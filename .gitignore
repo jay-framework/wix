@@ -1,0 +1,13 @@
+node_modules
+dist
+dist-secure
+build
+*.iml
+/packages/compiler/compiler/lib/expressions/expression-parser.js
+examples/**/*.d.ts
+examples/**/lib/**/*.jay-html.ts
+**/coverage/
+.yarn/install-state.gz
+/.idea/prettier.xml
+/.idea/workspace.xml
+exploration
