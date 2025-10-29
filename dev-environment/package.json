@@ -1,0 +1,21 @@
+{
+  "name": "@jay-framework/dev-environment",
+  "version": "0.6.10",
+  "private": true,
+  "files": [
+    "*.ts",
+    "*.json"
+  ],
+  "scripts": {
+    "build": ":",
+    "clean": ":",
+    "test": ":",
+    "confirm": ":",
+    "build:check-types": ":"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.1"
+  }
+}

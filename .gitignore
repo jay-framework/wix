@@ -11,3 +11,4 @@ examples/**/lib/**/*.jay-html.ts
 /.idea/prettier.xml
 /.idea/workspace.xml
 exploration
+config
