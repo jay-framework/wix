@@ -1780,7 +1780,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jay-framework/wix-server-client@workspace:packages/wix-server-client":
+"@jay-framework/wix-data@workspace:packages/wix-data":
+  version: 0.0.0-use.local
+  resolution: "@jay-framework/wix-data@workspace:packages/wix-data"
+  dependencies:
+    "@babel/core": ^7.23.7
+    "@babel/preset-env": ^7.23.8
+    "@babel/preset-typescript": ^7.23.3
+    "@jay-framework/component": ^0.6.10
+    "@jay-framework/fullstack-component": ^0.6.10
+    "@jay-framework/jay-cli": ^0.6.10
+    "@jay-framework/reactive": ^0.6.10
+    "@jay-framework/runtime": ^0.6.10
+    "@jay-framework/secure": ^0.6.10
+    "@jay-framework/vite-plugin": ^0.6.10
+    "@jay-framework/wix-server-client": ^1.0.0
+    "@wix/data": ^1.0.316
+    nodemon: ^3.0.3
+    rimraf: ^5.0.5
+    tslib: ^2.6.2
+    typescript: ^5.3.3
+    vite: ^5.0.11
+    vite-plugin-inspect: ^0.8.1
+  languageName: unknown
+  linkType: soft
+
+"@jay-framework/wix-server-client@^1.0.0, @jay-framework/wix-server-client@workspace:packages/wix-server-client":
   version: 0.0.0-use.local
   resolution: "@jay-framework/wix-server-client@workspace:packages/wix-server-client"
   dependencies:
@@ -1795,10 +1820,33 @@ __metadata:
     "@jay-framework/secure": ^0.6.10
     "@jay-framework/vite-plugin": ^0.6.10
     "@types/js-yaml": ^4.0.9
-    "@wix/data": ^1.0.316
     "@wix/sdk": ^1.17.1
-    "@wix/stores": ^1.0.547
     js-yaml: ^4.1.0
+    nodemon: ^3.0.3
+    rimraf: ^5.0.5
+    tslib: ^2.6.2
+    typescript: ^5.3.3
+    vite: ^5.0.11
+    vite-plugin-inspect: ^0.8.1
+  languageName: unknown
+  linkType: soft
+
+"@jay-framework/wix-stores@workspace:packages/wix-stores":
+  version: 0.0.0-use.local
+  resolution: "@jay-framework/wix-stores@workspace:packages/wix-stores"
+  dependencies:
+    "@babel/core": ^7.23.7
+    "@babel/preset-env": ^7.23.8
+    "@babel/preset-typescript": ^7.23.3
+    "@jay-framework/component": ^0.6.10
+    "@jay-framework/fullstack-component": ^0.6.10
+    "@jay-framework/jay-cli": ^0.6.10
+    "@jay-framework/reactive": ^0.6.10
+    "@jay-framework/runtime": ^0.6.10
+    "@jay-framework/secure": ^0.6.10
+    "@jay-framework/vite-plugin": ^0.6.10
+    "@jay-framework/wix-server-client": ^1.0.0
+    "@wix/stores": ^1.0.547
     nodemon: ^3.0.3
     rimraf: ^5.0.5
     tslib: ^2.6.2
