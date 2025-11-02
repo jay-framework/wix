@@ -1,0 +1,8 @@
+{
+  "extends": "@jay-framework/dev-environment/examples/tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+  },
+}
+
+
