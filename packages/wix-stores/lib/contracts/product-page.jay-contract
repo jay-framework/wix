@@ -1,0 +1,571 @@
+name: product-page
+tags:
+  # Product basic info (from Wix Stores Product API)
+  - tag: _id
+    type: data
+    dataType: string
+    description: Product GUID
+    
+  - tag: name
+    type: data
+    dataType: string
+    required: true
+    description: Product name
+    
+  - tag: slug
+    type: data
+    dataType: string
+    description: Product slug for URL
+    
+  - tag: description
+    type: data
+    dataType: string
+    description: Product description using rich content
+    
+  - tag: plainDescription
+    type: data
+    dataType: string
+    description: Product description in HTML
+  
+  # Price information (from Wix Stores API - PriceRange)
+  - tag: actualPriceRange
+    type: sub-contract
+    description: Product actualPrice range - minimum and maximum prices of all product variants
+    tags:
+      - tag: minValue
+        type: sub-contract
+        description: Minimum price
+        tags:
+          - tag: amount
+            type: data
+            dataType: string
+            description: Price amount (e.g., "29.99")
+            
+          - tag: formattedAmount
+            type: data
+            dataType: string
+            description: Formatted price (e.g., "$29.99")
+        
+      - tag: maxValue
+        type: sub-contract
+        description: Maximum price
+        tags:
+          - tag: amount
+            type: data
+            dataType: string
+            description: Price amount
+            
+          - tag: formattedAmount
+            type: data
+            dataType: string
+            description: Formatted price
+  
+  - tag: compareAtPriceRange
+    type: sub-contract
+    description: Product compareAtPrice range - minimum and maximum compare at prices of all product variants
+    tags:
+      - tag: minValue
+        type: sub-contract
+        description: Minimum compare at price
+        tags:
+          - tag: amount
+            type: data
+            dataType: string
+            description: Price amount
+            
+          - tag: formattedAmount
+            type: data
+            dataType: string
+            description: Formatted price
+        
+      - tag: maxValue
+        type: sub-contract
+        description: Maximum compare at price
+        tags:
+          - tag: amount
+            type: data
+            dataType: string
+            description: Price amount
+            
+          - tag: formattedAmount
+            type: data
+            dataType: string
+            description: Formatted price
+            
+  - tag: currency
+    type: data
+    dataType: string
+    description: Currency code in ISO-4217 format (e.g., "USD")
+  
+  # Media (from Wix Stores API - Media structure)
+  - tag: media
+    type: sub-contract
+    description: Product media
+    tags:
+      - tag: main
+        type: sub-contract
+        description: Main media (image, video, etc.) associated with this product
+        tags:
+          - tag: _id
+            type: data
+            dataType: string
+            description: Media GUID or external URL
+            
+          - tag: url
+            type: data
+            dataType: string
+            description: Media URL
+            
+          - tag: altText
+            type: data
+            dataType: string
+            description: Media alt text
+            
+          - tag: mediaType
+            type: data
+            dataType: enum (IMAGE | VIDEO)
+            description: Media type
+            
+          - tag: displayName
+            type: data
+            dataType: string
+            description: Media display name
+        
+      - tag: itemsInfo
+        type: sub-contract
+        description: All media items info
+        tags:
+          - tag: items
+            type: sub-contract
+            repeated: true
+            description: All media items (images, videos) associated with this product
+            tags:
+              - tag: _id
+                type: data
+                dataType: string
+                description: Media GUID or external URL
+                
+              - tag: url
+                type: data
+                dataType: string
+                description: Media URL
+                
+              - tag: altText
+                type: data
+                dataType: string
+                description: Media alt text
+                
+              - tag: mediaType
+                type: data
+                dataType: enum (IMAGE | VIDEO)
+                description: Media type
+                
+              - tag: displayName
+                type: data
+                dataType: string
+                description: Media display name
+                
+              - tag: thumbnail
+                type: sub-contract
+                description: Media thumbnail
+                tags:
+                  - tag: url
+                    type: data
+                    dataType: string
+                    description: Thumbnail URL
+                    
+                  - tag: altText
+                    type: data
+                    dataType: string
+                    description: Thumbnail alt text
+                    
+                  - tag: width
+                    type: data
+                    dataType: number
+                    description: Thumbnail width in pixels
+                    
+                  - tag: height
+                    type: data
+                    dataType: number
+                    description: Thumbnail height in pixels
+  
+  # Inventory (from Wix Stores API - Inventory structure)
+  - tag: inventory
+    type: sub-contract
+    description: Product inventory information
+    tags:
+      - tag: availabilityStatus
+        type: variant
+        dataType: enum (IN_STOCK | OUT_OF_STOCK | PARTIALLY_OUT_OF_STOCK)
+        description: Current availability status
+        
+      - tag: preorderStatus
+        type: data
+        dataType: enum (ENABLED | DISABLED | PARTIALLY_ENABLED)
+        description: Current preorder status
+        
+      - tag: preorderAvailability
+        type: data
+        dataType: enum (ALL_VARIANTS | NO_VARIANTS | SOME_VARIANTS)
+        description: Preorder availability across variants
+  
+  # Product options (from Wix Stores API - ConnectedOption structure)
+  - tag: options
+    type: sub-contract
+    repeated: true
+    description: Product customization options that generate variants
+    tags:
+      - tag: _id
+        type: data
+        dataType: string
+        description: Option GUID (customization ID)
+        
+      - tag: name
+        type: data
+        dataType: string
+        description: Option name (e.g., "Color", "Size")
+        
+      - tag: optionRenderType
+        type: data
+        dataType: enum (TEXT_CHOICES | SWATCH_CHOICES)
+        description: How the option should be rendered
+        
+      - tag: choices
+        type: sub-contract
+        repeated: true
+        description: Available choices for this option
+        tags:
+          - tag: choiceId
+            type: data
+            dataType: string
+            description: Choice GUID
+            
+          - tag: name
+            type: data
+            dataType: string
+            description: Choice name (e.g., "Red", "Large")
+            
+          - tag: choiceType
+            type: data
+            dataType: enum (CHOICE_TEXT | ONE_COLOR | MULTIPLE_COLORS | IMAGE)
+            description: Type of choice
+            
+          - tag: colorCode
+            type: data
+            dataType: string
+            description: Color code in HEX format (for color choices)
+            
+          - tag: inStock
+            type: data
+            dataType: boolean
+            description: Whether at least one variant with this choice is in stock
+            
+          - tag: visible
+            type: data
+            dataType: boolean
+            description: Whether at least one variant with this choice is visible
+            
+          - tag: isSelected
+            type: variant
+            dataType: boolean
+            description: Whether this choice is currently selected (UI state)
+            
+          - tag: choiceButton
+            type: interactive
+            elementType: HTMLButtonElement
+            description: Button to select this choice
+  
+  # Quantity selector
+  - tag: quantity
+    type: sub-contract
+    description: Quantity selection controls
+    tags:
+      - tag: currentQuantity
+        type: data
+        dataType: number
+        description: Currently selected quantity
+        
+      - tag: decrementButton
+        type: interactive
+        elementType: HTMLButtonElement
+        description: Button to decrease quantity
+        
+      - tag: incrementButton
+        type: interactive
+        elementType: HTMLButtonElement
+        description: Button to increase quantity
+        
+      - tag: quantityInput
+        type: [data, interactive]
+        dataType: number
+        elementType: HTMLInputElement
+        description: Direct quantity input field
+  
+  # Call to action
+  - tag: addToCartButton
+    type: interactive
+    elementType: HTMLButtonElement
+    required: true
+    description: Add product to cart button
+    
+  - tag: isAddingToCart
+    type: variant
+    dataType: boolean
+    description: Whether add to cart is in progress
+    
+  # Current variant (from Wix Stores API - Variant structure)
+  - tag: currentVariant
+    type: sub-contract
+    description: Currently selected variant
+    tags:
+      - tag: _id
+        type: data
+        dataType: string
+        description: Variant GUID
+        
+      - tag: sku
+        type: data
+        dataType: string
+        description: Variant SKU
+        
+      - tag: barcode
+        type: data
+        dataType: string
+        description: Variant barcode
+        
+      - tag: price
+        type: sub-contract
+        description: Variant price
+        tags:
+          - tag: actualPrice
+            type: sub-contract
+            description: Current price
+            tags:
+              - tag: amount
+                type: data
+                dataType: string
+                description: Price amount
+                
+              - tag: formattedAmount
+                type: data
+                dataType: string
+                description: Formatted price (e.g., "$29.99")
+          
+          - tag: compareAtPrice
+            type: sub-contract
+            description: Compare-at price (original price before discount)
+            tags:
+              - tag: amount
+                type: data
+                dataType: string
+                description: Price amount
+                
+              - tag: formattedAmount
+                type: data
+                dataType: string
+                description: Formatted price
+        
+      - tag: inventoryStatus
+        type: sub-contract
+        description: Variant inventory status
+        tags:
+          - tag: inStock
+            type: data
+            dataType: boolean
+            description: Whether variant is in stock
+            
+          - tag: preorderEnabled
+            type: data
+            dataType: boolean
+            description: Whether preorder is enabled for this variant
+      
+      - tag: visible
+        type: data
+        dataType: boolean
+        description: Whether variant is visible
+  
+  # Brand (from Wix Stores API - Brand structure)
+  - tag: brand
+    type: sub-contract
+    description: Product brand
+    tags:
+      - tag: _id
+        type: data
+        dataType: string
+        description: Brand GUID
+        
+      - tag: name
+        type: data
+        dataType: string
+        description: Brand name
+  
+  # Ribbon (from Wix Stores API - Ribbon structure)
+  - tag: ribbon
+    type: sub-contract
+    description: Product ribbon/badge
+    tags:
+      - tag: _id
+        type: data
+        dataType: string
+        description: Ribbon GUID
+        
+      - tag: name
+        type: data
+        dataType: string
+        description: Ribbon text (e.g., "New", "Sale")
+  
+  # Categories and Navigation (from Wix Stores API)
+  - tag: mainCategoryId
+    type: data
+    dataType: string
+    description: The GUID of the product's primary direct category
+    
+  - tag: breadcrumbsInfo
+    type: sub-contract
+    description: Breadcrumbs of the mainCategoryId for navigation
+    tags:
+      - tag: breadcrumbs
+        type: sub-contract
+        repeated: true
+        description: Breadcrumb navigation path
+        tags:
+          - tag: categoryId
+            type: data
+            dataType: string
+            description: Category GUID
+            
+          - tag: categoryName
+            type: data
+            dataType: string
+            description: Category name
+            
+          - tag: categorySlug
+            type: data
+            dataType: string
+            description: Category slug
+  
+  - tag: allCategoriesInfo
+    type: sub-contract
+    description: List of categories that directly contain this product and their parent categories
+    tags:
+      - tag: categories
+        type: sub-contract
+        repeated: true
+        description: List of related categories
+        tags:
+          - tag: _id
+            type: data
+            dataType: string
+            description: Category GUID
+            
+          - tag: index
+            type: data
+            dataType: number
+            description: Index location of the product within the category
+  
+  - tag: directCategoriesInfo
+    type: sub-contract
+    description: List of categories that directly contain this product
+    tags:
+      - tag: categories
+        type: sub-contract
+        repeated: true
+        description: List of direct categories
+        tags:
+          - tag: _id
+            type: data
+            dataType: string
+            description: Category GUID
+            
+          - tag: index
+            type: data
+            dataType: number
+            description: Index location of the product within the category
+    
+  # Additional info sections (from Wix Stores API)
+  - tag: infoSections
+    type: sub-contract
+    repeated: true
+    description: Additional product information sections
+    tags:
+      - tag: _id
+        type: data
+        dataType: string
+        description: Info section GUID
+        
+      - tag: title
+        type: data
+        dataType: string
+        description: Info section title
+        
+      - tag: uniqueName
+        type: data
+        dataType: string
+        description: Info section unique name
+        
+      - tag: description
+        type: data
+        dataType: string
+        description: Info section description using rich content
+        
+      - tag: plainDescription
+        type: data
+        dataType: string
+        description: Info section description in HTML
+  
+  # Product metadata and settings (from Wix Stores API)
+  - tag: productType
+    type: data
+    dataType: enum (PHYSICAL | DIGITAL)
+    description: Product type
+    
+  - tag: handle
+    type: data
+    dataType: string
+    description: A unique human-friendly identifier for the product
+    
+  - tag: visible
+    type: data
+    dataType: boolean
+    description: Whether the product is visible to site visitors
+    
+  - tag: visibleInPos
+    type: data
+    dataType: boolean
+    description: Whether the product is visible in POS (point of sale)
+    
+  - tag: taxGroupId
+    type: data
+    dataType: string
+    description: Tax group GUID
+    
+  - tag: url
+    type: data
+    dataType: string
+    description: URL to the site's product page
+    
+  - tag: _createdDate
+    type: data
+    dataType: string
+    description: Date and time the product was created
+    
+  - tag: _updatedDate
+    type: data
+    dataType: string
+    description: Date and time the product was last updated
+    
+  - tag: revision
+    type: data
+    dataType: string
+    description: Revision number, increments by 1 each time the product is updated
+  
+  # Variant summary (from Wix Stores API)
+  - tag: variantSummary
+    type: sub-contract
+    description: The total number of variants for the product
+    tags:
+      - tag: variantCount
+        type: data
+        dataType: number
+        description: Total number of variants
+

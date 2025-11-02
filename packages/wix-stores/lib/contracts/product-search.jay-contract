@@ -1,0 +1,196 @@
+name: product-search
+tags:
+  # Search input
+  - tag: searchQuery
+    type: [data, interactive]
+    dataType: string
+    elementType: HTMLInputElement
+    description: Search query input field
+    
+  - tag: searchButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Search submit button
+    
+  - tag: clearSearchButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Clear search input button
+    
+  # Search state
+  - tag: isSearching
+    type: variant
+    dataType: boolean
+    description: Whether search is in progress
+    
+  - tag: hasSearched
+    type: variant
+    dataType: boolean
+    description: Whether a search has been performed
+    
+  # Search results
+  - tag: searchResults
+    type: sub-contract
+    repeated: true
+    async: true
+    description: Product search results (loaded asynchronously)
+    link: ./product-card
+    
+  - tag: resultCount
+    type: data
+    dataType: number
+    description: Total number of search results
+    
+  - tag: hasResults
+    type: variant
+    dataType: boolean
+    description: Whether search returned any results
+    
+  # Empty state message
+  - tag: emptyStateMessage
+    type: data
+    dataType: string
+    description: Message to show when no results found
+    
+  # Search filters
+  - tag: filters
+    type: sub-contract
+    description: Search result filters
+    tags:
+      # Price range filter
+      - tag: priceRange
+        type: sub-contract
+        description: Price range filter
+        tags:
+          - tag: minPrice
+            type: [data, interactive]
+            dataType: number
+            elementType: HTMLInputElement
+            description: Minimum price input
+            
+          - tag: maxPrice
+            type: [data, interactive]
+            dataType: number
+            elementType: HTMLInputElement
+            description: Maximum price input
+      
+      # Category filter
+      - tag: categoryFilter
+        type: sub-contract
+        description: Filter by category
+        tags:
+          - tag: categories
+            type: sub-contract
+            repeated: true
+            description: Available categories for filtering
+            tags:
+              - tag: categoryId
+                type: data
+                dataType: string
+                description: Category GUID
+                
+              - tag: categoryName
+                type: data
+                dataType: string
+                description: Category name
+                
+              - tag: isSelected
+                type: [data, interactive]
+                dataType: boolean
+                elementType: HTMLInputElement
+                description: Category checkbox
+      
+      # Availability filter
+      - tag: inStockOnly
+        type: [data, interactive]
+        dataType: boolean
+        elementType: HTMLInputElement
+        description: Show only in-stock products checkbox
+        
+      # Apply filters button
+      - tag: applyFilters
+        type: interactive
+        elementType: HTMLButtonElement
+        description: Apply all filters button
+        
+      - tag: clearFilters
+        type: interactive
+        elementType: HTMLButtonElement
+        description: Clear all filters button
+  
+  # Sorting
+  - tag: sortBy
+    type: sub-contract
+    description: Sort search results
+    tags:
+      - tag: currentSort
+        type: data
+        dataType: enum (relevance | priceAsc | priceDesc | newest | nameAsc | nameDesc)
+        description: Current sort option
+        
+      - tag: sortDropdown
+        type: interactive
+        elementType: HTMLSelectElement
+        description: Dropdown to select sort option
+  
+  # Pagination
+  - tag: pagination
+    type: sub-contract
+    description: Search results pagination
+    tags:
+      - tag: currentPage
+        type: data
+        dataType: number
+        description: Current page number
+        
+      - tag: totalPages
+        type: data
+        dataType: number
+        description: Total number of pages
+        
+      - tag: hasNextPage
+        type: variant
+        dataType: boolean
+        description: Whether there is a next page
+        
+      - tag: hasPrevPage
+        type: variant
+        dataType: boolean
+        description: Whether there is a previous page
+        
+      - tag: prevButton
+        type: interactive
+        elementType: HTMLButtonElement
+        description: Previous page button
+        
+      - tag: nextButton
+        type: interactive
+        elementType: HTMLButtonElement
+        description: Next page button
+        
+      - tag: loadMoreButton
+        type: interactive
+        elementType: HTMLButtonElement
+        description: Load more results button (infinite scroll option)
+  
+  # Search suggestions (optional)
+  - tag: hasSuggestions
+    type: variant
+    dataType: boolean
+    description: Whether search suggestions are available
+    
+  - tag: suggestions
+    type: sub-contract
+    repeated: true
+    description: Search term suggestions
+    tags:
+      - tag: suggestionText
+        type: data
+        dataType: string
+        description: Suggested search term
+        
+      - tag: suggestionButton
+        type: interactive
+        elementType: HTMLButtonElement
+        description: Button to use this suggestion
+

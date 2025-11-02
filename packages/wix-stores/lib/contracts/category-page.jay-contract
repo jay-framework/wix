@@ -1,0 +1,167 @@
+name: category-page
+tags:
+  # Category information
+  - tag: categoryId
+    type: data
+    dataType: string
+    description: Category GUID
+    
+  - tag: categoryName
+    type: data
+    dataType: string
+    required: true
+    description: Category name
+    
+  - tag: categoryDescription
+    type: data
+    dataType: string
+    description: Category description
+    
+  - tag: categoryImage
+    type: data
+    dataType: string
+    description: Category banner/header image URL
+    
+  # Breadcrumbs navigation
+  - tag: breadcrumbs
+    type: sub-contract
+    repeated: true
+    description: Breadcrumb navigation path
+    tags:
+      - tag: categoryName
+        type: data
+        dataType: string
+        description: Category name in breadcrumb
+        
+      - tag: categorySlug
+        type: data
+        dataType: string
+        description: Category slug for link
+        
+      - tag: categoryLink
+        type: interactive
+        elementType: HTMLAnchorElement
+        description: Link to category
+  
+  # Products list
+  - tag: products
+    type: sub-contract
+    repeated: true
+    async: true
+    description: Products in this category (loaded asynchronously)
+    link: ./product-card
+    
+  # Pagination
+  - tag: pagination
+    type: sub-contract
+    description: Pagination controls
+    tags:
+      - tag: currentPage
+        type: data
+        dataType: number
+        description: Current page number
+        
+      - tag: totalPages
+        type: data
+        dataType: number
+        description: Total number of pages
+        
+      - tag: totalProducts
+        type: data
+        dataType: number
+        description: Total number of products in category
+        
+      - tag: prevButton
+        type: interactive
+        elementType: HTMLButtonElement
+        description: Previous page button
+        
+      - tag: nextButton
+        type: interactive
+        elementType: HTMLButtonElement
+        description: Next page button
+        
+      - tag: pageNumbers
+        type: sub-contract
+        repeated: true
+        description: Individual page number buttons
+        tags:
+          - tag: pageNumber
+            type: data
+            dataType: number
+            description: Page number
+            
+          - tag: isCurrent
+            type: variant
+            dataType: boolean
+            description: Whether this is the current page
+            
+          - tag: pageButton
+            type: interactive
+            elementType: HTMLButtonElement
+            description: Button to navigate to this page
+  
+  # Sorting
+  - tag: sortBy
+    type: sub-contract
+    description: Product sorting options
+    tags:
+      - tag: currentSort
+        type: data
+        dataType: enum (newest | priceAsc | priceDesc | nameAsc | nameDesc)
+        description: Current sort option
+        
+      - tag: sortDropdown
+        type: interactive
+        elementType: HTMLSelectElement
+        description: Dropdown to select sort option
+  
+  # Filters
+  - tag: filters
+    type: sub-contract
+    description: Product filtering options
+    tags:
+      - tag: priceRange
+        type: sub-contract
+        description: Price range filter
+        tags:
+          - tag: minPrice
+            type: [data, interactive]
+            dataType: number
+            elementType: HTMLInputElement
+            description: Minimum price input
+            
+          - tag: maxPrice
+            type: [data, interactive]
+            dataType: number
+            elementType: HTMLInputElement
+            description: Maximum price input
+            
+          - tag: applyPriceFilter
+            type: interactive
+            elementType: HTMLButtonElement
+            description: Apply price filter button
+      
+      - tag: inStockOnly
+        type: [data, interactive]
+        dataType: boolean
+        elementType: HTMLInputElement
+        description: Show only in-stock products checkbox
+        
+      - tag: clearFilters
+        type: interactive
+        elementType: HTMLButtonElement
+        description: Clear all filters button
+  
+  # Loading state
+  - tag: isLoading
+    type: variant
+    dataType: boolean
+    description: Whether products are currently loading
+    
+  # Empty state
+  - tag: hasProducts
+    type: variant
+    dataType: boolean
+    description: Whether category has any products
+

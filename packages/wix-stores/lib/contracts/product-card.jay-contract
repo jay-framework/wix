@@ -1,0 +1,116 @@
+name: product-card
+tags:
+  # Product basic info
+  - tag: productId
+    type: data
+    dataType: string
+    description: Product GUID
+    
+  - tag: productName
+    type: data
+    dataType: string
+    required: true
+    description: Product name
+    
+  - tag: productSlug
+    type: data
+    dataType: string
+    description: Product slug for URL
+    
+  - tag: productLink
+    type: interactive
+    elementType: HTMLAnchorElement
+    description: Link to product page
+    
+  # Product image
+  - tag: productImage
+    type: data
+    dataType: string
+    description: Product thumbnail image URL
+    
+  - tag: imageAltText
+    type: data
+    dataType: string
+    description: Image alternative text
+    
+  # Price information
+  - tag: actualPrice
+    type: data
+    dataType: string
+    description: Current price (formatted, e.g., "$29.99")
+    
+  - tag: compareAtPrice
+    type: data
+    dataType: string
+    description: Original price before discount (formatted)
+    
+  - tag: hasDiscount
+    type: variant
+    dataType: boolean
+    description: Whether product has a discount
+    
+  - tag: discountPercentage
+    type: data
+    dataType: number
+    description: Discount percentage if applicable
+    
+  # Inventory status
+  - tag: inventoryStatus
+    type: variant
+    dataType: enum (inStock | outOfStock | lowStock)
+    description: Product availability status
+    
+  - tag: inventoryBadge
+    type: data
+    dataType: string
+    description: Inventory status badge text (e.g., "Low Stock", "Out of Stock")
+    
+  # Product ribbon/badge
+  - tag: hasRibbon
+    type: variant
+    dataType: boolean
+    description: Whether product has a ribbon/badge
+    
+  - tag: ribbonText
+    type: data
+    dataType: string
+    description: Ribbon text (e.g., "New", "Sale", "Best Seller")
+    
+  # Quick actions
+  - tag: addToCartButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Quick add to cart button
+    
+  - tag: isAddingToCart
+    type: variant
+    dataType: boolean
+    description: Whether add to cart is in progress
+    
+  # Additional info
+  - tag: brandName
+    type: data
+    dataType: string
+    description: Product brand name
+    
+  - tag: shortDescription
+    type: data
+    dataType: string
+    description: Short product description
+    
+  # Rating (optional)
+  - tag: hasRating
+    type: variant
+    dataType: boolean
+    description: Whether product has ratings
+    
+  - tag: averageRating
+    type: data
+    dataType: number
+    description: Average rating (0-5)
+    
+  - tag: reviewCount
+    type: data
+    dataType: number
+    description: Number of reviews
+
