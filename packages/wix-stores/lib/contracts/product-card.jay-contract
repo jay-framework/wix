@@ -1,18 +1,18 @@
 name: product-card
 tags:
-  # Product basic info
-  - tag: productId
+  # Product basic info (from Wix Stores Product API)
+  - tag: _id
     type: data
     dataType: string
     description: Product GUID
     
-  - tag: productName
+  - tag: name
     type: data
     dataType: string
     required: true
     description: Product name
     
-  - tag: productSlug
+  - tag: slug
     type: data
     dataType: string
     description: Product slug for URL
@@ -22,59 +22,185 @@ tags:
     elementType: HTMLAnchorElement
     description: Link to product page
     
-  # Product image
-  - tag: productImage
-    type: data
-    dataType: string
-    description: Product thumbnail image URL
+  # Media (from Wix Stores Product API)
+  - tag: mainMedia
+    type: sub-contract
+    description: Main product media
+    tags:
+      - tag: url
+        type: data
+        dataType: string
+        description: Media URL
+        
+      - tag: altText
+        type: data
+        dataType: string
+        description: Media alt text
+        
+      - tag: mediaType
+        type: data
+        dataType: enum (IMAGE | VIDEO)
+        description: Media type
+        
+  - tag: thumbnail
+    type: sub-contract
+    description: Thumbnail image optimized for listings
+    tags:
+      - tag: url
+        type: data
+        dataType: string
+        description: Thumbnail URL
+        
+      - tag: altText
+        type: data
+        dataType: string
+        description: Thumbnail alt text
+        
+      - tag: width
+        type: data
+        dataType: number
+        description: Thumbnail width in pixels
+        
+      - tag: height
+        type: data
+        dataType: number
+        description: Thumbnail height in pixels
     
-  - tag: imageAltText
+  # Price information (from Wix Stores Product API)
+  - tag: actualPriceRange
+    type: sub-contract
+    description: Product price range (minimum and maximum prices)
+    tags:
+      - tag: minValue
+        type: sub-contract
+        description: Minimum price
+        tags:
+          - tag: amount
+            type: data
+            dataType: string
+            description: Price amount (e.g., "29.99")
+            
+          - tag: formattedAmount
+            type: data
+            dataType: string
+            description: Formatted price (e.g., "$29.99")
+            
+      - tag: maxValue
+        type: sub-contract
+        description: Maximum price
+        tags:
+          - tag: amount
+            type: data
+            dataType: string
+            description: Price amount
+            
+          - tag: formattedAmount
+            type: data
+            dataType: string
+            description: Formatted price
+            
+  - tag: compareAtPriceRange
+    type: sub-contract
+    description: Compare-at price range (original prices before discount)
+    tags:
+      - tag: minValue
+        type: sub-contract
+        description: Minimum compare-at price
+        tags:
+          - tag: amount
+            type: data
+            dataType: string
+            description: Price amount
+            
+          - tag: formattedAmount
+            type: data
+            dataType: string
+            description: Formatted price
+            
+      - tag: maxValue
+        type: sub-contract
+        description: Maximum compare-at price
+        tags:
+          - tag: amount
+            type: data
+            dataType: string
+            description: Price amount
+            
+          - tag: formattedAmount
+            type: data
+            dataType: string
+            description: Formatted price
+            
+  - tag: currency
     type: data
     dataType: string
-    description: Image alternative text
-    
-  # Price information
-  - tag: actualPrice
-    type: data
-    dataType: string
-    description: Current price (formatted, e.g., "$29.99")
-    
-  - tag: compareAtPrice
-    type: data
-    dataType: string
-    description: Original price before discount (formatted)
+    description: Currency code in ISO-4217 format (e.g., "USD")
     
   - tag: hasDiscount
     type: variant
     dataType: boolean
-    description: Whether product has a discount
+    description: Whether product has a discount (compareAtPrice > actualPrice)
     
-  - tag: discountPercentage
-    type: data
-    dataType: number
-    description: Discount percentage if applicable
-    
-  # Inventory status
-  - tag: inventoryStatus
-    type: variant
-    dataType: enum (inStock | outOfStock | lowStock)
-    description: Product availability status
-    
-  - tag: inventoryBadge
-    type: data
-    dataType: string
-    description: Inventory status badge text (e.g., "Low Stock", "Out of Stock")
-    
-  # Product ribbon/badge
+  # Inventory (from Wix Stores Product API)
+  - tag: inventory
+    type: sub-contract
+    description: Product inventory information
+    tags:
+      - tag: availabilityStatus
+        type: variant
+        dataType: enum (IN_STOCK | OUT_OF_STOCK | PARTIALLY_OUT_OF_STOCK)
+        description: Current availability status
+        
+      - tag: preorderStatus
+        type: data
+        dataType: enum (ENABLED | DISABLED | PARTIALLY_ENABLED)
+        description: Current preorder status
+        
+  # Product ribbon (from Wix Stores Product API)
+  - tag: ribbon
+    type: sub-contract
+    description: Product ribbon/badge
+    tags:
+      - tag: _id
+        type: data
+        dataType: string
+        description: Ribbon GUID
+        
+      - tag: name
+        type: data
+        dataType: string
+        description: Ribbon text (e.g., "New", "Sale", "Best Seller")
+        
   - tag: hasRibbon
     type: variant
     dataType: boolean
     description: Whether product has a ribbon/badge
     
-  - tag: ribbonText
+  # Brand (from Wix Stores Product API)
+  - tag: brand
+    type: sub-contract
+    description: Product brand
+    tags:
+      - tag: _id
+        type: data
+        dataType: string
+        description: Brand GUID
+        
+      - tag: name
+        type: data
+        dataType: string
+        description: Brand name
+        
+  # Additional product metadata
+  - tag: productType
     type: data
-    dataType: string
-    description: Ribbon text (e.g., "New", "Sale", "Best Seller")
+    dataType: enum (PHYSICAL | DIGITAL)
+    description: Product type
+    
+  - tag: visible
+    type: data
+    dataType: boolean
+    description: Whether product is visible to site visitors
     
   # Quick actions
   - tag: addToCartButton
@@ -86,31 +212,4 @@ tags:
     type: variant
     dataType: boolean
     description: Whether add to cart is in progress
-    
-  # Additional info
-  - tag: brandName
-    type: data
-    dataType: string
-    description: Product brand name
-    
-  - tag: shortDescription
-    type: data
-    dataType: string
-    description: Short product description
-    
-  # Rating (optional)
-  - tag: hasRating
-    type: variant
-    dataType: boolean
-    description: Whether product has ratings
-    
-  - tag: averageRating
-    type: data
-    dataType: number
-    description: Average rating (0-5)
-    
-  - tag: reviewCount
-    type: data
-    dataType: number
-    description: Number of reviews
 

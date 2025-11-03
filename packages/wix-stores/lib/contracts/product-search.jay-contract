@@ -1,11 +1,21 @@
 name: product-search
 tags:
-  # Search input
-  - tag: searchQuery
+  # Search input (matches Wix searchProducts search.search parameter)
+  - tag: searchExpression
     type: [data, interactive]
     dataType: string
     elementType: HTMLInputElement
-    description: Search query input field
+    description: Search term or expression
+    
+  - tag: searchFields
+    type: data
+    dataType: string
+    description: Comma-separated list of fields to search in (name, description, sku, etc.)
+    
+  - tag: fuzzySearch
+    type: data
+    dataType: boolean
+    description: Whether to enable fuzzy search for typos and declensions
     
   - tag: searchButton
     type: interactive
@@ -28,7 +38,7 @@ tags:
     dataType: boolean
     description: Whether a search has been performed
     
-  # Search results
+  # Search results (links to product-card, same as Wix searchProducts response)
   - tag: searchResults
     type: sub-contract
     repeated: true

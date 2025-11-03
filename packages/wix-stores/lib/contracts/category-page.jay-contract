@@ -1,26 +1,119 @@
 name: category-page
 tags:
-  # Category information
-  - tag: categoryId
+  # Category/Collection information (from Wix Stores Collection API)
+  - tag: _id
     type: data
     dataType: string
-    description: Category GUID
+    description: Collection GUID
     
-  - tag: categoryName
+  - tag: name
     type: data
     dataType: string
     required: true
-    description: Category name
+    description: Collection name
     
-  - tag: categoryDescription
+  - tag: description
     type: data
     dataType: string
-    description: Category description
+    description: Collection description
     
-  - tag: categoryImage
+  - tag: slug
     type: data
     dataType: string
-    description: Category banner/header image URL
+    description: Collection slug
+    
+  - tag: visible
+    type: data
+    dataType: boolean
+    description: Collection visibility (impacts dynamic pages only)
+    
+  - tag: numberOfProducts
+    type: data
+    dataType: number
+    description: Number of products in the collection
+    
+  # Media (from Wix Stores Collection API)
+  - tag: media
+    type: sub-contract
+    description: Media items associated with this collection
+    tags:
+      - tag: mainMedia
+        type: sub-contract
+        description: Primary media for the collection
+        tags:
+          - tag: _id
+            type: data
+            dataType: string
+            description: Media GUID
+            
+          - tag: url
+            type: data
+            dataType: string
+            description: Media URL
+            
+          - tag: altText
+            type: data
+            dataType: string
+            description: Media alt text
+            
+          - tag: mediaType
+            type: data
+            dataType: enum (IMAGE | VIDEO | AUDIO | DOCUMENT | ZIP)
+            description: Media item type
+            
+      - tag: items
+        type: sub-contract
+        repeated: true
+        description: All media items
+        tags:
+          - tag: _id
+            type: data
+            dataType: string
+            description: Media GUID
+            
+          - tag: url
+            type: data
+            dataType: string
+            description: Media URL
+            
+          - tag: altText
+            type: data
+            dataType: string
+            description: Media alt text
+            
+          - tag: title
+            type: data
+            dataType: string
+            description: Media item title
+            
+          - tag: mediaType
+            type: data
+            dataType: enum (IMAGE | VIDEO | AUDIO | DOCUMENT | ZIP)
+            description: Media item type
+            
+          - tag: thumbnail
+            type: sub-contract
+            description: Media thumbnail
+            tags:
+              - tag: url
+                type: data
+                dataType: string
+                description: Thumbnail URL
+                
+              - tag: width
+                type: data
+                dataType: number
+                description: Thumbnail width in pixels
+                
+              - tag: height
+                type: data
+                dataType: number
+                description: Thumbnail height in pixels
+                
+              - tag: format
+                type: data
+                dataType: string
+                description: Media format (mp4, png, etc.)
     
   # Breadcrumbs navigation
   - tag: breadcrumbs
@@ -28,6 +121,11 @@ tags:
     repeated: true
     description: Breadcrumb navigation path
     tags:
+      - tag: categoryId
+        type: data
+        dataType: string
+        description: Category GUID
+        
       - tag: categoryName
         type: data
         dataType: string
