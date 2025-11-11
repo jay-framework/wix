@@ -1,216 +1,297 @@
 # @jay-framework/wix-stores
 
-Wix Stores API client for the Jay Framework. This package provides a convenient wrapper around `@wix/stores` that uses the configured Wix client from `@jay-framework/wix-server-client`.
+Wix Stores API client and headless full-stack components for the Jay Framework with server-side rendering support.
 
 ## Installation
 
 ```bash
-yarn add @jay-framework/wix-stores
+npm install @jay-framework/wix-stores
 ```
 
-## Prerequisites
+## Features
 
-Make sure you have configured `@jay-framework/wix-server-client` with a valid `./config/.wix.yaml` file. See the [wix-server-client documentation](../wix-server-client/README.md) for configuration details.
+- **Type-safe Wix Stores API client** - Pre-configured singleton clients for Products V3, Collections, and Inventory
+- **Full-stack headless components** - Jay Stack components with SSR, SSG, and client-side interactivity built on Products V3 API
+- **Three-phase rendering** - Slow (semi-static), Fast (dynamic), and Interactive (client-side) rendering phases
+- **Server context** - Dependency injection for Wix API clients in server-side rendering
+- **TypeScript support** - Full type definitions for all APIs and components
 
-## Usage
+## Quick Start
 
-### Quick Start
+### 1. Configure Wix
+
+Set up your Wix configuration in a `.wix-config.json` file:
+
+```json
+{
+  "apiKey": "your-api-key",
+  "siteId": "your-site-id"
+}
+```
+
+### 2. Set Up Server Context
+
+In your application setup, provide the Wix Stores context:
 
 ```typescript
+import { provideContext } from '@jay-framework/runtime';
 import { 
-  getProductsClient,
-  getProductsV3Client,
-  getCollectionsClient,
-  getInventoryClient 
+  WixStoresContextMarker, 
+  createWixStoresContext 
 } from '@jay-framework/wix-stores';
 
-// Get pre-configured clients
-const productsClient = getProductsClient();
-const productsV3Client = getProductsV3Client(); // New Catalog V3 API
-const collectionsClient = getCollectionsClient();
-const inventoryClient = getInventoryClient();
-
-// Query products
-const products = await productsClient.queryProducts().find();
-
-// Get a specific product
-const product = await productsClient.getProduct('product-id');
+// Provide the context at application startup
+provideContext(WixStoresContextMarker, createWixStoresContext());
 ```
 
-### Advanced Usage
-
-You can also use the Wix client directly:
+### 3. Use Headless Components
 
 ```typescript
-import { getClient } from '@jay-framework/wix-server-client';
-import { products, productsV3, collections, inventory } from '@jay-framework/wix-stores';
+import { productPage, categoryPage, productCard, productSearch } from '@jay-framework/wix-stores';
 
-const wixClient = getClient();
-const productsClient = wixClient.use(products);
-const productsV3Client = wixClient.use(productsV3);
-const collectionsClient = wixClient.use(collections);
-const inventoryClient = wixClient.use(inventory);
-
-// Use the clients...
+// Components are ready to use with automatic server-side rendering
 ```
 
-### Working with Products
+## Headless Components
+
+### Product Page
+
+A complete product detail page with server-side rendering and URL parameters.
+
+**Features:**
+- Product details (name, description, media gallery)
+- Dynamic pricing with discount indicators
+- Real-time inventory status (fast rendering phase)
+- Variant/option selection (size, color, etc.)
+- Quantity controls
+- Add to cart with loading states
+
+**Rendering Phases:**
+- **Slow:** Product details, media, options, categories (SSG/ISR)
+- **Fast:** Inventory status, real-time availability (SSR)
+- **Interactive:** Variant selection, quantity, add to cart (Client)
+
+**Usage:**
 
 ```typescript
-import { getProductsClient } from '@jay-framework/wix-stores';
+import { productPage } from '@jay-framework/wix-stores';
 
-const productsClient = getProductsClient();
-
-// Query all products
-const allProducts = await productsClient.queryProducts().find();
-
-// Query products with filters
-const activeProducts = await productsClient.queryProducts()
-  .eq('visible', true)
-  .gt('price', 10)
-  .find();
-
-// Get a single product
-const product = await productsClient.getProduct('product-id');
-
-// Query product variants
-const variants = await productsClient.queryProductVariants({
-  productId: 'product-id'
-}).find();
+// Automatically creates pages for all products at /products/[slug]
+export const page = productPage;
 ```
 
-### Working with Products V3 (Catalog V3)
+**URL Parameters:**
+- `slug` - Product slug (e.g., `/products/gaming-laptop`)
+
+---
+
+### Product Card
+
+A product card component for listings and grids with server-side rendering.
+
+**Features:**
+- Product thumbnail and main image
+- Price with compare-at price
+- Real-time inventory status (fast rendering phase)
+- Product ribbon/badge
+- Quick add to cart
+
+**Rendering Phases:**
+- **Slow:** Product info, media, pricing (SSG/ISR)
+- **Fast:** Inventory status (SSR)
+- **Interactive:** Add to cart action (Client)
+
+**Usage:**
+
+```typescript
+import { productCard, ProductCardProps } from '@jay-framework/wix-stores';
+
+// Use in a listing page
+const props: ProductCardProps = {
+  productId: 'product-123'
+};
+```
+
+---
+
+### Category Page
+
+A category/collection page with product listings, filtering, and pagination.
+
+**Features:**
+- Category details (name, description, media)
+- Breadcrumb navigation
+- Product grid (async loading)
+- Filtering (price range, in-stock only)
+- Sorting (price, name, newest)
+- Pagination
+
+**Rendering Phases:**
+- **Slow:** Category details, media, breadcrumbs (SSG/ISR)
+- **Fast:** Product count, pagination metadata (SSR)
+- **Interactive:** Filtering, sorting, navigation (Client)
+
+**Usage:**
+
+```typescript
+import { categoryPage } from '@jay-framework/wix-stores';
+
+// Automatically creates pages for all categories at /categories/[slug]
+export const page = categoryPage;
+```
+
+**URL Parameters:**
+- `slug` - Category slug (e.g., `/categories/electronics`)
+
+---
+
+### Product Search
+
+A product search component with filtering, sorting, and pagination.
+
+**Features:**
+- Search input with fuzzy search support
+- Category filtering
+- Price range filtering
+- In-stock filtering
+- Multiple sort options
+- Pagination with load more option
+- Search suggestions
+
+**Rendering Phases:**
+- **Slow:** Available categories for filtering (SSG/ISR)
+- **Fast:** Initial empty state (SSR)
+- **Interactive:** Search execution, filtering, sorting (Client)
+
+**Usage:**
+
+```typescript
+import { productSearch } from '@jay-framework/wix-stores';
+
+// Use as a search page
+export const page = productSearch;
+```
+
+## API Clients
+
+You can also use the Wix Stores API clients directly:
+
+### Products V3 Client
+
+The headless components use the **Products V3 API** (Catalog V3) for enhanced features and better type safety.
 
 ```typescript
 import { getProductsV3Client } from '@jay-framework/wix-stores';
 
-const productsV3Client = getProductsV3Client();
+const products = getProductsV3Client();
 
-// Query products with the new V3 API
-const products = await productsV3Client.queryProducts().find();
+// Get a single product
+const { product } = await products.getProduct('product-id');
 
-// Get a product by ID
-const product = await productsV3Client.getProduct('product-id');
-
-// Create a new product
-const newProduct = await productsV3Client.createProduct({
-  product: {
-    name: 'New Product',
-    priceData: {
-      price: 29.99
-    }
-  }
-});
+// Query products
+const { items } = await products.queryProducts()
+  .eq('visible', true)
+  .find();
 ```
 
-**Note:** The Products V3 API is part of the new Catalog V3 system. See the [Catalog V3 documentation](https://dev.wix.com/docs/sdk/backend-modules/stores/catalog-v3/introduction) for more details.
-
-### Working with Collections
+### Collections Client
 
 ```typescript
 import { getCollectionsClient } from '@jay-framework/wix-stores';
 
-const collectionsClient = getCollectionsClient();
+const collections = getCollectionsClient();
+
+// Get a single collection
+const collection = await collections.getCollection('collection-id');
 
 // Query collections
-const collections = await collectionsClient.queryStoreCollections().find();
-
-// Get a specific collection
-const collection = await collectionsClient.getStoreCollection('collection-id');
-
-// Query products by collection
-const collectionProducts = await collectionsClient.queryStoreCollectionProducts({
-  collectionId: 'collection-id'
-}).find();
+const { collection } = await collections.queryCollections().find();
 ```
 
-### Working with Inventory
+### Inventory Client
 
 ```typescript
 import { getInventoryClient } from '@jay-framework/wix-stores';
 
-const inventoryClient = getInventoryClient();
+const inventory = getInventoryClient();
 
-// Query inventory items
-const inventory = await inventoryClient.queryInventoryItems().find();
-
-// Get product inventory
-const productInventory = await inventoryClient.getInventoryItem('product-id');
-
-// Update inventory
-await inventoryClient.updateInventoryVariants({
-  productId: 'product-id',
-  variants: [{
-    variantId: 'variant-id',
-    quantity: 100,
-    inStock: true
-  }]
-});
+// Query inventory
+const { items } = await inventory.queryInventoryItems()
+  .eq('productId', 'product-123')
+  .find();
 ```
 
-## API Reference
+## Architecture
 
-### `getProductsClient()`
+### Three-Phase Rendering
 
-Returns a configured Wix Stores Products client (singleton).
+Jay Stack components use a three-phase rendering model:
 
-The Products API allows you to manage products in your Wix store.
+1. **Slow Rendering (Build Time / ISR)**
+   - Renders semi-static data that doesn't change often
+   - Product details, descriptions, media
+   - Executed during build or on-demand revalidation
 
-**Returns:** Products client instance from `@wix/stores`
+2. **Fast Rendering (Request Time / SSR)**
+   - Renders dynamic data that changes frequently
+   - Inventory status, real-time pricing
+   - Executed on every request with caching
 
-**Documentation:** [Wix Stores Products API](https://dev.wix.com/docs/sdk/backend-modules/stores/products/introduction)
+3. **Interactive Rendering (Client Side)**
+   - Handles user interactions
+   - Form submissions, cart actions
+   - Executed in the browser
 
-### `getProductsV3Client()`
+### Server Context
 
-Returns a configured Wix Stores Products V3 client (singleton).
-
-The Products V3 API is part of the new Catalog V3 system that provides advanced product management capabilities for sophisticated e-commerce applications.
-
-**Returns:** Products V3 client instance from `@wix/stores`
-
-**Documentation:** [Wix Stores Catalog V3](https://dev.wix.com/docs/sdk/backend-modules/stores/catalog-v3/introduction)
-
-### `getCollectionsClient()`
-
-Returns a configured Wix Stores Collections client (singleton).
-
-The Collections API allows you to manage product collections in your Wix store.
-
-**Returns:** Collections client instance from `@wix/stores`
-
-**Documentation:** [Wix Stores Collections API](https://dev.wix.com/docs/sdk/backend-modules/stores/collections/introduction)
-
-### `getInventoryClient()`
-
-Returns a configured Wix Stores Inventory client (singleton).
-
-The Inventory API allows you to manage product inventory in your Wix store.
-
-**Returns:** Inventory client instance from `@wix/stores`
-
-**Documentation:** [Wix Stores Inventory API](https://dev.wix.com/docs/sdk/backend-modules/stores/inventory/introduction)
-
-## Re-exported Types
-
-This package re-exports all types and functions from `@wix/stores`, so you can import them directly:
+Server contexts provide dependency injection for server-side rendering:
 
 ```typescript
-import { 
-  products,
-  productsV3,
-  collections,
-  inventory,
-  type Product,
-  type Collection,
-  // ... all other exports from @wix/stores
+import { WixStoresContext } from '@jay-framework/wix-stores';
+
+// In slow render function
+async function renderSlowlyChanging(
+  props: PageProps & ProductPageParams,
+  wixStores: WixStoresContext  // Injected context
+) {
+  // Access Wix API clients (Products V3)
+  const { product } = await wixStores.products.getProduct(props.productId);
+  
+  // Use V3 API structure
+  const price = product.priceData?.price;
+  const comparePrice = product.priceData?.comparePrice;
+  // ...
+}
+```
+
+## Type Safety
+
+All components and APIs are fully typed:
+
+```typescript
+import type {
+  ProductPageContract,
+  ProductCardContract,
+  CategoryPageContract,
+  ProductSearchContract,
+  WixStoresContext
 } from '@jay-framework/wix-stores';
 ```
 
-## Configuration
+## Documentation
 
-This package uses the configuration from `@jay-framework/wix-server-client`. Make sure you have a `./config/.wix.yaml` file configured. See the [wix-server-client README](../wix-server-client/README.md) for details.
+For more information, see:
+
+- [Jay Stack Documentation](../../jay/docs/core/jay-stack.md)
+- [Wix Stores Products V3 (Catalog V3) API](https://dev.wix.com/docs/sdk/backend-modules/stores/catalog-v3/introduction)
+- [Wix Stores Collections API](https://dev.wix.com/docs/sdk/backend-modules/stores/collections/introduction)
+- [Wix Stores Inventory API](https://dev.wix.com/docs/sdk/backend-modules/stores/inventory/introduction)
+
+## Examples
+
+See the Jay Stack examples for usage patterns:
+- `/jay/examples/jay-stack/fake-shop` - E-commerce example with product pages
 
 ## License
 
 Apache-2.0
-

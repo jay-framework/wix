@@ -1,7 +1,52 @@
 import {HTMLElementCollectionProxy, HTMLElementProxy, JayContract} from "@jay-framework/runtime";
 import {ProductCardViewState, ProductCardRefs, ProductCardRepeatedRefs} from "./product-card.jay-contract";
 
+export enum MediaType {
+  IMAGE,
+  VIDEO,
+  AUDIO,
+  DOCUMENT,
+  ZIP
+}
+
+export interface MainMediaOfMediaOfCategoryPageViewState {
+  id: string,
+  url: string,
+  altText: string,
+  mediaType: MediaType
+}
+
+export enum MediaType {
+  IMAGE,
+  VIDEO,
+  AUDIO,
+  DOCUMENT,
+  ZIP
+}
+
+export interface ThumbnailOfItemOfMediaOfCategoryPageViewState {
+  url: string,
+  width: number,
+  height: number,
+  format: string
+}
+
+export interface ItemOfMediaOfCategoryPageViewState {
+  id: string,
+  url: string,
+  altText: string,
+  title: string,
+  mediaType: MediaType,
+  thumbnail: Array<ThumbnailOfItemOfMediaOfCategoryPageViewState>
+}
+
+export interface MediaOfCategoryPageViewState {
+  mainMedia: MainMediaOfMediaOfCategoryPageViewState,
+  items: Array<ItemOfMediaOfCategoryPageViewState>
+}
+
 export interface BreadcrumbOfCategoryPageViewState {
+  categoryId: string,
   categoryName: string,
   categorySlug: string
 }
@@ -41,10 +86,13 @@ export interface FilterOfCategoryPageViewState {
 }
 
 export interface CategoryPageViewState {
-  categoryId: string,
-  categoryName: string,
-  categoryDescription: string,
-  categoryImage: string,
+  id: string,
+  name: string,
+  description: string,
+  slug: string,
+  visible: boolean,
+  numberOfProducts: number,
+  media: MediaOfCategoryPageViewState,
   breadcrumbs: Array<BreadcrumbOfCategoryPageViewState>,
   products: Array<ProductCardViewState>,
   pagination: PaginationOfCategoryPageViewState,

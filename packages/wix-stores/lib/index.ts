@@ -4,6 +4,9 @@ import { products, productsV3, collections, inventory } from "@wix/stores";
 // Re-export everything from @wix/stores for convenience
 export * from "@wix/stores";
 
+// Export headless components
+export * from "./components";
+
 // Singleton instances
 let productsClientInstance: typeof products | undefined;
 let productsV3ClientInstance: typeof productsV3 | undefined;

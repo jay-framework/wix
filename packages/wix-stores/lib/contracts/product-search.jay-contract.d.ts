@@ -47,7 +47,9 @@ export interface SuggestionOfProductSearchViewState {
 }
 
 export interface ProductSearchViewState {
-  searchQuery: string,
+  searchExpression: string,
+  searchFields: string,
+  fuzzySearch: boolean,
   isSearching: boolean,
   hasSearched: boolean,
   searchResults: Array<ProductCardViewState>,
@@ -63,7 +65,7 @@ export interface ProductSearchViewState {
 
 
 export interface ProductSearchRefs {
-  searchQuery: HTMLElementProxy<ProductSearchViewState, HTMLInputElement>,
+  searchExpression: HTMLElementProxy<ProductSearchViewState, HTMLInputElement>,
   searchButton: HTMLElementProxy<ProductSearchViewState, HTMLButtonElement>,
   clearSearchButton: HTMLElementProxy<ProductSearchViewState, HTMLButtonElement>,
   searchResults: ProductCardRepeatedRefs,
@@ -96,7 +98,7 @@ export interface ProductSearchRefs {
 
 
 export interface ProductSearchRepeatedRefs {
-  searchQuery: HTMLElementCollectionProxy<ProductSearchViewState, HTMLInputElement>,
+  searchExpression: HTMLElementCollectionProxy<ProductSearchViewState, HTMLInputElement>,
   searchButton: HTMLElementCollectionProxy<ProductSearchViewState, HTMLButtonElement>,
   clearSearchButton: HTMLElementCollectionProxy<ProductSearchViewState, HTMLButtonElement>,
   searchResults: ProductCardRepeatedRefs,

@@ -1,32 +1,103 @@
 import {HTMLElementCollectionProxy, HTMLElementProxy, JayContract} from "@jay-framework/runtime";
 
 
-export enum InventoryStatus {
-  inStock,
-  outOfStock,
-  lowStock
+export enum MediaType {
+  IMAGE,
+  VIDEO
+}
+
+export interface MainMediaOfProductCardViewState {
+  url: string,
+  altText: string,
+  mediaType: MediaType
+}
+
+export interface ThumbnailOfProductCardViewState {
+  url: string,
+  altText: string,
+  width: number,
+  height: number
+}
+
+export interface MinValueOfActualPriceRangeOfProductCardViewState {
+  amount: string,
+  formattedAmount: string
+}
+
+export interface MaxValueOfActualPriceRangeOfProductCardViewState {
+  amount: string,
+  formattedAmount: string
+}
+
+export interface ActualPriceRangeOfProductCardViewState {
+  minValue: MinValueOfActualPriceRangeOfProductCardViewState,
+  maxValue: MaxValueOfActualPriceRangeOfProductCardViewState
+}
+
+export interface MinValueOfCompareAtPriceRangeOfProductCardViewState {
+  amount: string,
+  formattedAmount: string
+}
+
+export interface MaxValueOfCompareAtPriceRangeOfProductCardViewState {
+  amount: string,
+  formattedAmount: string
+}
+
+export interface CompareAtPriceRangeOfProductCardViewState {
+  minValue: MinValueOfCompareAtPriceRangeOfProductCardViewState,
+  maxValue: MaxValueOfCompareAtPriceRangeOfProductCardViewState
+}
+
+export enum AvailabilityStatus {
+  IN_STOCK,
+  OUT_OF_STOCK,
+  PARTIALLY_OUT_OF_STOCK
+}
+
+export enum PreorderStatus {
+  ENABLED,
+  DISABLED,
+  PARTIALLY_ENABLED
+}
+
+export interface InventoryOfProductCardViewState {
+  availabilityStatus: AvailabilityStatus,
+  preorderStatus: PreorderStatus
+}
+
+export interface RibbonOfProductCardViewState {
+  id: string,
+  name: string
+}
+
+export interface BrandOfProductCardViewState {
+  id: string,
+  name: string
+}
+
+export enum ProductType {
+  PHYSICAL,
+  DIGITAL
 }
 
 export interface ProductCardViewState {
-  productId: string,
-  productName: string,
-  productSlug: string,
-  productImage: string,
-  imageAltText: string,
-  actualPrice: string,
-  compareAtPrice: string,
+  id: string,
+  name: string,
+  slug: string,
+  mainMedia: MainMediaOfProductCardViewState,
+  thumbnail: ThumbnailOfProductCardViewState,
+  actualPriceRange: ActualPriceRangeOfProductCardViewState,
+  compareAtPriceRange: CompareAtPriceRangeOfProductCardViewState,
+  currency: string,
   hasDiscount: boolean,
-  discountPercentage: number,
-  inventoryStatus: InventoryStatus,
-  inventoryBadge: string,
+  inventory: InventoryOfProductCardViewState,
+  ribbon: RibbonOfProductCardViewState,
   hasRibbon: boolean,
-  ribbonText: string,
-  isAddingToCart: boolean,
-  brandName: string,
-  shortDescription: string,
-  hasRating: boolean,
-  averageRating: number,
-  reviewCount: number
+  brand: BrandOfProductCardViewState,
+  productType: ProductType,
+  visible: boolean,
+  isAddingToCart: boolean
 }
 
 
