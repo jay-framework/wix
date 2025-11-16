@@ -132,35 +132,6 @@ export interface QuantityOfProductPageViewState {
   quantityInput: number
 }
 
-export interface ActualPriceOfPriceOfCurrentVariantOfProductPageViewState {
-  amount: string,
-  formattedAmount: string
-}
-
-export interface CompareAtPriceOfPriceOfCurrentVariantOfProductPageViewState {
-  amount: string,
-  formattedAmount: string
-}
-
-export interface PriceOfCurrentVariantOfProductPageViewState {
-  actualPrice: ActualPriceOfPriceOfCurrentVariantOfProductPageViewState,
-  compareAtPrice: CompareAtPriceOfPriceOfCurrentVariantOfProductPageViewState
-}
-
-export interface InventoryStatusOfCurrentVariantOfProductPageViewState {
-  inStock: boolean,
-  preorderEnabled: boolean
-}
-
-export interface CurrentVariantOfProductPageViewState {
-  id: string,
-  sku: string,
-  barcode: string,
-  price: PriceOfCurrentVariantOfProductPageViewState,
-  inventoryStatus: InventoryStatusOfCurrentVariantOfProductPageViewState,
-  visible: boolean
-}
-
 export interface BrandOfProductPageViewState {
   id: string,
   name: string
@@ -206,6 +177,184 @@ export interface VariantSummaryOfProductPageViewState {
   variantCount: number
 }
 
+export interface OptionChoiceIdOfChoiceOfVariantOfVariantsInfoOfProductPageViewState {
+  optionId: string,
+  choiceId: string
+}
+
+export enum RenderType {
+  TEXT_CHOICES,
+  SWATCH_CHOICES
+}
+
+export interface OptionChoiceNameOfChoiceOfVariantOfVariantsInfoOfProductPageViewState {
+  optionName: string,
+  choiceName: string,
+  renderType: RenderType
+}
+
+export interface ChoiceOfVariantOfVariantsInfoOfProductPageViewState {
+  optionChoiceIds: Array<OptionChoiceIdOfChoiceOfVariantOfVariantsInfoOfProductPageViewState>,
+  optionChoiceNames: Array<OptionChoiceNameOfChoiceOfVariantOfVariantsInfoOfProductPageViewState>
+}
+
+export interface ActualPriceOfPriceOfVariantOfVariantsInfoOfProductPageViewState {
+  amount: string,
+  formattedAmount: string
+}
+
+export interface CompareAtPriceOfPriceOfVariantOfVariantsInfoOfProductPageViewState {
+  amount: string,
+  formattedAmount: string
+}
+
+export interface PriceOfVariantOfVariantsInfoOfProductPageViewState {
+  actualPrice: Array<ActualPriceOfPriceOfVariantOfVariantsInfoOfProductPageViewState>,
+  compareAtPrice: Array<CompareAtPriceOfPriceOfVariantOfVariantsInfoOfProductPageViewState>
+}
+
+export interface InventoryStatusOfVariantOfVariantsInfoOfProductPageViewState {
+  inStock: boolean,
+  preorderEnabled: boolean
+}
+
+export interface CostOfRevenueDetailOfVariantOfVariantsInfoOfProductPageViewState {
+  amount: string,
+  formattedAmount: string
+}
+
+export interface ProfitOfRevenueDetailOfVariantOfVariantsInfoOfProductPageViewState {
+  amount: string,
+  formattedAmount: string
+}
+
+export interface RevenueDetailOfVariantOfVariantsInfoOfProductPageViewState {
+  cost: Array<CostOfRevenueDetailOfVariantOfVariantsInfoOfProductPageViewState>,
+  profit: Array<ProfitOfRevenueDetailOfVariantOfVariantsInfoOfProductPageViewState>,
+  profitMargin: number
+}
+
+export enum MediaType {
+  IMAGE,
+  VIDEO
+}
+
+export interface ThumbnailOfMediaOfVariantOfVariantsInfoOfProductPageViewState {
+  url: string,
+  altText: string,
+  width: number,
+  height: number
+}
+
+export interface MediaOfVariantOfVariantsInfoOfProductPageViewState {
+  id: string,
+  altText: string,
+  displayName: string,
+  mediaType: MediaType,
+  thumbnail: Array<ThumbnailOfMediaOfVariantOfVariantsInfoOfProductPageViewState>,
+  url: string
+}
+
+export interface PriceOfSubscriptionPriceOfSubscriptionPricesInfoOfVariantOfVariantsInfoOfProductPageViewState {
+  amount: string,
+  formattedAmount: string
+}
+
+export interface PricePerUnitOfSubscriptionPriceOfSubscriptionPricesInfoOfVariantOfVariantsInfoOfProductPageViewState {
+  value: string,
+  description: string
+}
+
+export interface SubscriptionPriceOfSubscriptionPricesInfoOfVariantOfVariantsInfoOfProductPageViewState {
+  subscriptionId: string,
+  price: Array<PriceOfSubscriptionPriceOfSubscriptionPricesInfoOfVariantOfVariantsInfoOfProductPageViewState>,
+  pricePerUnit: Array<PricePerUnitOfSubscriptionPriceOfSubscriptionPricesInfoOfVariantOfVariantsInfoOfProductPageViewState>
+}
+
+export interface SubscriptionPricesInfoOfVariantOfVariantsInfoOfProductPageViewState {
+  subscriptionPrices: Array<SubscriptionPriceOfSubscriptionPricesInfoOfVariantOfVariantsInfoOfProductPageViewState>
+}
+
+export enum MeasurementUnit {
+  UNSPECIFIED,
+  ML,
+  CL,
+  L,
+  CBM,
+  MG,
+  G,
+  KG,
+  MM,
+  CM,
+  M,
+  SQM,
+  OZ,
+  LB,
+  FLOZ,
+  PT,
+  QT,
+  GAL,
+  IN,
+  FT,
+  YD,
+  SQFT
+}
+
+export interface SettingOfPricePerUnitOfPhysicalPropertyOfVariantOfVariantsInfoOfProductPageViewState {
+  quantity: number,
+  measurementUnit: MeasurementUnit
+}
+
+export interface PricePerUnitOfPhysicalPropertyOfVariantOfVariantsInfoOfProductPageViewState {
+  value: string,
+  description: string,
+  settings: Array<SettingOfPricePerUnitOfPhysicalPropertyOfVariantOfVariantsInfoOfProductPageViewState>
+}
+
+export interface PhysicalPropertyOfVariantOfVariantsInfoOfProductPageViewState {
+  weight: number,
+  pricePerUnit: Array<PricePerUnitOfPhysicalPropertyOfVariantOfVariantsInfoOfProductPageViewState>
+}
+
+export enum FileType {
+  SECURE_ARCHIVE,
+  SECURE_MUSIC,
+  SECURE_DOCUMENT,
+  SECURE_VIDEO,
+  SECURE_PICTURE,
+  UNSPECIFIED
+}
+
+export interface DigitalFileOfDigitalPropertyOfVariantOfVariantsInfoOfProductPageViewState {
+  id: string,
+  fileName: string,
+  fileSize: string,
+  fileType: FileType
+}
+
+export interface DigitalPropertyOfVariantOfVariantsInfoOfProductPageViewState {
+  digitalFile: Array<DigitalFileOfDigitalPropertyOfVariantOfVariantsInfoOfProductPageViewState>
+}
+
+export interface VariantOfVariantsInfoOfProductPageViewState {
+  id: string,
+  visible: boolean,
+  sku: string,
+  barcode: string,
+  choices: Array<ChoiceOfVariantOfVariantsInfoOfProductPageViewState>,
+  price: Array<PriceOfVariantOfVariantsInfoOfProductPageViewState>,
+  inventoryStatus: Array<InventoryStatusOfVariantOfVariantsInfoOfProductPageViewState>,
+  revenueDetails: Array<RevenueDetailOfVariantOfVariantsInfoOfProductPageViewState>,
+  media: Array<MediaOfVariantOfVariantsInfoOfProductPageViewState>,
+  subscriptionPricesInfo: Array<SubscriptionPricesInfoOfVariantOfVariantsInfoOfProductPageViewState>,
+  physicalProperties: Array<PhysicalPropertyOfVariantOfVariantsInfoOfProductPageViewState>,
+  digitalProperties: Array<DigitalPropertyOfVariantOfVariantsInfoOfProductPageViewState>
+}
+
+export interface VariantsInfoOfProductPageViewState {
+  variants: Array<VariantOfVariantsInfoOfProductPageViewState>
+}
+
 export interface ProductPageViewState {
   id: string,
   name: string,
@@ -219,7 +368,7 @@ export interface ProductPageViewState {
   options: Array<OptionOfProductPageViewState>,
   quantity: QuantityOfProductPageViewState,
   isAddingToCart: boolean,
-  currentVariant: CurrentVariantOfProductPageViewState,
+  currentVariant: Array<VariantOfVariantsInfoOfProductPageViewState> | null,
   brand: BrandOfProductPageViewState,
   ribbon: RibbonOfProductPageViewState,
   mainCategoryId: string,
@@ -236,7 +385,8 @@ export interface ProductPageViewState {
   createdDate: string,
   updatedDate: string,
   revision: string,
-  variantSummary: VariantSummaryOfProductPageViewState
+  variantSummary: VariantSummaryOfProductPageViewState,
+  variantsInfo: VariantsInfoOfProductPageViewState
 }
 
 

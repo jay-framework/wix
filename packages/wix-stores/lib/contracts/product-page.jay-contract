@@ -317,72 +317,73 @@ tags:
   - tag: currentVariant
     type: sub-contract
     description: Currently selected variant
-    tags:
-      - tag: _id
-        type: data
-        dataType: string
-        description: Variant GUID
-        
-      - tag: sku
-        type: data
-        dataType: string
-        description: Variant SKU
-        
-      - tag: barcode
-        type: data
-        dataType: string
-        description: Variant barcode
-        
-      - tag: price
-        type: sub-contract
-        description: Variant price
-        tags:
-          - tag: actualPrice
-            type: sub-contract
-            description: Current price
-            tags:
-              - tag: amount
-                type: data
-                dataType: string
-                description: Price amount
-                
-              - tag: formattedAmount
-                type: data
-                dataType: string
-                description: Formatted price (e.g., "$29.99")
-          
-          - tag: compareAtPrice
-            type: sub-contract
-            description: Compare-at price (original price before discount)
-            tags:
-              - tag: amount
-                type: data
-                dataType: string
-                description: Price amount
-                
-              - tag: formattedAmount
-                type: data
-                dataType: string
-                description: Formatted price
-        
-      - tag: inventoryStatus
-        type: sub-contract
-        description: Variant inventory status
-        tags:
-          - tag: inStock
-            type: data
-            dataType: boolean
-            description: Whether variant is in stock
-            
-          - tag: preorderEnabled
-            type: data
-            dataType: boolean
-            description: Whether preorder is enabled for this variant
-      
-      - tag: visible
-        type: data
-        dataType: boolean
-        description: Whether variant is visible
+    link: $/variantsInfo/variants
+#    tags:
+#      - tag: _id
+#        type: data
+#        dataType: string
+#        description: Variant GUID
+#
+#      - tag: sku
+#        type: data
+#        dataType: string
+#        description: Variant SKU
+#
+#      - tag: barcode
+#        type: data
+#        dataType: string
+#        description: Variant barcode
+#
+#      - tag: price
+#        type: sub-contract
+#        description: Variant price
+#        tags:
+#          - tag: actualPrice
+#            type: sub-contract
+#            description: Current price
+#            tags:
+#              - tag: amount
+#                type: data
+#                dataType: string
+#                description: Price amount
+#
+#              - tag: formattedAmount
+#                type: data
+#                dataType: string
+#                description: Formatted price (e.g., "$29.99")
+#
+#          - tag: compareAtPrice
+#            type: sub-contract
+#            description: Compare-at price (original price before discount)
+#            tags:
+#              - tag: amount
+#                type: data
+#                dataType: string
+#                description: Price amount
+#
+#              - tag: formattedAmount
+#                type: data
+#                dataType: string
+#                description: Formatted price
+#
+#      - tag: inventoryStatus
+#        type: sub-contract
+#        description: Variant inventory status
+#        tags:
+#          - tag: inStock
+#            type: data
+#            dataType: boolean
+#            description: Whether variant is in stock
+#
+#          - tag: preorderEnabled
+#            type: data
+#            dataType: boolean
+#            description: Whether preorder is enabled for this variant
+#
+#      - tag: visible
+#        type: data
+#        dataType: boolean
+#        description: Whether variant is visible
   
   # Brand (from Wix Stores API - Brand structure)
   - tag: brand
@@ -554,11 +555,332 @@ tags:
         type: data
         dataType: number
         description: Total number of variants
+        
   - tag: variantsInfo
     type: sub-contract
-    description: Product variants.
+    description: Product variants. Each variant must reference all product options via its choices array.
     tags:
-      - tag: _id
-        type: data
-        dataType: string
-        description: Variant ID.
+      - tag: variants
+        type: sub-contract
+        repeated: true
+        description: List of related variants
+        tags:
+          - tag: _id
+            type: data
+            dataType: string
+            description: Variant GUID
+            
+          - tag: visible
+            type: data
+            dataType: boolean
+            description: Whether the variant is visible to site visitors
+
+          - tag: sku
+            type: data
+            dataType: string
+            description: Variant SKU (stock keeping unit)
+            
+          - tag: barcode
+            type: data
+            dataType: string
+            description: Variant barcode
+
+          - tag: choices
+            type: sub-contract
+            repeated: true
+            description: List of choices that define the product's variant, requires exactly one choice per product option
+            tags:
+              - tag: optionChoiceIds
+                type: sub-contract
+                description: Option and choice GUIDs matching the product's options field
+                tags:
+                  - tag: optionId
+                    type: data
+                    dataType: string
+                    description: Option GUID
+                    
+                  - tag: choiceId
+                    type: data
+                    dataType: string
+                    description: Choice GUID
+                    
+              - tag: optionChoiceNames
+                type: sub-contract
+                description: Option and choice names for variant identification
+                tags:
+                  - tag: optionName
+                    type: data
+                    dataType: string
+                    description: Option name
+                    
+                  - tag: choiceName
+                    type: data
+                    dataType: string
+                    description: Choice name
+                    
+                  - tag: renderType
+                    type: data
+                    dataType: enum (TEXT_CHOICES | SWATCH_CHOICES)
+                    description: Render type
+                    
+          - tag: price
+            type: sub-contract
+            description: Variant price
+            tags:
+              - tag: actualPrice
+                type: sub-contract
+                description: Variant price (must be greater or equal to 0)
+                tags:
+                  - tag: amount
+                    type: data
+                    dataType: string
+                    description: Price amount
+                    
+                  - tag: formattedAmount
+                    type: data
+                    dataType: string
+                    description: Formatted price with currency
+                    
+              - tag: compareAtPrice
+                type: sub-contract
+                description: Compare-at-price (original price before discount)
+                tags:
+                  - tag: amount
+                    type: data
+                    dataType: string
+                    description: Price amount
+                    
+                  - tag: formattedAmount
+                    type: data
+                    dataType: string
+                    description: Formatted price with currency
+                    
+          - tag: inventoryStatus
+            type: sub-contract
+            description: Variant inventory status
+            tags:
+              - tag: inStock
+                type: data
+                dataType: boolean
+                description: Whether the variant is in stock
+                
+              - tag: preorderEnabled
+                type: data
+                dataType: boolean
+                description: Whether preorder is enabled for this variant
+                
+          - tag: revenueDetails
+            type: sub-contract
+            description: Variant revenue details (requires MERCHANT_DATA field and PRODUCT_READ_ADMIN scope)
+            tags:
+              - tag: cost
+                type: sub-contract
+                description: Item cost
+                tags:
+                  - tag: amount
+                    type: data
+                    dataType: string
+                    description: Cost amount
+
+                  - tag: formattedAmount
+                    type: data
+                    dataType: string
+                    description: Formatted cost with currency
+
+              - tag: profit
+                type: sub-contract
+                description: Profit (calculated by reducing cost from discountedPrice)
+                tags:
+                  - tag: amount
+                    type: data
+                    dataType: string
+                    description: Profit amount
+
+                  - tag: formattedAmount
+                    type: data
+                    dataType: string
+                    description: Formatted profit with currency
+
+              - tag: profitMargin
+                type: data
+                dataType: number
+                description: Profit margin (calculated by dividing profit by discountedPrice, rounded to 4 decimal places)
+
+          - tag: media
+            type: sub-contract
+            description: Variant media
+            tags:
+              - tag: _id
+                type: data
+                dataType: string
+                description: Media GUID or external URL
+
+              - tag: altText
+                type: data
+                dataType: string
+                description: Media alt text
+
+              - tag: displayName
+                type: data
+                dataType: string
+                description: Media display name
+
+              - tag: mediaType
+                type: data
+                dataType: enum (IMAGE | VIDEO)
+                description: Media type
+
+              - tag: thumbnail
+                type: sub-contract
+                description: Media thumbnail.
+                tags:
+                  - tag: url
+                    type: data
+                    dataType: string
+                    description: Thumbnail URL
+
+                  - tag: altText
+                    type: data
+                    dataType: string
+                    description: Thumbnail alt text
+
+                  - tag: width
+                    type: data
+                    dataType: number
+                    description: Thumbnail width in pixels
+
+                  - tag: height
+                    type: data
+                    dataType: number
+                    description: Thumbnail height in pixels
+
+              - tag: url
+                type: data
+                dataType: string
+                description: Media URL
+                
+          - tag: subscriptionPricesInfo
+            type: sub-contract
+            description: Subscription prices calculated by applying subscription discount to the variant price
+            tags:
+              - tag: subscriptionPrices
+                type: sub-contract
+                repeated: true
+                description: Subscription prices
+                tags:
+                  - tag: subscriptionId
+                    type: data
+                    dataType: string
+                    description: Subscription GUID
+                    
+                  - tag: price
+                    type: sub-contract
+                    description: Subscription price calculated with discount
+                    tags:
+                      - tag: amount
+                        type: data
+                        dataType: string
+                        description: Price amount
+                        
+                      - tag: formattedAmount
+                        type: data
+                        dataType: string
+                        description: Formatted price with currency
+                        
+                  - tag: pricePerUnit
+                    type: sub-contract
+                    description: Price per unit info
+                    tags:
+                      - tag: value
+                        type: data
+                        dataType: string
+                        description: Calculated value of price per unit
+                        
+                      - tag: description
+                        type: data
+                        dataType: string
+                        description: Price per unit description
+
+
+
+
+          - tag: inventoryStatus
+            type: sub-contract
+            description: Variant inventory status.
+            tags:
+              - tag: inStock
+                type: data
+                dataType: boolean
+                description: Whether the variant is in stock.
+
+              - tag: preorderEnabled
+                type: data
+                dataType: boolean
+                description: Whether preorder is enabled for this variant.
+
+
+          - tag: physicalProperties
+            type: sub-contract
+            description: Physical properties (required when productType is PHYSICAL)
+            tags:
+              - tag: weight
+                type: data
+                dataType: number
+                description: Variant shipping weight
+                
+              - tag: pricePerUnit
+                type: sub-contract
+                description: Price per unit info for product page display
+                tags:
+                  - tag: value
+                    type: data
+                    dataType: string
+                    description: Calculated value of price per unit
+                    
+                  - tag: description
+                    type: data
+                    dataType: string
+                    description: Price per unit description
+                    
+                  - tag: settings
+                    type: sub-contract
+                    description: Price per unit settings for this variant
+                    tags:
+                      - tag: quantity
+                        type: data
+                        dataType: number
+                        description: Quantity (e.g., 100 for price per 100 grams)
+                        
+                      - tag: measurementUnit
+                        type: data
+                        dataType: enum (UNSPECIFIED | ML | CL | L | CBM | MG | G | KG | MM | CM | M | SQM | OZ | LB | FLOZ | PT | QT | GAL | IN | FT | YD | SQFT)
+                        description: Measurement unit (e.g., G for grams)
+                        
+          - tag: digitalProperties
+            type: sub-contract
+            description: Digital properties (required when productType is DIGITAL)
+            tags:
+              - tag: digitalFile
+                type: sub-contract
+                description: Digital file downloaded by customer after purchase
+                tags:
+                  - tag: id
+                    type: data
+                    dataType: string
+                    description: Media ID in media manager.
+
+                  - tag: fileName
+                    type: data
+                    dataType: string
+                    description: Original file name.
+
+                  - tag: fileSize
+                    type: data
+                    dataType: string
+                    description: Original file size, in decimal.
+
+                  - tag: fileType
+                    type: data
+                    dataType: enum(SECURE_ARCHIVE | SECURE_MUSIC | SECURE_DOCUMENT | SECURE_VIDEO | SECURE_PICTURE | UNSPECIFIED)
+                    description: File type.
+
