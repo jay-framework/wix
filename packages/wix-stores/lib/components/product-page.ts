@@ -1,23 +1,28 @@
-import { 
-    makeJayStackComponent, 
-    PageProps, 
-    partialRender, 
+import {
+    makeJayStackComponent,
+    PageProps,
+    partialRender,
     UrlParams,
-    notFound 
+    notFound, SlowlyRenderResult
 } from '@jay-framework/fullstack-component';
 import { createSignal, Props } from '@jay-framework/component';
-import { 
-    ProductPageContract, 
-    ProductPageRefs, 
-    AvailabilityStatus, 
-    PreorderStatus, 
+import {
+    ProductPageContract,
+    ProductPageRefs,
+    AvailabilityStatus,
+    PreorderStatus,
     PreorderAvailability,
     MediaType,
     OptionRenderType,
     ChoiceType,
-    ProductType
+    ProductType, ProductPageViewState, MediaOfProductPageViewState, OptionOfProductPageViewState,
+    CompareAtPriceRangeOfProductPageViewState, ActualPriceRangeOfProductPageViewState, BrandOfProductPageViewState,
+    RibbonOfProductPageViewState, BreadcrumbsInfoOfProductPageViewState, AllCategoriesInfoOfProductPageViewState,
+    InfoSectionOfProductPageViewState, VariantSummaryOfProductPageViewState
 } from '../contracts/product-page.jay-contract';
 import { WixStoresContext, WixStoresContextMarker } from './wix-stores-context';
+import {Media, Brand, PriceRange, ConnectedOption, Ribbon, BreadcrumbsInfo, ProductCategoriesInfo,
+    ProductCategory, InfoSection, VariantSummary} from '@wix/auto_sdk_stores_products-v-3'
 
 /**
  * URL parameters for product page routes
@@ -59,6 +64,135 @@ async function* loadProductParams(
     }
 }
 
+export type SlowRenderedProduct = Omit<ProductPageViewState,
+    "inventory" | "options" | "quantity" | "isAddingToCart" | "currentVariant">
+
+function mapProductType(productType: string): ProductType {
+    return productType === 'DIGITAL' ? ProductType.DIGITAL : ProductType.PHYSICAL
+}
+
+function mapMedia(media: Media): MediaOfProductPageViewState {
+    return ({
+        main: media?.itemsInfo?.items?.[0] ? {
+            id: media.itemsInfo.items[0]._id || '',
+            url: media.itemsInfo.items[0].url || '',
+            altText: media.itemsInfo.items[0].altText || '',
+            mediaType: media.itemsInfo.items[0].mediaType === 'VIDEO' ? MediaType.VIDEO : MediaType.IMAGE,
+            displayName: media.itemsInfo.items[0].displayName || ''
+        } : undefined,
+        itemsInfo: {
+            items: media?.itemsInfo?.items?.map((item) => ({
+                id: item._id || '',
+                url: item.url || '',
+                altText: item.altText || '',
+                mediaType: item.mediaType === 'VIDEO' ? MediaType.VIDEO : MediaType.IMAGE,
+                displayName: item.displayName || '',
+                thumbnail: item.thumbnail ? [{
+                    url: item.thumbnail.url || '',
+                    altText: item.thumbnail.altText || '',
+                    width: item.thumbnail.width || 0,
+                    height: item.thumbnail.height || 0
+                }] : []
+            })) || []
+        }
+    })
+}
+
+function mapActualPriceRange(actualPriceRange: PriceRange): ActualPriceRangeOfProductPageViewState {
+    return {
+        minValue: {
+            amount: actualPriceRange?.minValue?.amount || '',
+            formattedAmount: actualPriceRange?.minValue?.formattedAmount || ''
+        },
+        maxValue: {
+            amount: actualPriceRange?.maxValue?.amount || '',
+            formattedAmount: actualPriceRange?.maxValue?.formattedAmount || ''
+        }
+    };
+}
+
+function mapCompareAtPriceRange(compareAtPriceRange: PriceRange): CompareAtPriceRangeOfProductPageViewState {
+    return compareAtPriceRange ? {
+        minValue: {
+            amount: compareAtPriceRange.minValue?.amount || '',
+            formattedAmount: compareAtPriceRange.minValue?.formattedAmount || ''
+        },
+        maxValue: {
+            amount: compareAtPriceRange.maxValue?.amount || '',
+            formattedAmount: compareAtPriceRange.maxValue?.formattedAmount || ''
+        }
+    } : undefined;
+}
+
+function mapOptions(options: ConnectedOption[]): Array<OptionOfProductPageViewState> {
+    return options?.map((option) => ({
+        id: option._id || '',
+        name: option.name || '',
+        optionRenderType: option.optionRenderType === 'SWATCH_CHOICES' ? OptionRenderType.SWATCH_CHOICES : OptionRenderType.TEXT_CHOICES,
+        choices: option.choicesSettings?.choices?.map((choice) => ({
+            choiceId: choice.choiceId || '',
+            name: choice.name || '',
+            choiceType: choice.choiceType === 'ONE_COLOR' ? ChoiceType.ONE_COLOR :
+                choice.choiceType === 'MULTIPLE_COLORS' ? ChoiceType.MULTIPLE_COLORS :
+                    choice.choiceType === 'IMAGE' ? ChoiceType.IMAGE :
+                        ChoiceType.CHOICE_TEXT,
+            inStock: choice.inStock !== false,
+            visible: choice.visible !== false,
+            colorCode: (choice as any).colorCode || '',
+            isSelected: false
+        })) || []
+    })) || [];
+}
+
+function mapBrand({_id, name}: Brand): BrandOfProductPageViewState {
+    return ({
+        id: _id,
+        name
+    });
+}
+
+function mapRibbon({_id, name}: Ribbon): RibbonOfProductPageViewState {
+    return ({
+        id: _id,
+        name
+    })
+}
+
+function mapBreadcrumbsInfo(breadcrumbsInfo: BreadcrumbsInfo): BreadcrumbsInfoOfProductPageViewState {
+    return ({
+        breadcrumbs: breadcrumbsInfo.breadcrumbs.map(breadCrumb => ({
+            categoryId: breadCrumb.categoryId,
+            categoryName: breadCrumb.categoryName,
+            categorySlug: breadCrumb.categorySlug,
+        }))
+    });
+}
+
+function mapProductCategoriesInfo(productCategoriesInfo: ProductCategoriesInfo): AllCategoriesInfoOfProductPageViewState {
+    return ({
+        categories: productCategoriesInfo.categories.map(productCategory =>
+            ({
+                id: productCategory._id,
+                index: productCategory.index,
+            }))
+    });
+}
+
+function mapInfoSections(infoSections: InfoSection[]): InfoSectionOfProductPageViewState[] {
+    return infoSections.map(infoSection => ({
+        id: infoSection._id,
+        plainDescription: infoSection.plainDescription || '',
+        title: infoSection.title || '',
+        uniqueName: infoSection.uniqueName || '',
+    }));
+}
+
+function mapVariantSummary(variantSummary: VariantSummary): VariantSummaryOfProductPageViewState {
+    return ({
+        variantCount: variantSummary.variantCount || 0,
+    });
+}
+
 /**
  * Slow Rendering Phase
  * Loads semi-static product data that doesn't change often:
@@ -71,91 +205,47 @@ async function* loadProductParams(
 async function renderSlowlyChanging(
     props: PageProps & ProductPageParams,
     wixStores: WixStoresContext
-) {
+): Promise<SlowlyRenderResult<SlowRenderedProduct, ProductSlowCarryForward>> {
     try {
         // Query product by slug with required fields
         const { product } = await wixStores.products
             .getProductBySlug(props.slug);
+        const { _id: id, name, slug, plainDescription, actualPriceRange, compareAtPriceRange, currency, media, productType, handle,
+            visible, visibleInPos, brand, ribbon, mainCategoryId, breadcrumbsInfo,
+            allCategoriesInfo, directCategoriesInfo, infoSections, taxGroupId, variantSummary, _createdDate, _updatedDate, revision} = product
+
 
 
         // Map product data to view state
         return partialRender(
             {
-                _id: product._id || '',
-                name: product.name || '',
-                slug: product.slug || '',
-                description: product.plainDescription || (typeof product.description === 'string' ? product.description : ''),
-                plainDescription: product.plainDescription || (typeof product.description === 'string' ? product.description : ''),
-                actualPriceRange: {
-                    minValue: {
-                        amount: product.actualPriceRange?.minValue?.amount || '0',
-                        formattedAmount: product.actualPriceRange?.minValue?.formattedAmount || '$0.00'
-                    },
-                    maxValue: {
-                        amount: product.actualPriceRange?.maxValue?.amount || '0',
-                        formattedAmount: product.actualPriceRange?.maxValue?.formattedAmount || '$0.00'
-                    }
-                },
-                compareAtPriceRange: product.compareAtPriceRange ? {
-                    minValue: {
-                        amount: product.compareAtPriceRange.minValue?.amount || '0',
-                        formattedAmount: product.compareAtPriceRange.minValue?.formattedAmount || ''
-                    },
-                    maxValue: {
-                        amount: product.compareAtPriceRange.maxValue?.amount || '0',
-                        formattedAmount: product.compareAtPriceRange.maxValue?.formattedAmount || ''
-                    }
-                } : undefined,
-                currency: product.currency || 'USD',
-                media: {
-                    main: product.media?.itemsInfo?.items?.[0] ? {
-                        id: product.media.itemsInfo.items[0]._id || '',
-                        url: product.media.itemsInfo.items[0].url || '',
-                        altText: product.media.itemsInfo.items[0].altText || '',
-                        mediaType: product.media.itemsInfo.items[0].mediaType === 'VIDEO' ? MediaType.VIDEO : MediaType.IMAGE,
-                        displayName: product.media.itemsInfo.items[0].displayName || ''
-                    } : undefined,
-                    itemsInfo: {
-                        items: product.media?.itemsInfo?.items?.map((item) => ({
-                            id: item._id || '',
-                            url: item.url || '',
-                            altText: item.altText || '',
-                            mediaType: item.mediaType === 'VIDEO' ? MediaType.VIDEO : MediaType.IMAGE,
-                            displayName: item.displayName || '',
-                            thumbnail: item.thumbnail ? [{
-                                url: item.thumbnail.url || '',
-                                altText: item.thumbnail.altText || '',
-                                width: item.thumbnail.width || 0,
-                                height: item.thumbnail.height || 0
-                            }] : []
-                        })) || []
-                    }
-                },
-                productType: product.productType === 'DIGITAL' ? ProductType.DIGITAL : ProductType.PHYSICAL,
+                // description: product.plainDescription || (typeof product.description === 'string' ? product.description : ''),
+                actualPriceRange: mapActualPriceRange(actualPriceRange),
+                allCategoriesInfo: mapProductCategoriesInfo(allCategoriesInfo),
+                brand: mapBrand(brand),
+                breadcrumbsInfo: mapBreadcrumbsInfo(breadcrumbsInfo),
+                compareAtPriceRange: mapCompareAtPriceRange(compareAtPriceRange),
+                currency: product.currency || '',
+                directCategoriesInfo: mapProductCategoriesInfo(directCategoriesInfo),
                 handle: product.slug || '',
-                visible: product.visible !== false,
-                visibleInPos: false,
+                id: id || '',
+                infoSections: mapInfoSections(infoSections),
+                mainCategoryId,
+                media: mapMedia(media),
+                name: name || '',
+                options: mapOptions(product.options),
+                plainDescription: plainDescription || '',
+                productType: mapProductType(productType),
+                ribbon: mapRibbon(ribbon),
+                slug: slug || '',
+                taxGroupId,
                 url: `/products/${product.slug}`,
-                _createdDate: product._createdDate?.toString() || '',
-                _updatedDate: product._updatedDate?.toString() || '',
-                revision: product.revision || '1',
-                options: product.options?.map((option) => ({
-                    id: option._id || '',
-                    name: option.name || '',
-                    optionRenderType: option.optionRenderType === 'SWATCH_CHOICES' ? OptionRenderType.SWATCH_CHOICES : OptionRenderType.TEXT_CHOICES,
-                    choices: option.choicesSettings?.choices?.map((choice) => ({
-                        choiceId: choice.choiceId || '',
-                        name: choice.name || '',
-                        choiceType: choice.choiceType === 'ONE_COLOR' ? ChoiceType.ONE_COLOR :
-                                   choice.choiceType === 'MULTIPLE_COLORS' ? ChoiceType.MULTIPLE_COLORS :
-                                   choice.choiceType === 'IMAGE' ? ChoiceType.IMAGE :
-                                   ChoiceType.CHOICE_TEXT,
-                        inStock: choice.inStock !== false,
-                        visible: choice.visible !== false,
-                        colorCode: (choice as any).colorCode || '',
-                        isSelected: false
-                    })) || []
-                })) || []
+                variantSummary: mapVariantSummary(variantSummary),
+                visible,
+                visibleInPos,
+                createdDate: new Intl.DateTimeFormat().format(_createdDate),
+                updatedDate: new Intl.DateTimeFormat().format(_updatedDate),
+                revision
             },
             {
                 productId: product._id || '',
@@ -186,7 +276,7 @@ async function renderFastChanging(
         let preorderEnabled = false;
         
         try {
-            const inventoryResponse = await (wixStores.inventory as any).queryInventory({
+            const inventoryResponse = await wixStores.inventory.getInventoryItem({
                 filter: { productId: carryForward.productId }
             });
             const hasInventory = inventoryResponse.items && inventoryResponse.items.length > 0;

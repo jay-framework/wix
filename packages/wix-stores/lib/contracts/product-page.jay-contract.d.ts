@@ -190,20 +190,10 @@ export interface AllCategoriesInfoOfProductPageViewState {
   categories: Array<CategoryOfAllCategoriesInfoOfProductPageViewState>
 }
 
-export interface CategoryOfDirectCategoriesInfoOfProductPageViewState {
-  id: string,
-  index: number
-}
-
-export interface DirectCategoriesInfoOfProductPageViewState {
-  categories: Array<CategoryOfDirectCategoriesInfoOfProductPageViewState>
-}
-
 export interface InfoSectionOfProductPageViewState {
   id: string,
   title: string,
   uniqueName: string,
-  description: string,
   plainDescription: string
 }
 
@@ -220,7 +210,6 @@ export interface ProductPageViewState {
   id: string,
   name: string,
   slug: string,
-  description: string,
   plainDescription: string,
   actualPriceRange: ActualPriceRangeOfProductPageViewState,
   compareAtPriceRange: CompareAtPriceRangeOfProductPageViewState,
@@ -236,7 +225,7 @@ export interface ProductPageViewState {
   mainCategoryId: string,
   breadcrumbsInfo: BreadcrumbsInfoOfProductPageViewState,
   allCategoriesInfo: AllCategoriesInfoOfProductPageViewState,
-  directCategoriesInfo: DirectCategoriesInfoOfProductPageViewState,
+  directCategoriesInfo: AllCategoriesInfoOfProductPageViewState | null,
   infoSections: Array<InfoSectionOfProductPageViewState>,
   productType: ProductType,
   handle: string,

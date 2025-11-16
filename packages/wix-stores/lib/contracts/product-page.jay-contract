@@ -17,10 +17,10 @@ tags:
     dataType: string
     description: Product slug for URL
     
-  - tag: description
-    type: data
-    dataType: string
-    description: Product description using rich content
+#  - tag: description
+#    type: data
+#    dataType: string
+#    description: Product description using rich content
     
   - tag: plainDescription
     type: data
@@ -465,23 +465,9 @@ tags:
   
   - tag: directCategoriesInfo
     type: sub-contract
+    link: $/allCategoriesInfo
     description: List of categories that directly contain this product
-    tags:
-      - tag: categories
-        type: sub-contract
-        repeated: true
-        description: List of direct categories
-        tags:
-          - tag: _id
-            type: data
-            dataType: string
-            description: Category GUID
-            
-          - tag: index
-            type: data
-            dataType: number
-            description: Index location of the product within the category
-    
+
   # Additional info sections (from Wix Stores API)
   - tag: infoSections
     type: sub-contract
@@ -503,10 +489,10 @@ tags:
         dataType: string
         description: Info section unique name
         
-      - tag: description
-        type: data
-        dataType: string
-        description: Info section description using rich content
+#      - tag: description
+#        type: data
+#        dataType: string
+#        description: Info section description using rich content
         
       - tag: plainDescription
         type: data
@@ -558,8 +544,8 @@ tags:
     type: data
     dataType: string
     description: Revision number, increments by 1 each time the product is updated
-  
-  # Variant summary (from Wix Stores API)
+
+  # Variants
   - tag: variantSummary
     type: sub-contract
     description: The total number of variants for the product
@@ -568,4 +554,11 @@ tags:
         type: data
         dataType: number
         description: Total number of variants
-
+  - tag: variantsInfo
+    type: sub-contract
+    description: Product variants.
+    tags:
+      - tag: _id
+        type: data
+        dataType: string
+        description: Variant ID.

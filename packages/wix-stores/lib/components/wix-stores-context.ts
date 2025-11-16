@@ -6,7 +6,7 @@
  */
 
 import { createJayContext } from '@jay-framework/runtime';
-import {getProductsClient, getCollectionsClient, getInventoryClient, getProductsV3Client} from '../index';
+import {getCollectionsClient, getInventoryClient, getProductsV3Client} from "../wix-store-api";
 
 export interface WixStoresContext {
     products: ReturnType<typeof getProductsV3Client>;
