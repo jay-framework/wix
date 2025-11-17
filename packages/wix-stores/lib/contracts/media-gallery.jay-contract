@@ -1,0 +1,23 @@
+name: mediaGallery
+tags:
+  - tag: selectedMedia
+    type: sub-contract
+    description: Selected Media (image, video) to display with selection based galleries
+    link: ./media
+
+  - tag: availableMedia
+    type: sub-contract
+    description: Available media for display or use as thumbnails
+    tags:
+      - tag: mediaItems
+        type: sub-contract
+        repeated: true
+        description: All media items (images, videos) associated with this product
+        tags:
+          - tag: media
+            type: sub-contract
+            link: ./media
+          - tag: selected
+            type: [variant, interactive]
+            dataType: enum(selected | notSelected)
+            elementType: HTMLImageElement | HTMLDivElement

@@ -1,122 +1,22 @@
 import {HTMLElementCollectionProxy, HTMLElementProxy, JayContract} from "@jay-framework/runtime";
-
-
-export interface MinValueOfActualPriceRangeOfProductPageViewState {
-  amount: string,
-  formattedAmount: string
-}
-
-export interface MaxValueOfActualPriceRangeOfProductPageViewState {
-  amount: string,
-  formattedAmount: string
-}
-
-export interface ActualPriceRangeOfProductPageViewState {
-  minValue: MinValueOfActualPriceRangeOfProductPageViewState,
-  maxValue: MaxValueOfActualPriceRangeOfProductPageViewState
-}
-
-export interface MinValueOfCompareAtPriceRangeOfProductPageViewState {
-  amount: string,
-  formattedAmount: string
-}
-
-export interface MaxValueOfCompareAtPriceRangeOfProductPageViewState {
-  amount: string,
-  formattedAmount: string
-}
-
-export interface CompareAtPriceRangeOfProductPageViewState {
-  minValue: MinValueOfCompareAtPriceRangeOfProductPageViewState,
-  maxValue: MaxValueOfCompareAtPriceRangeOfProductPageViewState
-}
-
-export enum MediaType {
-  IMAGE,
-  VIDEO
-}
-
-export interface MainOfMediaOfProductPageViewState {
-  id: string,
-  url: string,
-  altText: string,
-  mediaType: MediaType,
-  displayName: string
-}
-
-export enum MediaType {
-  IMAGE,
-  VIDEO
-}
-
-export interface ThumbnailOfItemOfItemsInfoOfMediaOfProductPageViewState {
-  url: string,
-  altText: string,
-  width: number,
-  height: number
-}
-
-export interface ItemOfItemsInfoOfMediaOfProductPageViewState {
-  id: string,
-  url: string,
-  altText: string,
-  mediaType: MediaType,
-  displayName: string,
-  thumbnail: Array<ThumbnailOfItemOfItemsInfoOfMediaOfProductPageViewState>
-}
-
-export interface ItemsInfoOfMediaOfProductPageViewState {
-  items: Array<ItemOfItemsInfoOfMediaOfProductPageViewState>
-}
-
-export interface MediaOfProductPageViewState {
-  main: MainOfMediaOfProductPageViewState,
-  itemsInfo: ItemsInfoOfMediaOfProductPageViewState
-}
-
-export enum AvailabilityStatus {
-  IN_STOCK,
-  OUT_OF_STOCK,
-  PARTIALLY_OUT_OF_STOCK
-}
-
-export enum PreorderStatus {
-  ENABLED,
-  DISABLED,
-  PARTIALLY_ENABLED
-}
-
-export enum PreorderAvailability {
-  ALL_VARIANTS,
-  NO_VARIANTS,
-  SOME_VARIANTS
-}
-
-export interface InventoryOfProductPageViewState {
-  availabilityStatus: AvailabilityStatus,
-  preorderStatus: PreorderStatus,
-  preorderAvailability: PreorderAvailability
-}
+import {MediaGalleryViewState, MediaGalleryRefs, MediaGalleryRepeatedRefs} from "./media-gallery.jay-contract";
 
 export enum OptionRenderType {
   TEXT_CHOICES,
-  SWATCH_CHOICES
+  COLOR_SWATCH_CHOICES
 }
 
 export enum ChoiceType {
   CHOICE_TEXT,
-  ONE_COLOR,
-  MULTIPLE_COLORS,
-  IMAGE
+  ONE_COLOR
 }
 
 export interface ChoiceOfOptionOfProductPageViewState {
   choiceId: string,
-  name: string,
   choiceType: ChoiceType,
+  name: string,
   colorCode: string,
   inStock: boolean,
-  visible: boolean,
   isSelected: boolean
 }
 
@@ -124,48 +24,52 @@ export interface OptionOfProductPageViewState {
   id: string,
   name: string,
   optionRenderType: OptionRenderType,
+  textChoiceSelection: string,
   choices: Array<ChoiceOfOptionOfProductPageViewState>
 }
 
 export interface QuantityOfProductPageViewState {
-  currentQuantity: number,
-  quantityInput: number
+  currentQuantity: number
 }
 
-export interface BrandOfProductPageViewState {
-  id: string,
-  name: string
-}
-
-export interface RibbonOfProductPageViewState {
-  id: string,
-  name: string
-}
-
-export interface BreadcrumbOfBreadcrumbsInfoOfProductPageViewState {
-  categoryId: string,
-  categoryName: string,
-  categorySlug: string
-}
-
-export interface BreadcrumbsInfoOfProductPageViewState {
-  breadcrumbs: Array<BreadcrumbOfBreadcrumbsInfoOfProductPageViewState>
-}
-
-export interface CategoryOfAllCategoriesInfoOfProductPageViewState {
-  id: string,
-  index: number
-}
-
-export interface AllCategoriesInfoOfProductPageViewState {
-  categories: Array<CategoryOfAllCategoriesInfoOfProductPageViewState>
+export enum StockStatus {
+  OUT_OF_STOCK,
+  IN_STOCK
 }
 
 export interface InfoSectionOfProductPageViewState {
   id: string,
   title: string,
-  uniqueName: string,
   plainDescription: string
+}
+
+export enum ModifierType {
+  TEXT_CHOICES,
+  COLOR_SWATCH_CHOICES,
+  FREE_TEXT
+}
+
+export enum ChoiceType {
+  CHOICE_TEXT,
+  ONE_COLOR
+}
+
+export interface ChoiceOfModifierOfProductPageViewState {
+  choiceId: string,
+  choiceType: ChoiceType,
+  name: string,
+  colorCode: string,
+  isSelected: boolean
+}
+
+export interface ModifierOfProductPageViewState {
+  id: string,
+  name: string,
+  modifierType: ModifierType,
+  textModifierSelection: string,
+  textInputLength: string,
+  textInputRequired: string,
+  choices: Array<ChoiceOfModifierOfProductPageViewState>
 }
 
 export enum ProductType {
@@ -173,249 +77,107 @@ export enum ProductType {
   DIGITAL
 }
 
-export interface VariantSummaryOfProductPageViewState {
-  variantCount: number
+export interface PropOfTagOfSeoDatumOfProductPageViewState {
+  key: string,
+  value: string
 }
 
-export interface OptionChoiceIdOfChoiceOfVariantOfVariantsInfoOfProductPageViewState {
-  optionId: string,
-  choiceId: string
+export interface MetaOfTagOfSeoDatumOfProductPageViewState {
+  key: string,
+  value: string
 }
 
-export enum RenderType {
-  TEXT_CHOICES,
-  SWATCH_CHOICES
+export interface TagOfSeoDatumOfProductPageViewState {
+  type: string,
+  props: Array<PropOfTagOfSeoDatumOfProductPageViewState>,
+  meta: Array<MetaOfTagOfSeoDatumOfProductPageViewState>,
+  children: string,
+  custom: boolean,
+  disabled: boolean
 }
 
-export interface OptionChoiceNameOfChoiceOfVariantOfVariantsInfoOfProductPageViewState {
-  optionName: string,
-  choiceName: string,
-  renderType: RenderType
+export interface KeywordOfSettingOfSeoDatumOfProductPageViewState {
+  term: string,
+  isMain: boolean,
+  origin: string
 }
 
-export interface ChoiceOfVariantOfVariantsInfoOfProductPageViewState {
-  optionChoiceIds: Array<OptionChoiceIdOfChoiceOfVariantOfVariantsInfoOfProductPageViewState>,
-  optionChoiceNames: Array<OptionChoiceNameOfChoiceOfVariantOfVariantsInfoOfProductPageViewState>
+export interface SettingOfSeoDatumOfProductPageViewState {
+  preventAutoRedirect: boolean,
+  keywords: KeywordOfSettingOfSeoDatumOfProductPageViewState
 }
 
-export interface ActualPriceOfPriceOfVariantOfVariantsInfoOfProductPageViewState {
-  amount: string,
-  formattedAmount: string
-}
-
-export interface CompareAtPriceOfPriceOfVariantOfVariantsInfoOfProductPageViewState {
-  amount: string,
-  formattedAmount: string
-}
-
-export interface PriceOfVariantOfVariantsInfoOfProductPageViewState {
-  actualPrice: Array<ActualPriceOfPriceOfVariantOfVariantsInfoOfProductPageViewState>,
-  compareAtPrice: Array<CompareAtPriceOfPriceOfVariantOfVariantsInfoOfProductPageViewState>
-}
-
-export interface InventoryStatusOfVariantOfVariantsInfoOfProductPageViewState {
-  inStock: boolean,
-  preorderEnabled: boolean
-}
-
-export interface CostOfRevenueDetailOfVariantOfVariantsInfoOfProductPageViewState {
-  amount: string,
-  formattedAmount: string
-}
-
-export interface ProfitOfRevenueDetailOfVariantOfVariantsInfoOfProductPageViewState {
-  amount: string,
-  formattedAmount: string
-}
-
-export interface RevenueDetailOfVariantOfVariantsInfoOfProductPageViewState {
-  cost: Array<CostOfRevenueDetailOfVariantOfVariantsInfoOfProductPageViewState>,
-  profit: Array<ProfitOfRevenueDetailOfVariantOfVariantsInfoOfProductPageViewState>,
-  profitMargin: number
-}
-
-export enum MediaType {
-  IMAGE,
-  VIDEO
-}
-
-export interface ThumbnailOfMediaOfVariantOfVariantsInfoOfProductPageViewState {
-  url: string,
-  altText: string,
-  width: number,
-  height: number
-}
-
-export interface MediaOfVariantOfVariantsInfoOfProductPageViewState {
-  id: string,
-  altText: string,
-  displayName: string,
-  mediaType: MediaType,
-  thumbnail: Array<ThumbnailOfMediaOfVariantOfVariantsInfoOfProductPageViewState>,
-  url: string
-}
-
-export interface PriceOfSubscriptionPriceOfSubscriptionPricesInfoOfVariantOfVariantsInfoOfProductPageViewState {
-  amount: string,
-  formattedAmount: string
-}
-
-export interface PricePerUnitOfSubscriptionPriceOfSubscriptionPricesInfoOfVariantOfVariantsInfoOfProductPageViewState {
-  value: string,
-  description: string
-}
-
-export interface SubscriptionPriceOfSubscriptionPricesInfoOfVariantOfVariantsInfoOfProductPageViewState {
-  subscriptionId: string,
-  price: Array<PriceOfSubscriptionPriceOfSubscriptionPricesInfoOfVariantOfVariantsInfoOfProductPageViewState>,
-  pricePerUnit: Array<PricePerUnitOfSubscriptionPriceOfSubscriptionPricesInfoOfVariantOfVariantsInfoOfProductPageViewState>
-}
-
-export interface SubscriptionPricesInfoOfVariantOfVariantsInfoOfProductPageViewState {
-  subscriptionPrices: Array<SubscriptionPriceOfSubscriptionPricesInfoOfVariantOfVariantsInfoOfProductPageViewState>
-}
-
-export enum MeasurementUnit {
-  UNSPECIFIED,
-  ML,
-  CL,
-  L,
-  CBM,
-  MG,
-  G,
-  KG,
-  MM,
-  CM,
-  M,
-  SQM,
-  OZ,
-  LB,
-  FLOZ,
-  PT,
-  QT,
-  GAL,
-  IN,
-  FT,
-  YD,
-  SQFT
-}
-
-export interface SettingOfPricePerUnitOfPhysicalPropertyOfVariantOfVariantsInfoOfProductPageViewState {
-  quantity: number,
-  measurementUnit: MeasurementUnit
-}
-
-export interface PricePerUnitOfPhysicalPropertyOfVariantOfVariantsInfoOfProductPageViewState {
-  value: string,
-  description: string,
-  settings: Array<SettingOfPricePerUnitOfPhysicalPropertyOfVariantOfVariantsInfoOfProductPageViewState>
-}
-
-export interface PhysicalPropertyOfVariantOfVariantsInfoOfProductPageViewState {
-  weight: number,
-  pricePerUnit: Array<PricePerUnitOfPhysicalPropertyOfVariantOfVariantsInfoOfProductPageViewState>
-}
-
-export enum FileType {
-  SECURE_ARCHIVE,
-  SECURE_MUSIC,
-  SECURE_DOCUMENT,
-  SECURE_VIDEO,
-  SECURE_PICTURE,
-  UNSPECIFIED
-}
-
-export interface DigitalFileOfDigitalPropertyOfVariantOfVariantsInfoOfProductPageViewState {
-  id: string,
-  fileName: string,
-  fileSize: string,
-  fileType: FileType
-}
-
-export interface DigitalPropertyOfVariantOfVariantsInfoOfProductPageViewState {
-  digitalFile: Array<DigitalFileOfDigitalPropertyOfVariantOfVariantsInfoOfProductPageViewState>
-}
-
-export interface VariantOfVariantsInfoOfProductPageViewState {
-  id: string,
-  visible: boolean,
-  sku: string,
-  barcode: string,
-  choices: Array<ChoiceOfVariantOfVariantsInfoOfProductPageViewState>,
-  price: Array<PriceOfVariantOfVariantsInfoOfProductPageViewState>,
-  inventoryStatus: Array<InventoryStatusOfVariantOfVariantsInfoOfProductPageViewState>,
-  revenueDetails: Array<RevenueDetailOfVariantOfVariantsInfoOfProductPageViewState>,
-  media: Array<MediaOfVariantOfVariantsInfoOfProductPageViewState>,
-  subscriptionPricesInfo: Array<SubscriptionPricesInfoOfVariantOfVariantsInfoOfProductPageViewState>,
-  physicalProperties: Array<PhysicalPropertyOfVariantOfVariantsInfoOfProductPageViewState>,
-  digitalProperties: Array<DigitalPropertyOfVariantOfVariantsInfoOfProductPageViewState>
-}
-
-export interface VariantsInfoOfProductPageViewState {
-  variants: Array<VariantOfVariantsInfoOfProductPageViewState>
+export interface SeoDatumOfProductPageViewState {
+  tags: Array<TagOfSeoDatumOfProductPageViewState>,
+  settings: SettingOfSeoDatumOfProductPageViewState
 }
 
 export interface ProductPageViewState {
   id: string,
-  name: string,
-  slug: string,
-  plainDescription: string,
-  actualPriceRange: ActualPriceRangeOfProductPageViewState,
-  compareAtPriceRange: CompareAtPriceRangeOfProductPageViewState,
-  currency: string,
-  media: MediaOfProductPageViewState,
-  inventory: InventoryOfProductPageViewState,
+  productName: string,
+  mediaGallery: MediaGalleryViewState,
+  description: string,
+  sku: string,
+  brand: string,
+  ribbon: string,
   options: Array<OptionOfProductPageViewState>,
   quantity: QuantityOfProductPageViewState,
-  isAddingToCart: boolean,
-  currentVariant: Array<VariantOfVariantsInfoOfProductPageViewState> | null,
-  brand: BrandOfProductPageViewState,
-  ribbon: RibbonOfProductPageViewState,
-  mainCategoryId: string,
-  breadcrumbsInfo: BreadcrumbsInfoOfProductPageViewState,
-  allCategoriesInfo: AllCategoriesInfoOfProductPageViewState,
-  directCategoriesInfo: AllCategoriesInfoOfProductPageViewState | null,
+  stockStatus: StockStatus,
   infoSections: Array<InfoSectionOfProductPageViewState>,
+  modifiers: Array<ModifierOfProductPageViewState>,
+  price: string,
+  strikethroughPrice: string,
+  pricePerUnit: string,
   productType: ProductType,
-  handle: string,
-  visible: boolean,
-  visibleInPos: boolean,
-  taxGroupId: string,
-  url: string,
-  createdDate: string,
-  updatedDate: string,
-  revision: string,
-  variantSummary: VariantSummaryOfProductPageViewState,
-  variantsInfo: VariantsInfoOfProductPageViewState
+  seoData: SeoDatumOfProductPageViewState,
+  actionsEnabled: boolean
 }
 
 
 export interface ProductPageRefs {
   addToCartButton: HTMLElementProxy<ProductPageViewState, HTMLButtonElement>,
+  buyNowButton: HTMLElementProxy<ProductPageViewState, HTMLButtonElement>,
+  mediaGallery: MediaGalleryRefs,
   options: {
+    textChoice: HTMLElementCollectionProxy<OptionOfProductPageViewState, HTMLSelectElement>,
     choices: {
       choiceButton: HTMLElementCollectionProxy<ChoiceOfOptionOfProductPageViewState, HTMLButtonElement>
     }
   },
   quantity: {
     decrementButton: HTMLElementProxy<QuantityOfProductPageViewState, HTMLButtonElement>,
-    incrementButton: HTMLElementProxy<QuantityOfProductPageViewState, HTMLButtonElement>,
-    quantityInput: HTMLElementProxy<QuantityOfProductPageViewState, HTMLInputElement>
+    incrementButton: HTMLElementProxy<QuantityOfProductPageViewState, HTMLButtonElement>
+  },
+  modifiers: {
+    textModifier: HTMLElementCollectionProxy<ModifierOfProductPageViewState, HTMLSelectElement>,
+    textInput: HTMLElementCollectionProxy<ModifierOfProductPageViewState, HTMLInputElement | HTMLAreaElement>,
+    choices: {
+      choiceButton: HTMLElementCollectionProxy<ChoiceOfModifierOfProductPageViewState, HTMLButtonElement>
+    }
   }
 }
 
 
 export interface ProductPageRepeatedRefs {
   addToCartButton: HTMLElementCollectionProxy<ProductPageViewState, HTMLButtonElement>,
+  buyNowButton: HTMLElementCollectionProxy<ProductPageViewState, HTMLButtonElement>,
+  mediaGallery: MediaGalleryRepeatedRefs,
   options: {
+    textChoice: HTMLElementCollectionProxy<OptionOfProductPageViewState, HTMLSelectElement>,
     choices: {
       choiceButton: HTMLElementCollectionProxy<ChoiceOfOptionOfProductPageViewState, HTMLButtonElement>
     }
   },
   quantity: {
     decrementButton: HTMLElementCollectionProxy<QuantityOfProductPageViewState, HTMLButtonElement>,
-    incrementButton: HTMLElementCollectionProxy<QuantityOfProductPageViewState, HTMLButtonElement>,
-    quantityInput: HTMLElementCollectionProxy<QuantityOfProductPageViewState, HTMLInputElement>
+    incrementButton: HTMLElementCollectionProxy<QuantityOfProductPageViewState, HTMLButtonElement>
+  },
+  modifiers: {
+    textModifier: HTMLElementCollectionProxy<ModifierOfProductPageViewState, HTMLSelectElement>,
+    textInput: HTMLElementCollectionProxy<ModifierOfProductPageViewState, HTMLInputElement | HTMLAreaElement>,
+    choices: {
+      choiceButton: HTMLElementCollectionProxy<ChoiceOfModifierOfProductPageViewState, HTMLButtonElement>
+    }
   }
 }
 
