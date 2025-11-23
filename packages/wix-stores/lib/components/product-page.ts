@@ -1,28 +1,28 @@
 import {
     makeJayStackComponent,
+    notFound,
     PageProps,
     partialRender,
-    UrlParams,
-    notFound, SlowlyRenderResult
+    SlowlyRenderResult,
+    UrlParams
 } from '@jay-framework/fullstack-component';
-import { createSignal, Props } from '@jay-framework/component';
+import {createSignal, Props} from '@jay-framework/component';
 import {
+    InfoSectionOfProductPageViewState,
+    ModifierOfProductPageViewState,
+    OptionOfProductPageViewState,
     ProductPageContract,
     ProductPageRefs,
-    AvailabilityStatus,
-    PreorderStatus,
-    PreorderAvailability,
-    MediaType,
-    OptionRenderType,
-    ChoiceType,
-    ProductType, ProductPageViewState, MediaOfProductPageViewState, OptionOfProductPageViewState,
-    CompareAtPriceRangeOfProductPageViewState, ActualPriceRangeOfProductPageViewState, BrandOfProductPageViewState,
-    RibbonOfProductPageViewState, BreadcrumbsInfoOfProductPageViewState, AllCategoriesInfoOfProductPageViewState,
-    InfoSectionOfProductPageViewState, VariantSummaryOfProductPageViewState
+    ProductPageViewState,
+    ProductType,
+    QuantityOfProductPageViewState,
+    SeoDatumOfProductPageViewState,
+    StockStatus
 } from '../contracts/product-page.jay-contract';
-import { WixStoresContext, WixStoresContextMarker } from './wix-stores-context';
-import {Media, Brand, PriceRange, ConnectedOption, Ribbon, BreadcrumbsInfo, ProductCategoriesInfo,
-    ProductCategory, InfoSection, VariantSummary} from '@wix/auto_sdk_stores_products-v-3'
+import {WixStoresContext, WixStoresContextMarker} from './wix-stores-context';
+import {InfoSection, Media, MediaTypeWithLiterals, SeoSchema} from '@wix/auto_sdk_stores_products-v-3'
+import {MediaGalleryViewState} from "../contracts/media-gallery.jay-contract";
+import {MediaType} from "../contracts/media.jay-contract";
 
 /**
  * URL parameters for product page routes
@@ -37,7 +37,11 @@ export interface ProductPageParams extends UrlParams {
  */
 interface ProductSlowCarryForward {
     productId: string;
-    slug: string;
+    mediaGallery: MediaGalleryViewState,
+    options: Array<OptionOfProductPageViewState>,
+    quantity: QuantityOfProductPageViewState,
+    stockStatus: StockStatus,
+    modifiers: Array<ModifierOfProductPageViewState>,
 }
 
 /**
@@ -47,6 +51,9 @@ interface ProductFastCarryForward extends ProductSlowCarryForward {
     inStock: boolean;
     preorderEnabled: boolean;
 }
+
+export type SlowRenderedProduct = Omit<ProductPageViewState,
+    "mediaGallery" | "sku" | "options" | "stockStatus" | "modifiers" | "price" | "strikethroughPrice" | "actionsEnabled" | "quantity">
 
 /**
  * Load product slugs for static site generation
@@ -64,121 +71,11 @@ async function* loadProductParams(
     }
 }
 
-export type SlowRenderedProduct = Omit<ProductPageViewState,
-    "inventory" | "options" | "quantity" | "isAddingToCart" | "currentVariant">
-
 function mapProductType(productType: string): ProductType {
     return productType === 'DIGITAL' ? ProductType.DIGITAL : ProductType.PHYSICAL
 }
 
-function mapMedia(media: Media): MediaOfProductPageViewState {
-    return ({
-        main: media?.itemsInfo?.items?.[0] ? {
-            id: media.itemsInfo.items[0]._id || '',
-            url: media.itemsInfo.items[0].url || '',
-            altText: media.itemsInfo.items[0].altText || '',
-            mediaType: media.itemsInfo.items[0].mediaType === 'VIDEO' ? MediaType.VIDEO : MediaType.IMAGE,
-            displayName: media.itemsInfo.items[0].displayName || ''
-        } : undefined,
-        itemsInfo: {
-            items: media?.itemsInfo?.items?.map((item) => ({
-                id: item._id || '',
-                url: item.url || '',
-                altText: item.altText || '',
-                mediaType: item.mediaType === 'VIDEO' ? MediaType.VIDEO : MediaType.IMAGE,
-                displayName: item.displayName || '',
-                thumbnail: item.thumbnail ? [{
-                    url: item.thumbnail.url || '',
-                    altText: item.thumbnail.altText || '',
-                    width: item.thumbnail.width || 0,
-                    height: item.thumbnail.height || 0
-                }] : []
-            })) || []
-        }
-    })
-}
-
-function mapActualPriceRange(actualPriceRange: PriceRange): ActualPriceRangeOfProductPageViewState {
-    return {
-        minValue: {
-            amount: actualPriceRange?.minValue?.amount || '',
-            formattedAmount: actualPriceRange?.minValue?.formattedAmount || ''
-        },
-        maxValue: {
-            amount: actualPriceRange?.maxValue?.amount || '',
-            formattedAmount: actualPriceRange?.maxValue?.formattedAmount || ''
-        }
-    };
-}
-
-function mapCompareAtPriceRange(compareAtPriceRange: PriceRange): CompareAtPriceRangeOfProductPageViewState {
-    return compareAtPriceRange ? {
-        minValue: {
-            amount: compareAtPriceRange.minValue?.amount || '',
-            formattedAmount: compareAtPriceRange.minValue?.formattedAmount || ''
-        },
-        maxValue: {
-            amount: compareAtPriceRange.maxValue?.amount || '',
-            formattedAmount: compareAtPriceRange.maxValue?.formattedAmount || ''
-        }
-    } : undefined;
-}
-
-function mapOptions(options: ConnectedOption[]): Array<OptionOfProductPageViewState> {
-    return options?.map((option) => ({
-        id: option._id || '',
-        name: option.name || '',
-        optionRenderType: option.optionRenderType === 'SWATCH_CHOICES' ? OptionRenderType.SWATCH_CHOICES : OptionRenderType.TEXT_CHOICES,
-        choices: option.choicesSettings?.choices?.map((choice) => ({
-            choiceId: choice.choiceId || '',
-            name: choice.name || '',
-            choiceType: choice.choiceType === 'ONE_COLOR' ? ChoiceType.ONE_COLOR :
-                choice.choiceType === 'MULTIPLE_COLORS' ? ChoiceType.MULTIPLE_COLORS :
-                    choice.choiceType === 'IMAGE' ? ChoiceType.IMAGE :
-                        ChoiceType.CHOICE_TEXT,
-            inStock: choice.inStock !== false,
-            visible: choice.visible !== false,
-            colorCode: (choice as any).colorCode || '',
-            isSelected: false
-        })) || []
-    })) || [];
-}
-
-function mapBrand({_id, name}: Brand): BrandOfProductPageViewState {
-    return ({
-        id: _id,
-        name
-    });
-}
-
-function mapRibbon({_id, name}: Ribbon): RibbonOfProductPageViewState {
-    return ({
-        id: _id,
-        name
-    })
-}
-
-function mapBreadcrumbsInfo(breadcrumbsInfo: BreadcrumbsInfo): BreadcrumbsInfoOfProductPageViewState {
-    return ({
-        breadcrumbs: breadcrumbsInfo.breadcrumbs.map(breadCrumb => ({
-            categoryId: breadCrumb.categoryId,
-            categoryName: breadCrumb.categoryName,
-            categorySlug: breadCrumb.categorySlug,
-        }))
-    });
-}
-
-function mapProductCategoriesInfo(productCategoriesInfo: ProductCategoriesInfo): AllCategoriesInfoOfProductPageViewState {
-    return ({
-        categories: productCategoriesInfo.categories.map(productCategory =>
-            ({
-                id: productCategory._id,
-                index: productCategory.index,
-            }))
-    });
-}
-
-function mapInfoSections(infoSections: InfoSection[]): InfoSectionOfProductPageViewState[] {
+function mapInfoSections(infoSections: InfoSection[]): Array<InfoSectionOfProductPageViewState> {
     return infoSections.map(infoSection => ({
         id: infoSection._id,
         plainDescription: infoSection.plainDescription || '',
@@ -186,11 +83,52 @@ function mapInfoSections(infoSections: InfoSection[]): InfoSectionOfProductPageV
         uniqueName: infoSection.uniqueName || '',
     }));
 }
-
-function mapVariantSummary(variantSummary: VariantSummary): VariantSummaryOfProductPageViewState {
+function mapSeoData(seoData: SeoSchema): SeoDatumOfProductPageViewState {
     return ({
-        variantCount: variantSummary.variantCount || 0,
+        tags: seoData.tags.map(tag => ({
+            type: tag.type,
+            props: Object.entries(tag.props).map(([key, value]) => ({key, value})),
+            meta: Object.entries(tag.meta).map(([key, value]) => ({key, value})),
+            children: tag.children
+        })),
+        settings: {
+            preventAutoRedirect: seoData.settings?.preventAutoRedirect || false,
+            keywords: seoData.settings.keywords.map(keyword => ({
+                isMain: keyword.isMain,
+                origin: keyword.origin,
+                term: keyword.term,
+            }))
+        }
     });
+}
+
+function formatWixMediaUrl(_id: string, url: string, mediaType: MediaType, resize?: {w: number, h: number}) {
+    if (url)
+        return url;
+    else if (mediaType === MediaType.IMAGE)
+        return `https://static.wixstatic.com/media/${_id}`
+    else if (mediaType === MediaType.VIDEO)
+        return `https://static.wixstatic.com/media/${_id}`
+}
+
+function mapMediaType(mediaType: MediaTypeWithLiterals): MediaType {
+    if (mediaType === "VIDEO")
+        return MediaType.VIDEO
+    else
+        return MediaType.IMAGE;
+}
+
+function mapMedia(media: Media): MediaGalleryViewState {
+    const mainMediaType = mapMediaType(media.main.mediaType);
+    return {
+        selectedMedia: {
+            url: formatWixMediaUrl(media.main._id, media.main.url, mainMediaType),
+            mediaType: mainMediaType,
+            thumbnail_50x50: formatWixMediaUrl(media.main._id, media.main.url, mainMediaType, {w: 50, h: 50})
+
+        },
+        availableMedia: ,
+    };
 }
 
 /**
@@ -210,46 +148,29 @@ async function renderSlowlyChanging(
         // Query product by slug with required fields
         const { product } = await wixStores.products
             .getProductBySlug(props.slug);
-        const { _id: id, name, slug, plainDescription, actualPriceRange, compareAtPriceRange, currency, media, productType, handle,
+        const { _id, name, plainDescription, actualPriceRange, compareAtPriceRange, currency, media, productType, handle,
             visible, visibleInPos, brand, ribbon, mainCategoryId, breadcrumbsInfo,
-            allCategoriesInfo, directCategoriesInfo, infoSections, taxGroupId, variantSummary, _createdDate, _updatedDate, revision} = product
+            allCategoriesInfo, directCategoriesInfo, infoSections, seoData, physicalProperties, taxGroupId, variantSummary, _createdDate, _updatedDate, revision} = product
 
-
-
-        // Map product data to view state
         return partialRender(
             {
-                // description: product.plainDescription || (typeof product.description === 'string' ? product.description : ''),
-                actualPriceRange: mapActualPriceRange(actualPriceRange),
-                allCategoriesInfo: mapProductCategoriesInfo(allCategoriesInfo),
-                brand: mapBrand(brand),
-                breadcrumbsInfo: mapBreadcrumbsInfo(breadcrumbsInfo),
-                compareAtPriceRange: mapCompareAtPriceRange(compareAtPriceRange),
-                currency: product.currency || '',
-                directCategoriesInfo: mapProductCategoriesInfo(directCategoriesInfo),
-                handle: product.slug || '',
-                id: id || '',
-                infoSections: mapInfoSections(infoSections),
-                mainCategoryId,
-                media: mapMedia(media),
-                name: name || '',
-                options: mapOptions(product.options),
-                plainDescription: plainDescription || '',
+                id: _id,
+                productName: name || '',
+                description: plainDescription,
+                brand: brand?.name || '',
+                ribbon: ribbon?.name || '',
                 productType: mapProductType(productType),
-                ribbon: mapRibbon(ribbon),
-                slug: slug || '',
-                taxGroupId,
-                url: `/products/${product.slug}`,
-                variantSummary: mapVariantSummary(variantSummary),
-                visible,
-                visibleInPos,
-                createdDate: new Intl.DateTimeFormat().format(_createdDate),
-                updatedDate: new Intl.DateTimeFormat().format(_updatedDate),
-                revision
+                infoSections: mapInfoSections(infoSections),
+                seoData: mapSeoData(seoData),
+                pricePerUnit: physicalProperties?.pricePerUnitRange?.minValue?.description,
             },
             {
                 productId: product._id || '',
-                slug: product.slug || ''
+                mediaGallery: mapMedia(media),
+                options: Array<OptionOfProductPageViewState>,
+                quantity: QuantityOfProductPageViewState,
+                stockStatus: StockStatus,
+                modifiers: Array<ModifierOfProductPageViewState>,
             }
         );
     } catch (error) {

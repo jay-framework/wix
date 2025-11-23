@@ -91,9 +91,7 @@ export interface TagOfSeoDatumOfProductPageViewState {
   type: string,
   props: Array<PropOfTagOfSeoDatumOfProductPageViewState>,
   meta: Array<MetaOfTagOfSeoDatumOfProductPageViewState>,
-  children: string,
-  custom: boolean,
-  disabled: boolean
+  children: string
 }
 
 export interface KeywordOfSettingOfSeoDatumOfProductPageViewState {
@@ -104,7 +102,7 @@ export interface KeywordOfSettingOfSeoDatumOfProductPageViewState {
 
 export interface SettingOfSeoDatumOfProductPageViewState {
   preventAutoRedirect: boolean,
-  keywords: KeywordOfSettingOfSeoDatumOfProductPageViewState
+  keywords: Array<KeywordOfSettingOfSeoDatumOfProductPageViewState>
 }
 
 export interface SeoDatumOfProductPageViewState {

@@ -122,8 +122,6 @@ tags:
                 type: data
                 dataType: string
           - {tag: children, type: data, dataType: string, description: SEO tag inner content.}
-          - {tag: custom, type: data, dataType: boolean, description: Whether the tag is a custom tag.}
-          - {tag: disabled, type: data, dataType: boolean, description: Whether the tag is disabled. }
 
       - tag: settings
         type: sub-contract
@@ -132,6 +130,7 @@ tags:
           - {tag: preventAutoRedirect, type: data, dataType: boolean, description: Whether the automatical redirect visits from the old URL to the new one is enabled.}
           - tag: keywords
             type: sub-contract
+            repeated: true
             description: User-selected keyword terms for a specific page.
             tags:
             - {tag: term, type: data, dataType: string, description: Keyword value.}
