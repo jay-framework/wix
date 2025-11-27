@@ -102,6 +102,32 @@ export interface CategoryPageViewState {
   hasProducts: boolean
 }
 
+export type CategoryPageSlowViewState = Pick<CategoryPageViewState, 'id' | 'name' | 'description' | 'slug' | 'visible' | 'numberOfProducts' | 'products' | 'isLoading' | 'hasProducts'> & {
+    media: {
+    mainMedia: CategoryPageViewState['media']['mainMedia'];
+    items: Array<Pick<CategoryPageViewState['media']['items'][number], 'id' | 'url' | 'altText' | 'title' | 'mediaType'> & {
+    thumbnail: CategoryPageViewState['media']['items']['thumbnail'];
+}>;
+};
+    breadcrumbs: Array<CategoryPageViewState['breadcrumbs'][number]>;
+    pagination: Pick<CategoryPageViewState['pagination'], 'currentPage' | 'totalPages' | 'totalProducts'> & {
+    pageNumbers: Array<CategoryPageViewState['pagination']['pageNumbers'][number]>;
+};
+    sortBy: CategoryPageViewState['sortBy'];
+};
+
+export type CategoryPageFastViewState = {
+    filters: Pick<CategoryPageViewState['filters'], 'inStockOnly'> & {
+    priceRange: CategoryPageViewState['filters']['priceRange'];
+};
+};
+
+export type CategoryPageInteractiveViewState = {
+    filters: Pick<CategoryPageViewState['filters'], 'inStockOnly'> & {
+    priceRange: CategoryPageViewState['filters']['priceRange'];
+};
+};
+
 
 export interface CategoryPageRefs {
   breadcrumbs: {
@@ -156,4 +182,4 @@ export interface CategoryPageRepeatedRefs {
   }
 }
 
-export type CategoryPageContract = JayContract<CategoryPageViewState, CategoryPageRefs>
+export type CategoryPageContract = JayContract<CategoryPageViewState, CategoryPageRefs, CategoryPageSlowViewState, CategoryPageFastViewState, CategoryPageInteractiveViewState>

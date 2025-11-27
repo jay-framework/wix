@@ -100,6 +100,26 @@ export interface ProductCardViewState {
   isAddingToCart: boolean
 }
 
+export type ProductCardSlowViewState = Pick<ProductCardViewState, 'id' | 'name' | 'slug' | 'currency' | 'hasDiscount' | 'hasRibbon' | 'productType' | 'visible' | 'isAddingToCart'> & {
+    mainMedia: ProductCardViewState['mainMedia'];
+    thumbnail: ProductCardViewState['thumbnail'];
+    actualPriceRange: {
+    minValue: ProductCardViewState['actualPriceRange']['minValue'];
+    maxValue: ProductCardViewState['actualPriceRange']['maxValue'];
+};
+    compareAtPriceRange: {
+    minValue: ProductCardViewState['compareAtPriceRange']['minValue'];
+    maxValue: ProductCardViewState['compareAtPriceRange']['maxValue'];
+};
+    inventory: ProductCardViewState['inventory'];
+    ribbon: ProductCardViewState['ribbon'];
+    brand: ProductCardViewState['brand'];
+};
+
+export type ProductCardFastViewState = {};
+
+export type ProductCardInteractiveViewState = {};
+
 
 export interface ProductCardRefs {
   productLink: HTMLElementProxy<ProductCardViewState, HTMLAnchorElement>,
@@ -112,4 +132,4 @@ export interface ProductCardRepeatedRefs {
   addToCartButton: HTMLElementCollectionProxy<ProductCardViewState, HTMLButtonElement>
 }
 
-export type ProductCardContract = JayContract<ProductCardViewState, ProductCardRefs>
+export type ProductCardContract = JayContract<ProductCardViewState, ProductCardRefs, ProductCardSlowViewState, ProductCardFastViewState, ProductCardInteractiveViewState>

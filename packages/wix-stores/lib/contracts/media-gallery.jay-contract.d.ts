@@ -20,6 +20,24 @@ export interface MediaGalleryViewState {
   availableMedia: AvailableMediaOfMediaGalleryViewState
 }
 
+export type MediaGallerySlowViewState = Pick<MediaGalleryViewState, 'selectedMedia'> & {
+    availableMedia: {
+    mediaItems: Array<Pick<MediaGalleryViewState['availableMedia']['mediaItems'][number], 'media'>>;
+};
+};
+
+export type MediaGalleryFastViewState = {
+    availableMedia: {
+    mediaItems: Array<Pick<MediaGalleryViewState['availableMedia']['mediaItems'][number], 'selected'>>;
+};
+};
+
+export type MediaGalleryInteractiveViewState = {
+    availableMedia: {
+    mediaItems: Array<Pick<MediaGalleryViewState['availableMedia']['mediaItems'][number], 'selected'>>;
+};
+};
+
 
 export interface MediaGalleryRefs {
   selectedMedia: MediaRefs,
@@ -42,4 +60,4 @@ export interface MediaGalleryRepeatedRefs {
   }
 }
 
-export type MediaGalleryContract = JayContract<MediaGalleryViewState, MediaGalleryRefs>
+export type MediaGalleryContract = JayContract<MediaGalleryViewState, MediaGalleryRefs, MediaGallerySlowViewState, MediaGalleryFastViewState, MediaGalleryInteractiveViewState>

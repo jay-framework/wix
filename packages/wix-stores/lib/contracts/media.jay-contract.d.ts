@@ -12,8 +12,14 @@ export interface MediaViewState {
   thumbnail_50x50: string
 }
 
+export type MediaSlowViewState = Pick<MediaViewState, 'url' | 'mediaType' | 'thumbnail_50x50'>;
+
+export type MediaFastViewState = {};
+
+export type MediaInteractiveViewState = {};
+
 export interface MediaRefs {}
 
 export interface MediaRepeatedRefs {}
 
-export type MediaContract = JayContract<MediaViewState, MediaRefs>
+export type MediaContract = JayContract<MediaViewState, MediaRefs, MediaSlowViewState, MediaFastViewState, MediaInteractiveViewState>

@@ -63,6 +63,35 @@ export interface ProductSearchViewState {
   suggestions: Array<SuggestionOfProductSearchViewState>
 }
 
+export type ProductSearchSlowViewState = Pick<ProductSearchViewState, 'searchFields' | 'fuzzySearch' | 'isSearching' | 'hasSearched' | 'searchResults' | 'resultCount' | 'hasResults' | 'emptyStateMessage' | 'hasSuggestions'> & {
+    filters: {
+    categoryFilter: {
+    categories: Array<Pick<ProductSearchViewState['filters']['categoryFilter']['categories'][number], 'categoryId' | 'categoryName'>>;
+};
+};
+    sortBy: ProductSearchViewState['sortBy'];
+    pagination: ProductSearchViewState['pagination'];
+    suggestions: Array<ProductSearchViewState['suggestions'][number]>;
+};
+
+export type ProductSearchFastViewState = Pick<ProductSearchViewState, 'searchExpression'> & {
+    filters: Pick<ProductSearchViewState['filters'], 'inStockOnly'> & {
+    priceRange: ProductSearchViewState['filters']['priceRange'];
+    categoryFilter: {
+    categories: Array<Pick<ProductSearchViewState['filters']['categoryFilter']['categories'][number], 'isSelected'>>;
+};
+};
+};
+
+export type ProductSearchInteractiveViewState = Pick<ProductSearchViewState, 'searchExpression'> & {
+    filters: Pick<ProductSearchViewState['filters'], 'inStockOnly'> & {
+    priceRange: ProductSearchViewState['filters']['priceRange'];
+    categoryFilter: {
+    categories: Array<Pick<ProductSearchViewState['filters']['categoryFilter']['categories'][number], 'isSelected'>>;
+};
+};
+};
+
 
 export interface ProductSearchRefs {
   searchExpression: HTMLElementProxy<ProductSearchViewState, HTMLInputElement>,
@@ -129,4 +158,4 @@ export interface ProductSearchRepeatedRefs {
   }
 }
 
-export type ProductSearchContract = JayContract<ProductSearchViewState, ProductSearchRefs>
+export type ProductSearchContract = JayContract<ProductSearchViewState, ProductSearchRefs, ProductSearchSlowViewState, ProductSearchFastViewState, ProductSearchInteractiveViewState>
