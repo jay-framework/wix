@@ -8,6 +8,7 @@ import {
 import { createSignal, Props } from '@jay-framework/component';
 import { CategoryPageContract, CategoryPageRefs } from '../contracts/category-page.jay-contract';
 import { WixStoresContext, WixStoresContextMarker } from './wix-stores-context';
+import {WIX_STORES_SERVICE_MARKER} from "../stores-client/wix-stores-context";
 
 /**
  * URL parameters for category page routes
@@ -311,7 +312,7 @@ function CategoryPageInteractive(
  */
 export const categoryPage = makeJayStackComponent<CategoryPageContract>()
     .withProps<PageProps>()
-    .withServerContext(WixStoresContextMarker)
+    .withServices(WIX_STORES_SERVICE_MARKER)
     .withLoadParams(loadCategoryParams)
     .withSlowlyRender(renderSlowlyChanging)
     .withFastRender(renderFastChanging)

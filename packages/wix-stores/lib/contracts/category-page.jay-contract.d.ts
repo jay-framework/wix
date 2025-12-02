@@ -37,7 +37,7 @@ export interface ItemOfMediaOfCategoryPageViewState {
   altText: string,
   title: string,
   mediaType: MediaType,
-  thumbnail: Array<ThumbnailOfItemOfMediaOfCategoryPageViewState>
+  thumbnail: ThumbnailOfItemOfMediaOfCategoryPageViewState
 }
 
 export interface MediaOfCategoryPageViewState {

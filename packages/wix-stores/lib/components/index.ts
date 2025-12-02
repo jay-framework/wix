@@ -6,13 +6,6 @@
  * with server-side rendering support for optimal performance and SEO.
  */
 
-// Server Context
-export {
-    WixStoresContextMarker,
-    createWixStoresContext,
-    type WixStoresContext
-} from './wix-stores-context';
-
 // Product Card Component
 export { 
     productCard, 

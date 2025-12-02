@@ -1,0 +1,18 @@
+<html>
+  <head>
+      <script type="application/jay-headless"
+              contract="@jay-framework/wix-stores/product-page.jay-contract"
+              src="@jay-framework/wix-stores"
+              name="productPage"
+              key="product-page"
+      ></script>
+    <script type="application/jay-data">
+      data:
+    </script>
+  </head>
+  <body>
+    <div>
+      products
+    </div>
+  </body>
+</html>

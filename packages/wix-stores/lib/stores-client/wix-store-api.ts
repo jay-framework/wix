@@ -1,5 +1,4 @@
-import { getClient } from "@jay-framework/wix-server-client";
-// Singleton instances
+import { WixClient } from "@wix/sdk";
 import {collections, inventoryItemsV3, productsV3} from "@wix/stores";
 
 const instances: {
@@ -22,10 +21,9 @@ const instances: {
  * @returns Products V3 client instance from @wix/stores
  * @see https://dev.wix.com/docs/sdk/backend-modules/stores/catalog-v3/introduction
  */
-export function getProductsV3Client(): typeof productsV3 {
+export function getProductsV3Client(wixClient: WixClient): typeof productsV3 {
     if (!instances.productsV3ClientInstance) {
-        const wixClient = getClient();
-        instances.productsV3ClientInstance = wixClient.use(productsV3);
+        instances.productsV3ClientInstance = wixClient.use(productsV3) as unknown as typeof productsV3;
     }
     return instances.productsV3ClientInstance;
 }
@@ -38,10 +36,9 @@ export function getProductsV3Client(): typeof productsV3 {
  * @returns Collections client instance from @wix/stores
  * @see https://dev.wix.com/docs/sdk/backend-modules/stores/collections/introduction
  */
-export function getCollectionsClient(): typeof collections {
+export function getCollectionsClient(wixClient: WixClient): typeof collections {
     if (!instances.collectionsClientInstance) {
-        const wixClient = getClient();
-        instances.collectionsClientInstance = wixClient.use(collections);
+        instances.collectionsClientInstance = wixClient.use(collections) as unknown as typeof collections;
     }
     return instances.collectionsClientInstance;
 }
@@ -54,10 +51,9 @@ export function getCollectionsClient(): typeof collections {
  * @returns Inventory client instance from @wix/stores
  * @see https://dev.wix.com/docs/sdk/backend-modules/stores/inventory/introduction
  */
-export function getInventoryClient(): typeof inventoryItemsV3 {
+export function getInventoryClient(wixClient: WixClient): typeof inventoryItemsV3 {
     if (!instances.inventoryV3ClientInstance) {
-        const wixClient = getClient();
-        instances.inventoryV3ClientInstance = wixClient.use(inventoryItemsV3);
+        instances.inventoryV3ClientInstance = wixClient.use(inventoryItemsV3) as unknown as typeof inventoryItemsV3;
     }
     return instances.inventoryV3ClientInstance;
 }

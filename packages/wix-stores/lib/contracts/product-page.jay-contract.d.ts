@@ -11,7 +11,9 @@ export enum StockStatus {
   IN_STOCK
 }
 
-export interface QuantityOfProductPageViewState {}
+export interface QuantityOfProductPageViewState {
+  quantity: number
+}
 
 export enum OptionRenderType {
   TEXT_CHOICES,
@@ -70,8 +72,8 @@ export interface ModifierOfProductPageViewState {
   name: string,
   modifierType: ModifierType,
   textModifierSelection: string,
-  textInputLength: string,
-  textInputRequired: string,
+  textInputLength: number,
+  textInputRequired: boolean,
   choices: Array<ChoiceOfModifierOfProductPageViewState>
 }
 
@@ -139,8 +141,8 @@ export type ProductPageSlowViewState = Pick<ProductPageViewState, 'id' | 'produc
 }>;
     seoData: {
     tags: Array<Pick<ProductPageViewState['seoData']['tags'][number], 'type' | 'children'> & {
-    props: ProductPageViewState['seoData']['tags']['props'];
-    meta: ProductPageViewState['seoData']['tags']['meta'];
+    props: Array<ProductPageViewState['seoData']['tags']['props'][number]>;
+    meta: Array<ProductPageViewState['seoData']['tags']['meta'][number]>;
 }>;
     settings: Pick<ProductPageViewState['seoData']['settings'], 'preventAutoRedirect'> & {
     keywords: Array<ProductPageViewState['seoData']['settings']['keywords'][number]>;
@@ -149,6 +151,7 @@ export type ProductPageSlowViewState = Pick<ProductPageViewState, 'id' | 'produc
 };
 
 export type ProductPageFastViewState = Pick<ProductPageViewState, 'mediaGallery' | 'sku' | 'price' | 'strikethroughPrice' | 'pricePerUnit' | 'stockStatus' | 'actionsEnabled'> & {
+    quantity: ProductPageViewState['quantity'];
     options: Array<Pick<ProductPageViewState['options'][number], 'textChoiceSelection'> & {
     choices: Array<Pick<ProductPageViewState['options']['choices'][number], 'isSelected'>>;
 }>;
@@ -158,6 +161,7 @@ export type ProductPageFastViewState = Pick<ProductPageViewState, 'mediaGallery'
 };
 
 export type ProductPageInteractiveViewState = Pick<ProductPageViewState, 'mediaGallery' | 'sku' | 'price' | 'strikethroughPrice' | 'pricePerUnit' | 'stockStatus' | 'actionsEnabled'> & {
+    quantity: ProductPageViewState['quantity'];
     options: Array<Pick<ProductPageViewState['options'][number], 'textChoiceSelection'> & {
     choices: Array<Pick<ProductPageViewState['options']['choices'][number], 'isSelected'>>;
 }>;
@@ -173,7 +177,8 @@ export interface ProductPageRefs {
   mediaGallery: MediaGalleryRefs,
   quantity: {
     decrementButton: HTMLElementProxy<QuantityOfProductPageViewState, HTMLButtonElement>,
-    incrementButton: HTMLElementProxy<QuantityOfProductPageViewState, HTMLButtonElement>
+    incrementButton: HTMLElementProxy<QuantityOfProductPageViewState, HTMLButtonElement>,
+    quantity: HTMLElementProxy<QuantityOfProductPageViewState, HTMLInputElement>
   },
   options: {
     textChoice: HTMLElementCollectionProxy<OptionOfProductPageViewState, HTMLSelectElement>,
@@ -197,7 +202,8 @@ export interface ProductPageRepeatedRefs {
   mediaGallery: MediaGalleryRepeatedRefs,
   quantity: {
     decrementButton: HTMLElementCollectionProxy<QuantityOfProductPageViewState, HTMLButtonElement>,
-    incrementButton: HTMLElementCollectionProxy<QuantityOfProductPageViewState, HTMLButtonElement>
+    incrementButton: HTMLElementCollectionProxy<QuantityOfProductPageViewState, HTMLButtonElement>,
+    quantity: HTMLElementCollectionProxy<QuantityOfProductPageViewState, HTMLInputElement>
   },
   options: {
     textChoice: HTMLElementCollectionProxy<OptionOfProductPageViewState, HTMLSelectElement>,

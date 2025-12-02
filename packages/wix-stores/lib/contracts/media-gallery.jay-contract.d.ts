@@ -6,46 +6,34 @@ export enum Selected {
   notSelected
 }
 
-export interface MediaItemOfAvailableMediaOfMediaGalleryViewState {
-  media: Array<MediaViewState>,
-  selected: Selected
-}
-
 export interface AvailableMediaOfMediaGalleryViewState {
-  mediaItems: Array<MediaItemOfAvailableMediaOfMediaGalleryViewState>
+  media: MediaViewState,
+  selected: Selected
 }
 
 export interface MediaGalleryViewState {
   selectedMedia: MediaViewState,
-  availableMedia: AvailableMediaOfMediaGalleryViewState
+  availableMedia: Array<AvailableMediaOfMediaGalleryViewState>
 }
 
 export type MediaGallerySlowViewState = Pick<MediaGalleryViewState, 'selectedMedia'> & {
-    availableMedia: {
-    mediaItems: Array<Pick<MediaGalleryViewState['availableMedia']['mediaItems'][number], 'media'>>;
-};
+    availableMedia: Array<Pick<MediaGalleryViewState['availableMedia'][number], 'media'>>;
 };
 
 export type MediaGalleryFastViewState = {
-    availableMedia: {
-    mediaItems: Array<Pick<MediaGalleryViewState['availableMedia']['mediaItems'][number], 'selected'>>;
-};
+    availableMedia: Array<Pick<MediaGalleryViewState['availableMedia'][number], 'selected'>>;
 };
 
 export type MediaGalleryInteractiveViewState = {
-    availableMedia: {
-    mediaItems: Array<Pick<MediaGalleryViewState['availableMedia']['mediaItems'][number], 'selected'>>;
-};
+    availableMedia: Array<Pick<MediaGalleryViewState['availableMedia'][number], 'selected'>>;
 };
 
 
 export interface MediaGalleryRefs {
   selectedMedia: MediaRefs,
   availableMedia: {
-    mediaItems: {
-      selected: HTMLElementCollectionProxy<MediaItemOfAvailableMediaOfMediaGalleryViewState, HTMLImageElement | HTMLDivElement>,
-      media: MediaRepeatedRefs
-    }
+    selected: HTMLElementCollectionProxy<AvailableMediaOfMediaGalleryViewState, HTMLImageElement | HTMLDivElement>,
+    media: MediaRefs
   }
 }
 
@@ -53,10 +41,8 @@ export interface MediaGalleryRefs {
 export interface MediaGalleryRepeatedRefs {
   selectedMedia: MediaRepeatedRefs,
   availableMedia: {
-    mediaItems: {
-      selected: HTMLElementCollectionProxy<MediaItemOfAvailableMediaOfMediaGalleryViewState, HTMLImageElement | HTMLDivElement>,
-      media: MediaRepeatedRefs
-    }
+    selected: HTMLElementCollectionProxy<AvailableMediaOfMediaGalleryViewState, HTMLImageElement | HTMLDivElement>,
+    media: MediaRepeatedRefs
   }
 }
 

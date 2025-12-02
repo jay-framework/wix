@@ -10,7 +10,8 @@
     "dist"
   ],
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./product-page.jay-contract": "./dist/product-page.jay-contract"
   },
   "scripts": {
     "build": "npm run definitions && npm run build:js && npm run build:copy-contract",
@@ -29,6 +30,7 @@
     "@jay-framework/reactive": "^0.6.10",
     "@jay-framework/runtime": "^0.6.10",
     "@jay-framework/secure": "^0.6.10",
+    "@jay-framework/stack-server-runtime": "^0.6.10",
     "@jay-framework/wix-server-client": "^1.0.0",
     "@wix/stores": "^1.0.547"
   },

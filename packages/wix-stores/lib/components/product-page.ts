@@ -8,20 +8,30 @@ import {
 } from '@jay-framework/fullstack-component';
 import {createSignal, Props} from '@jay-framework/component';
 import {
+    ChoiceType,
     InfoSectionOfProductPageViewState,
-    ModifierOfProductPageViewState,
-    OptionOfProductPageViewState,
+    ModifierType,
+    OptionRenderType,
     ProductPageContract,
+    ProductPageFastViewState,
     ProductPageRefs,
-    ProductPageViewState,
+    ProductPageSlowViewState,
     ProductType,
-    QuantityOfProductPageViewState,
     SeoDatumOfProductPageViewState,
     StockStatus
 } from '../contracts/product-page.jay-contract';
-import {WixStoresContext, WixStoresContextMarker} from './wix-stores-context';
-import {InfoSection, Media, MediaTypeWithLiterals, SeoSchema} from '@wix/auto_sdk_stores_products-v-3'
-import {MediaGalleryViewState} from "../contracts/media-gallery.jay-contract";
+import {WixStoresContext, WIX_STORES_SERVICE_MARKER} from '../stores-client/wix-stores-context';
+import {
+    ChoiceTypeWithLiterals,
+    ConnectedModifier,
+    ConnectedOption,
+    InfoSection,
+    Media,
+    MediaTypeWithLiterals,
+    ModifierRenderTypeWithLiterals,
+    SeoSchema
+} from '@wix/auto_sdk_stores_products-v-3'
+import {MediaGalleryViewState, Selected} from "../contracts/media-gallery.jay-contract";
 import {MediaType} from "../contracts/media.jay-contract";
 
 /**
@@ -38,22 +48,21 @@ export interface ProductPageParams extends UrlParams {
 interface ProductSlowCarryForward {
     productId: string;
     mediaGallery: MediaGalleryViewState,
-    options: Array<OptionOfProductPageViewState>,
-    quantity: QuantityOfProductPageViewState,
+    options: ProductPageFastViewState['options'],
+    modifiers: ProductPageFastViewState['modifiers'],
+    sku: string,
+    price: string,
+    strikethroughPrice: string,
+    pricePerUnit: string,
     stockStatus: StockStatus,
-    modifiers: Array<ModifierOfProductPageViewState>,
 }
 
 /**
  * Data carried forward from fast rendering to interactive phase
  */
-interface ProductFastCarryForward extends ProductSlowCarryForward {
-    inStock: boolean;
-    preorderEnabled: boolean;
+interface ProductFastCarryForward {
+    defaultVS: ProductPageFastViewState
 }
-
-export type SlowRenderedProduct = Omit<ProductPageViewState,
-    "mediaGallery" | "sku" | "options" | "stockStatus" | "modifiers" | "price" | "strikethroughPrice" | "actionsEnabled" | "quantity">
 
 /**
  * Load product slugs for static site generation
@@ -127,8 +136,80 @@ function mapMedia(media: Media): MediaGalleryViewState {
             thumbnail_50x50: formatWixMediaUrl(media.main._id, media.main.url, mainMediaType, {w: 50, h: 50})
 
         },
-        availableMedia: ,
+        availableMedia: media.itemsInfo?.items?.map(item => ({
+            media: {
+                url: formatWixMediaUrl(item._id, item.url, mainMediaType),
+                mediaType: (item.mediaType === 'IMAGE'? MediaType.IMAGE : MediaType.VIDEO),
+                thumbnail_50x50: formatWixMediaUrl(item._id, item.url, mainMediaType, {w: 50, h: 50})
+            },
+            selected: (item.url === media.main.url)? Selected.selected : Selected.notSelected
+        })) ?? [],
     };
+}
+
+function mapOptionsToSlowVS(options: ConnectedOption[]): ProductPageSlowViewState['options'] {
+    return options?.map(option => ({
+        name: option.name,
+        optionRenderType: (option.optionRenderType === 'TEXT_CHOICES'? OptionRenderType.TEXT_CHOICES : OptionRenderType.COLOR_SWATCH_CHOICES),
+        id: option._id,
+        choices: option.choicesSettings?.choices?.map((choice) => ({
+            name: choice.name,
+            choiceId: choice.choiceId,
+            choiceType: (choice.choiceType === 'CHOICE_TEXT'? ChoiceType.CHOICE_TEXT : ChoiceType.ONE_COLOR),
+            inStock: choice.inStock,
+            colorCode: choice.colorCode,
+        })) ?? [],
+    })) ?? [];
+}
+
+function mapOptionsToFastVS(options: ConnectedOption[]): ProductPageFastViewState['options'] {
+    return options?.map(option => ({
+        textChoiceSelection: undefined,
+        choices: option.choicesSettings?.choices?.map((choice) => ({
+            isSelected: false
+        })) ?? [],
+    })) ?? [];
+}
+
+function mapModifierType(modifierRenderType: ModifierRenderTypeWithLiterals): ModifierType {
+    switch (modifierRenderType) {
+        case "FREE_TEXT": return ModifierType.FREE_TEXT
+        case "TEXT_CHOICES": return ModifierType.TEXT_CHOICES
+        case "SWATCH_CHOICES": return ModifierType.COLOR_SWATCH_CHOICES
+        default: return ModifierType.FREE_TEXT
+    }
+}
+
+function mapModifierChoiceType(choiceType: ChoiceTypeWithLiterals): ChoiceType {
+    if (choiceType === "ONE_COLOR")
+        return ChoiceType.ONE_COLOR
+    else
+        return ChoiceType.CHOICE_TEXT
+}
+
+function mapModifiersToSlowVS(modifiers: ConnectedModifier[]): ProductPageSlowViewState['modifiers'] {
+    return modifiers?.map(modifier => ({
+        name: modifier.name || modifier.freeTextSettings?.title || '',
+        id: modifier._id,
+        modifierType: mapModifierType(modifier.modifierRenderType),
+        textInputLength: modifier.freeTextSettings?.maxCharCount,
+        textInputRequired: modifier.mandatory,
+        choices: modifier.choicesSettings?.choices?.map((choice) => ({
+            name: choice.name,
+            choiceId: choice.choiceId,
+            colorCode: choice.colorCode,
+            choiceType: mapModifierChoiceType(choice.choiceType)
+        })) ?? []
+    })) ?? [];
+}
+
+function mapModifiersToFastVS(modifiers: ConnectedModifier[]): ProductPageFastViewState['modifiers'] {
+    return modifiers?.map(modifier => ({
+        textModifierSelection: undefined,
+        choices: modifier.choicesSettings?.choices?.map((choice) => ({
+            isSelected: false
+        })) ?? []
+    })) ?? [];
 }
 
 /**
@@ -143,34 +224,41 @@ function mapMedia(media: Media): MediaGalleryViewState {
 async function renderSlowlyChanging(
     props: PageProps & ProductPageParams,
     wixStores: WixStoresContext
-): Promise<SlowlyRenderResult<SlowRenderedProduct, ProductSlowCarryForward>> {
+): Promise<SlowlyRenderResult<ProductPageSlowViewState, ProductSlowCarryForward>> {
     try {
         // Query product by slug with required fields
         const { product } = await wixStores.products
             .getProductBySlug(props.slug);
-        const { _id, name, plainDescription, actualPriceRange, compareAtPriceRange, currency, media, productType, handle,
+        const { _id, name, plainDescription, options, modifiers, actualPriceRange, compareAtPriceRange, currency, media, productType, handle,
             visible, visibleInPos, brand, ribbon, mainCategoryId, breadcrumbsInfo,
-            allCategoriesInfo, directCategoriesInfo, infoSections, seoData, physicalProperties, taxGroupId, variantSummary, _createdDate, _updatedDate, revision} = product
+            allCategoriesInfo, directCategoriesInfo, infoSections, seoData, physicalProperties, taxGroupId,
+            variantSummary, _createdDate, _updatedDate, revision} = product
 
-        return partialRender(
+        return partialRender<ProductPageSlowViewState, ProductSlowCarryForward>(
             {
                 id: _id,
                 productName: name || '',
                 description: plainDescription,
-                brand: brand?.name || '',
-                ribbon: ribbon?.name || '',
+                brand: brand.name || '',
+                ribbon: ribbon.name || '',
                 productType: mapProductType(productType),
+                options: mapOptionsToSlowVS(options),
                 infoSections: mapInfoSections(infoSections),
+                modifiers: mapModifiersToSlowVS(modifiers),
                 seoData: mapSeoData(seoData),
-                pricePerUnit: physicalProperties?.pricePerUnitRange?.minValue?.description,
             },
             {
                 productId: product._id || '',
                 mediaGallery: mapMedia(media),
-                options: Array<OptionOfProductPageViewState>,
-                quantity: QuantityOfProductPageViewState,
-                stockStatus: StockStatus,
-                modifiers: Array<ModifierOfProductPageViewState>,
+                options: mapOptionsToFastVS(options),
+                modifiers: mapModifiersToFastVS(modifiers),
+                sku: 'N/A not in API',
+                price: product.actualPriceRange?.minValue?.formattedAmount || '',
+                strikethroughPrice:
+                    product.actualPriceRange?.minValue?.amount !== product.compareAtPriceRange?.minValue?.amount ?
+                    product.compareAtPriceRange?.minValue?.formattedAmount || '' : '',
+                pricePerUnit: product.physicalProperties?.pricePerUnitRange?.minValue?.description,
+                stockStatus: (product.inventory?.availabilityStatus === 'IN_STOCK'? StockStatus.IN_STOCK : StockStatus.OUT_OF_STOCK),
             }
         );
     } catch (error) {
@@ -191,58 +279,25 @@ async function renderFastChanging(
     carryForward: ProductSlowCarryForward,
     wixStores: WixStoresContext
 ) {
-    try {
-        // Get current inventory status
-        let inStock = false;
-        let preorderEnabled = false;
-        
-        try {
-            const inventoryResponse = await wixStores.inventory.getInventoryItem({
-                filter: { productId: carryForward.productId }
-            });
-            const hasInventory = inventoryResponse.items && inventoryResponse.items.length > 0;
-            const firstItem = inventoryResponse.items?.[0];
-            
-            inStock = hasInventory && (firstItem?.availableQuantity || 0) > 0;
-            preorderEnabled = firstItem?.preorderInfo?.enabled || false;
-        } catch (invError) {
-            console.warn('Inventory query failed:', invError);
-        }
-
-        return partialRender(
-            {
-                inventory: {
-                    availabilityStatus: inStock ? AvailabilityStatus.IN_STOCK : AvailabilityStatus.OUT_OF_STOCK,
-                    preorderStatus: preorderEnabled ? PreorderStatus.ENABLED : PreorderStatus.DISABLED,
-                    preorderAvailability: PreorderAvailability.NO_VARIANTS
-                }
-            },
-            {
-                productId: carryForward.productId,
-                slug: carryForward.slug,
-                inStock,
-                preorderEnabled
-            }
-        );
-    } catch (error) {
-        console.error('Failed to render product page (fast):', error);
-        // Return default inventory state on error
-        return partialRender(
-            {
-                inventory: {
-                    availabilityStatus: AvailabilityStatus.OUT_OF_STOCK,
-                    preorderStatus: PreorderStatus.DISABLED,
-                    preorderAvailability: PreorderAvailability.NO_VARIANTS
-                }
-            },
-            {
-                productId: carryForward.productId,
-                slug: carryForward.slug,
-                inStock: false,
-                preorderEnabled: false
-            }
-        );
+    const fastVS: ProductPageFastViewState = {
+        actionsEnabled: false,
+        options: carryForward.options,
+        modifiers: carryForward.modifiers,
+        mediaGallery: carryForward.mediaGallery,
+        sku: carryForward.sku,
+        price: carryForward.price,
+        pricePerUnit: carryForward.pricePerUnit,
+        stockStatus: carryForward.stockStatus,
+        strikethroughPrice: carryForward.strikethroughPrice,
+        quantity: { quantity: 1}
     }
+
+    return partialRender<ProductPageFastViewState, ProductFastCarryForward>(
+        fastVS,
+        {
+            defaultVS: fastVS
+        }
+    );
 }
 
 /**
@@ -256,7 +311,18 @@ function ProductPageInteractive(
     props: Props<PageProps & ProductPageParams & ProductFastCarryForward>,
     refs: ProductPageRefs
 ) {
-    const [quantity, setQuantity] = createSignal(1);
+
+    const [quantity, setQuantity] = createSignal(props.defaultVS().quantity.quantity);
+    const [actionsEnabled, setActionsEnabled] = createSignal(props.defaultVS().actionsEnabled);
+    const [options, setOptions] = createSignal(props.defaultVS().options);
+    const [modifiers, setModifiers] = createSignal(props.defaultVS().modifiers);
+    const [mediaGallery, setMediaGallery] = createSignal(props.defaultVS().mediaGallery);
+    const [sku, setSKU] = createSignal(props.defaultVS().sku);
+    const [price, setPrice] = createSignal(props.defaultVS().price);
+    const [pricePerUnit, setPricePerUnit] = createSignal(props.defaultVS().pricePerUnit);
+    const [stockStatus, setStockStatus] = createSignal(props.defaultVS().stockStatus);
+    const [strikethroughPrice, setStrikethroughPrice] = createSignal(props.defaultVS().strikethroughPrice);
+
     const [isAddingToCart, setIsAddingToCart] = createSignal(false);
     const [selectedChoices, setSelectedChoices] = createSignal<Map<string, string>>(new Map());
 
@@ -269,7 +335,7 @@ function ProductPageInteractive(
         setQuantity(prev => prev + 1);
     });
 
-    refs.quantity.quantityInput.oninput(({event}) => {
+    refs.quantity.quantity.oninput(({event}) => {
         const value = parseInt((event.target as HTMLInputElement).value, 10);
         if (!isNaN(value) && value > 0) {
             setQuantity(value);
@@ -310,16 +376,18 @@ function ProductPageInteractive(
 
     return {
         render: () => ({
-            isAddingToCart: isAddingToCart(),
             quantity: {
-                currentQuantity: quantity(),
-                quantityInput: quantity()
+                quantity: quantity(),
             },
-            options: refs.options.map((option) => ({
-                choices: option.choices.map((choice) => ({
-                    isSelected: selectedChoices().get(option._id) === choice.choiceId
-                }))
-            }))
+            actionsEnabled,
+            options,
+            modifiers,
+            mediaGallery,
+            sku,
+            price,
+            pricePerUnit,
+            stockStatus,
+            strikethroughPrice,
         })
     };
 }
@@ -339,7 +407,7 @@ function ProductPageInteractive(
  */
 export const productPage = makeJayStackComponent<ProductPageContract>()
     .withProps<PageProps>()
-    .withServerContext(WixStoresContextMarker)
+    .withServices(WIX_STORES_SERVICE_MARKER)
     .withLoadParams(loadProductParams)
     .withSlowlyRender(renderSlowlyChanging)
     .withFastRender(renderFastChanging)

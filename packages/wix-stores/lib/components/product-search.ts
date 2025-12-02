@@ -6,6 +6,7 @@ import {
 import { createSignal, Props } from '@jay-framework/component';
 import { ProductSearchContract, ProductSearchRefs } from '../contracts/product-search.jay-contract';
 import { WixStoresContext, WixStoresContextMarker } from './wix-stores-context';
+import {WIX_STORES_SERVICE_MARKER} from "../stores-client/wix-stores-context";
 
 /**
  * Search sort options
@@ -332,7 +333,7 @@ function ProductSearchInteractive(
  */
 export const productSearch = makeJayStackComponent<ProductSearchContract>()
     .withProps<PageProps>()
-    .withServerContext(WixStoresContextMarker)
+    .withServices(WIX_STORES_SERVICE_MARKER)
     .withSlowlyRender(renderSlowlyChanging)
     .withFastRender(renderFastChanging)
     .withInteractive(ProductSearchInteractive);

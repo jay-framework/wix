@@ -6,6 +6,7 @@ import {
 import { createSignal, Props } from '@jay-framework/component';
 import { ProductCardContract, ProductCardRefs } from '../contracts/product-card.jay-contract';
 import { WixStoresContext, WixStoresContextMarker } from './wix-stores-context';
+import {WIX_STORES_SERVICE_MARKER} from "../stores-client/wix-stores-context";
 
 /**
  * Product Card Props
@@ -271,7 +272,7 @@ function ProductCardInteractive(
  */
 export const productCard = makeJayStackComponent<ProductCardContract>()
     .withProps<ProductCardProps>()
-    .withServerContext(WixStoresContextMarker)
+    .withServices(WIX_STORES_SERVICE_MARKER)
     .withSlowlyRender(renderSlowlyChanging)
     // @ts-expect-error - Type inference issue with carry-forward parameters in component builder
     .withFastRender(renderFastChanging)
