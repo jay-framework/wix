@@ -8,13 +8,16 @@
 import {
     onInit,
     onShutdown,
-    registerService,
-    getService,
 } from '@jay-framework/stack-server-runtime';
+import {
+    getWixClient
+} from '@jay-framework/wix-server-client'
+import {provideWixStoresService} from "@jay-framework/wix-stores";
 
 onInit(async () => {
     console.log('[Fake Shop] Initializing services...');
-
+    const wixClient = getWixClient();
+    provideWixStoresService(wixClient);
     console.log('[Fake Shop] Services initialized successfully!!!!');
 });
 

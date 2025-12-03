@@ -6,30 +6,12 @@
  * with server-side rendering support for optimal performance and SEO.
  */
 
-// Product Card Component
-export { 
-    productCard, 
-    type ProductCardProps 
-} from './product-card';
-
 // Product Page Component
 export { 
     productPage, 
     type ProductPageParams 
 } from './product-page';
 
-// Category Page Component
-export { 
-    categoryPage, 
-    type CategoryPageParams,
-    type SortOption 
-} from './category-page';
-
-// Product Search Component
-export { 
-    productSearch, 
-    type SearchSortOption 
-} from './product-search';
 
 // Re-export contract types for convenience
 export type {

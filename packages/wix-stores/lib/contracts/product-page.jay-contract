@@ -11,13 +11,13 @@ tags:
   - {tag: description, type: data, dataType: string, description: Product description}
   - {tag: brand, type: data, dataType: string, description: Brand name}
   - {tag: ribbon, type: data, dataType: string, description: "Ribbon text (e.g., \"New\", \"Sale\")"}
-  - {tag: productType, type: data, dataType: "enum (PHYSICAL | DIGITAL)", description: Product type }
+  - {tag: productType, type: variant, dataType: "enum (PHYSICAL | DIGITAL)", description: Product type }
 
   - {tag: sku, type: data, dataType: string, phase: fast+interactive, description: Product SKU, or chosen variant SKU}
   - {tag: price, type: data, dataType: string, phase: fast+interactive, description: The product or variant price}
   - {tag: strikethroughPrice, type: data, dataType: string, phase: fast+interactive, description: A Strikethrough product price for sales}
   - {tag: pricePerUnit, type: data, dataType: string, phase: fast+interactive, description: formatted price per unit, if used}
-  - {tag: stockStatus, type: data, dataType: "enum (OUT_OF_STOCK | IN_STOCK)", phase: fast+interactive, description: indicator if the product or current variant are in stock }
+  - {tag: stockStatus, type: variant, dataType: "enum (OUT_OF_STOCK | IN_STOCK)", phase: fast+interactive, description: indicator if the product or current variant are in stock }
 
   - tag: quantity
     type: sub-contract
@@ -39,7 +39,7 @@ tags:
     tags:
       - {tag: _id, type: data, dataType: string, description: "Option GUID (customization ID)"}
       - {tag: name, type: data, dataType: string, description: "Option name (e.g., \"Color\", \"Size\")"}
-      - {tag: optionRenderType, type: data, dataType: "enum (TEXT_CHOICES | COLOR_SWATCH_CHOICES)", description: How the option should be rendered}
+      - {tag: optionRenderType, type: variant, dataType: "enum (TEXT_CHOICES | COLOR_SWATCH_CHOICES)", description: How the option should be rendered}
       - {tag: textChoice, type: interactive, elementType: HTMLSelectElement, description: dropdown for text choice}
       - {tag: textChoiceSelection, type: data, dataType: string, phase: fast+interactive, description: the selected text option}
 
@@ -49,7 +49,7 @@ tags:
         description: Available choices for this option
         tags:
           - {tag: choiceId, type: data, dataType: string, description: Choice GUID}
-          - {tag: choiceType, type: data, dataType: "enum (CHOICE_TEXT | ONE_COLOR)", description: Type of choice}
+          - {tag: choiceType, type: variant, dataType: "enum (CHOICE_TEXT | ONE_COLOR)", description: Type of choice}
           - {tag: name, type: data, dataType: string, description: "Choice name (e.g., \"Red\", \"Large\")"}
           - {tag: colorCode, type: data, dataType: string, description: Color code in HEX format (for color choices)}
           - {tag: inStock, type: data, dataType: boolean, description: Whether at least one variant with this choice is in stock}
@@ -73,7 +73,7 @@ tags:
     tags:
       - {tag: _id, type: data, dataType: string, description: "modifier id"}
       - {tag: name, type: data, dataType: string, description: "modifier name (e.g., \"Color\", \"Size\")"}
-      - {tag: modifierType, type: [data, variant], dataType: "enum (TEXT_CHOICES | COLOR_SWATCH_CHOICES | FREE_TEXT)", description: What type of modifier to use?}
+      - {tag: modifierType, type: variant, dataType: "enum (TEXT_CHOICES | COLOR_SWATCH_CHOICES | FREE_TEXT)", description: What type of modifier to use?}
       - {tag: textModifier, type: interactive, elementType: HTMLSelectElement, description: dropdown for text modifier}
       - {tag: textModifierSelection, type: data, dataType: string, phase: fast+interactive, description: the selected text modifier}
       - {tag: textInput, type: interactive, elementType: HTMLInputElement | HTMLAreaElement, description: text input for free text}
@@ -86,7 +86,7 @@ tags:
         description: Available choices for this Modifier
         tags:
           - {tag: choiceId, type: data, dataType: string, description: Choice GUID}
-          - {tag: choiceType, type: data, dataType: "enum (CHOICE_TEXT | ONE_COLOR)", description: Type of choice}
+          - {tag: choiceType, type: variant, dataType: "enum (CHOICE_TEXT | ONE_COLOR)", description: Type of choice}
           - {tag: name, type: data, dataType: string, description: "Choice name (e.g., \"Red\", \"Large\")"}
           - {tag: colorCode, type: data, dataType: string, description: Color code in HEX format (for color choices)}
           - {tag: isSelected, type: variant, dataType: boolean, phase: fast+interactive, description: Whether this choice is currently selected (UI state)}

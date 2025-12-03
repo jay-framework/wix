@@ -5,7 +5,7 @@ import { loadConfig } from "./config-loader.js";
 export { loadConfig, type WixConfig } from "./config-loader.js";
 
 let instance: WixClient = undefined;
-export function getClient(): WixClient  {
+export function getWixClient(): WixClient  {
     if (!instance) {
         const config = loadConfig();
         instance = createClient({

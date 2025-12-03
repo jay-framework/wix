@@ -13,8 +13,7 @@
     ".": "./dist/index.js"
   },
   "scripts": {
-    "build": "npm run definitions && npm run build:js && npm run build:copy-contract",
-    "definitions": "jay-cli definitions lib",
+    "build": "npm run build:js && npm run build:copy-contract",
     "build:js": "vite build",
     "build:copy-contract": "# cp lib/*.jay-contract* dist/",
     "build:types": "tsup lib/index.ts --dts-only --format esm",
@@ -24,20 +23,20 @@
     "test": ":"
   },
   "dependencies": {
-    "@jay-framework/component": "^0.6.10",
-    "@jay-framework/fullstack-component": "^0.6.10",
-    "@jay-framework/reactive": "^0.6.10",
-    "@jay-framework/runtime": "^0.6.10",
-    "@jay-framework/secure": "^0.6.10",
-    "@wix/sdk": "^1.17.1",
+    "@jay-framework/component": "^0.9.0",
+    "@jay-framework/fullstack-component": "^0.9.0",
+    "@jay-framework/reactive": "^0.9.0",
+    "@jay-framework/runtime": "^0.9.0",
+    "@jay-framework/secure": "^0.9.0",
+    "@wix/sdk": "^1.17.4",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",
     "@babel/preset-env": "^7.23.8",
     "@babel/preset-typescript": "^7.23.3",
-    "@jay-framework/jay-cli": "^0.6.10",
-    "@jay-framework/vite-plugin": "^0.6.10",
+    "@jay-framework/jay-cli": "^0.9.0",
+    "@jay-framework/vite-plugin": "^0.9.0",
     "@types/js-yaml": "^4.0.9",
     "nodemon": "^3.0.3",
     "rimraf": "^5.0.5",

@@ -2,7 +2,7 @@ import {
     makeJayStackComponent,
     notFound,
     PageProps,
-    partialRender,
+    partialRender, Signals,
     SlowlyRenderResult,
     UrlParams
 } from '@jay-framework/fullstack-component';
@@ -20,7 +20,7 @@ import {
     SeoDatumOfProductPageViewState,
     StockStatus
 } from '../contracts/product-page.jay-contract';
-import {WixStoresContext, WIX_STORES_SERVICE_MARKER} from '../stores-client/wix-stores-context';
+import {WixStoresService, WIX_STORES_SERVICE_MARKER} from '../stores-client/wix-stores-service';
 import {
     ChoiceTypeWithLiterals,
     ConnectedModifier,
@@ -61,7 +61,7 @@ interface ProductSlowCarryForward {
  * Data carried forward from fast rendering to interactive phase
  */
 interface ProductFastCarryForward {
-    defaultVS: ProductPageFastViewState
+
 }
 
 /**
@@ -69,7 +69,7 @@ interface ProductFastCarryForward {
  * This function yields all product slugs to generate pages for.
  */
 async function* loadProductParams(
-    [wixStores]: [WixStoresContext]
+    [wixStores]: [WixStoresService]
 ): AsyncIterable<ProductPageParams[]> {
     try {
         const { items } = await wixStores.products.queryProducts().find();
@@ -223,7 +223,7 @@ function mapModifiersToFastVS(modifiers: ConnectedModifier[]): ProductPageFastVi
  */
 async function renderSlowlyChanging(
     props: PageProps & ProductPageParams,
-    wixStores: WixStoresContext
+    wixStores: WixStoresService
 ): Promise<SlowlyRenderResult<ProductPageSlowViewState, ProductSlowCarryForward>> {
     try {
         // Query product by slug with required fields
@@ -277,7 +277,7 @@ async function renderSlowlyChanging(
 async function renderFastChanging(
     props: PageProps & ProductPageParams,
     carryForward: ProductSlowCarryForward,
-    wixStores: WixStoresContext
+    wixStores: WixStoresService
 ) {
     const fastVS: ProductPageFastViewState = {
         actionsEnabled: false,
@@ -294,9 +294,7 @@ async function renderFastChanging(
 
     return partialRender<ProductPageFastViewState, ProductFastCarryForward>(
         fastVS,
-        {
-            defaultVS: fastVS
-        }
+        {}
     );
 }
 
@@ -309,19 +307,23 @@ async function renderFastChanging(
  */
 function ProductPageInteractive(
     props: Props<PageProps & ProductPageParams & ProductFastCarryForward>,
-    refs: ProductPageRefs
+    refs: ProductPageRefs,
+    fcs: Signals<ProductPageFastViewState>
 ) {
 
-    const [quantity, setQuantity] = createSignal(props.defaultVS().quantity.quantity);
-    const [actionsEnabled, setActionsEnabled] = createSignal(props.defaultVS().actionsEnabled);
-    const [options, setOptions] = createSignal(props.defaultVS().options);
-    const [modifiers, setModifiers] = createSignal(props.defaultVS().modifiers);
-    const [mediaGallery, setMediaGallery] = createSignal(props.defaultVS().mediaGallery);
-    const [sku, setSKU] = createSignal(props.defaultVS().sku);
-    const [price, setPrice] = createSignal(props.defaultVS().price);
-    const [pricePerUnit, setPricePerUnit] = createSignal(props.defaultVS().pricePerUnit);
-    const [stockStatus, setStockStatus] = createSignal(props.defaultVS().stockStatus);
-    const [strikethroughPrice, setStrikethroughPrice] = createSignal(props.defaultVS().strikethroughPrice);
+    const [quantity, setQuantity] = createSignal(fcs.quantity[0]().quantity)
+
+    const {
+        actionsEnabled: [actionsEnabled, setActionsEnabled],
+        options: [options, setOptions],
+        modifiers: [modifiers, setModifiers],
+        mediaGallery: [mediaGallery, setMediaGallery],
+        sku: [sku, setSKU],
+        price: [price, setPrice],
+        pricePerUnit: [pricePerUnit, setPricePerUnit],
+        stockStatus: [stockStatus, setStockStatus],
+        strikethroughPrice: [strikethroughPrice, setStrikethroughPrice]
+    } = fcs;
 
     const [isAddingToCart, setIsAddingToCart] = createSignal(false);
     const [selectedChoices, setSelectedChoices] = createSignal<Map<string, string>>(new Map());

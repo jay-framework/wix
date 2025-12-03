@@ -24,20 +24,20 @@
     "test": ":"
   },
   "dependencies": {
-    "@jay-framework/component": "^0.6.10",
-    "@jay-framework/fullstack-component": "^0.6.10",
-    "@jay-framework/reactive": "^0.6.10",
-    "@jay-framework/runtime": "^0.6.10",
-    "@jay-framework/secure": "^0.6.10",
+    "@jay-framework/component": "^0.9.0",
+    "@jay-framework/fullstack-component": "^0.9.0",
+    "@jay-framework/reactive": "^0.9.0",
+    "@jay-framework/runtime": "^0.9.0",
+    "@jay-framework/secure": "^0.9.0",
     "@jay-framework/wix-server-client": "^1.0.0",
-    "@wix/data": "^1.0.316"
+    "@wix/data": "^1.0.341"
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",
     "@babel/preset-env": "^7.23.8",
     "@babel/preset-typescript": "^7.23.3",
-    "@jay-framework/jay-cli": "^0.6.10",
-    "@jay-framework/vite-plugin": "^0.6.10",
+    "@jay-framework/jay-cli": "^0.9.0",
+    "@jay-framework/vite-plugin": "^0.9.0",
     "nodemon": "^3.0.3",
     "rimraf": "^5.0.5",
     "tslib": "^2.6.2",
