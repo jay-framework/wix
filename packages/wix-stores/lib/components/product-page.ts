@@ -2,7 +2,8 @@ import {
     makeJayStackComponent,
     notFound,
     PageProps,
-    partialRender, Signals,
+    RenderPipeline,
+    Signals,
     SlowlyRenderResult,
     UrlParams
 } from '@jay-framework/fullstack-component';
@@ -94,15 +95,15 @@ function mapInfoSections(infoSections: InfoSection[]): Array<InfoSectionOfProduc
 }
 function mapSeoData(seoData: SeoSchema): SeoDatumOfProductPageViewState {
     return ({
-        tags: seoData.tags.map(tag => ({
+        tags: seoData?.tags?.map(tag => ({
             type: tag.type,
             props: Object.entries(tag.props).map(([key, value]) => ({key, value})),
             meta: Object.entries(tag.meta).map(([key, value]) => ({key, value})),
             children: tag.children
         })),
         settings: {
-            preventAutoRedirect: seoData.settings?.preventAutoRedirect || false,
-            keywords: seoData.settings.keywords.map(keyword => ({
+            preventAutoRedirect: seoData?.settings?.preventAutoRedirect || false,
+            keywords: seoData?.settings?.keywords.map(keyword => ({
                 isMain: keyword.isMain,
                 origin: keyword.origin,
                 term: keyword.term,
@@ -225,46 +226,47 @@ async function renderSlowlyChanging(
     props: PageProps & ProductPageParams,
     wixStores: WixStoresService
 ): Promise<SlowlyRenderResult<ProductPageSlowViewState, ProductSlowCarryForward>> {
-    try {
-        // Query product by slug with required fields
-        const { product } = await wixStores.products
-            .getProductBySlug(props.slug);
-        const { _id, name, plainDescription, options, modifiers, actualPriceRange, compareAtPriceRange, currency, media, productType, handle,
-            visible, visibleInPos, brand, ribbon, mainCategoryId, breadcrumbsInfo,
-            allCategoriesInfo, directCategoriesInfo, infoSections, seoData, physicalProperties, taxGroupId,
-            variantSummary, _createdDate, _updatedDate, revision} = product
 
-        return partialRender<ProductPageSlowViewState, ProductSlowCarryForward>(
-            {
-                id: _id,
-                productName: name || '',
-                description: plainDescription,
-                brand: brand.name || '',
-                ribbon: ribbon.name || '',
-                productType: mapProductType(productType),
-                options: mapOptionsToSlowVS(options),
-                infoSections: mapInfoSections(infoSections),
-                modifiers: mapModifiersToSlowVS(modifiers),
-                seoData: mapSeoData(seoData),
-            },
-            {
-                productId: product._id || '',
-                mediaGallery: mapMedia(media),
-                options: mapOptionsToFastVS(options),
-                modifiers: mapModifiersToFastVS(modifiers),
-                sku: 'N/A not in API',
-                price: product.actualPriceRange?.minValue?.formattedAmount || '',
-                strikethroughPrice:
-                    product.actualPriceRange?.minValue?.amount !== product.compareAtPriceRange?.minValue?.amount ?
-                    product.compareAtPriceRange?.minValue?.formattedAmount || '' : '',
-                pricePerUnit: product.physicalProperties?.pricePerUnitRange?.minValue?.description,
-                stockStatus: (product.inventory?.availabilityStatus === 'IN_STOCK'? StockStatus.IN_STOCK : StockStatus.OUT_OF_STOCK),
-            }
-        );
-    } catch (error) {
-        console.error('Failed to render product page (slow):', error);
-        return notFound();
-    }
+    const Pipeline = RenderPipeline.for<ProductPageSlowViewState, ProductSlowCarryForward>()
+
+    return Pipeline
+        .try(() => wixStores.products.getProductBySlug(props.slug))
+        .recover(error => {
+            console.log('product page error', error)
+            return Pipeline.clientError(404, 'not found')
+        })
+        .toPhaseOutput(getProductResponse => {
+            const product = getProductResponse.product;
+            const { _id, name, plainDescription, options, modifiers, actualPriceRange, compareAtPriceRange, media, productType,
+                brand, ribbon, infoSections, seoData, physicalProperties, inventory} = product
+            return ({
+                viewState: {
+                    id: _id,
+                    productName: name || '',
+                    description: plainDescription,
+                    brand: brand?.name || '',
+                    ribbon: ribbon?.name || '',
+                    productType: mapProductType(productType),
+                    options: mapOptionsToSlowVS(options),
+                    infoSections: mapInfoSections(infoSections),
+                    modifiers: mapModifiersToSlowVS(modifiers),
+                    seoData: mapSeoData(seoData),
+                },
+                carryForward: {
+                    productId: _id,
+                    mediaGallery: mapMedia(media),
+                    options: mapOptionsToFastVS(options),
+                    modifiers: mapModifiersToFastVS(modifiers),
+                    sku: 'N/A not in API',
+                    price: actualPriceRange?.minValue?.formattedAmount || '',
+                    strikethroughPrice:
+                        actualPriceRange?.minValue?.amount !== product.compareAtPriceRange?.minValue?.amount ?
+                            compareAtPriceRange?.minValue?.formattedAmount || '' : '',
+                    pricePerUnit: physicalProperties?.pricePerUnitRange?.minValue?.description,
+                    stockStatus: (inventory?.availabilityStatus === 'IN_STOCK' ? StockStatus.IN_STOCK : StockStatus.OUT_OF_STOCK),
+                }
+            });
+        })
 }
 
 /**
@@ -279,23 +281,24 @@ async function renderFastChanging(
     carryForward: ProductSlowCarryForward,
     wixStores: WixStoresService
 ) {
-    const fastVS: ProductPageFastViewState = {
-        actionsEnabled: false,
-        options: carryForward.options,
-        modifiers: carryForward.modifiers,
-        mediaGallery: carryForward.mediaGallery,
-        sku: carryForward.sku,
-        price: carryForward.price,
-        pricePerUnit: carryForward.pricePerUnit,
-        stockStatus: carryForward.stockStatus,
-        strikethroughPrice: carryForward.strikethroughPrice,
-        quantity: { quantity: 1}
-    }
+    const Pipeline = RenderPipeline.for<ProductPageFastViewState, ProductFastCarryForward>()
 
-    return partialRender<ProductPageFastViewState, ProductFastCarryForward>(
-        fastVS,
-        {}
-    );
+    return Pipeline.ok({
+            actionsEnabled: false,
+            options: carryForward.options,
+            modifiers: carryForward.modifiers,
+            mediaGallery: carryForward.mediaGallery,
+            sku: carryForward.sku,
+            price: carryForward.price,
+            pricePerUnit: carryForward.pricePerUnit,
+            stockStatus: carryForward.stockStatus,
+            strikethroughPrice: carryForward.strikethroughPrice,
+            quantity: { quantity: 1}
+        }
+    ).toPhaseOutput(viewState => ({
+        viewState,
+        carryForward: {}
+    }))
 }
 
 /**
