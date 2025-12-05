@@ -11,6 +11,7 @@
   ],
   "exports": {
     ".": "./dist/index.js",
+    "./client": "./dist/index.client.js",
     "./product-page.jay-contract": "./dist/product-page.jay-contract"
   },
   "scripts": {
