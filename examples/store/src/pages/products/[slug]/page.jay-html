@@ -4,7 +4,7 @@
               contract="@jay-framework/wix-stores/product-page.jay-contract"
               src="@jay-framework/wix-stores"
               name="productPage"
-              key="product-page"
+              key="productPage"
       ></script>
     <script type="application/jay-data">
       data:
