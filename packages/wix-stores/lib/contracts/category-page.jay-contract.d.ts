@@ -106,7 +106,7 @@ export type CategoryPageSlowViewState = Pick<CategoryPageViewState, 'id' | 'name
     media: {
     mainMedia: CategoryPageViewState['media']['mainMedia'];
     items: Array<Pick<CategoryPageViewState['media']['items'][number], 'id' | 'url' | 'altText' | 'title' | 'mediaType'> & {
-    thumbnail: CategoryPageViewState['media']['items']['thumbnail'];
+    thumbnail: CategoryPageViewState['media']['items'][number]['thumbnail'];
 }>;
 };
     breadcrumbs: Array<CategoryPageViewState['breadcrumbs'][number]>;

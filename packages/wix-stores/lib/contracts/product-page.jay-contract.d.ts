@@ -133,16 +133,16 @@ export interface ProductPageViewState {
 
 export type ProductPageSlowViewState = Pick<ProductPageViewState, 'id' | 'productName' | 'description' | 'brand' | 'ribbon' | 'productType'> & {
     options: Array<Pick<ProductPageViewState['options'][number], 'id' | 'name' | 'optionRenderType'> & {
-    choices: Array<Pick<ProductPageViewState['options']['choices'][number], 'choiceId' | 'choiceType' | 'name' | 'colorCode' | 'inStock'>>;
+    choices: Array<Pick<ProductPageViewState['options'][number]['choices'][number], 'choiceId' | 'choiceType' | 'name' | 'colorCode' | 'inStock'>>;
 }>;
     infoSections: Array<ProductPageViewState['infoSections'][number]>;
     modifiers: Array<Pick<ProductPageViewState['modifiers'][number], 'id' | 'name' | 'modifierType' | 'textInputLength' | 'textInputRequired'> & {
-    choices: Array<Pick<ProductPageViewState['modifiers']['choices'][number], 'choiceId' | 'choiceType' | 'name' | 'colorCode'>>;
+    choices: Array<Pick<ProductPageViewState['modifiers'][number]['choices'][number], 'choiceId' | 'choiceType' | 'name' | 'colorCode'>>;
 }>;
     seoData: {
     tags: Array<Pick<ProductPageViewState['seoData']['tags'][number], 'type' | 'children'> & {
-    props: Array<ProductPageViewState['seoData']['tags']['props'][number]>;
-    meta: Array<ProductPageViewState['seoData']['tags']['meta'][number]>;
+    props: Array<ProductPageViewState['seoData']['tags'][number]['props'][number]>;
+    meta: Array<ProductPageViewState['seoData']['tags'][number]['meta'][number]>;
 }>;
     settings: Pick<ProductPageViewState['seoData']['settings'], 'preventAutoRedirect'> & {
     keywords: Array<ProductPageViewState['seoData']['settings']['keywords'][number]>;
@@ -153,20 +153,20 @@ export type ProductPageSlowViewState = Pick<ProductPageViewState, 'id' | 'produc
 export type ProductPageFastViewState = Pick<ProductPageViewState, 'mediaGallery' | 'sku' | 'price' | 'strikethroughPrice' | 'pricePerUnit' | 'stockStatus' | 'actionsEnabled'> & {
     quantity: ProductPageViewState['quantity'];
     options: Array<Pick<ProductPageViewState['options'][number], 'textChoiceSelection'> & {
-    choices: Array<Pick<ProductPageViewState['options']['choices'][number], 'isSelected'>>;
+    choices: Array<Pick<ProductPageViewState['options'][number]['choices'][number], 'isSelected'>>;
 }>;
     modifiers: Array<Pick<ProductPageViewState['modifiers'][number], 'textModifierSelection'> & {
-    choices: Array<Pick<ProductPageViewState['modifiers']['choices'][number], 'isSelected'>>;
+    choices: Array<Pick<ProductPageViewState['modifiers'][number]['choices'][number], 'isSelected'>>;
 }>;
 };
 
 export type ProductPageInteractiveViewState = Pick<ProductPageViewState, 'mediaGallery' | 'sku' | 'price' | 'strikethroughPrice' | 'pricePerUnit' | 'stockStatus' | 'actionsEnabled'> & {
     quantity: ProductPageViewState['quantity'];
     options: Array<Pick<ProductPageViewState['options'][number], 'textChoiceSelection'> & {
-    choices: Array<Pick<ProductPageViewState['options']['choices'][number], 'isSelected'>>;
+    choices: Array<Pick<ProductPageViewState['options'][number]['choices'][number], 'isSelected'>>;
 }>;
     modifiers: Array<Pick<ProductPageViewState['modifiers'][number], 'textModifierSelection'> & {
-    choices: Array<Pick<ProductPageViewState['modifiers']['choices'][number], 'isSelected'>>;
+    choices: Array<Pick<ProductPageViewState['modifiers'][number]['choices'][number], 'isSelected'>>;
 }>;
 };
 
