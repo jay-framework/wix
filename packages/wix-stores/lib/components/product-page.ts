@@ -61,9 +61,7 @@ interface ProductSlowCarryForward {
 /**
  * Data carried forward from fast rendering to interactive phase
  */
-interface ProductFastCarryForward {
-
-}
+type ProductFastCarryForward = {}
 
 /**
  * Load product slugs for static site generation
@@ -311,10 +309,10 @@ async function renderFastChanging(
 function ProductPageInteractive(
     props: Props<PageProps & ProductPageParams & ProductFastCarryForward>,
     refs: ProductPageRefs,
-    fcs: Signals<ProductPageFastViewState>
+    fastViewState: Signals<ProductPageFastViewState>
 ) {
 
-    const [quantity, setQuantity] = createSignal(fcs.quantity[0]().quantity)
+    const [quantity, setQuantity] = createSignal(fastViewState.quantity[0]().quantity)
 
     const {
         actionsEnabled: [actionsEnabled, setActionsEnabled],
@@ -323,10 +321,11 @@ function ProductPageInteractive(
         mediaGallery: [mediaGallery, setMediaGallery],
         sku: [sku, setSKU],
         price: [price, setPrice],
-        pricePerUnit: [pricePerUnit, setPricePerUnit],
         stockStatus: [stockStatus, setStockStatus],
         strikethroughPrice: [strikethroughPrice, setStrikethroughPrice]
-    } = fcs;
+    } = fastViewState;
+
+    const pricePerUnit = "5";
 
     const [isAddingToCart, setIsAddingToCart] = createSignal(false);
     const [selectedChoices, setSelectedChoices] = createSignal<Map<string, string>>(new Map());
