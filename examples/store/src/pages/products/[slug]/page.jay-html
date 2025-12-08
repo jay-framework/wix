@@ -1,18 +1,689 @@
 <html>
   <head>
-      <script type="application/jay-headless"
-              contract="@jay-framework/wix-stores/product-page.jay-contract"
-              src="@jay-framework/wix-stores"
-              name="productPage"
-              key="productPage"
-      ></script>
+    <script type="application/jay-headless"
+            contract="@jay-framework/wix-stores/product-page.jay-contract"
+            src="@jay-framework/wix-stores"
+            name="productPage"
+            key="productPage"
+    ></script>
     <script type="application/jay-data">
       data:
     </script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+        background: linear-gradient(135deg, #fafafa 0%, #f0f4f8 100%);
+        min-height: 100vh;
+        color: #1a1a2e;
+      }
+
+      .product-page {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 48px 32px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 64px;
+        align-items: start;
+      }
+
+      /* Gallery Section */
+      .gallery-section {
+        position: sticky;
+        top: 32px;
+      }
+
+      .main-image-container {
+        aspect-ratio: 1;
+        border-radius: 24px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+      }
+
+      .main-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+      }
+
+      .main-image:hover {
+        transform: scale(1.03);
+      }
+
+      .thumbnail-strip {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        padding: 8px 0;
+      }
+
+      .thumbnail {
+        width: 80px;
+        height: 80px;
+        border-radius: 12px;
+        overflow: hidden;
+        cursor: pointer;
+        border: 3px solid transparent;
+        transition: all 0.25s ease;
+        flex-shrink: 0;
+        background: #fff;
+      }
+
+      .thumbnail:hover {
+        border-color: #667eea;
+        transform: translateY(-2px);
+      }
+
+      .thumbnail.selected {
+        border-color: #1a1a2e;
+        box-shadow: 0 4px 12px rgba(26,26,46,0.2);
+      }
+
+      .thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Details Section */
+      .details-section {
+        padding-top: 16px;
+      }
+
+      .ribbon {
+        display: inline-block;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 16px;
+      }
+
+      .brand {
+        font-size: 14px;
+        color: #667eea;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 8px;
+      }
+
+      .product-name {
+        font-size: 42px;
+        font-weight: 700;
+        line-height: 1.15;
+        margin-bottom: 16px;
+        background: linear-gradient(135deg, #1a1a2e 0%, #3d3d5c 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .sku {
+        font-size: 13px;
+        color: #888;
+        margin-bottom: 24px;
+      }
+
+      .price-block {
+        display: flex;
+        align-items: baseline;
+        gap: 16px;
+        margin-bottom: 8px;
+      }
+
+      .price {
+        font-size: 36px;
+        font-weight: 700;
+        color: #1a1a2e;
+      }
+
+      .strikethrough-price {
+        font-size: 22px;
+        color: #999;
+        text-decoration: line-through;
+      }
+
+      .price-per-unit {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 24px;
+      }
+
+      .stock-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 32px;
+      }
+
+      .stock-badge.in-stock {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+
+      .stock-badge.out-of-stock {
+        background: #ffebee;
+        color: #c62828;
+      }
+
+      .stock-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+
+      .in-stock .stock-dot {
+        background: #2e7d32;
+      }
+
+      .out-of-stock .stock-dot {
+        background: #c62828;
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+
+      .description {
+        font-size: 16px;
+        line-height: 1.75;
+        color: #555;
+        margin-bottom: 32px;
+        padding: 24px;
+        background: rgba(255,255,255,0.7);
+        border-radius: 16px;
+        border-left: 4px solid #667eea;
+      }
+
+      /* Options Section */
+      .options-section {
+        margin-bottom: 32px;
+      }
+
+      .option-group {
+        margin-bottom: 24px;
+      }
+
+      .option-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1a1a2e;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .option-choices {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .choice-button {
+        padding: 12px 24px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        background: #fff;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: #1a1a2e;
+      }
+
+      .choice-button:hover {
+        border-color: #667eea;
+        background: #f8f9ff;
+      }
+
+      .choice-button.selected {
+        border-color: #1a1a2e;
+        background: #1a1a2e;
+        color: #fff;
+      }
+
+      .choice-button.out-of-stock {
+        opacity: 0.5;
+        text-decoration: line-through;
+      }
+
+      .color-choice {
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        border-radius: 50%;
+        position: relative;
+      }
+
+      .color-choice.selected::after {
+        content: '✓';
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 18px;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      }
+
+      .text-select {
+        width: 100%;
+        padding: 14px 18px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 15px;
+        background: #fff;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+      }
+
+      .text-select:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      /* Modifiers */
+      .modifier-group {
+        margin-bottom: 24px;
+      }
+
+      .modifier-input {
+        width: 100%;
+        padding: 14px 18px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 15px;
+        transition: border-color 0.2s;
+      }
+
+      .modifier-input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      /* Quantity */
+      .quantity-section {
+        margin-bottom: 32px;
+      }
+
+      .quantity-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1a1a2e;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .quantity-controls {
+        display: inline-flex;
+        align-items: center;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+      }
+
+      .quantity-btn {
+        width: 48px;
+        height: 48px;
+        border: none;
+        background: transparent;
+        font-size: 20px;
+        cursor: pointer;
+        transition: background 0.2s;
+        color: #1a1a2e;
+      }
+
+      .quantity-btn:hover {
+        background: #f5f5f5;
+      }
+
+      .quantity-btn:active {
+        background: #e0e0e0;
+      }
+
+      .quantity-input {
+        width: 64px;
+        height: 48px;
+        border: none;
+        text-align: center;
+        font-size: 18px;
+        font-weight: 600;
+        border-left: 2px solid #e0e0e0;
+        border-right: 2px solid #e0e0e0;
+      }
+
+      .quantity-input:focus {
+        outline: none;
+      }
+
+      /* Action Buttons */
+      .action-buttons {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 40px;
+      }
+
+      .add-to-cart-btn {
+        flex: 1;
+        padding: 18px 32px;
+        border: none;
+        border-radius: 14px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .add-to-cart-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 32px rgba(102,126,234,0.4);
+      }
+
+      .add-to-cart-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+
+      .buy-now-btn {
+        flex: 1;
+        padding: 18px 32px;
+        border: 2px solid #1a1a2e;
+        border-radius: 14px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: transparent;
+        color: #1a1a2e;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .buy-now-btn:hover:not(:disabled) {
+        background: #1a1a2e;
+        color: #fff;
+      }
+
+      .buy-now-btn:disabled {
+        border-color: #ccc;
+        color: #ccc;
+        cursor: not-allowed;
+      }
+
+      /* Info Sections */
+      .info-sections {
+        border-top: 1px solid #e0e0e0;
+        padding-top: 32px;
+      }
+
+      .info-section {
+        margin-bottom: 24px;
+      }
+
+      .info-section-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .info-section-title::before {
+        content: '';
+        width: 4px;
+        height: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 2px;
+      }
+
+      .info-section-content {
+        font-size: 15px;
+        line-height: 1.7;
+        color: #555;
+        padding-left: 12px;
+      }
+
+      /* Product Type Badge */
+      .product-type-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 16px;
+      }
+
+      .product-type-badge.physical {
+        background: #e3f2fd;
+        color: #1565c0;
+      }
+
+      .product-type-badge.digital {
+        background: #f3e5f5;
+        color: #7b1fa2;
+      }
+
+      /* Responsive */
+      @media (max-width: 1024px) {
+        .product-page {
+          grid-template-columns: 1fr;
+          gap: 40px;
+          padding: 32px 20px;
+        }
+
+        .gallery-section {
+          position: static;
+        }
+
+        .product-name {
+          font-size: 32px;
+        }
+
+        .price {
+          font-size: 28px;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .action-buttons {
+          flex-direction: column;
+        }
+
+        .thumbnail-strip {
+          justify-content: flex-start;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div>
-      products
+    <div class="product-page">
+      <!-- Gallery Section -->
+      <div class="gallery-section">
+        <div class="main-image-container">
+          <img class="main-image" src="{productPage.mediaGallery.selectedMedia.url}" alt="{productPage.productName}" />
+        </div>
+        <div class="thumbnail-strip">
+          <div class="thumbnail {selected == selected ? selected}"
+               forEach="productPage.mediaGallery.availableMedia" 
+               trackBy="media.url"
+               ref="productPage.mediaGallery.availableMedia.selected">
+            <img src="{media.thumbnail_50x50}" alt="Product thumbnail" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Details Section -->
+      <div class="details-section">
+        <!-- Ribbon -->
+        <div class="ribbon" if="productPage.ribbon">{productPage.ribbon}</div>
+
+        <!-- Product Type -->
+        <div class="product-type-badge physical" if="productPage.productType == PHYSICAL">
+          📦 Physical Product
+        </div>
+        <div class="product-type-badge digital" if="productPage.productType == DIGITAL">
+          ⚡ Digital Product
+        </div>
+
+        <!-- Brand -->
+        <div class="brand" if="productPage.brand">{productPage.brand}</div>
+
+        <!-- Product Name -->
+        <h1 class="product-name">{productPage.productName}</h1>
+
+        <!-- SKU -->
+        <div class="sku" if="productPage.sku">SKU: {productPage.sku}</div>
+
+        <!-- Price -->
+        <div class="price-block">
+          <span class="price">{productPage.price}</span>
+          <span class="strikethrough-price" if="productPage.strikethroughPrice">{productPage.strikethroughPrice}</span>
+        </div>
+        <div class="price-per-unit" if="productPage.pricePerUnit">{productPage.pricePerUnit}</div>
+
+        <!-- Stock Status -->
+        <div class="stock-badge in-stock" if="productPage.stockStatus == IN_STOCK">
+          <span class="stock-dot"></span>
+          In Stock
+        </div>
+        <div class="stock-badge out-of-stock" if="productPage.stockStatus == OUT_OF_STOCK">
+          <span class="stock-dot"></span>
+          Out of Stock
+        </div>
+
+        <!-- Description -->
+        <div class="description" if="productPage.description">{productPage.description}</div>
+
+        <!-- Options (Variants like Color, Size) -->
+        <div class="options-section" if="productPage.options">
+          <div class="option-group" forEach="productPage.options" trackBy="_id">
+            <div class="option-label">{name}</div>
+            
+            <!-- Text Choices as Dropdown -->
+            <select class="text-select" 
+                    if="optionRenderType == TEXT_CHOICES"
+                    ref="productPage.options.textChoice">
+              <option forEach="choices" trackBy="choiceId" value="{choiceId}">{name}</option>
+            </select>
+
+            <!-- Color Swatch Choices -->
+            <div class="option-choices" if="optionRenderType == COLOR_SWATCH_CHOICES">
+              <button class="choice-button color-choice {isSelected ? selected} {!inStock ? out-of-stock}"
+                      style="background-color: {colorCode}"
+                      forEach="choices" 
+                      trackBy="choiceId"
+                      ref="productPage.options.choices.choiceButton"
+                      title="{name}">
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modifiers (Customizations) -->
+        <div class="options-section" if="productPage.modifiers">
+          <div class="modifier-group" forEach="productPage.modifiers" trackBy="_id">
+            <div class="option-label">{name}</div>
+            
+            <!-- Text Choices Dropdown -->
+            <select class="text-select" 
+                    if="modifierType == TEXT_CHOICES"
+                    ref="productPage.modifiers.textModifier">
+              <option forEach="choices" trackBy="choiceId" value="{choiceId}">{name}</option>
+            </select>
+
+            <!-- Color Swatch Choices -->
+            <div class="option-choices" if="modifierType == COLOR_SWATCH_CHOICES">
+              <button class="choice-button color-choice {isSelected ? selected}"
+                      style="background-color: {colorCode}"
+                      forEach="choices" 
+                      trackBy="choiceId"
+                      ref="productPage.modifiers.choices.choiceButton"
+                      title="{name}">
+              </button>
+            </div>
+
+            <!-- Free Text Input -->
+            <input class="modifier-input" 
+                   type="text" 
+                   if="modifierType == FREE_TEXT"
+                   ref="productPage.modifiers.textInput"
+                   placeholder="Enter your custom text"
+                   maxlength="{textInputLength}" />
+          </div>
+        </div>
+
+        <!-- Quantity -->
+        <div class="quantity-section">
+          <div class="quantity-label">Quantity</div>
+          <div class="quantity-controls">
+            <button class="quantity-btn" ref="productPage.quantity.decrementButton">−</button>
+            <input class="quantity-input" 
+                   type="number" 
+                   value="{productPage.quantity.quantity}" 
+                   ref="productPage.quantity.quantity"
+                   min="1" />
+            <button class="quantity-btn" ref="productPage.quantity.incrementButton">+</button>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button class="add-to-cart-btn" 
+                  ref="productPage.addToCartButton"
+                  disabled="{!productPage.actionsEnabled}">
+            Add to Cart
+          </button>
+          <button class="buy-now-btn" 
+                  ref="productPage.buyNowButton"
+                  disabled="{!productPage.actionsEnabled}">
+            Buy Now
+          </button>
+        </div>
+
+        <!-- Info Sections -->
+        <div class="info-sections" if="productPage.infoSections">
+          <div class="info-section" forEach="productPage.infoSections" trackBy="_id">
+            <div class="info-section-title">{title}</div>
+            <div class="info-section-content">{plainDescription}</div>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
 </html>
