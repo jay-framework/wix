@@ -43,6 +43,7 @@ export interface PaginationOfProductSearchViewState {
 }
 
 export interface SuggestionOfProductSearchViewState {
+  suggestionId: string,
   suggestionText: string
 }
 
@@ -78,7 +79,7 @@ export type ProductSearchFastViewState = Pick<ProductSearchViewState, 'searchExp
     filters: Pick<ProductSearchViewState['filters'], 'inStockOnly'> & {
     priceRange: ProductSearchViewState['filters']['priceRange'];
     categoryFilter: {
-    categories: Array<Pick<ProductSearchViewState['filters']['categoryFilter']['categories'][number], 'isSelected'>>;
+    categories: Array<Pick<ProductSearchViewState['filters']['categoryFilter']['categories'][number], 'categoryId' | 'isSelected'>>;
 };
 };
 };
@@ -87,7 +88,7 @@ export type ProductSearchInteractiveViewState = Pick<ProductSearchViewState, 'se
     filters: Pick<ProductSearchViewState['filters'], 'inStockOnly'> & {
     priceRange: ProductSearchViewState['filters']['priceRange'];
     categoryFilter: {
-    categories: Array<Pick<ProductSearchViewState['filters']['categoryFilter']['categories'][number], 'isSelected'>>;
+    categories: Array<Pick<ProductSearchViewState['filters']['categoryFilter']['categories'][number], 'categoryId' | 'isSelected'>>;
 };
 };
 };

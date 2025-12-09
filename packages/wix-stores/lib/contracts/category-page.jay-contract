@@ -64,6 +64,7 @@ tags:
       - tag: items
         type: sub-contract
         repeated: true
+        trackBy: _id
         description: All media items
         tags:
           - tag: _id
@@ -119,6 +120,7 @@ tags:
   - tag: breadcrumbs
     type: sub-contract
     repeated: true
+    trackBy: categoryId
     description: Breadcrumb navigation path
     tags:
       - tag: categoryId
@@ -145,6 +147,7 @@ tags:
   - tag: products
     type: sub-contract
     repeated: true
+    trackBy: _id
     async: true
     description: Products in this category (loaded asynchronously)
     link: ./product-card
@@ -182,6 +185,7 @@ tags:
       - tag: pageNumbers
         type: sub-contract
         repeated: true
+        trackBy: pageNumber
         description: Individual page number buttons
         tags:
           - tag: pageNumber

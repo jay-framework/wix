@@ -8,8 +8,11 @@ tags:
   - tag: availableMedia
     type: sub-contract
     repeated: true
+    trackBy: mediaId
     description: Available media for display or use as thumbnails
     tags:
+      - tag: mediaId
+        type: data
       - tag: media
         type: sub-contract
         link: ./media

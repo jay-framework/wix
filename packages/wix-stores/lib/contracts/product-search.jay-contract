@@ -43,6 +43,7 @@ tags:
     type: sub-contract
     repeated: true
     async: true
+    trackBy: _id
     description: Product search results (loaded asynchronously)
     link: ./product-card
     
@@ -92,6 +93,7 @@ tags:
           - tag: categories
             type: sub-contract
             repeated: true
+            trackBy: categoryId
             description: Available categories for filtering
             tags:
               - tag: categoryId
@@ -192,8 +194,14 @@ tags:
   - tag: suggestions
     type: sub-contract
     repeated: true
+    trackBy: suggestionId
     description: Search term suggestions
     tags:
+      - tag: suggestionId
+        type: data
+        dataType: string
+        description: Suggested id
+
       - tag: suggestionText
         type: data
         dataType: string

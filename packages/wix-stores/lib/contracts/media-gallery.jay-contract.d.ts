@@ -7,6 +7,7 @@ export enum Selected {
 }
 
 export interface AvailableMediaOfMediaGalleryViewState {
+  mediaId: string,
   media: MediaViewState,
   selected: Selected
 }
@@ -17,15 +18,15 @@ export interface MediaGalleryViewState {
 }
 
 export type MediaGallerySlowViewState = Pick<MediaGalleryViewState, 'selectedMedia'> & {
-    availableMedia: Array<Pick<MediaGalleryViewState['availableMedia'][number], 'media'>>;
+    availableMedia: Array<Pick<MediaGalleryViewState['availableMedia'][number], 'mediaId' | 'media'>>;
 };
 
 export type MediaGalleryFastViewState = {
-    availableMedia: Array<Pick<MediaGalleryViewState['availableMedia'][number], 'selected'>>;
+    availableMedia: Array<Pick<MediaGalleryViewState['availableMedia'][number], 'mediaId' | 'selected'>>;
 };
 
 export type MediaGalleryInteractiveViewState = {
-    availableMedia: Array<Pick<MediaGalleryViewState['availableMedia'][number], 'selected'>>;
+    availableMedia: Array<Pick<MediaGalleryViewState['availableMedia'][number], 'mediaId' | 'selected'>>;
 };
 
 

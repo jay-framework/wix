@@ -35,6 +35,7 @@ tags:
   - tag: options
     type: sub-contract
     repeated: true
+    trackBy: _id
     description: Product customization options that generate variants
     tags:
       - {tag: _id, type: data, dataType: string, description: "Option GUID (customization ID)"}
@@ -46,6 +47,7 @@ tags:
       - tag: choices
         type: sub-contract
         repeated: true
+        trackBy: choiceId
         description: Available choices for this option
         tags:
           - {tag: choiceId, type: data, dataType: string, description: Choice GUID}
@@ -60,6 +62,7 @@ tags:
   - tag: infoSections
     type: sub-contract
     repeated: true
+    trackBy: _id
     description: Additional product information sections
     tags:
       - {tag: _id, type: data, dataType: string, description: Info section GUID}
@@ -69,6 +72,7 @@ tags:
   - tag: modifiers
     type: sub-contract
     repeated: true
+    trackBy: _id
     description: Product customization options that do not generate variants
     tags:
       - {tag: _id, type: data, dataType: string, description: "modifier id"}
@@ -83,6 +87,7 @@ tags:
       - tag: choices
         type: sub-contract
         repeated: true
+        trackBy: choiceId
         description: Available choices for this Modifier
         tags:
           - {tag: choiceId, type: data, dataType: string, description: Choice GUID}
@@ -98,13 +103,13 @@ tags:
     tags:
       - tag: tags
         type: sub-contract
-        repeated: true
         description: SEO tag information.
         tags:
           - {tag: type, type: data, dataType: string, description: SEO tag type.}
           - tag: props
             type: sub-contract
             repeated: true
+            trackBy: key
             description: A Key Value pair of SEO properties.
             tags:
               - tag: key
@@ -116,6 +121,7 @@ tags:
           - tag: meta
             type: sub-contract
             repeated: true
+            trackBy: key
             description: SEO tag metadata
             tags:
               - tag: key
@@ -134,6 +140,7 @@ tags:
           - tag: keywords
             type: sub-contract
             repeated: true
+            trackBy: term
             description: User-selected keyword terms for a specific page.
             tags:
             - {tag: term, type: data, dataType: string, description: Keyword value.}
