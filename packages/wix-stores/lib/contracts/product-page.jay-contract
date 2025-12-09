@@ -103,8 +103,11 @@ tags:
     tags:
       - tag: tags
         type: sub-contract
+        repeated: true
+        trackBy: position
         description: SEO tag information.
         tags:
+          - {tag: position, type: data, dataType: string, description: the number of the tag, as two digit string.}
           - {tag: type, type: data, dataType: string, description: SEO tag type.}
           - tag: props
             type: sub-contract

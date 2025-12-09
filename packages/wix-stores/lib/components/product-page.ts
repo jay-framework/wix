@@ -1,6 +1,5 @@
 import {
     makeJayStackComponent,
-    notFound,
     PageProps,
     RenderPipeline,
     Signals,
@@ -93,7 +92,8 @@ function mapInfoSections(infoSections: InfoSection[]): Array<InfoSectionOfProduc
 }
 function mapSeoData(seoData: SeoSchema): SeoDatumOfProductPageViewState {
     return ({
-        tags: seoData?.tags?.map(tag => ({
+        tags: seoData?.tags?.map((tag, index) => ({
+            position: index.toString().padStart(2, '0'),
             type: tag.type,
             props: Object.entries(tag.props).map(([key, value]) => ({key, value})),
             meta: Object.entries(tag.meta).map(([key, value]) => ({key, value})),
@@ -111,12 +111,15 @@ function mapSeoData(seoData: SeoSchema): SeoDatumOfProductPageViewState {
 }
 
 function formatWixMediaUrl(_id: string, url: string, mediaType: MediaType, resize?: {w: number, h: number}) {
+    const resizeFragment = resize?
+        `/v1/fit/w_${resize.w},h_${resize.h},q_90/file.jpg` :
+        ``;
     if (url)
         return url;
     else if (mediaType === MediaType.IMAGE)
-        return `https://static.wixstatic.com/media/${_id}`
+        return `https://static.wixstatic.com/media/${_id}${resizeFragment}`
     else if (mediaType === MediaType.VIDEO)
-        return `https://static.wixstatic.com/media/${_id}`
+        return `https://static.wixstatic.com/media/${_id}${resizeFragment}`
 }
 
 function mapMediaType(mediaType: MediaTypeWithLiterals): MediaType {
@@ -136,6 +139,7 @@ function mapMedia(media: Media): MediaGalleryViewState {
 
         },
         availableMedia: media.itemsInfo?.items?.map(item => ({
+            mediaId: item._id,
             media: {
                 url: formatWixMediaUrl(item._id, item.url, mainMediaType),
                 mediaType: (item.mediaType === 'IMAGE'? MediaType.IMAGE : MediaType.VIDEO),
@@ -163,8 +167,10 @@ function mapOptionsToSlowVS(options: ConnectedOption[]): ProductPageSlowViewStat
 
 function mapOptionsToFastVS(options: ConnectedOption[]): ProductPageFastViewState['options'] {
     return options?.map(option => ({
+        id: option._id,
         textChoiceSelection: undefined,
         choices: option.choicesSettings?.choices?.map((choice) => ({
+            choiceId: choice.choiceId,
             isSelected: false
         })) ?? [],
     })) ?? [];
@@ -204,8 +210,10 @@ function mapModifiersToSlowVS(modifiers: ConnectedModifier[]): ProductPageSlowVi
 
 function mapModifiersToFastVS(modifiers: ConnectedModifier[]): ProductPageFastViewState['modifiers'] {
     return modifiers?.map(modifier => ({
+        id: modifier._id,
         textModifierSelection: undefined,
         choices: modifier.choicesSettings?.choices?.map((choice) => ({
+            choiceId: choice.choiceId,
             isSelected: false
         })) ?? []
     })) ?? [];

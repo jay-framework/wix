@@ -88,6 +88,7 @@ export interface MetaOfTagOfSeoDatumOfProductPageViewState {
 }
 
 export interface TagOfSeoDatumOfProductPageViewState {
+  position: string,
   type: string,
   props: Array<PropOfTagOfSeoDatumOfProductPageViewState>,
   meta: Array<MetaOfTagOfSeoDatumOfProductPageViewState>,
@@ -106,7 +107,7 @@ export interface SettingOfSeoDatumOfProductPageViewState {
 }
 
 export interface SeoDatumOfProductPageViewState {
-  tags: TagOfSeoDatumOfProductPageViewState,
+  tags: Array<TagOfSeoDatumOfProductPageViewState>,
   settings: SettingOfSeoDatumOfProductPageViewState
 }
 
@@ -140,10 +141,10 @@ export type ProductPageSlowViewState = Pick<ProductPageViewState, 'id' | 'produc
     choices: Array<Pick<ProductPageViewState['modifiers'][number]['choices'][number], 'choiceId' | 'choiceType' | 'name' | 'colorCode'>>;
 }>;
     seoData: {
-    tags: Pick<ProductPageViewState['seoData']['tags'], 'type' | 'children'> & {
-    props: Array<ProductPageViewState['seoData']['tags']['props'][number]>;
-    meta: Array<ProductPageViewState['seoData']['tags']['meta'][number]>;
-};
+    tags: Array<Pick<ProductPageViewState['seoData']['tags'][number], 'position' | 'type' | 'children'> & {
+    props: Array<ProductPageViewState['seoData']['tags'][number]['props'][number]>;
+    meta: Array<ProductPageViewState['seoData']['tags'][number]['meta'][number]>;
+}>;
     settings: Pick<ProductPageViewState['seoData']['settings'], 'preventAutoRedirect'> & {
     keywords: Array<ProductPageViewState['seoData']['settings']['keywords'][number]>;
 };
