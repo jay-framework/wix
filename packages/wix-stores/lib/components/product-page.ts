@@ -236,12 +236,15 @@ async function renderSlowlyChanging(
     const Pipeline = RenderPipeline.for<ProductPageSlowViewState, ProductSlowCarryForward>()
 
     return Pipeline
-        .try(() => wixStores.products.getProductBySlug(props.slug))
+        .try(() => wixStores.products.getProductBySlug(props.slug, {
+            fields: ['INFO_SECTION', 'INFO_SECTION_PLAIN_DESCRIPTION', 'MEDIA_ITEMS_INFO', 'PLAIN_DESCRIPTION']
+        }))
         .recover(error => {
             console.log('product page error', error)
             return Pipeline.clientError(404, 'not found')
         })
         .toPhaseOutput(getProductResponse => {
+            console.log('product\n', JSON.stringify(getProductResponse.product, null, 2))
             const product = getProductResponse.product;
             const { _id, name, plainDescription, options, modifiers, actualPriceRange, compareAtPriceRange, media, productType,
                 brand, ribbon, infoSections, seoData, physicalProperties, inventory} = product
