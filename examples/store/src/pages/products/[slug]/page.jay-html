@@ -1,9 +1,8 @@
 <html>
   <head>
     <script type="application/jay-headless"
-            contract="@jay-framework/wix-stores/product-page.jay-contract"
-            src="@jay-framework/wix-stores"
-            name="productPage"
+            plugin="@jay-framework/wix-stores"
+            contract="product-page"
             key="productPage"
     ></script>
     <script type="application/jay-data">

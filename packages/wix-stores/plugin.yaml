@@ -1,0 +1,11 @@
+name: wix-stores
+# No module field for NPM packages - uses package main export by default
+
+contracts:
+  - name: product-page
+    contract: product-page.jay-contract  # Export subpath (matches package.json exports)
+    component: productPage  # Exported member name from index.ts
+    description: Complete headless product page with server-side rendering and client interactivity
+
+
+

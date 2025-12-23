@@ -60,7 +60,9 @@ interface ProductSlowCarryForward {
 /**
  * Data carried forward from fast rendering to interactive phase
  */
-type ProductFastCarryForward = {}
+interface ProductFastCarryForward {
+    productId: string;
+}
 
 /**
  * Load product slugs for static site generation
@@ -284,29 +286,33 @@ async function renderSlowlyChanging(
  * - Real-time inventory status
  * - Current variant availability
  * - Dynamic pricing (if applicable)
+ * 
+ * Note: slowCarryForward is injected as the FIRST SERVICE parameter
  */
 async function renderFastChanging(
     props: PageProps & ProductPageParams,
-    carryForward: ProductSlowCarryForward,
+    slowCarryForward: ProductSlowCarryForward,
     wixStores: WixStoresService
 ) {
     const Pipeline = RenderPipeline.for<ProductPageFastViewState, ProductFastCarryForward>()
 
     return Pipeline.ok({
             actionsEnabled: false,
-            options: carryForward.options,
-            modifiers: carryForward.modifiers,
-            mediaGallery: carryForward.mediaGallery,
-            sku: carryForward.sku,
-            price: carryForward.price,
-            pricePerUnit: carryForward.pricePerUnit,
-            stockStatus: carryForward.stockStatus,
-            strikethroughPrice: carryForward.strikethroughPrice,
+            options: slowCarryForward.options,
+            modifiers: slowCarryForward.modifiers,
+            mediaGallery: slowCarryForward.mediaGallery,
+            sku: slowCarryForward.sku,
+            price: slowCarryForward.price,
+            pricePerUnit: slowCarryForward.pricePerUnit,
+            stockStatus: slowCarryForward.stockStatus,
+            strikethroughPrice: slowCarryForward.strikethroughPrice,
             quantity: { quantity: 1}
         }
     ).toPhaseOutput(viewState => ({
         viewState,
-        carryForward: {}
+        carryForward: {
+            productId: slowCarryForward.productId
+        }
     }))
 }
 
@@ -316,14 +322,21 @@ async function renderFastChanging(
  * - Variant/option selection
  * - Quantity adjustments
  * - Add to cart action
+ * 
+ * Parameter order:
+ * 1. props - from withProps() + URL params (NOT including carry forward)
+ * 2. refs - interactive elements from contract
+ * 3. viewStateSignals - Signals<FastViewState> (reactive access to fast-phase data)
+ * 4. fastCarryForward - carry forward from fast render (first context)
  */
 function ProductPageInteractive(
-    props: Props<PageProps & ProductPageParams & ProductFastCarryForward>,
+    props: Props<PageProps & ProductPageParams>,
     refs: ProductPageRefs,
-    fastViewState: Signals<ProductPageFastViewState>
+    viewStateSignals: Signals<ProductPageFastViewState>,
+    fastCarryForward: ProductFastCarryForward
 ) {
 
-    const [quantity, setQuantity] = createSignal(fastViewState.quantity[0]().quantity)
+    const [quantity, setQuantity] = createSignal(viewStateSignals.quantity[0]().quantity)
 
     const {
         actionsEnabled: [actionsEnabled, setActionsEnabled],
@@ -334,7 +347,7 @@ function ProductPageInteractive(
         price: [price, setPrice],
         stockStatus: [stockStatus, setStockStatus],
         strikethroughPrice: [strikethroughPrice, setStrikethroughPrice]
-    } = fastViewState;
+    } = viewStateSignals;
 
     const pricePerUnit = "5";
 
@@ -367,7 +380,7 @@ function ProductPageInteractive(
 
     // Handle add to cart
     refs.addToCartButton.onclick(async () => {
-        if (!props.inStock()) {
+        if (stockStatus() === StockStatus.OUT_OF_STOCK) {
             console.warn('Product is out of stock');
             return;
         }
@@ -378,7 +391,7 @@ function ProductPageInteractive(
             await new Promise(resolve => setTimeout(resolve, 500));
             
             console.log('Adding to cart:', {
-                productId: props.productId(),
+                productId: fastCarryForward.productId,
                 quantity: quantity(),
                 selectedChoices: Array.from(selectedChoices().entries())
             });
