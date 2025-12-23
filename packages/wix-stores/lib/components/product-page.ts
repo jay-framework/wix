@@ -86,7 +86,7 @@ function mapProductType(productType: string): ProductType {
 
 function mapInfoSections(infoSections: InfoSection[]): Array<InfoSectionOfProductPageViewState> {
     return infoSections.map(infoSection => ({
-        id: infoSection._id,
+        _id: infoSection._id,
         plainDescription: infoSection.plainDescription || '',
         title: infoSection.title || '',
         uniqueName: infoSection.uniqueName || '',
@@ -156,7 +156,7 @@ function mapOptionsToSlowVS(options: ConnectedOption[]): ProductPageSlowViewStat
     return options?.map(option => ({
         name: option.name,
         optionRenderType: (option.optionRenderType === 'TEXT_CHOICES'? OptionRenderType.TEXT_CHOICES : OptionRenderType.COLOR_SWATCH_CHOICES),
-        id: option._id,
+        _id: option._id,
         choices: option.choicesSettings?.choices?.map((choice) => ({
             name: choice.name,
             choiceId: choice.choiceId,
@@ -169,7 +169,7 @@ function mapOptionsToSlowVS(options: ConnectedOption[]): ProductPageSlowViewStat
 
 function mapOptionsToFastVS(options: ConnectedOption[]): ProductPageFastViewState['options'] {
     return options?.map(option => ({
-        id: option._id,
+        _id: option._id,
         textChoiceSelection: undefined,
         choices: option.choicesSettings?.choices?.map((choice) => ({
             choiceId: choice.choiceId,
@@ -197,7 +197,7 @@ function mapModifierChoiceType(choiceType: ChoiceTypeWithLiterals): ChoiceType {
 function mapModifiersToSlowVS(modifiers: ConnectedModifier[]): ProductPageSlowViewState['modifiers'] {
     return modifiers?.map(modifier => ({
         name: modifier.name || modifier.freeTextSettings?.title || '',
-        id: modifier._id,
+        _id: modifier._id,
         modifierType: mapModifierType(modifier.modifierRenderType),
         textInputLength: modifier.freeTextSettings?.maxCharCount,
         textInputRequired: modifier.mandatory,
@@ -212,7 +212,7 @@ function mapModifiersToSlowVS(modifiers: ConnectedModifier[]): ProductPageSlowVi
 
 function mapModifiersToFastVS(modifiers: ConnectedModifier[]): ProductPageFastViewState['modifiers'] {
     return modifiers?.map(modifier => ({
-        id: modifier._id,
+        _id: modifier._id,
         textModifierSelection: undefined,
         choices: modifier.choicesSettings?.choices?.map((choice) => ({
             choiceId: choice.choiceId,
@@ -253,7 +253,7 @@ async function renderSlowlyChanging(
             console.log('****', mapMedia(media))
             return ({
                 viewState: {
-                    id: _id,
+                    _id: _id,
                     productName: name || '',
                     description: plainDescription,
                     brand: brand?.name || '',
@@ -388,8 +388,9 @@ function ProductPageInteractive(
 
     // Handle option choice selection
     refs.options.choices.choiceButton.onclick(({event, viewState, coordinate}) => {
-        const choices = new Map(selectedChoices());
         const [optionId, choiceId] = coordinate;
+        // options
+        const choices = new Map(selectedChoices());
         choices.set(optionId, choiceId);
         setSelectedChoices(choices);
     });

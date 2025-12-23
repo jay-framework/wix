@@ -10,7 +10,7 @@ export enum MediaType {
 }
 
 export interface MainMediaOfMediaOfCategoryPageViewState {
-  id: string,
+  _id: string,
   url: string,
   altText: string,
   mediaType: MediaType
@@ -32,7 +32,7 @@ export interface ThumbnailOfItemOfMediaOfCategoryPageViewState {
 }
 
 export interface ItemOfMediaOfCategoryPageViewState {
-  id: string,
+  _id: string,
   url: string,
   altText: string,
   title: string,
@@ -86,7 +86,7 @@ export interface FilterOfCategoryPageViewState {
 }
 
 export interface CategoryPageViewState {
-  id: string,
+  _id: string,
   name: string,
   description: string,
   slug: string,
@@ -102,10 +102,10 @@ export interface CategoryPageViewState {
   hasProducts: boolean
 }
 
-export type CategoryPageSlowViewState = Pick<CategoryPageViewState, 'id' | 'name' | 'description' | 'slug' | 'visible' | 'numberOfProducts' | 'products' | 'isLoading' | 'hasProducts'> & {
+export type CategoryPageSlowViewState = Pick<CategoryPageViewState, '_id' | 'name' | 'description' | 'slug' | 'visible' | 'numberOfProducts' | 'products' | 'isLoading' | 'hasProducts'> & {
     media: {
     mainMedia: CategoryPageViewState['media']['mainMedia'];
-    items: Array<Pick<CategoryPageViewState['media']['items'][number], 'id' | 'url' | 'altText' | 'title' | 'mediaType'> & {
+    items: Array<Pick<CategoryPageViewState['media']['items'][number], '_id' | 'url' | 'altText' | 'title' | 'mediaType'> & {
     thumbnail: CategoryPageViewState['media']['items'][number]['thumbnail'];
 }>;
 };

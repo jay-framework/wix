@@ -35,7 +35,7 @@ export interface ChoiceOfOptionOfProductPageViewState {
 }
 
 export interface OptionOfProductPageViewState {
-  id: string,
+  _id: string,
   name: string,
   optionRenderType: OptionRenderType,
   textChoiceSelection: string,
@@ -43,7 +43,7 @@ export interface OptionOfProductPageViewState {
 }
 
 export interface InfoSectionOfProductPageViewState {
-  id: string,
+  _id: string,
   title: string,
   plainDescription: string
 }
@@ -68,7 +68,7 @@ export interface ChoiceOfModifierOfProductPageViewState {
 }
 
 export interface ModifierOfProductPageViewState {
-  id: string,
+  _id: string,
   name: string,
   modifierType: ModifierType,
   textModifierSelection: string,
@@ -112,7 +112,7 @@ export interface SeoDatumOfProductPageViewState {
 }
 
 export interface ProductPageViewState {
-  id: string,
+  _id: string,
   productName: string,
   mediaGallery: MediaGalleryViewState,
   description: string,
@@ -132,12 +132,12 @@ export interface ProductPageViewState {
   seoData: SeoDatumOfProductPageViewState
 }
 
-export type ProductPageSlowViewState = Pick<ProductPageViewState, 'id' | 'productName' | 'description' | 'brand' | 'ribbon' | 'productType'> & {
-    options: Array<Pick<ProductPageViewState['options'][number], 'id' | 'name' | 'optionRenderType'> & {
+export type ProductPageSlowViewState = Pick<ProductPageViewState, '_id' | 'productName' | 'description' | 'brand' | 'ribbon' | 'productType'> & {
+    options: Array<Pick<ProductPageViewState['options'][number], '_id' | 'name' | 'optionRenderType'> & {
     choices: Array<Pick<ProductPageViewState['options'][number]['choices'][number], 'choiceId' | 'choiceType' | 'name' | 'colorCode' | 'inStock'>>;
 }>;
     infoSections: Array<ProductPageViewState['infoSections'][number]>;
-    modifiers: Array<Pick<ProductPageViewState['modifiers'][number], 'id' | 'name' | 'modifierType' | 'textInputLength' | 'textInputRequired'> & {
+    modifiers: Array<Pick<ProductPageViewState['modifiers'][number], '_id' | 'name' | 'modifierType' | 'textInputLength' | 'textInputRequired'> & {
     choices: Array<Pick<ProductPageViewState['modifiers'][number]['choices'][number], 'choiceId' | 'choiceType' | 'name' | 'colorCode'>>;
 }>;
     seoData: {
@@ -153,20 +153,20 @@ export type ProductPageSlowViewState = Pick<ProductPageViewState, 'id' | 'produc
 
 export type ProductPageFastViewState = Pick<ProductPageViewState, 'mediaGallery' | 'sku' | 'price' | 'strikethroughPrice' | 'pricePerUnit' | 'stockStatus' | 'actionsEnabled'> & {
     quantity: ProductPageViewState['quantity'];
-    options: Array<Pick<ProductPageViewState['options'][number], 'id' | 'textChoiceSelection'> & {
+    options: Array<Pick<ProductPageViewState['options'][number], '_id' | 'textChoiceSelection'> & {
     choices: Array<Pick<ProductPageViewState['options'][number]['choices'][number], 'choiceId' | 'isSelected'>>;
 }>;
-    modifiers: Array<Pick<ProductPageViewState['modifiers'][number], 'id' | 'textModifierSelection'> & {
+    modifiers: Array<Pick<ProductPageViewState['modifiers'][number], '_id' | 'textModifierSelection'> & {
     choices: Array<Pick<ProductPageViewState['modifiers'][number]['choices'][number], 'choiceId' | 'isSelected'>>;
 }>;
 };
 
 export type ProductPageInteractiveViewState = Pick<ProductPageViewState, 'mediaGallery' | 'sku' | 'price' | 'strikethroughPrice' | 'pricePerUnit' | 'stockStatus' | 'actionsEnabled'> & {
     quantity: ProductPageViewState['quantity'];
-    options: Array<Pick<ProductPageViewState['options'][number], 'id' | 'textChoiceSelection'> & {
+    options: Array<Pick<ProductPageViewState['options'][number], '_id' | 'textChoiceSelection'> & {
     choices: Array<Pick<ProductPageViewState['options'][number]['choices'][number], 'choiceId' | 'isSelected'>>;
 }>;
-    modifiers: Array<Pick<ProductPageViewState['modifiers'][number], 'id' | 'textModifierSelection'> & {
+    modifiers: Array<Pick<ProductPageViewState['modifiers'][number], '_id' | 'textModifierSelection'> & {
     choices: Array<Pick<ProductPageViewState['modifiers'][number]['choices'][number], 'choiceId' | 'isSelected'>>;
 }>;
 };
