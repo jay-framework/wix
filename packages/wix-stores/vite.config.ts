@@ -28,6 +28,7 @@ export default defineConfig(({ isSsrBuild }) => ({
                 '@jay-framework/fullstack-component',
                 '@jay-framework/reactive',
                 '@jay-framework/runtime',
+                '@jay-framework/json-patch',
                 '@jay-framework/secure',
                 '@jay-framework/wix-server-client',
                 '@wix/stores',

@@ -20,7 +20,7 @@ import {
     SeoDatumOfProductPageViewState,
     StockStatus
 } from '../contracts/product-page.jay-contract';
-import {WixStoresService, WIX_STORES_SERVICE_MARKER} from '../stores-client/wix-stores-service';
+import {WIX_STORES_SERVICE_MARKER, WixStoresService} from '../stores-client/wix-stores-service';
 import {
     ChoiceTypeWithLiterals,
     ConnectedModifier,
@@ -29,10 +29,12 @@ import {
     Media,
     MediaTypeWithLiterals,
     ModifierRenderTypeWithLiterals,
-    SeoSchema
+    SeoSchema,
+    VariantsInfo
 } from '@wix/auto_sdk_stores_products-v-3'
 import {MediaGalleryViewState, Selected} from "../contracts/media-gallery.jay-contract";
 import {MediaType} from "../contracts/media.jay-contract";
+import {patch, REPLACE} from '@jay-framework/json-patch';
 
 /**
  * URL parameters for product page routes
@@ -50,11 +52,9 @@ interface ProductSlowCarryForward {
     mediaGallery: MediaGalleryViewState,
     options: ProductPageFastViewState['options'],
     modifiers: ProductPageFastViewState['modifiers'],
-    sku: string,
-    price: string,
-    strikethroughPrice: string,
     pricePerUnit: string,
     stockStatus: StockStatus,
+    variantsInfo: VariantsInfo
 }
 
 /**
@@ -147,7 +147,7 @@ function mapMedia(media: Media): MediaGalleryViewState {
                 mediaType: (item.mediaType === 'IMAGE'? MediaType.IMAGE : MediaType.VIDEO),
                 thumbnail_50x50: formatWixMediaUrl(item._id, item.url, mainMediaType, {w: 50, h: 50})
             },
-            selected: (item.url === media.main.url)? Selected.selected : Selected.notSelected
+            selected: (item._id === media.main._id)? Selected.selected : Selected.notSelected
         })) ?? [],
     };
 }
@@ -239,7 +239,7 @@ async function renderSlowlyChanging(
 
     return Pipeline
         .try(() => wixStores.products.getProductBySlug(props.slug, {
-            fields: ['INFO_SECTION', 'INFO_SECTION_PLAIN_DESCRIPTION', 'MEDIA_ITEMS_INFO', 'PLAIN_DESCRIPTION']
+            fields: ['INFO_SECTION', 'INFO_SECTION_PLAIN_DESCRIPTION', 'MEDIA_ITEMS_INFO', 'PLAIN_DESCRIPTION', 'CURRENCY']
         }))
         .recover(error => {
             console.log('product page error', error)
@@ -249,7 +249,8 @@ async function renderSlowlyChanging(
             console.log('product\n', JSON.stringify(getProductResponse.product, null, 2))
             const product = getProductResponse.product;
             const { _id, name, plainDescription, options, modifiers, actualPriceRange, compareAtPriceRange, media, productType,
-                brand, ribbon, infoSections, seoData, physicalProperties, inventory} = product
+                brand, ribbon, infoSections, seoData, physicalProperties, inventory, variantsInfo} = product
+            console.log('****', mapMedia(media))
             return ({
                 viewState: {
                     id: _id,
@@ -275,6 +276,7 @@ async function renderSlowlyChanging(
                             compareAtPriceRange?.minValue?.formattedAmount || '' : '',
                     pricePerUnit: physicalProperties?.pricePerUnitRange?.minValue?.description,
                     stockStatus: (inventory?.availabilityStatus === 'IN_STOCK' ? StockStatus.IN_STOCK : StockStatus.OUT_OF_STOCK),
+                    variantsInfo
                 }
             });
         })
@@ -301,11 +303,11 @@ async function renderFastChanging(
             options: slowCarryForward.options,
             modifiers: slowCarryForward.modifiers,
             mediaGallery: slowCarryForward.mediaGallery,
-            sku: slowCarryForward.sku,
-            price: slowCarryForward.price,
+            sku: slowCarryForward.variantsInfo.variants[0].sku,
+            price: slowCarryForward.variantsInfo.variants[0].price.actualPrice.formattedAmount,
             pricePerUnit: slowCarryForward.pricePerUnit,
             stockStatus: slowCarryForward.stockStatus,
-            strikethroughPrice: slowCarryForward.strikethroughPrice,
+            strikethroughPrice: slowCarryForward.variantsInfo.variants[0].price.compareAtPrice.formattedAmount,
             quantity: { quantity: 1}
         }
     ).toPhaseOutput(viewState => ({
@@ -369,6 +371,20 @@ function ProductPageInteractive(
             setQuantity(value);
         }
     });
+
+    refs.mediaGallery.availableMedia.selected.onclick(({coordinate}) => {
+        const mediaId = coordinate[0];
+        const oldSelectedMediaIndex = mediaGallery().availableMedia.findIndex(_ => _.selected === Selected.selected);
+        const newSelectedMediaIndex = mediaGallery().availableMedia.findIndex(_ => _.mediaId === mediaId);
+        if (oldSelectedMediaIndex === newSelectedMediaIndex)
+            return;
+        const newSelectedMedia = mediaGallery().availableMedia[newSelectedMediaIndex];
+        setMediaGallery(patch(mediaGallery(), [
+            { op: REPLACE, path: ['selectedMedia'], value: newSelectedMedia.media},
+            { op: REPLACE, path: ['availableMedia', oldSelectedMediaIndex, 'selected'], value: Selected.notSelected},
+            { op: REPLACE, path: ['availableMedia', newSelectedMediaIndex, 'selected'], value: Selected.selected},
+        ]))
+    })
 
     // Handle option choice selection
     refs.options.choices.choiceButton.onclick(({event, viewState, coordinate}) => {

@@ -540,7 +540,7 @@
         <div class="thumbnail-strip">
           <div class="thumbnail {selected == selected ? selected}"
                forEach="productPage.mediaGallery.availableMedia" 
-               trackBy="media.url"
+               trackBy="mediaId"
                ref="productPage.mediaGallery.availableMedia.selected">
             <img src="{media.thumbnail_50x50}" alt="Product thumbnail" />
           </div>
@@ -574,7 +574,7 @@
           <span class="price">{productPage.price}</span>
           <span class="strikethrough-price" if="productPage.strikethroughPrice">{productPage.strikethroughPrice}</span>
         </div>
-        <div class="price-per-unit" if="productPage.pricePerUnit">{productPage.pricePerUnit}</div>
+        <div class="price-per-unit" if="productPage.pricePerUnit">Price per Unit: {productPage.pricePerUnit}</div>
 
         <!-- Stock Status -->
         <div class="stock-badge in-stock" if="productPage.stockStatus == IN_STOCK">
