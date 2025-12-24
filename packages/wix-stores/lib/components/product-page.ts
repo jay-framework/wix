@@ -6,7 +6,7 @@ import {
     SlowlyRenderResult,
     UrlParams
 } from '@jay-framework/fullstack-component';
-import {createSignal, Props} from '@jay-framework/component';
+import {createEffect, createMemo, createSignal, Props} from '@jay-framework/component';
 import {
     ChoiceType,
     InfoSectionOfProductPageViewState,
@@ -14,6 +14,7 @@ import {
     OptionRenderType,
     ProductPageContract,
     ProductPageFastViewState,
+    ProductPageInteractiveViewState,
     ProductPageRefs,
     ProductPageSlowViewState,
     ProductType,
@@ -29,12 +30,13 @@ import {
     Media,
     MediaTypeWithLiterals,
     ModifierRenderTypeWithLiterals,
+    OptionChoice,
     SeoSchema,
     VariantsInfo
 } from '@wix/auto_sdk_stores_products-v-3'
 import {MediaGalleryViewState, Selected} from "../contracts/media-gallery.jay-contract";
 import {MediaType} from "../contracts/media.jay-contract";
-import {JSONPatchOperation, patch, REPLACE} from '@jay-framework/json-patch';
+import {ADD, JSONPatchOperation, patch, REPLACE} from '@jay-framework/json-patch';
 
 /**
  * URL parameters for product page routes
@@ -42,6 +44,16 @@ import {JSONPatchOperation, patch, REPLACE} from '@jay-framework/json-patch';
  */
 export interface ProductPageParams extends UrlParams {
     slug: string;
+}
+
+interface InteractiveVariant {
+    _id: string,
+    sku: string,
+    price: string,
+    strikethroughPrice: string,
+    choices: OptionChoice[],
+    mediaId?: string,
+    inventoryStatus: StockStatus
 }
 
 /**
@@ -54,7 +66,7 @@ interface ProductSlowCarryForward {
     modifiers: ProductPageFastViewState['modifiers'],
     pricePerUnit: string,
     stockStatus: StockStatus,
-    variantsInfo: VariantsInfo
+    variants: InteractiveVariant[]
 }
 
 /**
@@ -62,6 +74,7 @@ interface ProductSlowCarryForward {
  */
 interface ProductFastCarryForward {
     productId: string;
+    variants: InteractiveVariant[]
 }
 
 /**
@@ -221,6 +234,18 @@ function mapModifiersToFastVS(modifiers: ConnectedModifier[]): ProductPageFastVi
     })) ?? [];
 }
 
+function mapVariants(variantsInfo: VariantsInfo): InteractiveVariant[]{
+    return variantsInfo?.variants.map(variant => ({
+        _id: variant._id,
+        choices: variant.choices,
+        sku: variant.sku,
+        price: variant.price.actualPrice.formattedAmount,
+        inventoryStatus: variant.inventoryStatus.inStock? StockStatus.IN_STOCK : StockStatus.OUT_OF_STOCK,
+        mediaId: variant.media?._id,
+        strikethroughPrice: variant.price.compareAtPrice?.formattedAmount || ''
+    })) || [];
+}
+
 /**
  * Slow Rendering Phase
  * Loads semi-static product data that doesn't change often:
@@ -275,7 +300,7 @@ async function renderSlowlyChanging(
                             compareAtPriceRange?.minValue?.formattedAmount || '' : '',
                     pricePerUnit: physicalProperties?.pricePerUnitRange?.minValue?.description,
                     stockStatus: (inventory?.availabilityStatus === 'IN_STOCK' ? StockStatus.IN_STOCK : StockStatus.OUT_OF_STOCK),
-                    variantsInfo
+                    variants: mapVariants(variantsInfo)
                 }
             });
         })
@@ -302,17 +327,18 @@ async function renderFastChanging(
             options: slowCarryForward.options,
             modifiers: slowCarryForward.modifiers,
             mediaGallery: slowCarryForward.mediaGallery,
-            sku: slowCarryForward.variantsInfo.variants[0].sku,
-            price: slowCarryForward.variantsInfo.variants[0].price.actualPrice.formattedAmount,
-            pricePerUnit: slowCarryForward.pricePerUnit,
+            sku: slowCarryForward.variants[0].sku,
+            price: slowCarryForward.variants[0].price,
+            pricePerUnit: slowCarryForward.pricePerUnit || '',
             stockStatus: slowCarryForward.stockStatus,
-            strikethroughPrice: slowCarryForward.variantsInfo.variants[0].price.compareAtPrice?.formattedAmount || '',
+            strikethroughPrice: slowCarryForward.variants[0].strikethroughPrice,
             quantity: { quantity: 1}
         }
     ).toPhaseOutput(viewState => ({
         viewState,
         carryForward: {
-            productId: slowCarryForward.productId
+            productId: slowCarryForward.productId,
+            variants: slowCarryForward.variants
         }
     }))
 }
@@ -339,22 +365,42 @@ function ProductPageInteractive(
 
     const [quantity, setQuantity] = createSignal(viewStateSignals.quantity[0]().quantity)
 
+    const {productId, variants} = fastCarryForward;
     const {
         actionsEnabled: [actionsEnabled, setActionsEnabled],
         options: [options, setOptions],
         modifiers: [modifiers, setModifiers],
         mediaGallery: [mediaGallery, setMediaGallery],
-        sku: [sku, setSKU],
-        price: [price, setPrice],
-        stockStatus: [stockStatus, setStockStatus],
-        strikethroughPrice: [strikethroughPrice, setStrikethroughPrice]
+        // sku: [sku, setSKU],
+        // price: [price, setPrice],
+        // stockStatus: [stockStatus, setStockStatus],
+        pricePerUnit: [pricePerUnit, setPricePerUnit]
     } = viewStateSignals;
 
-    const pricePerUnit = "5";
 
     const [isAddingToCart, setIsAddingToCart] = createSignal(false);
-    const [selectedChoices, setSelectedChoices] = createSignal<Map<string, string>>(new Map());
 
+    const [selectedOptions, setSelectedOptions] = createSignal<Record<string, string>>({});
+    const selectedVariant = createMemo(() => findVariant(variants, selectedOptions()))
+    const [selectedMediaId, setSelectedMediaId] = createSignal<string>(null);
+    const sku = createMemo(() => selectedVariant().sku)
+    const price = createMemo(() => selectedVariant().price)
+    const strikethroughPrice = createMemo(() => selectedVariant().strikethroughPrice)
+    const stockStatus = createMemo(() => selectedVariant().inventoryStatus)
+
+    const interactiveMedia = createMemo((prev: MediaGalleryViewState) => {
+        prev = prev || mediaGallery();
+        const oldSelectedMediaIndex = prev.availableMedia.findIndex(_ => _.selected === Selected.selected);
+        const newSelectedMediaIndex = Math.max(0, prev.availableMedia.findIndex(_ => _.mediaId === selectedMediaId()));
+        if (oldSelectedMediaIndex === newSelectedMediaIndex)
+            return prev;
+        const newSelectedMedia = prev.availableMedia[newSelectedMediaIndex];
+        return patch(prev, [
+            { op: REPLACE, path: ['selectedMedia'], value: newSelectedMedia.media},
+            { op: REPLACE, path: ['availableMedia', oldSelectedMediaIndex, 'selected'], value: Selected.notSelected},
+            { op: REPLACE, path: ['availableMedia', newSelectedMediaIndex, 'selected'], value: Selected.selected},
+        ])
+    })
     // Quantity controls
     refs.quantity.decrementButton.onclick(() => {
         setQuantity(prev => Math.max(1, prev - 1));
@@ -371,18 +417,18 @@ function ProductPageInteractive(
         }
     });
 
+    function findVariant(variants: InteractiveVariant[], options: Record<string, string>) {
+        const foundFullMatch = variants.find(variant =>
+            variant.choices.every(choice => options[choice.optionChoiceIds.optionId] === choice.optionChoiceIds.choiceId)
+        )
+        if (foundFullMatch && foundFullMatch.mediaId)
+            setSelectedMediaId(foundFullMatch.mediaId);
+        return foundFullMatch || variants[0];
+    }
+
     refs.mediaGallery.availableMedia.selected.onclick(({coordinate}) => {
         const mediaId = coordinate[0];
-        const oldSelectedMediaIndex = mediaGallery().availableMedia.findIndex(_ => _.selected === Selected.selected);
-        const newSelectedMediaIndex = mediaGallery().availableMedia.findIndex(_ => _.mediaId === mediaId);
-        if (oldSelectedMediaIndex === newSelectedMediaIndex)
-            return;
-        const newSelectedMedia = mediaGallery().availableMedia[newSelectedMediaIndex];
-        setMediaGallery(patch(mediaGallery(), [
-            { op: REPLACE, path: ['selectedMedia'], value: newSelectedMedia.media},
-            { op: REPLACE, path: ['availableMedia', oldSelectedMediaIndex, 'selected'], value: Selected.notSelected},
-            { op: REPLACE, path: ['availableMedia', newSelectedMediaIndex, 'selected'], value: Selected.selected},
-        ]))
+        setSelectedMediaId(mediaId);
     })
 
     refs.options.choices.choiceButton.onclick(({event, viewState, coordinate}) => {
@@ -397,6 +443,9 @@ function ProductPageInteractive(
             { op: REPLACE, path: [optionIndex, 'choices', newChoiceIndex, 'isSelected'], value: true },
             ...removeSelectedPatch
         ]))
+        setSelectedOptions(patch(selectedOptions(), [
+            {op: ADD, path: [optionId], value: choiceId}
+        ]))
     });
 
     refs.options.textChoice.oninput(({event, viewState, coordinate}) => {
@@ -405,6 +454,9 @@ function ProductPageInteractive(
         const textValue = (event.target as HTMLSelectElement).value;
         setOptions(patch(options(), [
             { op: REPLACE, path: [optionIndex, 'textChoiceSelection'], value: textValue },
+        ]))
+        setSelectedOptions(patch(selectedOptions(), [
+            {op: ADD, path: [optionId], value: choiceId}
         ]))
     });
 
@@ -422,6 +474,7 @@ function ProductPageInteractive(
         ]))
 
     })
+
     refs.modifiers.textInput.oninput(({event, viewState, coordinate}) => {
         const [modifierId] = coordinate;
         const modifierIndex = modifiers().findIndex(_ => _._id === modifierId)
@@ -430,6 +483,7 @@ function ProductPageInteractive(
             { op: REPLACE, path: [modifierIndex, 'textModifierSelection'], value: textValue },
         ]))
     })
+
     refs.modifiers.textModifier.oninput(({event, viewState, coordinate}) => {
         const [modifierId, choiceId] = coordinate;
         const modifierIndex = modifiers().findIndex(_ => _._id === modifierId)
@@ -439,7 +493,6 @@ function ProductPageInteractive(
         ]))
     });
 
-    // Handle add to cart
     refs.addToCartButton.onclick(async () => {
         if (stockStatus() === StockStatus.OUT_OF_STOCK) {
             console.warn('Product is out of stock');
@@ -454,7 +507,6 @@ function ProductPageInteractive(
             console.log('Adding to cart:', {
                 productId: fastCarryForward.productId,
                 quantity: quantity(),
-                selectedChoices: Array.from(selectedChoices().entries())
             });
         } catch (error) {
             console.error('Failed to add to cart:', error);
@@ -471,7 +523,7 @@ function ProductPageInteractive(
             actionsEnabled,
             options,
             modifiers,
-            mediaGallery,
+            mediaGallery: interactiveMedia,
             sku,
             price,
             pricePerUnit,
