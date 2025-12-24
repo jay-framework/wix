@@ -632,7 +632,7 @@
                       style="background-color: {colorCode}"
                       forEach="choices" 
                       trackBy="choiceId"
-                      ref="productPage.modifiers.choices.choiceButton"
+                      ref="choiceButton"
                       title="{name}">
               </button>
             </div>

@@ -34,7 +34,7 @@ import {
 } from '@wix/auto_sdk_stores_products-v-3'
 import {MediaGalleryViewState, Selected} from "../contracts/media-gallery.jay-contract";
 import {MediaType} from "../contracts/media.jay-contract";
-import {patch, REPLACE} from '@jay-framework/json-patch';
+import {JSONPatchOperation, patch, REPLACE} from '@jay-framework/json-patch';
 
 /**
  * URL parameters for product page routes
@@ -386,13 +386,43 @@ function ProductPageInteractive(
         ]))
     })
 
-    // Handle option choice selection
     refs.options.choices.choiceButton.onclick(({event, viewState, coordinate}) => {
         const [optionId, choiceId] = coordinate;
         // options
         const choices = new Map(selectedChoices());
         choices.set(optionId, choiceId);
         setSelectedChoices(choices);
+    });
+
+    refs.modifiers.choices.choiceButton.onclick(({event, viewState, coordinate}) => {
+        const [modifierId, choiceId] = coordinate;
+        const modifierIndex = modifiers().findIndex(_ => _._id === modifierId)
+        const modifier = modifiers()[modifierIndex];
+        const newChoiceIndex = modifier.choices.findIndex(_ => _.choiceId === choiceId);
+        const oldChoiceIndex = modifier.choices.findIndex(_ => _.isSelected);
+        const removeSelectedPatch: JSONPatchOperation<ReturnType<typeof modifiers>>[] = (oldChoiceIndex > -1 && oldChoiceIndex !== newChoiceIndex) ?
+            [{ op: REPLACE, path: [modifierIndex, 'choices', oldChoiceIndex, 'isSelected'], value: false }]: []
+        setModifiers(patch(modifiers(), [
+            { op: REPLACE, path: [modifierIndex, 'choices', newChoiceIndex, 'isSelected'], value: true },
+            ...removeSelectedPatch
+        ]))
+
+    })
+    refs.modifiers.textInput.oninput(({event, viewState, coordinate}) => {
+        const [modifierId] = coordinate;
+        const modifierIndex = modifiers().findIndex(_ => _._id === modifierId)
+        const textValue = (event.target as HTMLInputElement).value;
+        setModifiers(patch(modifiers(), [
+            { op: REPLACE, path: [modifierIndex, 'textModifierSelection'], value: textValue },
+        ]))
+    })
+    refs.modifiers.textModifier.oninput(({event, viewState, coordinate}) => {
+        const [modifierId, choiceId] = coordinate;
+        const modifierIndex = modifiers().findIndex(_ => _._id === modifierId)
+        const textValue = (event.target as HTMLSelectElement).value;
+        setModifiers(patch(modifiers(), [
+            { op: REPLACE, path: [modifierIndex, 'textModifierSelection'], value: textValue },
+        ]))
     });
 
     // Handle add to cart
