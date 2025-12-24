@@ -250,7 +250,6 @@ async function renderSlowlyChanging(
             const product = getProductResponse.product;
             const { _id, name, plainDescription, options, modifiers, actualPriceRange, compareAtPriceRange, media, productType,
                 brand, ribbon, infoSections, seoData, physicalProperties, inventory, variantsInfo} = product
-            console.log('****', mapMedia(media))
             return ({
                 viewState: {
                     _id: _id,
@@ -307,7 +306,7 @@ async function renderFastChanging(
             price: slowCarryForward.variantsInfo.variants[0].price.actualPrice.formattedAmount,
             pricePerUnit: slowCarryForward.pricePerUnit,
             stockStatus: slowCarryForward.stockStatus,
-            strikethroughPrice: slowCarryForward.variantsInfo.variants[0].price.compareAtPrice.formattedAmount,
+            strikethroughPrice: slowCarryForward.variantsInfo.variants[0].price.compareAtPrice?.formattedAmount || '',
             quantity: { quantity: 1}
         }
     ).toPhaseOutput(viewState => ({
@@ -388,10 +387,25 @@ function ProductPageInteractive(
 
     refs.options.choices.choiceButton.onclick(({event, viewState, coordinate}) => {
         const [optionId, choiceId] = coordinate;
-        // options
-        const choices = new Map(selectedChoices());
-        choices.set(optionId, choiceId);
-        setSelectedChoices(choices);
+        const optionIndex = options().findIndex(_ => _._id === optionId)
+        const option = options()[optionIndex];
+        const newChoiceIndex = option.choices.findIndex(_ => _.choiceId === choiceId);
+        const oldChoiceIndex = option.choices.findIndex(_ => _.isSelected);
+        const removeSelectedPatch: JSONPatchOperation<ReturnType<typeof options>>[] = (oldChoiceIndex > -1 && oldChoiceIndex !== newChoiceIndex) ?
+            [{ op: REPLACE, path: [optionIndex, 'choices', oldChoiceIndex, 'isSelected'], value: false }]: []
+        setOptions(patch(options(), [
+            { op: REPLACE, path: [optionIndex, 'choices', newChoiceIndex, 'isSelected'], value: true },
+            ...removeSelectedPatch
+        ]))
+    });
+
+    refs.options.textChoice.oninput(({event, viewState, coordinate}) => {
+        const [optionId, choiceId] = coordinate;
+        const optionIndex = options().findIndex(_ => _._id === optionId)
+        const textValue = (event.target as HTMLSelectElement).value;
+        setOptions(patch(options(), [
+            { op: REPLACE, path: [optionIndex, 'textChoiceSelection'], value: textValue },
+        ]))
     });
 
     refs.modifiers.choices.choiceButton.onclick(({event, viewState, coordinate}) => {
