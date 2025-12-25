@@ -158,23 +158,17 @@ async function renderSlowlyChanging(
 
     return Pipeline
         .try(async () => {
-
-            console.log('******************************')
-            const collectionsResult = await wixStores.categories.queryCategories({
-                treeReference: {
-                    appNamespace: "@wix/stores"
-                }
-            })
-                .eq('visible', true)
-                .find()
-            console.log('******************************')
-            const productsResult = await wixStores.products.queryProducts().limit(PAGE_SIZE).find();
-            console.log('******************************')
             // Load categories for filtering and initial products
-            // const [collectionsResult, productsResult] = await Promise.all([
-            //     wixStores.collections.queryCollections().find(),
-            //     wixStores.products.queryProducts().limit(PAGE_SIZE).find()
-            // ]);
+            const [collectionsResult, productsResult] = await Promise.all([
+                await wixStores.categories.queryCategories({
+                    treeReference: {
+                        appNamespace: "@wix/stores"
+                    }})
+                    .eq('visible', true)
+                    .find(),
+                wixStores.products.queryProducts().limit(PAGE_SIZE).find()
+            ]);
+            console.log(collectionsResult.items)
             return {
                 collections: collectionsResult.items || [],
                 products: productsResult.items || []
