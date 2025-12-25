@@ -12,6 +12,12 @@ export {
     type ProductPageParams 
 } from './product-page';
 
+// Product Search Component
+export { 
+    productSearch,
+    type SearchSortOption 
+} from './product-search';
+
 
 // Re-export contract types for convenience
 export type {

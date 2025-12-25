@@ -1,14 +1,15 @@
 import { WixClient } from "@wix/sdk";
 import {collections, inventoryItemsV3, productsV3} from "@wix/stores";
+import { categories } from "@wix/categories";
 
 const instances: {
-  productsV3ClientInstance: typeof productsV3 | undefined;
-  collectionsClientInstance: typeof collections | undefined;
-  inventoryV3ClientInstance: typeof inventoryItemsV3 | undefined;
+    productsV3ClientInstance: typeof productsV3 | undefined;
+    categoriesClientInstance: typeof categories | undefined;
+    inventoryV3ClientInstance: typeof inventoryItemsV3 | undefined;
 } = {
-  productsV3ClientInstance: undefined,
-  collectionsClientInstance: undefined,
-  inventoryV3ClientInstance: undefined
+    productsV3ClientInstance: undefined,
+    categoriesClientInstance: undefined,
+    inventoryV3ClientInstance: undefined
 }
 
 
@@ -29,18 +30,18 @@ export function getProductsV3Client(wixClient: WixClient): typeof productsV3 {
 }
 
 /**
- * Get a configured Wix Stores Collections client (singleton)
+ * Get a configured Wix Stores Categories client (singleton)
  *
- * The Collections API allows you to manage product collections in your Wix store.
+ * The Categories API allows you to manage product Categories in your Wix store.
  *
- * @returns Collections client instance from @wix/stores
- * @see https://dev.wix.com/docs/sdk/backend-modules/stores/collections/introduction
+ * @returns Categories client instance from @wix/stores
+ * @see https://dev.wix.com/docs/sdk/backend-modules/categories/categories/introduction
  */
-export function getCollectionsClient(wixClient: WixClient): typeof collections {
-    if (!instances.collectionsClientInstance) {
-        instances.collectionsClientInstance = wixClient.use(collections) as unknown as typeof collections;
+export function getCategoriesClient(wixClient: WixClient): typeof categories {
+    if (!instances.categoriesClientInstance) {
+        instances.categoriesClientInstance = wixClient.use(categories) as unknown as typeof categories;
     }
-    return instances.collectionsClientInstance;
+    return instances.categoriesClientInstance;
 }
 
 /**

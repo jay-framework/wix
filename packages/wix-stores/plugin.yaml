@@ -6,6 +6,10 @@ contracts:
     contract: product-page.jay-contract  # Export subpath (matches package.json exports)
     component: productPage  # Exported member name from index.ts
     description: Complete headless product page with server-side rendering and client interactivity
+  - name: product-search
+    contract: product-search.jay-contract  # Export subpath (matches package.json exports)
+    component: productSearch  # Exported member name from index.ts
+    description: Headless product search page
 
 
 

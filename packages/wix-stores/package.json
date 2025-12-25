@@ -15,7 +15,7 @@
     "./client": "./dist/index.client.js",
     "./plugin.yaml": "./plugin.yaml",
     "./product-page.jay-contract": "./dist/contracts/product-page.jay-contract",
-    "./contracts/*.jay-contract": "./dist/contracts/*.jay-contract"
+    "./product-search.jay-contract": "./dist/contracts/product-search.jay-contract"
   },
   "scripts": {
     "build": "npm run clean && npm run definitions && npm run build:client && npm run build:server && npm run build:copy-contract",
@@ -37,6 +37,7 @@
     "@jay-framework/secure": "^0.9.0",
     "@jay-framework/stack-server-runtime": "^0.9.0",
     "@jay-framework/wix-server-client": "^1.0.0",
+    "@wix/categories": "^1.0.165",
     "@wix/stores": "^1.0.563"
   },
   "devDependencies": {

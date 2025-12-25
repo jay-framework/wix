@@ -2143,6 +2143,7 @@ __metadata:
     "@jay-framework/stack-server-runtime": ^0.9.0
     "@jay-framework/vite-plugin": ^0.9.0
     "@jay-framework/wix-server-client": ^1.0.0
+    "@wix/categories": ^1.0.165
     "@wix/stores": ^1.0.563
     nodemon: ^3.0.3
     rimraf: ^5.0.5
@@ -2816,6 +2817,16 @@ __metadata:
     "@wix/sdk-runtime": ^0.5.0
     "@wix/sdk-types": ^1.13.35
   checksum: 67b568f8c7797be6f4dc8e60ea9dddf395fd1bcecb0c9af21ff2deac3929199f10ac6656a7532118bc25ee6fd6fcd1c3c8e7af5ac36aa07e6d7a378f00de2d73
+  languageName: node
+  linkType: hard
+
+"@wix/auto_sdk_categories_categories@npm:1.0.87":
+  version: 1.0.87
+  resolution: "@wix/auto_sdk_categories_categories@npm:1.0.87"
+  dependencies:
+    "@wix/sdk-runtime": ^1.0.0
+    "@wix/sdk-types": ^1.15.0
+  checksum: c835742d3e21442b083757451aff9b48847725f7610b6a6c080eb545956ce6992842244f8270a0f4292264d2bc5e8753d552c5ad2d77219a46f5ace8824cb5b2
   languageName: node
   linkType: hard
 
@@ -3639,6 +3650,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@wix/categories@npm:^1.0.165":
+  version: 1.0.165
+  resolution: "@wix/categories@npm:1.0.165"
+  dependencies:
+    "@wix/auto_sdk_categories_categories": 1.0.87
+  checksum: a25cf851dcc14123b4ee0ab36ec8aba6bad0e2e246c81772d0d42557913a2420ef6d60b7c71f95ba04279b9f90181cb50eb96396ed715c55686bbf97ae5d0028
+  languageName: node
+  linkType: hard
+
 "@wix/data@npm:^1.0.0, @wix/data@npm:^1.0.341":
   version: 1.0.341
   resolution: "@wix/data@npm:1.0.341"
@@ -4023,6 +4043,17 @@ __metadata:
     "@wix/monitoring-types": ^0.12.0
     type-fest: ^4.41.0
   checksum: 01500f0616d6437582c4655cf9e471e7fc22d385d1b05ef4316407559d27ad7392af1a897fd27d78e72701ebc037282888d72c2898b4e1b76f477854f7480377
+  languageName: node
+  linkType: hard
+
+"@wix/sdk-types@npm:^1.15.0":
+  version: 1.16.0
+  resolution: "@wix/sdk-types@npm:1.16.0"
+  dependencies:
+    "@wix/error-handler-types": ^1.19.0
+    "@wix/monitoring-types": ^0.12.0
+    type-fest: ^4.41.0
+  checksum: 01d514a79862b102bac5fc52e27c37c90bfa8a66af33f7f4f12a5366cb6b2ca364d63fc599063344e5175c8cbcc915a773718a192ab9d063460abfe60a99e549
   languageName: node
   linkType: hard
 
