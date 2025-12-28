@@ -4,7 +4,7 @@ import {
     RenderPipeline,
     Signals
 } from '@jay-framework/fullstack-component';
-import { createSignal, createMemo, Props } from '@jay-framework/component';
+import { createMemo, createEffect, Props } from '@jay-framework/component';
 import {
     CurrentSort,
     ProductSearchContract,
@@ -21,6 +21,7 @@ import {
     ProductType
 } from '../contracts/product-card.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../stores-client/wix-stores-service';
+import { patch, REPLACE } from '@jay-framework/json-patch';
 
 /**
  * Search sort options
@@ -285,6 +286,9 @@ async function renderFastChanging(
  * - Sorting
  * - Pagination
  * - Search suggestions
+ * 
+ * All state updates use immutable patterns with the patch utility.
+ * Search is triggered reactively via createEffect when dependencies change.
  */
 function ProductSearchInteractive(
     props: Props<PageProps>,
@@ -306,48 +310,66 @@ function ProductSearchInteractive(
         pagination: [pagination, setPagination]
     } = viewStateSignals;
 
-    const [currentSort, setCurrentSort] = createSignal<CurrentSort>(sortBy().currentSort);
-    const [currentPage, setCurrentPage] = createSignal(pagination().currentPage);
-    const [minPrice, setMinPrice] = createSignal<number>(filters().priceRange.minPrice);
-    const [maxPrice, setMaxPrice] = createSignal<number>(filters().priceRange.maxPrice);
-    const [inStockOnly, setInStockOnly] = createSignal(filters().inStockOnly);
-    const [selectedCategories, setSelectedCategories] = createSignal<Set<string>>(new Set());
+    // Computed pagination values
+    const totalPages = createMemo(() => Math.ceil(resultCount() / PAGE_SIZE) || 1);
+    const hasNextPage = createMemo(() => pagination().currentPage < totalPages());
+    const hasPrevPage = createMemo(() => pagination().currentPage > 1);
 
-    // Perform search function - will be called from various interactions
-    const performSearch = async () => {
+    // Track whether user has triggered a search (to avoid initial effect run)
+    let isFirst = true;
+
+    // Reactive search effect - runs when search parameters change
+    createEffect(() => {
+        // Access all reactive dependencies
         const searchTerm = searchExpression().trim();
+        const currentFilters = filters();
+        const currentSort = sortBy().currentSort;
+        const currentPage = pagination().currentPage;
 
-        setIsSearching(true);
-        setHasSearched(true);
-
-        try {
-            // In the interactive phase, we log the search parameters
-            // In a real implementation, this would call a server endpoint via fetch
-            await new Promise(resolve => setTimeout(resolve, 300));
-
-            console.log('Searching:', {
-                searchExpression: searchTerm,
-                searchFields: fastCarryForward.searchFields,
-                fuzzySearch: fastCarryForward.fuzzySearch,
-                sort: currentSort(),
-                page: currentPage(),
-                filters: {
-                    minPrice: minPrice(),
-                    maxPrice: maxPrice(),
-                    categories: Array.from(selectedCategories()),
-                    inStockOnly: inStockOnly()
-                }
-            });
-
-            // TODO: Call search API and update searchResults
-            // For now, we keep the current results
-
-        } catch (error) {
-            console.error('Search failed:', error);
-        } finally {
-            setIsSearching(false);
+        // Skip initial effect run (trigger starts at 0)
+        if (isFirst) {
+            isFirst = false;
+            return;
         }
-    };
+
+        // Perform the search
+        const performSearch = async () => {
+            setIsSearching(true);
+            setHasSearched(true);
+
+            try {
+                // In the interactive phase, we log the search parameters
+                // In a real implementation, this would call a server endpoint via fetch
+                await new Promise(resolve => setTimeout(resolve, 300));
+
+                console.log('Searching:', {
+                    searchExpression: searchTerm,
+                    searchFields: fastCarryForward.searchFields,
+                    fuzzySearch: fastCarryForward.fuzzySearch,
+                    sort: currentSort,
+                    page: currentPage,
+                    filters: {
+                        minPrice: currentFilters.priceRange.minPrice,
+                        maxPrice: currentFilters.priceRange.maxPrice,
+                        categories: currentFilters.categoryFilter.categories
+                            .filter(c => c.isSelected)
+                            .map(c => c.categoryId),
+                        inStockOnly: currentFilters.inStockOnly
+                    }
+                });
+
+                // TODO: Call search API and update searchResults
+                // For now, we keep the current results
+
+            } catch (error) {
+                console.error('Search failed:', error);
+            } finally {
+                setIsSearching(false);
+            }
+        };
+
+        performSearch();
+    });
 
     // Search input handler
     refs.searchExpression.oninput(({ event }) => {
@@ -357,15 +379,18 @@ function ProductSearchInteractive(
 
     // Search button click
     refs.searchButton.onclick(() => {
-        setCurrentPage(1);
-        performSearch();
+        setPagination(patch(pagination(), [
+            { op: REPLACE, path: ['currentPage'], value: 1 }
+        ]));
     });
 
     // Clear search button
     refs.clearSearchButton.onclick(() => {
         setSearchExpression('');
         setHasSearched(false);
-        setCurrentPage(1);
+        setPagination(patch(pagination(), [
+            { op: REPLACE, path: ['currentPage'], value: 1 }
+        ]));
     });
 
     // Sorting dropdown
@@ -380,78 +405,104 @@ function ProductSearchInteractive(
             'nameDesc': CurrentSort.nameDesc
         };
         const newSort = sortMap[value] ?? CurrentSort.relevance;
-        setCurrentSort(newSort);
         setSortBy({ currentSort: newSort });
-        setCurrentPage(1);
-        if (hasSearched()) {
-            performSearch();
-        }
+        setPagination(patch(pagination(), [
+            { op: REPLACE, path: ['currentPage'], value: 1 }
+        ]));
     });
 
-    // Price range filters
+    // Price range filters - update filters immutably
     refs.filters.priceRange.minPrice.oninput(({ event }) => {
         const value = parseFloat((event.target as HTMLInputElement).value);
-        setMinPrice(isNaN(value) ? 0 : value);
+        const newValue = isNaN(value) ? 0 : value;
+        setFilters(patch(filters(), [
+            { op: REPLACE, path: ['priceRange', 'minPrice'], value: newValue }
+        ]));
     });
 
     refs.filters.priceRange.maxPrice.oninput(({ event }) => {
         const value = parseFloat((event.target as HTMLInputElement).value);
-        setMaxPrice(isNaN(value) ? 0 : value);
+        const newValue = isNaN(value) ? 0 : value;
+        setFilters(patch(filters(), [
+            { op: REPLACE, path: ['priceRange', 'maxPrice'], value: newValue }
+        ]));
     });
 
-    // Category filter checkboxes
+    // Category filter checkboxes - update categories immutably
     refs.filters.categoryFilter.categories.isSelected.oninput(({ event, coordinate }) => {
         const [categoryId] = coordinate;
-        const categories = new Set(selectedCategories());
-        if ((event.target as HTMLInputElement).checked) {
-            categories.add(categoryId);
-        } else {
-            categories.delete(categoryId);
+        const currentFilters = filters();
+        const categoryIndex = currentFilters.categoryFilter.categories.findIndex(
+            c => c.categoryId === categoryId
+        );
+        
+        if (categoryIndex !== -1) {
+            const isChecked = (event.target as HTMLInputElement).checked;
+            setFilters(patch(currentFilters, [
+                { op: REPLACE, path: ['categoryFilter', 'categories', categoryIndex, 'isSelected'], value: isChecked }
+            ]));
         }
-        setSelectedCategories(categories);
     });
 
     // In stock only filter
     refs.filters.inStockOnly.oninput(({ event }) => {
-        setInStockOnly((event.target as HTMLInputElement).checked);
+        const isChecked = (event.target as HTMLInputElement).checked;
+        setFilters(patch(filters(), [
+            { op: REPLACE, path: ['inStockOnly'], value: isChecked }
+        ]));
     });
 
-    // Apply filters button
+    // Apply filters button - triggers the search effect
     refs.filters.applyFilters.onclick(() => {
-        setCurrentPage(1);
-        performSearch();
+        setPagination(patch(pagination(), [
+            { op: REPLACE, path: ['currentPage'], value: 1 }
+        ]));
     });
 
-    // Clear filters button
+    // Clear filters button - reset all filter values immutably
     refs.filters.clearFilters.onclick(() => {
-        setMinPrice(0);
-        setMaxPrice(0);
-        setSelectedCategories(new Set());
-        setInStockOnly(false);
-        setCurrentPage(1);
-        if (hasSearched()) {
-            performSearch();
-        }
+        const currentFilters = filters();
+        // Reset all category selections
+        const clearedCategories = currentFilters.categoryFilter.categories.map(cat => ({
+            ...cat,
+            isSelected: false
+        }));
+        
+        setFilters({
+            priceRange: { minPrice: 0, maxPrice: 0 },
+            categoryFilter: { categories: clearedCategories },
+            inStockOnly: false
+        });
+        
+        setPagination(patch(pagination(), [
+            { op: REPLACE, path: ['currentPage'], value: 1 }
+        ]));
     });
 
     // Pagination - previous page
     refs.pagination.prevButton.onclick(() => {
-        if (currentPage() > 1) {
-            setCurrentPage(prev => prev - 1);
-            performSearch();
+        const currentPage = pagination().currentPage;
+        if (currentPage > 1) {
+            setPagination(patch(pagination(), [
+                { op: REPLACE, path: ['currentPage'], value: currentPage - 1 }
+            ]));
         }
     });
 
     // Pagination - next page
     refs.pagination.nextButton.onclick(() => {
-        setCurrentPage(prev => prev + 1);
-        performSearch();
+        const currentPage = pagination().currentPage;
+        setPagination(patch(pagination(), [
+            { op: REPLACE, path: ['currentPage'], value: currentPage + 1 }
+        ]));
     });
 
     // Load more button (infinite scroll alternative)
     refs.pagination.loadMoreButton.onclick(() => {
-        setCurrentPage(prev => prev + 1);
-        performSearch();
+        const currentPage = pagination().currentPage;
+        setPagination(patch(pagination(), [
+            { op: REPLACE, path: ['currentPage'], value: currentPage + 1 }
+        ]));
     });
 
     // Suggestion clicks
@@ -460,8 +511,9 @@ function ProductSearchInteractive(
         const suggestion = suggestions().find(s => s.suggestionId === suggestionId);
         if (suggestion) {
             setSearchExpression(suggestion.suggestionText);
-            setCurrentPage(1);
-            performSearch();
+            setPagination(patch(pagination(), [
+                { op: REPLACE, path: ['currentPage'], value: 1 }
+            ]));
         }
     });
 
@@ -471,19 +523,6 @@ function ProductSearchInteractive(
         console.log('Quick add to cart:', productId);
         // TODO: Implement cart functionality
     });
-
-    // Build the categories array for render
-    const categoriesForRender = createMemo(() => {
-        return fastCarryForward.categories.map(cat => ({
-            categoryId: cat.categoryId,
-            isSelected: selectedCategories().has(cat.categoryId)
-        }));
-    });
-
-    // Computed pagination values
-    const totalPages = createMemo(() => Math.ceil(resultCount() / PAGE_SIZE) || 1);
-    const hasNextPage = createMemo(() => currentPage() < totalPages());
-    const hasPrevPage = createMemo(() => currentPage() > 1);
 
     return {
         render: (): ProductSearchInteractiveViewState => ({
@@ -495,21 +534,10 @@ function ProductSearchInteractive(
             hasResults: hasResults(),
             hasSuggestions: hasSuggestions(),
             suggestions: suggestions(),
-            filters: {
-                inStockOnly: inStockOnly(),
-                priceRange: {
-                    minPrice: minPrice(),
-                    maxPrice: maxPrice()
-                },
-                categoryFilter: {
-                    categories: categoriesForRender()
-                }
-            },
-            sortBy: {
-                currentSort: currentSort()
-            },
+            filters: filters(),
+            sortBy: sortBy(),
             pagination: {
-                currentPage: currentPage(),
+                currentPage: pagination().currentPage,
                 totalPages: totalPages(),
                 hasNextPage: hasNextPage(),
                 hasPrevPage: hasPrevPage()

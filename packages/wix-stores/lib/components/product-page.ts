@@ -381,8 +381,8 @@ function ProductPageInteractive(
     const [isAddingToCart, setIsAddingToCart] = createSignal(false);
 
     const [selectedOptions, setSelectedOptions] = createSignal<Record<string, string>>({});
-    const selectedVariant = createMemo(() => findVariant(variants, selectedOptions()))
     const [selectedMediaId, setSelectedMediaId] = createSignal<string>(null);
+    const selectedVariant = createMemo(() => findVariant(variants, selectedOptions()))
     const sku = createMemo(() => selectedVariant().sku)
     const price = createMemo(() => selectedVariant().price)
     const strikethroughPrice = createMemo(() => selectedVariant().strikethroughPrice)
