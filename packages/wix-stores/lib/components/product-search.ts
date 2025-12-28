@@ -4,7 +4,7 @@ import {
     RenderPipeline,
     Signals
 } from '@jay-framework/fullstack-component';
-import { createMemo, createEffect, Props } from '@jay-framework/component';
+import { createSignal, createMemo, createEffect, Props } from '@jay-framework/component';
 import {
     CurrentSort,
     ProductSearchContract,
@@ -288,7 +288,12 @@ async function renderFastChanging(
  * - Search suggestions
  * 
  * All state updates use immutable patterns with the patch utility.
- * Search is triggered reactively via createEffect when dependencies change.
+ * 
+ * Search trigger pattern:
+ * - `searchExpression` is for live input display (typing doesn't trigger search)
+ * - `submittedSearchTerm` is updated only when search button is clicked
+ * - The effect depends on `submittedSearchTerm`, `filters`, `sortBy`, `pagination`
+ *   so it runs reactively when any of these change
  */
 function ProductSearchInteractive(
     props: Props<PageProps>,
@@ -310,23 +315,27 @@ function ProductSearchInteractive(
         pagination: [pagination, setPagination]
     } = viewStateSignals;
 
+    // Submitted search term - only updated when search button is clicked
+    // This separates "typing" from "searching"
+    const [submittedSearchTerm, setSubmittedSearchTerm] = createSignal<string | null>(null);
+
     // Computed pagination values
     const totalPages = createMemo(() => Math.ceil(resultCount() / PAGE_SIZE) || 1);
     const hasNextPage = createMemo(() => pagination().currentPage < totalPages());
     const hasPrevPage = createMemo(() => pagination().currentPage > 1);
 
-    // Track whether user has triggered a search (to avoid initial effect run)
     let isFirst = true;
 
-    // Reactive search effect - runs when search parameters change
+    // Reactive search effect - runs when any search parameter changes
+    // Depends on: submittedSearchTerm, filters, sortBy, pagination (all reactive)
     createEffect(() => {
         // Access all reactive dependencies
-        const searchTerm = searchExpression().trim();
+        const searchTerm = submittedSearchTerm();
         const currentFilters = filters();
         const currentSort = sortBy().currentSort;
         const currentPage = pagination().currentPage;
 
-        // Skip initial effect run (trigger starts at 0)
+        // Skip if search hasn't been submitted yet
         if (isFirst) {
             isFirst = false;
             return;
@@ -371,29 +380,31 @@ function ProductSearchInteractive(
         performSearch();
     });
 
-    // Search input handler
+    // Search input handler - only updates live input, does not trigger search
     refs.searchExpression.oninput(({ event }) => {
         const value = (event.target as HTMLInputElement).value;
         setSearchExpression(value);
     });
 
-    // Search button click
+    // Search button click - submits the current search term, triggering the effect
     refs.searchButton.onclick(() => {
         setPagination(patch(pagination(), [
             { op: REPLACE, path: ['currentPage'], value: 1 }
         ]));
+        setSubmittedSearchTerm(searchExpression().trim());
     });
 
     // Clear search button
     refs.clearSearchButton.onclick(() => {
         setSearchExpression('');
+        setSubmittedSearchTerm(null);
         setHasSearched(false);
         setPagination(patch(pagination(), [
             { op: REPLACE, path: ['currentPage'], value: 1 }
         ]));
     });
 
-    // Sorting dropdown
+    // Sorting dropdown - updates sort, effect runs automatically if search was submitted
     refs.sortBy.sortDropdown.oninput(({ event }) => {
         const value = (event.target as HTMLSelectElement).value;
         const sortMap: Record<string, CurrentSort> = {
@@ -406,9 +417,11 @@ function ProductSearchInteractive(
         };
         const newSort = sortMap[value] ?? CurrentSort.relevance;
         setSortBy({ currentSort: newSort });
+        // Reset to page 1 when sort changes
         setPagination(patch(pagination(), [
             { op: REPLACE, path: ['currentPage'], value: 1 }
         ]));
+        // Effect will run automatically since sortBy and pagination are dependencies
     });
 
     // Price range filters - update filters immutably
@@ -452,14 +465,19 @@ function ProductSearchInteractive(
         ]));
     });
 
-    // Apply filters button - triggers the search effect
+    // Apply filters button - reset to page 1, effect runs automatically
     refs.filters.applyFilters.onclick(() => {
         setPagination(patch(pagination(), [
             { op: REPLACE, path: ['currentPage'], value: 1 }
         ]));
+        // If user hasn't searched yet, submit the current search term
+        if (submittedSearchTerm() === null) {
+            setSubmittedSearchTerm(searchExpression().trim());
+        }
+        // Effect will run automatically since filters and pagination are dependencies
     });
 
-    // Clear filters button - reset all filter values immutably
+    // Clear filters button - reset all filter values
     refs.filters.clearFilters.onclick(() => {
         const currentFilters = filters();
         // Reset all category selections
@@ -477,6 +495,7 @@ function ProductSearchInteractive(
         setPagination(patch(pagination(), [
             { op: REPLACE, path: ['currentPage'], value: 1 }
         ]));
+        // Effect will run automatically since filters and pagination are dependencies
     });
 
     // Pagination - previous page
@@ -486,6 +505,7 @@ function ProductSearchInteractive(
             setPagination(patch(pagination(), [
                 { op: REPLACE, path: ['currentPage'], value: currentPage - 1 }
             ]));
+            // Effect will run automatically since pagination is a dependency
         }
     });
 
@@ -495,6 +515,7 @@ function ProductSearchInteractive(
         setPagination(patch(pagination(), [
             { op: REPLACE, path: ['currentPage'], value: currentPage + 1 }
         ]));
+        // Effect will run automatically since pagination is a dependency
     });
 
     // Load more button (infinite scroll alternative)
@@ -503,9 +524,10 @@ function ProductSearchInteractive(
         setPagination(patch(pagination(), [
             { op: REPLACE, path: ['currentPage'], value: currentPage + 1 }
         ]));
+        // Effect will run automatically since pagination is a dependency
     });
 
-    // Suggestion clicks
+    // Suggestion clicks - set search term and submit
     refs.suggestions.suggestionButton.onclick(({ coordinate }) => {
         const [suggestionId] = coordinate;
         const suggestion = suggestions().find(s => s.suggestionId === suggestionId);
@@ -514,6 +536,8 @@ function ProductSearchInteractive(
             setPagination(patch(pagination(), [
                 { op: REPLACE, path: ['currentPage'], value: 1 }
             ]));
+            setSubmittedSearchTerm(suggestion.suggestionText);
+            // Effect will run automatically since submittedSearchTerm is a dependency
         }
     });
 
