@@ -325,6 +325,62 @@ function ProductSearchInteractive(
     const hasPrevPage = createMemo(() => pagination().currentPage > 1);
 
     let isFirst = true;
+    let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
+    let searchVersion = 0; // Incremented on each search to handle race conditions
+    const DEBOUNCE_MS = 300;
+
+    // Perform the search - extracted so we can pass version for race condition handling
+    const performSearch = async (
+        version: number,
+        searchTerm: string | null,
+        currentFilters: ProductSearchFastViewState['filters'],
+        currentSort: CurrentSort,
+        currentPage: number
+    ) => {
+        setIsSearching(true);
+        setHasSearched(true);
+
+        try {
+            // In the interactive phase, we log the search parameters
+            // In a real implementation, this would call a server endpoint via fetch
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            // Check if a newer search was started - if so, ignore this result
+            if (version !== searchVersion) {
+                return;
+            }
+
+            console.log('Searching:', {
+                searchExpression: searchTerm,
+                searchFields: fastCarryForward.searchFields,
+                fuzzySearch: fastCarryForward.fuzzySearch,
+                sort: currentSort,
+                page: currentPage,
+                filters: {
+                    minPrice: currentFilters.priceRange.minPrice,
+                    maxPrice: currentFilters.priceRange.maxPrice,
+                    categories: currentFilters.categoryFilter.categories
+                        .filter(c => c.isSelected)
+                        .map(c => c.categoryId),
+                    inStockOnly: currentFilters.inStockOnly
+                }
+            });
+
+            // TODO: Call search API and update searchResults
+            // For now, we keep the current results
+
+        } catch (error) {
+            // Only log error if this is still the current search
+            if (version === searchVersion) {
+                console.error('Search failed:', error);
+            }
+        } finally {
+            // Only update isSearching if this is still the current search
+            if (version === searchVersion) {
+                setIsSearching(false);
+            }
+        }
+    };
 
     // Reactive search effect - runs when any search parameter changes
     // Depends on: submittedSearchTerm, filters, sortBy, pagination (all reactive)
@@ -335,49 +391,24 @@ function ProductSearchInteractive(
         const currentSort = sortBy().currentSort;
         const currentPage = pagination().currentPage;
 
-        // Skip if search hasn't been submitted yet
+        // Skip the initial run
         if (isFirst) {
             isFirst = false;
             return;
         }
 
-        // Perform the search
-        const performSearch = async () => {
-            setIsSearching(true);
-            setHasSearched(true);
+        // Clear any pending debounced search
+        if (debounceTimeout) {
+            clearTimeout(debounceTimeout);
+        }
 
-            try {
-                // In the interactive phase, we log the search parameters
-                // In a real implementation, this would call a server endpoint via fetch
-                await new Promise(resolve => setTimeout(resolve, 300));
-
-                console.log('Searching:', {
-                    searchExpression: searchTerm,
-                    searchFields: fastCarryForward.searchFields,
-                    fuzzySearch: fastCarryForward.fuzzySearch,
-                    sort: currentSort,
-                    page: currentPage,
-                    filters: {
-                        minPrice: currentFilters.priceRange.minPrice,
-                        maxPrice: currentFilters.priceRange.maxPrice,
-                        categories: currentFilters.categoryFilter.categories
-                            .filter(c => c.isSelected)
-                            .map(c => c.categoryId),
-                        inStockOnly: currentFilters.inStockOnly
-                    }
-                });
-
-                // TODO: Call search API and update searchResults
-                // For now, we keep the current results
-
-            } catch (error) {
-                console.error('Search failed:', error);
-            } finally {
-                setIsSearching(false);
-            }
-        };
-
-        performSearch();
+        // Debounce the search
+        debounceTimeout = setTimeout(() => {
+            // Increment version to invalidate any in-flight searches
+            searchVersion++;
+            const version = searchVersion;
+            performSearch(version, searchTerm, currentFilters, currentSort, currentPage);
+        }, DEBOUNCE_MS);
     });
 
     // Search input handler - only updates live input, does not trigger search
