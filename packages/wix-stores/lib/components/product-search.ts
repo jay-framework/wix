@@ -417,6 +417,17 @@ function ProductSearchInteractive(
         setSearchExpression(value);
     });
 
+    // Enter key in search input - triggers search
+    refs.searchExpression.onkeydown(({ event }) => {
+        if ((event as KeyboardEvent).key === 'Enter') {
+            event.preventDefault();
+            setPagination(patch(pagination(), [
+                { op: REPLACE, path: ['currentPage'], value: 1 }
+            ]));
+            setSubmittedSearchTerm(searchExpression().trim());
+        }
+    });
+
     // Search button click - submits the current search term, triggering the effect
     refs.searchButton.onclick(() => {
         setPagination(patch(pagination(), [
