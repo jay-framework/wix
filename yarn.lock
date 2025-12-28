@@ -1951,6 +1951,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@jay-framework/jay-wix-packages@workspace:."
   dependencies:
+    "@jay-framework/view-state-merge": ^0.9.0
     commander: ^14.0.0
     esbuild: ^0.20.0
     prettier: ^3.2.4
@@ -2065,6 +2066,12 @@ __metadata:
   checksum: 48a77c9e190c308069ae8f31bb4437de87eafa177dfbbed486f15495d0b59f45fc238f20499c00e9435140e2dc72870e65f3063626e12620557d821a08b6e5bd
   languageName: node
   linkType: hard
+
+"@jay-framework/view-state-merge@portal:../jay/packages/runtime/view-state-merge::locator=%40jay-framework%2Fjay-wix-packages%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@jay-framework/view-state-merge@portal:../jay/packages/runtime/view-state-merge::locator=%40jay-framework%2Fjay-wix-packages%40workspace%3A."
+  languageName: node
+  linkType: soft
 
 "@jay-framework/vite-plugin@npm:^0.9.0":
   version: 0.9.0

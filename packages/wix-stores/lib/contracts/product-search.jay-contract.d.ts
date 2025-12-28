@@ -64,10 +64,19 @@ export interface ProductSearchViewState {
   suggestions: Array<SuggestionOfProductSearchViewState>
 }
 
-export type ProductSearchSlowViewState = Pick<ProductSearchViewState, 'searchFields' | 'fuzzySearch' | 'isSearching' | 'hasSearched' | 'searchResults' | 'resultCount' | 'hasResults' | 'emptyStateMessage' | 'hasSuggestions'> & {
+export type ProductSearchSlowViewState = Pick<ProductSearchViewState, 'searchFields' | 'fuzzySearch' | 'emptyStateMessage'> & {
     filters: {
     categoryFilter: {
     categories: Array<Pick<ProductSearchViewState['filters']['categoryFilter']['categories'][number], 'categoryId' | 'categoryName'>>;
+};
+};
+};
+
+export type ProductSearchFastViewState = Pick<ProductSearchViewState, 'searchExpression' | 'isSearching' | 'hasSearched' | 'searchResults' | 'resultCount' | 'hasResults' | 'hasSuggestions'> & {
+    filters: Pick<ProductSearchViewState['filters'], 'inStockOnly'> & {
+    priceRange: ProductSearchViewState['filters']['priceRange'];
+    categoryFilter: {
+    categories: Array<Pick<ProductSearchViewState['filters']['categoryFilter']['categories'][number], 'categoryId' | 'isSelected'>>;
 };
 };
     sortBy: ProductSearchViewState['sortBy'];
@@ -75,22 +84,16 @@ export type ProductSearchSlowViewState = Pick<ProductSearchViewState, 'searchFie
     suggestions: Array<ProductSearchViewState['suggestions'][number]>;
 };
 
-export type ProductSearchFastViewState = Pick<ProductSearchViewState, 'searchExpression'> & {
+export type ProductSearchInteractiveViewState = Pick<ProductSearchViewState, 'searchExpression' | 'isSearching' | 'hasSearched' | 'searchResults' | 'resultCount' | 'hasResults' | 'hasSuggestions'> & {
     filters: Pick<ProductSearchViewState['filters'], 'inStockOnly'> & {
     priceRange: ProductSearchViewState['filters']['priceRange'];
     categoryFilter: {
     categories: Array<Pick<ProductSearchViewState['filters']['categoryFilter']['categories'][number], 'categoryId' | 'isSelected'>>;
 };
 };
-};
-
-export type ProductSearchInteractiveViewState = Pick<ProductSearchViewState, 'searchExpression'> & {
-    filters: Pick<ProductSearchViewState['filters'], 'inStockOnly'> & {
-    priceRange: ProductSearchViewState['filters']['priceRange'];
-    categoryFilter: {
-    categories: Array<Pick<ProductSearchViewState['filters']['categoryFilter']['categories'][number], 'categoryId' | 'isSelected'>>;
-};
-};
+    sortBy: ProductSearchViewState['sortBy'];
+    pagination: ProductSearchViewState['pagination'];
+    suggestions: Array<ProductSearchViewState['suggestions'][number]>;
 };
 
 

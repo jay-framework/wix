@@ -28,12 +28,17 @@ import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../stores-client/wi
 export type SearchSortOption = 'relevance' | 'priceAsc' | 'priceDesc' | 'newest' | 'nameAsc' | 'nameDesc';
 
 /**
+ * Category info carried forward from slow to fast phase
+ */
+type CategoryInfos = ProductSearchSlowViewState['filters']['categoryFilter']['categories'];
+
+/**
  * Data carried forward from slow rendering to fast rendering
  */
 interface SearchSlowCarryForward {
     searchFields: string;
     fuzzySearch: boolean;
-    categoryIds: string[];
+    categories: CategoryInfos;
 }
 
 /**
@@ -42,7 +47,7 @@ interface SearchSlowCarryForward {
 interface SearchFastCarryForward {
     searchFields: string;
     fuzzySearch: boolean;
-    categoryIds: string[];
+    categories: CategoryInfos;
 }
 
 const PAGE_SIZE = 12;
@@ -144,11 +149,10 @@ function mapProductToCard(product: any): ProductCardViewState {
 
 /**
  * Slow Rendering Phase
- * Loads semi-static search configuration:
+ * Loads semi-static configuration:
  * - Search field configuration
  * - Fuzzy search settings
- * - Available categories for filtering
- * - Initial product results
+ * - Available categories for filtering (relatively static)
  */
 async function renderSlowlyChanging(
     props: PageProps,
@@ -158,67 +162,54 @@ async function renderSlowlyChanging(
 
     return Pipeline
         .try(async () => {
-            // Load categories for filtering and initial products
-            const [collectionsResult, productsResult] = await Promise.all([
-                await wixStores.categories.queryCategories({
-                    treeReference: {
-                        appNamespace: "@wix/stores"
-                    }})
-                    .eq('visible', true)
-                    .find(),
-                wixStores.products.queryProducts().limit(PAGE_SIZE).find()
-            ]);
-            console.log(collectionsResult.items)
-            return {
-                collections: collectionsResult.items || [],
-                products: productsResult.items || []
-            };
+            // Load categories for filtering (Catalog V3 API)
+            const categoriesResult = await wixStores.categories.queryCategories({
+                treeReference: {
+                    appNamespace: "@wix/stores"
+                }
+            })
+                .eq('visible', true)
+                .find();
+            
+            console.log('Categories loaded:', categoriesResult.items);
+            return categoriesResult.items || [];
         })
         .recover(error => {
-            console.error('Failed to load search page data:', error);
-            return Pipeline.ok({ collections: [], products: [] });
+            console.error('Failed to load categories:', error);
+            return Pipeline.ok([]);
         })
-        .toPhaseOutput(({ collections, products }) => ({
-            viewState: {
-                searchFields: 'name,description,sku',
-                fuzzySearch: true,
-                isSearching: false,
-                hasSearched: false,
-                searchResults: products.map(mapProductToCard),
-                resultCount: products.length,
-                hasResults: products.length > 0,
-                emptyStateMessage: 'Enter a search term to find products',
-                hasSuggestions: false,
-                filters: {
-                    categoryFilter: {
-                        categories: collections.map((cat) => ({
-                            categoryId: cat._id || '',
-                            categoryName: cat.name || ''
-                        }))
+        .toPhaseOutput(categories => {
+            const categoryInfos: CategoryInfos = categories.map((cat) => ({
+                categoryId: cat._id || '',
+                categoryName: cat.name || ''
+            }));
+
+            return {
+                viewState: {
+                    searchFields: 'name,description,sku',
+                    fuzzySearch: true,
+                    emptyStateMessage: 'Enter a search term to find products',
+                    filters: {
+                        categoryFilter: {
+                            categories: categoryInfos
+                        }
                     }
                 },
-                sortBy: {
-                    currentSort: CurrentSort.relevance
-                },
-                pagination: {
-                    currentPage: 1,
-                    totalPages: 1,
-                    hasNextPage: false,
-                    hasPrevPage: false
-                },
-                suggestions: []
-            },
-            carryForward: {
-                searchFields: 'name,description,sku',
-                fuzzySearch: true,
-                categoryIds: collections.map(c => c._id || '')
-            }
-        }));
+                carryForward: {
+                    searchFields: 'name,description,sku',
+                    fuzzySearch: true,
+                    categories: categoryInfos
+                }
+            };
+        });
 }
 
 /**
  * Fast Rendering Phase
- * Loads dynamic search state that may change per request
+ * Loads dynamic data per request:
+ * - Initial products
+ * - Search results
+ * - Pagination state
  */
 async function renderFastChanging(
     props: PageProps,
@@ -228,30 +219,62 @@ async function renderFastChanging(
     const Pipeline = RenderPipeline.for<ProductSearchFastViewState, SearchFastCarryForward>();
 
     return Pipeline
-        .ok({
-            searchExpression: '',
-            filters: {
-                inStockOnly: false,
-                priceRange: {
-                    minPrice: 0,
-                    maxPrice: 0
-                },
-                categoryFilter: {
-                    categories: slowCarryForward.categoryIds.map(id => ({
-                        categoryId: id,
-                        isSelected: false
-                    }))
-                }
-            }
+        .try(async () => {
+            // Load initial products
+            const productsResult = await wixStores.products.queryProducts()
+                .limit(PAGE_SIZE)
+                .find();
+            
+            return productsResult.items || [];
         })
-        .toPhaseOutput(viewState => ({
-            viewState,
-            carryForward: {
-                searchFields: slowCarryForward.searchFields,
-                fuzzySearch: slowCarryForward.fuzzySearch,
-                categoryIds: slowCarryForward.categoryIds
-            }
-        }));
+        .recover(error => {
+            console.error('Failed to load products:', error);
+            return Pipeline.ok([]);
+        })
+        .toPhaseOutput(products => {
+            const mappedProducts = products.map(mapProductToCard);
+            const totalPages = Math.ceil(products.length / PAGE_SIZE) || 1;
+
+            return {
+                viewState: {
+                    searchExpression: '',
+                    isSearching: false,
+                    hasSearched: false,
+                    searchResults: mappedProducts,
+                    resultCount: products.length,
+                    hasResults: products.length > 0,
+                    hasSuggestions: false,
+                    suggestions: [],
+                    filters: {
+                        inStockOnly: false,
+                        priceRange: {
+                            minPrice: 0,
+                            maxPrice: 0
+                        },
+                        categoryFilter: {
+                            categories: slowCarryForward.categories.map(cat => ({
+                                categoryId: cat.categoryId,
+                                isSelected: false
+                            }))
+                        }
+                    },
+                    sortBy: {
+                        currentSort: CurrentSort.relevance
+                    },
+                    pagination: {
+                        currentPage: 1,
+                        totalPages,
+                        hasNextPage: totalPages > 1,
+                        hasPrevPage: false
+                    }
+                },
+                carryForward: {
+                    searchFields: slowCarryForward.searchFields,
+                    fuzzySearch: slowCarryForward.fuzzySearch,
+                    categories: slowCarryForward.categories
+                }
+            };
+        });
 }
 
 /**
@@ -271,16 +294,23 @@ function ProductSearchInteractive(
 ) {
     const {
         searchExpression: [searchExpression, setSearchExpression],
-        filters: [filters, setFilters]
+        isSearching: [isSearching, setIsSearching],
+        hasSearched: [hasSearched, setHasSearched],
+        searchResults: [searchResults, setSearchResults],
+        resultCount: [resultCount, setResultCount],
+        hasResults: [hasResults, setHasResults],
+        hasSuggestions: [hasSuggestions, setHasSuggestions],
+        suggestions: [suggestions, setSuggestions],
+        filters: [filters, setFilters],
+        sortBy: [sortBy, setSortBy],
+        pagination: [pagination, setPagination]
     } = viewStateSignals;
 
-    const [currentSort, setCurrentSort] = createSignal<CurrentSort>(CurrentSort.relevance);
-    const [currentPage, setCurrentPage] = createSignal(1);
-    const [isSearching, setIsSearching] = createSignal(false);
-    const [hasSearched, setHasSearched] = createSignal(false);
-    const [minPrice, setMinPrice] = createSignal<number>(0);
-    const [maxPrice, setMaxPrice] = createSignal<number>(0);
-    const [inStockOnly, setInStockOnly] = createSignal(false);
+    const [currentSort, setCurrentSort] = createSignal<CurrentSort>(sortBy().currentSort);
+    const [currentPage, setCurrentPage] = createSignal(pagination().currentPage);
+    const [minPrice, setMinPrice] = createSignal<number>(filters().priceRange.minPrice);
+    const [maxPrice, setMaxPrice] = createSignal<number>(filters().priceRange.maxPrice);
+    const [inStockOnly, setInStockOnly] = createSignal(filters().inStockOnly);
     const [selectedCategories, setSelectedCategories] = createSignal<Set<string>>(new Set());
 
     // Perform search function - will be called from various interactions
@@ -308,6 +338,9 @@ function ProductSearchInteractive(
                     inStockOnly: inStockOnly()
                 }
             });
+
+            // TODO: Call search API and update searchResults
+            // For now, we keep the current results
 
         } catch (error) {
             console.error('Search failed:', error);
@@ -348,6 +381,7 @@ function ProductSearchInteractive(
         };
         const newSort = sortMap[value] ?? CurrentSort.relevance;
         setCurrentSort(newSort);
+        setSortBy({ currentSort: newSort });
         setCurrentPage(1);
         if (hasSearched()) {
             performSearch();
@@ -423,9 +457,12 @@ function ProductSearchInteractive(
     // Suggestion clicks
     refs.suggestions.suggestionButton.onclick(({ coordinate }) => {
         const [suggestionId] = coordinate;
-        // In a real implementation, we would look up the suggestion text
-        setCurrentPage(1);
-        performSearch();
+        const suggestion = suggestions().find(s => s.suggestionId === suggestionId);
+        if (suggestion) {
+            setSearchExpression(suggestion.suggestionText);
+            setCurrentPage(1);
+            performSearch();
+        }
     });
 
     // Product card add to cart
@@ -437,15 +474,27 @@ function ProductSearchInteractive(
 
     // Build the categories array for render
     const categoriesForRender = createMemo(() => {
-        return fastCarryForward.categoryIds.map(id => ({
-            categoryId: id,
-            isSelected: selectedCategories().has(id)
+        return fastCarryForward.categories.map(cat => ({
+            categoryId: cat.categoryId,
+            isSelected: selectedCategories().has(cat.categoryId)
         }));
     });
+
+    // Computed pagination values
+    const totalPages = createMemo(() => Math.ceil(resultCount() / PAGE_SIZE) || 1);
+    const hasNextPage = createMemo(() => currentPage() < totalPages());
+    const hasPrevPage = createMemo(() => currentPage() > 1);
 
     return {
         render: (): ProductSearchInteractiveViewState => ({
             searchExpression: searchExpression(),
+            isSearching: isSearching(),
+            hasSearched: hasSearched(),
+            searchResults: searchResults(),
+            resultCount: resultCount(),
+            hasResults: hasResults(),
+            hasSuggestions: hasSuggestions(),
+            suggestions: suggestions(),
             filters: {
                 inStockOnly: inStockOnly(),
                 priceRange: {
@@ -455,6 +504,15 @@ function ProductSearchInteractive(
                 categoryFilter: {
                     categories: categoriesForRender()
                 }
+            },
+            sortBy: {
+                currentSort: currentSort()
+            },
+            pagination: {
+                currentPage: currentPage(),
+                totalPages: totalPages(),
+                hasNextPage: hasNextPage(),
+                hasPrevPage: hasPrevPage()
             }
         })
     };
@@ -465,6 +523,11 @@ function ProductSearchInteractive(
  * 
  * A complete headless product search component with server-side rendering,
  * filtering, sorting, pagination, and search suggestions.
+ * 
+ * Rendering phases:
+ * - Slow: Categories for filtering (relatively static)
+ * - Fast: Products, search results, pagination (dynamic per request)
+ * - Interactive: Search input, filter selections, sorting (client-side)
  * 
  * Usage:
  * ```typescript
