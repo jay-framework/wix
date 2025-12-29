@@ -37,6 +37,7 @@ import {
 import {MediaGalleryViewState, Selected} from "../contracts/media-gallery.jay-contract";
 import {MediaType} from "../contracts/media.jay-contract";
 import {ADD, JSONPatchOperation, patch, REPLACE} from '@jay-framework/json-patch';
+import { quickAddToCart } from '../stores-actions';
 
 /**
  * URL parameters for product page routes
@@ -501,13 +502,11 @@ function ProductPageInteractive(
 
         setIsAddingToCart(true);
         try {
-            // TODO: Implement cart API call
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
-            console.log('Adding to cart:', {
+            const result = await quickAddToCart({
                 productId: fastCarryForward.productId,
                 quantity: quantity(),
             });
+            console.log('Added to cart:', result.message);
         } catch (error) {
             console.error('Failed to add to cart:', error);
         } finally {

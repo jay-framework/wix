@@ -26,6 +26,7 @@ export default defineConfig(({ isSsrBuild }) => ({
             external: [
                 '@jay-framework/component',
                 '@jay-framework/fullstack-component',
+                '@jay-framework/stack-client-runtime', // For action callers in client bundle
                 '@jay-framework/reactive',
                 '@jay-framework/runtime',
                 '@jay-framework/json-patch',

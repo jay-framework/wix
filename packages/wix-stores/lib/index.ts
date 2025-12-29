@@ -1,3 +1,6 @@
 // Export headless components
 export * from "./components";
-export { provideWixStoresService } from './stores-client/wix-stores-service'
+export { provideWixStoresService } from './stores-client/wix-stores-service';
+
+// Export server actions
+export * from './stores-actions';

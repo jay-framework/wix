@@ -10,3 +10,11 @@ contracts:
     contract: product-search.jay-contract  # Export subpath (matches package.json exports)
     component: productSearch  # Exported member name from index.ts
     description: Headless product search page
+
+# Server actions (named exports from main module)
+actions:
+  - searchProducts
+  - getAllProducts
+  - getProductBySlug
+  - getCategories
+  - quickAddToCart

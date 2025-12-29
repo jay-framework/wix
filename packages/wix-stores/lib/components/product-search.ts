@@ -22,6 +22,7 @@ import {
 } from '../contracts/product-card.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../stores-client/wix-stores-service';
 import { patch, REPLACE } from '@jay-framework/json-patch';
+import { searchProducts, quickAddToCart, ProductSortField } from '../stores-actions';
 
 /**
  * Search sort options
@@ -329,6 +330,18 @@ function ProductSearchInteractive(
     let searchVersion = 0; // Incremented on each search to handle race conditions
     const DEBOUNCE_MS = 300;
 
+    // Map CurrentSort enum to action sort field
+    const mapSortToAction = (sort: CurrentSort): ProductSortField => {
+        switch (sort) {
+            case CurrentSort.priceAsc: return 'price_asc';
+            case CurrentSort.priceDesc: return 'price_desc';
+            case CurrentSort.newest: return 'newest';
+            case CurrentSort.nameAsc: return 'name_asc';
+            case CurrentSort.nameDesc: return 'name_desc';
+            default: return 'relevance';
+        }
+    };
+
     // Perform the search - extracted so we can pass version for race condition handling
     const performSearch = async (
         version: number,
@@ -341,33 +354,36 @@ function ProductSearchInteractive(
         setHasSearched(true);
 
         try {
-            // In the interactive phase, we log the search parameters
-            // In a real implementation, this would call a server endpoint via fetch
-            await new Promise(resolve => setTimeout(resolve, 300));
+            // Call the searchProducts action
+            const result = await searchProducts({
+                query: searchTerm || '',
+                filters: {
+                    minPrice: currentFilters.priceRange.minPrice || undefined,
+                    maxPrice: currentFilters.priceRange.maxPrice || undefined,
+                    categoryIds: currentFilters.categoryFilter.categories
+                        .filter(c => c.isSelected)
+                        .map(c => c.categoryId),
+                    inStockOnly: currentFilters.inStockOnly
+                },
+                sortBy: mapSortToAction(currentSort),
+                page: currentPage,
+                pageSize: PAGE_SIZE
+            });
 
             // Check if a newer search was started - if so, ignore this result
             if (version !== searchVersion) {
                 return;
             }
 
-            console.log('Searching:', {
-                searchExpression: searchTerm,
-                searchFields: fastCarryForward.searchFields,
-                fuzzySearch: fastCarryForward.fuzzySearch,
-                sort: currentSort,
-                page: currentPage,
-                filters: {
-                    minPrice: currentFilters.priceRange.minPrice,
-                    maxPrice: currentFilters.priceRange.maxPrice,
-                    categories: currentFilters.categoryFilter.categories
-                        .filter(c => c.isSelected)
-                        .map(c => c.categoryId),
-                    inStockOnly: currentFilters.inStockOnly
-                }
-            });
-
-            // TODO: Call search API and update searchResults
-            // For now, we keep the current results
+            // Update the search results
+            setSearchResults(result.products);
+            setResultCount(result.totalCount);
+            setHasResults(result.products.length > 0);
+            setPagination(patch(pagination(), [
+                { op: REPLACE, path: ['totalPages'], value: result.totalPages },
+                { op: REPLACE, path: ['hasNextPage'], value: result.hasNextPage },
+                { op: REPLACE, path: ['hasPrevPage'], value: currentPage > 1 }
+            ]));
 
         } catch (error) {
             // Only log error if this is still the current search
@@ -586,8 +602,28 @@ function ProductSearchInteractive(
     // Product card add to cart
     refs.searchResults.addToCartButton.onclick(async ({ coordinate }) => {
         const [productId] = coordinate;
-        console.log('Quick add to cart:', productId);
-        // TODO: Implement cart functionality
+        
+        // Find the product in results and set loading state
+        const currentResults = searchResults();
+        const productIndex = currentResults.findIndex(p => p._id === productId);
+        if (productIndex === -1) return;
+
+        // Update loading state for this product
+        setSearchResults(patch(currentResults, [
+            { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: true }
+        ]));
+
+        try {
+            const result = await quickAddToCart({ productId, quantity: 1 });
+            console.log('Added to cart:', result.message);
+        } catch (error) {
+            console.error('Failed to add to cart:', error);
+        } finally {
+            // Reset loading state
+            setSearchResults(patch(searchResults(), [
+                { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: false }
+            ]));
+        }
     });
 
     return {
