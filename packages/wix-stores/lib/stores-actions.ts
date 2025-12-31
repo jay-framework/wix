@@ -132,8 +132,27 @@ const DEFAULT_PRODUCT_PAGE_PATH = '/products';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapProductToCard(product: any, productPagePath: string = DEFAULT_PRODUCT_PAGE_PATH): ProductCardViewState {
     const mainMedia = product.media?.main;
-    const hasDiscount = product.compareAtPriceRange?.minValue?.amount !== product.actualPriceRange?.minValue?.amount;
     const slug = product.slug || '';
+    
+    // In Catalog V3, prices come from variantsInfo.variants[0].price
+    // Fall back to actualPriceRange/compareAtPriceRange for backwards compatibility
+    const firstVariant = product.variantsInfo?.variants?.[0];
+    const variantPrice = firstVariant?.price;
+    
+    // Get actual price - prefer variant price, fall back to price range
+    const actualAmount = variantPrice?.actualPrice?.amount || 
+                         product.actualPriceRange?.minValue?.amount || '0';
+    const actualFormattedAmount = variantPrice?.actualPrice?.formattedAmount || 
+                                   product.actualPriceRange?.minValue?.formattedAmount || '';
+    
+    // Get compare-at price (for discounts)
+    const compareAtAmount = variantPrice?.compareAtPrice?.amount || 
+                            product.compareAtPriceRange?.minValue?.amount || '0';
+    const compareAtFormattedAmount = variantPrice?.compareAtPrice?.formattedAmount || 
+                                      product.compareAtPriceRange?.minValue?.formattedAmount || '';
+    
+    // Has discount if compare-at price exists and is different from actual price
+    const hasDiscount = compareAtAmount && compareAtAmount !== '0' && compareAtAmount !== actualAmount;
 
     return {
         _id: product._id || '',
@@ -153,22 +172,22 @@ function mapProductToCard(product: any, productPagePath: string = DEFAULT_PRODUC
         },
         actualPriceRange: {
             minValue: {
-                amount: product.actualPriceRange?.minValue?.amount || '0',
-                formattedAmount: product.actualPriceRange?.minValue?.formattedAmount || ''
+                amount: actualAmount,
+                formattedAmount: actualFormattedAmount
             },
             maxValue: {
-                amount: product.actualPriceRange?.maxValue?.amount || '0',
-                formattedAmount: product.actualPriceRange?.maxValue?.formattedAmount || ''
+                amount: product.actualPriceRange?.maxValue?.amount || actualAmount,
+                formattedAmount: product.actualPriceRange?.maxValue?.formattedAmount || actualFormattedAmount
             }
         },
         compareAtPriceRange: {
             minValue: {
-                amount: product.compareAtPriceRange?.minValue?.amount || '0',
-                formattedAmount: product.compareAtPriceRange?.minValue?.formattedAmount || ''
+                amount: compareAtAmount,
+                formattedAmount: compareAtFormattedAmount
             },
             maxValue: {
-                amount: product.compareAtPriceRange?.maxValue?.amount || '0',
-                formattedAmount: product.compareAtPriceRange?.maxValue?.formattedAmount || ''
+                amount: product.compareAtPriceRange?.maxValue?.amount || compareAtAmount,
+                formattedAmount: product.compareAtPriceRange?.maxValue?.formattedAmount || compareAtFormattedAmount
             }
         },
         currency: product.currency || 'USD',
@@ -229,7 +248,9 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
 
         try {
             // Use queryProducts for all queries
-            let queryBuilder = wixStores.products.queryProducts();
+            let queryBuilder = wixStores.products.queryProducts({
+                fields: ['CURRENCY']
+            });
 
             // Apply sorting (using supported fields)
             switch (sortBy) {

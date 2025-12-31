@@ -61,9 +61,9 @@
       }
 
       /* Product card wrapper - contains both image and content */
-      .product-card-wrapper {
-        display: contents;
-      }
+      /*.product-card-wrapper {*/
+      /*  display: contents;*/
+      /*}*/
 
       @media (max-width: 1024px) {
         .main-content {
