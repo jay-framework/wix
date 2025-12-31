@@ -60,8 +60,8 @@
         font-weight: 600;
       }
 
-      /* Make forEach wrapper div not break the grid */
-      .products-grid > div {
+      /* Product card wrapper - contains both image and content */
+      .product-card-wrapper {
         display: contents;
       }
 
@@ -209,8 +209,8 @@
 
           <!-- Products Grid -->
           <div class="products-grid" if="productSearch.hasResults">
-            <div forEach="productSearch.searchResults" trackBy="_id">
-              <article class="product-card">
+            <article class="product-card" forEach="productSearch.searchResults" trackBy="_id">
+              <div class="product-card-wrapper">
                 <a href="{productUrl}" class="product-card-image">
                   <img 
                     src="{thumbnail.url}" 
@@ -252,8 +252,8 @@
                     Out of Stock
                   </button>
                 </div>
-              </article>
-            </div>
+              </div>
+            </article>
           </div>
 
           <!-- Pagination -->
