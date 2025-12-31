@@ -8,288 +8,36 @@
     <script type="application/jay-data">
       data:
     </script>
+    <link rel="stylesheet" href="../../styles/store-theme.css" />
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      :root {
-        --bg-primary: #0a0a0f;
-        --bg-secondary: #12121a;
-        --bg-card: #1a1a24;
-        --bg-hover: #22222e;
-        --text-primary: #f5f5f7;
-        --text-secondary: #a1a1aa;
-        --text-muted: #71717a;
-        --accent: #8b5cf6;
-        --accent-hover: #a78bfa;
-        --accent-glow: rgba(139, 92, 246, 0.15);
-        --border: #27272a;
-        --success: #22c55e;
-        --warning: #f59e0b;
-        --error: #ef4444;
-        --radius-sm: 8px;
-        --radius-md: 12px;
-        --radius-lg: 16px;
-        --radius-xl: 24px;
-      }
-
-      body {
-        font-family: 'Outfit', system-ui, sans-serif;
-        background: var(--bg-primary);
-        color: var(--text-primary);
-        min-height: 100vh;
-        line-height: 1.6;
-      }
-
+      /* Page-specific layout */
       .search-page {
-        max-width: 1600px;
+        max-width: var(--container-max);
         margin: 0 auto;
-        padding: 40px 32px;
+        padding: 40px var(--page-padding);
       }
 
-      /* Header Section */
       .page-header {
         text-align: center;
-        margin-bottom: 48px;
+        margin-bottom: var(--section-gap);
       }
 
-      .page-title {
-        font-size: 48px;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 16px;
-      }
-
-      .page-subtitle {
-        font-size: 18px;
-        color: var(--text-secondary);
+      .page-header .page-subtitle {
         max-width: 600px;
-        margin: 0 auto;
+        margin: 16px auto 0;
       }
 
-      /* Search Section */
       .search-section {
-        max-width: 800px;
-        margin: 0 auto 48px;
+        max-width: var(--container-narrow);
+        margin: 0 auto var(--section-gap);
       }
 
-      .search-box {
-        display: flex;
-        gap: 12px;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
-        padding: 8px;
-        transition: all 0.3s ease;
-      }
-
-      .search-box:focus-within {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 4px var(--accent-glow);
-      }
-
-      .search-input {
-        flex: 1;
-        padding: 16px 20px;
-        background: transparent;
-        border: none;
-        font-size: 16px;
-        color: var(--text-primary);
-        font-family: inherit;
-      }
-
-      .search-input::placeholder {
-        color: var(--text-muted);
-      }
-
-      .search-input:focus {
-        outline: none;
-      }
-
-      .search-btn {
-        padding: 16px 32px;
-        background: linear-gradient(135deg, var(--accent) 0%, #6d28d9 100%);
-        border: none;
-        border-radius: var(--radius-md);
-        color: #fff;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .search-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
-      }
-
-      .search-btn:active {
-        transform: translateY(0);
-      }
-
-      .clear-btn {
-        padding: 16px;
-        background: var(--bg-hover);
-        border: none;
-        border-radius: var(--radius-md);
-        color: var(--text-secondary);
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-
-      .clear-btn:hover {
-        background: var(--border);
-        color: var(--text-primary);
-      }
-
-      /* Main Layout */
       .main-content {
         display: grid;
         grid-template-columns: 280px 1fr;
         gap: 32px;
       }
 
-      /* Filters Sidebar */
-      .filters-sidebar {
-        background: var(--bg-secondary);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
-        padding: 24px;
-        height: fit-content;
-        position: sticky;
-        top: 24px;
-      }
-
-      .filters-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 24px;
-        padding-bottom: 16px;
-        border-bottom: 1px solid var(--border);
-      }
-
-      .filters-title {
-        font-size: 18px;
-        font-weight: 600;
-      }
-
-      .clear-filters-btn {
-        padding: 8px 16px;
-        background: transparent;
-        border: 1px solid var(--border);
-        border-radius: var(--radius-sm);
-        color: var(--text-secondary);
-        font-size: 13px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-
-      .clear-filters-btn:hover {
-        background: var(--bg-hover);
-        color: var(--text-primary);
-      }
-
-      .filter-group {
-        margin-bottom: 24px;
-      }
-
-      .filter-group:last-child {
-        margin-bottom: 0;
-      }
-
-      .filter-label {
-        display: block;
-        font-size: 14px;
-        font-weight: 500;
-        color: var(--text-secondary);
-        margin-bottom: 12px;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-
-      .price-inputs {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
-
-      .price-input {
-        padding: 12px 16px;
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-sm);
-        color: var(--text-primary);
-        font-size: 14px;
-        font-family: inherit;
-      }
-
-      .price-input::placeholder {
-        color: var(--text-muted);
-      }
-
-      .price-input:focus {
-        outline: none;
-        border-color: var(--accent);
-      }
-
-      .checkbox-group {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .checkbox-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        cursor: pointer;
-      }
-
-      .checkbox-input {
-        width: 20px;
-        height: 20px;
-        accent-color: var(--accent);
-        cursor: pointer;
-      }
-
-      .checkbox-label {
-        font-size: 14px;
-        color: var(--text-primary);
-      }
-
-      .apply-filters-btn {
-        width: 100%;
-        padding: 14px 24px;
-        margin-top: 24px;
-        background: linear-gradient(135deg, var(--accent) 0%, #6d28d9 100%);
-        border: none;
-        border-radius: var(--radius-md);
-        color: #fff;
-        font-size: 15px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-
-      .apply-filters-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
-      }
-
-      /* Results Section */
       .results-section {
         display: flex;
         flex-direction: column;
@@ -312,358 +60,19 @@
         font-weight: 600;
       }
 
-      .sort-select {
-        padding: 12px 40px 12px 16px;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-md);
-        color: var(--text-primary);
-        font-size: 14px;
-        font-family: inherit;
-        cursor: pointer;
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a1a1aa' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 16px center;
-      }
-
-      .sort-select:focus {
-        outline: none;
-        border-color: var(--accent);
-      }
-
-      /* Product Grid */
-      .products-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 24px;
-      }
-
-      /* Product Card */
-      .product-card {
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
-        overflow: hidden;
-        transition: all 0.3s ease;
-        position: relative;
-      }
-
-      .product-card:hover {
-        border-color: var(--accent);
-        transform: translateY(-4px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-      }
-
-      .product-image-container {
-        position: relative;
-        aspect-ratio: 1;
-        overflow: hidden;
-        background: var(--bg-secondary);
-      }
-
-      .product-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.4s ease;
-      }
-
-      .product-card:hover .product-image {
-        transform: scale(1.05);
-      }
-
-      .product-ribbon {
-        position: absolute;
-        top: 12px;
-        left: 12px;
-        padding: 6px 12px;
-        background: linear-gradient(135deg, var(--accent) 0%, #6d28d9 100%);
-        border-radius: var(--radius-sm);
-        font-size: 12px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-
-      .stock-badge {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        padding: 6px 12px;
-        border-radius: var(--radius-sm);
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-      }
-
-      .stock-badge.in-stock {
-        background: rgba(34, 197, 94, 0.2);
-        color: var(--success);
-      }
-
-      .stock-badge.out-of-stock {
-        background: rgba(239, 68, 68, 0.2);
-        color: var(--error);
-      }
-
-      .product-content {
-        padding: 20px;
-      }
-
-      .product-brand {
-        font-size: 12px;
-        color: var(--accent);
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        margin-bottom: 4px;
-      }
-
-      .product-name {
-        font-size: 18px;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 8px;
-        line-height: 1.4;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
-
-      .product-name a {
-        color: inherit;
-        text-decoration: none;
-      }
-
-      .product-name a:hover {
-        color: var(--accent-hover);
-      }
-
-      .product-price {
-        display: flex;
-        align-items: baseline;
-        gap: 12px;
-        margin-bottom: 16px;
-      }
-
-      .current-price {
-        font-size: 22px;
-        font-weight: 700;
-        color: var(--text-primary);
-      }
-
-      .original-price {
-        font-size: 16px;
-        color: var(--text-muted);
-        text-decoration: line-through;
-      }
-
-      .discount-badge {
-        padding: 4px 8px;
-        background: rgba(239, 68, 68, 0.15);
-        color: var(--error);
-        border-radius: var(--radius-sm);
-        font-size: 12px;
-        font-weight: 600;
-      }
-
-      .add-to-cart-btn {
-        width: 100%;
-        padding: 14px 24px;
-        background: transparent;
-        border: 2px solid var(--accent);
-        border-radius: var(--radius-md);
-        color: var(--accent);
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-
-      .add-to-cart-btn:hover {
-        background: var(--accent);
-        color: #fff;
-      }
-
-      .add-to-cart-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-
-      /* Loading State */
-      .loading-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(10, 10, 15, 0.8);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        backdrop-filter: blur(4px);
-      }
-
-      .loading-spinner {
-        width: 48px;
-        height: 48px;
-        border: 4px solid var(--border);
-        border-top-color: var(--accent);
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-
-      @keyframes spin {
-        to { transform: rotate(360deg); }
-      }
-
-      /* Empty State */
-      .empty-state {
-        text-align: center;
-        padding: 80px 40px;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
-      }
-
-      .empty-state-icon {
-        font-size: 64px;
-        margin-bottom: 24px;
-        opacity: 0.5;
-      }
-
-      .empty-state-title {
-        font-size: 24px;
-        font-weight: 600;
-        margin-bottom: 12px;
-      }
-
-      .empty-state-message {
-        color: var(--text-secondary);
-        font-size: 16px;
-      }
-
-      /* Pagination */
-      .pagination {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 16px;
-        margin-top: 48px;
-      }
-
-      .pagination-btn {
-        padding: 12px 24px;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-md);
-        color: var(--text-primary);
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-
-      .pagination-btn:hover:not(:disabled) {
-        background: var(--bg-hover);
-        border-color: var(--accent);
-      }
-
-      .pagination-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-
-      .pagination-info {
-        font-size: 14px;
-        color: var(--text-secondary);
-      }
-
-      .load-more-btn {
-        width: 100%;
-        max-width: 300px;
-        margin: 0 auto;
-        padding: 16px 32px;
-        background: var(--bg-secondary);
-        border: 2px solid var(--accent);
-        border-radius: var(--radius-md);
-        color: var(--accent);
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-
-      .load-more-btn:hover {
-        background: var(--accent);
-        color: #fff;
-      }
-
-      /* Suggestions */
-      .suggestions-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-top: 16px;
-        justify-content: center;
-      }
-
-      .suggestion-btn {
-        padding: 8px 16px;
-        background: var(--bg-hover);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-xl);
-        color: var(--text-secondary);
-        font-size: 13px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-
-      .suggestion-btn:hover {
-        background: var(--accent);
-        border-color: var(--accent);
-        color: #fff;
-      }
-
-      /* Responsive */
       @media (max-width: 1024px) {
         .main-content {
           grid-template-columns: 1fr;
-        }
-
-        .filters-sidebar {
-          position: static;
-        }
-      }
-
-      @media (max-width: 600px) {
-        .search-page {
-          padding: 24px 16px;
-        }
-
-        .page-title {
-          font-size: 32px;
-        }
-
-        .search-box {
-          flex-direction: column;
-        }
-
-        .products-grid {
-          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-          gap: 16px;
         }
       }
     </style>
   </head>
   <body>
-    <!-- Loading Overlay -->
-    <div>
-    <div class="loading-overlay" if="productSearch.isSearching">
-      <div class="loading-spinner"></div>
-    </div>
-
     <div class="search-page">
+      <!-- Loading Overlay -->
+      <div class="loading-overlay" if="productSearch.isSearching">
+        <div class="loading-spinner"></div>
+      </div>
       <!-- Page Header -->
       <header class="page-header">
         <h1 class="page-title">Discover Products</h1>
@@ -674,22 +83,22 @@
       <div class="search-section">
         <div class="search-box">
           <input 
-            class="search-input" 
+            class="input input-lg" 
             type="text" 
             placeholder="Search for products..." 
             value="{productSearch.searchExpression}"
             ref="productSearch.searchExpression"
           />
-          <button class="clear-btn" ref="productSearch.clearSearchButton" title="Clear search">
+          <button class="btn btn-ghost" ref="productSearch.clearSearchButton" title="Clear search">
             ✕
           </button>
-          <button class="search-btn" ref="productSearch.searchButton">
+          <button class="btn btn-primary" ref="productSearch.searchButton">
             🔍 Search
           </button>
         </div>
 
         <!-- Suggestions -->
-        <div class="suggestions-container" if="productSearch.hasSuggestions">
+        <div class="suggestions" if="productSearch.hasSuggestions">
           <button 
             class="suggestion-btn" 
             forEach="productSearch.suggestions" 
@@ -706,25 +115,25 @@
         <!-- Filters Sidebar -->
         <aside class="filters-sidebar">
           <div class="filters-header">
-            <h3 class="filters-title">Filters</h3>
-            <button class="clear-filters-btn" ref="productSearch.filters.clearFilters">
+            <h3 class="section-title" style="font-size: 18px;">Filters</h3>
+            <button class="btn btn-ghost btn-sm" ref="productSearch.filters.clearFilters">
               Clear All
             </button>
           </div>
 
           <!-- Price Range -->
           <div class="filter-group">
-            <label class="filter-label">Price Range</label>
+            <label class="label">Price Range</label>
             <div class="price-inputs">
               <input 
-                class="price-input" 
+                class="input" 
                 type="number" 
                 placeholder="Min" 
                 value="{productSearch.filters.priceRange.minPrice}"
                 ref="productSearch.filters.priceRange.minPrice"
               />
               <input 
-                class="price-input" 
+                class="input" 
                 type="number" 
                 placeholder="Max" 
                 value="{productSearch.filters.priceRange.maxPrice}"
@@ -735,7 +144,7 @@
 
           <!-- Categories -->
           <div class="filter-group">
-            <label class="filter-label">Categories</label>
+            <label class="label">Categories</label>
             <div class="checkbox-group">
               <label 
                 class="checkbox-item" 
@@ -743,11 +152,11 @@
                 trackBy="categoryId"
               >
                 <input 
-                  class="checkbox-input" 
+                  class="checkbox" 
                   type="checkbox"
                   ref="productSearch.filters.categoryFilter.categories.isSelected"
                 />
-                <span class="checkbox-label">{categoryName}</span>
+                <span>{categoryName}</span>
               </label>
             </div>
           </div>
@@ -756,15 +165,15 @@
           <div class="filter-group">
             <label class="checkbox-item">
               <input 
-                class="checkbox-input" 
+                class="checkbox" 
                 type="checkbox"
                 ref="productSearch.filters.inStockOnly"
               />
-              <span class="checkbox-label">In Stock Only</span>
+              <span>In Stock Only</span>
             </label>
           </div>
 
-          <button class="apply-filters-btn" ref="productSearch.filters.applyFilters">
+          <button class="btn btn-primary btn-block" ref="productSearch.filters.applyFilters" style="margin-top: 24px;">
             Apply Filters
           </button>
         </aside>
@@ -776,10 +185,7 @@
             <p class="results-count">
               Showing <span>{productSearch.resultCount}</span> products
             </p>
-            <select 
-              class="sort-select" 
-              ref="productSearch.sortBy.sortDropdown"
-            >
+            <select class="select" ref="productSearch.sortBy.sortDropdown">
               <option value="relevance">Most Relevant</option>
               <option value="newest">Newest First</option>
               <option value="priceAsc">Price: Low to High</option>
@@ -803,40 +209,36 @@
               forEach="productSearch.searchResults" 
               trackBy="_id"
             >
-              <a href="{productUrl}">
-              <div class="product-image-container">
+              <a href="{productUrl}" class="product-card-image">
                 <img 
-                  class="product-image" 
                   src="{thumbnail.url}" 
                   alt="{thumbnail.altText}"
                   loading="lazy"
                 />
-                <span class="product-ribbon" if="hasRibbon">{ribbon.name}</span>
-                <span class="stock-badge in-stock" if="inventory.availabilityStatus === IN_STOCK">
+                <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
+                <span class="badge badge-success" style="position: absolute; top: 12px; right: 12px;" if="inventory.availabilityStatus === IN_STOCK">
                   In Stock
                 </span>
-                <span class="stock-badge out-of-stock" if="inventory.availabilityStatus === OUT_OF_STOCK">
+                <span class="badge badge-error" style="position: absolute; top: 12px; right: 12px;" if="inventory.availabilityStatus === OUT_OF_STOCK">
                   Out of Stock
                 </span>
-              </div>
               </a>
-              <div class="product-content">
-                <p class="product-brand" if="brand.name">{brand.name}</p>
-                <h3 class="product-name">
-                  <a href="/products/{slug}" ref="productSearch.searchResults.productLink">{name}</a>
+              <div class="product-card-content">
+                <p class="product-card-brand" if="brand.name">{brand.name}</p>
+                <h3 class="product-card-name">
+                  <a href="{productUrl}" ref="productSearch.searchResults.productLink">{name}</a>
                 </h3>
-                <div class="product-price">
+                <div class="product-card-price">
                   <span class="current-price">{actualPriceRange.minValue.formattedAmount}</span>
                   <span class="original-price" if="hasDiscount">
                     {compareAtPriceRange.minValue.formattedAmount}
                   </span>
-                  <span class="discount-badge" if="hasDiscount">Sale</span>
+                  <span class="badge badge-error" if="hasDiscount">Sale</span>
                 </div>
                 <button 
-                  class="add-to-cart-btn" 
+                  class="btn btn-secondary btn-block" 
                   ref="productSearch.searchResults.addToCartButton"
                 >
-                    <!--                  disabled="{inventory.availabilityStatus == OUT_OF_STOCK}"-->
                   Add to Cart
                 </button>
               </div>
@@ -846,7 +248,7 @@
           <!-- Pagination -->
           <div class="pagination" if="productSearch.hasResults">
             <button 
-              class="pagination-btn" 
+              class="btn btn-ghost" 
               ref="productSearch.pagination.prevButton"
               disabled="{!productSearch.pagination.hasPrevPage}"
             >
@@ -856,7 +258,7 @@
               Page {productSearch.pagination.currentPage} of {productSearch.pagination.totalPages}
             </span>
             <button 
-              class="pagination-btn" 
+              class="btn btn-ghost" 
               ref="productSearch.pagination.nextButton"
               disabled="{!productSearch.pagination.hasNextPage}"
             >
@@ -866,7 +268,8 @@
 
           <!-- Load More (Alternative) -->
           <button 
-            class="load-more-btn" 
+            class="btn btn-secondary" 
+            style="max-width: 300px; margin: 0 auto;"
             if="productSearch.pagination.hasNextPage"
             ref="productSearch.pagination.loadMoreButton"
           >
@@ -875,6 +278,6 @@
         </section>
       </div>
     </div>
-    </div>
   </body>
 </html>
+
