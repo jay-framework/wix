@@ -323,8 +323,11 @@ async function renderFastChanging(
 ) {
     const Pipeline = RenderPipeline.for<ProductPageFastViewState, ProductFastCarryForward>()
 
+    // Determine if actions should be enabled based on stock status
+    const isInStock = slowCarryForward.stockStatus === StockStatus.IN_STOCK;
+    
     return Pipeline.ok({
-            actionsEnabled: false,
+            actionsEnabled: isInStock,
             options: slowCarryForward.options,
             modifiers: slowCarryForward.modifiers,
             mediaGallery: slowCarryForward.mediaGallery,
@@ -388,6 +391,9 @@ function ProductPageInteractive(
     const price = createMemo(() => selectedVariant().price)
     const strikethroughPrice = createMemo(() => selectedVariant().strikethroughPrice)
     const stockStatus = createMemo(() => selectedVariant().inventoryStatus)
+    
+    // Actions are enabled when the selected variant is in stock
+    const computedActionsEnabled = createMemo(() => stockStatus() === StockStatus.IN_STOCK)
 
     const interactiveMedia = createMemo((prev: MediaGalleryViewState) => {
         prev = prev || mediaGallery();
@@ -519,7 +525,7 @@ function ProductPageInteractive(
             quantity: {
                 quantity: quantity(),
             },
-            actionsEnabled,
+            actionsEnabled: computedActionsEnabled,
             options,
             modifiers,
             mediaGallery: interactiveMedia,

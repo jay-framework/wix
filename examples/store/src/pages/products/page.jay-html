@@ -60,6 +60,11 @@
         font-weight: 600;
       }
 
+      /* Make forEach wrapper div not break the grid */
+      .products-grid > div {
+        display: contents;
+      }
+
       @media (max-width: 1024px) {
         .main-content {
           grid-template-columns: 1fr;
@@ -204,45 +209,51 @@
 
           <!-- Products Grid -->
           <div class="products-grid" if="productSearch.hasResults">
-            <article 
-              class="product-card" 
-              forEach="productSearch.searchResults" 
-              trackBy="_id"
-            >
-              <a href="{productUrl}" class="product-card-image">
-                <img 
-                  src="{thumbnail.url}" 
-                  alt="{thumbnail.altText}"
-                  loading="lazy"
-                />
-                <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
-                <span class="badge badge-success" style="position: absolute; top: 12px; right: 12px;" if="inventory.availabilityStatus === IN_STOCK">
-                  In Stock
-                </span>
-                <span class="badge badge-error" style="position: absolute; top: 12px; right: 12px;" if="inventory.availabilityStatus === OUT_OF_STOCK">
-                  Out of Stock
-                </span>
-              </a>
-              <div class="product-card-content">
-                <p class="product-card-brand" if="brand.name">{brand.name}</p>
-                <h3 class="product-card-name">
-                  <a href="{productUrl}" ref="productSearch.searchResults.productLink">{name}</a>
-                </h3>
-                <div class="product-card-price">
-                  <span class="current-price">{actualPriceRange.minValue.formattedAmount}</span>
-                  <span class="original-price" if="hasDiscount">
-                    {compareAtPriceRange.minValue.formattedAmount}
+            <div forEach="productSearch.searchResults" trackBy="_id">
+              <article class="product-card">
+                <a href="{productUrl}" class="product-card-image">
+                  <img 
+                    src="{thumbnail.url}" 
+                    alt="{thumbnail.altText}"
+                    loading="lazy"
+                  />
+                  <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
+                  <span class="badge badge-success" style="position: absolute; top: 12px; right: 12px;" if="inventory.availabilityStatus === IN_STOCK">
+                    In Stock
                   </span>
-                  <span class="badge badge-error" if="hasDiscount">Sale</span>
+                  <span class="badge badge-error" style="position: absolute; top: 12px; right: 12px;" if="inventory.availabilityStatus === OUT_OF_STOCK">
+                    Out of Stock
+                  </span>
+                </a>
+                <div class="product-card-content">
+                  <p class="product-card-brand" if="brand.name">{brand.name}</p>
+                  <h3 class="product-card-name">
+                    <a href="{productUrl}" ref="productSearch.searchResults.productLink">{name}</a>
+                  </h3>
+                  <div class="product-card-price">
+                    <span class="current-price">{actualPriceRange.minValue.formattedAmount}</span>
+                    <span class="original-price" if="hasDiscount">
+                      {compareAtPriceRange.minValue.formattedAmount}
+                    </span>
+                    <span class="badge badge-error" if="hasDiscount">Sale</span>
+                  </div>
+                  <button 
+                    class="btn btn-secondary btn-block" 
+                    ref="productSearch.searchResults.addToCartButton"
+                    if="inventory.availabilityStatus === IN_STOCK"
+                  >
+                    Add to Cart
+                  </button>
+                  <button 
+                    class="btn btn-ghost btn-block" 
+                    disabled="true"
+                    if="inventory.availabilityStatus === OUT_OF_STOCK"
+                  >
+                    Out of Stock
+                  </button>
                 </div>
-                <button 
-                  class="btn btn-secondary btn-block" 
-                  ref="productSearch.searchResults.addToCartButton"
-                >
-                  Add to Cart
-                </button>
-              </div>
-            </article>
+              </article>
+            </div>
           </div>
 
           <!-- Pagination -->
