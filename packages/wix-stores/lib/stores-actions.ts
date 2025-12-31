@@ -126,15 +126,20 @@ function mapProductType(productType: string | undefined): ProductType {
     return productType === 'DIGITAL' ? ProductType.DIGITAL : ProductType.PHYSICAL;
 }
 
+/** Default path for product pages */
+const DEFAULT_PRODUCT_PAGE_PATH = '/products';
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapProductToCard(product: any): ProductCardViewState {
+function mapProductToCard(product: any, productPagePath: string = DEFAULT_PRODUCT_PAGE_PATH): ProductCardViewState {
     const mainMedia = product.media?.main;
     const hasDiscount = product.compareAtPriceRange?.minValue?.amount !== product.actualPriceRange?.minValue?.amount;
+    const slug = product.slug || '';
 
     return {
         _id: product._id || '',
         name: product.name || '',
-        slug: product.slug || '',
+        slug,
+        productUrl: slug ? `${productPagePath}/${slug}` : '',
         mainMedia: {
             url: mainMedia ? formatWixMediaUrl(mainMedia._id, mainMedia.url) : '',
             altText: mainMedia?.altText || product.name || '',
@@ -248,7 +253,7 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
             let products: any[] = queryResult.items || [];
 
             // Map products to card view state
-            let mappedProducts = products.map(mapProductToCard);
+            let mappedProducts = products.map(p => mapProductToCard(p));
 
             // Apply client-side search filtering if query provided
             if (query && query.trim().length > 0) {
@@ -336,7 +341,7 @@ export const getAllProducts = makeJayQuery('wixStores.getAllProducts')
             const totalPages = Math.ceil(totalCount / pageSize) || 1;
 
             return {
-                products: products.map(mapProductToCard),
+                products: products.map(p => mapProductToCard(p)),
                 totalCount,
                 totalPages,
                 currentPage: page,

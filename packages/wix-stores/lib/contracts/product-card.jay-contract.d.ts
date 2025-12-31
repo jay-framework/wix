@@ -85,6 +85,7 @@ export interface ProductCardViewState {
   _id: string,
   name: string,
   slug: string,
+  productUrl: string,
   mainMedia: MainMediaOfProductCardViewState,
   thumbnail: ThumbnailOfProductCardViewState,
   actualPriceRange: ActualPriceRangeOfProductCardViewState,
@@ -100,7 +101,7 @@ export interface ProductCardViewState {
   isAddingToCart: boolean
 }
 
-export type ProductCardSlowViewState = Pick<ProductCardViewState, '_id' | 'name' | 'slug' | 'currency' | 'hasDiscount' | 'hasRibbon' | 'productType' | 'visible' | 'isAddingToCart'> & {
+export type ProductCardSlowViewState = Pick<ProductCardViewState, '_id' | 'name' | 'slug' | 'productUrl' | 'currency' | 'hasDiscount' | 'hasRibbon' | 'productType' | 'visible' | 'isAddingToCart'> & {
     mainMedia: ProductCardViewState['mainMedia'];
     thumbnail: ProductCardViewState['thumbnail'];
     actualPriceRange: {

@@ -89,14 +89,16 @@ function mapProductType(productType: string | undefined): ProductType {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapProductToCard(product: any): ProductCardViewState {
+function mapProductToCard(product: any, productPagePath = '/products'): ProductCardViewState {
     const mainMedia = product.media?.main;
     const hasDiscount = product.compareAtPriceRange?.minValue?.amount !== product.actualPriceRange?.minValue?.amount;
+    const slug = product.slug || '';
 
     return {
         _id: product._id || '',
         name: product.name || '',
-        slug: product.slug || '',
+        slug,
+        productUrl: slug ? `${productPagePath}/${slug}` : '',
         mainMedia: {
             url: mainMedia ? formatWixMediaUrl(mainMedia._id, mainMedia.url) : '',
             altText: mainMedia?.altText || product.name || '',
@@ -234,7 +236,7 @@ async function renderFastChanging(
             return Pipeline.ok([]);
         })
         .toPhaseOutput(products => {
-            const mappedProducts = products.map(mapProductToCard);
+            const mappedProducts = products.map(p => mapProductToCard(p));
             const totalPages = Math.ceil(products.length / PAGE_SIZE) || 1;
 
             return {

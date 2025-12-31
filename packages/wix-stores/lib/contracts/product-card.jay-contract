@@ -17,6 +17,11 @@ tags:
     dataType: string
     description: Product slug for URL
     
+  - tag: productUrl
+    type: data
+    dataType: string
+    description: Full URL path to product page (e.g., /products/my-product)
+    
   - tag: productLink
     type: interactive
     elementType: HTMLAnchorElement

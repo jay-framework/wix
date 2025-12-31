@@ -803,6 +803,7 @@
               forEach="productSearch.searchResults" 
               trackBy="_id"
             >
+              <a href="{productUrl}">
               <div class="product-image-container">
                 <img 
                   class="product-image" 
@@ -818,6 +819,7 @@
                   Out of Stock
                 </span>
               </div>
+              </a>
               <div class="product-content">
                 <p class="product-brand" if="brand.name">{brand.name}</p>
                 <h3 class="product-name">
@@ -876,5 +878,3 @@
     </div>
   </body>
 </html>
-
-
