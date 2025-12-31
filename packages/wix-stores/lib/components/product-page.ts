@@ -513,6 +513,15 @@ function ProductPageInteractive(
                 quantity: quantity(),
             });
             console.log('Added to cart:', result.message);
+            
+            // Dispatch cart update event for cart indicator
+            window.dispatchEvent(new CustomEvent('wix-cart-updated', {
+                detail: {
+                    itemCount: result.cartItemCount,
+                    hasItems: result.cartItemCount > 0,
+                    subtotal: { amount: '0', formattedAmount: '', currency: 'USD' }
+                }
+            }));
         } catch (error) {
             console.error('Failed to add to cart:', error);
         } finally {

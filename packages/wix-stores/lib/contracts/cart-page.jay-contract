@@ -1,0 +1,328 @@
+name: cart-page
+description: Full cart page showing all items, quantities, totals, and checkout actions
+
+tags:
+  # Cart identity
+  - tag: cartId
+    type: data
+    dataType: string
+    description: Cart GUID
+    
+  # Cart state
+  - tag: isEmpty
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether cart is empty
+    
+  - tag: isLoading
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether cart is loading/updating
+    
+  # Line items
+  - tag: lineItems
+    type: sub-contract
+    repeated: true
+    trackBy: lineItemId
+    phase: fast+interactive
+    description: Items in the cart
+    tags:
+      - tag: lineItemId
+        type: data
+        dataType: string
+        description: Line item GUID
+        
+      - tag: productId
+        type: data
+        dataType: string
+        description: Product GUID
+        
+      - tag: productName
+        type: data
+        dataType: string
+        description: Product name
+        
+      - tag: productUrl
+        type: data
+        dataType: string
+        description: URL to product page
+        
+      - tag: productLink
+        type: interactive
+        elementType: HTMLAnchorElement
+        description: Link to product page
+        
+      # Variant/options info
+      - tag: variantName
+        type: data
+        dataType: string
+        description: Selected variant description (e.g., "Blue / Large")
+        
+      - tag: sku
+        type: data
+        dataType: string
+        description: Product/variant SKU
+        
+      # Media
+      - tag: image
+        type: sub-contract
+        description: Product thumbnail
+        tags:
+          - tag: url
+            type: data
+            dataType: string
+            description: Image URL
+            
+          - tag: altText
+            type: data
+            dataType: string
+            description: Image alt text
+            
+      # Quantity
+      - tag: quantity
+        type: [data, interactive]
+        dataType: number
+        elementType: HTMLInputElement
+        description: Item quantity
+        
+      - tag: decrementButton
+        type: interactive
+        elementType: HTMLButtonElement
+        description: Decrease quantity button
+        
+      - tag: incrementButton
+        type: interactive
+        elementType: HTMLButtonElement
+        description: Increase quantity button
+        
+      - tag: isUpdatingQuantity
+        type: variant
+        dataType: boolean
+        description: Whether quantity is being updated
+        
+      # Price per item
+      - tag: unitPrice
+        type: sub-contract
+        description: Price per unit
+        tags:
+          - tag: amount
+            type: data
+            dataType: string
+            description: Unit price amount
+            
+          - tag: formattedAmount
+            type: data
+            dataType: string
+            description: Formatted unit price
+            
+      # Line total (quantity * unit price)
+      - tag: lineTotal
+        type: sub-contract
+        description: Total for this line item
+        tags:
+          - tag: amount
+            type: data
+            dataType: string
+            description: Line total amount
+            
+          - tag: formattedAmount
+            type: data
+            dataType: string
+            description: Formatted line total
+            
+      # Discount on line item
+      - tag: lineDiscount
+        type: sub-contract
+        description: Discount applied to this line
+        tags:
+          - tag: amount
+            type: data
+            dataType: string
+            description: Discount amount
+            
+          - tag: formattedAmount
+            type: data
+            dataType: string
+            description: Formatted discount
+            
+      - tag: hasDiscount
+        type: variant
+        dataType: boolean
+        description: Whether line has a discount
+        
+      # Remove item
+      - tag: removeButton
+        type: interactive
+        elementType: HTMLButtonElement
+        description: Remove item from cart button
+        
+      - tag: isRemoving
+        type: variant
+        dataType: boolean
+        description: Whether item is being removed
+        
+  # Cart summary
+  - tag: summary
+    type: sub-contract
+    phase: fast+interactive
+    description: Cart totals and summary
+    tags:
+      - tag: itemCount
+        type: data
+        dataType: number
+        description: Total number of items
+        
+      - tag: subtotal
+        type: sub-contract
+        description: Cart subtotal before discounts/shipping
+        tags:
+          - tag: amount
+            type: data
+            dataType: string
+            description: Subtotal amount
+            
+          - tag: formattedAmount
+            type: data
+            dataType: string
+            description: Formatted subtotal
+            
+      - tag: discount
+        type: sub-contract
+        description: Total discounts applied
+        tags:
+          - tag: amount
+            type: data
+            dataType: string
+            description: Discount amount
+            
+          - tag: formattedAmount
+            type: data
+            dataType: string
+            description: Formatted discount
+            
+      - tag: hasDiscount
+        type: variant
+        dataType: boolean
+        description: Whether cart has any discounts
+        
+      - tag: estimatedTax
+        type: sub-contract
+        description: Estimated tax (if calculable)
+        tags:
+          - tag: amount
+            type: data
+            dataType: string
+            description: Tax amount
+            
+          - tag: formattedAmount
+            type: data
+            dataType: string
+            description: Formatted tax
+            
+      - tag: showTax
+        type: variant
+        dataType: boolean
+        description: Whether to show tax estimate
+        
+      - tag: estimatedTotal
+        type: sub-contract
+        description: Estimated order total
+        tags:
+          - tag: amount
+            type: data
+            dataType: string
+            description: Total amount
+            
+          - tag: formattedAmount
+            type: data
+            dataType: string
+            description: Formatted total
+            
+      - tag: currency
+        type: data
+        dataType: string
+        description: Currency code (e.g., "USD")
+        
+  # Coupon/promo code
+  - tag: coupon
+    type: sub-contract
+    phase: fast+interactive
+    description: Coupon code input and application
+    tags:
+      - tag: code
+        type: [data, interactive]
+        dataType: string
+        elementType: HTMLInputElement
+        description: Coupon code input
+        
+      - tag: applyButton
+        type: interactive
+        elementType: HTMLButtonElement
+        description: Apply coupon button
+        
+      - tag: isApplying
+        type: variant
+        dataType: boolean
+        description: Whether coupon is being applied
+        
+      - tag: appliedCode
+        type: data
+        dataType: string
+        description: Currently applied coupon code (empty if none)
+        
+      - tag: hasAppliedCoupon
+        type: variant
+        dataType: boolean
+        description: Whether a coupon is applied
+        
+      - tag: removeButton
+        type: interactive
+        elementType: HTMLButtonElement
+        description: Remove applied coupon button
+        
+      - tag: errorMessage
+        type: data
+        dataType: string
+        description: Error message if coupon invalid
+        
+      - tag: hasError
+        type: variant
+        dataType: boolean
+        description: Whether there's a coupon error
+        
+  # Cart actions
+  - tag: checkoutButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Proceed to checkout button
+    
+  - tag: continueShoppingLink
+    type: interactive
+    elementType: HTMLAnchorElement
+    description: Continue shopping link
+    
+  - tag: clearCartButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Clear all items from cart
+    
+  - tag: isCheckingOut
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether checkout is in progress
+    
+  # Empty cart state
+  - tag: emptyCartMessage
+    type: data
+    dataType: string
+    description: Message to show when cart is empty
+    
+  - tag: emptyCartLink
+    type: interactive
+    elementType: HTMLAnchorElement
+    description: Link to start shopping (when cart empty)
+
+

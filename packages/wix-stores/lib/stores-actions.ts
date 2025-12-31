@@ -324,8 +324,6 @@ export const getCategories = makeJayQuery('wixStores.getCategories')
  * This is a simplified add-to-cart for products without variant selection.
  * For products with options/variants, use the full add-to-cart flow.
  *
- * Note: Requires @wix/ecom to be configured. Currently returns mock response.
- *
  * @example
  * ```typescript
  * const result = await quickAddToCart({ productId: 'prod-123', quantity: 2 });
@@ -336,7 +334,7 @@ export const quickAddToCart = makeJayAction('wixStores.quickAddToCart')
     .withHandler(async (
         input: QuickAddToCartInput,
         wixStores: WixStoresService
-    ): Promise<{ success: boolean; cartItemId?: string; message?: string }> => {
+    ): Promise<{ success: boolean; cartItemCount: number; message?: string }> => {
         const { productId, quantity = 1 } = input;
 
         if (!productId) {
@@ -362,12 +360,29 @@ export const quickAddToCart = makeJayAction('wixStores.quickAddToCart')
                 throw new ActionError('OUT_OF_STOCK', 'Product is out of stock');
             }
 
-            // TODO: Integrate with @wix/ecom currentCart API when configured
-            // For now, return success - cart integration to be added
-            console.log('[wixStores.quickAddToCart] Adding to cart:', { productId, quantity });
+            // Add to cart using the ecom currentCart API
+            await wixStores.cart.addToCurrentCart({
+                lineItems: [{
+                    catalogReference: {
+                        catalogItemId: productId,
+                        appId: '1380b703-ce81-ff05-f115-39571d94dfcd', // Wix Stores app ID
+                    },
+                    quantity
+                }]
+            });
+
+            // Get updated cart to return item count
+            // getCurrentCart() returns Cart directly
+            const cart = await wixStores.cart.getCurrentCart();
+            const itemCount = (cart?.lineItems || []).reduce(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (sum: number, item: any) => sum + (item.quantity || 0),
+                0
+            );
 
             return {
                 success: true,
+                cartItemCount: itemCount,
                 message: `Added ${quantity} item(s) to cart`
             };
         } catch (error) {

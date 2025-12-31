@@ -10,11 +10,28 @@ contracts:
     contract: product-search.jay-contract  # Export subpath (matches package.json exports)
     component: productSearch  # Exported member name from index.ts
     description: Headless product search page
+  - name: cart-indicator
+    contract: cart-indicator.jay-contract
+    component: cartIndicator
+    description: Lightweight cart indicator for site headers showing item count
+  - name: cart-page
+    contract: cart-page.jay-contract
+    component: cartPage
+    description: Full cart page with line item management and checkout
 
 # Server actions (named exports from main module)
 actions:
+  # Product actions
   - searchProducts
   - getAllProducts
   - getProductBySlug
   - getCategories
   - quickAddToCart
+  # Cart actions
+  - getCart
+  - getCartIndicator
+  - addToCart
+  - updateCartItemQuantity
+  - removeFromCart
+  - clearCart
+  - removeCoupon

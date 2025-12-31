@@ -1,5 +1,5 @@
 import { WixClient } from "@wix/sdk";
-import {getCategoriesClient, getInventoryClient, getProductsV3Client} from "./wix-store-api";
+import {getCategoriesClient, getCurrentCartClient, getInventoryClient, getProductsV3Client} from "./wix-store-api";
 import {createJayService} from "@jay-framework/fullstack-component";
 import {registerService} from "@jay-framework/stack-server-runtime/dist";
 
@@ -7,6 +7,7 @@ export interface WixStoresService {
     products: ReturnType<typeof getProductsV3Client>;
     categories: ReturnType<typeof getCategoriesClient>;
     inventory: ReturnType<typeof getInventoryClient>;
+    cart: ReturnType<typeof getCurrentCartClient>;
 }
 
 /**
@@ -24,10 +25,10 @@ export function provideWixStoresService(wixClient: WixClient): WixStoresService 
         products: getProductsV3Client(wixClient),
         categories: getCategoriesClient(wixClient),
         inventory: getInventoryClient(wixClient),
+        cart: getCurrentCartClient(wixClient),
     };
 
     registerService(WIX_STORES_SERVICE_MARKER, service);
     return service;
-
 }
 

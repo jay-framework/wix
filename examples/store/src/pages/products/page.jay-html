@@ -5,6 +5,11 @@
             contract="product-search"
             key="productSearch"
     ></script>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="cart-indicator"
+            key="cartIndicator"
+    ></script>
     <script type="application/jay-data">
       data:
     </script>
@@ -74,6 +79,20 @@
   </head>
   <body>
     <div class="search-page">
+      <!-- Site Header with Cart -->
+      <header class="site-header">
+        <a href="/products" class="site-logo">Store<span>.</span></a>
+        <nav class="site-nav">
+          <a href="/products">Products</a>
+          <a href="/cart" 
+             class="cart-indicator {cartIndicator.hasItems ? has-items} {cartIndicator.isLoading ? is-loading} {cartIndicator.justAdded ? just-added}"
+             ref="cartIndicator.cartLink">
+            <span class="cart-indicator-icon">🛒</span>
+            <span class="cart-indicator-count" if="cartIndicator.hasItems">{cartIndicator.itemCount}</span>
+          </a>
+        </nav>
+      </header>
+
       <!-- Loading Overlay -->
       <div class="loading-overlay" if="productSearch.isSearching">
         <div class="loading-spinner"></div>

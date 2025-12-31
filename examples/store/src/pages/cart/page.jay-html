@@ -1,0 +1,495 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - Store</title>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="cart-page"
+            key="cartPage"
+    ></script>
+    <script type="application/jay-data">
+      data:
+    </script>
+    <link rel="stylesheet" href="../../styles/store-theme.css">
+    <style>
+        /* Cart Page Specific Styles */
+        .cart-page {
+            min-height: 100vh;
+            background: var(--bg-primary);
+        }
+
+        .cart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+        }
+
+        .cart-layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 32px;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .cart-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Line Items */
+        .cart-items {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 100px 1fr auto;
+            gap: 24px;
+            padding: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            align-items: center;
+        }
+
+        .cart-item.removing {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .cart-item-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: var(--radius-md);
+            background: var(--bg-secondary);
+        }
+
+        .cart-item-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .cart-item-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .cart-item-name:hover {
+            color: var(--accent-hover);
+        }
+
+        .cart-item-variant {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .cart-item-sku {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .cart-item-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 16px;
+        }
+
+        .cart-item-price {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .cart-item-discount {
+            font-size: 14px;
+            color: var(--success);
+        }
+
+        /* Quantity Controls */
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 4px;
+        }
+
+        .quantity-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 18px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .quantity-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .quantity-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .quantity-input {
+            width: 48px;
+            height: 32px;
+            text-align: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .quantity-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .remove-btn {
+            color: var(--text-muted);
+            font-size: 13px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: color var(--transition-fast);
+        }
+
+        .remove-btn:hover {
+            color: var(--error);
+        }
+
+        /* Cart Summary */
+        .cart-summary {
+            position: sticky;
+            top: 24px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+        }
+
+        .cart-summary-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+        }
+
+        .summary-row-label {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        .summary-row-value {
+            color: var(--text-primary);
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .summary-row.total {
+            border-top: 1px solid var(--border);
+            margin-top: 16px;
+            padding-top: 20px;
+        }
+
+        .summary-row.total .summary-row-label {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .summary-row.total .summary-row-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .summary-discount {
+            color: var(--success);
+        }
+
+        /* Coupon Section */
+        .coupon-section {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .coupon-form {
+            display: flex;
+            gap: 8px;
+        }
+
+        .coupon-input {
+            flex: 1;
+            padding: 12px 16px;
+        }
+
+        .coupon-applied {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--success-bg);
+            border-radius: var(--radius-md);
+        }
+
+        .coupon-applied-code {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .coupon-error {
+            margin-top: 8px;
+            color: var(--error);
+            font-size: 13px;
+        }
+
+        /* Checkout Button */
+        .checkout-btn {
+            width: 100%;
+            margin-top: 24px;
+        }
+
+        /* Empty Cart */
+        .empty-cart {
+            text-align: center;
+            padding: 80px 40px;
+        }
+
+        .empty-cart-icon {
+            font-size: 80px;
+            margin-bottom: 24px;
+            opacity: 0.3;
+        }
+
+        .empty-cart-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .empty-cart-message {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        /* Loading State */
+        .cart-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 40px;
+            gap: 24px;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .cart-item.updating .quantity-controls {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="cart-page">
+        <!-- Site Header with Cart -->
+        <header class="site-header">
+            <a href="/products" class="site-logo">Store<span>.</span></a>
+            <nav class="site-nav">
+                <a href="/products">Products</a>
+                <a href="/cart" class="cart-indicator cart-indicator-active">
+                    <span class="cart-indicator-icon">🛒</span>
+                    <span class="cart-indicator-count">{cartPage.summary.itemCount}</span>
+                </a>
+            </nav>
+        </header>
+
+        <div class="container">
+            <!-- Header -->
+            <div class="cart-header">
+                <div>
+                    <h1 class="page-title">Shopping Cart</h1>
+                    <p class="page-subtitle">
+                        {cartPage.summary.itemCount} items in your cart
+                    </p>
+                </div>
+                <div style="display: flex; gap: 16px;">
+                    <a href="/products" ref="cartPage.continueShoppingLink" class="btn btn-ghost">
+                        ← Continue Shopping
+                    </a>
+                    <button ref="cartPage.clearCartButton" class="btn btn-ghost">
+                        Clear Cart
+                    </button>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div class="cart-loading" if="cartPage.isLoading">
+                <div class="spinner"></div>
+                <p style="color: var(--text-secondary);">Loading your cart...</p>
+            </div>
+
+            <!-- Empty Cart -->
+            <div class="empty-cart card-elevated" if="cartPage.isEmpty && !cartPage.isLoading">
+                <div class="empty-cart-icon">🛒</div>
+                <h2 class="empty-cart-title">Your cart is empty</h2>
+                <p class="empty-cart-message">
+                    {cartPage.emptyCartMessage}
+                </p>
+                <a href="/products" ref="cartPage.emptyCartLink" class="btn btn-primary btn-lg">
+                    Start Shopping
+                </a>
+            </div>
+
+            <!-- Cart Content -->
+            <div class="cart-content" if="!cartPage.isEmpty && !cartPage.isLoading">
+                <div class="cart-layout">
+                    <!-- Cart Items -->
+                    <div class="cart-items-section">
+                        <div class="cart-items">
+                            <article class="cart-item {isUpdatingQuantity ? updating} {isRemoving ? removing}"
+                                     forEach="cartPage.lineItems" 
+                                     trackBy="lineItemId">
+                                <a href="{productUrl}" ref="cartPage.lineItems.productLink">
+                                    <img class="cart-item-image"
+                                         src="{image.url}"
+                                         alt="{image.altText}"
+                                         loading="lazy">
+                                </a>
+
+                                <div class="cart-item-details">
+                                    <a href="{productUrl}" ref="cartPage.lineItems.productLink" class="cart-item-name">
+                                        {productName}
+                                    </a>
+                                    <span class="cart-item-variant" if="variantName">{variantName}</span>
+                                    <span class="cart-item-sku" if="sku">SKU: {sku}</span>
+                                </div>
+
+                                <div class="cart-item-actions">
+                                    <div class="cart-item-price">{lineTotal.formattedAmount}</div>
+                                    <span class="cart-item-discount" if="hasDiscount">{lineDiscount.formattedAmount}</span>
+
+                                    <div class="quantity-controls">
+                                        <button class="quantity-btn" ref="cartPage.lineItems.decrementButton">−</button>
+                                        <input type="number"
+                                               class="quantity-input"
+                                               ref="cartPage.lineItems.quantity"
+                                               value="{quantity}"
+                                               min="1"
+                                               max="99">
+                                        <button class="quantity-btn" ref="cartPage.lineItems.incrementButton">+</button>
+                                    </div>
+
+                                    <button class="remove-btn" ref="cartPage.lineItems.removeButton">
+                                        Remove
+                                    </button>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+
+                    <!-- Cart Summary -->
+                    <div class="cart-summary-section">
+                        <aside class="cart-summary">
+                            <h2 class="cart-summary-title">Order Summary</h2>
+
+                            <div class="summary-row">
+                                <span class="summary-row-label">Subtotal</span>
+                                <span class="summary-row-value">{cartPage.summary.subtotal.formattedAmount}</span>
+                            </div>
+
+                            <div class="summary-row" if="cartPage.summary.hasDiscount">
+                                <span class="summary-row-label">Discount</span>
+                                <span class="summary-row-value summary-discount">{cartPage.summary.discount.formattedAmount}</span>
+                            </div>
+
+                            <div class="summary-row" if="cartPage.summary.showTax">
+                                <span class="summary-row-label">Estimated Tax</span>
+                                <span class="summary-row-value">{cartPage.summary.estimatedTax.formattedAmount}</span>
+                            </div>
+
+                            <div class="summary-row total">
+                                <span class="summary-row-label">Total</span>
+                                <span class="summary-row-value">{cartPage.summary.estimatedTotal.formattedAmount}</span>
+                            </div>
+
+                            <!-- Coupon Section -->
+                            <div class="coupon-section">
+                                <div if="!cartPage.coupon.hasAppliedCoupon">
+                                    <div class="coupon-form">
+                                        <input type="text"
+                                               class="input coupon-input"
+                                               ref="cartPage.coupon.code"
+                                               value="{cartPage.coupon.code}"
+                                               placeholder="Enter coupon code">
+                                        <button class="btn btn-secondary" ref="cartPage.coupon.applyButton">
+                                            Apply
+                                        </button>
+                                    </div>
+                                    <p class="coupon-error" if="cartPage.coupon.hasError">{cartPage.coupon.errorMessage}</p>
+                                </div>
+
+                                <div class="coupon-applied" if="cartPage.coupon.hasAppliedCoupon">
+                                    <span>
+                                        Coupon: <span class="coupon-applied-code">{cartPage.coupon.appliedCode}</span>
+                                    </span>
+                                    <button class="remove-btn" ref="cartPage.coupon.removeButton">Remove</button>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary btn-lg checkout-btn" ref="cartPage.checkoutButton">
+                                <span if="!cartPage.isCheckingOut">Proceed to Checkout</span>
+                                <span if="cartPage.isCheckingOut">Processing...</span>
+                            </button>
+                        </aside>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

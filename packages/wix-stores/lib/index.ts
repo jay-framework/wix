@@ -4,3 +4,4 @@ export { provideWixStoresService } from './stores-client/wix-stores-service';
 
 // Export server actions
 export * from './stores-actions';
+export * from './cart-actions';
