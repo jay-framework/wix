@@ -221,6 +221,130 @@ const { items } = await inventory.queryInventoryItems()
   .find();
 ```
 
+## Client-Side Cart and Search
+
+When OAuth is configured in `@jay-framework/wix-server-client`, this package provides client-side cart and search operations that bypass server round-trips.
+
+### Enabling Client-Side Operations
+
+1. Configure OAuth in `./config/.wix.yaml`:
+
+```yaml
+oauthStrategy:
+  clientId: "your-oauth-client-id"
+```
+
+2. The plugin automatically enables client-side operations during initialization.
+
+### Using Client-Side Cart
+
+```typescript
+import { useContext } from '@jay-framework/runtime';
+import { WIX_STORES_CLIENT_CONTEXT } from '@jay-framework/wix-stores';
+
+function CartComponent(props, refs) {
+    const stores = useContext(WIX_STORES_CLIENT_CONTEXT);
+    
+    if (!stores.isEnabled) {
+        console.log('Client cart not available');
+        return;
+    }
+
+    // Get current cart
+    refs.loadCart.onclick(async () => {
+        const cart = await stores.cart.getCart();
+        console.log(`Cart has ${cart.itemCount} items`);
+    });
+
+    // Add to cart (direct API call - no server round-trip)
+    refs.addToCart.onclick(async () => {
+        const cart = await stores.cart.addToCart('product-id', 1);
+        console.log(`Added! Cart now has ${cart.itemCount} items`);
+    });
+
+    // Update quantity
+    refs.updateQty.onclick(async () => {
+        const cart = await stores.cart.updateQuantity('line-item-id', 3);
+    });
+
+    // Remove item
+    refs.remove.onclick(async () => {
+        const cart = await stores.cart.removeItem('line-item-id');
+    });
+}
+```
+
+### Using Client-Side Search
+
+```typescript
+import { useContext } from '@jay-framework/runtime';
+import { WIX_STORES_CLIENT_CONTEXT } from '@jay-framework/wix-stores';
+
+function SearchComponent(props, refs) {
+    const stores = useContext(WIX_STORES_CLIENT_CONTEXT);
+
+    refs.searchInput.oninput(async (e) => {
+        const query = e.target.value;
+        
+        // Search products (direct API call)
+        const results = await stores.search.searchProducts(query, 10);
+        
+        // results: [{ id, name, slug, price, formattedPrice, imageUrl }]
+        console.log(`Found ${results.length} products`);
+    });
+}
+```
+
+### Client vs Server Operations
+
+| Operation | Server Action | Client API |
+|-----------|--------------|------------|
+| Add to cart | `addToCart({...})` | `stores.cart.addToCart(productId)` |
+| Search products | `searchProducts({...})` | `stores.search.searchProducts(query)` |
+| Get cart | `getCart()` | `stores.cart.getCart()` |
+| Latency | ~100-300ms | ~50-100ms |
+| Auth | API Key | OAuth Visitor Token |
+
+**When to use client-side operations:**
+- Real-time search autocomplete
+- Quick add-to-cart buttons
+- Cart indicator updates
+- Any operation where latency matters
+
+**When to use server actions:**
+- Initial page load data
+- SEO-critical content
+- Operations requiring admin permissions
+
+### Plugin Initialization Flow
+
+Both plugins use the `makeJayInit` pattern for consolidated server/client initialization:
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│              wix-server-client (lib/init.ts - init first)           │
+├─────────────────────────────────────────────────────────────────────┤
+│  withServer: return { oauthClientId }                               │
+│  withClient: Creates OAuth client, stores tokens in localStorage    │
+│              Registers WIX_CLIENT_CONTEXT                           │
+└─────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼ (depends on via package.json)
+┌─────────────────────────────────────────────────────────────────────┐
+│                  wix-stores (lib/init.ts - init second)             │
+├─────────────────────────────────────────────────────────────────────┤
+│  withServer: Registers WIX_STORES_SERVICE_MARKER                    │
+│              return { enableClientCart, enableClientSearch }        │
+│  withClient: Uses WIX_CLIENT_CONTEXT to create cart/search APIs     │
+│              Registers WIX_STORES_CLIENT_CONTEXT                    │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+**Key benefits of `makeJayInit` pattern:**
+- Single file for both server and client init
+- Automatic type flow from `withServer` return to `withClient` parameter
+- Compiler strips `withServer` from client bundle and `withClient` from server bundle
+
 ## Architecture
 
 ### Three-Phase Rendering

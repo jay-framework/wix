@@ -2,20 +2,23 @@
   "name": "@jay-framework/wix-server-client",
   "version": "1.0.0",
   "type": "module",
-  "description": "",
+  "description": "Wix SDK client configuration and authentication for Jay Framework",
   "private": true,
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "files": [
-    "dist"
+    "dist",
+    "plugin.yaml"
   ],
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./client": "./dist/index.client.js",
+    "./plugin.yaml": "./plugin.yaml"
   },
   "scripts": {
-    "build": "npm run build:js && npm run build:copy-contract",
-    "build:js": "vite build",
-    "build:copy-contract": "# cp lib/*.jay-contract* dist/",
+    "build": "npm run clean && npm run build:client && npm run build:server",
+    "build:client": "vite build",
+    "build:server": "vite build --ssr",
     "build:types": "tsup lib/index.ts --dts-only --format esm",
     "build:check-types": "tsc",
     "clean": "rimraf dist",
@@ -28,6 +31,8 @@
     "@jay-framework/reactive": "^0.9.0",
     "@jay-framework/runtime": "^0.9.0",
     "@jay-framework/secure": "^0.9.0",
+    "@jay-framework/stack-server-runtime": "^0.9.0",
+    "@jay-framework/stack-client-runtime": "^0.9.0",
     "@wix/sdk": "^1.17.4",
     "js-yaml": "^4.1.0"
   },
@@ -35,6 +40,7 @@
     "@babel/core": "^7.23.7",
     "@babel/preset-env": "^7.23.8",
     "@babel/preset-typescript": "^7.23.3",
+    "@jay-framework/compiler-jay-stack": "^0.9.0",
     "@jay-framework/jay-cli": "^0.9.0",
     "@jay-framework/vite-plugin": "^0.9.0",
     "@types/js-yaml": "^4.0.9",

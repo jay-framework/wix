@@ -35,3 +35,6 @@ actions:
   - removeFromCart
   - clearCart
   - removeCoupon
+
+# Plugin initialization uses makeJayInit pattern in lib/init.ts
+# Export name defaults to 'init'

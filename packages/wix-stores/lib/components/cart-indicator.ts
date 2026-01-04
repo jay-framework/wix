@@ -16,7 +16,6 @@ import {
     CartIndicatorContract,
     CartIndicatorFastViewState,
     CartIndicatorRefs,
-    CartIndicatorSlowViewState
 } from '../contracts/cart-indicator.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../stores-client/wix-stores-service';
 import { getCartIndicator, CartIndicatorState } from '../cart-actions';
@@ -38,26 +37,10 @@ interface CartIndicatorFastCarryForward {
 // ============================================================================
 
 /**
- * Slow render phase - minimal static content
- */
-async function renderSlowlyChanging(
-    _props: PageProps,
-    _wixStores: WixStoresService
-) {
-    const Pipeline = RenderPipeline.for<CartIndicatorSlowViewState, CartIndicatorSlowCarryForward>();
-
-    return Pipeline.ok(null).toPhaseOutput(() => ({
-        viewState: {},
-        carryForward: {}
-    }));
-}
-
-/**
  * Fast render phase - show loading state
  */
 async function renderFastChanging(
     _props: PageProps,
-    _slowCarryForward: CartIndicatorSlowCarryForward,
     _wixStores: WixStoresService
 ) {
     const Pipeline = RenderPipeline.for<CartIndicatorFastViewState, CartIndicatorFastCarryForward>();
@@ -176,7 +159,6 @@ function CartIndicatorInteractive(
 export const cartIndicator = makeJayStackComponent<CartIndicatorContract>()
     .withProps<PageProps>()
     .withServices(WIX_STORES_SERVICE_MARKER)
-    .withSlowlyRender(renderSlowlyChanging)
     .withFastRender(renderFastChanging)
     .withInteractive(CartIndicatorInteractive);
 
