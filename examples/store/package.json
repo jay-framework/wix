@@ -17,8 +17,8 @@
     "preview": "cross-env NODE_ENV=production node server"
   },
   "dependencies": {
-    "@jay-framework/fullstack-component": "^0.9.0",
-    "@jay-framework/jay-stack-cli": "^0.9.0",
+    "@jay-framework/fullstack-component": "^0.10.0",
+    "@jay-framework/jay-stack-cli": "^0.10.0",
     "@jay-framework/wix-server-client": "workspace:^",
     "@jay-framework/wix-stores": "workspace:^",
     "compression": "^1.7.5",
@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@jay-framework/dev-environment": "^0.6.10",
-    "@jay-framework/jay-cli": "^0.9.0",
+    "@jay-framework/jay-cli": "^0.10.0",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.0",
     "cross-env": "^7.0.3",
