@@ -4,11 +4,9 @@
  * Provides OAuth-authenticated Wix client for browser use.
  */
 
+export {WIX_CLIENT_CONTEXT, type WixClientContext} from './wix-client-context'
+
 // Export init and client context
 export { 
     init,
-    WIX_CLIENT_CONTEXT, 
-    clearStoredTokens,
-    type WixClientInitData,
-    type WixClientContext,
 } from './init.js';
