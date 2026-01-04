@@ -1,7 +1,14 @@
-import { WixClient } from "@wix/sdk";
-import {getCategoriesClient, getCurrentCartClient, getInventoryClient, getProductsV3Client} from "./wix-store-api";
-import {createJayService} from "@jay-framework/fullstack-component";
-import {registerService} from "@jay-framework/stack-server-runtime/dist";
+/**
+ * Server-side Wix Stores Service
+ * 
+ * Provides access to Wix Stores APIs on the server using API Key authentication.
+ * Used with .withServices(WIX_STORES_SERVICE_MARKER) in component definitions.
+ */
+
+import { WixClient } from '@wix/sdk';
+import { getCategoriesClient, getCurrentCartClient, getInventoryClient, getProductsV3Client } from './wix-store-api.js';
+import { createJayService } from '@jay-framework/fullstack-component';
+import { registerService } from '@jay-framework/stack-server-runtime';
 
 export interface WixStoresService {
     products: ReturnType<typeof getProductsV3Client>;
@@ -11,14 +18,14 @@ export interface WixStoresService {
 }
 
 /**
- * Server context marker for Wix Stores services.
- * Use with `.withServerContext(WixStoresContextMarker)` in component definitions.
+ * Server service marker for Wix Stores.
+ * Use with `.withServices(WIX_STORES_SERVICE_MARKER)` in component definitions.
  */
 export const WIX_STORES_SERVICE_MARKER = createJayService<WixStoresService>('Wix Store Service');
-console.log('WIX_STORES_SERVICE_MARKER');
+
 /**
- * Creates and returns a Wix Stores context instance.
- * This should be provided at the application level to make it available to all components.
+ * Creates, registers, and returns a Wix Stores service instance.
+ * Called during server initialization.
  */
 export function provideWixStoresService(wixClient: WixClient): WixStoresService {
     const service: WixStoresService = {

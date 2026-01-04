@@ -2,7 +2,7 @@
  * Cart Page Component
  *
  * Full cart page with line item management, quantity updates, and checkout.
- * Uses the Wix eCommerce Cart API via server actions.
+ * Uses the Wix eCommerce Cart API via client context.
  */
 
 import {
@@ -12,6 +12,7 @@ import {
     PageProps
 } from '@jay-framework/fullstack-component';
 import { createEffect, Props } from '@jay-framework/component';
+import { useGlobalContext } from '@jay-framework/runtime';
 import {
     CartPageContract,
     CartPageFastViewState,
@@ -19,16 +20,15 @@ import {
     CartPageSlowViewState,
     LineItemOfCartPageViewState
 } from '../contracts/cart-page.jay-contract';
-import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../stores-client/wix-stores-service';
-import {
-    getCart,
-    updateCartItemQuantity,
-    removeFromCart,
-    clearCart,
-    removeCoupon,
+import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
+import { 
+    WIX_STORES_CONTEXT,
     CartState,
-    CartLineItem
-} from '../cart-actions';
+    CartLineItem,
+    mapCartToState,
+    getEmptyCartState,
+    mapLineItem
+} from '../contexts/index.js';
 import { patch, REPLACE } from '@jay-framework/json-patch';
 
 // ============================================================================
@@ -72,7 +72,7 @@ function mapLineItemToViewState(item: CartLineItem): LineItemOfCartPageViewState
 /**
  * Map CartState to view state
  */
-function mapCartToViewState(cart: CartState): CartPageFastViewState {
+function mapCartStateToViewState(cart: CartState): CartPageFastViewState {
     return {
         isEmpty: cart.isEmpty,
         isLoading: false,
@@ -176,6 +176,9 @@ function CartPageInteractive(
     viewStateSignals: Signals<CartPageFastViewState>,
     _carryForward: CartPageFastCarryForward
 ) {
+    // Get the stores context for client-side cart operations
+    const storesContext = useGlobalContext(WIX_STORES_CONTEXT);
+
     // Get signal setters from viewStateSignals
     const {
         isEmpty: [isEmpty, setIsEmpty],
@@ -186,12 +189,13 @@ function CartPageInteractive(
         coupon: [coupon, setCoupon]
     } = viewStateSignals;
 
-    // Load cart data
+    // Load cart data using client context
     async function loadCart() {
         try {
             setIsLoading(true);
-            const cart = await getCart({});
-            const viewState = mapCartToViewState(cart);
+            const cart = await storesContext.cart.getCurrentCart();
+            const cartState = mapCartToState(cart);
+            const viewState = mapCartStateToViewState(cartState);
             
             setIsEmpty(viewState.isEmpty);
             setLineItems(viewState.lineItems);
@@ -204,9 +208,9 @@ function CartPageInteractive(
         }
     }
 
-    // Update cart from action result
+    // Update cart from cart state
     function updateFromCart(cart: CartState) {
-        const viewState = mapCartToViewState(cart);
+        const viewState = mapCartStateToViewState(cart);
         setIsEmpty(viewState.isEmpty);
         setLineItems(viewState.lineItems);
         setSummary(viewState.summary);
@@ -242,9 +246,19 @@ function CartPageInteractive(
         );
 
         try {
-            const result = await updateCartItemQuantity({ lineItemId, quantity: newQuantity });
-            if (result.success) {
-                updateFromCart(result.cart);
+            let result;
+            if (newQuantity === 0) {
+                // Remove item if quantity is 0
+                result = await storesContext.cart.removeLineItemsFromCurrentCart([lineItemId]);
+            } else {
+                // Update quantity
+                result = await storesContext.cart.updateCurrentCartLineItemQuantity([
+                    { _id: lineItemId, quantity: newQuantity }
+                ]);
+            }
+            
+            if (result.cart) {
+                updateFromCart(mapCartToState(result.cart));
             }
         } catch (error) {
             console.error('[CartPage] Failed to update quantity:', error);
@@ -271,9 +285,9 @@ function CartPageInteractive(
         );
 
         try {
-            const result = await removeFromCart({ lineItemId });
-            if (result.success) {
-                updateFromCart(result.cart);
+            const result = await storesContext.cart.removeLineItemsFromCurrentCart([lineItemId]);
+            if (result.cart) {
+                updateFromCart(mapCartToState(result.cart));
             }
         } catch (error) {
             console.error('[CartPage] Failed to remove item:', error);
@@ -291,7 +305,18 @@ function CartPageInteractive(
     async function handleClearCart() {
         try {
             setIsLoading(true);
-            await clearCart({});
+            
+            // Get current cart to get all line item IDs
+            const cart = await storesContext.cart.getCurrentCart();
+            if (cart?.lineItems?.length) {
+                const lineItemIds = cart.lineItems
+                    .map((item: { _id?: string }) => item._id || '')
+                    .filter(Boolean);
+                if (lineItemIds.length > 0) {
+                    await storesContext.cart.removeLineItemsFromCurrentCart(lineItemIds);
+                }
+            }
+            
             await loadCart();
         } catch (error) {
             console.error('[CartPage] Failed to clear cart:', error);
@@ -302,9 +327,9 @@ function CartPageInteractive(
     // Handle coupon removal
     async function handleRemoveCoupon() {
         try {
-            const result = await removeCoupon({});
-            if (result.success) {
-                updateFromCart(result.cart);
+            const result = await storesContext.cart.removeCouponFromCurrentCart();
+            if (result.cart) {
+                updateFromCart(mapCartToState(result.cart));
             }
         } catch (error) {
             console.error('[CartPage] Failed to remove coupon:', error);

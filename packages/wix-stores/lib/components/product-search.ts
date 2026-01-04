@@ -14,10 +14,12 @@ import {
     ProductSearchSlowViewState
 } from '../contracts/product-search.jay-contract';
 import { AvailabilityStatus } from '../contracts/product-card.jay-contract';
-import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../stores-client/wix-stores-service';
+import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
 import { patch, REPLACE } from '@jay-framework/json-patch';
-import { searchProducts, quickAddToCart, ProductSortField } from '../stores-actions';
+import { searchProducts, ProductSortField } from '../actions/stores-actions.js';
 import { mapProductToCard } from '../utils/product-mapper';
+import { useGlobalContext } from '@jay-framework/runtime';
+import { WIX_STORES_CONTEXT } from '../contexts/wix-stores-context.js';
 
 /**
  * Search sort options
@@ -204,6 +206,9 @@ function ProductSearchInteractive(
     viewStateSignals: Signals<ProductSearchFastViewState>,
     fastCarryForward: SearchFastCarryForward
 ) {
+    // Get the stores context for cart operations
+    const storesContext = useGlobalContext(WIX_STORES_CONTEXT);
+
     const {
         searchExpression: [searchExpression, setSearchExpression],
         isSearching: [isSearching, setIsSearching],
@@ -516,14 +521,31 @@ function ProductSearchInteractive(
         ]));
 
         try {
-            const result = await quickAddToCart({ productId, quantity: 1 });
-            console.log('Added to cart:', result.message);
+            // Add to cart using the client context
+            await storesContext.cart.addToCurrentCart({
+                lineItems: [{
+                    catalogReference: {
+                        catalogItemId: productId,
+                        appId: '1380b703-ce81-ff05-f115-39571d94dfcd', // Wix Stores app ID
+                    },
+                    quantity: 1
+                }]
+            });
+
+            // Get updated cart to dispatch event
+            const cart = await storesContext.cart.getCurrentCart();
+            const itemCount = (cart?.lineItems || []).reduce(
+                (sum: number, item: { quantity?: number }) => sum + (item.quantity || 0),
+                0
+            );
+
+            console.log('Added to cart: 1 item');
             
             // Dispatch cart update event for cart indicator
             window.dispatchEvent(new CustomEvent('wix-cart-updated', {
                 detail: {
-                    itemCount: result.cartItemCount,
-                    hasItems: result.cartItemCount > 0,
+                    itemCount,
+                    hasItems: itemCount > 0,
                     subtotal: { amount: '0', formattedAmount: '', currency: 'USD' }
                 }
             }));

@@ -6,7 +6,7 @@ import {
     SlowlyRenderResult,
     UrlParams
 } from '@jay-framework/fullstack-component';
-import {createEffect, createMemo, createSignal, Props} from '@jay-framework/component';
+import {createMemo, createSignal, Props} from '@jay-framework/component';
 import {
     ChoiceType,
     InfoSectionOfProductPageViewState,
@@ -14,14 +14,13 @@ import {
     OptionRenderType,
     ProductPageContract,
     ProductPageFastViewState,
-    ProductPageInteractiveViewState,
     ProductPageRefs,
     ProductPageSlowViewState,
     ProductType,
     SeoDatumOfProductPageViewState,
     StockStatus
 } from '../contracts/product-page.jay-contract';
-import {WIX_STORES_SERVICE_MARKER, WixStoresService} from '../stores-client/wix-stores-service';
+import {WIX_STORES_SERVICE_MARKER, WixStoresService} from '../services';
 import {
     ChoiceTypeWithLiterals,
     ConnectedModifier,
@@ -37,7 +36,8 @@ import {
 import {MediaGalleryViewState, Selected} from "../contracts/media-gallery.jay-contract";
 import {MediaType} from "../contracts/media.jay-contract";
 import {ADD, JSONPatchOperation, patch, REPLACE} from '@jay-framework/json-patch';
-import { quickAddToCart } from '../stores-actions';
+import { useGlobalContext } from '@jay-framework/runtime';
+import { WIX_STORES_CONTEXT } from '../contexts/wix-stores-context.js';
 
 /**
  * URL parameters for product page routes
@@ -366,6 +366,8 @@ function ProductPageInteractive(
     viewStateSignals: Signals<ProductPageFastViewState>,
     fastCarryForward: ProductFastCarryForward
 ) {
+    // Get the stores context for cart operations
+    const storesContext = useGlobalContext(WIX_STORES_CONTEXT);
 
     const [quantity, setQuantity] = createSignal(viewStateSignals.quantity[0]().quantity)
 
@@ -508,17 +510,31 @@ function ProductPageInteractive(
 
         setIsAddingToCart(true);
         try {
-            const result = await quickAddToCart({
-                productId: fastCarryForward.productId,
-                quantity: quantity(),
+            // Add to cart using the client context
+            await storesContext.cart.addToCurrentCart({
+                lineItems: [{
+                    catalogReference: {
+                        catalogItemId: fastCarryForward.productId,
+                        appId: '1380b703-ce81-ff05-f115-39571d94dfcd', // Wix Stores app ID
+                    },
+                    quantity: quantity()
+                }]
             });
-            console.log('Added to cart:', result.message);
+
+            // Get updated cart to dispatch event
+            const cart = await storesContext.cart.getCurrentCart();
+            const itemCount = (cart?.lineItems || []).reduce(
+                (sum: number, item: { quantity?: number }) => sum + (item.quantity || 0),
+                0
+            );
+            
+            console.log('Added to cart:', quantity(), 'items');
             
             // Dispatch cart update event for cart indicator
             window.dispatchEvent(new CustomEvent('wix-cart-updated', {
                 detail: {
-                    itemCount: result.cartItemCount,
-                    hasItems: result.cartItemCount > 0,
+                    itemCount,
+                    hasItems: itemCount > 0,
                     subtotal: { amount: '0', formattedAmount: '', currency: 'USD' }
                 }
             }));

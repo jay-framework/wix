@@ -1,17 +1,33 @@
+/**
+ * Wix Stores Package - Client Entry Point
+ * 
+ * This is the entry point for client-side imports.
+ * Provides the context for direct API access and component definitions.
+ */
+
 // Export headless components
-export * from "./components";
+export * from './components/index.js';
 
-// Export server actions (transformed to action callers for client)
-export * from './stores-actions';
-export * from './cart-actions';
-
-// Export init and client context
-export { 
-    init,
-    WIX_STORES_CLIENT_CONTEXT,
-    type WixStoresClientContext,
+// Export client context and types
+export {
+    WIX_STORES_CONTEXT,
+    provideWixStoresContext,
+    type WixStoresContext,
     type WixStoresInitData,
-    type ClientCartItem,
-    type ClientCartState,
-    type SearchResult,
-} from './init.js';
+    type CartLineItem,
+    type CartSummary,
+    type CartState,
+    type CartIndicatorState,
+    mapLineItem,
+    mapCartSummary,
+    mapCartToState,
+    mapCartToIndicator,
+    getEmptyCartState,
+} from './contexts/index.js';
+
+// Note: Actions should be imported directly from '@jay-framework/wix-stores/actions'
+// or from the specific action files. They are NOT re-exported here because the
+// action transformer needs to intercept imports at the source file level.
+
+// Export init
+export { init } from './init.js';

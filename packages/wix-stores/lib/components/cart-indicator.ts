@@ -2,7 +2,7 @@
  * Cart Indicator Component
  *
  * A lightweight cart indicator for site headers showing item count and subtotal.
- * Uses the Wix eCommerce Cart API via server actions.
+ * Uses the Wix eCommerce Cart API via client context.
  */
 
 import {
@@ -12,13 +12,14 @@ import {
     PageProps
 } from '@jay-framework/fullstack-component';
 import { createEffect, Props } from '@jay-framework/component';
+import { useGlobalContext } from '@jay-framework/runtime';
 import {
     CartIndicatorContract,
     CartIndicatorFastViewState,
     CartIndicatorRefs,
 } from '../contracts/cart-indicator.jay-contract';
-import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../stores-client/wix-stores-service';
-import { getCartIndicator, CartIndicatorState } from '../cart-actions';
+import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
+import { WIX_STORES_CONTEXT, CartIndicatorState, mapCartToIndicator } from '../contexts/index.js';
 
 // ============================================================================
 // Types
@@ -70,6 +71,9 @@ function CartIndicatorInteractive(
     viewStateSignals: Signals<CartIndicatorFastViewState>,
     _carryForward: CartIndicatorFastCarryForward
 ) {
+    // Get the stores context for client-side cart operations
+    const storesContext = useGlobalContext(WIX_STORES_CONTEXT);
+
     // Get signal setters from viewStateSignals
     const {
         itemCount: [itemCount, setItemCount],
@@ -79,11 +83,13 @@ function CartIndicatorInteractive(
         justAdded: [justAdded, setJustAdded]
     } = viewStateSignals;
 
-    // Load cart data
+    // Load cart data using client context
     async function loadCart() {
         try {
             setIsLoading(true);
-            const indicator: CartIndicatorState = await getCartIndicator({});
+            const cart = await storesContext.cart.getCurrentCart();
+            const indicator = mapCartToIndicator(cart);
+            
             setItemCount(indicator.itemCount);
             setHasItems(indicator.hasItems);
             setSubtotal({

@@ -1,3 +1,10 @@
+/**
+ * Wix Store API Client Factories
+ * 
+ * These functions create singleton instances of Wix API clients.
+ * Used by both the server service and client context.
+ */
+
 import { WixClient } from "@wix/sdk";
 import {collections, inventoryItemsV3, productsV3} from "@wix/stores";
 import { categories } from "@wix/categories";
@@ -76,3 +83,4 @@ export function getCurrentCartClient(wixClient: WixClient): typeof currentCart {
     }
     return instances.currentCartInstance;
 }
+

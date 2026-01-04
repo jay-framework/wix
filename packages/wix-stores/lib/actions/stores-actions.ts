@@ -5,10 +5,10 @@
  * Wix Stores Catalog V3 API.
  */
 
-import { makeJayAction, makeJayQuery, ActionError } from '@jay-framework/fullstack-component';
-import { WIX_STORES_SERVICE_MARKER, WixStoresService } from './stores-client/wix-stores-service';
-import { AvailabilityStatus, ProductCardViewState } from './contracts/product-card.jay-contract';
-import { mapProductToCard } from './utils/product-mapper';
+import { makeJayQuery, ActionError } from '@jay-framework/fullstack-component';
+import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
+import { AvailabilityStatus, ProductCardViewState } from '../contracts/product-card.jay-contract';
+import { mapProductToCard } from '../utils/product-mapper.js';
 
 // ============================================================================
 // Types
@@ -73,15 +73,6 @@ export interface GetProductBySlugInput {
     slug: string;
 }
 
-/**
- * Input for quick add to cart (from search results)
- */
-export interface QuickAddToCartInput {
-    /** Product ID to add */
-    productId: string;
-    /** Quantity to add (default: 1) */
-    quantity?: number;
-}
 
 // ============================================================================
 // Actions
@@ -318,78 +309,3 @@ export const getCategories = makeJayQuery('wixStores.getCategories')
         }
     });
 
-/**
- * Quick add a product to cart (from search results or product cards).
- *
- * This is a simplified add-to-cart for products without variant selection.
- * For products with options/variants, use the full add-to-cart flow.
- *
- * @example
- * ```typescript
- * const result = await quickAddToCart({ productId: 'prod-123', quantity: 2 });
- * ```
- */
-export const quickAddToCart = makeJayAction('wixStores.quickAddToCart')
-    .withServices(WIX_STORES_SERVICE_MARKER)
-    .withHandler(async (
-        input: QuickAddToCartInput,
-        wixStores: WixStoresService
-    ): Promise<{ success: boolean; cartItemCount: number; message?: string }> => {
-        const { productId, quantity = 1 } = input;
-
-        if (!productId) {
-            throw new ActionError('INVALID_INPUT', 'Product ID is required');
-        }
-
-        if (quantity < 1) {
-            throw new ActionError('INVALID_INPUT', 'Quantity must be at least 1');
-        }
-
-        try {
-            // Verify product exists and is in stock
-            const result = await wixStores.products.queryProducts()
-                .eq('_id', productId)
-                .find();
-
-            const product = result.items?.[0];
-            if (!product) {
-                throw new ActionError('NOT_FOUND', 'Product not found');
-            }
-
-            if (product.inventory?.availabilityStatus === 'OUT_OF_STOCK') {
-                throw new ActionError('OUT_OF_STOCK', 'Product is out of stock');
-            }
-
-            // Add to cart using the ecom currentCart API
-            await wixStores.cart.addToCurrentCart({
-                lineItems: [{
-                    catalogReference: {
-                        catalogItemId: productId,
-                        appId: '1380b703-ce81-ff05-f115-39571d94dfcd', // Wix Stores app ID
-                    },
-                    quantity
-                }]
-            });
-
-            // Get updated cart to return item count
-            // getCurrentCart() returns Cart directly
-            const cart = await wixStores.cart.getCurrentCart();
-            const itemCount = (cart?.lineItems || []).reduce(
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (sum: number, item: any) => sum + (item.quantity || 0),
-                0
-            );
-
-            return {
-                success: true,
-                cartItemCount: itemCount,
-                message: `Added ${quantity} item(s) to cart`
-            };
-        } catch (error) {
-            if (error instanceof ActionError) {
-                throw error;
-            }
-            console.error('[wixStores.quickAddToCart] Failed to add to cart:', error);
-            throw new ActionError('CART_ERROR', 'Failed to add to cart');
-        }
-    });
