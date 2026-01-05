@@ -1,6 +1,7 @@
 import {ApiKeyStrategy, createClient, WixClient} from "@wix/sdk";
 import {WixConfig} from "./config-loader";
-import { registerService, createJayService } from '@jay-framework/stack-server-runtime';
+import { createJayService } from '@jay-framework/fullstack-component';
+import { registerService } from '@jay-framework/stack-server-runtime';
 
 export interface WixClientService {
     wixClient: WixClient;
