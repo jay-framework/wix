@@ -26,15 +26,6 @@ actions:
   - getAllProducts
   - getProductBySlug
   - getCategories
-  - quickAddToCart
-  # Cart actions
-  - getCart
-  - getCartIndicator
-  - addToCart
-  - updateCartItemQuantity
-  - removeFromCart
-  - clearCart
-  - removeCoupon
 
 # Plugin initialization uses makeJayInit pattern in lib/init.ts
 # Export name defaults to 'init'
