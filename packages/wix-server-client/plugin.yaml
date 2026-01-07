@@ -1,0 +1,6 @@
+name: wix-server-client
+# Wix SDK client configuration and authentication
+
+# Plugin initialization uses makeJayInit pattern in lib/init.ts
+# Export name defaults to 'init'
+

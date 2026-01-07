@@ -18,6 +18,10 @@ export {
     type SearchSortOption 
 } from './product-search';
 
+// Cart Components
+export { cartIndicator } from './cart-indicator';
+export { cartPage } from './cart-page';
+
 
 // Re-export contract types for convenience
 export type {
@@ -45,4 +49,17 @@ export type {
     ProductSearchContract,
     ProductSearchRefs
 } from '../contracts/product-search.jay-contract';
+
+export type {
+    CartIndicatorContract,
+    CartIndicatorRefs,
+    CartIndicatorViewState
+} from '../contracts/cart-indicator.jay-contract';
+
+export type {
+    CartPageContract,
+    CartPageRefs,
+    CartPageViewState,
+    LineItemOfCartPageViewState
+} from '../contracts/cart-page.jay-contract';
 

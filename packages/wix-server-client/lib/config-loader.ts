@@ -2,9 +2,29 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
 
-export interface WixConfig {
+/**
+ * Configuration for API Key authentication (server-side)
+ */
+export interface ApiKeyConfig {
     apiKey: string;
     siteId: string;
+}
+
+/**
+ * Configuration for OAuth authentication (client-side)
+ */
+export interface OAuthConfig {
+    clientId: string;
+}
+
+/**
+ * Full Wix configuration
+ */
+export interface WixConfig {
+    /** API Key strategy for server-side auth (required) */
+    apiKey: ApiKeyConfig;
+    /** OAuth strategy for client-side auth (optional) */
+    oauth: OAuthConfig;
 }
 
 export function loadConfig(): WixConfig {
@@ -28,7 +48,7 @@ export function loadConfig(): WixConfig {
     if (!config.apiKeyStrategy) {
         throw new Error('Config validation failed: "apiKeyStrategy" section is required');
     }
-    
+
     const strategy = config.apiKeyStrategy;
     
     if (!strategy.apiKey) {
@@ -46,10 +66,24 @@ export function loadConfig(): WixConfig {
     if (typeof strategy.siteId !== 'string' || strategy.siteId.trim() === '') {
         throw new Error('Config validation failed: "apiKeyStrategy.siteId" must be a non-empty string');
     }
-    
+
+    if (!config.oauthStrategy) {
+        throw new Error('Config validation failed: "oauthStrategy" section is required');
+    }
+    const oauth = config.oauthStrategy;
+        
+    if (!oauth.clientId || typeof oauth.clientId !== 'string' || oauth.clientId.trim() === '') {
+        throw new Error('Config validation failed: "oauthStrategy.clientId" must be a non-empty string');
+    }
+
     return {
-        apiKey: strategy.apiKey,
-        siteId: strategy.siteId,
+        apiKey: {
+            apiKey: strategy.apiKey,
+            siteId: strategy.siteId,
+        },
+        oauth: {
+            clientId: oauth.clientId,
+        }
     };
 }
 

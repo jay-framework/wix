@@ -1,15 +1,25 @@
+/**
+ * Wix Store API Client Factories
+ * 
+ * These functions create singleton instances of Wix API clients.
+ * Used by both the server service and client context.
+ */
+
 import { WixClient } from "@wix/sdk";
 import {collections, inventoryItemsV3, productsV3} from "@wix/stores";
 import { categories } from "@wix/categories";
+import { currentCart } from "@wix/ecom";
 
 const instances: {
     productsV3ClientInstance: typeof productsV3 | undefined;
     categoriesClientInstance: typeof categories | undefined;
     inventoryV3ClientInstance: typeof inventoryItemsV3 | undefined;
+    currentCartInstance: typeof currentCart | undefined;
 } = {
     productsV3ClientInstance: undefined,
     categoriesClientInstance: undefined,
-    inventoryV3ClientInstance: undefined
+    inventoryV3ClientInstance: undefined,
+    currentCartInstance: undefined
 }
 
 
@@ -58,3 +68,19 @@ export function getInventoryClient(wixClient: WixClient): typeof inventoryItemsV
     }
     return instances.inventoryV3ClientInstance;
 }
+
+/**
+ * Get a configured Wix eCommerce Current Cart client (singleton)
+ *
+ * The Current Cart API allows you to manage the visitor's shopping cart.
+ *
+ * @returns Current Cart client instance from @wix/ecom
+ * @see https://dev.wix.com/docs/sdk/backend-modules/ecom/current-cart/introduction
+ */
+export function getCurrentCartClient(wixClient: WixClient): typeof currentCart {
+    if (!instances.currentCartInstance) {
+        instances.currentCartInstance = wixClient.use(currentCart) as unknown as typeof currentCart;
+    }
+    return instances.currentCartInstance;
+}
+

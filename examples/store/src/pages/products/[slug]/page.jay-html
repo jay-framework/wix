@@ -1,285 +1,69 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <script type="application/jay-data">
-    data:
-  </script>
-  <title>[slug]</title>
-  <style>
-    /* Basic reset */
-    body { margin: 0; font-family: sans-serif; }
-    a { color: inherit; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    div { box-sizing: border-box; }
-    
-    /* Scrollbar styling for Webkit browsers */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 4px;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(0, 0, 0, 0.5);
-    }
-    
-    /* Smooth scrolling */
-    * {
-      scroll-behavior: smooth;
-    }
-  </style>
-</head>
-<body>
-  <div data-figma-id="424:366" data-figma-type="frame" style="position: absolute;top: 100px;left: 100px;width: 100%;height: 816.483642578125px;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: column;justify-content: flex-start;align-items: flex-start;gap: 0px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
-    <!-- Page -->
-    <div data-figma-id="424:367" data-figma-type="instance" style="position: relative;width: 100%;height: 35.717498779296875px;">
-      <!-- Browser toolbar -->
-      <div data-figma-id="I424:367;27:2050" data-figma-type="frame" style="position: absolute;top: 13.87874984741211px;left: 13.737499237060547px;width: fit-content;height: fit-content;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: row;justify-content: flex-start;align-items: flex-start;gap: 5.494999885559082px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
-        <!-- Controls -->
-        <div data-figma-id="I424:367;27:2051" data-figma-type="ellipse" style="position: relative;width: 8.242500305175781px;height: 8.242500305175781px;box-shadow: inset 0px 0px 4.121250152587891px 0px rgba(236, 109, 98, 1);"><!-- Close --></div>
-        <div data-figma-id="I424:367;27:2052" data-figma-type="ellipse" style="position: relative;width: 8.242500305175781px;height: 8.242500305175781px;box-shadow: inset 0px 0px 4.121250152587891px 0px rgba(245, 196, 81, 1);"><!-- Maximise --></div>
-        <div data-figma-id="I424:367;27:2053" data-figma-type="ellipse" style="position: relative;width: 8.242500305175781px;height: 8.242500305175781px;box-shadow: inset 0px 0px 4.121250152587891px 0px rgba(104, 204, 88, 1);"><!-- Minimise --></div>
-      </div>
-      <div data-figma-id="I424:367;27:2054" data-figma-type="frame" style="position: absolute;top: 8.383749961853027px;left: 89.29374694824219px;width: fit-content;height: fit-content;background: transparent;border-radius: 0px;overflow: hidden;display: flex;flex-direction: row;justify-content: flex-start;align-items: center;gap: 0px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
-        <!-- Actions -->
-        <div data-figma-id="I424:367;27:2055" data-figma-type="frame" style="position: relative;width: 21.979999542236328px;height: 19.232500076293945px;background: transparent;border-radius: 4.121250152587891px;overflow: visible;box-sizing: border-box;">
-          <!-- Button -->
-          <div data-figma-id="I424:367;27:2056" data-figma-type="vector" style="position: absolute;top: 4.666255474090576px;left: 8.242164611816406px;width: 5.5761637687683105px;height: 9.903677940368652px;"><!-- Vector --></div>
-        </div>
-        <div data-figma-id="I424:367;27:2057" data-figma-type="frame" style="position: relative;width: 21.979999542236328px;height: 19.232500076293945px;background: transparent;border-radius: 4.121250152587891px;overflow: visible;box-sizing: border-box;">
-          <!-- Button -->
-          <div data-figma-id="I424:367;27:2058" data-figma-type="vector" style="position: absolute;top: 4.666255474090576px;left: 8.242164611816406px;width: 5.5761637687683105px;height: 9.909379005432129px;"><!-- Vector --></div>
-        </div>
-      </div>
-      <div data-figma-id="I424:367;27:2059" data-figma-type="frame" style="position: absolute;top: 8.242500305175781px;left: 60.1015625px;width: 22.666873931884766px;height: 19.232500076293945px;background: transparent;border-radius: 4.121250152587891px;overflow: visible;box-sizing: border-box;">
-        <!-- Button -->
-        <div data-figma-id="I424:367;27:2060" data-figma-type="vector" style="position: absolute;top: 4.381175518035889px;left: 4.6112518310546875px;width: 13.44437026977539px;height: 10.496644020080566px;"><!-- Vector --></div>
-      </div>
-      <div data-figma-id="I424:367;27:2061" data-figma-type="frame" style="position: absolute;top: 8.383749961853027px;left: 343.9375px;width: 21.979999542236328px;height: 19.232500076293945px;background: transparent;border-radius: 4.121250152587891px;overflow: visible;box-sizing: border-box;">
-        <!-- Button -->
-        <div data-figma-id="I424:367;27:2062" data-figma-type="vector" style="position: absolute;top: 4.016273498535156px;left: 6.5954084396362305px;width: 9.476058006286621px;height: 11.517230033874512px;"><!-- Vector --></div>
-      </div>
-      <div data-figma-id="I424:367;27:2063" data-figma-type="frame" style="position: absolute;top: 8.383749961853027px;left: 372.7862548828125px;width: 354.427490234375px;height: 19.232500076293945px;background-image: linear-gradient(rgba(255, 255, 255, 1), rgba(255, 255, 255, 1));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-color: rgb(191, 191, 191); border-width: 0.6868749856948853px; border-style: solid;border-radius: 4.121250152587891px;overflow: visible;box-sizing: border-box;">
-        <!-- Search input -->
-        <div data-figma-id="I424:367;27:2064" data-figma-type="frame" style="position: absolute;top: 4.5px;left: 80.70687103271484px;width: fit-content;height: fit-content;background: transparent;border-radius: 0px;overflow: hidden;display: flex;flex-direction: row;justify-content: flex-start;align-items: center;gap: 4.121250152587891px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
-          <!-- Text and lock icon -->
-          <div data-figma-id="I424:367;27:2065" data-figma-type="frame" style="position: relative;width: 10.989999771118164px;height: 10.989999771118164px;background: transparent;border-radius: 0px;overflow: visible;box-sizing: border-box;">
-            <!-- Lock -->
-            <div data-figma-id="I424:367;27:2066" data-figma-type="vector" style="position: absolute;top: 1.3737499713897705px;left: 2.747499942779541px;width: 5.376943111419678px;height: 7.852108001708984px;"><!-- Vector --></div>
-          </div>
-          <div data-figma-id="I424:367;27:2067" style="position: relative;width: fit-content;height: fit-content;display: flex; flex-direction: column;justify-content: center;">
-            <div style="font-family: 'Inter', sans-serif;font-size: 8.929374694824219px;font-weight: 400;color: #1b1b1b;text-align: left;letter-spacing: -0.4000000059604645%;line-height: normal;">
-              fashioonhub.com/single-shop-page
-            </div>
-          </div>
-        </div>
-        <div data-figma-id="I424:367;27:2068" data-figma-type="frame" style="position: absolute;top: 4.121250152587891px;left: 339.3162536621094px;width: 10.989999771118164px;height: 10.989999771118164px;background: transparent;border-radius: 0px;overflow: visible;box-sizing: border-box;">
-          <!-- Refresh -->
-          <div data-figma-id="I424:367;27:2069" data-figma-type="vector" style="position: absolute;top: 0.7150806784629822px;left: 1.945860743522644px;width: 7.111570835113525px;height: 8.665088653564453px;"><!-- Vector --></div>
-        </div>
-      </div>
-      <div data-figma-id="I424:367;27:2070" data-figma-type="frame" style="position: absolute;top: 8.242500305175781px;left: 983.60498046875px;width: fit-content;height: fit-content;background: transparent;border-radius: 0px;overflow: hidden;display: flex;flex-direction: row;justify-content: flex-start;align-items: center;gap: 5.494999885559082px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
-        <!-- Right actions -->
-        <div data-figma-id="I424:367;27:2071" data-figma-type="frame" style="position: relative;width: 21.979999542236328px;height: 19.232500076293945px;background: transparent;border-radius: 4.121250152587891px;overflow: visible;box-sizing: border-box;">
-          <!-- Button -->
-          <div data-figma-id="I424:367;27:2072" data-figma-type="vector" style="position: absolute;top: 3.805314302444458px;left: 5.494999885559082px;width: 11.631261825561523px;height: 11.631261825561523px;"><!-- Vector --></div>
-        </div>
-        <div data-figma-id="I424:367;27:2073" data-figma-type="frame" style="position: relative;width: 21.979999542236328px;height: 19.232500076293945px;background: transparent;border-radius: 4.121250152587891px;overflow: visible;box-sizing: border-box;">
-          <!-- Button -->
-          <div data-figma-id="I424:367;27:2074" data-figma-type="vector" style="position: absolute;top: 2.76762318611145px;left: 6.181874752044678px;width: 10.120338439941406px;height: 12.868509292602539px;"><!-- Vector --></div>
-        </div>
-        <div data-figma-id="I424:367;27:2075" data-figma-type="frame" style="position: relative;width: 21.979999542236328px;height: 19.232500076293945px;background: transparent;border-radius: 4.121250152587891px;overflow: visible;box-sizing: border-box;">
-          <!-- Button -->
-          <div data-figma-id="I424:367;27:2076" data-figma-type="vector" style="position: absolute;top: 4.825900554656982px;left: 6.181539535522461px;width: 9.407638549804688px;height: 9.601492881774902px;"><!-- Vector --></div>
-        </div>
-        <div data-figma-id="I424:367;27:2077" data-figma-type="frame" style="position: relative;width: 21.979999542236328px;height: 19.232500076293945px;background: transparent;border-radius: 4.121250152587891px;overflow: visible;box-sizing: border-box;">
-          <!-- Button -->
-          <div data-figma-id="I424:367;27:2078" data-figma-type="vector" style="position: absolute;top: 3.6570727825164795px;left: 4.808125019073486px;width: 12.064583778381348px;height: 11.944849967956543px;"><!-- Vector --></div>
-        </div>
-      </div>
-    </div>
-    <div data-figma-id="424:368" data-figma-type="frame" style="position: relative;width: 1099px;height: 780.76611328125px;background-image: linear-gradient(rgba(255, 255, 255, 1), rgba(255, 255, 255, 1));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-radius: 0px;overflow: hidden;box-sizing: border-box;">
-      <!-- Home -->
-      <div data-figma-id="424:369" data-figma-type="frame" style="position: absolute;top: 0px;left: 0px;width: 1097.952392578125px;height: fit-content;background: transparent;border-color: rgb(237, 237, 237); border-width: 0px 0px 0.7624669075012207px 0px; border-style: solid;border-radius: 0px;overflow: visible;display: flex;flex-direction: row;justify-content: space-between;align-items: center;gap: 130.3818359375px;padding-left: 60.997352600097656px;padding-right: 60.997352600097656px;padding-top: 15.249338150024414px;padding-bottom: 15.249338150024414px;box-sizing: border-box;">
-        <!-- Frame 6 -->
-        <div data-figma-id="424:370" data-figma-type="frame" style="position: relative;width: fit-content;height: fit-content;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: row;justify-content: flex-start;align-items: center;gap: 45.74800491333008px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
-          <!-- Frame 2 -->
-          <div data-figma-id="424:371" style="position: relative;width: fit-content;height: fit-content;display: flex; flex-direction: column;justify-content: flex-start;">
-            <div style="font-family: 'Inter', sans-serif;font-size: 25.008909225463867px;font-weight: 800;color: #0d3356;text-align: left;line-height: normal;">
-              FashionHub
-            </div>
-          </div>
-          <div data-figma-id="424:372" data-figma-type="frame" style="position: relative;width: fit-content;height: fit-content;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: row;justify-content: flex-start;align-items: flex-start;gap: 38.12334442138672px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
-            <!-- Frame 1 -->
-            <div data-figma-id="424:373" style="position: relative;width: fit-content;height: fit-content;display: flex; flex-direction: column;justify-content: flex-start;">
-              <div style="font-family: 'Inter', sans-serif;font-size: 12.199470520019531px;font-weight: 500;color: #1d364d;text-align: left;line-height: normal;">
-                Category
-              </div>
-            </div>
-            <div data-figma-id="424:374" style="position: relative;width: fit-content;height: fit-content;display: flex; flex-direction: column;justify-content: flex-start;">
-              <div style="font-family: 'Inter', sans-serif;font-size: 12.199470520019531px;font-weight: 500;color: #1d364d;text-align: left;line-height: normal;">
-                Brand
-              </div>
-            </div>
-            <div data-figma-id="424:375" style="position: relative;width: fit-content;height: fit-content;display: flex; flex-direction: column;justify-content: flex-start;">
-              <div style="font-family: 'Inter', sans-serif;font-size: 12.199470520019531px;font-weight: 500;color: #1d364d;text-align: left;line-height: normal;">
-                Contact
-              </div>
-            </div>
-            <div data-figma-id="424:376" style="position: relative;width: fit-content;height: fit-content;display: flex; flex-direction: column;justify-content: flex-start;">
-              <div style="font-family: 'Inter', sans-serif;font-size: 12.199470520019531px;font-weight: 500;color: #1d364d;text-align: left;line-height: normal;">
-                FAQ’s
-              </div>
-            </div>
-          </div>
-        </div>
-        <div data-figma-id="424:377" data-figma-type="frame" style="position: relative;width: fit-content;height: fit-content;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: row;justify-content: flex-start;align-items: flex-start;gap: 12.961936950683594px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
-          <!-- Frame 5 -->
-          <div data-figma-id="424:378" data-figma-type="group" style="position: relative;width: 38.12334442138672px;height: 38.12334442138672px;">
-            <!-- Group 1 -->
-            <div data-figma-id="424:379" data-figma-type="rectangle" style="width: 38.12334442138672px;height: 38.12334442138672px;"><!-- Rectangle 3 --></div>
-            <div data-figma-id="424:380" data-figma-type="frame" style="width: 16.011804580688477px;height: 16.011804580688477px;background: transparent;border-radius: 0px;overflow: hidden;box-sizing: border-box;">
-              <!-- Frame -->
-              <div data-figma-id="424:381" data-figma-type="vector" style="position: absolute;top: 1.5010954141616821px;left: 2.0840022563934326px;width: 11.843084335327148px;height: 13.009592056274414px;"><!-- Vector --></div>
-            </div>
-          </div>
-          <div data-figma-id="424:382" data-figma-type="group" style="position: relative;width: 38.12334442138672px;height: 38.12334442138672px;">
-            <!-- Group 2 -->
-            <div data-figma-id="424:383" data-figma-type="rectangle" style="width: 38.12334442138672px;height: 38.12334442138672px;"><!-- Rectangle 2 --></div>
-            <div data-figma-id="424:384" data-figma-type="frame" style="width: 15.249337196350098px;height: 15.249337196350098px;background: transparent;border-radius: 0px;overflow: hidden;box-sizing: border-box;">
-              <!-- Frame -->
-              <div data-figma-id="424:385" data-figma-type="vector" style="position: absolute;top: 1.9061583280563354px;left: 2.3430838584899902px;width: 10.562073707580566px;height: 11.435212135314941px;"><!-- Vector --></div>
-            </div>
-          </div>
-          <div data-figma-id="424:386" data-figma-type="frame" style="position: relative;width: fit-content;height: fit-content;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: row;justify-content: flex-start;align-items: center;gap: 10.67453670501709px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
-            <!-- Frame 4 -->
-            <div data-figma-id="424:387" data-figma-type="rectangle" style="position: relative;width: 38.12334442138672px;height: 38.12334442138672px;"><!-- Rectangle 1 --></div>
-            <div data-figma-id="424:388" data-figma-type="frame" style="position: relative;width: fit-content;height: fit-content;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: column;justify-content: flex-start;align-items: flex-start;gap: 5.337268352508545px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
-              <!-- Frame 3 -->
-              <div data-figma-id="424:389" style="position: relative;width: fit-content;height: fit-content;display: flex; flex-direction: column;justify-content: flex-start;">
-                <div style="font-family: 'Inter', sans-serif;font-size: 9.149602890014648px;font-weight: 500;color: #c0c3c6;text-align: left;line-height: normal;">
-                  Good Morning!
-                </div>
-              </div>
-              <div data-figma-id="424:390" style="position: relative;width: fit-content;height: fit-content;display: flex; flex-direction: column;justify-content: flex-start;">
-                <div style="font-family: 'Inter', sans-serif;font-size: 12.199470520019531px;font-weight: 600;color: #1d364d;text-align: left;line-height: normal;">
-                  Scarlet Johnson
-                </div>
-              </div>
-            </div>
-          </div>
-          <div data-figma-id="424:391" data-figma-type="frame" style="position: absolute;top: -2.2873969078063965px;left: 24.398637771606445px;width: 15.249337196350098px;height: 15.249337196350098px;background-image: linear-gradient(rgba(29, 54, 77, 1), rgba(29, 54, 77, 1));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-color: rgb(255, 255, 255); border-width: 1.143700361251831px; border-style: solid;border-radius: 9.149602890014648px;overflow: visible;display: flex;flex-direction: column;justify-content: center;align-items: center;gap: 7.624669075012207px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
-            <!-- Frame 7 -->
-            <div data-figma-id="424:392" data-figma-type="vector" style="position: relative;width: 4.574801445007324px;height: 7.624668598175049px;"><!-- 3 --></div>
-          </div>
-          <div data-figma-id="424:393" data-figma-type="frame" style="position: absolute;top: 1.5249178409576416px;left: 79.29631805419922px;width: 7.624668598175049px;height: 7.624668598175049px;background-image: linear-gradient(rgba(215, 89, 81, 1), rgba(215, 89, 81, 1));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-color: rgb(255, 255, 255); border-width: 1.143700361251831px; border-style: solid;border-radius: 9.149602890014648px;overflow: visible;display: flex;flex-direction: column;justify-content: center;align-items: center;gap: 7.624669075012207px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
-            <!-- Frame 8 -->
-          </div>
-        </div>
-      </div>
-      <div data-figma-id="424:394" data-figma-type="frame" style="position: absolute;top: 99.12068176269531px;left: 594.1993408203125px;width: fit-content;height: fit-content;background-image: linear-gradient(rgba(237, 240, 248, 1), rgba(237, 240, 248, 1));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-radius: 6.099735260009766px;overflow: visible;display: flex;flex-direction: row;justify-content: flex-start;align-items: center;gap: 10.67453670501709px;padding-left: 9.149602890014648px;padding-right: 9.149602890014648px;padding-top: 6.099735260009766px;padding-bottom: 6.099735260009766px;box-sizing: border-box;">
-        <!-- Frame 9 -->
-        <div data-figma-id="424:395" style="position: relative;width: fit-content;height: fit-content;display: flex; flex-direction: column;justify-content: flex-start;">
-          <div style="font-family: 'Inter', sans-serif;font-size: 10.67453670501709px;font-weight: 400;color: #a3a9c2;text-align: left;line-height: normal;">
-            Home
-          </div>
-        </div>
-        <div data-figma-id="424:396" data-figma-type="frame" style="position: relative;width: 12.199470520019531px;height: 12.199470520019531px;background: transparent;border-radius: 0px;overflow: hidden;box-sizing: border-box;">
-          <!-- Frame -->
-          <div data-figma-id="424:397" data-figma-type="vector" style="position: absolute;top: 2.2873971462249756px;left: 4.1936259269714355px;width: 3.8123342990875244px;height: 7.624668598175049px;"><!-- Vector --></div>
-        </div>
-        <div data-figma-id="424:398" style="position: relative;width: fit-content;height: fit-content;display: flex; flex-direction: column;justify-content: flex-start;">
-          <div style="font-family: 'Inter', sans-serif;font-size: 10.67453670501709px;font-weight: 400;color: #a3a9c2;text-align: left;line-height: normal;">
-            Decoration
-          </div>
-        </div>
-        <div data-figma-id="424:399" data-figma-type="frame" style="position: relative;width: 12.199470520019531px;height: 12.199470520019531px;background: transparent;border-radius: 0px;overflow: hidden;box-sizing: border-box;">
-          <!-- Frame -->
-          <div data-figma-id="424:400" data-figma-type="vector" style="position: absolute;top: 2.2873971462249756px;left: 4.193703651428223px;width: 3.8123342990875244px;height: 7.624668598175049px;"><!-- Vector --></div>
-        </div>
-        <div data-figma-id="424:401" style="position: relative;width: fit-content;height: fit-content;display: flex; flex-direction: column;justify-content: flex-start;">
-          <div style="font-family: 'Inter', sans-serif;font-size: 10.67453670501709px;font-weight: 400;color: #a3a9c2;text-align: left;line-height: normal;">
-            Furniture
-          </div>
-        </div>
-        <div data-figma-id="424:402" data-figma-type="frame" style="position: relative;width: 12.199470520019531px;height: 12.199470520019531px;background: transparent;border-radius: 0px;overflow: hidden;box-sizing: border-box;">
-          <!-- Frame -->
-          <div data-figma-id="424:403" data-figma-type="vector" style="position: absolute;top: 2.2873971462249756px;left: 4.193759441375732px;width: 3.8123342990875244px;height: 7.624668598175049px;"><!-- Vector --></div>
-        </div>
-        <div data-figma-id="424:404" style="position: relative;width: fit-content;height: fit-content;display: flex; flex-direction: column;justify-content: flex-start;">
-          <div style="font-family: 'Inter', sans-serif;font-size: 10.67453670501709px;font-weight: 400;color: #a3a9c2;text-align: left;line-height: normal;">
-            Storage
-          </div>
-        </div>
-        <div data-figma-id="424:405" data-figma-type="frame" style="position: relative;width: 12.199470520019531px;height: 12.199470520019531px;background: transparent;border-radius: 0px;overflow: hidden;box-sizing: border-box;">
-          <!-- Frame -->
-          <div data-figma-id="424:406" data-figma-type="vector" style="position: absolute;top: 2.2873971462249756px;left: 4.1934990882873535px;width: 3.8123342990875244px;height: 7.624668598175049px;"><!-- Vector --></div>
-        </div>
-        <div data-figma-id="424:407" style="position: relative;width: fit-content;height: fit-content;display: flex; flex-direction: column;justify-content: flex-start;">
-          <div style="font-family: 'Inter', sans-serif;font-size: 10.67453670501709px;font-weight: 600;color: #3a4980;text-align: left;line-height: normal;">
-            Sideboard
-          </div>
-        </div>
-      </div>
-      <div data-figma-id="424:408" data-figma-type="instance" style="position: absolute;top: 99.12068176269531px;left: 60.99728775024414px;width: 447.57000732421875px;height: 526.8599853515625px;">
-        <!-- selectedMedia -->
-        <div data-figma-id="I424:408;424:551" data-figma-type="rectangle" style="position: absolute;top: 0px;left: 0px;width: 447.57000732421875px;height: 526.8599853515625px;"><!-- coverImage --></div>
-        <div data-figma-id="I424:408;424:552" data-figma-type="frame" style="position: absolute;top: 219.07081604003906px;left: 179.08131408691406px;width: fit-content;height: fit-content;background-image: linear-gradient(rgba(255, 255, 255, 0.30000001192092896), rgba(255, 255, 255, 0.30000001192092896));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-radius: 34.31100845336914px;overflow: visible;backdrop-filter: blur(2.287400722503662px);-webkit-backdrop-filter: blur(2.287400722503662px);display: flex;flex-direction: row;justify-content: center;align-items: center;gap: 7.624669075012207px;padding-left: 9.149602890014648px;padding-right: 9.149602890014648px;padding-top: 9.149602890014648px;padding-bottom: 9.149602890014648px;box-sizing: border-box;">
-          <!-- Frame 4 -->
-          <div data-figma-id="I424:408;424:553" data-figma-type="frame" style="position: relative;width: 75px;height: 75px;background: transparent;border-radius: 0px;overflow: hidden;box-sizing: border-box;">
-            <!-- Frame -->
-            <div data-figma-id="I424:408;424:554" data-figma-type="vector" style="position: absolute;top: 14.144832611083984px;left: 16.40596580505371px;width: 43.091880798339844px;height: 46.70588684082031px;"><!-- Vector --></div>
-          </div>
-        </div>
-      </div>
-      <div data-figma-id="424:409" data-figma-type="frame" style="position: absolute;top: 147.15609741210938px;left: 594.1993408203125px;width: 443.7557373046875px;height: fit-content;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: row;justify-content: space-between;align-items: flex-start;gap: 50.32280731201172px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
-        <!-- Frame 12 -->
-        <div data-figma-id="424:410" data-figma-type="frame" style="position: relative;width: fit-content;height: fit-content;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: column;justify-content: flex-start;align-items: flex-start;gap: 8.38713550567627px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
-          <!-- Frame 10 -->
-          <div data-figma-id="424:411" style="position: relative;width: fit-content;height: fit-content;display: flex; flex-direction: column;justify-content: flex-start;">
-            <div style="font-family: 'Inter', sans-serif;font-size: 21.34907341003418px;font-weight: 600;color: #000000;text-align: left;line-height: normal;">
-              Embrace Sideboard
-            </div>
-          </div>
-          <div data-figma-id="424:412" style="position: relative;width: fit-content;height: fit-content;display: flex; flex-direction: column;justify-content: flex-start;">
-            <div style="font-family: 'Inter', sans-serif;font-size: 12.199470520019531px;font-weight: 400;color: #b9bbbf;text-align: left;line-height: normal;">
-              Teixeira Design Studio
-            </div>
-          </div>
-        </div>
-        <div data-figma-id="424:413" data-figma-type="frame" style="position: relative;width: fit-content;height: fit-content;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: row;justify-content: flex-start;align-items: flex-start;gap: 9.912069320678711px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
-          <!-- Frame 14 -->
-          <div data-figma-id="424:414" data-figma-type="frame" style="position: relative;width: fit-content;height: fit-content;background-image: linear-gradient(rgba(255, 240, 240, 1), rgba(255, 240, 240, 1));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-radius: 7.624669075012207px;overflow: visible;display: flex;flex-direction: row;justify-content: flex-start;align-items: center;gap: 5.337268352508545px;padding-left: 7.624669075012207px;padding-right: 7.624669075012207px;padding-top: 5.337268352508545px;padding-bottom: 5.337268352508545px;box-sizing: border-box;">
-            <!-- Frame 11 -->
-            <div data-figma-id="424:415" data-figma-type="frame" style="position: relative;width: 15.249337196350098px;height: 15.249337196350098px;background: transparent;border-radius: 0px;overflow: hidden;box-sizing: border-box;">
-              <!-- Frame -->
-              <div data-figma-id="424:416" data-figma-type="vector" style="position: absolute;top: 2.3827126026153564px;left: 1.9061206579208374px;width: 11.437003135681152px;height: 10.483920097351074px;"><!-- Vector --></div>
-            </div>
-            <div data-figma-id="424:417" style="position: relative;width: fit-content;height: fit-content;display: flex; flex-direction: column;justify-content: flex-start;">
-              <div style="font-family: 'Inter', sans-serif;font-size: 12.199470520019531px;font-weight: 600;color: #d46f77;text-align: left;line-height: normal;">
-                109
-              </div>
-            </div>
-          </div>
-          <div data-figma-id="424:418" data-figma-type="frame" style="position: relative;width: fit-content;height: fit-content;background-image: linear-gradient(rgba(237, 240, 248, 1), rgba(237, 240, 248, 1));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-radius: 7.624669075012207px;overflow: visible;display: flex;flex-direction: row;justify-content: flex-start;align-items: center;gap: 5.337268352508545px;padding-left: 5.337268352508545px;padding-right: 5.337268352508545px;padding-top: 5.337268352508545px;padding-bottom: 5.337268352508545px;box-sizing: border-box;">
-            <!-- Frame 12 -->
-            <div data-figma-id="424:419" data-figma-type="frame" style="position: relative;width: 15.249337196350098px;height: 15.249337196350098px;background: transparent;border-radius: 0px;overflow: hidden;box-sizing: border-box;">
-              <!-- Frame -->
-              <div data-figma-id="424:420" data-figma-type="vector" style="position: absolute;top: 1.905205488204956px;left: 2.8592214584350586px;width: 9.53083610534668px;height: 11.437973022460938px;"><!-- Vector --></div>
-            </div>
+<html>
+  <head>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="product-page"
+            key="productPage"
+    ></script>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="cart-indicator"
+            key="cartIndicator"
+    ></script>
+    <script type="application/jay-data">
+      data:
+    </script>
+    <link rel="stylesheet" href="../../../styles/store-theme.css" />
+    <style>
+      /* Page-specific layout */
+      .product-page {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: var(--section-gap) var(--page-padding);
+      }
+
+      /* Back link */
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-secondary);
+        font-size: 14px;
+        margin-bottom: 32px;
+        transition: color var(--transition-base);
+      }
+
+      .back-link:hover {
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="product-page">
+      <!-- Site Header with Cart -->
+      <header class="site-header">
+        <a href="/products" class="site-logo">Store<span>.</span></a>
+        <nav class="site-nav">
+          <a href="/products">Products</a>
+          <a href="/cart" 
+             class="cart-indicator {cartIndicator.hasItems ? has-items} {cartIndicator.isLoading ? is-loading} {cartIndicator.justAdded ? just-added}" 
+             ref="cartIndicator.cartLink">
+            <span class="cart-indicator-icon">🛒</span>
+            <span class="cart-indicator-count" if="cartIndicator.hasItems">{cartIndicator.itemCount}</span>
+          </a>
+        </nav>
+      </header>
+
+      <!-- Back Link -->
+      <a href="/products" class="back-link">
+        ← Back to Products
+      </a>
+
+      <div class="product-page-layout">
+        <!-- Gallery Section -->
+        <div class="product-gallery">
+          <div class="product-main-image">
+            <img src="{productPage.mediaGallery.selectedMedia.url}" alt="{productPage.productName}" />
           </div>
           <div data-figma-id="424:421" data-figma-type="frame" style="position: relative;width: fit-content;height: fit-content;background-image: linear-gradient(rgba(237, 240, 248, 1), rgba(237, 240, 248, 1));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-radius: 7.624669075012207px;overflow: visible;display: flex;flex-direction: row;justify-content: flex-start;align-items: center;gap: 5.337268352508545px;padding-left: 5.337268352508545px;padding-right: 5.337268352508545px;padding-top: 5.337268352508545px;padding-bottom: 5.337268352508545px;box-sizing: border-box;">
             <!-- Frame 13 -->
