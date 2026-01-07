@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script type="application/jay-data">
     data:
   </script>
@@ -77,7 +80,11 @@
             <!-- Lock -->
             <div><!-- Vector --></div>
           </div>
-          <p">Text</p>
+          <div data-figma-id="I424:367;27:2067" style="position: absolute;width: 150px; height: 11px;display: flex; flex-direction: column;justify-content: center;">
+            <div style="font-family: 'Inter', sans-serif;font-size: 8.929374694824219px;font-weight: 400;color: #1b1b1b;text-align: left;letter-spacing: -0.4000000059604645%;line-height: normal;">
+              fashioonhub.com/single-shop-page
+            </div>
+          </div>
         </div>
         <div data-figma-id="I424:367;27:2068" data-figma-type="frame">
           <!-- Refresh -->
@@ -110,13 +117,33 @@
         <!-- Frame 6 -->
         <div data-figma-id="424:370" data-figma-type="frame">
           <!-- Frame 2 -->
-          <p">FashionHub</p>
+          <div data-figma-id="424:371" style="position: absolute;width: 149px; height: 30px;display: flex; flex-direction: column;justify-content: flex-start;">
+            <div style="font-family: 'Inter', sans-serif;font-size: 25.008909225463867px;font-weight: 800;color: #0d3356;text-align: left;line-height: normal;">
+              FashionHub
+            </div>
+          </div>
           <div data-figma-id="424:372" data-figma-type="frame">
             <!-- Frame 1 -->
-            <p">Category</p>
-            <p">Brand</p>
-            <p">Contact</p>
-            <p">FAQ’s</p>
+            <div data-figma-id="424:373" style="position: absolute;width: 55px; height: 15px;display: flex; flex-direction: column;justify-content: flex-start;">
+              <div style="font-family: 'Inter', sans-serif;font-size: 12.199470520019531px;font-weight: 500;color: #1d364d;text-align: left;line-height: normal;">
+                Category
+              </div>
+            </div>
+            <div data-figma-id="424:374" style="position: absolute;width: 35px; height: 15px;display: flex; flex-direction: column;justify-content: flex-start;">
+              <div style="font-family: 'Inter', sans-serif;font-size: 12.199470520019531px;font-weight: 500;color: #1d364d;text-align: left;line-height: normal;">
+                Brand
+              </div>
+            </div>
+            <div data-figma-id="424:375" style="position: absolute;width: 47px; height: 15px;display: flex; flex-direction: column;justify-content: flex-start;">
+              <div style="font-family: 'Inter', sans-serif;font-size: 12.199470520019531px;font-weight: 500;color: #1d364d;text-align: left;line-height: normal;">
+                Contact
+              </div>
+            </div>
+            <div data-figma-id="424:376" style="position: absolute;width: 32px; height: 15px;display: flex; flex-direction: column;justify-content: flex-start;">
+              <div style="font-family: 'Inter', sans-serif;font-size: 12.199470520019531px;font-weight: 500;color: #1d364d;text-align: left;line-height: normal;">
+                FAQ’s
+              </div>
+            </div>
           </div>
         </div>
         <div data-figma-id="424:377" data-figma-type="frame">
@@ -142,8 +169,16 @@
             <div><!-- Rectangle 1 --></div>
             <div data-figma-id="424:388" data-figma-type="frame">
               <!-- Frame 3 -->
-              <p">Good Morning!</p>
-              <p">Scarlet Johnson</p>
+              <div data-figma-id="424:389" style="position: absolute;width: 65px; height: 11px;display: flex; flex-direction: column;justify-content: flex-start;">
+                <div style="font-family: 'Inter', sans-serif;font-size: 9.149602890014648px;font-weight: 500;color: #c0c3c6;text-align: left;line-height: normal;">
+                  Good Morning!
+                </div>
+              </div>
+              <div data-figma-id="424:390" style="position: absolute;width: 96px; height: 15px;display: flex; flex-direction: column;justify-content: flex-start;">
+                <div style="font-family: 'Inter', sans-serif;font-size: 12.199470520019531px;font-weight: 600;color: #1d364d;text-align: left;line-height: normal;">
+                  Scarlet Johnson
+                </div>
+              </div>
             </div>
           </div>
           <div data-figma-id="424:391" data-figma-type="frame">
@@ -157,27 +192,47 @@
       </div>
       <div data-figma-id="424:394" data-figma-type="frame">
         <!-- Frame 9 -->
-        <p">Home</p>
+        <div data-figma-id="424:395" style="position: absolute;width: 30px; height: 13px;display: flex; flex-direction: column;justify-content: flex-start;">
+          <div style="font-family: 'Inter', sans-serif;font-size: 10.67453670501709px;font-weight: 400;color: #a3a9c2;text-align: left;line-height: normal;">
+            Home
+          </div>
+        </div>
         <div data-figma-id="424:396" data-figma-type="frame">
           <!-- Frame -->
           <div><!-- Vector --></div>
         </div>
-        <p">Decoration</p>
+        <div data-figma-id="424:398" style="position: absolute;width: 56px; height: 13px;display: flex; flex-direction: column;justify-content: flex-start;">
+          <div style="font-family: 'Inter', sans-serif;font-size: 10.67453670501709px;font-weight: 400;color: #a3a9c2;text-align: left;line-height: normal;">
+            Decoration
+          </div>
+        </div>
         <div data-figma-id="424:399" data-figma-type="frame">
           <!-- Frame -->
           <div><!-- Vector --></div>
         </div>
-        <p">Furniture</p>
+        <div data-figma-id="424:401" style="position: absolute;width: 45px; height: 13px;display: flex; flex-direction: column;justify-content: flex-start;">
+          <div style="font-family: 'Inter', sans-serif;font-size: 10.67453670501709px;font-weight: 400;color: #a3a9c2;text-align: left;line-height: normal;">
+            Furniture
+          </div>
+        </div>
         <div data-figma-id="424:402" data-figma-type="frame">
           <!-- Frame -->
           <div><!-- Vector --></div>
         </div>
-        <p">Storage</p>
+        <div data-figma-id="424:404" style="position: absolute;width: 40px; height: 13px;display: flex; flex-direction: column;justify-content: flex-start;">
+          <div style="font-family: 'Inter', sans-serif;font-size: 10.67453670501709px;font-weight: 400;color: #a3a9c2;text-align: left;line-height: normal;">
+            Storage
+          </div>
+        </div>
         <div data-figma-id="424:405" data-figma-type="frame">
           <!-- Frame -->
           <div><!-- Vector --></div>
         </div>
-        <p">Sideboard</p>
+        <div data-figma-id="424:407" style="position: absolute;width: 53px; height: 13px;display: flex; flex-direction: column;justify-content: flex-start;">
+          <div style="font-family: 'Inter', sans-serif;font-size: 10.67453670501709px;font-weight: 600;color: #3a4980;text-align: left;line-height: normal;">
+            Sideboard
+          </div>
+        </div>
       </div>
       <div>
         <!-- selectedMedia -->
@@ -194,8 +249,16 @@
         <!-- Frame 12 -->
         <div data-figma-id="424:410" data-figma-type="frame">
           <!-- Frame 10 -->
-          <p">Product Name</p>
-          <p">Teixeira Design Studio</p>
+          <div data-figma-id="424:411" style="position: absolute;width: 203px; height: 26px;display: flex; flex-direction: column;justify-content: flex-start;">
+            <div style="font-family: 'Inter', sans-serif;font-size: 21.34907341003418px;font-weight: 600;color: #000000;text-align: left;line-height: normal;">
+              Embrace Sideboard
+            </div>
+          </div>
+          <div data-figma-id="424:412" style="position: absolute;width: 129px; height: 15px;display: flex; flex-direction: column;justify-content: flex-start;">
+            <div style="font-family: 'Inter', sans-serif;font-size: 12.199470520019531px;font-weight: 400;color: #b9bbbf;text-align: left;line-height: normal;">
+              Teixeira Design Studio
+            </div>
+          </div>
         </div>
         <div data-figma-id="424:413" data-figma-type="frame">
           <!-- Frame 14 -->
@@ -205,7 +268,11 @@
               <!-- Frame -->
               <div><!-- Vector --></div>
             </div>
-            <p">109</p>
+            <div data-figma-id="424:417" style="position: absolute;width: 22px; height: 15px;display: flex; flex-direction: column;justify-content: flex-start;">
+              <div style="font-family: 'Inter', sans-serif;font-size: 12.199470520019531px;font-weight: 600;color: #d46f77;text-align: left;line-height: normal;">
+                109
+              </div>
+            </div>
           </div>
           <div data-figma-id="424:418" data-figma-type="frame">
             <!-- Frame 12 -->
@@ -227,8 +294,16 @@
         <!-- Frame 18 -->
         <div data-figma-id="424:425" data-figma-type="frame">
           <!-- Frame 17 -->
-          <p">price</p>
-          <p">strikePrice</p>
+          <div data-figma-id="424:426" style="position: absolute;width: 86px; height: 31px;display: flex; flex-direction: column;justify-content: flex-start;">
+            <div style="font-family: 'Inter', sans-serif;font-size: 25.923873901367188px;font-weight: 700;color: #3a4980;text-align: left;line-height: normal;">
+              $71.56
+            </div>
+          </div>
+          <div data-figma-id="424:427" style="position: absolute;width: 51px; height: 19px;display: flex; flex-direction: column;justify-content: flex-start;">
+            <div style="font-family: 'Inter', sans-serif;font-size: 16.011804580688477px;font-weight: 400;color: #000000;text-align: left;line-height: normal;text-decoration: line-through;">
+              $71.56
+            </div>
+          </div>
         </div>
         <div data-figma-id="424:428" data-figma-type="frame">
           <!-- Frame 16 -->
@@ -240,7 +315,11 @@
                 <!-- Frame -->
                 <div><!-- Vector --></div>
               </div>
-              <p">4.8</p>
+              <div data-figma-id="424:433" style="position: absolute;width: 17px; height: 13px;display: flex; flex-direction: column;justify-content: flex-start;">
+                <div style="font-family: 'Inter', sans-serif;font-size: 10.67453670501709px;font-weight: 600;color: #d48d3b;text-align: left;line-height: normal;">
+                  4.8
+                </div>
+              </div>
             </div>
             <div data-figma-id="424:434" data-figma-type="frame">
               <!-- Frame 13 -->
@@ -248,10 +327,18 @@
                 <!-- Frame -->
                 <div><!-- Vector --></div>
               </div>
-              <p">67 Reviews</p>
+              <div data-figma-id="424:437" style="position: absolute;width: 59px; height: 13px;display: flex; flex-direction: column;justify-content: flex-start;">
+                <div style="font-family: 'Inter', sans-serif;font-size: 10.67453670501709px;font-weight: 600;color: #3a4980;text-align: left;line-height: normal;">
+                  67 Reviews
+                </div>
+              </div>
             </div>
           </div>
-          <p">93% of buyers have recommended this.</p>
+          <div data-figma-id="424:438" style="position: absolute;width: 201px; height: 13px;display: flex; flex-direction: column;justify-content: flex-start;">
+            <div style="font-family: sans-serif;font-size: 10.67453670501709px;font-weight: 400;color: #000000;text-align: left;line-height: normal;">
+              93% of buyers have recommended this.
+            </div>
+          </div>
         </div>
       </div>
       <!-- Line 1 (LINE) -->
@@ -296,7 +383,11 @@
         <!-- options -->
         <div>
           <!-- choice -->
-          <p">Choice Title</p>
+          <div data-figma-id="I424:453;424:511" style="position: absolute;width: 90px; height: 15px;display: flex; flex-direction: column;justify-content: flex-start;">
+            <div style="font-family: 'Inter', sans-serif;font-size: 12.199470520019531px;font-weight: 500;color: #b9bbbf;text-align: left;line-height: normal;">
+              Choose a Color
+            </div>
+          </div>
           <div data-figma-id="I424:453;424:512" data-figma-type="frame">
             <!-- colors -->
             <div>
@@ -339,7 +430,11 @@
         </div>
         <div>
           <!-- choice -->
-          <p">Choice Title</p>
+          <div data-figma-id="I424:454;424:503" style="position: absolute;width: 83px; height: 15px;display: flex; flex-direction: column;justify-content: flex-start;">
+            <div style="font-family: 'Inter', sans-serif;font-size: 12.199470520019531px;font-weight: 500;color: #b9bbbf;text-align: left;line-height: normal;">
+              Choose a Size
+            </div>
+          </div>
           <div data-figma-id="I424:454;424:504" data-figma-type="frame">
             <!-- sizes -->
             <div>
@@ -348,7 +443,11 @@
                 <!-- Group 10 -->
                 <div><!-- Rectangle 10 --></div>
               </div>
-              <p">Size Name</p>
+              <div data-figma-id="I424:454;424:505;424:500" style="position: absolute;width: 28px; height: 13px;display: flex; flex-direction: column;justify-content: flex-start;">
+                <div style="font-family: 'Inter', sans-serif;font-size: 10.67453670501709px;font-weight: 500;color: #726c6c;text-align: left;line-height: normal;">
+                  Small
+                </div>
+              </div>
             </div>
             <div>
               <!-- sizeChoice -->
@@ -357,7 +456,11 @@
                 <div><!-- Rectangle 9 --></div>
                 <div><!-- Rectangle 10 --></div>
               </div>
-              <p">Size Name</p>
+              <div data-figma-id="I424:454;424:506;424:496" style="position: absolute;width: 41px; height: 13px;display: flex; flex-direction: column;justify-content: flex-start;">
+                <div style="font-family: 'Inter', sans-serif;font-size: 10.67453670501709px;font-weight: 500;color: #3a4980;text-align: left;line-height: normal;">
+                  Medium
+                </div>
+              </div>
             </div>
             <div>
               <!-- sizeChoice -->
@@ -365,7 +468,11 @@
                 <!-- Group 10 -->
                 <div><!-- Rectangle 10 --></div>
               </div>
-              <p">Size Name</p>
+              <div data-figma-id="I424:454;424:507;424:500" style="position: absolute;width: 29px; height: 13px;display: flex; flex-direction: column;justify-content: flex-start;">
+                <div style="font-family: 'Inter', sans-serif;font-size: 10.67453670501709px;font-weight: 500;color: #726c6c;text-align: left;line-height: normal;">
+                  Large
+                </div>
+              </div>
             </div>
             <div>
               <!-- sizeChoice -->
@@ -373,7 +480,11 @@
                 <!-- Group 10 -->
                 <div><!-- Rectangle 10 --></div>
               </div>
-              <p">Size Name</p>
+              <div data-figma-id="I424:454;424:508;424:500" style="position: absolute;width: 59px; height: 13px;display: flex; flex-direction: column;justify-content: flex-start;">
+                <div style="font-family: 'Inter', sans-serif;font-size: 10.67453670501709px;font-weight: 500;color: #726c6c;text-align: left;line-height: normal;">
+                  Extra Large
+                </div>
+              </div>
             </div>
             <div>
               <!-- sizeChoice -->
@@ -381,7 +492,11 @@
                 <!-- Group 10 -->
                 <div><!-- Rectangle 10 --></div>
               </div>
-              <p">Size Name</p>
+              <div data-figma-id="I424:454;424:509;424:500" style="position: absolute;width: 21px; height: 13px;display: flex; flex-direction: column;justify-content: flex-start;">
+                <div style="font-family: 'Inter', sans-serif;font-size: 10.67453670501709px;font-weight: 500;color: #726c6c;text-align: left;line-height: normal;">
+                  XXL
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -391,15 +506,31 @@
         <div>
           <!-- Group 11 -->
           <div><!-- Rectangle 11 --></div>
-          <p">quantity</p>
-          <p">increment</p>
-          <p">decrement</p>
+          <div data-figma-id="424:458" style="position: absolute;width: 9.560994148254395px; height: auto;display: flex; flex-direction: column;justify-content: flex-start;">
+            <div style="font-family: 'Inter', sans-serif;font-size: 16.77427101135254px;font-weight: 700;color: #3a4980;text-align: left;line-height: normal;">
+              5
+            </div>
+          </div>
+          <div data-figma-id="424:459" style="position: absolute;width: 8.691811561584473px; height: auto;display: flex; flex-direction: column;justify-content: flex-start;">
+            <div style="font-family: 'Inter', sans-serif;font-size: 13.724401473999023px;font-weight: 700;color: #3a4980;text-align: left;line-height: normal;">
+              +
+            </div>
+          </div>
+          <div data-figma-id="424:460" style="position: absolute;width: 6.084268093109131px; height: auto;display: flex; flex-direction: column;justify-content: flex-start;">
+            <div style="font-family: 'Inter', sans-serif;font-size: 13.724401473999023px;font-weight: 700;color: #a3a3a3;text-align: left;line-height: normal;">
+              -
+            </div>
+          </div>
         </div>
         <div data-figma-id="424:461" data-figma-type="frame">
           <!-- buyButton -->
           <div data-figma-id="424:462" data-figma-type="frame">
             <!-- Frame 27 -->
-            <p">Buy Now</p>
+            <div data-figma-id="424:463" style="position: absolute;width: 86px; height: 24px;display: flex; flex-direction: column;justify-content: flex-start;">
+              <div style="font-family: 'Inter', sans-serif;font-size: 20px;font-weight: 700;color: #ffffff;text-align: left;line-height: normal;">
+                Buy Now
+              </div>
+            </div>
           </div>
         </div>
         <div data-figma-id="424:464" data-figma-type="frame">
@@ -410,7 +541,11 @@
               <!-- Frame -->
               <div><!-- Vector --></div>
             </div>
-            <p">Add To Cart</p>
+            <div data-figma-id="424:468" style="position: absolute;width: 71px; height: 15px;display: flex; flex-direction: column;justify-content: flex-start;">
+              <div style="font-family: 'Inter', sans-serif;font-size: 12.199470520019531px;font-weight: 600;color: #ffffff;text-align: left;line-height: normal;">
+                Add To Cart
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -424,8 +559,16 @@
           </div>
           <div data-figma-id="424:473" data-figma-type="frame">
             <!-- Frame 28 -->
-            <p">Free Delivery</p>
-            <p">Enter your Postal code for Delivery Availability</p>
+            <div data-figma-id="424:474" style="position: absolute;width: 388.85809326171875px; height: auto;display: flex; flex-direction: column;justify-content: flex-start;">
+              <div style="font-family: 'Inter', sans-serif;font-size: 12.961936950683594px;font-weight: 700;color: #1d364d;text-align: left;line-height: normal;">
+                Free Delivery
+              </div>
+            </div>
+            <div data-figma-id="424:475" style="position: absolute;width: 388.85809326171875px; height: auto;display: flex; flex-direction: column;justify-content: flex-start;">
+              <div style="font-family: 'Inter', sans-serif;font-size: 10.67453670501709px;font-weight: 400;color: #726c6c;text-align: left;line-height: normal;text-decoration: underline;">
+                Enter your Postal code for Delivery Availability
+              </div>
+            </div>
           </div>
         </div>
         <!-- Line 5 (LINE) -->
@@ -437,8 +580,16 @@
           </div>
           <div data-figma-id="424:480" data-figma-type="frame">
             <!-- Frame 28 -->
-            <p">Return Delivery</p>
-            <p">Free 30 days Delivery Return. Details</p>
+            <div data-figma-id="424:481" style="position: absolute;width: 388.85809326171875px; height: auto;display: flex; flex-direction: column;justify-content: flex-start;">
+              <div style="font-family: 'Inter', sans-serif;font-size: 12.961936950683594px;font-weight: 700;color: #1d364d;text-align: left;line-height: normal;">
+                Return Delivery
+              </div>
+            </div>
+            <div data-figma-id="424:482" style="position: absolute;width: 388.85809326171875px; height: auto;display: flex; flex-direction: column;justify-content: flex-start;">
+              <div style="font-family: 'Inter', sans-serif;font-size: 10.67453670501709px;font-weight: 400;color: #726c6c;text-align: left;line-height: normal;">
+                Free 30 days Delivery Return. Details
+              </div>
+            </div>
           </div>
         </div>
       </div>
