@@ -1,200 +1,449 @@
-<html>
-  <head>
-    <script type="application/jay-headless"
-            plugin="@jay-framework/wix-stores"
-            contract="product-page"
-            key="productPage"
-    ></script>
-    <script type="application/jay-data">
-      data:
-    </script>
-    <link rel="stylesheet" href="../../../styles/store-theme.css" />
-    <style>
-      /* Page-specific layout */
-      .product-page {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: var(--section-gap) var(--page-padding);
-      }
-
-      /* Back link */
-      .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        color: var(--text-secondary);
-        font-size: 14px;
-        margin-bottom: 32px;
-        transition: color var(--transition-base);
-      }
-
-      .back-link:hover {
-        color: var(--accent);
-      }
-    </style>
-  </head>
-  <body>
-    <div class="product-page">
-      <!-- Back Link -->
-      <a href="/products" class="back-link">
-        ← Back to Products
-      </a>
-
-      <div class="product-page-layout">
-        <!-- Gallery Section -->
-        <div class="product-gallery">
-          <div class="product-main-image">
-            <img src="{productPage.mediaGallery.selectedMedia.url}" alt="{productPage.productName}" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="application/jay-data">
+    data:
+  </script>
+  <title>Product Page</title>
+  <style>
+    /* Basic reset */
+    body { margin: 0; font-family: sans-serif; }
+    a { color: inherit; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    div { box-sizing: border-box; }
+    
+    /* Scrollbar styling for Webkit browsers */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.5);
+    }
+    
+    /* Smooth scrolling */
+    * {
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+<body>
+  <div data-figma-id="424:366" data-figma-type="frame">
+    <!-- Page -->
+    <div>
+      <!-- Browser toolbar -->
+      <div data-figma-id="I424:367;27:2050" data-figma-type="frame">
+        <!-- Controls -->
+        <div><!-- Close --></div>
+        <div><!-- Maximise --></div>
+        <div><!-- Minimise --></div>
+      </div>
+      <div data-figma-id="I424:367;27:2054" data-figma-type="frame">
+        <!-- Actions -->
+        <div data-figma-id="I424:367;27:2055" data-figma-type="frame">
+          <!-- Button -->
+          <div><!-- Vector --></div>
+        </div>
+        <div data-figma-id="I424:367;27:2057" data-figma-type="frame">
+          <!-- Button -->
+          <div><!-- Vector --></div>
+        </div>
+      </div>
+      <div data-figma-id="I424:367;27:2059" data-figma-type="frame">
+        <!-- Button -->
+        <div><!-- Vector --></div>
+      </div>
+      <div data-figma-id="I424:367;27:2061" data-figma-type="frame">
+        <!-- Button -->
+        <div><!-- Vector --></div>
+      </div>
+      <div data-figma-id="I424:367;27:2063" data-figma-type="frame">
+        <!-- Search input -->
+        <div data-figma-id="I424:367;27:2064" data-figma-type="frame">
+          <!-- Text and lock icon -->
+          <div data-figma-id="I424:367;27:2065" data-figma-type="frame">
+            <!-- Lock -->
+            <div><!-- Vector --></div>
           </div>
-          <div class="product-thumbnails">
-            <div class="product-thumbnail {selected == selected ? selected}"
-                 forEach="productPage.mediaGallery.availableMedia" 
-                 trackBy="mediaId"
-                 ref="productPage.mediaGallery.availableMedia.selected">
-              <img src="{media.thumbnail_50x50}" alt="Product thumbnail" />
-            </div>
+          <p">Text</p>
+        </div>
+        <div data-figma-id="I424:367;27:2068" data-figma-type="frame">
+          <!-- Refresh -->
+          <div><!-- Vector --></div>
+        </div>
+      </div>
+      <div data-figma-id="I424:367;27:2070" data-figma-type="frame">
+        <!-- Right actions -->
+        <div data-figma-id="I424:367;27:2071" data-figma-type="frame">
+          <!-- Button -->
+          <div><!-- Vector --></div>
+        </div>
+        <div data-figma-id="I424:367;27:2073" data-figma-type="frame">
+          <!-- Button -->
+          <div><!-- Vector --></div>
+        </div>
+        <div data-figma-id="I424:367;27:2075" data-figma-type="frame">
+          <!-- Button -->
+          <div><!-- Vector --></div>
+        </div>
+        <div data-figma-id="I424:367;27:2077" data-figma-type="frame">
+          <!-- Button -->
+          <div><!-- Vector --></div>
+        </div>
+      </div>
+    </div>
+    <div data-figma-id="424:368" data-figma-type="frame">
+      <!-- Home -->
+      <div data-figma-id="424:369" data-figma-type="frame">
+        <!-- Frame 6 -->
+        <div data-figma-id="424:370" data-figma-type="frame">
+          <!-- Frame 2 -->
+          <p">FashionHub</p>
+          <div data-figma-id="424:372" data-figma-type="frame">
+            <!-- Frame 1 -->
+            <p">Category</p>
+            <p">Brand</p>
+            <p">Contact</p>
+            <p">FAQ’s</p>
           </div>
         </div>
-
-        <!-- Details Section -->
-        <div class="product-details">
-          <!-- Ribbon -->
-          <div class="badge badge-accent" style="margin-bottom: 16px;" if="productPage.ribbon">{productPage.ribbon}</div>
-
-          <!-- Product Type -->
-          <div class="product-type-badge physical" if="productPage.productType == PHYSICAL">
-            📦 Physical Product
-          </div>
-          <div class="product-type-badge digital" if="productPage.productType == DIGITAL">
-            ⚡ Digital Product
-          </div>
-
-          <!-- Brand -->
-          <div class="brand-text" style="margin-bottom: 8px;" if="productPage.brand">{productPage.brand}</div>
-
-          <!-- Product Name -->
-          <h1 class="product-name">{productPage.productName}</h1>
-
-          <!-- SKU -->
-          <div class="product-sku" if="productPage.sku">SKU: {productPage.sku}</div>
-
-          <!-- Price -->
-          <div class="product-price">
-            <span class="price">{productPage.price}</span>
-            <span class="strikethrough-price" if="productPage.strikethroughPrice">{productPage.strikethroughPrice}</span>
-          </div>
-          <div class="product-price-per-unit" if="productPage.pricePerUnit">Price per Unit: {productPage.pricePerUnit}</div>
-
-          <!-- Stock Status -->
-          <div class="stock-badge badge-success" if="productPage.stockStatus == IN_STOCK" style="margin-bottom: 32px;">
-            <span class="stock-dot"></span>
-            In Stock
-          </div>
-          <div class="stock-badge badge-error" if="productPage.stockStatus == OUT_OF_STOCK" style="margin-bottom: 32px;">
-            <span class="stock-dot"></span>
-            Out of Stock
-          </div>
-
-          <!-- Description -->
-          <div class="product-description" if="productPage.description">{productPage.description}</div>
-
-          <!-- Options (Variants like Color, Size) -->
-          <div class="product-options" if="productPage.options">
-            <div class="option-group" forEach="productPage.options" trackBy="_id">
-              <div class="option-label">{name}</div>
-              
-              <!-- Text Choices as Dropdown -->
-              <select class="select" 
-                      if="optionRenderType == TEXT_CHOICES"
-                      ref="productPage.options.textChoice">
-                <option forEach="choices" trackBy="choiceId" value="{choiceId}">{name}</option>
-              </select>
-
-              <!-- Color Swatch Choices -->
-              <div class="option-choices" if="optionRenderType == COLOR_SWATCH_CHOICES">
-                <button class="choice-btn color-swatch {isSelected ? selected} {!inStock ? out-of-stock}"
-                        style="background-color: {colorCode}"
-                        forEach="choices" 
-                        trackBy="choiceId"
-                        ref="productPage.options.choices.choiceButton"
-                        title="{name}">
-                </button>
-              </div>
+        <div data-figma-id="424:377" data-figma-type="frame">
+          <!-- Frame 5 -->
+          <div>
+            <!-- Group 1 -->
+            <div><!-- Rectangle 3 --></div>
+            <div data-figma-id="424:380" data-figma-type="frame">
+              <!-- Frame -->
+              <div><!-- Vector --></div>
             </div>
           </div>
-
-          <!-- Modifiers (Customizations) -->
-          <div class="product-options" if="productPage.modifiers">
-            <div class="option-group" forEach="productPage.modifiers" trackBy="_id">
-              <div class="option-label">{name}</div>
-              
-              <!-- Text Choices Dropdown -->
-              <select class="select" 
-                      if="modifierType == TEXT_CHOICES"
-                      ref="productPage.modifiers.textModifier">
-                <option forEach="choices" trackBy="choiceId" value="{choiceId}">{name}</option>
-              </select>
-
-              <!-- Color Swatch Choices -->
-              <div class="option-choices" if="modifierType == COLOR_SWATCH_CHOICES">
-                <button class="choice-btn color-swatch {isSelected ? selected}"
-                        style="background-color: {colorCode}"
-                        forEach="choices" 
-                        trackBy="choiceId"
-                        ref="choiceButton"
-                        title="{name}">
-                </button>
-              </div>
-
-              <!-- Free Text Input -->
-              <input class="input" 
-                     type="text" 
-                     if="modifierType == FREE_TEXT"
-                     ref="productPage.modifiers.textInput"
-                     placeholder="Enter your custom text"
-                     maxlength="{textInputLength}" />
+          <div>
+            <!-- Group 2 -->
+            <div><!-- Rectangle 2 --></div>
+            <div data-figma-id="424:384" data-figma-type="frame">
+              <!-- Frame -->
+              <div><!-- Vector --></div>
             </div>
           </div>
-
-          <!-- Quantity -->
-          <div class="quantity-section">
-            <div class="option-label">Quantity</div>
-            <div class="quantity-controls">
-              <button class="quantity-btn" ref="productPage.quantity.decrementButton">−</button>
-              <input class="quantity-input" 
-                     type="number" 
-                     value="{productPage.quantity.quantity}" 
-                     ref="productPage.quantity.quantity"
-                     min="1" />
-              <button class="quantity-btn" ref="productPage.quantity.incrementButton">+</button>
+          <div data-figma-id="424:386" data-figma-type="frame">
+            <!-- Frame 4 -->
+            <div><!-- Rectangle 1 --></div>
+            <div data-figma-id="424:388" data-figma-type="frame">
+              <!-- Frame 3 -->
+              <p">Good Morning!</p>
+              <p">Scarlet Johnson</p>
             </div>
           </div>
-
-          <!-- Action Buttons -->
-          <div class="product-actions">
-            <button class="btn btn-primary btn-lg" 
-                    style="flex: 1;"
-                    ref="productPage.addToCartButton"
-                    disabled="{!productPage.actionsEnabled}">
-              Add to Cart
-            </button>
-            <button class="btn btn-secondary btn-lg" 
-                    style="flex: 1;"
-                    ref="productPage.buyNowButton"
-                    disabled="{!productPage.actionsEnabled}">
-              Buy Now
-            </button>
+          <div data-figma-id="424:391" data-figma-type="frame">
+            <!-- Frame 7 -->
+            <div><!-- 3 --></div>
           </div>
-
-          <!-- Info Sections -->
-          <div class="info-sections" if="productPage.infoSections">
-            <div class="info-section" forEach="productPage.infoSections" trackBy="_id">
-              <div class="info-section-title">{title}</div>
-              <div class="info-section-content">{plainDescription}</div>
+          <div data-figma-id="424:393" data-figma-type="frame">
+            <!-- Frame 8 -->
+          </div>
+        </div>
+      </div>
+      <div data-figma-id="424:394" data-figma-type="frame">
+        <!-- Frame 9 -->
+        <p">Home</p>
+        <div data-figma-id="424:396" data-figma-type="frame">
+          <!-- Frame -->
+          <div><!-- Vector --></div>
+        </div>
+        <p">Decoration</p>
+        <div data-figma-id="424:399" data-figma-type="frame">
+          <!-- Frame -->
+          <div><!-- Vector --></div>
+        </div>
+        <p">Furniture</p>
+        <div data-figma-id="424:402" data-figma-type="frame">
+          <!-- Frame -->
+          <div><!-- Vector --></div>
+        </div>
+        <p">Storage</p>
+        <div data-figma-id="424:405" data-figma-type="frame">
+          <!-- Frame -->
+          <div><!-- Vector --></div>
+        </div>
+        <p">Sideboard</p>
+      </div>
+      <div>
+        <!-- selectedMedia -->
+        <div><!-- coverImage --></div>
+        <div data-figma-id="I424:408;424:552" data-figma-type="frame">
+          <!-- Frame 4 -->
+          <div data-figma-id="I424:408;424:553" data-figma-type="frame">
+            <!-- Frame -->
+            <div><!-- Vector --></div>
+          </div>
+        </div>
+      </div>
+      <div data-figma-id="424:409" data-figma-type="frame">
+        <!-- Frame 12 -->
+        <div data-figma-id="424:410" data-figma-type="frame">
+          <!-- Frame 10 -->
+          <p">Product Name</p>
+          <p">Teixeira Design Studio</p>
+        </div>
+        <div data-figma-id="424:413" data-figma-type="frame">
+          <!-- Frame 14 -->
+          <div data-figma-id="424:414" data-figma-type="frame">
+            <!-- Frame 11 -->
+            <div data-figma-id="424:415" data-figma-type="frame">
+              <!-- Frame -->
+              <div><!-- Vector --></div>
+            </div>
+            <p">109</p>
+          </div>
+          <div data-figma-id="424:418" data-figma-type="frame">
+            <!-- Frame 12 -->
+            <div data-figma-id="424:419" data-figma-type="frame">
+              <!-- Frame -->
+              <div><!-- Vector --></div>
+            </div>
+          </div>
+          <div data-figma-id="424:421" data-figma-type="frame">
+            <!-- Frame 13 -->
+            <div data-figma-id="424:422" data-figma-type="frame">
+              <!-- Frame -->
+              <div><!-- Vector --></div>
             </div>
           </div>
         </div>
       </div>
+      <div data-figma-id="424:424" data-figma-type="frame">
+        <!-- Frame 18 -->
+        <div data-figma-id="424:425" data-figma-type="frame">
+          <!-- Frame 17 -->
+          <p">price</p>
+          <p">strikePrice</p>
+        </div>
+        <div data-figma-id="424:428" data-figma-type="frame">
+          <!-- Frame 16 -->
+          <div data-figma-id="424:429" data-figma-type="frame">
+            <!-- Frame 15 -->
+            <div data-figma-id="424:430" data-figma-type="frame">
+              <!-- Frame 11 -->
+              <div data-figma-id="424:431" data-figma-type="frame">
+                <!-- Frame -->
+                <div><!-- Vector --></div>
+              </div>
+              <p">4.8</p>
+            </div>
+            <div data-figma-id="424:434" data-figma-type="frame">
+              <!-- Frame 13 -->
+              <div data-figma-id="424:435" data-figma-type="frame">
+                <!-- Frame -->
+                <div><!-- Vector --></div>
+              </div>
+              <p">67 Reviews</p>
+            </div>
+          </div>
+          <p">93% of buyers have recommended this.</p>
+        </div>
+      </div>
+      <!-- Line 1 (LINE) -->
+      <!-- Line 2 (LINE) -->
+      <!-- Line 3 (LINE) -->
+      <!-- Line 4 (LINE) -->
+      <div data-figma-id="424:443" data-figma-type="frame">
+        <!-- mediaGallery -->
+        <div>
+          <!-- thumbnail -->
+          <img><!-- thumbnail --></img>
+        </div>
+        <div>
+          <!-- thumbnail -->
+          <img><!-- thumbnail --></img>
+        </div>
+        <div>
+          <!-- thumbnail -->
+          <img><!-- thumbnail --></img>
+          <div data-figma-id="I424:446;424:521" data-figma-type="frame">
+            <!-- Frame 4 -->
+            <div data-figma-id="I424:446;424:522" data-figma-type="frame">
+              <!-- Frame -->
+              <div><!-- Vector --></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <!-- thumbnail -->
+          <img><!-- thumbnail --></img>
+        </div>
+      </div>
+      <div data-figma-id="424:448" data-figma-type="frame">
+        <!-- right -->
+        <div><!-- Vector --></div>
+      </div>
+      <div data-figma-id="424:450" data-figma-type="frame">
+        <!-- left -->
+        <div><!-- Vector --></div>
+      </div>
+      <div data-figma-id="424:452" data-figma-type="frame">
+        <!-- options -->
+        <div>
+          <!-- choice -->
+          <p">Choice Title</p>
+          <div data-figma-id="I424:453;424:512" data-figma-type="frame">
+            <!-- colors -->
+            <div>
+              <!-- colorChoise -->
+              <div data-figma-id="I424:453;424:513;424:488" data-figma-type="frame">
+                <!-- colorChoice -->
+                <shape><!-- shape --></shape>
+                <div><!-- Vector (Stroke) --></div>
+              </div>
+            </div>
+            <div>
+              <!-- colorChoise -->
+              <div data-figma-id="I424:453;424:514;424:485" data-figma-type="frame">
+                <!-- colorChoice -->
+                <shape><!-- shape --></shape>
+              </div>
+            </div>
+            <div>
+              <!-- colorChoise -->
+              <div data-figma-id="I424:453;424:515;424:485" data-figma-type="frame">
+                <!-- colorChoice -->
+                <shape><!-- shape --></shape>
+              </div>
+            </div>
+            <div>
+              <!-- colorChoise -->
+              <div data-figma-id="I424:453;424:516;424:485" data-figma-type="frame">
+                <!-- colorChoice -->
+                <shape><!-- shape --></shape>
+              </div>
+            </div>
+            <div>
+              <!-- colorChoise -->
+              <div data-figma-id="I424:453;424:517;424:485" data-figma-type="frame">
+                <!-- colorChoice -->
+                <shape><!-- shape --></shape>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <!-- choice -->
+          <p">Choice Title</p>
+          <div data-figma-id="I424:454;424:504" data-figma-type="frame">
+            <!-- sizes -->
+            <div>
+              <!-- sizeChoice -->
+              <div>
+                <!-- Group 10 -->
+                <div><!-- Rectangle 10 --></div>
+              </div>
+              <p">Size Name</p>
+            </div>
+            <div>
+              <!-- sizeChoice -->
+              <div>
+                <!-- Group 10 -->
+                <div><!-- Rectangle 9 --></div>
+                <div><!-- Rectangle 10 --></div>
+              </div>
+              <p">Size Name</p>
+            </div>
+            <div>
+              <!-- sizeChoice -->
+              <div>
+                <!-- Group 10 -->
+                <div><!-- Rectangle 10 --></div>
+              </div>
+              <p">Size Name</p>
+            </div>
+            <div>
+              <!-- sizeChoice -->
+              <div>
+                <!-- Group 10 -->
+                <div><!-- Rectangle 10 --></div>
+              </div>
+              <p">Size Name</p>
+            </div>
+            <div>
+              <!-- sizeChoice -->
+              <div>
+                <!-- Group 10 -->
+                <div><!-- Rectangle 10 --></div>
+              </div>
+              <p">Size Name</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-figma-id="424:455" data-figma-type="frame">
+        <!-- Frame 13 -->
+        <div>
+          <!-- Group 11 -->
+          <div><!-- Rectangle 11 --></div>
+          <p">quantity</p>
+          <p">increment</p>
+          <p">decrement</p>
+        </div>
+        <div data-figma-id="424:461" data-figma-type="frame">
+          <!-- buyButton -->
+          <div data-figma-id="424:462" data-figma-type="frame">
+            <!-- Frame 27 -->
+            <p">Buy Now</p>
+          </div>
+        </div>
+        <div data-figma-id="424:464" data-figma-type="frame">
+          <!-- add2cart -->
+          <div data-figma-id="424:465" data-figma-type="frame">
+            <!-- Frame 27 -->
+            <div data-figma-id="424:466" data-figma-type="frame">
+              <!-- Frame -->
+              <div><!-- Vector --></div>
+            </div>
+            <p">Add To Cart</p>
+          </div>
+        </div>
+      </div>
+      <div data-figma-id="424:469" data-figma-type="frame">
+        <!-- Frame 31 -->
+        <div data-figma-id="424:470" data-figma-type="frame">
+          <!-- Frame 29 -->
+          <div data-figma-id="424:471" data-figma-type="frame">
+            <!-- Frame -->
+            <div><!-- Vector --></div>
+          </div>
+          <div data-figma-id="424:473" data-figma-type="frame">
+            <!-- Frame 28 -->
+            <p">Free Delivery</p>
+            <p">Enter your Postal code for Delivery Availability</p>
+          </div>
+        </div>
+        <!-- Line 5 (LINE) -->
+        <div data-figma-id="424:477" data-figma-type="frame">
+          <!-- Frame 30 -->
+          <div data-figma-id="424:478" data-figma-type="frame">
+            <!-- Frame -->
+            <div><!-- Vector --></div>
+          </div>
+          <div data-figma-id="424:480" data-figma-type="frame">
+            <!-- Frame 28 -->
+            <p">Return Delivery</p>
+            <p">Free 30 days Delivery Return. Details</p>
+          </div>
+        </div>
+      </div>
     </div>
-  </body>
+  </div>
+
+</body>
 </html>
