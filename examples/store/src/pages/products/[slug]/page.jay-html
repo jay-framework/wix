@@ -9,7 +9,7 @@
   <script type="application/jay-data">
     data:
   </script>
-  <title>Product Page</title>
+  <title>[slug]</title>
   <style>
     /* Basic reset */
     body { margin: 0; font-family: sans-serif; }
