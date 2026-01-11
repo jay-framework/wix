@@ -1,0 +1,23 @@
+{
+  "name": "static-wix-page",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Static webpage with Wix SDK - products and cart API calls",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@wix/sdk": "^1.17.4",
+    "@wix/stores": "^1.0.563",
+    "@wix/ecom": "^1.0.753"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.0"
+  }
+}

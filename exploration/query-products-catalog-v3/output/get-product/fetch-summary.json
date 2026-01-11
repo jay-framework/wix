@@ -1,0 +1,69 @@
+{
+  "method": "getProduct",
+  "totalAttempted": 12,
+  "successful": 12,
+  "failed": 0,
+  "fetchedAt": "2025-12-10T18:01:51.039Z",
+  "results": [
+    {
+      "id": "af654225-662f-42e5-ac51-fbebc88f63ed",
+      "name": "Ceramic Flower Vase",
+      "status": "success"
+    },
+    {
+      "id": "fedfcb20-1ad2-405b-950b-e65112bb6222",
+      "name": "Minimalist Tote Bag",
+      "status": "success"
+    },
+    {
+      "id": "ca71fee6-1fc9-4a57-8fa7-967c8edcaabb",
+      "name": "Hydrating Eye Serum - Pre Order",
+      "status": "success"
+    },
+    {
+      "id": "99684dfe-d36a-4869-858a-dba67af9b993",
+      "name": "Knitted Golf Sweater",
+      "status": "success"
+    },
+    {
+      "id": "d86d7bea-fe19-4654-a597-bfe8dd449407",
+      "name": "Round Eyeglasses",
+      "status": "success"
+    },
+    {
+      "id": "42941ee7-1707-4b5d-a7d7-41e12da6ab9e",
+      "name": "Solid Wood Chair",
+      "status": "success"
+    },
+    {
+      "id": "96ff5295-1660-40d1-89e4-d1f1a34309be",
+      "name": "Foaming Facial Cleanser",
+      "status": "success"
+    },
+    {
+      "id": "618dcfe4-8d85-40a9-87c6-0dea57abe644",
+      "name": "Baseball Cap",
+      "status": "success"
+    },
+    {
+      "id": "1190303d-1fb5-40ca-bb60-2d5c1af3ae97",
+      "name": "Stainless Steel Water Bottle",
+      "status": "success"
+    },
+    {
+      "id": "f68519fb-2095-4dfc-8684-ec55d60c2adc",
+      "name": "Essential Oil Diffuser",
+      "status": "success"
+    },
+    {
+      "id": "d2dc8bef-0a26-414a-b1dc-7bbba867bc6a",
+      "name": "Textured Loop Earrings",
+      "status": "success"
+    },
+    {
+      "id": "df8ae122-9a06-4fa2-96bb-4b058db5959f",
+      "name": "Crew T-Shirt",
+      "status": "success"
+    }
+  ]
+}

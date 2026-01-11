@@ -1,0 +1,81 @@
+{
+  "method": "getProductBySlug",
+  "totalAttempted": 12,
+  "successful": 12,
+  "failed": 0,
+  "fetchedAt": "2025-12-10T18:02:08.522Z",
+  "results": [
+    {
+      "id": "af654225-662f-42e5-ac51-fbebc88f63ed",
+      "slug": "ceramic-flower-vase",
+      "name": "unnamed",
+      "status": "success"
+    },
+    {
+      "id": "fedfcb20-1ad2-405b-950b-e65112bb6222",
+      "slug": "minimalist-tote-bag",
+      "name": "unnamed",
+      "status": "success"
+    },
+    {
+      "id": "ca71fee6-1fc9-4a57-8fa7-967c8edcaabb",
+      "slug": "hydrating-eye-serum",
+      "name": "unnamed",
+      "status": "success"
+    },
+    {
+      "id": "99684dfe-d36a-4869-858a-dba67af9b993",
+      "slug": "knitted-golf-sweater",
+      "name": "unnamed",
+      "status": "success"
+    },
+    {
+      "id": "d86d7bea-fe19-4654-a597-bfe8dd449407",
+      "slug": "round-eyeglasses",
+      "name": "unnamed",
+      "status": "success"
+    },
+    {
+      "id": "42941ee7-1707-4b5d-a7d7-41e12da6ab9e",
+      "slug": "solid-wood-chair",
+      "name": "unnamed",
+      "status": "success"
+    },
+    {
+      "id": "96ff5295-1660-40d1-89e4-d1f1a34309be",
+      "slug": "foaming-facial-cleanser",
+      "name": "unnamed",
+      "status": "success"
+    },
+    {
+      "id": "618dcfe4-8d85-40a9-87c6-0dea57abe644",
+      "slug": "baseball-cap",
+      "name": "unnamed",
+      "status": "success"
+    },
+    {
+      "id": "1190303d-1fb5-40ca-bb60-2d5c1af3ae97",
+      "slug": "stainless-steel-water-bottle",
+      "name": "unnamed",
+      "status": "success"
+    },
+    {
+      "id": "f68519fb-2095-4dfc-8684-ec55d60c2adc",
+      "slug": "essential-oil-diffuser",
+      "name": "unnamed",
+      "status": "success"
+    },
+    {
+      "id": "d2dc8bef-0a26-414a-b1dc-7bbba867bc6a",
+      "slug": "textured-loop-earrings",
+      "name": "unnamed",
+      "status": "success"
+    },
+    {
+      "id": "df8ae122-9a06-4fa2-96bb-4b058db5959f",
+      "slug": "crew-t-shirt",
+      "name": "unnamed",
+      "status": "success"
+    }
+  ]
+}

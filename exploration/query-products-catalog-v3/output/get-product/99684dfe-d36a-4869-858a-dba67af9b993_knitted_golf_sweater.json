@@ -1,0 +1,590 @@
+{
+  "revision": "2",
+  "numericId": "1737888849118000",
+  "name": "Knitted Golf Sweater",
+  "slug": "knitted-golf-sweater",
+  "visible": true,
+  "visibleInPos": true,
+  "media": {
+    "main": {
+      "image": "wix:image://v1/22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg/Sweater-Product%20(1).jpg#originWidth=2662&originHeight=2662",
+      "mediaType": "IMAGE",
+      "uploadId": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg",
+      "_id": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg"
+    }
+  },
+  "options": [
+    {
+      "name": "Size",
+      "optionRenderType": "TEXT_CHOICES",
+      "choicesSettings": {
+        "choices": [
+          {
+            "choiceId": "c73f73b6-ac0f-42b1-aad9-48bfb8a6afc3",
+            "linkedMedia": [],
+            "choiceType": "CHOICE_TEXT",
+            "key": "Small",
+            "name": "Small",
+            "inStock": true,
+            "visible": true
+          },
+          {
+            "choiceId": "804f3b49-c81e-43d0-8967-f691ac4e53d4",
+            "linkedMedia": [],
+            "choiceType": "CHOICE_TEXT",
+            "key": "Medium",
+            "name": "Medium",
+            "inStock": true,
+            "visible": true
+          },
+          {
+            "choiceId": "8fc8d3ec-ca94-44d4-bba8-2ac65e909599",
+            "linkedMedia": [],
+            "choiceType": "CHOICE_TEXT",
+            "key": "Large",
+            "name": "Large",
+            "inStock": true,
+            "visible": true
+          },
+          {
+            "choiceId": "53d872ce-7d9d-4d90-a4ff-1dbdfca55d24",
+            "linkedMedia": [],
+            "choiceType": "CHOICE_TEXT",
+            "key": "X-Large",
+            "name": "X-Large",
+            "inStock": true,
+            "visible": true
+          }
+        ]
+      },
+      "key": "Size",
+      "_id": "c4ced48a-4ced-47e1-a876-05f97a1e361b"
+    },
+    {
+      "name": "Color",
+      "optionRenderType": "SWATCH_CHOICES",
+      "choicesSettings": {
+        "choices": [
+          {
+            "choiceId": "1137f00f-c9b0-48bd-b8fd-78aa0d92e2b5",
+            "linkedMedia": [
+              {
+                "image": "wix:image://v1/22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png/Sweater-Product%20White(1).png#originWidth=1024&originHeight=1024",
+                "mediaType": "IMAGE",
+                "uploadId": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png",
+                "_id": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png"
+              }
+            ],
+            "choiceType": "ONE_COLOR",
+            "key": "White",
+            "name": "White",
+            "inStock": true,
+            "visible": true,
+            "colorCode": "#FFFFFF"
+          },
+          {
+            "choiceId": "20983c09-86e5-4ba4-9d94-3c776d2391ac",
+            "linkedMedia": [
+              {
+                "image": "wix:image://v1/22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg/Sweater-Product%20(1).jpg#originWidth=2662&originHeight=2662",
+                "mediaType": "IMAGE",
+                "uploadId": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg",
+                "_id": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg"
+              },
+              {
+                "image": "wix:image://v1/22e53e_008b06daf2e844eb9b1626f6c8ea93bd~mv2.jpg/Sweater-Model%20(1).jpg#originWidth=3007&originHeight=3007",
+                "mediaType": "IMAGE",
+                "uploadId": "22e53e_008b06daf2e844eb9b1626f6c8ea93bd~mv2.jpg",
+                "_id": "22e53e_008b06daf2e844eb9b1626f6c8ea93bd~mv2.jpg"
+              }
+            ],
+            "choiceType": "ONE_COLOR",
+            "key": "Dark Green",
+            "name": "Dark Green",
+            "inStock": true,
+            "visible": true,
+            "colorCode": "#395E55"
+          },
+          {
+            "choiceId": "0a7cb748-44d4-4bd2-b088-993989f02ac0",
+            "linkedMedia": [
+              {
+                "image": "wix:image://v1/22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png/Sweater-Product%20Blue%20(1).jpg#originWidth=1024&originHeight=1024",
+                "mediaType": "IMAGE",
+                "uploadId": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png",
+                "_id": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png"
+              }
+            ],
+            "choiceType": "ONE_COLOR",
+            "key": "Dark Blue",
+            "name": "Dark Blue",
+            "inStock": true,
+            "visible": true,
+            "colorCode": "#3E3E96"
+          }
+        ]
+      },
+      "key": "Color",
+      "_id": "1d926bdc-e161-4690-85c8-5e1dea5bde4c"
+    }
+  ],
+  "modifiers": [],
+  "infoSections": [
+    {
+      "_id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
+    },
+    {
+      "_id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
+    },
+    {
+      "_id": "57075b9e-ba33-401b-86bd-045d949c9283"
+    }
+  ],
+  "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
+  "inventory": {
+    "availabilityStatus": "IN_STOCK",
+    "preorderStatus": "DISABLED",
+    "preorderAvailability": "NO_VARIANTS"
+  },
+  "productType": "PHYSICAL",
+  "physicalProperties": {},
+  "handle": "Product_95c8f784-799c-4f33-b820-17b726a65296",
+  "actualPriceRange": {
+    "minValue": {
+      "amount": "270"
+    },
+    "maxValue": {
+      "amount": "310"
+    }
+  },
+  "compareAtPriceRange": {
+    "minValue": {
+      "amount": "0"
+    },
+    "maxValue": {
+      "amount": "0"
+    }
+  },
+  "variantsInfo": {
+    "variants": [
+      {
+        "visible": true,
+        "sku": "217537123517253",
+        "choices": [
+          {
+            "optionChoiceIds": {
+              "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+              "choiceId": "c73f73b6-ac0f-42b1-aad9-48bfb8a6afc3"
+            }
+          },
+          {
+            "optionChoiceIds": {
+              "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+              "choiceId": "1137f00f-c9b0-48bd-b8fd-78aa0d92e2b5"
+            }
+          }
+        ],
+        "price": {
+          "actualPrice": {
+            "amount": "280"
+          }
+        },
+        "media": {
+          "image": "wix:image://v1/22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png/Sweater-Product%20White(1).png#originWidth=1024&originHeight=1024",
+          "mediaType": "IMAGE",
+          "uploadId": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png",
+          "_id": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png"
+        },
+        "physicalProperties": {},
+        "inventoryStatus": {
+          "inStock": true,
+          "preorderEnabled": false
+        },
+        "_id": "f0348d42-7307-4825-bcd9-44997dd93e98"
+      },
+      {
+        "visible": true,
+        "choices": [
+          {
+            "optionChoiceIds": {
+              "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+              "choiceId": "c73f73b6-ac0f-42b1-aad9-48bfb8a6afc3"
+            }
+          },
+          {
+            "optionChoiceIds": {
+              "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+              "choiceId": "20983c09-86e5-4ba4-9d94-3c776d2391ac"
+            }
+          }
+        ],
+        "price": {
+          "actualPrice": {
+            "amount": "275"
+          }
+        },
+        "media": {
+          "image": "wix:image://v1/22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg/Sweater-Product%20(1).jpg#originWidth=2662&originHeight=2662",
+          "mediaType": "IMAGE",
+          "uploadId": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg",
+          "_id": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg"
+        },
+        "physicalProperties": {},
+        "inventoryStatus": {
+          "inStock": true,
+          "preorderEnabled": false
+        },
+        "_id": "66c683d6-622c-4f87-b67e-48e88db9e7d7"
+      },
+      {
+        "visible": true,
+        "choices": [
+          {
+            "optionChoiceIds": {
+              "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+              "choiceId": "c73f73b6-ac0f-42b1-aad9-48bfb8a6afc3"
+            }
+          },
+          {
+            "optionChoiceIds": {
+              "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+              "choiceId": "0a7cb748-44d4-4bd2-b088-993989f02ac0"
+            }
+          }
+        ],
+        "price": {
+          "actualPrice": {
+            "amount": "270"
+          }
+        },
+        "media": {
+          "image": "wix:image://v1/22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png/Sweater-Product%20Blue%20(1).jpg#originWidth=1024&originHeight=1024",
+          "mediaType": "IMAGE",
+          "uploadId": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png",
+          "_id": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png"
+        },
+        "physicalProperties": {},
+        "inventoryStatus": {
+          "inStock": true,
+          "preorderEnabled": false
+        },
+        "_id": "e722833d-5f30-4e3e-8694-f27ca3a1b1a3"
+      },
+      {
+        "visible": true,
+        "choices": [
+          {
+            "optionChoiceIds": {
+              "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+              "choiceId": "804f3b49-c81e-43d0-8967-f691ac4e53d4"
+            }
+          },
+          {
+            "optionChoiceIds": {
+              "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+              "choiceId": "1137f00f-c9b0-48bd-b8fd-78aa0d92e2b5"
+            }
+          }
+        ],
+        "price": {
+          "actualPrice": {
+            "amount": "275"
+          }
+        },
+        "media": {
+          "image": "wix:image://v1/22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png/Sweater-Product%20White(1).png#originWidth=1024&originHeight=1024",
+          "mediaType": "IMAGE",
+          "uploadId": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png",
+          "_id": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png"
+        },
+        "physicalProperties": {},
+        "inventoryStatus": {
+          "inStock": true,
+          "preorderEnabled": false
+        },
+        "_id": "6faf50a4-2dc5-4986-96a4-2a328118ffbf"
+      },
+      {
+        "visible": true,
+        "choices": [
+          {
+            "optionChoiceIds": {
+              "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+              "choiceId": "804f3b49-c81e-43d0-8967-f691ac4e53d4"
+            }
+          },
+          {
+            "optionChoiceIds": {
+              "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+              "choiceId": "20983c09-86e5-4ba4-9d94-3c776d2391ac"
+            }
+          }
+        ],
+        "price": {
+          "actualPrice": {
+            "amount": "300"
+          }
+        },
+        "media": {
+          "image": "wix:image://v1/22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg/Sweater-Product%20(1).jpg#originWidth=2662&originHeight=2662",
+          "mediaType": "IMAGE",
+          "uploadId": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg",
+          "_id": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg"
+        },
+        "physicalProperties": {},
+        "inventoryStatus": {
+          "inStock": true,
+          "preorderEnabled": false
+        },
+        "_id": "2034da09-f052-4942-ac91-b44366cd019d"
+      },
+      {
+        "visible": true,
+        "choices": [
+          {
+            "optionChoiceIds": {
+              "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+              "choiceId": "804f3b49-c81e-43d0-8967-f691ac4e53d4"
+            }
+          },
+          {
+            "optionChoiceIds": {
+              "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+              "choiceId": "0a7cb748-44d4-4bd2-b088-993989f02ac0"
+            }
+          }
+        ],
+        "price": {
+          "actualPrice": {
+            "amount": "310"
+          }
+        },
+        "media": {
+          "image": "wix:image://v1/22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png/Sweater-Product%20Blue%20(1).jpg#originWidth=1024&originHeight=1024",
+          "mediaType": "IMAGE",
+          "uploadId": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png",
+          "_id": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png"
+        },
+        "physicalProperties": {},
+        "inventoryStatus": {
+          "inStock": true,
+          "preorderEnabled": false
+        },
+        "_id": "c1df7354-ed67-45c7-8701-2a14557cd8a5"
+      },
+      {
+        "visible": true,
+        "choices": [
+          {
+            "optionChoiceIds": {
+              "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+              "choiceId": "8fc8d3ec-ca94-44d4-bba8-2ac65e909599"
+            }
+          },
+          {
+            "optionChoiceIds": {
+              "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+              "choiceId": "1137f00f-c9b0-48bd-b8fd-78aa0d92e2b5"
+            }
+          }
+        ],
+        "price": {
+          "actualPrice": {
+            "amount": "275"
+          }
+        },
+        "media": {
+          "image": "wix:image://v1/22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png/Sweater-Product%20White(1).png#originWidth=1024&originHeight=1024",
+          "mediaType": "IMAGE",
+          "uploadId": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png",
+          "_id": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png"
+        },
+        "physicalProperties": {},
+        "inventoryStatus": {
+          "inStock": true,
+          "preorderEnabled": false
+        },
+        "_id": "bb33d12b-a954-421d-ab0d-1ce18e2d8b61"
+      },
+      {
+        "visible": true,
+        "choices": [
+          {
+            "optionChoiceIds": {
+              "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+              "choiceId": "8fc8d3ec-ca94-44d4-bba8-2ac65e909599"
+            }
+          },
+          {
+            "optionChoiceIds": {
+              "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+              "choiceId": "20983c09-86e5-4ba4-9d94-3c776d2391ac"
+            }
+          }
+        ],
+        "price": {
+          "actualPrice": {
+            "amount": "275"
+          }
+        },
+        "media": {
+          "image": "wix:image://v1/22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg/Sweater-Product%20(1).jpg#originWidth=2662&originHeight=2662",
+          "mediaType": "IMAGE",
+          "uploadId": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg",
+          "_id": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg"
+        },
+        "physicalProperties": {},
+        "inventoryStatus": {
+          "inStock": true,
+          "preorderEnabled": false
+        },
+        "_id": "9bbf7977-245f-4dc4-a500-ebd3297e0ecf"
+      },
+      {
+        "visible": true,
+        "choices": [
+          {
+            "optionChoiceIds": {
+              "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+              "choiceId": "8fc8d3ec-ca94-44d4-bba8-2ac65e909599"
+            }
+          },
+          {
+            "optionChoiceIds": {
+              "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+              "choiceId": "0a7cb748-44d4-4bd2-b088-993989f02ac0"
+            }
+          }
+        ],
+        "price": {
+          "actualPrice": {
+            "amount": "275"
+          }
+        },
+        "media": {
+          "image": "wix:image://v1/22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png/Sweater-Product%20Blue%20(1).jpg#originWidth=1024&originHeight=1024",
+          "mediaType": "IMAGE",
+          "uploadId": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png",
+          "_id": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png"
+        },
+        "physicalProperties": {},
+        "inventoryStatus": {
+          "inStock": true,
+          "preorderEnabled": false
+        },
+        "_id": "dd8e116e-3e9c-4853-b09e-c1229dcf4bfe"
+      },
+      {
+        "visible": true,
+        "choices": [
+          {
+            "optionChoiceIds": {
+              "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+              "choiceId": "53d872ce-7d9d-4d90-a4ff-1dbdfca55d24"
+            }
+          },
+          {
+            "optionChoiceIds": {
+              "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+              "choiceId": "1137f00f-c9b0-48bd-b8fd-78aa0d92e2b5"
+            }
+          }
+        ],
+        "price": {
+          "actualPrice": {
+            "amount": "275"
+          }
+        },
+        "media": {
+          "image": "wix:image://v1/22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png/Sweater-Product%20White(1).png#originWidth=1024&originHeight=1024",
+          "mediaType": "IMAGE",
+          "uploadId": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png",
+          "_id": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png"
+        },
+        "physicalProperties": {},
+        "inventoryStatus": {
+          "inStock": true,
+          "preorderEnabled": false
+        },
+        "_id": "449e9087-a290-4ba9-8289-98f756409ef1"
+      },
+      {
+        "visible": true,
+        "choices": [
+          {
+            "optionChoiceIds": {
+              "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+              "choiceId": "53d872ce-7d9d-4d90-a4ff-1dbdfca55d24"
+            }
+          },
+          {
+            "optionChoiceIds": {
+              "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+              "choiceId": "20983c09-86e5-4ba4-9d94-3c776d2391ac"
+            }
+          }
+        ],
+        "price": {
+          "actualPrice": {
+            "amount": "275"
+          }
+        },
+        "media": {
+          "image": "wix:image://v1/22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg/Sweater-Product%20(1).jpg#originWidth=2662&originHeight=2662",
+          "mediaType": "IMAGE",
+          "uploadId": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg",
+          "_id": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg"
+        },
+        "physicalProperties": {},
+        "inventoryStatus": {
+          "inStock": true,
+          "preorderEnabled": false
+        },
+        "_id": "4f905739-5c78-407f-8f56-49aa8b3f586c"
+      },
+      {
+        "visible": true,
+        "choices": [
+          {
+            "optionChoiceIds": {
+              "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+              "choiceId": "53d872ce-7d9d-4d90-a4ff-1dbdfca55d24"
+            }
+          },
+          {
+            "optionChoiceIds": {
+              "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+              "choiceId": "0a7cb748-44d4-4bd2-b088-993989f02ac0"
+            }
+          }
+        ],
+        "price": {
+          "actualPrice": {
+            "amount": "275"
+          }
+        },
+        "media": {
+          "image": "wix:image://v1/22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png/Sweater-Product%20Blue%20(1).jpg#originWidth=1024&originHeight=1024",
+          "mediaType": "IMAGE",
+          "uploadId": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png",
+          "_id": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png"
+        },
+        "physicalProperties": {},
+        "inventoryStatus": {
+          "inStock": true,
+          "preorderEnabled": false
+        },
+        "_id": "35ce2200-5e88-4e7f-985e-36d422913fe1"
+      }
+    ]
+  },
+  "flattenOptions": [],
+  "flattenModifiers": [],
+  "variantSummary": {
+    "variantCount": 12
+  },
+  "entityEventSequence": "4",
+  "_id": "99684dfe-d36a-4869-858a-dba67af9b993",
+  "_createdDate": "2025-01-26T10:54:09.139Z",
+  "_updatedDate": "2025-11-16T16:29:15.684Z"
+}

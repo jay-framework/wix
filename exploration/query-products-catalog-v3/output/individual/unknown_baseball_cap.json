@@ -1,0 +1,645 @@
+{
+  "revision": "3",
+  "numericId": "1737885561857000",
+  "name": "Baseball Cap",
+  "slug": "baseball-cap",
+  "plainDescription": "<p>I'm a product description. I'm a great place to add more details about your product such as sizing, material, care instructions and cleaning instructions.</p>",
+  "visible": true,
+  "visibleInPos": true,
+  "media": {
+    "main": {
+      "image": "wix:image://v1/22e53e_71aca8b5483a4e5f80fb33cf76f9bc84~mv2.jpg/Cap-Product%20(1).jpg#originWidth=4000&originHeight=4000",
+      "mediaType": "IMAGE",
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/22e53e_71aca8b5483a4e5f80fb33cf76f9bc84~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "height": 50,
+        "width": 50
+      },
+      "uploadId": "22e53e_71aca8b5483a4e5f80fb33cf76f9bc84~mv2.jpg",
+      "_id": "22e53e_71aca8b5483a4e5f80fb33cf76f9bc84~mv2.jpg"
+    },
+    "itemsInfo": {
+      "items": [
+        {
+          "image": "wix:image://v1/22e53e_71aca8b5483a4e5f80fb33cf76f9bc84~mv2.jpg/Cap-Product%20(1).jpg#originWidth=4000&originHeight=4000",
+          "mediaType": "IMAGE",
+          "thumbnail": {
+            "url": "https://static.wixstatic.com/media/22e53e_71aca8b5483a4e5f80fb33cf76f9bc84~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+            "height": 50,
+            "width": 50
+          },
+          "uploadId": "22e53e_71aca8b5483a4e5f80fb33cf76f9bc84~mv2.jpg",
+          "_id": "22e53e_71aca8b5483a4e5f80fb33cf76f9bc84~mv2.jpg"
+        },
+        {
+          "image": "wix:image://v1/22e53e_70f8de4fae82472aa2e1e1c9d4fac4fa~mv2.jpg/Cap-Context%20(1).jpg#originWidth=2250&originHeight=2250",
+          "mediaType": "IMAGE",
+          "thumbnail": {
+            "url": "https://static.wixstatic.com/media/22e53e_70f8de4fae82472aa2e1e1c9d4fac4fa~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+            "height": 50,
+            "width": 50
+          },
+          "uploadId": "22e53e_70f8de4fae82472aa2e1e1c9d4fac4fa~mv2.jpg",
+          "_id": "22e53e_70f8de4fae82472aa2e1e1c9d4fac4fa~mv2.jpg"
+        }
+      ]
+    }
+  },
+  "options": [],
+  "modifiers": [
+    {
+      "name": "color",
+      "modifierRenderType": "SWATCH_CHOICES",
+      "mandatory": true,
+      "choicesSettings": {
+        "choices": [
+          {
+            "choiceId": "6f8172e5-81b4-49b7-870b-261a1bfd3b5a",
+            "linkedMedia": [],
+            "choiceType": "ONE_COLOR",
+            "key": "red",
+            "name": "red",
+            "colorCode": "#FF0000"
+          },
+          {
+            "choiceId": "15a38f2f-10dc-4527-bbd6-ab543c438cce",
+            "linkedMedia": [],
+            "choiceType": "ONE_COLOR",
+            "key": "yellow",
+            "name": "yellow",
+            "colorCode": "#FFFF00"
+          }
+        ]
+      },
+      "key": "color",
+      "_id": "8e73d45b-b669-4bfb-9292-8a08ee7f3a0e"
+    },
+    {
+      "name": "Symbol",
+      "modifierRenderType": "TEXT_CHOICES",
+      "mandatory": true,
+      "choicesSettings": {
+        "choices": [
+          {
+            "choiceId": "bb4ed555-eb30-49a9-a418-a2f67c3399b9",
+            "linkedMedia": [],
+            "choiceType": "CHOICE_TEXT",
+            "key": "star",
+            "name": "star"
+          },
+          {
+            "choiceId": "8bfcc5e4-abe1-434e-95bf-399bf89b3933",
+            "linkedMedia": [],
+            "choiceType": "CHOICE_TEXT",
+            "key": "dog",
+            "name": "dog"
+          },
+          {
+            "choiceId": "e5a83c7a-ba68-4e9b-9834-4a2a5d66bfe2",
+            "linkedMedia": [],
+            "choiceType": "CHOICE_TEXT",
+            "key": "cat",
+            "name": "cat"
+          }
+        ]
+      },
+      "key": "Symbol",
+      "_id": "dcca9a64-b405-48b5-a23a-912251b38db1"
+    },
+    {
+      "name": "text",
+      "modifierRenderType": "FREE_TEXT",
+      "mandatory": false,
+      "freeTextSettings": {
+        "minCharCount": 0,
+        "maxCharCount": 500,
+        "title": "What text to write on the hat?",
+        "key": "What text to write on the hat?"
+      },
+      "key": "text",
+      "_id": "8e76f0a9-37f8-4f7f-b15c-c5f8297f160d"
+    }
+  ],
+  "infoSections": [
+    {
+      "uniqueName": "Product Info",
+      "title": "Product Info",
+      "description": {
+        "nodes": [
+          {
+            "type": "PARAGRAPH",
+            "id": "foo",
+            "nodes": [
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "I'm a great place to add more information about your product, such as ",
+                  "decorations": []
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "sizing",
+                  "decorations": [
+                    {
+                      "type": "BOLD",
+                      "fontWeightValue": 700
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": ", ",
+                  "decorations": []
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "material",
+                  "decorations": [
+                    {
+                      "type": "BOLD",
+                      "fontWeightValue": 700
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": ", ",
+                  "decorations": []
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "care",
+                  "decorations": [
+                    {
+                      "type": "BOLD",
+                      "fontWeightValue": 700
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": ", and ",
+                  "decorations": []
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "cleaning instructions",
+                  "decorations": [
+                    {
+                      "type": "BOLD",
+                      "fontWeightValue": 700
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": ". This is also a great space to highlight what makes this product special and how your customers can benefit from this item.",
+                  "decorations": []
+                }
+              }
+            ],
+            "paragraphData": {
+              "textStyle": {
+                "textAlignment": "AUTO"
+              },
+              "indentation": 0
+            }
+          }
+        ],
+        "metadata": {
+          "version": 1,
+          "id": "cef828df-9af2-4f0b-8788-acfc8f8c30c3"
+        },
+        "documentStyle": {}
+      },
+      "plainDescription": "<p>I'm a great place to add more information about your product, such as <span style=\"font-weight: 700\">sizing</span>, <span style=\"font-weight: 700\">material</span>, <span style=\"font-weight: 700\">care</span>, and <span style=\"font-weight: 700\">cleaning instructions</span>. This is also a great space to highlight what makes this product special and how your customers can benefit from this item.</p>",
+      "_id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
+    },
+    {
+      "uniqueName": "Return & Refund Policy",
+      "title": "Return & Refund Policy",
+      "description": {
+        "nodes": [
+          {
+            "type": "PARAGRAPH",
+            "id": "foo",
+            "nodes": [
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "I’m a great place to let your customers know what to do in case they are dissatisfied with their purchase.",
+                  "decorations": []
+                }
+              }
+            ],
+            "paragraphData": {
+              "textStyle": {
+                "textAlignment": "AUTO"
+              },
+              "indentation": 0
+            }
+          },
+          {
+            "type": "DIVIDER",
+            "id": "e7j7p617",
+            "nodes": [],
+            "dividerData": {
+              "containerData": {
+                "width": {},
+                "alignment": "CENTER",
+                "spoiler": {},
+                "height": {},
+                "textWrap": false
+              },
+              "lineStyle": "SINGLE",
+              "width": "LARGE",
+              "alignment": "CENTER"
+            }
+          },
+          {
+            "type": "BULLETED_LIST",
+            "id": "611zx386",
+            "nodes": [
+              {
+                "type": "LIST_ITEM",
+                "id": "d7a1r387",
+                "nodes": [
+                  {
+                    "type": "PARAGRAPH",
+                    "id": "je7y7388",
+                    "nodes": [
+                      {
+                        "type": "TEXT",
+                        "id": "",
+                        "nodes": [],
+                        "textData": {
+                          "text": "Easy Returns & Exchanges",
+                          "decorations": [
+                            {
+                              "type": "BOLD",
+                              "fontWeightValue": 700
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "paragraphData": {
+                      "textStyle": {
+                        "textAlignment": "AUTO"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "LIST_ITEM",
+                "id": "ayutr390",
+                "nodes": [
+                  {
+                    "type": "PARAGRAPH",
+                    "id": "kwqgo391",
+                    "nodes": [
+                      {
+                        "type": "TEXT",
+                        "id": "",
+                        "nodes": [],
+                        "textData": {
+                          "text": "Hassle-Free Process",
+                          "decorations": [
+                            {
+                              "type": "BOLD",
+                              "fontWeightValue": 700
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "paragraphData": {
+                      "textStyle": {
+                        "textAlignment": "AUTO"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "LIST_ITEM",
+                "id": "nnvyg393",
+                "nodes": [
+                  {
+                    "type": "PARAGRAPH",
+                    "id": "0dmam394",
+                    "nodes": [
+                      {
+                        "type": "TEXT",
+                        "id": "",
+                        "nodes": [],
+                        "textData": {
+                          "text": "Builds Customer Confidence",
+                          "decorations": [
+                            {
+                              "type": "BOLD",
+                              "fontWeightValue": 700
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "paragraphData": {
+                      "textStyle": {
+                        "textAlignment": "AUTO"
+                      }
+                    }
+                  }
+                ]
+              }
+            ],
+            "bulletedListData": {
+              "indentation": 0
+            }
+          },
+          {
+            "type": "PARAGRAPH",
+            "id": "3mv7p396",
+            "nodes": [],
+            "paragraphData": {
+              "textStyle": {
+                "textAlignment": "AUTO"
+              }
+            }
+          },
+          {
+            "type": "PARAGRAPH",
+            "id": "92ur7709",
+            "nodes": [
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "Having a straightforward refund or exchange policy is a great way to build trust and reassure your customers that they can buy with confidence.",
+                  "decorations": []
+                }
+              }
+            ],
+            "paragraphData": {
+              "textStyle": {
+                "textAlignment": "AUTO"
+              }
+            }
+          }
+        ],
+        "metadata": {
+          "version": 1,
+          "id": "348a85e5-9341-4f49-bf74-8db013643be3"
+        },
+        "documentStyle": {}
+      },
+      "plainDescription": "<p>I’m a great place to let your customers know what to do in case they are dissatisfied with their purchase.</p><hr><ul><li><p><span style=\"font-weight: 700\">Easy Returns &amp; Exchanges</span></p></li><li><p><span style=\"font-weight: 700\">Hassle-Free Process</span></p></li><li><p><span style=\"font-weight: 700\">Builds Customer Confidence</span></p></li></ul><p>Having a straightforward refund or exchange policy is a great way to build trust and reassure your customers that they can buy with confidence.</p>",
+      "_id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
+    },
+    {
+      "uniqueName": "Shipping Info",
+      "title": "Shipping Info",
+      "description": {
+        "nodes": [
+          {
+            "type": "PARAGRAPH",
+            "id": "foo",
+            "nodes": [
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "I’m a great place to add more information about your ",
+                  "decorations": []
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "shipping methods",
+                  "decorations": [
+                    {
+                      "type": "BOLD",
+                      "fontWeightValue": 700
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": ", ",
+                  "decorations": []
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "packaging",
+                  "decorations": [
+                    {
+                      "type": "BOLD",
+                      "fontWeightValue": 700
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": ", and ",
+                  "decorations": []
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "cost",
+                  "decorations": [
+                    {
+                      "type": "BOLD",
+                      "fontWeightValue": 700
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": ".",
+                  "decorations": []
+                }
+              }
+            ],
+            "paragraphData": {
+              "textStyle": {
+                "textAlignment": "AUTO"
+              },
+              "indentation": 0
+            }
+          },
+          {
+            "type": "PARAGRAPH",
+            "id": "h67al1107",
+            "nodes": [],
+            "paragraphData": {
+              "textStyle": {
+                "textAlignment": "AUTO"
+              }
+            }
+          },
+          {
+            "type": "PARAGRAPH",
+            "id": "cnipn1472",
+            "nodes": [
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "Providing straightforward information about your ",
+                  "decorations": []
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "shipping policy",
+                  "decorations": [
+                    {
+                      "type": "UNDERLINE"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": " is a great way to build trust and reassure your customers that they can buy from you with confidence.",
+                  "decorations": []
+                }
+              }
+            ],
+            "paragraphData": {
+              "textStyle": {
+                "textAlignment": "AUTO"
+              }
+            }
+          }
+        ],
+        "metadata": {
+          "version": 1,
+          "id": "65d8c66c-324f-45b9-9c51-10f093656c5f"
+        },
+        "documentStyle": {}
+      },
+      "plainDescription": "<p>I’m a great place to add more information about your <span style=\"font-weight: 700\">shipping methods</span>, <span style=\"font-weight: 700\">packaging</span>, and <span style=\"font-weight: 700\">cost</span>.</p><p>Providing straightforward information about your <u>shipping policy</u>&nbsp;is a great way to build trust and reassure your customers that they can buy from you with confidence.</p>",
+      "_id": "57075b9e-ba33-401b-86bd-045d949c9283"
+    }
+  ],
+  "ribbon": {
+    "name": "Sale",
+    "_id": "5d536f20-dbf0-4254-928e-8c9d911c34b0"
+  },
+  "directCategoriesInfo": {
+    "categories": [
+      {
+        "_id": "becc814c-0375-45e8-a826-cd0391f935ef"
+      }
+    ]
+  },
+  "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
+  "inventory": {
+    "availabilityStatus": "IN_STOCK",
+    "preorderStatus": "DISABLED",
+    "preorderAvailability": "NO_VARIANTS"
+  },
+  "productType": "PHYSICAL",
+  "physicalProperties": {},
+  "handle": "Product_04a36e81-2a67-4d6d-a0a6-eed28d1bafae",
+  "currency": "ILS",
+  "actualPriceRange": {
+    "minValue": {
+      "amount": "68.00",
+      "formattedAmount": "68.00 ₪"
+    },
+    "maxValue": {
+      "amount": "68.00",
+      "formattedAmount": "68.00 ₪"
+    }
+  },
+  "compareAtPriceRange": {
+    "minValue": {
+      "amount": "129.00",
+      "formattedAmount": "129.00 ₪"
+    },
+    "maxValue": {
+      "amount": "129.00",
+      "formattedAmount": "129.00 ₪"
+    }
+  },
+  "flattenOptions": [],
+  "flattenModifiers": [],
+  "variantSummary": {
+    "variantCount": 1
+  },
+  "entityEventSequence": "5",
+  "_id": "618dcfe4-8d85-40a9-87c6-0dea57abe644",
+  "_createdDate": "2025-01-26T09:59:21.897Z",
+  "_updatedDate": "2025-11-18T07:36:40.456Z"
+}
