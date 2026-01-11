@@ -13,13 +13,12 @@ import {
     ProductSearchRefs,
     ProductSearchSlowViewState
 } from '../contracts/product-search.jay-contract';
-import { AvailabilityStatus } from '../contracts/product-card.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
 import { patch, REPLACE } from '@jay-framework/json-patch';
-import { searchProducts, ProductSortField } from '../actions/stores-actions.js';
+import { searchProducts, ProductSortField } from '../actions/stores-actions';
 import { mapProductToCard } from '../utils/product-mapper';
 import { useGlobalContext } from '@jay-framework/runtime';
-import { WIX_STORES_CONTEXT } from '../contexts/wix-stores-context.js';
+import { WIX_STORES_CONTEXT } from '../contexts/wix-stores-context';
 
 /**
  * Search sort options

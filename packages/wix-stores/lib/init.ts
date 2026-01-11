@@ -12,8 +12,8 @@ import { makeJayInit } from '@jay-framework/fullstack-component';
 import { getService } from '@jay-framework/stack-server-runtime';
 import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
 
-import { provideWixStoresService } from './services/wix-stores-service.js';
-import { provideWixStoresContext, type WixStoresInitData } from './contexts/wix-stores-context.js';
+import { provideWixStoresService } from './services/wix-stores-service';
+import { provideWixStoresContext, type WixStoresInitData } from './contexts/wix-stores-context';
 
 // Re-export types for consumers
 export type { WixStoresInitData } from './contexts/wix-stores-context.js';

@@ -4,11 +4,12 @@
  * Demonstrates calling Wix APIs:
  * - productsV3 for fetching products from Wix Stores
  * - currentCart for getting the visitor's shopping cart
+ * 
+ * Uses the module pattern where modules are initialized with the client.
+ * @see https://dev.wix.com/docs/go-headless/develop-your-project/self-managed-headless/authentication/visitors/handle-visitors-using-the-js-sdk
  */
 
 import { initializeWixClient, getWixClient } from "./wix-client.js";
-import { productsV3 } from "@wix/stores";
-import { currentCart } from "@wix/ecom";
 
 // ============================================================================
 // DOM Elements
@@ -34,14 +35,15 @@ interface ProductDisplay {
 
 /**
  * Fetch products using productsV3 API
+ * Uses the module pattern: client.productsV3.queryProducts()
  */
 async function fetchProducts(): Promise<ProductDisplay[]> {
     const client = getWixClient();
-    const productsClient = client.use(productsV3);
     
     console.log('[Products] Querying products...');
     
-    const response = await productsClient
+    // Access productsV3 directly from the client (initialized with modules)
+    const response = await client.productsV3
         .queryProducts({
             fields: [
                 'CURRENCY',
@@ -131,15 +133,16 @@ interface CartItemDisplay {
 
 /**
  * Fetch the current visitor's cart using currentCart API
+ * Uses the module pattern: client.currentCart.getCurrentCart()
  */
 async function fetchCurrentCart(): Promise<CartDisplay | null> {
     const client = getWixClient();
-    const cartClient = client.use(currentCart);
     
     console.log('[Cart] Fetching current cart...');
     
     try {
-        const cart = await cartClient.getCurrentCart();
+        // Access currentCart directly from the client (initialized with modules)
+        const cart = await client.currentCart.getCurrentCart();
         
         if (!cart) {
             console.log('[Cart] No cart found');

@@ -19,7 +19,8 @@ import {
     CartIndicatorRefs,
 } from '../contracts/cart-indicator.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
-import { WIX_STORES_CONTEXT, CartIndicatorState, mapCartToIndicator } from '../contexts/index.js';
+import { WIX_STORES_CONTEXT } from '../contexts/wix-stores-context';
+import { CartIndicatorState, mapCartToIndicator } from '../contexts/cart-helpers';
 
 // ============================================================================
 // Types

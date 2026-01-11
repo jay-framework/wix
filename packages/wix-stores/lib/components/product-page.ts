@@ -20,7 +20,7 @@ import {
     SeoDatumOfProductPageViewState,
     StockStatus
 } from '../contracts/product-page.jay-contract';
-import {WIX_STORES_SERVICE_MARKER, WixStoresService} from '../services';
+import {WIX_STORES_SERVICE_MARKER, WixStoresService} from '../services/wix-stores-service';
 import {
     ChoiceTypeWithLiterals,
     ConnectedModifier,
@@ -37,7 +37,7 @@ import {MediaGalleryViewState, Selected} from "../contracts/media-gallery.jay-co
 import {MediaType} from "../contracts/media.jay-contract";
 import {ADD, JSONPatchOperation, patch, REPLACE} from '@jay-framework/json-patch';
 import { useGlobalContext } from '@jay-framework/runtime';
-import { WIX_STORES_CONTEXT } from '../contexts/wix-stores-context.js';
+import { WIX_STORES_CONTEXT } from '../contexts/wix-stores-context';
 
 /**
  * URL parameters for product page routes

@@ -23,12 +23,14 @@ import {
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
 import { 
     WIX_STORES_CONTEXT,
+} from '../contexts/wix-stores-context';
+import {
     CartState,
     CartLineItem,
     mapCartToState,
     getEmptyCartState,
     mapLineItem
-} from '../contexts/index.js';
+} from '../contexts/cart-helpers';
 import { patch, REPLACE } from '@jay-framework/json-patch';
 
 // ============================================================================

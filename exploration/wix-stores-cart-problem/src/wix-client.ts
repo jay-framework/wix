@@ -2,11 +2,14 @@
  * Wix Client setup using OAuth Strategy
  * 
  * This creates a Wix client for browser use with OAuth visitor authentication.
- * Similar to @jay-framework/wix-server-client but for static webpage use.
+ * Modules are initialized with the client for type-safe access.
+ * 
+ * @see https://dev.wix.com/docs/go-headless/develop-your-project/self-managed-headless/authentication/visitors/handle-visitors-using-the-js-sdk
  */
 
 import { createClient, OAuthStrategy, Tokens } from "@wix/sdk";
-import type { WixClient } from "@wix/sdk";
+import { productsV3 } from "@wix/stores";
+import { currentCart } from "@wix/ecom";
 
 // ============================================================================
 // Configuration
@@ -60,18 +63,38 @@ export function clearStoredTokens(): void {
 }
 
 // ============================================================================
-// Wix Client Instance
+// Wix Client with Modules
 // ============================================================================
 
-// Use 'any' for the client instance since the exact auth type depends on runtime
-let wixClientInstance: WixClient | null = null;
+/**
+ * Type for the Wix client with our specific modules.
+ * This gives us type-safe access to products and cart APIs.
+ */
+export type WixStoresClient = ReturnType<typeof createWixClient>;
+
+function createWixClient(authStrategy: ReturnType<typeof OAuthStrategy>) {
+    return createClient({
+        auth: authStrategy,
+        modules: {
+            productsV3,
+            currentCart,
+        },
+    });
+}
+
+// Client instance
+let wixClientInstance: WixStoresClient | null = null;
 let authClient: ReturnType<typeof OAuthStrategy> | null = null;
 
 /**
  * Initialize the Wix client with OAuth visitor authentication.
  * This should be called once when the page loads.
+ * 
+ * The client is created with modules pre-configured, so you can access:
+ * - client.productsV3.queryProducts()
+ * - client.currentCart.getCurrentCart()
  */
-export async function initializeWixClient(): Promise<WixClient> {
+export async function initializeWixClient(): Promise<WixStoresClient> {
     if (wixClientInstance) {
         return wixClientInstance;
     }
@@ -94,10 +117,8 @@ export async function initializeWixClient(): Promise<WixClient> {
         tokens: existingTokens || undefined,
     });
     
-    // Create the Wix client with OAuth strategy
-    wixClientInstance = createClient({
-        auth: authClient,
-    });
+    // Create the Wix client with modules
+    wixClientInstance = createWixClient(authClient);
 
     // Generate new visitor tokens if none exist
     if (!existingTokens) {
@@ -122,7 +143,7 @@ export async function initializeWixClient(): Promise<WixClient> {
  * Get the Wix client instance.
  * Throws if not initialized.
  */
-export function getWixClient(): WixClient {
+export function getWixClient(): WixStoresClient {
     if (!wixClientInstance) {
         throw new Error('Wix client not initialized. Call initializeWixClient() first.');
     }

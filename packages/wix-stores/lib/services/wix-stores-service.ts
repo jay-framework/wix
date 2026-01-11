@@ -6,7 +6,7 @@
  */
 
 import { WixClient } from '@wix/sdk';
-import { getCategoriesClient, getCurrentCartClient, getInventoryClient, getProductsV3Client } from './wix-store-api.js';
+import { getCategoriesClient, getCurrentCartClient, getInventoryClient, getProductsV3Client } from '../utils/wix-store-api';
 import { createJayService } from '@jay-framework/fullstack-component';
 import { registerService } from '@jay-framework/stack-server-runtime';
 

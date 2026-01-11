@@ -18,7 +18,8 @@ import {
     getCategoriesClient, 
     getInventoryClient, 
     getCurrentCartClient 
-} from '../services/wix-store-api.js';
+} from '../utils/wix-store-api';
+import {WixClient} from "@wix/sdk";
 
 // ============================================================================
 // Type Definitions
@@ -47,6 +48,7 @@ export interface WixStoresContext {
     inventory: ReturnType<typeof getInventoryClient>;
     /** Cart API client */
     cart: ReturnType<typeof getCurrentCartClient>;
+    wixClient: WixClient;
 }
 
 /**
@@ -75,6 +77,7 @@ export function provideWixStoresContext(): void {
         categories: getCategoriesClient(wixClient),
         inventory: getInventoryClient(wixClient),
         cart: getCurrentCartClient(wixClient),
+        wixClient
     };
     
     registerGlobalContext(WIX_STORES_CONTEXT, storesContext);
