@@ -270,27 +270,46 @@ async function main(): Promise<void> {
         await initializeWixClient();
         updateStatus('Connected to Wix!');
         
-        // Fetch data in parallel
+        // Fetch data in parallel, tracking errors
+        let productsError: Error | null = null;
+        let cartError: Error | null = null;
+        
         const [products, cart] = await Promise.all([
             fetchProducts().catch(err => {
                 console.error('[Products] Error:', err);
-                showError('products-container', err);
+                productsError = err;
                 return [] as ProductDisplay[];
             }),
             fetchCurrentCart().catch(err => {
                 console.error('[Cart] Error:', err);
-                showError('cart-container', err);
+                cartError = err;
                 return null;
             }),
         ]);
         
-        // Render results
-        if (products.length > 0) {
+        // Render results or errors
+        if (productsError) {
+            showError('products-container', productsError);
+        } else {
             renderProducts(products);
         }
-        renderCart(cart);
         
-        updateStatus(`Loaded ${products.length} products`);
+        if (cartError) {
+            showError('cart-container', cartError);
+        } else {
+            renderCart(cart);
+        }
+        
+        // Update status based on results
+        if (productsError && cartError) {
+            updateStatus('Failed to load products and cart', true);
+        } else if (productsError) {
+            updateStatus('Failed to load products', true);
+        } else if (cartError) {
+            updateStatus(`Loaded ${products.length} products (cart error)`, true);
+        } else {
+            updateStatus(`Loaded ${products.length} products`);
+        }
         console.log('✅ Application initialized successfully');
         
     } catch (error) {

@@ -1,4 +1,4 @@
-# Static Wix Page
+# Wix Stores Cart Problem
 
 A static webpage demonstrating Wix SDK usage with OAuth visitor authentication.
 
@@ -16,7 +16,7 @@ A static webpage demonstrating Wix SDK usage with OAuth visitor authentication.
 Since npm is blocked, copy the node_modules from the parent wix workspace:
 
 ```bash
-cd /Users/yoav/work/jay/wix/exploration/static-wix-page
+cd /Users/yoav/work/jay/wix/exploration/wix-stores-cart-problem
 
 # Option A: Symlink to parent node_modules (recommended)
 ln -s ../../node_modules node_modules

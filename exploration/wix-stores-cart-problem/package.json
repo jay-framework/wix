@@ -1,5 +1,5 @@
 {
-  "name": "static-wix-page",
+  "name": "wix-stores-cart-problem",
   "version": "1.0.0",
   "type": "module",
   "description": "Static webpage with Wix SDK - products and cart API calls",
