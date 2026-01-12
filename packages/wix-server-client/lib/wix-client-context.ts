@@ -60,31 +60,21 @@ export function clearStoredTokens(): void {
 }
 
 export async function provideWixClientContext(oauthClientId: string) {
-    // const existingTokens = getStoredTokens();
+    const existingTokens = getStoredTokens();
 
     console.log('[wix-server-client] createClient with tokens: ', undefined);
     const wixClient = createClient({
         auth: OAuthStrategy({
             clientId: oauthClientId,
+            tokens: existingTokens,
         }),
     });
 
-    const tokens = await wixClient.auth.generateVisitorTokens();
-    wixClient.auth.setTokens(tokens);
-
-    // Only generate new tokens if none exist.
-    // When tokens are passed to OAuthStrategy, the SDK uses them automatically.
-    // if (!undefined) {
-    //     try {
-    //         const tokens = await wixClient.auth.generateVisitorTokens();
-    //         storeTokens(tokens);
-    //         console.log('[wix-server-client] New visitor session created');
-    //     } catch (error) {
-    //         console.error('[wix-server-client] Failed to generate visitor tokens:', error);
-    //     }
-    // } else {
-    //     console.log('[wix-server-client] Resumed existing visitor session');
-    // }
+    if (!existingTokens) {
+        const tokens = await wixClient.auth.generateVisitorTokens();
+        wixClient.auth.setTokens(tokens);
+        storeTokens(tokens);
+    }
 
     const clientContext: WixClientContext = {
         client: wixClient,
