@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wix Cart API Debug</title>
+    <style>
+        body { font-family: monospace; padding: 20px; max-width: 1200px; margin: 0 auto; }
+        h1 { margin-bottom: 5px; }
+        h2 { margin-top: 30px; margin-bottom: 5px; background: #eee; padding: 5px; }
+        h3 { margin-top: 20px; margin-bottom: 5px; color: #333; }
+        pre { 
+            background: #f5f5f5; 
+            padding: 10px; 
+            overflow: auto; 
+            max-height: 300px;
+            border: 1px solid #ddd;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 12px;
+        }
+        .status { font-weight: bold; margin: 5px 0; }
+        .controls { margin: 20px 0; padding: 10px; background: #ffe; border: 1px solid #cc0; }
+        .controls button { 
+            padding: 10px 20px; 
+            margin-right: 10px; 
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .controls button.danger { background: #fcc; border-color: #c00; }
+        #log { 
+            background: #1a1a1a; 
+            color: #0f0; 
+            max-height: 200px;
+            font-size: 11px;
+        }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+        .note { background: #eff; padding: 10px; border: 1px solid #0cc; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Wix Cart API Debug</h1>
+    <p>Tests the cart flow: 404 → add product → get cart → persist tokens</p>
+    
+    <div class="controls">
+        <button id="run-flow-btn">▶️ Run Flow Again</button>
+        <button id="clear-tokens-btn" class="danger">🗑️ Clear Tokens & Start Fresh</button>
+    </div>
+
+    <h2>Token Persistence (localStorage)</h2>
+    <div class="note">
+        Tokens are stored in localStorage. Reload the page after running the flow to verify 
+        that the same cart is retrieved (proving session persistence).
+    </div>
+    <div id="tokens-status" class="status">Checking...</div>
+    <pre id="tokens-result"></pre>
+
+    <h2>Client Initialization</h2>
+    <div id="init-status" class="status">Loading...</div>
+    <pre id="init-result"></pre>
+
+    <div class="grid">
+        <div>
+            <h2>Step 1: Get Current Cart (Expect 404)</h2>
+            <p>New visitors have no cart - API returns 404</p>
+            <div id="step1-status" class="status">Waiting...</div>
+            <pre id="step1-result"></pre>
+        </div>
+
+        <div>
+            <h2>Step 2: Get Products</h2>
+            <p>Find a product to add to cart</p>
+            <div id="step2-status" class="status">Waiting...</div>
+            <pre id="step2-result"></pre>
+        </div>
+
+        <div>
+            <h2>Step 3: Add Product to Cart</h2>
+            <p>Call addToCurrentCart() with a product</p>
+            <div id="step3-status" class="status">Waiting...</div>
+            <pre id="step3-result"></pre>
+        </div>
+
+        <div>
+            <h2>Step 4: Get Cart (Should Work Now)</h2>
+            <p>Cart should exist after adding a product</p>
+            <div id="step4-status" class="status">Waiting...</div>
+            <pre id="step4-result"></pre>
+        </div>
+    </div>
+
+    <h2>Execution Log</h2>
+    <pre id="log"></pre>
+
+    <script type="module" src="./debug.ts"></script>
+</body>
+</html>
