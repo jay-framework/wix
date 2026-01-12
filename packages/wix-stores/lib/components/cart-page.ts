@@ -28,8 +28,8 @@ import {
     CartState,
     CartLineItem,
     mapCartToState,
-    getEmptyCartState,
-    mapLineItem
+    mapLineItem,
+    getCurrentCartOrNull
 } from '../contexts/cart-helpers';
 import { patch, REPLACE } from '@jay-framework/json-patch';
 
@@ -191,12 +191,12 @@ function CartPageInteractive(
         coupon: [coupon, setCoupon]
     } = viewStateSignals;
 
-    // Load cart data using client context
+    // Load cart data using context helper API (includes accurate totals)
+    // @see https://dev.wix.com/docs/sdk/backend-modules/ecom/current-cart/estimate-current-cart-totals
     async function loadCart() {
         try {
             setIsLoading(true);
-            const cart = await storesContext.cart.getCurrentCart();
-            const cartState = mapCartToState(cart);
+            const cartState = await storesContext.getEstimatedCart();
             const viewState = mapCartStateToViewState(cartState);
             
             setIsEmpty(viewState.isEmpty);
@@ -226,12 +226,7 @@ function CartPageInteractive(
         window.dispatchEvent(new CustomEvent('wix-cart-updated', {
             detail: {
                 itemCount: cart.summary.itemCount,
-                hasItems: !cart.isEmpty,
-                subtotal: {
-                    amount: cart.summary.subtotal.amount,
-                    formattedAmount: cart.summary.subtotal.formattedAmount,
-                    currency: cart.summary.currency
-                }
+                hasItems: !cart.isEmpty
             }
         }));
     }
@@ -309,7 +304,7 @@ function CartPageInteractive(
             setIsLoading(true);
             
             // Get current cart to get all line item IDs
-            const cart = await storesContext.cart.getCurrentCart();
+            const cart = await getCurrentCartOrNull(storesContext.cart);
             if (cart?.lineItems?.length) {
                 const lineItemIds = cart.lineItems
                     .map((item: { _id?: string }) => item._id || '')

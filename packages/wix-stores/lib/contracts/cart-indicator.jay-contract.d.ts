@@ -1,29 +1,18 @@
 import {HTMLElementCollectionProxy, HTMLElementProxy, JayContract} from "@jay-framework/runtime";
 
 
-export interface SubtotalOfCartIndicatorViewState {
-  amount: string,
-  formattedAmount: string,
-  currency: string
-}
-
 export interface CartIndicatorViewState {
   itemCount: number,
   hasItems: boolean,
-  subtotal: SubtotalOfCartIndicatorViewState,
   isLoading: boolean,
   justAdded: boolean
 }
 
 export type CartIndicatorSlowViewState = {};
 
-export type CartIndicatorFastViewState = Pick<CartIndicatorViewState, 'itemCount' | 'hasItems' | 'isLoading' | 'justAdded'> & {
-    subtotal: CartIndicatorViewState['subtotal'];
-};
+export type CartIndicatorFastViewState = Pick<CartIndicatorViewState, 'itemCount' | 'hasItems' | 'isLoading' | 'justAdded'>;
 
-export type CartIndicatorInteractiveViewState = Pick<CartIndicatorViewState, 'itemCount' | 'hasItems' | 'isLoading' | 'justAdded'> & {
-    subtotal: CartIndicatorViewState['subtotal'];
-};
+export type CartIndicatorInteractiveViewState = Pick<CartIndicatorViewState, 'itemCount' | 'hasItems' | 'isLoading' | 'justAdded'>;
 
 
 export interface CartIndicatorRefs {

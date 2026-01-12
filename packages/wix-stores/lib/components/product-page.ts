@@ -521,22 +521,14 @@ function ProductPageInteractive(
                 }]
             });
 
-            // Get updated cart to dispatch event
-            const cart = await storesContext.cart.getCurrentCart();
-            const itemCount = (cart?.lineItems || []).reduce(
-                (sum: number, item: { quantity?: number }) => sum + (item.quantity || 0),
-                0
-            );
+            // Get updated cart indicator to dispatch event
+            const indicator = await storesContext.getCartIndicator();
             
             console.log('Added to cart:', quantity(), 'items');
             
             // Dispatch cart update event for cart indicator
             window.dispatchEvent(new CustomEvent('wix-cart-updated', {
-                detail: {
-                    itemCount,
-                    hasItems: itemCount > 0,
-                    subtotal: { amount: '0', formattedAmount: '', currency: 'USD' }
-                }
+                detail: indicator
             }));
         } catch (error) {
             console.error('Failed to add to cart:', error);

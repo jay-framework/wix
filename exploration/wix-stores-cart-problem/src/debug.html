@@ -62,10 +62,17 @@
 
     <div class="grid">
         <div>
-            <h2>Step 1: Get Current Cart (Expect 404)</h2>
+            <h2>Step 1a: Get Current Cart (Expect 404)</h2>
             <p>New visitors have no cart - API returns 404</p>
-            <div id="step1-status" class="status">Waiting...</div>
-            <pre id="step1-result"></pre>
+            <div id="step1a-status" class="status">Waiting...</div>
+            <pre id="step1a-result"></pre>
+        </div>
+
+        <div>
+            <h2>Step 1b: Estimate Totals (No Cart)</h2>
+            <p>estimateCurrentCartTotals() without a cart</p>
+            <div id="step1b-status" class="status">Waiting...</div>
+            <pre id="step1b-result"></pre>
         </div>
 
         <div>
@@ -87,6 +94,13 @@
             <p>Cart should exist after adding a product</p>
             <div id="step4-status" class="status">Waiting...</div>
             <pre id="step4-result"></pre>
+        </div>
+
+        <div>
+            <h2>Step 5: Estimate Totals (With Cart)</h2>
+            <p>estimateCurrentCartTotals() with items in cart</p>
+            <div id="step5-status" class="status">Waiting...</div>
+            <pre id="step5-result"></pre>
         </div>
     </div>
 

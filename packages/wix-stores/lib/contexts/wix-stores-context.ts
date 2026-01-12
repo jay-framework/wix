@@ -7,7 +7,8 @@
  * Usage in interactive components:
  * ```typescript
  * const storesContext = useGlobalContext(WIX_STORES_CONTEXT);
- * const cart = await storesContext.cart.getCurrentCart();
+ * const indicator = await storesContext.getCartIndicator();
+ * const cartState = await storesContext.getEstimatedCart();
  * ```
  */
 
@@ -19,7 +20,15 @@ import {
     getInventoryClient, 
     getCurrentCartClient 
 } from '../utils/wix-store-api';
-import {WixClient} from "@wix/sdk";
+import { WixClient } from "@wix/sdk";
+import {
+    CartIndicatorState,
+    CartState,
+    getCurrentCartOrNull,
+    estimateCurrentCartTotalsOrNull,
+    mapCartToIndicator,
+    mapEstimateTotalsToState
+} from './cart-helpers';
 
 // ============================================================================
 // Type Definitions
@@ -46,9 +55,29 @@ export interface WixStoresContext {
     categories: ReturnType<typeof getCategoriesClient>;
     /** Inventory API client */
     inventory: ReturnType<typeof getInventoryClient>;
-    /** Cart API client */
+    /** Cart API client (raw Wix SDK client) */
     cart: ReturnType<typeof getCurrentCartClient>;
+    /** Wix SDK client */
     wixClient: WixClient;
+    
+    // ========================================================================
+    // Cart Helper APIs
+    // ========================================================================
+    
+    /**
+     * Get cart indicator data (item count and hasItems).
+     * Handles 404 (no cart) as empty cart.
+     * Use this for lightweight cart indicators in headers.
+     */
+    getCartIndicator(): Promise<CartIndicatorState>;
+    
+    /**
+     * Get full cart state with estimated totals (subtotal, tax, total).
+     * Handles 404 (no cart) as empty cart.
+     * Use this for cart pages where accurate totals are needed.
+     * @see https://dev.wix.com/docs/sdk/backend-modules/ecom/current-cart/estimate-current-cart-totals
+     */
+    getEstimatedCart(): Promise<CartState>;
 }
 
 /**
@@ -70,14 +99,28 @@ export function provideWixStoresContext(): void {
     // Get the Wix client from wix-server-client plugin
     const wixClientContext = useGlobalContext(WIX_CLIENT_CONTEXT);
     const wixClient = wixClientContext.client;
+    
+    // Get cart client for helper functions
+    const cartClient = getCurrentCartClient(wixClient);
 
     // Create and register the stores context
     const storesContext: WixStoresContext = {
         products: getProductsV3Client(wixClient),
         categories: getCategoriesClient(wixClient),
         inventory: getInventoryClient(wixClient),
-        cart: getCurrentCartClient(wixClient),
-        wixClient
+        cart: cartClient,
+        wixClient,
+        
+        // Cart helper APIs
+        async getCartIndicator(): Promise<CartIndicatorState> {
+            const cart = await getCurrentCartOrNull(cartClient);
+            return mapCartToIndicator(cart);
+        },
+        
+        async getEstimatedCart(): Promise<CartState> {
+            const estimate = await estimateCurrentCartTotalsOrNull(cartClient);
+            return mapEstimateTotalsToState(estimate);
+        }
     };
     
     registerGlobalContext(WIX_STORES_CONTEXT, storesContext);

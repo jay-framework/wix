@@ -50,35 +50,73 @@ function log(message: string): void {
 }
 
 // ============================================================================
-// Step 1: Get Current Cart (Expecting 404)
+// Step 1a: Get Current Cart (Expecting 404)
 // ============================================================================
 
-async function step1_getCurrentCart(): Promise<void> {
-    log('Step 1: Getting current cart (expecting 404 for new visitors)...');
-    showStatus('step1-status', 'Calling currentCart.getCurrentCart()...');
+async function step1a_getCurrentCart(): Promise<boolean> {
+    log('Step 1a: Getting current cart (expecting 404 for new visitors)...');
+    showStatus('step1a-status', 'Calling currentCart.getCurrentCart()...');
     
     try {
         const client = getWixClient();
         const cart = await client.currentCart.getCurrentCart();
         
-        showStatus('step1-status', '✅ Cart exists!', 'green');
-        showJson('step1-result', cart);
-        log('Step 1: Cart found (visitor has existing cart)');
+        showStatus('step1a-status', '✅ Cart exists!', 'green');
+        showJson('step1a-result', cart);
+        log('Step 1a: Cart found (visitor has existing cart)');
+        return true;
         
     } catch (error: any) {
         if (error?.details?.applicationError?.code === 'CART_NOT_FOUND') {
-            showStatus('step1-status', '✅ Got expected 404 - No cart exists yet', 'orange');
-            showJson('step1-result', {
+            showStatus('step1a-status', '✅ Got expected 404 - No cart exists yet', 'orange');
+            showJson('step1a-result', {
                 status: 404,
                 message: 'Cart not found - this is expected for new visitors',
                 errorCode: error?.details?.applicationError?.code,
                 details: error?.details
             });
-            log('Step 1: Got expected 404 (no cart for new visitor)');
+            log('Step 1a: Got expected 404 (no cart for new visitor)');
+            return false;
         } else {
-            showStatus('step1-status', '❌ Unexpected error', 'red');
-            showError('step1-result', error);
-            log('Step 1: FAILED with unexpected error');
+            showStatus('step1a-status', '❌ Unexpected error', 'red');
+            showError('step1a-result', error);
+            log('Step 1a: FAILED with unexpected error');
+            return false;
+        }
+    }
+}
+
+// ============================================================================
+// Step 1b: Estimate Cart Totals (Without Cart)
+// ============================================================================
+
+async function step1b_estimateTotalsNoCart(): Promise<void> {
+    log('Step 1b: Calling estimateCurrentCartTotals (without cart)...');
+    showStatus('step1b-status', 'Calling currentCart.estimateCurrentCartTotals()...');
+    
+    try {
+        const client = getWixClient();
+        const estimate = await client.currentCart.estimateCurrentCartTotals({});
+        
+        showStatus('step1b-status', '✅ Estimate returned!', 'green');
+        showJson('step1b-result', estimate);
+        log('Step 1b: Estimate succeeded (unexpected if no cart)');
+        
+    } catch (error: any) {
+        const errorCode = error?.details?.applicationError?.code;
+        if (errorCode === 'CART_NOT_FOUND') {
+            showStatus('step1b-status', '✅ Got expected 404 - No cart to estimate', 'orange');
+            showJson('step1b-result', {
+                status: 404,
+                message: 'Cannot estimate totals without a cart',
+                errorCode: errorCode,
+                details: error?.details
+            });
+            log('Step 1b: Got expected 404 (no cart to estimate)');
+        } else {
+            showStatus('step1b-status', '❌ Error', 'red');
+            showError('step1b-result', error);
+            log(`Step 1b: Error - ${errorCode || 'unknown'}`);
         }
     }
 }
@@ -200,6 +238,30 @@ async function step4_getCurrentCartAfterAdd(): Promise<void> {
 }
 
 // ============================================================================
+// Step 5: Estimate Cart Totals (With Cart)
+// ============================================================================
+
+async function step5_estimateTotalsWithCart(): Promise<void> {
+    log('Step 5: Calling estimateCurrentCartTotals (with cart)...');
+    showStatus('step5-status', 'Calling currentCart.estimateCurrentCartTotals()...');
+    
+    try {
+        const client = getWixClient();
+        const estimate = await client.currentCart.estimateCurrentCartTotals({});
+        
+        showStatus('step5-status', '✅ Estimate returned!', 'green');
+        showJson('step5-result', estimate);
+        log('Step 5: Estimate succeeded - totals calculated');
+        
+    } catch (error: any) {
+        const errorCode = error?.details?.applicationError?.code;
+        showStatus('step5-status', '❌ Error', 'red');
+        showError('step5-result', error);
+        log(`Step 5: Error - ${errorCode || 'unknown'}`);
+    }
+}
+
+// ============================================================================
 // Token Management Display
 // ============================================================================
 
@@ -228,8 +290,11 @@ function updateTokenDisplay(): void {
 async function runFullFlow(): Promise<void> {
     log('=== Starting Full Cart Flow ===');
     
-    // Step 1: Try to get cart (expecting 404)
-    await step1_getCurrentCart();
+    // Step 1a: Try to get cart (expecting 404)
+    const cartExists = await step1a_getCurrentCart();
+    
+    // Step 1b: Try to estimate totals without cart
+    await step1b_estimateTotalsNoCart();
     
     // Step 2: Get products
     const productId = await step2_getProducts();
@@ -241,6 +306,9 @@ async function runFullFlow(): Promise<void> {
         if (added) {
             // Step 4: Get cart again
             await step4_getCurrentCartAfterAdd();
+            
+            // Step 5: Estimate totals with cart
+            await step5_estimateTotalsWithCart();
         }
     }
     

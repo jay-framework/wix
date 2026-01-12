@@ -14,28 +14,7 @@ tags:
     dataType: boolean
     phase: fast+interactive
     description: Whether cart has any items
-    
-  # Cart subtotal (optional display)
-  - tag: subtotal
-    type: sub-contract
-    phase: fast+interactive
-    description: Cart subtotal for quick display
-    tags:
-      - tag: amount
-        type: data
-        dataType: string
-        description: Subtotal amount (e.g., "99.99")
-        
-      - tag: formattedAmount
-        type: data
-        dataType: string
-        description: Formatted subtotal (e.g., "$99.99")
-        
-      - tag: currency
-        type: data
-        dataType: string
-        description: Currency code (e.g., "USD")
-        
+
   # Interactive elements
   - tag: cartButton
     type: interactive

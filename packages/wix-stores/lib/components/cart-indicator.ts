@@ -1,7 +1,7 @@
 /**
  * Cart Indicator Component
  *
- * A lightweight cart indicator for site headers showing item count and subtotal.
+ * A lightweight cart indicator for site headers showing item count.
  * Uses the Wix eCommerce Cart API via client context.
  */
 
@@ -20,7 +20,7 @@ import {
 } from '../contracts/cart-indicator.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
 import { WIX_STORES_CONTEXT } from '../contexts/wix-stores-context';
-import { CartIndicatorState, mapCartToIndicator } from '../contexts/cart-helpers';
+import { CartIndicatorState } from '../contexts/cart-helpers';
 
 // ============================================================================
 // Types
@@ -51,11 +51,6 @@ async function renderFastChanging(
         viewState: {
             itemCount: 0,
             hasItems: false,
-            subtotal: {
-                amount: '0',
-                formattedAmount: '$0.00',
-                currency: 'USD'
-            },
             isLoading: true,
             justAdded: false
         },
@@ -79,25 +74,18 @@ function CartIndicatorInteractive(
     const {
         itemCount: [itemCount, setItemCount],
         hasItems: [hasItems, setHasItems],
-        subtotal: [subtotal, setSubtotal],
         isLoading: [isLoading, setIsLoading],
         justAdded: [justAdded, setJustAdded]
     } = viewStateSignals;
 
-    // Load cart data using client context
+    // Load cart data using context helper API
     async function loadCart() {
         try {
             setIsLoading(true);
-            const cart = await storesContext.cart.getCurrentCart();
-            const indicator = mapCartToIndicator(cart);
+            const indicator = await storesContext.getCartIndicator();
             
             setItemCount(indicator.itemCount);
             setHasItems(indicator.hasItems);
-            setSubtotal({
-                amount: indicator.subtotal.amount,
-                formattedAmount: indicator.subtotal.formattedAmount,
-                currency: indicator.subtotal.currency
-            });
         } catch (error) {
             console.error('[CartIndicator] Failed to load cart:', error);
         } finally {
@@ -109,11 +97,6 @@ function CartIndicatorInteractive(
     function updateCart(indicator: CartIndicatorState) {
         setItemCount(indicator.itemCount);
         setHasItems(indicator.hasItems);
-        setSubtotal({
-            amount: indicator.subtotal.amount,
-            formattedAmount: indicator.subtotal.formattedAmount,
-            currency: indicator.subtotal.currency
-        });
         
         // Trigger "just added" animation
         setJustAdded(true);
@@ -146,7 +129,6 @@ function CartIndicatorInteractive(
         render: () => ({
             itemCount: itemCount(),
             hasItems: hasItems(),
-            subtotal: subtotal(),
             isLoading: isLoading(),
             justAdded: justAdded()
         })
@@ -160,7 +142,7 @@ function CartIndicatorInteractive(
 /**
  * Cart Indicator Component
  *
- * Displays cart item count and optionally subtotal in site header.
+ * Displays cart item count in site header.
  * Automatically updates when items are added to cart.
  */
 export const cartIndicator = makeJayStackComponent<CartIndicatorContract>()
