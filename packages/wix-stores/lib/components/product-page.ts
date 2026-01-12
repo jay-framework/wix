@@ -510,26 +510,9 @@ function ProductPageInteractive(
 
         setIsAddingToCart(true);
         try {
-            // Add to cart using the client context
-            await storesContext.cart.addToCurrentCart({
-                lineItems: [{
-                    catalogReference: {
-                        catalogItemId: fastCarryForward.productId,
-                        appId: '1380b703-ce81-ff05-f115-39571d94dfcd', // Wix Stores app ID
-                    },
-                    quantity: quantity()
-                }]
-            });
-
-            // Get updated cart indicator to dispatch event
-            const indicator = await storesContext.getCartIndicator();
-            
+            // Add to cart - signals are updated automatically
+            await storesContext.addToCart(fastCarryForward.productId, quantity());
             console.log('Added to cart:', quantity(), 'items');
-            
-            // Dispatch cart update event for cart indicator
-            window.dispatchEvent(new CustomEvent('wix-cart-updated', {
-                detail: indicator
-            }));
         } catch (error) {
             console.error('Failed to add to cart:', error);
         } finally {

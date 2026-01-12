@@ -11,7 +11,7 @@ import {
     Signals,
     PageProps
 } from '@jay-framework/fullstack-component';
-import { createEffect, Props } from '@jay-framework/component';
+import { createEffect, createSignal, Props } from '@jay-framework/component';
 import { useGlobalContext } from '@jay-framework/runtime';
 import {
     CartIndicatorContract,
@@ -20,7 +20,6 @@ import {
 } from '../contracts/cart-indicator.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
 import { WIX_STORES_CONTEXT } from '../contexts/wix-stores-context';
-import { CartIndicatorState } from '../contexts/cart-helpers';
 
 // ============================================================================
 // Types
@@ -59,7 +58,7 @@ async function renderFastChanging(
 }
 
 /**
- * Interactive phase - load cart data and set up reactivity
+ * Interactive phase - uses reactive global context signals
  */
 function CartIndicatorInteractive(
     _props: Props<PageProps>,
@@ -67,68 +66,38 @@ function CartIndicatorInteractive(
     viewStateSignals: Signals<CartIndicatorFastViewState>,
     _carryForward: CartIndicatorFastCarryForward
 ) {
-    // Get the stores context for client-side cart operations
+    // Get the stores context - cartIndicator signals are already reactive
     const storesContext = useGlobalContext(WIX_STORES_CONTEXT);
 
-    // Get signal setters from viewStateSignals
+    // Get signal setters for loading and animation states
     const {
-        itemCount: [itemCount, setItemCount],
-        hasItems: [hasItems, setHasItems],
         isLoading: [isLoading, setIsLoading],
         justAdded: [justAdded, setJustAdded]
     } = viewStateSignals;
+    
+    // Track previous item count for "just added" animation
+    const [prevItemCount, setPrevItemCount] = createSignal(storesContext.cartIndicator.itemCount());
 
-    // Load cart data using context helper API
-    async function loadCart() {
-        try {
-            setIsLoading(true);
-            const indicator = await storesContext.getCartIndicator();
-            
-            setItemCount(indicator.itemCount);
-            setHasItems(indicator.hasItems);
-        } catch (error) {
-            console.error('[CartIndicator] Failed to load cart:', error);
-        } finally {
-            setIsLoading(false);
+    // Watch for item count changes to trigger animation
+    createEffect(() => {
+        const currentCount = storesContext.cartIndicator.itemCount();
+        if (currentCount > prevItemCount()) {
+            // Items were added - trigger animation
+            setJustAdded(true);
+            setTimeout(() => setJustAdded(false), 1500);
         }
-    }
-
-    // Update cart state (called after add to cart events)
-    function updateCart(indicator: CartIndicatorState) {
-        setItemCount(indicator.itemCount);
-        setHasItems(indicator.hasItems);
-        
-        // Trigger "just added" animation
-        setJustAdded(true);
-        setTimeout(() => setJustAdded(false), 1500);
-    }
-
-    // Listen for cart update events from other components
-    createEffect(() => {
-        const handleCartUpdate = (event: CustomEvent<CartIndicatorState>) => {
-            updateCart(event.detail);
-        };
-
-        window.addEventListener('wix-cart-updated' as keyof WindowEventMap, handleCartUpdate as EventListener);
-        return () => {
-            window.removeEventListener('wix-cart-updated' as keyof WindowEventMap, handleCartUpdate as EventListener);
-        };
+        setPrevItemCount(currentCount);
     });
 
-    // Set up cart link click handlers
-    createEffect(() => {
-        refs.cartLink?.onclick(() => {
-            // Navigation handled by anchor href
-        });
+    refs.cartLink?.onclick(() => {
+        // Navigation handled by anchor href
     });
-
-    // Load cart on mount
-    loadCart();
 
     return {
         render: () => ({
-            itemCount: itemCount(),
-            hasItems: hasItems(),
+            // Read directly from reactive global context signals
+            itemCount: storesContext.cartIndicator.itemCount(),
+            hasItems: storesContext.cartIndicator.hasItems(),
             isLoading: isLoading(),
             justAdded: justAdded()
         })
@@ -150,6 +119,3 @@ export const cartIndicator = makeJayStackComponent<CartIndicatorContract>()
     .withServices(WIX_STORES_SERVICE_MARKER)
     .withFastRender(renderFastChanging)
     .withInteractive(CartIndicatorInteractive);
-
-// Re-export types
-export type { CartIndicatorState };

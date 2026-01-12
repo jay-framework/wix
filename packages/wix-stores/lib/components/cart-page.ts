@@ -27,9 +27,6 @@ import {
 import {
     CartState,
     CartLineItem,
-    mapCartToState,
-    mapLineItem,
-    getCurrentCartOrNull
 } from '../contexts/cart-helpers';
 import { patch, REPLACE } from '@jay-framework/json-patch';
 
@@ -243,20 +240,8 @@ function CartPageInteractive(
         );
 
         try {
-            let result;
-            if (newQuantity === 0) {
-                // Remove item if quantity is 0
-                result = await storesContext.cart.removeLineItemsFromCurrentCart([lineItemId]);
-            } else {
-                // Update quantity
-                result = await storesContext.cart.updateCurrentCartLineItemQuantity([
-                    { _id: lineItemId, quantity: newQuantity }
-                ]);
-            }
-            
-            if (result.cart) {
-                updateFromCart(mapCartToState(result.cart));
-            }
+            const { cartState } = await storesContext.updateLineItemQuantity(lineItemId, newQuantity);
+            updateFromCart(cartState);
         } catch (error) {
             console.error('[CartPage] Failed to update quantity:', error);
         }
@@ -282,10 +267,8 @@ function CartPageInteractive(
         );
 
         try {
-            const result = await storesContext.cart.removeLineItemsFromCurrentCart([lineItemId]);
-            if (result.cart) {
-                updateFromCart(mapCartToState(result.cart));
-            }
+            const { cartState } = await storesContext.removeLineItems([lineItemId]);
+            updateFromCart(cartState);
         } catch (error) {
             console.error('[CartPage] Failed to remove item:', error);
             setLineItems(items =>
@@ -302,18 +285,7 @@ function CartPageInteractive(
     async function handleClearCart() {
         try {
             setIsLoading(true);
-            
-            // Get current cart to get all line item IDs
-            const cart = await getCurrentCartOrNull(storesContext.cart);
-            if (cart?.lineItems?.length) {
-                const lineItemIds = cart.lineItems
-                    .map((item: { _id?: string }) => item._id || '')
-                    .filter(Boolean);
-                if (lineItemIds.length > 0) {
-                    await storesContext.cart.removeLineItemsFromCurrentCart(lineItemIds);
-                }
-            }
-            
+            await storesContext.clearCart();
             await loadCart();
         } catch (error) {
             console.error('[CartPage] Failed to clear cart:', error);
@@ -324,10 +296,8 @@ function CartPageInteractive(
     // Handle coupon removal
     async function handleRemoveCoupon() {
         try {
-            const result = await storesContext.cart.removeCouponFromCurrentCart();
-            if (result.cart) {
-                updateFromCart(mapCartToState(result.cart));
-            }
+            const { cartState } = await storesContext.removeCoupon();
+            updateFromCart(cartState);
         } catch (error) {
             console.error('[CartPage] Failed to remove coupon:', error);
         }

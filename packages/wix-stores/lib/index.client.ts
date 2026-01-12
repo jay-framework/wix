@@ -17,6 +17,8 @@ export {
     provideWixStoresContext,
     type WixStoresContext,
     type WixStoresInitData,
+    type ReactiveCartIndicator,
+    type CartOperationResult,
 } from './contexts/wix-stores-context';
 export {
     type CartLineItem,

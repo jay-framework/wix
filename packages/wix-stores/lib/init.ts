@@ -46,8 +46,13 @@ export const init = makeJayInit()
 
         const { enableClientCart, enableClientSearch } = data;
 
-        // Register the Wix Stores context (uses WIX_CLIENT_CONTEXT internally)
-        provideWixStoresContext();
+        // Register the reactive Wix Stores context (uses WIX_CLIENT_CONTEXT internally)
+        const storesContext = provideWixStoresContext();
+        
+        // Load initial cart indicator state
+        if (enableClientCart) {
+            await storesContext.refreshCartIndicator();
+        }
 
         console.log('[wix-stores] Client initialization complete');
         console.log(`[wix-stores] Cart enabled: ${enableClientCart}, Search enabled: ${enableClientSearch}`);
