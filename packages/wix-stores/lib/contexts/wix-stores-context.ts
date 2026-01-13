@@ -17,7 +17,7 @@
  */
 
 import { createJayContext, useGlobalContext } from '@jay-framework/runtime';
-import { createSignal, registerReactiveGlobalContext } from '@jay-framework/component';
+import {createSignal, registerReactiveGlobalContext, useReactive} from '@jay-framework/component';
 import { Getter } from '@jay-framework/reactive';
 import { WIX_CLIENT_CONTEXT } from '@jay-framework/wix-server-client';
 import { getCurrentCartClient } from '../utils/wix-store-api';
@@ -166,7 +166,7 @@ export function provideWixStoresContext(): WixStoresContext {
     // Get the Wix client from wix-server-client plugin
     const wixClientContext = useGlobalContext(WIX_CLIENT_CONTEXT);
     const wixClient = wixClientContext.client;
-    
+
     // Get cart client for helper functions
     const cartClient = getCurrentCartClient(wixClient);
 
@@ -175,12 +175,15 @@ export function provideWixStoresContext(): WixStoresContext {
         // Reactive signals for cart indicator
         const [itemCount, setItemCount] = createSignal(0);
         const [hasItems, setHasItems] = createSignal(false);
-        
+        const reactive = useReactive();
+
         // Helper to update indicator signals from cart data
         const updateIndicatorFromCart = (cart: Awaited<ReturnType<typeof getCurrentCartOrNull>>) => {
             const indicator = mapCartToIndicator(cart);
-            setItemCount(indicator.itemCount);
-            setHasItems(indicator.hasItems);
+            reactive.batchReactions(() => {
+                setItemCount(indicator.itemCount);
+                setHasItems(indicator.hasItems);
+            })
         };
         
         return {
