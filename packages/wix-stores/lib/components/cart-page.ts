@@ -21,8 +21,8 @@ import {
     LineItemOfCartPageViewState
 } from '../contracts/cart-page.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
-import { 
-    WIX_STORES_CONTEXT,
+import {
+    WIX_STORES_CONTEXT, WixStoresContext,
 } from '../contexts/wix-stores-context';
 import {
     CartState,
@@ -173,10 +173,9 @@ function CartPageInteractive(
     _props: Props<PageProps>,
     refs: CartPageRefs,
     viewStateSignals: Signals<CartPageFastViewState>,
-    _carryForward: CartPageFastCarryForward
+    _carryForward: CartPageFastCarryForward,
+    storesContext: WixStoresContext
 ) {
-    // Get the stores context for client-side cart operations
-    const storesContext = useGlobalContext(WIX_STORES_CONTEXT);
 
     // Get signal setters from viewStateSignals
     const {
@@ -392,6 +391,7 @@ function CartPageInteractive(
 export const cartPage = makeJayStackComponent<CartPageContract>()
     .withProps<PageProps>()
     .withServices(WIX_STORES_SERVICE_MARKER)
+    .withContexts(WIX_STORES_CONTEXT)
     .withSlowlyRender(renderSlowlyChanging)
     .withFastRender(renderFastChanging)
     .withInteractive(CartPageInteractive);

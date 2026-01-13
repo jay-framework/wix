@@ -18,7 +18,7 @@ import { patch, REPLACE } from '@jay-framework/json-patch';
 import { searchProducts, ProductSortField } from '../actions/stores-actions';
 import { mapProductToCard } from '../utils/product-mapper';
 import { useGlobalContext } from '@jay-framework/runtime';
-import { WIX_STORES_CONTEXT } from '../contexts/wix-stores-context';
+import {WIX_STORES_CONTEXT, WixStoresContext} from '../contexts/wix-stores-context';
 
 /**
  * Search sort options
@@ -203,10 +203,9 @@ function ProductSearchInteractive(
     props: Props<PageProps>,
     refs: ProductSearchRefs,
     viewStateSignals: Signals<ProductSearchFastViewState>,
-    fastCarryForward: SearchFastCarryForward
+    fastCarryForward: SearchFastCarryForward,
+    storesContext: WixStoresContext
 ) {
-    // Get the stores context for cart operations
-    const storesContext = useGlobalContext(WIX_STORES_CONTEXT);
 
     const {
         searchExpression: [searchExpression, setSearchExpression],
@@ -576,6 +575,7 @@ function ProductSearchInteractive(
 export const productSearch = makeJayStackComponent<ProductSearchContract>()
     .withProps<PageProps>()
     .withServices(WIX_STORES_SERVICE_MARKER)
+    .withContexts(WIX_STORES_CONTEXT)
     .withSlowlyRender(renderSlowlyChanging)
     .withFastRender(renderFastChanging)
     .withInteractive(ProductSearchInteractive);

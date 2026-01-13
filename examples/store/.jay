@@ -1,0 +1,12 @@
+devServer:
+  portRange:
+    - 3000
+    - 3100
+  pagesBase: ./src/pages
+  componentsBase: ./src/components
+  publicFolder: ./public
+editorServer:
+  portRange:
+    - 3101
+    - 3200
+  editorId: 573edbf1-bdae-4949-83fe-90e0beb9aea4

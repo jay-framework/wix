@@ -37,7 +37,7 @@ import {MediaGalleryViewState, Selected} from "../contracts/media-gallery.jay-co
 import {MediaType} from "../contracts/media.jay-contract";
 import {ADD, JSONPatchOperation, patch, REPLACE} from '@jay-framework/json-patch';
 import { useGlobalContext } from '@jay-framework/runtime';
-import { WIX_STORES_CONTEXT } from '../contexts/wix-stores-context';
+import {WIX_STORES_CONTEXT, WixStoresContext} from '../contexts/wix-stores-context';
 
 /**
  * URL parameters for product page routes
@@ -364,10 +364,11 @@ function ProductPageInteractive(
     props: Props<PageProps & ProductPageParams>,
     refs: ProductPageRefs,
     viewStateSignals: Signals<ProductPageFastViewState>,
-    fastCarryForward: ProductFastCarryForward
+    fastCarryForward: ProductFastCarryForward,
+    storesContext: WixStoresContext
 ) {
     // Get the stores context for cart operations
-    const storesContext = useGlobalContext(WIX_STORES_CONTEXT);
+    // const storesContext = useGlobalContext(WIX_STORES_CONTEXT);
 
     const [quantity, setQuantity] = createSignal(viewStateSignals.quantity[0]().quantity)
 
@@ -554,6 +555,7 @@ function ProductPageInteractive(
 export const productPage = makeJayStackComponent<ProductPageContract>()
     .withProps<PageProps>()
     .withServices(WIX_STORES_SERVICE_MARKER)
+    .withContexts(WIX_STORES_CONTEXT)
     .withLoadParams(loadProductParams)
     .withSlowlyRender(renderSlowlyChanging)
     .withFastRender(renderFastChanging)

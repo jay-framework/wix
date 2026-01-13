@@ -19,7 +19,7 @@ import {
     CartIndicatorRefs,
 } from '../contracts/cart-indicator.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
-import { WIX_STORES_CONTEXT } from '../contexts/wix-stores-context';
+import {WIX_STORES_CONTEXT, WixStoresContext} from '../contexts/wix-stores-context';
 
 // ============================================================================
 // Types
@@ -64,10 +64,9 @@ function CartIndicatorInteractive(
     _props: Props<PageProps>,
     refs: CartIndicatorRefs,
     viewStateSignals: Signals<CartIndicatorFastViewState>,
-    _carryForward: CartIndicatorFastCarryForward
+    _carryForward: CartIndicatorFastCarryForward,
+    storesContext: WixStoresContext
 ) {
-    // Get the stores context - cartIndicator signals are already reactive
-    const storesContext = useGlobalContext(WIX_STORES_CONTEXT);
 
     // Get signal setters for loading and animation states
     const {
@@ -117,5 +116,6 @@ function CartIndicatorInteractive(
 export const cartIndicator = makeJayStackComponent<CartIndicatorContract>()
     .withProps<PageProps>()
     .withServices(WIX_STORES_SERVICE_MARKER)
+    .withContexts(WIX_STORES_CONTEXT)
     .withFastRender(renderFastChanging)
     .withInteractive(CartIndicatorInteractive);
