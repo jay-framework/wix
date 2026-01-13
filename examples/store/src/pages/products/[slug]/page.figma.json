@@ -10527,7 +10527,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -10790,7 +10790,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -11063,7 +11063,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -11331,7 +11331,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -11609,7 +11609,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -11708,7 +11708,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -11817,7 +11817,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -11921,7 +11921,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -12024,7 +12024,7 @@
                       "layoutSizingVertical": "FIXED",
                       "pluginData": {
                         "semanticHtml": "img",
-                        "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]"
+                        "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]"
                       },
                       "cornerRadius": 10.67453670501709,
                       "fills": [
@@ -12172,7 +12172,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -12435,7 +12435,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -12708,7 +12708,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -12976,7 +12976,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -13254,7 +13254,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -13353,7 +13353,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -13462,7 +13462,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -13566,7 +13566,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -13669,7 +13669,7 @@
                       "layoutSizingVertical": "FIXED",
                       "pluginData": {
                         "semanticHtml": "img",
-                        "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]"
+                        "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]"
                       },
                       "cornerRadius": 10.67453670501709,
                       "fills": [
@@ -13822,7 +13822,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -14085,7 +14085,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -14358,7 +14358,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -14626,7 +14626,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -14904,7 +14904,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -15003,7 +15003,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -15112,7 +15112,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -15216,7 +15216,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -15319,7 +15319,7 @@
                       "layoutSizingVertical": "FIXED",
                       "pluginData": {
                         "semanticHtml": "img",
-                        "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]"
+                        "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]"
                       },
                       "cornerRadius": 10.67453670501709,
                       "fills": [
@@ -15631,7 +15631,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -15894,7 +15894,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -16167,7 +16167,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -16435,7 +16435,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -16713,7 +16713,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -16812,7 +16812,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -16921,7 +16921,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -17025,7 +17025,7 @@
                           "layoutSizingHorizontal": "FIXED",
                           "layoutSizingVertical": "FIXED",
                           "pluginData": {
-                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                            "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                             "semanticHtml": "img"
                           },
                           "cornerRadius": 10.67453670501709,
@@ -17128,7 +17128,7 @@
                       "layoutSizingVertical": "FIXED",
                       "pluginData": {
                         "semanticHtml": "img",
-                        "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]"
+                        "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]"
                       },
                       "cornerRadius": 10.67453670501709,
                       "fills": [
@@ -35160,8 +35160,8 @@
               "children": [
                 {
                   "id": "424:456",
-                  "name": "Group 11",
-                  "type": "GROUP",
+                  "name": "Frame 11",
+                  "type": "FRAME",
                   "visible": true,
                   "locked": false,
                   "parentId": "424:455",
@@ -35187,54 +35187,101 @@
                   "layoutAlign": "INHERIT",
                   "layoutSizingHorizontal": "FILL",
                   "layoutSizingVertical": "FIXED",
+                  "layoutMode": "HORIZONTAL",
+                  "primaryAxisAlignItems": "MIN",
+                  "counterAxisAlignItems": "CENTER",
+                  "itemSpacing": 27,
+                  "paddingLeft": 16,
+                  "paddingRight": 16,
+                  "paddingTop": 0,
+                  "paddingBottom": 0,
+                  "layoutWrap": "NO_WRAP",
+                  "cornerRadius": 22.492773056030273,
+                  "clipsContent": false,
+                  "overflowDirection": "NONE",
+                  "fills": [
+                    {
+                      "type": "SOLID",
+                      "visible": true,
+                      "color": {
+                        "r": 0.9541666507720947,
+                        "g": 0.9541666507720947,
+                        "b": 0.9541666507720947
+                      },
+                      "opacity": 1
+                    }
+                  ],
+                  "strokes": [],
+                  "strokeWeight": 0.7624669075012207,
+                  "strokeTopWeight": 0.7624669075012207,
+                  "strokeRightWeight": 0.7624669075012207,
+                  "strokeBottomWeight": 0.7624669075012207,
+                  "strokeLeftWeight": 0.7624669075012207,
+                  "strokeAlign": "INSIDE",
                   "children": [
                     {
-                      "id": "424:457",
-                      "name": "Rectangle 11",
-                      "type": "RECTANGLE",
+                      "id": "424:460",
+                      "name": "decrement",
+                      "type": "TEXT",
                       "visible": true,
                       "locked": false,
                       "parentId": "424:456",
-                      "parentType": "GROUP",
-                      "x": 0,
-                      "y": 0.007228851318359375,
-                      "width": 112,
-                      "height": 44.98554229736328,
+                      "parentType": "FRAME",
+                      "parentLayoutMode": "HORIZONTAL",
+                      "parentOverflowDirection": "NONE",
+                      "x": 16,
+                      "y": 13.99277114868164,
+                      "width": 6.084268093109131,
+                      "height": 17,
                       "rotation": 0,
                       "opacity": 1,
                       "blendMode": "PASS_THROUGH",
                       "isMask": false,
                       "absoluteRenderBounds": {
-                        "x": 2279.0283203125,
-                        "y": 360.7716064453125,
-                        "width": 112,
-                        "height": 44.98553466796875
+                        "x": 2295.968994140625,
+                        "y": 382.8419189453125,
+                        "width": 4.552001953125,
+                        "height": 1.647308349609375
                       },
                       "layoutPositioning": "AUTO",
                       "layoutGrow": 0,
                       "layoutAlign": "INHERIT",
                       "layoutSizingHorizontal": "FIXED",
-                      "layoutSizingVertical": "FIXED",
-                      "cornerRadius": 22.492773056030273,
+                      "layoutSizingVertical": "HUG",
+                      "pluginData": {
+                        "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"quantity\",\"decrementButton\"]}]"
+                      },
+                      "characters": "-",
+                      "fontName": {
+                        "family": "Inter",
+                        "style": "Bold"
+                      },
+                      "fontSize": 13.724401473999023,
+                      "fontWeight": 700,
                       "fills": [
                         {
                           "type": "SOLID",
-                          "visible": true,
                           "color": {
-                            "r": 0.9541666507720947,
-                            "g": 0.9541666507720947,
-                            "b": 0.9541666507720947
+                            "r": 0.637499988079071,
+                            "g": 0.637499988079071,
+                            "b": 0.637499988079071
                           },
                           "opacity": 1
                         }
                       ],
-                      "strokes": [],
-                      "strokeWeight": 0.7624669075012207,
-                      "strokeTopWeight": 0.7624669075012207,
-                      "strokeRightWeight": 0.7624669075012207,
-                      "strokeBottomWeight": 0.7624669075012207,
-                      "strokeLeftWeight": 0.7624669075012207,
-                      "strokeAlign": "INSIDE"
+                      "textAlignHorizontal": "LEFT",
+                      "textAlignVertical": "TOP",
+                      "letterSpacing": {
+                        "value": 0,
+                        "unit": "PERCENT"
+                      },
+                      "lineHeight": {
+                        "unit": "AUTO"
+                      },
+                      "textDecoration": "NONE",
+                      "textCase": "ORIGINAL",
+                      "textTruncation": "DISABLED",
+                      "textAutoResize": "HEIGHT"
                     },
                     {
                       "id": "424:458",
@@ -35243,9 +35290,11 @@
                       "visible": true,
                       "locked": false,
                       "parentId": "424:456",
-                      "parentType": "GROUP",
-                      "x": 51.02957534790039,
-                      "y": 12.20663070678711,
+                      "parentType": "FRAME",
+                      "parentLayoutMode": "HORIZONTAL",
+                      "parentOverflowDirection": "NONE",
+                      "x": 49.084266662597656,
+                      "y": 12.49277114868164,
                       "width": 9.560994148254395,
                       "height": 20,
                       "rotation": 0,
@@ -35253,8 +35302,8 @@
                       "blendMode": "PASS_THROUGH",
                       "isMask": false,
                       "absoluteRenderBounds": {
-                        "x": 2331.08837890625,
-                        "y": 376.77154541015625,
+                        "x": 2329.14306640625,
+                        "y": 377.0649108886719,
                         "width": 8.976806640625,
                         "height": 12.366241455078125
                       },
@@ -35262,7 +35311,7 @@
                       "layoutGrow": 0,
                       "layoutAlign": "INHERIT",
                       "layoutSizingHorizontal": "FIXED",
-                      "layoutSizingVertical": "FIXED",
+                      "layoutSizingVertical": "HUG",
                       "pluginData": {
                         "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"quantity\",\"quantity\"]}]"
                       },
@@ -35305,9 +35354,11 @@
                       "visible": true,
                       "locked": false,
                       "parentId": "424:456",
-                      "parentType": "GROUP",
-                      "x": 87.47914123535156,
-                      "y": 12.96908187866211,
+                      "parentType": "FRAME",
+                      "parentLayoutMode": "HORIZONTAL",
+                      "parentOverflowDirection": "NONE",
+                      "x": 85.645263671875,
+                      "y": 13.99277114868164,
                       "width": 8.691811561584473,
                       "height": 17,
                       "rotation": 0,
@@ -35315,8 +35366,8 @@
                       "blendMode": "PASS_THROUGH",
                       "isMask": false,
                       "absoluteRenderBounds": {
-                        "x": 2367.72119140625,
-                        "y": 379.2912902832031,
+                        "x": 2365.88720703125,
+                        "y": 380.32220458984375,
                         "width": 6.901123046875,
                         "height": 6.90118408203125
                       },
@@ -35324,7 +35375,7 @@
                       "layoutGrow": 0,
                       "layoutAlign": "INHERIT",
                       "layoutSizingHorizontal": "FIXED",
-                      "layoutSizingVertical": "FIXED",
+                      "layoutSizingVertical": "HUG",
                       "pluginData": {
                         "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"quantity\",\"incrementButton\"]}]"
                       },
@@ -35342,68 +35393,6 @@
                             "r": 0.22745098173618317,
                             "g": 0.2862745225429535,
                             "b": 0.501960813999176
-                          },
-                          "opacity": 1
-                        }
-                      ],
-                      "textAlignHorizontal": "LEFT",
-                      "textAlignVertical": "TOP",
-                      "letterSpacing": {
-                        "value": 0,
-                        "unit": "PERCENT"
-                      },
-                      "lineHeight": {
-                        "unit": "AUTO"
-                      },
-                      "textDecoration": "NONE",
-                      "textCase": "ORIGINAL",
-                      "textTruncation": "DISABLED",
-                      "textAutoResize": "HEIGHT"
-                    },
-                    {
-                      "id": "424:460",
-                      "name": "decrement",
-                      "type": "TEXT",
-                      "visible": true,
-                      "locked": false,
-                      "parentId": "424:456",
-                      "parentType": "GROUP",
-                      "x": 17.893415451049805,
-                      "y": 12.96908187866211,
-                      "width": 6.084268093109131,
-                      "height": 17,
-                      "rotation": 0,
-                      "opacity": 1,
-                      "blendMode": "PASS_THROUGH",
-                      "isMask": false,
-                      "absoluteRenderBounds": {
-                        "x": 2297.8623046875,
-                        "y": 381.8110046386719,
-                        "width": 4.552001953125,
-                        "height": 1.647308349609375
-                      },
-                      "layoutPositioning": "AUTO",
-                      "layoutGrow": 0,
-                      "layoutAlign": "INHERIT",
-                      "layoutSizingHorizontal": "FIXED",
-                      "layoutSizingVertical": "FIXED",
-                      "pluginData": {
-                        "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"quantity\",\"decrementButton\"]}]"
-                      },
-                      "characters": "-",
-                      "fontName": {
-                        "family": "Inter",
-                        "style": "Bold"
-                      },
-                      "fontSize": 13.724401473999023,
-                      "fontWeight": 700,
-                      "fills": [
-                        {
-                          "type": "SOLID",
-                          "color": {
-                            "r": 0.637499988079071,
-                            "g": 0.637499988079071,
-                            "b": 0.637499988079071
                           },
                           "opacity": 1
                         }
@@ -43388,7 +43377,7 @@
               "layoutSizingHorizontal": "FIXED",
               "layoutSizingVertical": "FIXED",
               "pluginData": {
-                "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                 "semanticHtml": "img"
               },
               "cornerRadius": 10.67453670501709,
@@ -43647,7 +43636,7 @@
               "layoutSizingHorizontal": "FIXED",
               "layoutSizingVertical": "FIXED",
               "pluginData": {
-                "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                 "semanticHtml": "img"
               },
               "cornerRadius": 10.67453670501709,
@@ -43916,7 +43905,7 @@
               "layoutSizingHorizontal": "FIXED",
               "layoutSizingVertical": "FIXED",
               "pluginData": {
-                "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                 "semanticHtml": "img"
               },
               "cornerRadius": 10.67453670501709,
@@ -44180,7 +44169,7 @@
               "layoutSizingHorizontal": "FIXED",
               "layoutSizingVertical": "FIXED",
               "pluginData": {
-                "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                 "semanticHtml": "img"
               },
               "cornerRadius": 10.67453670501709,
@@ -44454,7 +44443,7 @@
               "layoutSizingHorizontal": "FIXED",
               "layoutSizingVertical": "FIXED",
               "pluginData": {
-                "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                 "semanticHtml": "img"
               },
               "cornerRadius": 10.67453670501709,
@@ -44549,7 +44538,7 @@
               "layoutSizingHorizontal": "FIXED",
               "layoutSizingVertical": "FIXED",
               "pluginData": {
-                "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                 "semanticHtml": "img"
               },
               "cornerRadius": 10.67453670501709,
@@ -44654,7 +44643,7 @@
               "layoutSizingHorizontal": "FIXED",
               "layoutSizingVertical": "FIXED",
               "pluginData": {
-                "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                 "semanticHtml": "img"
               },
               "cornerRadius": 10.67453670501709,
@@ -44754,7 +44743,7 @@
               "layoutSizingHorizontal": "FIXED",
               "layoutSizingVertical": "FIXED",
               "pluginData": {
-                "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"]}]",
+                "jay-layer-bindings": "[{\"pageContractPath\":{\"pageUrl\":\"/products/:slug\",\"pluginName\":\"@jay-framework/wix-stores\",\"componentName\":\"product-page\"},\"jayPageSectionId\":\"424:364\",\"tagPath\":[\"/products/:slug|@jay-framework/wix-stores.product-page\",\"mediaGallery\",\"availableMedia\",\"media\",\"thumbnail_50x50\"],\"attribute\":\"src\"}]",
                 "semanticHtml": "img"
               },
               "cornerRadius": 10.67453670501709,
@@ -45611,7 +45600,8 @@
             "availableMedia",
             "media",
             "thumbnail_50x50"
-          ]
+          ],
+          "attribute": "src"
         }
       ],
       "424:525": [
@@ -45628,7 +45618,8 @@
             "availableMedia",
             "media",
             "thumbnail_50x50"
-          ]
+          ],
+          "attribute": "src"
         }
       ],
       "424:530": [
@@ -45645,7 +45636,8 @@
             "availableMedia",
             "media",
             "thumbnail_50x50"
-          ]
+          ],
+          "attribute": "src"
         }
       ],
       "424:535": [
@@ -45662,7 +45654,8 @@
             "availableMedia",
             "media",
             "thumbnail_50x50"
-          ]
+          ],
+          "attribute": "src"
         }
       ],
       "424:540": [
@@ -45679,7 +45672,8 @@
             "availableMedia",
             "media",
             "thumbnail_50x50"
-          ]
+          ],
+          "attribute": "src"
         }
       ],
       "424:542": [
@@ -45696,7 +45690,8 @@
             "availableMedia",
             "media",
             "thumbnail_50x50"
-          ]
+          ],
+          "attribute": "src"
         }
       ],
       "424:544": [
@@ -45713,7 +45708,8 @@
             "availableMedia",
             "media",
             "thumbnail_50x50"
-          ]
+          ],
+          "attribute": "src"
         }
       ],
       "424:546": [
@@ -45730,7 +45726,8 @@
             "availableMedia",
             "media",
             "thumbnail_50x50"
-          ]
+          ],
+          "attribute": "src"
         }
       ]
     }
