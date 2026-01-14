@@ -178,97 +178,103 @@ export function provideWixStoresContext(): WixStoresContext {
         const reactive = useReactive();
 
         // Helper to update indicator signals from cart data
-        const updateIndicatorFromCart = (cart: Awaited<ReturnType<typeof getCurrentCartOrNull>>) => {
+        function updateIndicatorFromCart(cart: Awaited<ReturnType<typeof getCurrentCartOrNull>>) {
             const indicator = mapCartToIndicator(cart);
             reactive.batchReactions(() => {
                 setItemCount(indicator.itemCount);
                 setHasItems(indicator.hasItems);
             })
-        };
+        }
+
+        // Refresh cart indicator from server
+        async function refreshCartIndicator(): Promise<void> {
+            const cart = await getCurrentCartOrNull(cartClient);
+            updateIndicatorFromCart(cart);
+        }
+
+        // Get full cart state with estimated totals
+        async function getEstimatedCart(): Promise<CartState> {
+            const estimate = await estimateCurrentCartTotalsOrNull(cartClient);
+            return mapEstimateTotalsToState(estimate);
+        }
+
+        // Add product to cart
+        async function addToCart(productId: string, quantity: number = 1, variantId?: string): Promise<CartOperationResult> {
+            const lineItem: LineItem = {
+                catalogReference: {
+                    catalogItemId: productId,
+                    appId: WIX_STORES_APP_ID,
+                },
+                quantity,
+            };
+
+            if (variantId) {
+                lineItem.catalogReference.options = { variantId };
+            }
+
+            const result = await cartClient.addToCurrentCart({
+                lineItems: [lineItem],
+            });
+
+            updateIndicatorFromCart(result.cart ?? null);
+            return { cartState: mapCartToState(result.cart ?? null) };
+        }
+
+        // Remove line items from cart
+        async function removeLineItems(lineItemIds: string[]): Promise<CartOperationResult> {
+            const result = await cartClient.removeLineItemsFromCurrentCart(lineItemIds);
+            updateIndicatorFromCart(result.cart ?? null);
+            return { cartState: mapCartToState(result.cart ?? null) };
+        }
+
+        // Update line item quantity
+        async function updateLineItemQuantity(lineItemId: string, quantity: number): Promise<CartOperationResult> {
+            let result;
+            if (quantity === 0) {
+                result = await cartClient.removeLineItemsFromCurrentCart([lineItemId]);
+            } else {
+                result = await cartClient.updateCurrentCartLineItemQuantity([
+                    { _id: lineItemId, quantity }
+                ]);
+            }
+            updateIndicatorFromCart(result.cart ?? null);
+            return { cartState: mapCartToState(result.cart ?? null) };
+        }
+
+        // Clear all items from cart
+        async function clearCart(): Promise<void> {
+            const cart = await getCurrentCartOrNull(cartClient);
+            if (cart?.lineItems?.length) {
+                const lineItemIds = cart.lineItems
+                    .map((item: { _id?: string }) => item._id || '')
+                    .filter(Boolean);
+                if (lineItemIds.length > 0) {
+                    await cartClient.removeLineItemsFromCurrentCart(lineItemIds);
+                }
+            }
+            setItemCount(0);
+            setHasItems(false);
+        }
+
+        // Remove coupon from cart
+        async function removeCoupon(): Promise<CartOperationResult> {
+            const result = await cartClient.removeCouponFromCurrentCart();
+            updateIndicatorFromCart(result.cart ?? null);
+            return { cartState: mapCartToState(result.cart ?? null) };
+        }
         
         return {
-            // Reactive cart indicator
             cartIndicator: {
                 itemCount,
                 hasItems,
             },
-            
-            // Refresh cart indicator from server
-            async refreshCartIndicator(): Promise<void> {
-                const cart = await getCurrentCartOrNull(cartClient);
-                updateIndicatorFromCart(cart);
-            },
-            
-            // Get full cart state with estimated totals
-            async getEstimatedCart(): Promise<CartState> {
-                const estimate = await estimateCurrentCartTotalsOrNull(cartClient);
-                return mapEstimateTotalsToState(estimate);
-            },
-            
-            // Add product to cart
-            async addToCart(productId: string, quantity: number = 1, variantId?: string): Promise<CartOperationResult> {
-                const lineItem: LineItem = {
-                    catalogReference: {
-                        catalogItemId: productId,
-                        appId: WIX_STORES_APP_ID,
-                    },
-                    quantity,
-                };
-                
-                if (variantId) {
-                    lineItem.catalogReference.options = { variantId };
-                }
-                
-                const result = await cartClient.addToCurrentCart({
-                    lineItems: [lineItem],
-                });
-                
-                updateIndicatorFromCart(result.cart ?? null);
-                return { cartState: mapCartToState(result.cart ?? null) };
-            },
-            
-            // Remove line items from cart
-            async removeLineItems(lineItemIds: string[]): Promise<CartOperationResult> {
-                const result = await cartClient.removeLineItemsFromCurrentCart(lineItemIds);
-                updateIndicatorFromCart(result.cart ?? null);
-                return { cartState: mapCartToState(result.cart ?? null) };
-            },
-            
-            // Update line item quantity
-            async updateLineItemQuantity(lineItemId: string, quantity: number): Promise<CartOperationResult> {
-                let result;
-                if (quantity === 0) {
-                    result = await cartClient.removeLineItemsFromCurrentCart([lineItemId]);
-                } else {
-                    result = await cartClient.updateCurrentCartLineItemQuantity([
-                        { _id: lineItemId, quantity }
-                    ]);
-                }
-                updateIndicatorFromCart(result.cart ?? null);
-                return { cartState: mapCartToState(result.cart ?? null) };
-            },
-            
-            // Clear all items from cart
-            async clearCart(): Promise<void> {
-                const cart = await getCurrentCartOrNull(cartClient);
-                if (cart?.lineItems?.length) {
-                    const lineItemIds = cart.lineItems
-                        .map((item: { _id?: string }) => item._id || '')
-                        .filter(Boolean);
-                    if (lineItemIds.length > 0) {
-                        await cartClient.removeLineItemsFromCurrentCart(lineItemIds);
-                    }
-                }
-                setItemCount(0);
-                setHasItems(false);
-            },
-            
-            // Remove coupon from cart
-            async removeCoupon(): Promise<CartOperationResult> {
-                const result = await cartClient.removeCouponFromCurrentCart();
-                updateIndicatorFromCart(result.cart ?? null);
-                return { cartState: mapCartToState(result.cart ?? null) };
-            },
+            refreshCartIndicator,
+            getEstimatedCart,
+            addToCart,
+            removeLineItems,
+            updateLineItemQuantity,
+            clearCart,
+            removeCoupon,
         };
     });
     
