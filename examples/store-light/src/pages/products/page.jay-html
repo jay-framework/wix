@@ -1,0 +1,582 @@
+<html>
+  <head>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="product-search"
+            key="productSearch"
+    ></script>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="cart-indicator"
+            key="cartIndicator"
+    ></script>
+    <script type="application/jay-data">
+      data:
+    </script>
+    <link rel="stylesheet" href="../../styles/atelier-theme.css" />
+    <style>
+      /* =====================================================
+         ATELIER PRODUCTS PAGE - HORIZONTAL FILTER LAYOUT
+         Full-width grid with top filter bar (no sidebar)
+         ===================================================== */
+      
+      .collection-page {
+        min-height: 100vh;
+      }
+
+      /* Hero Section - Full Width */
+      .collection-hero {
+        background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+        padding: 80px var(--page-padding) 60px;
+        text-align: center;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .collection-hero .page-title {
+        margin-bottom: 16px;
+      }
+
+      .collection-hero .page-subtitle {
+        margin: 0 auto 40px;
+        max-width: 560px;
+      }
+
+      /* Search in Hero */
+      .hero-search {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .hero-search .search-box {
+        box-shadow: var(--shadow-lg);
+      }
+
+      /* Horizontal Filter Bar */
+      .filter-bar {
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border);
+        padding: 16px var(--page-padding);
+        position: sticky;
+        top: 73px; /* Below header */
+        z-index: 50;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .filter-bar-inner {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        flex-wrap: wrap;
+      }
+
+      .filter-group-inline {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .filter-group-inline .label {
+        margin: 0;
+        white-space: nowrap;
+      }
+
+      .filter-group-inline .input,
+      .filter-group-inline .select {
+        min-width: 100px;
+      }
+
+      .filter-price-range {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .filter-price-range .input {
+        width: 90px;
+        padding: 10px 14px;
+      }
+
+      .filter-price-range span {
+        color: var(--text-muted);
+      }
+
+      .filter-categories {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .category-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-full);
+        font-size: 13px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .category-chip:hover {
+        border-color: var(--text-primary);
+        color: var(--text-primary);
+      }
+
+      .category-chip.selected {
+        background: var(--text-primary);
+        border-color: var(--text-primary);
+        color: var(--text-inverse);
+      }
+
+      .category-chip input {
+        display: none;
+      }
+
+      .filter-bar-actions {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .filter-toggle {
+        display: none;
+        padding: 10px 16px;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-primary);
+        cursor: pointer;
+      }
+
+      /* Results Bar */
+      .results-bar {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        padding: 24px var(--page-padding);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .results-count {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+
+      .results-count strong {
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+
+      /* Products Grid - Full Width, Larger Cards */
+      .products-container {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        padding: 0 var(--page-padding) 80px;
+      }
+
+      .products-grid-large {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 32px;
+      }
+
+      /* Featured First Item - Spans 2 Columns */
+      .products-grid-large .product-card:first-child {
+        grid-column: span 2;
+        grid-row: span 2;
+      }
+
+      .products-grid-large .product-card:first-child .product-card-image {
+        aspect-ratio: 3/4;
+      }
+
+      .products-grid-large .product-card:first-child .product-card-name {
+        font-size: 26px;
+      }
+
+      .products-grid-large .product-card:first-child .current-price {
+        font-size: 24px;
+      }
+
+      /* Pagination - Centered */
+      .pagination-section {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        padding: 48px var(--page-padding);
+        text-align: center;
+      }
+
+      .pagination {
+        margin-top: 0;
+        margin-bottom: 24px;
+      }
+
+      /* Empty State - Centered */
+      .empty-container {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        padding: 0 var(--page-padding);
+      }
+
+      /* Suggestions - Below Search */
+      .hero-suggestions {
+        margin-top: 20px;
+      }
+
+      /* Loading */
+      .loading-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(250, 248, 245, 0.92);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        backdrop-filter: blur(8px);
+      }
+
+      /* Responsive */
+      @media (max-width: 1200px) {
+        .products-grid-large {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .products-grid-large .product-card:first-child {
+          grid-column: span 2;
+          grid-row: span 1;
+        }
+      }
+
+      @media (max-width: 900px) {
+        .products-grid-large {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 24px;
+        }
+        
+        .products-grid-large .product-card:first-child {
+          grid-column: span 2;
+        }
+
+        .filter-bar-inner {
+          display: none;
+        }
+
+        .filter-toggle {
+          display: flex;
+        }
+
+        .filter-bar.expanded .filter-bar-inner {
+          display: flex;
+          flex-direction: column;
+          align-items: stretch;
+          gap: 16px;
+          margin-top: 16px;
+        }
+
+        .filter-bar.expanded .filter-group-inline {
+          width: 100%;
+        }
+
+        .filter-bar.expanded .filter-categories {
+          flex-wrap: wrap;
+        }
+
+        .filter-bar.expanded .filter-bar-actions {
+          margin-left: 0;
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .products-grid-large {
+          grid-template-columns: 1fr;
+        }
+        
+        .products-grid-large .product-card:first-child {
+          grid-column: span 1;
+        }
+
+        .collection-hero {
+          padding: 48px var(--page-padding) 40px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="collection-page">
+      <!-- Site Header -->
+      <header class="site-header">
+        <a href="/products" class="site-logo">Atelier<span>.</span></a>
+        <nav class="site-nav">
+          <a href="/products">Collection</a>
+          <a href="/cart" 
+             class="cart-indicator {cartIndicator.hasItems ? has-items} {cartIndicator.isLoading ? is-loading} {cartIndicator.justAdded ? just-added}"
+             ref="cartIndicator.cartLink">
+            <span class="cart-indicator-icon">🛒</span>
+            <span class="cart-indicator-count" if="cartIndicator.hasItems">{cartIndicator.itemCount}</span>
+          </a>
+        </nav>
+      </header>
+
+      <!-- Loading Overlay -->
+      <div class="loading-overlay" if="productSearch.isSearching">
+        <div class="loading-spinner"></div>
+      </div>
+
+      <!-- Hero Section with Search -->
+      <section class="collection-hero">
+        <h1 class="page-title">The Collection</h1>
+        <p class="page-subtitle">
+          Curated pieces crafted with intention. Each item selected for quality, design, and purpose.
+        </p>
+        
+        <div class="hero-search">
+          <div class="search-box">
+            <input 
+              class="input input-lg" 
+              type="text" 
+              placeholder="Search our collection..." 
+              value="{productSearch.searchExpression}"
+              ref="productSearch.searchExpression"
+            />
+            <button class="btn btn-ghost" ref="productSearch.clearSearchButton" title="Clear">
+              ✕
+            </button>
+            <button class="btn btn-primary" ref="productSearch.searchButton">
+              Search
+            </button>
+          </div>
+          
+          <!-- Suggestions -->
+          <div class="hero-suggestions suggestions" if="productSearch.hasSuggestions">
+            <button 
+              class="suggestion-btn" 
+              forEach="productSearch.suggestions" 
+              trackBy="suggestionId"
+              ref="productSearch.suggestions.suggestionButton"
+            >
+              {suggestionText}
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Horizontal Filter Bar -->
+      <div class="filter-bar">
+        <button class="filter-toggle">
+          ☰ Filters & Sort
+        </button>
+        
+        <div class="filter-bar-inner">
+          <!-- Price Range -->
+          <div class="filter-group-inline">
+            <span class="label">Price</span>
+            <div class="filter-price-range">
+              <input 
+                class="input" 
+                type="number" 
+                placeholder="Min" 
+                value="{productSearch.filters.priceRange.minPrice}"
+                ref="productSearch.filters.priceRange.minPrice"
+              />
+              <span>–</span>
+              <input 
+                class="input" 
+                type="number" 
+                placeholder="Max" 
+                value="{productSearch.filters.priceRange.maxPrice}"
+                ref="productSearch.filters.priceRange.maxPrice"
+              />
+            </div>
+          </div>
+
+          <!-- Categories as Chips -->
+          <div class="filter-group-inline">
+            <span class="label">Category</span>
+            <div class="filter-categories">
+              <label 
+                class="category-chip" 
+                forEach="productSearch.filters.categoryFilter.categories" 
+                trackBy="categoryId"
+              >
+                <input 
+                  type="checkbox"
+                  ref="productSearch.filters.categoryFilter.categories.isSelected"
+                />
+                {categoryName}
+              </label>
+            </div>
+          </div>
+
+          <!-- In Stock Toggle -->
+          <div class="filter-group-inline">
+            <label class="category-chip">
+              <input 
+                type="checkbox"
+                ref="productSearch.filters.inStockOnly"
+              />
+              Available Now
+            </label>
+          </div>
+
+          <!-- Actions -->
+          <div class="filter-bar-actions">
+            <button class="btn btn-ghost btn-sm" ref="productSearch.filters.clearFilters">
+              Clear
+            </button>
+            <button class="btn btn-primary btn-sm" ref="productSearch.filters.applyFilters">
+              Apply
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Bar -->
+      <div class="results-bar">
+        <p class="results-count">
+          Showing <strong>{productSearch.resultCount}</strong> pieces
+        </p>
+        <select class="select" ref="productSearch.sortBy.sortDropdown">
+          <option value="relevance">Featured</option>
+          <option value="newest">New Arrivals</option>
+          <option value="priceAsc">Price: Low to High</option>
+          <option value="priceDesc">Price: High to Low</option>
+          <option value="nameAsc">A to Z</option>
+          <option value="nameDesc">Z to A</option>
+        </select>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-container" if="!productSearch.hasResults">
+        <div class="empty-state">
+          <div class="empty-state-icon">✨</div>
+          <h3 class="empty-state-title">No pieces found</h3>
+          <p class="empty-state-message">{productSearch.emptyStateMessage}</p>
+        </div>
+      </div>
+
+      <!-- Products Grid - Large Cards, Featured First -->
+      <div class="products-container" if="productSearch.hasResults">
+        <div class="products-grid-large">
+          <article class="product-card {isAddingToCart ? is-adding}" forEach="productSearch.searchResults" trackBy="_id">
+            <a href="{productUrl}" class="product-card-image">
+              <img 
+                src="{thumbnail.url}" 
+                alt="{thumbnail.altText}"
+                loading="lazy"
+              />
+              
+              <!-- Badges -->
+              <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
+              <span class="badge badge-success stock-badge" if="inventory.availabilityStatus === IN_STOCK">
+                In Stock
+              </span>
+              <span class="badge badge-error stock-badge" if="inventory.availabilityStatus === OUT_OF_STOCK">
+                Sold Out
+              </span>
+            </a>
+            <div class="product-card-content">
+              <p class="product-card-brand" if="brand.name">{brand.name}</p>
+              <h3 class="product-card-name">
+                <a href="{productUrl}" ref="productSearch.searchResults.productLink">{name}</a>
+              </h3>
+              <div class="product-card-price">
+                <span class="current-price">{actualPriceRange.minValue.formattedAmount}</span>
+                <span class="original-price" if="hasDiscount">
+                  {compareAtPriceRange.minValue.formattedAmount}
+                </span>
+                <span class="badge badge-error" if="hasDiscount">Sale</span>
+              </div>
+              
+              <!-- SIMPLE: Add to cart -->
+              <button 
+                class="btn btn-secondary btn-block" 
+                ref="productSearch.searchResults.addToCartButton"
+                if="quickAddType === SIMPLE && inventory.availabilityStatus === IN_STOCK"
+              >
+                Add to Cart
+              </button>
+              
+              <!-- SINGLE_OPTION: Quick options -->
+              <div class="quick-options-area" if="quickAddType === SINGLE_OPTION && inventory.availabilityStatus !== OUT_OF_STOCK">
+                <span class="select-option-hint">
+                  Select {quickOption.name}
+                </span>
+                <div class="quick-options-buttons">
+                  <button 
+                    class="quick-option-btn {!inStock ? out-of-stock}"
+                    forEach="quickOption.choices" 
+                    trackBy="choiceId"
+                    ref="productSearch.searchResults.quickOption.choices.choiceButton"
+                    disabled="{!inStock}"
+                  >
+                    {name}
+                  </button>
+                </div>
+              </div>
+              
+              <!-- NEEDS_CONFIGURATION -->
+              <a 
+                href="{productUrl}" 
+                class="btn btn-secondary btn-block"
+                ref="productSearch.searchResults.viewOptionsButton"
+                if="quickAddType === NEEDS_CONFIGURATION && inventory.availabilityStatus !== OUT_OF_STOCK"
+              >
+                View Options
+              </a>
+              
+              <!-- Out of stock -->
+              <button 
+                class="btn btn-ghost btn-block" 
+                disabled="true"
+                if="inventory.availabilityStatus === OUT_OF_STOCK"
+              >
+                Sold Out
+              </button>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-section" if="productSearch.hasResults">
+        <div class="pagination">
+          <button 
+            class="btn btn-ghost" 
+            ref="productSearch.pagination.prevButton"
+            disabled="{!productSearch.pagination.hasPrevPage}"
+          >
+            ← Previous
+          </button>
+          <span class="pagination-info">
+            Page {productSearch.pagination.currentPage} of {productSearch.pagination.totalPages}
+          </span>
+          <button 
+            class="btn btn-ghost" 
+            ref="productSearch.pagination.nextButton"
+            disabled="{!productSearch.pagination.hasNextPage}"
+          >
+            Next →
+          </button>
+        </div>
+
+        <button 
+          class="btn btn-secondary" 
+          if="productSearch.pagination.hasNextPage"
+          ref="productSearch.pagination.loadMoreButton"
+        >
+          Load More Pieces
+        </button>
+      </div>
+    </div>
+  </body>
+</html>
