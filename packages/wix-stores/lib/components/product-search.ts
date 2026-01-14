@@ -74,7 +74,6 @@ async function renderSlowlyChanging(
                 .eq('visible', true)
                 .find();
             
-            console.log('Categories loaded:', categoriesResult.items);
             return categoriesResult.items || [];
         })
         .recover(error => {

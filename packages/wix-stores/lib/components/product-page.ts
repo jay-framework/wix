@@ -272,7 +272,6 @@ async function renderSlowlyChanging(
             return Pipeline.clientError(404, 'not found')
         })
         .toPhaseOutput(getProductResponse => {
-            console.log('product\n', JSON.stringify(getProductResponse.product, null, 2))
             const product = getProductResponse.product;
             const { _id, name, plainDescription, options, modifiers, actualPriceRange, compareAtPriceRange, media, productType,
                 brand, ribbon, infoSections, seoData, physicalProperties, inventory, variantsInfo} = product
