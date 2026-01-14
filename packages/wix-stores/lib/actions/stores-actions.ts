@@ -111,8 +111,9 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
 
         try {
             // Use queryProducts for all queries
+            // Include VARIANT_OPTION_CHOICE_NAMES for quick-add option display
             let queryBuilder = wixStores.products.queryProducts({
-                fields: ['CURRENCY']
+                fields: ['CURRENCY', 'VARIANT_OPTION_CHOICE_NAMES']
             });
 
             // Apply sorting (using supported fields)
@@ -215,7 +216,10 @@ export const getAllProducts = makeJayQuery('wixStores.getAllProducts')
         const { page = 1, pageSize = 12 } = input;
 
         try {
-            const queryBuilder = wixStores.products.queryProducts()
+            // Include VARIANT_OPTION_CHOICE_NAMES for quick-add option display
+            const queryBuilder = wixStores.products.queryProducts({
+                fields: ['CURRENCY', 'VARIANT_OPTION_CHOICE_NAMES']
+            })
                 .limit(pageSize);
 
             const result = await queryBuilder.find();
@@ -259,8 +263,9 @@ export const getProductBySlug = makeJayQuery('wixStores.getProductBySlug')
         }
 
         try {
+            // Include VARIANT_OPTION_CHOICE_NAMES for quick-add option display
             const result = await wixStores.products.getProductBySlug(slug, {
-                fields: ['MEDIA_ITEMS_INFO']
+                fields: ['MEDIA_ITEMS_INFO', 'VARIANT_OPTION_CHOICE_NAMES']
             });
 
             if (!result.product) {

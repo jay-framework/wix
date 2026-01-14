@@ -434,6 +434,88 @@ input, select, textarea {
   transform: scale(1.05);
 }
 
+/* Quick Options Area (for single-option products) */
+.quick-options-area {
+  position: relative;
+}
+
+/* Select option hint - visible by default */
+.quick-options-area .select-option-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding: 12px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+}
+
+/* Quick option buttons - hidden by default */
+.quick-options-area .quick-options-buttons {
+  display: none;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* On card hover: hide hint, show buttons */
+.product-card:hover .quick-options-area .select-option-hint {
+  display: none !important;
+}
+
+.product-card:hover .quick-options-area .quick-options-buttons {
+  display: flex !important;
+}
+
+.quick-option-btn {
+  min-width: 48px;
+  padding: 10px 16px;
+  border: 2px solid var(--border);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.quick-option-btn:hover:not(:disabled) {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.quick-option-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.quick-option-btn.out-of-stock,
+.quick-option-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+/* Adding to cart state */
+.product-card.is-adding .quick-options-buttons {
+  pointer-events: none;
+}
+
+.product-card.is-adding .quick-option-btn {
+  opacity: 0.5;
+}
+
+/* Stock badge positioning */
+.stock-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
 .product-card-content {
   padding: 20px;
 }

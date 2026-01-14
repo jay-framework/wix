@@ -211,10 +211,29 @@ tags:
   - tag: addToCartButton
     type: interactive
     elementType: HTMLButtonElement
-    description: Quick add to cart button
+    description: Quick add to cart button (for SIMPLE products with no options)
     
   - tag: isAddingToCart
     type: variant
     dataType: boolean
+    phase: fast+interactive
     description: Whether add to cart is in progress
 
+  # Quick-add behavior
+  - tag: quickAddType
+    type: variant
+    dataType: enum (SIMPLE | SINGLE_OPTION | NEEDS_CONFIGURATION)
+    description: |
+      SIMPLE = no options, show Add to Cart button
+      SINGLE_OPTION = one option, show choices on hover (click = add to cart)
+      NEEDS_CONFIGURATION = multiple options or modifiers, link to product page
+
+  - tag: quickOption
+    type: sub-contract
+    description: Primary option for quick selection (only when quickAddType = SINGLE_OPTION)
+    link: ./product-options
+
+  - tag: viewOptionsButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Button to navigate to product page (when quickAddType = NEEDS_CONFIGURATION)

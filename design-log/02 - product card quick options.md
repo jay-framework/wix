@@ -33,7 +33,7 @@ A: Send to product page for full configuration.
 A: Send to product page for full configuration.
 
 **Q5: Should we display option buttons on hover or always visible?**
-A: On hover. CSS handles show/hide.
+A: On hover. The "Select {option}" hint is replaced by option buttons when hovering over the card.
 
 ## UX Summary
 
@@ -142,119 +142,113 @@ quickOption: product.options?.length === 1
   <div class="product-card-wrapper">
     <a href="{productUrl}" class="product-card-image">
       <img src="{thumbnail.url}" alt="{thumbnail.altText}" loading="lazy" />
-      
-      <!-- Quick option choices overlay (single option products) -->
-      <div class="quick-options-overlay" if="quickAddType === SINGLE_OPTION">
-        <span class="quick-options-label">{quickOption.name}</span>
-        <div class="quick-options-row">
-          <button 
-            class="quick-option-btn {!inStock ? out-of-stock}"
-            forEach="quickOption.choices" 
-            trackBy="choiceId"
-            ref="productSearch.searchResults.quickOption.choices.choiceButton"
-            disabled="{!inStock}"
-          >
-            {name}
-          </button>
-        </div>
-      </div>
-      
-      <!-- Badges -->
+      <!-- Badges only - no overlay -->
       <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
     </a>
     
     <!-- Product content -->
     <div class="product-card-content">
-      <!-- ... existing name, price content ... -->
+      <!-- ... name, price content ... -->
       
       <!-- SIMPLE: Regular add to cart -->
-      <button 
-        class="btn btn-secondary btn-block" 
+      <button class="btn btn-secondary btn-block" 
         ref="productSearch.searchResults.addToCartButton"
-        if="quickAddType === SIMPLE && inventory.availabilityStatus === IN_STOCK"
-      >
+        if="quickAddType === SIMPLE && inventory.availabilityStatus === IN_STOCK">
         Add to Cart
       </button>
       
-      <!-- SINGLE_OPTION: Prompt to hover (mobile fallback) -->
-      <span 
-        class="select-size-hint"
-        if="quickAddType === SINGLE_OPTION && inventory.availabilityStatus === IN_STOCK"
-      >
-        Select {quickOption.name}
-      </span>
+      <!-- SINGLE_OPTION: Quick options in button area -->
+      <div class="quick-options-area" if="quickAddType === SINGLE_OPTION">
+        <!-- Default: "Select {option}" hint -->
+        <span class="select-option-hint">Select {quickOption.name}</span>
+        <!-- On hover: Show option buttons (replaces hint) -->
+        <div class="quick-options-buttons">
+          <button class="quick-option-btn {!inStock ? out-of-stock}"
+            forEach="quickOption.choices" trackBy="choiceId"
+            ref="productSearch.searchResults.quickOption.choices.choiceButton"
+            disabled="{!inStock}">
+            {name}
+          </button>
+        </div>
+      </div>
       
       <!-- NEEDS_CONFIGURATION: Link to product page -->
-      <a 
-        href="{productUrl}" 
-        class="btn btn-secondary btn-block"
+      <a href="{productUrl}" class="btn btn-secondary btn-block"
         ref="productSearch.searchResults.viewOptionsButton"
-        if="quickAddType === NEEDS_CONFIGURATION"
-      >
+        if="quickAddType === NEEDS_CONFIGURATION">
         View Options
       </a>
-      
-      <!-- Out of stock (any type) -->
-      <button 
-        class="btn btn-ghost btn-block" 
-        disabled="true"
-        if="inventory.availabilityStatus === OUT_OF_STOCK"
-      >
-        Out of Stock
-      </button>
     </div>
   </div>
 </article>
 ```
 
-### 5. CSS for Hover Overlay
+### 5. CSS for Hover Button Swap
 
 ```css
-.quick-options-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+/* Container for hint + buttons */
+.quick-options-area {
+  position: relative;
+  min-height: 48px;
+}
+
+/* "Select Color" hint - visible by default */
+.select-option-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 12px;
-  background: linear-gradient(transparent, rgba(0,0,0,0.6));
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  transition: opacity 0.15s;
+}
+
+/* Hide hint on hover */
+.product-card:hover .quick-options-area .select-option-hint {
   opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
 }
 
-.product-card:hover .quick-options-overlay {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.quick-options-row {
+/* Option buttons - hidden by default */
+.quick-options-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  transition: opacity 0.15s;
+}
+
+/* Show buttons on hover */
+.product-card:hover .quick-options-buttons {
+  opacity: 1;
+  pointer-events: auto;
+  position: relative;
 }
 
 .quick-option-btn {
-  min-width: 40px;
-  padding: 8px 12px;
-  border: 1px solid white;
-  background: rgba(255,255,255,0.9);
-  border-radius: 4px;
-  font-size: 12px;
+  min-width: 48px;
+  padding: 10px 16px;
+  border: 2px solid var(--border);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s;
 }
 
-.quick-option-btn.selected {
+.quick-option-btn:hover:not(:disabled) {
   background: var(--accent);
-  color: white;
+  color: #fff;
   border-color: var(--accent);
 }
 
-.quick-option-btn.disabled {
+.quick-option-btn.out-of-stock {
   opacity: 0.4;
-  cursor: not-allowed;
   text-decoration: line-through;
 }
 ```
@@ -294,7 +288,7 @@ quickOption: product.options?.length === 1
 | Single option only | Simple UI, one-click add | Multi-option products redirect to page |
 | Click = Add (not select) | Faster UX, fewer clicks | No "preview" before add |
 | Shared contract | DRY, consistency | Additional indirection |
-| Hover-based UI | Clean, progressive disclosure | Mobile shows "Select {option}" hint instead |
+| Buttons replace hint on hover | Cleaner than overlay, no image obstruction | Mobile shows only hint |
 | "View Options" for complex | Clear expectation | Extra navigation step |
 
 ## Verification Criteria
@@ -305,3 +299,27 @@ quickOption: product.options?.length === 1
 4. Out-of-stock choices appear disabled/greyed and cannot be clicked
 5. Cart correctly receives the variant ID corresponding to the clicked choice
 6. Cart indicator updates after successful add
+
+---
+
+## Implementation Results
+
+### Files Created
+- `wix/packages/wix-stores/lib/contracts/product-options.jay-contract` - Shared option/choice contract
+
+### Files Modified
+- `wix/packages/wix-stores/lib/contracts/product-card.jay-contract` - Added `quickAddType`, `quickOption`, `viewOptionsButton`
+- `wix/packages/wix-stores/lib/utils/product-mapper.ts` - Added `getQuickAddType()`, `mapQuickOption()` functions
+- `wix/packages/wix-stores/lib/actions/stores-actions.ts` - Added `VARIANT_OPTION_CHOICE_NAMES` to query fields
+- `wix/packages/wix-stores/lib/components/product-search.ts` - Added quick option click and view options handlers
+- `wix/examples/store/src/pages/products/page.jay-html` - Added quick options overlay and conditional buttons
+- `wix/examples/store/src/styles/store-theme.css` - Added hover overlay styles
+
+### Deviations from Design
+- Did not update `product-page.jay-contract` to use shared contract (kept existing structure to minimize changes)
+- Mobile fallback shows "Select {option name}" hint text instead of tap-to-reveal
+
+### Next Steps
+1. Run contract type generation to resolve linter errors
+2. Test with real product data
+3. Consider adding loading spinner to quick option buttons during add-to-cart

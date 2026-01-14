@@ -504,7 +504,7 @@ function ProductSearchInteractive(
         }
     });
 
-    // Product card add to cart
+    // Product card add to cart (SIMPLE products - no options)
     refs.searchResults.addToCartButton.onclick(async ({ coordinate }) => {
         const [productId] = coordinate;
         
@@ -529,6 +529,51 @@ function ProductSearchInteractive(
             setSearchResults(patch(searchResults(), [
                 { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: false }
             ]));
+        }
+    });
+
+    // Quick option choice click (SINGLE_OPTION products - click = add to cart)
+    refs.searchResults.quickOption.choices.choiceButton.onclick(async ({ coordinate }) => {
+        const [productId, choiceId] = coordinate;
+        
+        // Find the product and choice
+        const currentResults = searchResults();
+        const productIndex = currentResults.findIndex(p => p._id === productId);
+        if (productIndex === -1) return;
+        
+        const product = currentResults[productIndex];
+        const choice = product.quickOption?.choices?.find(c => c.choiceId === choiceId);
+        
+        if (!choice || !choice.inStock || !choice.variantId) {
+            console.warn('Choice not available or out of stock');
+            return;
+        }
+
+        // Update loading state for this product
+        setSearchResults(patch(currentResults, [
+            { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: true }
+        ]));
+
+        try {
+            // Add the specific variant to cart
+            await storesContext.addToCart(productId, 1, choice.variantId);
+            console.log(`Added to cart: ${product.name} - ${choice.name}`);
+        } catch (error) {
+            console.error('Failed to add to cart:', error);
+        } finally {
+            // Reset loading state
+            setSearchResults(patch(searchResults(), [
+                { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: false }
+            ]));
+        }
+    });
+
+    // View options button (NEEDS_CONFIGURATION products - navigate to product page)
+    refs.searchResults.viewOptionsButton.onclick(({ coordinate }) => {
+        const [productId] = coordinate;
+        const product = searchResults().find(p => p._id === productId);
+        if (product?.productUrl) {
+            window.location.href = product.productUrl;
         }
     });
 

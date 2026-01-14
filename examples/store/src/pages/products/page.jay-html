@@ -228,7 +228,7 @@
 
           <!-- Products Grid -->
           <div class="products-grid" if="productSearch.hasResults">
-            <article class="product-card" forEach="productSearch.searchResults" trackBy="_id">
+            <article class="product-card {isAddingToCart ? is-adding}" forEach="productSearch.searchResults" trackBy="_id">
               <div class="product-card-wrapper">
                 <a href="{productUrl}" class="product-card-image">
                   <img 
@@ -236,11 +236,13 @@
                     alt="{thumbnail.altText}"
                     loading="lazy"
                   />
+                  
+                  <!-- Badges -->
                   <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
-                  <span class="badge badge-success" style="position: absolute; top: 12px; right: 12px;" if="inventory.availabilityStatus === IN_STOCK">
+                  <span class="badge badge-success stock-badge" if="inventory.availabilityStatus === IN_STOCK">
                     In Stock
                   </span>
-                  <span class="badge badge-error" style="position: absolute; top: 12px; right: 12px;" if="inventory.availabilityStatus === OUT_OF_STOCK">
+                  <span class="badge badge-error stock-badge" if="inventory.availabilityStatus === OUT_OF_STOCK">
                     Out of Stock
                   </span>
                 </a>
@@ -256,13 +258,47 @@
                     </span>
                     <span class="badge badge-error" if="hasDiscount">Sale</span>
                   </div>
+                  
+                  <!-- SIMPLE: Regular add to cart -->
                   <button 
                     class="btn btn-secondary btn-block" 
                     ref="productSearch.searchResults.addToCartButton"
-                    if="inventory.availabilityStatus === IN_STOCK"
+                    if="quickAddType === SIMPLE && inventory.availabilityStatus === IN_STOCK"
                   >
                     Add to Cart
                   </button>
+                  
+                  <!-- SINGLE_OPTION: Quick option selection in button area -->
+                  <div class="quick-options-area" if="quickAddType === SINGLE_OPTION && inventory.availabilityStatus !== OUT_OF_STOCK">
+                    <!-- Default: "Select {option}" hint -->
+                    <span class="select-option-hint">
+                      Select {quickOption.name}
+                    </span>
+                    <!-- Hover: Show option buttons -->
+                    <div class="quick-options-buttons">
+                      <button 
+                        class="quick-option-btn {!inStock ? out-of-stock}"
+                        forEach="quickOption.choices" 
+                        trackBy="choiceId"
+                        ref="productSearch.searchResults.quickOption.choices.choiceButton"
+                        disabled="{!inStock}"
+                      >
+                        {name}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <!-- NEEDS_CONFIGURATION: Link to product page -->
+                  <a 
+                    href="{productUrl}" 
+                    class="btn btn-secondary btn-block"
+                    ref="productSearch.searchResults.viewOptionsButton"
+                    if="quickAddType === NEEDS_CONFIGURATION && inventory.availabilityStatus !== OUT_OF_STOCK"
+                  >
+                    View Options
+                  </a>
+                  
+                  <!-- Out of stock (any type) -->
                   <button 
                     class="btn btn-ghost btn-block" 
                     disabled="true"
