@@ -20,7 +20,7 @@ import { createJayContext, useGlobalContext } from '@jay-framework/runtime';
 import {createSignal, registerReactiveGlobalContext, useReactive} from '@jay-framework/component';
 import { Getter } from '@jay-framework/reactive';
 import { WIX_CLIENT_CONTEXT } from '@jay-framework/wix-server-client';
-import { getCurrentCartClient } from '../utils/wix-store-api';
+import {getCurrentCartClient, getProductsV3Client} from '../utils/wix-store-api';
 import {
     CartState,
     getCurrentCartOrNull,
@@ -67,6 +67,15 @@ export interface CartOperationResult {
     cartState: CartState;
 }
 
+export interface SelectedOptionsAndModifiers {
+    /** options as (options.id, options.choicesSettings.choices.choiceId) pairs*/
+    options: Record<string, string>,
+    /** modifiers as (modifiers.key, modifiers.choicesSettings.choices.key) pairs*/
+    modifiers: Record<string, string>,
+    /** custom text fields as (modifiers.freeTextSettings.key, user input) pairs*/
+    customTextFields: Record<string, string>,
+}
+
 /**
  * Client-side Wix Stores context interface.
  * Provides reactive cart indicator and encapsulated cart operations.
@@ -105,10 +114,10 @@ export interface WixStoresContext {
      * 
      * @param productId - The product ID to add
      * @param quantity - Number of items to add (default: 1)
-     * @param variantId - Optional variant ID for products with options
+     * @param selections - details of selected options and modifiers
      * @returns Updated cart state
      */
-    addToCart(productId: string, quantity?: number, variantId?: string): Promise<CartOperationResult>;
+    addToCart(productId: string, quantity?: number, selections?: SelectedOptionsAndModifiers): Promise<CartOperationResult>;
     
     /**
      * Remove line items from the cart.
@@ -169,6 +178,7 @@ export function provideWixStoresContext(): WixStoresContext {
 
     // Get cart client for helper functions
     const cartClient = getCurrentCartClient(wixClient);
+    const catalogClient = getProductsV3Client(wixClient);
 
     // Create and register the reactive stores context
     const storesContext = registerReactiveGlobalContext(WIX_STORES_CONTEXT, () => {
@@ -199,25 +209,33 @@ export function provideWixStoresContext(): WixStoresContext {
         }
 
         // Add product to cart
-        async function addToCart(productId: string, quantity: number = 1, variantId?: string): Promise<CartOperationResult> {
-            const lineItem: LineItem = {
-                catalogReference: {
-                    catalogItemId: productId,
-                    appId: WIX_STORES_APP_ID,
-                },
-                quantity,
-            };
+        async function addToCart(productId: string, quantity: number = 1, selections?: SelectedOptionsAndModifiers): Promise<CartOperationResult> {
+            console.log(`Added to cart: ${productId} - ${quantity}:`, selections);
+            const product = await catalogClient.getProduct(productId, {fields: ["VARIANT_OPTION_CHOICE_NAMES"]});
 
-            if (variantId) {
-                lineItem.catalogReference.options = { variantId };
+            const variant = product.variantsInfo.variants.find(_ =>
+                _.choices.every(choice => selections.options[choice.optionChoiceIds.optionId] === choice.optionChoiceIds.choiceId));
+
+            if (variant) {
+                const lineItem: LineItem = {
+                    catalogReference: {
+                        catalogItemId: productId,
+                        appId: WIX_STORES_APP_ID,
+                        options: {
+                            variantId: variant._id,
+                            options: selections.modifiers,
+                            customTextFields: selections.customTextFields,
+                        }
+                    },
+                    quantity,
+                };
+                const result = await cartClient.addToCurrentCart({
+                    lineItems: [lineItem],
+                });
+                updateIndicatorFromCart(result.cart ?? null);
+                return { cartState: mapCartToState(result.cart ?? null) };
             }
-
-            const result = await cartClient.addToCurrentCart({
-                lineItems: [lineItem],
-            });
-
-            updateIndicatorFromCart(result.cart ?? null);
-            return { cartState: mapCartToState(result.cart ?? null) };
+            return { cartState: mapCartToState(null)}
         }
 
         // Remove line items from cart

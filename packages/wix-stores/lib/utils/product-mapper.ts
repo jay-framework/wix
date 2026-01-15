@@ -134,43 +134,19 @@ export function mapQuickOption(option: any, variantsInfo: any): ProductOptionsVi
     
     const optionId = option._id;
     const choices = option.choicesSettings?.choices || [];
-    const variants = variantsInfo?.variants || [];
-    
-    // Build a map from choiceId -> variantId and inStock status
-    // For single-option products, each choice maps to exactly one variant
-    const choiceToVariant = new Map<string, { variantId: string; inStock: boolean }>();
-    
-    for (const variant of variants) {
-        // Find the choice for this option in this variant
-        const variantChoice = variant.choices?.find(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (c: any) => c.optionChoiceIds?.optionId === optionId
-        );
-        if (variantChoice) {
-            const choiceId = variantChoice.optionChoiceIds?.choiceId;
-            if (choiceId) {
-                choiceToVariant.set(choiceId, {
-                    variantId: variant._id,
-                    inStock: variant.inventoryStatus?.inStock ?? false
-                });
-            }
-        }
-    }
-    
+
     return {
         _id: optionId,
         name: option.name || '',
         optionRenderType: mapOptionRenderType(option.optionRenderType),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         choices: choices.map((choice: any) => {
-            const variantInfo = choiceToVariant.get(choice.choiceId);
             return {
-                choiceId: choice.choiceId || '',
+                choiceId: choice.choiceId,
                 name: choice.name || '',
                 choiceType: mapChoiceType(choice.choiceType),
                 colorCode: choice.colorCode || '',
-                inStock: variantInfo?.inStock ?? choice.inStock ?? false,
-                variantId: variantInfo?.variantId || '',
+                inStock: choice.inStock,
                 isSelected: false
             };
         })

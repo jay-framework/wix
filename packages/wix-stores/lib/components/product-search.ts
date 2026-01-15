@@ -128,7 +128,6 @@ async function renderFastChanging(
             })
                 .limit(PAGE_SIZE)
                 .find();
-            
             return productsResult.items || [];
         })
         .recover(error => {
@@ -543,7 +542,7 @@ function ProductSearchInteractive(
         const product = currentResults[productIndex];
         const choice = product.quickOption?.choices?.find(c => c.choiceId === choiceId);
         
-        if (!choice || !choice.inStock || !choice.variantId) {
+        if (!choice || !choice.inStock) {
             console.warn('Choice not available or out of stock');
             return;
         }
@@ -555,8 +554,12 @@ function ProductSearchInteractive(
 
         try {
             // Add the specific variant to cart
-            await storesContext.addToCart(productId, 1, choice.variantId);
-            console.log(`Added to cart: ${product.name} - ${choice.name}`);
+            const optionId = product.quickOption._id
+            await storesContext.addToCart(productId, 1, {
+                options: {[optionId]: choice.choiceId},
+                modifiers: {},
+                customTextFields: {}
+            });
         } catch (error) {
             console.error('Failed to add to cart:', error);
         } finally {
