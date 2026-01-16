@@ -210,13 +210,21 @@ export function provideWixStoresContext(): WixStoresContext {
 
         // Add product to cart
         async function addToCart(productId: string, quantity: number = 1, selections?: SelectedOptionsAndModifiers): Promise<CartOperationResult> {
-            console.log(`Added to cart: ${productId} - ${quantity}:`, selections);
+            console.log(`Adding to cart: ${productId} - ${quantity}:`, selections);
             const product = await catalogClient.getProduct(productId, {fields: ["VARIANT_OPTION_CHOICE_NAMES"]});
 
-            const variant = product.variantsInfo.variants.length > 0 ?
-                product.variantsInfo.variants[0] :
-                product.variantsInfo.variants.find(_ =>
-                    _.choices.every(choice => selections.options[choice.optionChoiceIds.optionId] === choice.optionChoiceIds.choiceId));
+            // Find matching variant based on selected options
+            // First try to match by selections, then fallback to first variant
+            let variant = product.variantsInfo?.variants?.find(v =>
+                v.choices?.every(choice => 
+                    selections?.options?.[choice.optionChoiceIds?.optionId] === choice.optionChoiceIds?.choiceId
+                )
+            );
+            
+            // Fallback to first variant if no match found (e.g., product with no options or simple product)
+            if (!variant && product.variantsInfo?.variants?.length > 0) {
+                variant = product.variantsInfo.variants[0];
+            }
 
             if (variant) {
                 const lineItem: LineItem = {
@@ -237,6 +245,8 @@ export function provideWixStoresContext(): WixStoresContext {
                 updateIndicatorFromCart(result.cart ?? null);
                 return { cartState: mapCartToState(result.cart ?? null) };
             }
+            
+            console.warn(`No variant found for product ${productId}`);
             return { cartState: mapCartToState(null)}
         }
 

@@ -37,7 +37,7 @@ import {MediaGalleryViewState, Selected} from "../contracts/media-gallery.jay-co
 import {MediaType} from "../contracts/media.jay-contract";
 import {ADD, JSONPatchOperation, patch, REPLACE} from '@jay-framework/json-patch';
 import { useGlobalContext } from '@jay-framework/runtime';
-import {WIX_STORES_CONTEXT, WixStoresContext} from '../contexts/wix-stores-context';
+import {SelectedOptionsAndModifiers, WIX_STORES_CONTEXT, WixStoresContext} from '../contexts/wix-stores-context';
 
 /**
  * URL parameters for product page routes
@@ -248,6 +248,51 @@ function mapVariants(variantsInfo: VariantsInfo): InteractiveVariant[]{
 }
 
 /**
+ * Build SelectedOptionsAndModifiers from the current viewState.
+ * Called on-demand when adding to cart to avoid duplicate state tracking.
+ */
+function buildSelectionsFromViewState(
+    optionsVS: ProductPageFastViewState['options'],
+    modifiersVS: ProductPageFastViewState['modifiers']
+): SelectedOptionsAndModifiers {
+    // Build options record from viewState
+    const options: Record<string, string> = {};
+    for (const option of optionsVS) {
+        if (option.textChoiceSelection) {
+            options[option._id] = option.textChoiceSelection;
+        } else {
+            const selectedChoice = option.choices.find(c => c.isSelected);
+            if (selectedChoice) {
+                options[option._id] = selectedChoice.choiceId;
+            }
+        }
+    }
+
+    // Build modifiers and customTextFields from viewState
+    const modifiers: Record<string, string> = {};
+    const customTextFields: Record<string, string> = {};
+    
+    for (const modifier of modifiersVS) {
+        // Check for dropdown/swatch selection (textModifierSelection holds the choiceId)
+        const selectedChoice = modifier.choices.find(c => c.isSelected);
+        if (selectedChoice) {
+            modifiers[modifier._id] = selectedChoice.choiceId;
+        } else if (modifier.textModifierSelection) {
+            // For dropdown modifiers, textModifierSelection holds the selected choice ID
+            // For free text modifiers, it holds the user's input text
+            // We determine which based on whether the modifier has choices
+            if (modifier.choices.length > 0) {
+                modifiers[modifier._id] = modifier.textModifierSelection;
+            } else {
+                customTextFields[modifier._id] = modifier.textModifierSelection;
+            }
+        }
+    }
+
+    return { options, modifiers, customTextFields };
+}
+
+/**
  * Slow Rendering Phase
  * Loads semi-static product data that doesn't change often:
  * - Product details (name, description, SKU)
@@ -386,9 +431,27 @@ function ProductPageInteractive(
 
     const [isAddingToCart, setIsAddingToCart] = createSignal(false);
 
-    const [selectedOptions, setSelectedOptions] = createSignal<Record<string, string>>({});
     const [selectedMediaId, setSelectedMediaId] = createSignal<string>(null);
-    const selectedVariant = createMemo(() => findVariant(variants, selectedOptions()))
+    
+    // Derive selected options from viewState for variant matching
+    const selectedOptionsRecord = createMemo(() => {
+        const result: Record<string, string> = {};
+        for (const option of options()) {
+            // Check textChoiceSelection first (for dropdowns)
+            if (option.textChoiceSelection) {
+                result[option._id] = option.textChoiceSelection;
+            } else {
+                // Check button-based selection
+                const selectedChoice = option.choices.find(c => c.isSelected);
+                if (selectedChoice) {
+                    result[option._id] = selectedChoice.choiceId;
+                }
+            }
+        }
+        return result;
+    });
+    
+    const selectedVariant = createMemo(() => findVariant(variants, selectedOptionsRecord()))
     const sku = createMemo(() => selectedVariant().sku)
     const price = createMemo(() => selectedVariant().price)
     const strikethroughPrice = createMemo(() => selectedVariant().strikethroughPrice)
@@ -452,20 +515,14 @@ function ProductPageInteractive(
             { op: REPLACE, path: [optionIndex, 'choices', newChoiceIndex, 'isSelected'], value: true },
             ...removeSelectedPatch
         ]))
-        setSelectedOptions(patch(selectedOptions(), [
-            {op: ADD, path: [optionId], value: choiceId}
-        ]))
     });
 
     refs.options.textChoice.oninput(({event, viewState, coordinate}) => {
-        const [optionId, choiceId] = coordinate;
+        const [optionId] = coordinate;
         const optionIndex = options().findIndex(_ => _._id === optionId)
-        const textValue = (event.target as HTMLSelectElement).value;
+        const selectedChoiceId = (event.target as HTMLSelectElement).value;
         setOptions(patch(options(), [
-            { op: REPLACE, path: [optionIndex, 'textChoiceSelection'], value: textValue },
-        ]))
-        setSelectedOptions(patch(selectedOptions(), [
-            {op: ADD, path: [optionId], value: choiceId}
+            { op: REPLACE, path: [optionIndex, 'textChoiceSelection'], value: selectedChoiceId },
         ]))
     });
 
@@ -481,7 +538,6 @@ function ProductPageInteractive(
             { op: REPLACE, path: [modifierIndex, 'choices', newChoiceIndex, 'isSelected'], value: true },
             ...removeSelectedPatch
         ]))
-
     })
 
     refs.modifiers.textInput.oninput(({event, viewState, coordinate}) => {
@@ -494,11 +550,11 @@ function ProductPageInteractive(
     })
 
     refs.modifiers.textModifier.oninput(({event, viewState, coordinate}) => {
-        const [modifierId, choiceId] = coordinate;
+        const [modifierId] = coordinate;
         const modifierIndex = modifiers().findIndex(_ => _._id === modifierId)
-        const textValue = (event.target as HTMLSelectElement).value;
+        const selectedChoiceId = (event.target as HTMLSelectElement).value;
         setModifiers(patch(modifiers(), [
-            { op: REPLACE, path: [modifierIndex, 'textModifierSelection'], value: textValue },
+            { op: REPLACE, path: [modifierIndex, 'textModifierSelection'], value: selectedChoiceId },
         ]))
     });
 
@@ -510,9 +566,12 @@ function ProductPageInteractive(
 
         setIsAddingToCart(true);
         try {
+            // Build selections from viewState
+            const selections = buildSelectionsFromViewState(options(), modifiers());
+            
             // Add to cart - signals are updated automatically
-            await storesContext.addToCart(fastCarryForward.productId, quantity());
-            console.log('Added to cart:', quantity(), 'items');
+            await storesContext.addToCart(fastCarryForward.productId, quantity(), selections);
+            console.log('Added to cart:', quantity(), 'items with selections:', selections);
         } catch (error) {
             console.error('Failed to add to cart:', error);
         } finally {
