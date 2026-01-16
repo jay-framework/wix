@@ -11,7 +11,7 @@ import {
     Signals,
     PageProps
 } from '@jay-framework/fullstack-component';
-import { createEffect, Props } from '@jay-framework/component';
+import { Props } from '@jay-framework/component';
 import { useGlobalContext } from '@jay-framework/runtime';
 import {
     CartPageContract,
@@ -206,77 +206,47 @@ function CartPageInteractive(
         }
     }
 
-    // Update cart from cart state
-    function updateFromCart(cart: CartState) {
-        const viewState = mapCartStateToViewState(cart);
-        setIsEmpty(viewState.isEmpty);
-        setLineItems(viewState.lineItems);
-        setSummary(viewState.summary);
-        setCoupon(prev => ({
-            ...prev,
-            appliedCode: viewState.coupon.appliedCode,
-            hasAppliedCoupon: viewState.coupon.hasAppliedCoupon
-        }));
-
-        // Dispatch cart update event for cart indicator
-        window.dispatchEvent(new CustomEvent('wix-cart-updated', {
-            detail: {
-                itemCount: cart.summary.itemCount,
-                hasItems: !cart.isEmpty
-            }
-        }));
-    }
-
     // Handle quantity update
     async function handleQuantityChange(lineItemId: string, newQuantity: number) {
+        const itemIndex = lineItems().findIndex(item => item.lineItemId === lineItemId);
+        if (itemIndex === -1) return;
+
         // Update local state immediately for responsiveness
-        setLineItems(items =>
-            items.map(item =>
-                item.lineItemId === lineItemId
-                    ? { ...item, isUpdatingQuantity: true }
-                    : item
-            )
-        );
+        setLineItems(patch(lineItems(), [
+            { op: REPLACE, path: [itemIndex, 'isUpdatingQuantity'], value: true }
+        ]));
 
         try {
-            const { cartState } = await storesContext.updateLineItemQuantity(lineItemId, newQuantity);
-            updateFromCart(cartState);
+            await storesContext.updateLineItemQuantity(lineItemId, newQuantity);
+            // Reload cart to get accurate totals from estimate API
+            await loadCart();
         } catch (error) {
             console.error('[CartPage] Failed to update quantity:', error);
+            // Clear updating state on error
+            setLineItems(patch(lineItems(), [
+                { op: REPLACE, path: [itemIndex, 'isUpdatingQuantity'], value: false }
+            ]));
         }
-
-        // Clear updating state
-        setLineItems(items =>
-            items.map(item =>
-                item.lineItemId === lineItemId
-                    ? { ...item, isUpdatingQuantity: false }
-                    : item
-            )
-        );
     }
 
     // Handle item removal
     async function handleRemoveItem(lineItemId: string) {
-        setLineItems(items =>
-            items.map(item =>
-                item.lineItemId === lineItemId
-                    ? { ...item, isRemoving: true }
-                    : item
-            )
-        );
+        const itemIndex = lineItems().findIndex(item => item.lineItemId === lineItemId);
+        if (itemIndex === -1) return;
+
+        setLineItems(patch(lineItems(), [
+            { op: REPLACE, path: [itemIndex, 'isRemoving'], value: true }
+        ]));
 
         try {
-            const { cartState } = await storesContext.removeLineItems([lineItemId]);
-            updateFromCart(cartState);
+            await storesContext.removeLineItems([lineItemId]);
+            // Reload cart to get accurate totals from estimate API
+            await loadCart();
         } catch (error) {
             console.error('[CartPage] Failed to remove item:', error);
-            setLineItems(items =>
-                items.map(item =>
-                    item.lineItemId === lineItemId
-                        ? { ...item, isRemoving: false }
-                        : item
-                )
-            );
+            setLineItems(patch(lineItems(), [
+                { op: REPLACE, path: [itemIndex, 'isRemoving'], value: false }
+            ]));
         }
     }
 
@@ -295,8 +265,9 @@ function CartPageInteractive(
     // Handle coupon removal
     async function handleRemoveCoupon() {
         try {
-            const { cartState } = await storesContext.removeCoupon();
-            updateFromCart(cartState);
+            await storesContext.removeCoupon();
+            // Reload cart to get accurate totals from estimate API
+            await loadCart();
         } catch (error) {
             console.error('[CartPage] Failed to remove coupon:', error);
         }
@@ -309,53 +280,48 @@ function CartPageInteractive(
         window.location.href = '/checkout';
     }
 
-    // Set up interactive refs
-    createEffect(() => {
-        // Clear cart button
-        refs.clearCartButton?.onclick(handleClearCart);
+    // Set up interactive refs - the effects system handles coordinates for repeaters
+    
+    // Clear cart button
+    refs.clearCartButton?.onclick(handleClearCart);
 
-        // Checkout button
-        refs.checkoutButton?.onclick(handleCheckout);
+    // Checkout button
+    refs.checkoutButton?.onclick(handleCheckout);
 
-        // Coupon input - use native event
-        refs.coupon?.code?.oninput(({ event }) => {
-            const code = (event.target as HTMLInputElement).value;
-            setCoupon(patch(coupon(), [
-                { op: REPLACE, path: ['code'], value: code }
-            ]));
-        });
-
-        // Remove coupon button
-        refs.coupon?.removeButton?.onclick(handleRemoveCoupon);
+    // Coupon input - use native event
+    refs.coupon?.code?.oninput(({ event }) => {
+        const code = (event.target as HTMLInputElement).value;
+        setCoupon(patch(coupon(), [
+            { op: REPLACE, path: ['code'], value: code }
+        ]));
     });
 
-    // Set up line item interactions
-    createEffect(() => {
-        const items = lineItems();
-        items.forEach((item, index) => {
-            // Quantity input change
-            refs.lineItems?.quantity[index]?.oninput(({ event }) => {
-                const newQty = parseInt((event.target as HTMLInputElement).value) || 1;
-                handleQuantityChange(item.lineItemId, newQty);
-            });
+    // Remove coupon button
+    refs.coupon?.removeButton?.onclick(handleRemoveCoupon);
 
-            // Decrement button
-            refs.lineItems?.decrementButton[index]?.onclick(() => {
-                if (item.quantity > 1) {
-                    handleQuantityChange(item.lineItemId, item.quantity - 1);
-                }
-            });
+    // Set up line item interactions using coordinate pattern
+    // Quantity input change
+    refs.lineItems?.quantity.oninput(({ event, coordinate }) => {
+        const lineItemId = coordinate[0];
+        const newQty = parseInt((event.target as HTMLInputElement).value) || 1;
+        handleQuantityChange(lineItemId, newQty);
+    });
 
-            // Increment button
-            refs.lineItems?.incrementButton[index]?.onclick(() => {
-                handleQuantityChange(item.lineItemId, item.quantity + 1);
-            });
+    // Decrement button
+    refs.lineItems?.decrementButton.onclick(({ viewState }) => {
+        if (viewState.quantity > 1) {
+            handleQuantityChange(viewState.lineItemId, viewState.quantity - 1);
+        }
+    });
 
-            // Remove button
-            refs.lineItems?.removeButton[index]?.onclick(() => {
-                handleRemoveItem(item.lineItemId);
-            });
-        });
+    // Increment button
+    refs.lineItems?.incrementButton.onclick(({ viewState }) => {
+        handleQuantityChange(viewState.lineItemId, viewState.quantity + 1);
+    });
+
+    // Remove button
+    refs.lineItems?.removeButton.onclick(({ viewState }) => {
+        handleRemoveItem(viewState.lineItemId);
     });
 
     // Load cart on mount

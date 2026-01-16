@@ -11,6 +11,7 @@ import type {
     LineItem,
     CartDiscount
 } from '@wix/auto_sdk_ecom_current-cart';
+import { formatWixMediaUrl } from '../utils/product-mapper';
 
 // ============================================================================
 // Types
@@ -127,7 +128,7 @@ export function mapLineItem(item: LineItem): CartLineItem {
         variantName: variantParts.join(' / '),
         sku: physicalProperties?.sku || '',
         image: {
-            url: item.image || '',
+            url: formatWixMediaUrl('', item.image || ''),
             altText: item.productName?.translated || ''
         },
         quantity: item.quantity || 1,
