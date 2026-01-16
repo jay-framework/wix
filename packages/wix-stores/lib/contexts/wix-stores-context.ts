@@ -68,11 +68,11 @@ export interface CartOperationResult {
 }
 
 export interface SelectedOptionsAndModifiers {
-    /** options as (options.id, options.choicesSettings.choices.choiceId) pairs*/
+    /** options as (option._id, choice.choiceId) pairs */
     options: Record<string, string>,
-    /** modifiers as (modifiers.key, modifiers.choicesSettings.choices.key) pairs*/
+    /** modifiers as (modifier._id, choice.choiceId) pairs - translated to keys in addToCart */
     modifiers: Record<string, string>,
-    /** custom text fields as (modifiers.freeTextSettings.key, user input) pairs*/
+    /** custom text fields as (modifier._id, user input) pairs - translated to keys in addToCart */
     customTextFields: Record<string, string>,
 }
 
@@ -227,14 +227,44 @@ export function provideWixStoresContext(): WixStoresContext {
             }
 
             if (variant) {
+                // Translate modifier selections from (modifierId, choiceId) to (key, key)
+                // The Wix Cart API expects modifier.key and choice.key, not IDs
+                const translatedModifiers: Record<string, string> = {};
+                const translatedCustomTextFields: Record<string, string> = {};
+                
+                if (selections?.modifiers || selections?.customTextFields) {
+                    for (const modifier of (product.modifiers || [])) {
+                        const modifierId = modifier._id;
+                        // Cast to access key properties that may not be in SDK types
+                        const modifierKey = modifier['key'];
+                        
+                        if (!modifierKey) continue;
+                        
+                        // Check for choice-based modifier selection
+                        const selectedChoiceId = selections?.modifiers?.[modifierId];
+                        if (selectedChoiceId && modifier.choicesSettings?.choices) {
+                            const choice = modifier.choicesSettings.choices.find(c => c.choiceId === selectedChoiceId);
+                            if (choice?.key) {
+                                translatedModifiers[modifierKey] = choice.key;
+                            }
+                        }
+                        
+                        // Check for free text modifier
+                        const customText = selections?.customTextFields?.[modifierId];
+                        if (customText) {
+                            translatedCustomTextFields[modifierKey] = customText;
+                        }
+                    }
+                }
+
                 const lineItem: LineItem = {
                     catalogReference: {
                         catalogItemId: productId,
                         appId: WIX_STORES_APP_ID,
                         options: {
                             variantId: variant._id,
-                            options: selections?.modifiers || {},
-                            customTextFields: selections?.customTextFields || {},
+                            options: translatedModifiers,
+                            customTextFields: translatedCustomTextFields,
                         }
                     },
                     quantity,

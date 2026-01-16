@@ -250,12 +250,14 @@ function mapVariants(variantsInfo: VariantsInfo): InteractiveVariant[]{
 /**
  * Build SelectedOptionsAndModifiers from the current viewState.
  * Called on-demand when adding to cart to avoid duplicate state tracking.
+ * 
+ * Uses _id/choiceId - the addToCart function translates to API keys.
  */
 function buildSelectionsFromViewState(
     optionsVS: ProductPageFastViewState['options'],
     modifiersVS: ProductPageFastViewState['modifiers']
 ): SelectedOptionsAndModifiers {
-    // Build options record from viewState
+    // Build options record (optionId -> choiceId)
     const options: Record<string, string> = {};
     for (const option of optionsVS) {
         if (option.textChoiceSelection) {
@@ -268,19 +270,18 @@ function buildSelectionsFromViewState(
         }
     }
 
-    // Build modifiers and customTextFields from viewState
+    // Build modifiers record (modifierId -> choiceId)
     const modifiers: Record<string, string> = {};
     const customTextFields: Record<string, string> = {};
     
     for (const modifier of modifiersVS) {
-        // Check for dropdown/swatch selection (textModifierSelection holds the choiceId)
+        // Check for button-based swatch selection
         const selectedChoice = modifier.choices.find(c => c.isSelected);
         if (selectedChoice) {
             modifiers[modifier._id] = selectedChoice.choiceId;
         } else if (modifier.textModifierSelection) {
-            // For dropdown modifiers, textModifierSelection holds the selected choice ID
-            // For free text modifiers, it holds the user's input text
-            // We determine which based on whether the modifier has choices
+            // For dropdown modifiers, textModifierSelection holds the selected choiceId
+            // For free text modifiers (no choices), it holds the user's input text
             if (modifier.choices.length > 0) {
                 modifiers[modifier._id] = modifier.textModifierSelection;
             } else {
