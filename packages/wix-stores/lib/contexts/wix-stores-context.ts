@@ -146,6 +146,15 @@ export interface WixStoresContext {
     clearCart(): Promise<void>;
     
     /**
+     * Apply a coupon code to the cart.
+     * Automatically updates the cart indicator signals.
+     * 
+     * @param couponCode - The coupon code to apply
+     * @returns Updated cart state
+     */
+    applyCoupon(couponCode: string): Promise<CartOperationResult>;
+    
+    /**
      * Remove applied coupon from the cart.
      * Automatically updates the cart indicator signals.
      * 
@@ -316,6 +325,13 @@ export function provideWixStoresContext(): WixStoresContext {
             setHasItems(false);
         }
 
+        // Apply coupon to cart
+        async function applyCoupon(couponCode: string): Promise<CartOperationResult> {
+            const result = await cartClient.updateCurrentCart({ couponCode });
+            updateIndicatorFromCart(result ?? null);
+            return { cartState: mapCartToState(result ?? null) };
+        }
+
         // Remove coupon from cart
         async function removeCoupon(): Promise<CartOperationResult> {
             const result = await cartClient.removeCouponFromCurrentCart();
@@ -334,6 +350,7 @@ export function provideWixStoresContext(): WixStoresContext {
             removeLineItems,
             updateLineItemQuantity,
             clearCart,
+            applyCoupon,
             removeCoupon,
         };
     });

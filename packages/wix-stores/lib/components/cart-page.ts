@@ -262,6 +262,31 @@ function CartPageInteractive(
         }
     }
 
+    // Handle coupon application
+    async function handleApplyCoupon() {
+        const code = coupon().code.trim();
+        if (!code) return;
+
+        setCoupon(patch(coupon(), [
+            { op: REPLACE, path: ['isApplying'], value: true },
+            { op: REPLACE, path: ['hasError'], value: false },
+            { op: REPLACE, path: ['errorMessage'], value: '' }
+        ]));
+
+        try {
+            await storesContext.applyCoupon(code);
+            // Reload cart to get accurate totals from estimate API
+            await loadCart();
+        } catch (error) {
+            console.error('[CartPage] Failed to apply coupon:', error);
+            setCoupon(patch(coupon(), [
+                { op: REPLACE, path: ['isApplying'], value: false },
+                { op: REPLACE, path: ['hasError'], value: true },
+                { op: REPLACE, path: ['errorMessage'], value: 'Invalid coupon code' }
+            ]));
+        }
+    }
+
     // Handle coupon removal
     async function handleRemoveCoupon() {
         try {
@@ -288,13 +313,16 @@ function CartPageInteractive(
     // Checkout button
     refs.checkoutButton?.onclick(handleCheckout);
 
-    // Coupon input - use native event
+    // Coupon input - update local state only
     refs.coupon?.code?.oninput(({ event }) => {
         const code = (event.target as HTMLInputElement).value;
         setCoupon(patch(coupon(), [
             { op: REPLACE, path: ['code'], value: code }
         ]));
     });
+
+    // Apply coupon button
+    refs.coupon?.applyButton?.onclick(handleApplyCoupon);
 
     // Remove coupon button
     refs.coupon?.removeButton?.onclick(handleRemoveCoupon);
