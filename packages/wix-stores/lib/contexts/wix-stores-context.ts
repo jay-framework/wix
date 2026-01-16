@@ -213,8 +213,10 @@ export function provideWixStoresContext(): WixStoresContext {
             console.log(`Added to cart: ${productId} - ${quantity}:`, selections);
             const product = await catalogClient.getProduct(productId, {fields: ["VARIANT_OPTION_CHOICE_NAMES"]});
 
-            const variant = product.variantsInfo.variants.find(_ =>
-                _.choices.every(choice => selections.options[choice.optionChoiceIds.optionId] === choice.optionChoiceIds.choiceId));
+            const variant = product.variantsInfo.variants.length > 0 ?
+                product.variantsInfo.variants[0] :
+                product.variantsInfo.variants.find(_ =>
+                    _.choices.every(choice => selections.options[choice.optionChoiceIds.optionId] === choice.optionChoiceIds.choiceId));
 
             if (variant) {
                 const lineItem: LineItem = {
@@ -223,8 +225,8 @@ export function provideWixStoresContext(): WixStoresContext {
                         appId: WIX_STORES_APP_ID,
                         options: {
                             variantId: variant._id,
-                            options: selections.modifiers,
-                            customTextFields: selections.customTextFields,
+                            options: selections?.modifiers || {},
+                            customTextFields: selections?.customTextFields || {},
                         }
                     },
                     quantity,
