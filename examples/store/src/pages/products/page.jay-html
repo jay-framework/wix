@@ -65,10 +65,47 @@
         font-weight: 600;
       }
 
-      /* Product card wrapper - contains both image and content */
-      /*.product-card-wrapper {*/
-      /*  display: contents;*/
-      /*}*/
+      /* Load more section */
+      .load-more-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        margin-top: 32px;
+        padding: 24px;
+      }
+
+      .load-more-section .loaded-info {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+
+      .load-more-section button {
+        min-width: 200px;
+      }
+
+      /* Loading indicator */
+      .loading-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 16px;
+        color: var(--text-secondary);
+      }
+
+      .loading-spinner-inline {
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--border);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
 
       @media (max-width: 1024px) {
         .main-content {
@@ -81,9 +118,10 @@
     <div class="search-page">
       <!-- Site Header with Cart -->
       <header class="site-header">
-        <a href="/products" class="site-logo">Store<span>.</span></a>
+        <a href="/" class="site-logo">Store<span>.</span></a>
         <nav class="site-nav">
-          <a href="/products">Products</a>
+          <a href="/">Home</a>
+          <a href="/products" class="active">Products</a>
           <a href="/cart" 
              class="cart-indicator {cartIndicator.hasItems ? has-items} {cartIndicator.isLoading ? is-loading} {cartIndicator.justAdded ? just-added}"
              ref="cartIndicator.cartLink">
@@ -97,6 +135,7 @@
       <div class="loading-overlay" if="productSearch.isSearching">
         <div class="loading-spinner"></div>
       </div>
+
       <!-- Page Header -->
       <header class="page-header">
         <h1 class="page-title">Discover Products</h1>
@@ -207,7 +246,7 @@
           <!-- Results Header -->
           <div class="results-header">
             <p class="results-count">
-              Showing <span>{productSearch.resultCount}</span> products
+              Showing <span>{productSearch.loadedCount}</span> of <span>{productSearch.totalCount}</span> products
             </p>
             <select class="select" ref="productSearch.sortBy.sortDropdown">
               <option value="relevance">Most Relevant</option>
@@ -239,10 +278,10 @@
                   
                   <!-- Badges -->
                   <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
-                  <span class="badge badge-success stock-badge" if="inventory.availabilityStatus === IN_STOCK">
+                  <span class="badge badge-success stock-badge" if="inventory.availabilityStatus == IN_STOCK">
                     In Stock
                   </span>
-                  <span class="badge badge-error stock-badge" if="inventory.availabilityStatus === OUT_OF_STOCK">
+                  <span class="badge badge-error stock-badge" if="inventory.availabilityStatus == OUT_OF_STOCK">
                     Out of Stock
                   </span>
                 </a>
@@ -263,13 +302,13 @@
                   <button 
                     class="btn btn-secondary btn-block" 
                     ref="productSearch.searchResults.addToCartButton"
-                    if="quickAddType === SIMPLE && inventory.availabilityStatus === IN_STOCK"
+                    if="quickAddType == SIMPLE && inventory.availabilityStatus == IN_STOCK"
                   >
                     Add to Cart
                   </button>
                   
                   <!-- SINGLE_OPTION: Quick option selection in button area -->
-                  <div class="quick-options-area" if="quickAddType === SINGLE_OPTION && inventory.availabilityStatus !== OUT_OF_STOCK">
+                  <div class="quick-options-area" if="quickAddType == SINGLE_OPTION && inventory.availabilityStatus != OUT_OF_STOCK">
                     <!-- Default: "Select {option}" hint -->
                     <span class="select-option-hint">
                       Select {quickOption.name}
@@ -293,7 +332,7 @@
                     href="{productUrl}" 
                     class="btn btn-secondary btn-block"
                     ref="productSearch.searchResults.viewOptionsButton"
-                    if="quickAddType === NEEDS_CONFIGURATION && inventory.availabilityStatus !== OUT_OF_STOCK"
+                    if="quickAddType == NEEDS_CONFIGURATION && inventory.availabilityStatus != OUT_OF_STOCK"
                   >
                     View Options
                   </a>
@@ -302,7 +341,7 @@
                   <button 
                     class="btn btn-ghost btn-block" 
                     disabled
-                    if="inventory.availabilityStatus === OUT_OF_STOCK"
+                    if="inventory.availabilityStatus == OUT_OF_STOCK"
                   >
                     Out of Stock
                   </button>
@@ -311,39 +350,30 @@
             </article>
           </div>
 
-          <!-- Pagination -->
-          <div class="pagination" if="productSearch.hasResults">
+          <!-- Load More Section -->
+          <div class="load-more-section" if="productSearch.hasResults">
+            <!-- Loading indicator -->
+            <div class="loading-indicator" if="productSearch.isSearching">
+              <div class="loading-spinner-inline"></div>
+              <span>Loading more products...</span>
+            </div>
+            
+            <!-- Load more button -->
             <button 
-              class="btn btn-ghost" 
-              ref="productSearch.pagination.prevButton"
-              disabled="!productSearch.pagination.hasPrevPage"
+              class="btn btn-secondary" 
+              ref="productSearch.loadMoreButton"
+              if="productSearch.hasMore && !productSearch.isSearching"
             >
-              ← Previous
+              Load More Products
             </button>
-            <span class="pagination-info">
-              Page {productSearch.pagination.currentPage} of {productSearch.pagination.totalPages}
+            
+            <!-- All loaded message -->
+            <span class="loaded-info" if="!productSearch.hasMore">
+              All products loaded
             </span>
-            <button 
-              class="btn btn-ghost" 
-              ref="productSearch.pagination.nextButton"
-              disabled="!productSearch.pagination.hasNextPage"
-            >
-              Next →
-            </button>
           </div>
-
-          <!-- Load More (Alternative) -->
-          <button 
-            class="btn btn-secondary" 
-            style="max-width: 300px; margin: 0 auto;"
-            if="productSearch.pagination.hasNextPage"
-            ref="productSearch.pagination.loadMoreButton"
-          >
-            Load More Products
-          </button>
         </section>
       </div>
     </div>
   </body>
 </html>
-

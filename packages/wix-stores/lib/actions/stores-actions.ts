@@ -43,8 +43,8 @@ export interface SearchProductsInput {
     filters?: ProductSearchFilters;
     /** Sort order */
     sortBy?: ProductSortField;
-    /** Page number (1-indexed) */
-    page?: number;
+    /** Cursor for pagination (from previous response's nextCursor) */
+    cursor?: string;
     /** Items per page (default: 12) */
     pageSize?: number;
 }
@@ -57,12 +57,10 @@ export interface SearchProductsOutput {
     products: ProductCardViewState[];
     /** Total number of matching products */
     totalCount: number;
-    /** Total number of pages */
-    totalPages: number;
-    /** Current page number */
-    currentPage: number;
+    /** Cursor for next page (null if no more results) */
+    nextCursor: string | null;
     /** Whether there are more results */
-    hasNextPage: boolean;
+    hasMore: boolean;
 }
 
 /**
@@ -105,7 +103,7 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
             query,
             filters = {},
             sortBy = 'relevance',
-            page = 1,
+            cursor,
             pageSize = 12
         } = input;
 
@@ -130,12 +128,18 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
                 // 'relevance', 'price_asc', 'price_desc' - will sort client-side
             }
 
-            // Apply pagination - fetch more for client-side filtering
-            queryBuilder = queryBuilder.limit(pageSize * 2);
+            // Apply cursor-based pagination
+            queryBuilder = queryBuilder.limit(pageSize);
+            if (cursor) {
+                queryBuilder = queryBuilder.skipTo(cursor);
+            }
 
             const queryResult = await queryBuilder.find();
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            let products: any[] = queryResult.items || [];
+            let products = queryResult.items || [];
+
+            // Get cursor for next page
+            const nextCursor = queryResult.cursors?.next || null;
+            const totalCount = 0;
 
             // Map products to card view state
             let mappedProducts = products.map(p => mapProductToCard(p));
@@ -179,19 +183,11 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
                 );
             }
 
-            // Apply pagination on filtered results
-            const totalCount = mappedProducts.length;
-            const startIndex = (page - 1) * pageSize;
-            const paginatedProducts = mappedProducts.slice(startIndex, startIndex + pageSize);
-
-            const totalPages = Math.ceil(totalCount / pageSize) || 1;
-
             return {
-                products: paginatedProducts,
+                products: mappedProducts,
                 totalCount,
-                totalPages,
-                currentPage: page,
-                hasNextPage: page < totalPages
+                nextCursor,
+                hasMore: nextCursor !== null
             };
         } catch (error) {
             console.error('[wixStores.searchProducts] Search failed:', error);
@@ -199,47 +195,6 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
         }
     });
 
-/**
- * Get all products (paginated) for browsing without search.
- *
- * @example
- * ```typescript
- * const products = await getAllProducts({ page: 1, pageSize: 12 });
- * ```
- */
-export const getAllProducts = makeJayQuery('wixStores.getAllProducts')
-    .withServices(WIX_STORES_SERVICE_MARKER)
-    .withHandler(async (
-        input: { page?: number; pageSize?: number; categoryId?: string },
-        wixStores: WixStoresService
-    ): Promise<SearchProductsOutput> => {
-        const { page = 1, pageSize = 12 } = input;
-
-        try {
-            // Include VARIANT_OPTION_CHOICE_NAMES for quick-add option display
-            const queryBuilder = wixStores.products.queryProducts({
-                fields: ['CURRENCY', 'VARIANT_OPTION_CHOICE_NAMES']
-            })
-                .limit(pageSize);
-
-            const result = await queryBuilder.find();
-            const products = result.items || [];
-            // Estimate total - if we got a full page, there might be more
-            const totalCount = products.length < pageSize ? (page - 1) * pageSize + products.length : page * pageSize + 1;
-            const totalPages = Math.ceil(totalCount / pageSize) || 1;
-
-            return {
-                products: products.map(p => mapProductToCard(p)),
-                totalCount,
-                totalPages,
-                currentPage: page,
-                hasNextPage: products.length === pageSize
-            };
-        } catch (error) {
-            console.error('[wixStores.getAllProducts] Failed to load products:', error);
-            throw new ActionError('LOAD_FAILED', 'Failed to load products');
-        }
-    });
 
 /**
  * Get a single product by its URL slug.

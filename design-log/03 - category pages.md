@@ -366,7 +366,253 @@ function CategoryPageInteractive(
 
 ---
 
-## Implementation Results
+## Revision 2: Simplified Category Pages
+
+### Changes from Revision 1
+
+1. **New `category-list` component**: Dedicated component for displaying category grid on home page
+2. **Remove categories listing page**: Categories shown on home page instead of `/categories`
+3. **Parallel product loading**: Products loaded in parallel during slow phase, rendered in fast phase (not async)
+4. **Simplified category page**:
+   - Remove filters (price range, in-stock only)
+   - Remove sorting dropdown
+   - Remove pagination (prev/next/page numbers)
+   - Add "Load More" button only
+5. **Product search load more**: Replace pagination with "Load More" button
+
+### New Component: category-list
+
+```yaml
+name: category-list
+tags:
+  - tag: categories
+    type: sub-contract
+    repeated: true
+    trackBy: _id
+    description: List of visible categories
+    tags:
+      - tag: _id
+        type: data
+        dataType: string
+      - tag: name
+        type: data
+        dataType: string
+      - tag: slug
+        type: data
+        dataType: string
+      - tag: description
+        type: data
+        dataType: string
+      - tag: productCount
+        type: data
+        dataType: number
+      - tag: imageUrl
+        type: data
+        dataType: string
+      - tag: categoryLink
+        type: interactive
+        elementType: HTMLAnchorElement
+        
+  - tag: hasCategories
+    type: variant
+    dataType: boolean
+```
+
+### Simplified category-page Contract
+
+```yaml
+name: category-page
+tags:
+  # Category info (slow phase)
+  - _id, name, description, slug, visible, numberOfProducts
+  - media (mainMedia, items)
+  - breadcrumbs
+  
+  # Initial products (SSR - slow phase)
+  - tag: products
+    type: sub-contract
+    repeated: true
+    trackBy: _id
+    link: ./product-card
+    # No phase = slow (default)
+  
+  # Additional products (loaded on client via "load more")
+  - tag: loadedProducts
+    type: sub-contract
+    repeated: true
+    trackBy: _id
+    link: ./product-card
+    phase: interactive
+  
+  # Load more state (fast+interactive)
+  - tag: hasMore
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    
+  - tag: loadMoreButton
+    type: interactive
+    elementType: HTMLButtonElement
+    
+  - tag: isLoading
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    
+  - tag: hasProducts
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+```
+
+**Key insight**: Two separate product lists:
+1. `products` - SSR products rendered in slow phase (build time)
+2. `loadedProducts` - Products loaded on client via "load more" button
+
+The cursor from `pagingMetadata.cursors.next` is captured in carry forward. The interactive phase appends to `loadedProducts` (not `products`).
+
+### Updated API Flow
+
+```mermaid
+sequenceDiagram
+    participant Page
+    participant Categories as categories API
+    participant Products as productsV3 API
+    
+    Note over Page: Slow Rendering Phase
+    Page->>Categories: queryCategories(slug)
+    Categories-->>Page: Category info
+    
+    par Parallel Product Loading
+        Page->>Categories: listItemsInCategory(limit: 20)
+        Categories-->>Page: Product IDs + cursor
+        loop For each product ID (parallel)
+            Page->>Products: getProduct()
+            Products-->>Page: Product data
+        end
+    end
+    Page->>Page: products[] = loaded products
+    Page->>Page: Store cursor in carryForward
+    
+    Note over Page: Fast Rendering Phase
+    Page->>Page: loadedProducts[] = empty
+    Page->>Page: hasMore = (cursor !== null)
+    
+    Note over Page: Interactive Phase (on Load More click)
+    Page->>Categories: listItemsInCategory(cursor)
+    Categories-->>Page: Next batch + new cursor
+    loop For each product ID (parallel)
+        Page->>Products: getProduct()
+        Products-->>Page: Product data
+    end
+    Page->>Page: Append to loadedProducts[]
+    Page->>Page: Update cursor
+```
+
+### Implementation Plan (Revision 2)
+
+#### Phase 1: category-list Component
+1. Create `category-list.jay-contract` with categories array
+2. Create `category-list.ts` component (slow render only - categories are static)
+3. Export from index.ts
+
+#### Phase 2: Simplify category-page
+1. Update `category-page.jay-contract`:
+   - Remove `pagination`, `sortBy`, `filters` sub-contracts
+   - Add `hasMore`, `loadMoreButton`
+   - Change products phase to `slow+fast+interactive`
+2. Update `category-page.ts`:
+   - Move product loading to slow phase (parallel fetch)
+   - Remove pagination/sort/filter interactive handlers
+   - Add loadMore handler that appends products
+
+#### Phase 3: Update product-search
+1. Update `product-search.jay-contract`:
+   - Remove `prevButton`, `nextButton`, `pageNumbers` from pagination
+   - Keep only `loadMoreButton`, `hasNextPage`
+2. Update `product-search.ts`:
+   - Remove prev/next handlers
+   - Update loadMore to append results
+
+#### Phase 4: Update Examples
+1. Add category-list to home page (`store/src/pages/page.jay-html` or similar)
+2. Simplify `/categories/[slug]/page.jay-html` (remove filters/sort/pagination UI)
+3. Update `/products/page.jay-html` for load more
+
+---
+
+## Implementation Results (Revision 2)
+
+### Files Created
+
+**New Contracts:**
+- `wix/packages/wix-stores/lib/contracts/category-list.jay-contract` - Category grid component contract
+
+**New Components:**
+- `wix/packages/wix-stores/lib/components/category-list.ts` - Slow-render-only component that loads all visible categories
+
+**New Example Pages:**
+- `wix/examples/store/src/pages/page.jay-html` - Home page with hero section and category grid
+
+### Files Modified
+
+**Contracts:**
+- `wix/packages/wix-stores/lib/contracts/category-page.jay-contract` - Simplified:
+  - Removed `pagination`, `sortBy`, `filters` sub-contracts
+  - Added `hasMore`, `loadMoreButton`, `loadedCount`
+  - Changed products phase to `slow+fast+interactive`
+
+- `wix/packages/wix-stores/lib/contracts/product-search.jay-contract` - Changed pagination to load more:
+  - Removed `pagination.prevButton`, `nextButton`, `pageNumbers`
+  - Added `hasMore`, `loadMoreButton`, `loadedCount`, `totalCount`
+
+**Components:**
+- `wix/packages/wix-stores/lib/components/category-page.ts` - Rewritten:
+  - Products now loaded in parallel during slow phase
+  - Fast phase just sets up load more metadata
+  - Interactive phase handles only `loadMoreButton` and add-to-cart
+  - Removed all filter/sort/pagination handlers
+
+- `wix/packages/wix-stores/lib/components/product-search.ts` - Updated:
+  - Removed pagination prev/next/page handlers
+  - Added `performLoadMore()` that appends results
+  - Changed reactive effect to reset page on parameter changes
+
+**Exports:**
+- `wix/packages/wix-stores/lib/index.ts` - Added export for `category-list` component
+
+**Example Pages:**
+- `wix/examples/store/src/pages/categories/[slug]/page.jay-html` - Simplified:
+  - Removed filters sidebar, sorting dropdown, pagination controls
+  - Added "Load More Products" button and loading indicator
+  
+- `wix/examples/store/src/pages/products/page.jay-html` - Updated:
+  - Replaced pagination controls with "Load More Products" button
+  - Shows "X of Y products" instead of "Page X of Y"
+  - Added loading indicator for load more
+
+### Files Deleted
+
+- `wix/examples/store/src/pages/categories/page.jay-html` - Categories listing page (replaced by home page)
+- `wix/examples/store/src/pages/categories/page.jay-html.d.ts` - Type definition for deleted page
+
+### Key Changes Summary
+
+| Feature | Before | After |
+|---------|--------|-------|
+| Category listing | Separate `/categories` page | Home page with category grid |
+| Category component | Uses product-search | New `category-list` component |
+| Product loading | Fast phase (request-time) | Slow phase (parallel, build-time) |
+| Category page filters | Price range, in-stock | Removed |
+| Category page sorting | Dropdown with 5 options | Removed |
+| Category page pagination | Prev/Next/Page numbers | Load More button (cursor-based) |
+| Product search pagination | Page-based (`page`, `pageSize`) | Cursor-based (`cursor`, `pageSize`) |
+| Context method | `loadCategoryProducts(page, size, sort)` | `loadMoreCategoryProducts(cursor, size)` |
+| Search action | `searchProducts({page, pageSize})` | `searchProducts({cursor, pageSize})` returns `{nextCursor, hasMore}` |
+
+---
+
+## Implementation Results (Revision 1)
 
 ### Files Modified
 

@@ -143,120 +143,40 @@ tags:
         elementType: HTMLAnchorElement
         description: Link to category
   
-  # Products list
+  # Initial products (SSR - loaded in slow phase)
   - tag: products
     type: sub-contract
     repeated: true
     trackBy: _id
-    phase: fast+interactive
-    description: Products in this category
+    description: Initial products in this category (rendered server-side)
     link: ./product-card
     
-  # Pagination
-  - tag: pagination
+  # Additional products (loaded on client via "load more")
+  - tag: loadedProducts
     type: sub-contract
+    repeated: true
+    trackBy: _id
     phase: fast+interactive
-    description: Pagination controls
-    tags:
-      - tag: currentPage
-        type: data
-        dataType: number
-        description: Current page number
-        
-      - tag: totalPages
-        type: data
-        dataType: number
-        description: Total number of pages
-        
-      - tag: totalProducts
-        type: data
-        dataType: number
-        description: Total number of products in category
-        
-      - tag: prevButton
-        type: interactive
-        elementType: HTMLButtonElement
-        description: Previous page button
-        
-      - tag: nextButton
-        type: interactive
-        elementType: HTMLButtonElement
-        description: Next page button
-        
-      - tag: pageNumbers
-        type: sub-contract
-        repeated: true
-        trackBy: pageNumber
-        description: Individual page number buttons
-        tags:
-          - tag: pageNumber
-            type: data
-            dataType: number
-            description: Page number
-            
-          - tag: isCurrent
-            type: variant
-            dataType: boolean
-            description: Whether this is the current page
-            
-          - tag: pageButton
-            type: interactive
-            elementType: HTMLButtonElement
-            description: Button to navigate to this page
-  
-  # Sorting
-  - tag: sortBy
-    type: sub-contract
+    description: Additional products loaded on the client
+    link: ./product-card
+    
+  # Load more functionality
+  - tag: hasMore
+    type: variant
+    dataType: boolean
     phase: fast+interactive
-    description: Product sorting options
-    tags:
-      - tag: currentSort
-        type: data
-        dataType: enum (newest | priceAsc | priceDesc | nameAsc | nameDesc)
-        description: Current sort option
-        
-      - tag: sortDropdown
-        type: interactive
-        elementType: HTMLSelectElement
-        description: Dropdown to select sort option
-  
-  # Filters
-  - tag: filters
-    type: sub-contract
+    description: Whether there are more products to load
+    
+  - tag: loadMoreButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Button to load more products
+    
+  - tag: loadedCount
+    type: data
+    dataType: number
     phase: fast+interactive
-    description: Product filtering options
-    tags:
-      - tag: priceRange
-        type: sub-contract
-        description: Price range filter
-        tags:
-          - tag: minPrice
-            type: [data, interactive]
-            dataType: number
-            elementType: HTMLInputElement
-            description: Minimum price input
-            
-          - tag: maxPrice
-            type: [data, interactive]
-            dataType: number
-            elementType: HTMLInputElement
-            description: Maximum price input
-            
-          - tag: applyPriceFilter
-            type: interactive
-            elementType: HTMLButtonElement
-            description: Apply price filter button
-      
-      - tag: inStockOnly
-        type: [data, interactive]
-        dataType: boolean
-        elementType: HTMLInputElement
-        description: Show only in-stock products checkbox
-        
-      - tag: clearFilters
-        type: interactive
-        elementType: HTMLButtonElement
-        description: Clear all filters button
+    description: Number of products currently loaded
   
   # Loading state
   - tag: isLoading
@@ -271,4 +191,3 @@ tags:
     dataType: boolean
     phase: fast+interactive
     description: Whether category has any products
-

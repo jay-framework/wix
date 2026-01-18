@@ -11,6 +11,7 @@ export * from './components/product-search';
 export * from './components/product-page';
 export * from './components/cart-indicator';
 export * from './components/category-page';
+export * from './components/category-list';
 
 // Export server service
 export {

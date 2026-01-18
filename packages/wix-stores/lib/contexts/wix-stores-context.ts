@@ -169,24 +169,22 @@ export interface WixStoresContext {
     // ========================================================================
     
     /**
-     * Load products for a category page with pagination and sorting.
-     * Used by category page interactive phase to reload products.
+     * Load more products for a category using cursor pagination.
+     * Used by category page interactive phase for "load more" functionality.
      * 
      * @param categoryId - The category ID to load products for
-     * @param page - Page number (1-indexed)
-     * @param pageSize - Number of products per page
-     * @param sort - Sort option (newest, priceAsc, priceDesc, nameAsc, nameDesc)
-     * @returns Products and pagination metadata
+     * @param cursor - Cursor from previous pagingMetadata.cursors.next
+     * @param pageSize - Number of products to load
+     * @returns Products, next cursor (null if no more), and total count
      */
-    loadCategoryProducts(
+    loadMoreCategoryProducts(
         categoryId: string,
-        page: number,
-        pageSize: number,
-        sort: string
+        cursor: string,
+        pageSize: number
     ): Promise<{
         products: ProductCardViewState[];
+        nextCursor: string | null;
         totalProducts: number;
-        totalPages: number;
     }>;
 }
 
@@ -367,66 +365,51 @@ export function provideWixStoresContext(): WixStoresContext {
             return { cartState: mapCartToState(result.cart ?? null) };
         }
 
-        // Load products for a category with pagination
-        async function loadCategoryProducts(
+        // Load more products for a category using cursor pagination
+        async function loadMoreCategoryProducts(
             categoryId: string,
-            page: number,
-            pageSize: number,
-            sort: string
-        ): Promise<{ products: ProductCardViewState[]; totalProducts: number; totalPages: number }> {
+            cursor: string,
+            pageSize: number
+        ): Promise<{ products: ProductCardViewState[]; nextCursor: string | null; totalProducts: number }> {
             try {
-                // List items in category
+                // List items in category using cursor
                 const itemsResult = await categoriesClient.listItemsInCategory(
                     categoryId,
                     { appNamespace: "@wix/stores" },
                     {
                         useCategoryArrangement: true,
-                        cursorPaging: { limit: pageSize }
+                        cursorPaging: { limit: pageSize, cursor }
                     }
                 );
 
                 const items = itemsResult.items || [];
+                const nextCursor = itemsResult.pagingMetadata?.cursors?.next || null;
                 const totalProducts = itemsResult.pagingMetadata?.total || items.length;
-                const totalPages = Math.ceil(totalProducts / pageSize) || 1;
 
-                // Fetch full product details
-                const productCards: ProductCardViewState[] = [];
-                for (const item of items) {
-                    if (item.catalogItemId) {
+                // Fetch full product details in parallel
+                const productPromises = items
+                    .filter(item => item.catalogItemId)
+                    .map(async (item) => {
                         try {
                             const product = await catalogClient.getProduct(
-                                item.catalogItemId,
+                                item.catalogItemId!,
                                 { fields: ['CURRENCY', 'VARIANT_OPTION_CHOICE_NAMES'] }
                             );
                             if (product) {
-                                productCards.push(mapProductToCard(product, '/products'));
+                                return mapProductToCard(product, '/products');
                             }
                         } catch (err) {
                             console.error('Failed to load product:', item.catalogItemId, err);
                         }
-                    }
-                }
+                        return null;
+                    });
 
-                // Client-side sort (since API doesn't support sort in listItemsInCategory)
-                if (sort === 'priceAsc') {
-                    productCards.sort((a, b) => 
-                        parseFloat(a.actualPriceRange.minValue.amount) - parseFloat(b.actualPriceRange.minValue.amount)
-                    );
-                } else if (sort === 'priceDesc') {
-                    productCards.sort((a, b) => 
-                        parseFloat(b.actualPriceRange.minValue.amount) - parseFloat(a.actualPriceRange.minValue.amount)
-                    );
-                } else if (sort === 'nameAsc') {
-                    productCards.sort((a, b) => a.name.localeCompare(b.name));
-                } else if (sort === 'nameDesc') {
-                    productCards.sort((a, b) => b.name.localeCompare(a.name));
-                }
-                // 'newest' is default from API arrangement
+                const products = (await Promise.all(productPromises)).filter(Boolean) as ProductCardViewState[];
 
-                return { products: productCards, totalProducts, totalPages };
+                return { products, nextCursor, totalProducts };
             } catch (error) {
-                console.error('Failed to load category products:', error);
-                return { products: [], totalProducts: 0, totalPages: 0 };
+                console.error('Failed to load more category products:', error);
+                return { products: [], nextCursor: null, totalProducts: 0 };
             }
         }
         
@@ -443,7 +426,7 @@ export function provideWixStoresContext(): WixStoresContext {
             clearCart,
             applyCoupon,
             removeCoupon,
-            loadCategoryProducts,
+            loadMoreCategoryProducts,
         };
     });
     

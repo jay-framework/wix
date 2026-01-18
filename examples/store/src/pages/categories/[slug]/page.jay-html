@@ -15,7 +15,7 @@
     </script>
     <link rel="stylesheet" href="../../../styles/store-theme.css" />
     <style>
-      /* Category page specific styles */
+      /* Category page styles */
       .category-page {
         max-width: var(--container-max);
         margin: 0 auto;
@@ -98,62 +98,6 @@
         object-fit: cover;
       }
 
-      /* Toolbar */
-      .category-toolbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 16px;
-        margin-bottom: 32px;
-        padding: 16px 24px;
-        background: var(--bg-card);
-        border-radius: var(--radius-md);
-        border: 1px solid var(--border);
-      }
-
-      .category-toolbar .result-count {
-        font-size: 14px;
-        color: var(--text-secondary);
-      }
-
-      .category-toolbar .sort-section {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .category-toolbar .sort-section label {
-        font-size: 14px;
-        color: var(--text-muted);
-      }
-
-      /* Loading overlay */
-      .loading-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(10, 10, 15, 0.8);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 100;
-      }
-
-      .loading-spinner {
-        width: 48px;
-        height: 48px;
-        border: 3px solid var(--border);
-        border-top-color: var(--accent);
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-
-      @keyframes spin {
-        to { transform: rotate(360deg); }
-      }
-
       /* Empty state */
       .empty-state {
         text-align: center;
@@ -181,85 +125,46 @@
         gap: 24px;
       }
 
-      /* Pagination */
-      .pagination-section {
+      /* Load more section */
+      .load-more-section {
         display: flex;
-        justify-content: center;
+        flex-direction: column;
         align-items: center;
         gap: 16px;
         margin-top: 48px;
         padding: 24px;
       }
 
-      .pagination-section .page-info {
+      .load-more-section .loaded-info {
         font-size: 14px;
         color: var(--text-secondary);
       }
 
-      .pagination-section button {
-        min-width: 100px;
+      .load-more-section button {
+        min-width: 200px;
       }
 
-      /* Page numbers */
-      .page-numbers {
+      /* Loading state */
+      .loading-indicator {
         display: flex;
-        gap: 8px;
-      }
-
-      .page-numbers button {
-        min-width: 40px;
-        padding: 8px;
-      }
-
-      .page-numbers button.current {
-        background: var(--accent);
-        color: white;
-      }
-
-      /* Filters sidebar (optional) */
-      .filters-section {
-        margin-bottom: 32px;
-        padding: 24px;
-        background: var(--bg-card);
-        border-radius: var(--radius-md);
-        border: 1px solid var(--border);
-      }
-
-      .filters-section h3 {
-        font-size: 1rem;
-        font-weight: 600;
-        margin-bottom: 16px;
-        color: var(--text-primary);
-      }
-
-      .filter-group {
-        margin-bottom: 20px;
-      }
-
-      .filter-group label {
-        display: block;
-        font-size: 14px;
-        color: var(--text-secondary);
-        margin-bottom: 8px;
-      }
-
-      .filter-group .price-inputs {
-        display: flex;
-        gap: 8px;
         align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 16px;
+        color: var(--text-secondary);
       }
 
-      .filter-group .price-inputs input {
-        width: 100px;
+      .loading-spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--border);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
       }
 
-      .filter-group .price-inputs span {
-        color: var(--text-muted);
-      }
-
-      .filter-actions {
-        display: flex;
-        gap: 12px;
+      @keyframes spin {
+        to { transform: rotate(360deg); }
       }
     </style>
   </head>
@@ -267,9 +172,9 @@
     <div class="category-page">
       <!-- Site Header with Cart -->
       <header class="site-header">
-        <a href="/products" class="site-logo">Store<span>.</span></a>
+        <a href="/" class="site-logo">Store<span>.</span></a>
         <nav class="site-nav">
-          <a href="/categories">Categories</a>
+          <a href="/">Home</a>
           <a href="/products">Products</a>
           <a href="/cart" 
              class="cart-indicator {cartIndicator.hasItems ? has-items} {cartIndicator.isLoading ? is-loading}" 
@@ -282,13 +187,14 @@
 
       <!-- Breadcrumbs -->
       <nav class="breadcrumbs">
-        <a href="/categories">All Categories</a>
+        <a href="/">Home</a>
+        <span class="separator">/</span>
         <span forEach="categoryPage.breadcrumbs" trackBy="categoryId">
-          <span class="separator">/</span>
           <a href="/categories/{categorySlug}" 
              ref="categoryPage.breadcrumbs.categoryLink">
             {categoryName}
           </a>
+          <span class="separator">/</span>
         </span>
       </nav>
 
@@ -304,65 +210,6 @@
         <span class="product-count">{categoryPage.numberOfProducts} products</span>
       </header>
 
-      <!-- Toolbar -->
-      <div class="category-toolbar">
-        <span class="result-count">
-          Showing {categoryPage.pagination.totalProducts} products
-        </span>
-        <div class="sort-section">
-          <label>Sort by:</label>
-          <select class="select" ref="categoryPage.sortBy.sortDropdown">
-            <option value="newest" selected="categoryPage.sortBy.currentSort == newest">Newest</option>
-            <option value="priceAsc" selected="categoryPage.sortBy.currentSort == priceAsc">Price: Low to High</option>
-            <option value="priceDesc" selected="categoryPage.sortBy.currentSort == priceDesc">Price: High to Low</option>
-            <option value="nameAsc" selected="categoryPage.sortBy.currentSort == nameAsc">Name: A-Z</option>
-            <option value="nameDesc" selected="categoryPage.sortBy.currentSort == nameDesc">Name: Z-A</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Filters Section -->
-      <div class="filters-section">
-        <h3>Filters</h3>
-        <div class="filter-group">
-          <label>Price Range</label>
-          <div class="price-inputs">
-            <input type="number" 
-                   class="input" 
-                   placeholder="Min"
-                   value="{categoryPage.filters.priceRange.minPrice}"
-                   ref="categoryPage.filters.priceRange.minPrice" />
-            <span>to</span>
-            <input type="number" 
-                   class="input" 
-                   placeholder="Max"
-                   value="{categoryPage.filters.priceRange.maxPrice}"
-                   ref="categoryPage.filters.priceRange.maxPrice" />
-            <button class="btn btn-secondary" ref="categoryPage.filters.priceRange.applyPriceFilter">
-              Apply
-            </button>
-          </div>
-        </div>
-        <div class="filter-group">
-          <label class="checkbox-label">
-            <input type="checkbox" 
-                   checked="{categoryPage.filters.inStockOnly}"
-                   ref="categoryPage.filters.inStockOnly" />
-            In stock only
-          </label>
-        </div>
-        <div class="filter-actions">
-          <button class="btn btn-secondary" ref="categoryPage.filters.clearFilters">
-            Clear Filters
-          </button>
-        </div>
-      </div>
-
-      <!-- Loading Overlay -->
-      <div class="loading-overlay" if="categoryPage.isLoading">
-        <div class="loading-spinner"></div>
-      </div>
-
       <!-- Empty State -->
       <div class="empty-state" if="!categoryPage.hasProducts">
         <h2>No products found</h2>
@@ -370,8 +217,9 @@
         <a href="/products" class="btn btn-primary">Browse All Products</a>
       </div>
 
-      <!-- Product Grid -->
+      <!-- Product Grid - Initial SSR products -->
       <div class="product-grid" if="categoryPage.hasProducts">
+        <!-- SSR Products (slow phase) -->
         <article class="product-card" 
                  forEach="categoryPage.products" 
                  trackBy="_id">
@@ -431,35 +279,89 @@
             </div>
           </div>
         </article>
+        
+        <!-- Dynamically Loaded Products (interactive phase) -->
+        <article class="product-card" 
+                 forEach="categoryPage.loadedProducts" 
+                 trackBy="_id">
+          <div class="product-card-wrapper">
+            <a href="{productUrl}" class="product-card-image">
+              <img src="{thumbnail.url}" alt="{thumbnail.altText}" loading="lazy" />
+              <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
+            </a>
+            
+            <div class="product-card-content">
+              <a href="{productUrl}" class="product-card-name">{name}</a>
+              <span class="brand-text" if="brand.name">{brand.name}</span>
+              
+              <div class="product-card-price">
+                <span class="price">{actualPriceRange.minValue.formattedAmount}</span>
+                <span class="compare-price" if="hasDiscount">{compareAtPriceRange.minValue.formattedAmount}</span>
+              </div>
+              
+              <div class="stock-badge badge-success" if="inventory.availabilityStatus == IN_STOCK">
+                <span class="stock-dot"></span>
+                In Stock
+              </div>
+              <div class="stock-badge badge-error" if="inventory.availabilityStatus == OUT_OF_STOCK">
+                <span class="stock-dot"></span>
+                Out of Stock
+              </div>
+              
+              <!-- SIMPLE: Regular add to cart -->
+              <button class="btn btn-secondary btn-block {isAddingToCart ? is-loading}" 
+                      ref="categoryPage.loadedProducts.addToCartButton"
+                      if="quickAddType == SIMPLE"
+                      disabled="inventory.availabilityStatus == OUT_OF_STOCK">
+                <span if="!isAddingToCart">Add to Cart</span>
+                <span if="isAddingToCart">Adding...</span>
+              </button>
+              
+              <!-- SINGLE_OPTION: Quick options -->
+              <div class="quick-options-area" if="quickAddType == SINGLE_OPTION">
+                <span class="select-option-hint">Select {quickOption.name}</span>
+                <div class="quick-options-buttons">
+                  <button class="quick-option-btn {!inStock ? out-of-stock} {isSelected ? selected}"
+                          forEach="quickOption.choices" 
+                          trackBy="choiceId"
+                          ref="categoryPage.loadedProducts.quickOption.choices.choiceButton"
+                          disabled="!inStock">
+                    {name}
+                  </button>
+                </div>
+              </div>
+              
+              <!-- NEEDS_CONFIGURATION: View Options -->
+              <a href="{productUrl}" 
+                 class="btn btn-secondary btn-block"
+                 ref="categoryPage.loadedProducts.viewOptionsButton"
+                 if="quickAddType == NEEDS_CONFIGURATION">
+                View Options
+              </a>
+            </div>
+          </div>
+        </article>
       </div>
 
-      <!-- Pagination -->
-      <nav class="pagination-section" if="categoryPage.pagination.totalPages > 1">
-        <button class="btn btn-secondary" 
-                ref="categoryPage.pagination.prevButton"
-                disabled="categoryPage.pagination.currentPage <= 1">
-          ← Previous
-        </button>
-        
-        <div class="page-numbers">
-          <button class="btn btn-secondary {isCurrent ? current}"
-                  forEach="categoryPage.pagination.pageNumbers"
-                  trackBy="pageNumber"
-                  ref="categoryPage.pagination.pageNumbers.pageButton">
-            {pageNumber}
-          </button>
-        </div>
-        
-        <span class="page-info">
-          Page {categoryPage.pagination.currentPage} of {categoryPage.pagination.totalPages}
+      <!-- Load More Section -->
+      <div class="load-more-section" if="categoryPage.hasProducts">
+        <span class="loaded-info">
+          Showing {categoryPage.loadedCount} of {categoryPage.numberOfProducts} products
         </span>
         
+        <!-- Loading indicator -->
+        <div class="loading-indicator" if="categoryPage.isLoading">
+          <div class="loading-spinner"></div>
+          <span>Loading more products...</span>
+        </div>
+        
+        <!-- Load more button -->
         <button class="btn btn-secondary" 
-                ref="categoryPage.pagination.nextButton"
-                disabled="categoryPage.pagination.currentPage >= categoryPage.pagination.totalPages">
-          Next →
+                ref="categoryPage.loadMoreButton"
+                if="categoryPage.hasMore && !categoryPage.isLoading">
+          Load More Products
         </button>
-      </nav>
+      </div>
     </div>
   </body>
 </html>

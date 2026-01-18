@@ -22,6 +22,10 @@ contracts:
     contract: category-page.jay-contract
     component: categoryPage
     description: Category page listing the details of the category and the products within
+  - name: category-list
+    contract: category-list.jay-contract
+    component: categoryList
+    description: Category list listing the categories
 
 # Server actions (named exports from main module)
 actions:

@@ -36,13 +36,6 @@ export interface SortByOfProductSearchViewState {
   currentSort: CurrentSort
 }
 
-export interface PaginationOfProductSearchViewState {
-  currentPage: number,
-  totalPages: number,
-  hasNextPage: boolean,
-  hasPrevPage: boolean
-}
-
 export interface SuggestionOfProductSearchViewState {
   suggestionId: string,
   suggestionText: string
@@ -60,7 +53,9 @@ export interface ProductSearchViewState {
   emptyStateMessage: string,
   filters: FilterOfProductSearchViewState,
   sortBy: SortByOfProductSearchViewState,
-  pagination: PaginationOfProductSearchViewState,
+  hasMore: boolean,
+  loadedCount: number,
+  totalCount: number,
   hasSuggestions: boolean,
   suggestions: Array<SuggestionOfProductSearchViewState>
 }
@@ -73,7 +68,7 @@ export type ProductSearchSlowViewState = Pick<ProductSearchViewState, 'searchFie
 };
 };
 
-export type ProductSearchFastViewState = Pick<ProductSearchViewState, 'searchExpression' | 'isSearching' | 'hasSearched' | 'searchResults' | 'resultCount' | 'hasResults' | 'hasSuggestions'> & {
+export type ProductSearchFastViewState = Pick<ProductSearchViewState, 'searchExpression' | 'isSearching' | 'hasSearched' | 'searchResults' | 'resultCount' | 'hasResults' | 'hasMore' | 'loadedCount' | 'totalCount' | 'hasSuggestions'> & {
     filters: Pick<ProductSearchViewState['filters'], 'inStockOnly'> & {
     priceRange: ProductSearchViewState['filters']['priceRange'];
     categoryFilter: {
@@ -81,11 +76,10 @@ export type ProductSearchFastViewState = Pick<ProductSearchViewState, 'searchExp
 };
 };
     sortBy: ProductSearchViewState['sortBy'];
-    pagination: ProductSearchViewState['pagination'];
     suggestions: Array<ProductSearchViewState['suggestions'][number]>;
 };
 
-export type ProductSearchInteractiveViewState = Pick<ProductSearchViewState, 'searchExpression' | 'isSearching' | 'hasSearched' | 'searchResults' | 'resultCount' | 'hasResults' | 'hasSuggestions'> & {
+export type ProductSearchInteractiveViewState = Pick<ProductSearchViewState, 'searchExpression' | 'isSearching' | 'hasSearched' | 'searchResults' | 'resultCount' | 'hasResults' | 'hasMore' | 'loadedCount' | 'totalCount' | 'hasSuggestions'> & {
     filters: Pick<ProductSearchViewState['filters'], 'inStockOnly'> & {
     priceRange: ProductSearchViewState['filters']['priceRange'];
     categoryFilter: {
@@ -93,7 +87,6 @@ export type ProductSearchInteractiveViewState = Pick<ProductSearchViewState, 'se
 };
 };
     sortBy: ProductSearchViewState['sortBy'];
-    pagination: ProductSearchViewState['pagination'];
     suggestions: Array<ProductSearchViewState['suggestions'][number]>;
 };
 
@@ -102,6 +95,7 @@ export interface ProductSearchRefs {
   searchExpression: HTMLElementProxy<ProductSearchViewState, HTMLInputElement>,
   searchButton: HTMLElementProxy<ProductSearchViewState, HTMLButtonElement>,
   clearSearchButton: HTMLElementProxy<ProductSearchViewState, HTMLButtonElement>,
+  loadMoreButton: HTMLElementProxy<ProductSearchViewState, HTMLButtonElement>,
   searchResults: ProductCardRepeatedRefs,
   filters: {
     inStockOnly: HTMLElementProxy<FilterOfProductSearchViewState, HTMLInputElement>,
@@ -120,11 +114,6 @@ export interface ProductSearchRefs {
   sortBy: {
     sortDropdown: HTMLElementProxy<SortByOfProductSearchViewState, HTMLSelectElement>
   },
-  pagination: {
-    prevButton: HTMLElementProxy<PaginationOfProductSearchViewState, HTMLButtonElement>,
-    nextButton: HTMLElementProxy<PaginationOfProductSearchViewState, HTMLButtonElement>,
-    loadMoreButton: HTMLElementProxy<PaginationOfProductSearchViewState, HTMLButtonElement>
-  },
   suggestions: {
     suggestionButton: HTMLElementCollectionProxy<SuggestionOfProductSearchViewState, HTMLButtonElement>
   }
@@ -135,6 +124,7 @@ export interface ProductSearchRepeatedRefs {
   searchExpression: HTMLElementCollectionProxy<ProductSearchViewState, HTMLInputElement>,
   searchButton: HTMLElementCollectionProxy<ProductSearchViewState, HTMLButtonElement>,
   clearSearchButton: HTMLElementCollectionProxy<ProductSearchViewState, HTMLButtonElement>,
+  loadMoreButton: HTMLElementCollectionProxy<ProductSearchViewState, HTMLButtonElement>,
   searchResults: ProductCardRepeatedRefs,
   filters: {
     inStockOnly: HTMLElementCollectionProxy<FilterOfProductSearchViewState, HTMLInputElement>,
@@ -152,11 +142,6 @@ export interface ProductSearchRepeatedRefs {
   },
   sortBy: {
     sortDropdown: HTMLElementCollectionProxy<SortByOfProductSearchViewState, HTMLSelectElement>
-  },
-  pagination: {
-    prevButton: HTMLElementCollectionProxy<PaginationOfProductSearchViewState, HTMLButtonElement>,
-    nextButton: HTMLElementCollectionProxy<PaginationOfProductSearchViewState, HTMLButtonElement>,
-    loadMoreButton: HTMLElementCollectionProxy<PaginationOfProductSearchViewState, HTMLButtonElement>
   },
   suggestions: {
     suggestionButton: HTMLElementCollectionProxy<SuggestionOfProductSearchViewState, HTMLButtonElement>

@@ -4,7 +4,7 @@ import {
     RenderPipeline,
     Signals
 } from '@jay-framework/fullstack-component';
-import { createSignal, createMemo, createEffect, Props } from '@jay-framework/component';
+import { createSignal, createEffect, Props } from '@jay-framework/component';
 import {
     CurrentSort,
     ProductSearchContract,
@@ -14,11 +14,10 @@ import {
     ProductSearchSlowViewState
 } from '../contracts/product-search.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
-import { patch, REPLACE } from '@jay-framework/json-patch';
+import { patch, REPLACE, ADD } from '@jay-framework/json-patch';
 import { searchProducts, ProductSortField } from '../actions/stores-actions';
 import { mapProductToCard } from '../utils/product-mapper';
-import { useGlobalContext } from '@jay-framework/runtime';
-import {WIX_STORES_CONTEXT, WixStoresContext} from '../contexts/wix-stores-context';
+import { WIX_STORES_CONTEXT, WixStoresContext } from '../contexts/wix-stores-context';
 
 /**
  * Search sort options
@@ -112,7 +111,7 @@ async function renderSlowlyChanging(
  * Loads dynamic data per request:
  * - Initial products
  * - Search results
- * - Pagination state
+ * - Load more state
  */
 async function renderFastChanging(
     props: PageProps,
@@ -129,15 +128,19 @@ async function renderFastChanging(
             })
                 .limit(PAGE_SIZE)
                 .find();
-            return productsResult.items || [];
+            
+            // Get total count - the Wix SDK returns items but not always total count
+            const items = productsResult.items || [];
+            const total = items.length; // Initial load, will be updated on search
+            
+            return { items, total };
         })
         .recover(error => {
             console.error('Failed to load products:', error);
-            return Pipeline.ok([]);
+            return Pipeline.ok({ items: [], total: 0 });
         })
-        .toPhaseOutput(products => {
-            const mappedProducts = products.map(p => mapProductToCard(p));
-            const totalPages = Math.ceil(products.length / PAGE_SIZE) || 1;
+        .toPhaseOutput(({ items, total }) => {
+            const mappedProducts = items.map(p => mapProductToCard(p));
 
             return {
                 viewState: {
@@ -145,8 +148,8 @@ async function renderFastChanging(
                     isSearching: false,
                     hasSearched: false,
                     searchResults: mappedProducts,
-                    resultCount: products.length,
-                    hasResults: products.length > 0,
+                    resultCount: items.length,
+                    hasResults: items.length > 0,
                     hasSuggestions: false,
                     suggestions: [],
                     filters: {
@@ -165,12 +168,9 @@ async function renderFastChanging(
                     sortBy: {
                         currentSort: CurrentSort.relevance
                     },
-                    pagination: {
-                        currentPage: 1,
-                        totalPages,
-                        hasNextPage: totalPages > 1,
-                        hasPrevPage: false
-                    }
+                    hasMore: items.length < total,
+                    loadedCount: items.length,
+                    totalCount: total
                 },
                 carryForward: {
                     searchFields: slowCarryForward.searchFields,
@@ -187,16 +187,10 @@ async function renderFastChanging(
  * - Search input and submission
  * - Filtering (categories, price, stock)
  * - Sorting
- * - Pagination
+ * - Load more button
  * - Search suggestions
  * 
  * All state updates use immutable patterns with the patch utility.
- * 
- * Search trigger pattern:
- * - `searchExpression` is for live input display (typing doesn't trigger search)
- * - `submittedSearchTerm` is updated only when search button is clicked
- * - The effect depends on `submittedSearchTerm`, `filters`, `sortBy`, `pagination`
- *   so it runs reactively when any of these change
  */
 function ProductSearchInteractive(
     props: Props<PageProps>,
@@ -217,21 +211,20 @@ function ProductSearchInteractive(
         suggestions: [suggestions, setSuggestions],
         filters: [filters, setFilters],
         sortBy: [sortBy, setSortBy],
-        pagination: [pagination, setPagination]
+        hasMore: [hasMore, setHasMore],
+        loadedCount: [loadedCount, setLoadedCount],
+        totalCount: [totalCount, setTotalCount]
     } = viewStateSignals;
 
     // Submitted search term - only updated when search button is clicked
-    // This separates "typing" from "searching"
     const [submittedSearchTerm, setSubmittedSearchTerm] = createSignal<string | null>(null);
-
-    // Computed pagination values
-    const totalPages = createMemo(() => Math.ceil(resultCount() / PAGE_SIZE) || 1);
-    const hasNextPage = createMemo(() => pagination().currentPage < totalPages());
-    const hasPrevPage = createMemo(() => pagination().currentPage > 1);
+    
+    // Current cursor for load more (internal state, not in view state)
+    let currentCursor: string | null = null;
 
     let isFirst = true;
     let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
-    let searchVersion = 0; // Incremented on each search to handle race conditions
+    let searchVersion = 0;
     const DEBOUNCE_MS = 300;
 
     // Map CurrentSort enum to action sort field
@@ -246,19 +239,17 @@ function ProductSearchInteractive(
         }
     };
 
-    // Perform the search - extracted so we can pass version for race condition handling
+    // Perform search (replaces results, resets cursor)
     const performSearch = async (
         version: number,
         searchTerm: string | null,
         currentFilters: ProductSearchFastViewState['filters'],
-        currentSort: CurrentSort,
-        currentPage: number
+        currentSort: CurrentSort
     ) => {
         setIsSearching(true);
         setHasSearched(true);
 
         try {
-            // Call the searchProducts action
             const result = await searchProducts({
                 query: searchTerm || '',
                 filters: {
@@ -270,89 +261,119 @@ function ProductSearchInteractive(
                     inStockOnly: currentFilters.inStockOnly
                 },
                 sortBy: mapSortToAction(currentSort),
-                page: currentPage,
+                // No cursor = start from beginning
                 pageSize: PAGE_SIZE
             });
 
-            // Check if a newer search was started - if so, ignore this result
+            // Check if a newer search was started
             if (version !== searchVersion) {
                 return;
             }
 
-            // Update the search results
             setSearchResults(result.products);
-            setResultCount(result.totalCount);
+            setResultCount(result.products.length);
+            setTotalCount(result.totalCount);
+            setLoadedCount(result.products.length);
+            setHasMore(result.hasMore);
             setHasResults(result.products.length > 0);
-            setPagination(patch(pagination(), [
-                { op: REPLACE, path: ['totalPages'], value: result.totalPages },
-                { op: REPLACE, path: ['hasNextPage'], value: result.hasNextPage },
-                { op: REPLACE, path: ['hasPrevPage'], value: currentPage > 1 }
-            ]));
+            
+            // Store cursor for load more
+            currentCursor = result.nextCursor;
 
         } catch (error) {
-            // Only log error if this is still the current search
             if (version === searchVersion) {
                 console.error('Search failed:', error);
             }
         } finally {
-            // Only update isSearching if this is still the current search
             if (version === searchVersion) {
                 setIsSearching(false);
             }
         }
     };
 
-    // Reactive search effect - runs when any search parameter changes
-    // Depends on: submittedSearchTerm, filters, sortBy, pagination (all reactive)
+    // Load more (appends results using cursor)
+    const performLoadMore = async () => {
+        if (isSearching() || !hasMore() || !currentCursor) return;
+
+        setIsSearching(true);
+
+        try {
+            const currentFilters = filters();
+            const currentSort = sortBy().currentSort;
+            const searchTerm = submittedSearchTerm();
+
+            const result = await searchProducts({
+                query: searchTerm || '',
+                filters: {
+                    minPrice: currentFilters.priceRange.minPrice || undefined,
+                    maxPrice: currentFilters.priceRange.maxPrice || undefined,
+                    categoryIds: currentFilters.categoryFilter.categories
+                        .filter(c => c.isSelected)
+                        .map(c => c.categoryId),
+                    inStockOnly: currentFilters.inStockOnly
+                },
+                sortBy: mapSortToAction(currentSort),
+                cursor: currentCursor,
+                pageSize: PAGE_SIZE
+            });
+
+            // Append new products to existing results
+            const currentResults = searchResults();
+            const newResults = [...currentResults, ...result.products];
+            
+            setSearchResults(newResults);
+            setResultCount(newResults.length);
+            setLoadedCount(newResults.length);
+            setHasMore(result.hasMore);
+            
+            // Update cursor for next load
+            currentCursor = result.nextCursor;
+
+        } catch (error) {
+            console.error('Load more failed:', error);
+        } finally {
+            setIsSearching(false);
+        }
+    };
+
+    // Reactive search effect - runs when search parameters change
     createEffect(() => {
-        // Access all reactive dependencies
         const searchTerm = submittedSearchTerm();
         const currentFilters = filters();
         const currentSort = sortBy().currentSort;
-        const currentPage = pagination().currentPage;
 
-        // Skip the initial run
         if (isFirst) {
             isFirst = false;
             return;
         }
 
-        // Clear any pending debounced search
         if (debounceTimeout) {
             clearTimeout(debounceTimeout);
         }
 
-        // Debounce the search
         debounceTimeout = setTimeout(() => {
-            // Increment version to invalidate any in-flight searches
             searchVersion++;
             const version = searchVersion;
-            performSearch(version, searchTerm, currentFilters, currentSort, currentPage);
+            performSearch(version, searchTerm, currentFilters, currentSort);
         }, DEBOUNCE_MS);
     });
 
-    // Search input handler - only updates live input, does not trigger search
+    // Search input handler
     refs.searchExpression.oninput(({ event }) => {
         const value = (event.target as HTMLInputElement).value;
         setSearchExpression(value);
     });
 
-    // Enter key in search input - triggers search
+    // Enter key triggers search
     refs.searchExpression.onkeydown(({ event }) => {
         if ((event as KeyboardEvent).key === 'Enter') {
             event.preventDefault();
-            setPagination(patch(pagination(), [
-                { op: REPLACE, path: ['currentPage'], value: 1 }
-            ]));
             setSubmittedSearchTerm(searchExpression().trim());
         }
     });
 
-    // Search button click - submits the current search term, triggering the effect
+    // Search button click
     refs.searchButton.onclick(() => {
-        setPagination(patch(pagination(), [
-            { op: REPLACE, path: ['currentPage'], value: 1 }
-        ]));
         setSubmittedSearchTerm(searchExpression().trim());
     });
 
@@ -361,12 +382,9 @@ function ProductSearchInteractive(
         setSearchExpression('');
         setSubmittedSearchTerm(null);
         setHasSearched(false);
-        setPagination(patch(pagination(), [
-            { op: REPLACE, path: ['currentPage'], value: 1 }
-        ]));
     });
 
-    // Sorting dropdown - updates sort, effect runs automatically if search was submitted
+    // Sorting dropdown
     refs.sortBy.sortDropdown.oninput(({ event }) => {
         const value = (event.target as HTMLSelectElement).value;
         const sortMap: Record<string, CurrentSort> = {
@@ -379,14 +397,9 @@ function ProductSearchInteractive(
         };
         const newSort = sortMap[value] ?? CurrentSort.relevance;
         setSortBy({ currentSort: newSort });
-        // Reset to page 1 when sort changes
-        setPagination(patch(pagination(), [
-            { op: REPLACE, path: ['currentPage'], value: 1 }
-        ]));
-        // Effect will run automatically since sortBy and pagination are dependencies
     });
 
-    // Price range filters - update filters immutably
+    // Price range filters
     refs.filters.priceRange.minPrice.oninput(({ event }) => {
         const value = parseFloat((event.target as HTMLInputElement).value);
         const newValue = isNaN(value) ? 0 : value;
@@ -403,7 +416,7 @@ function ProductSearchInteractive(
         ]));
     });
 
-    // Category filter checkboxes - update categories immutably
+    // Category filter checkboxes
     refs.filters.categoryFilter.categories.isSelected.oninput(({ event, coordinate }) => {
         const [categoryId] = coordinate;
         const currentFilters = filters();
@@ -427,22 +440,16 @@ function ProductSearchInteractive(
         ]));
     });
 
-    // Apply filters button - reset to page 1, effect runs automatically
+    // Apply filters button
     refs.filters.applyFilters.onclick(() => {
-        setPagination(patch(pagination(), [
-            { op: REPLACE, path: ['currentPage'], value: 1 }
-        ]));
-        // If user hasn't searched yet, submit the current search term
         if (submittedSearchTerm() === null) {
             setSubmittedSearchTerm(searchExpression().trim());
         }
-        // Effect will run automatically since filters and pagination are dependencies
     });
 
-    // Clear filters button - reset all filter values
+    // Clear filters button
     refs.filters.clearFilters.onclick(() => {
         const currentFilters = filters();
-        // Reset all category selections
         const clearedCategories = currentFilters.categoryFilter.categories.map(cat => ({
             ...cat,
             isSelected: false
@@ -453,89 +460,50 @@ function ProductSearchInteractive(
             categoryFilter: { categories: clearedCategories },
             inStockOnly: false
         });
-        
-        setPagination(patch(pagination(), [
-            { op: REPLACE, path: ['currentPage'], value: 1 }
-        ]));
-        // Effect will run automatically since filters and pagination are dependencies
     });
 
-    // Pagination - previous page
-    refs.pagination.prevButton.onclick(() => {
-        const currentPage = pagination().currentPage;
-        if (currentPage > 1) {
-            setPagination(patch(pagination(), [
-                { op: REPLACE, path: ['currentPage'], value: currentPage - 1 }
-            ]));
-            // Effect will run automatically since pagination is a dependency
-        }
+    // Load more button
+    refs.loadMoreButton.onclick(() => {
+        performLoadMore();
     });
 
-    // Pagination - next page
-    refs.pagination.nextButton.onclick(() => {
-        const currentPage = pagination().currentPage;
-        setPagination(patch(pagination(), [
-            { op: REPLACE, path: ['currentPage'], value: currentPage + 1 }
-        ]));
-        // Effect will run automatically since pagination is a dependency
-    });
-
-    // Load more button (infinite scroll alternative)
-    refs.pagination.loadMoreButton.onclick(() => {
-        const currentPage = pagination().currentPage;
-        setPagination(patch(pagination(), [
-            { op: REPLACE, path: ['currentPage'], value: currentPage + 1 }
-        ]));
-        // Effect will run automatically since pagination is a dependency
-    });
-
-    // Suggestion clicks - set search term and submit
+    // Suggestion clicks
     refs.suggestions.suggestionButton.onclick(({ coordinate }) => {
         const [suggestionId] = coordinate;
         const suggestion = suggestions().find(s => s.suggestionId === suggestionId);
         if (suggestion) {
             setSearchExpression(suggestion.suggestionText);
-            setPagination(patch(pagination(), [
-                { op: REPLACE, path: ['currentPage'], value: 1 }
-            ]));
             setSubmittedSearchTerm(suggestion.suggestionText);
-            // Effect will run automatically since submittedSearchTerm is a dependency
         }
     });
 
-    // Product card add to cart (SIMPLE products - no options)
+    // Product card add to cart (SIMPLE products)
     refs.searchResults.addToCartButton.onclick(async ({ coordinate }) => {
         const [productId] = coordinate;
         
-        // Find the product in results and set loading state
         const currentResults = searchResults();
         const productIndex = currentResults.findIndex(p => p._id === productId);
         if (productIndex === -1) return;
 
-        // Update loading state for this product
         setSearchResults(patch(currentResults, [
             { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: true }
         ]));
 
         try {
-            // Add to cart - signals are updated automatically
             await storesContext.addToCart(productId, 1);
-            console.log('Added to cart: 1 item');
         } catch (error) {
             console.error('Failed to add to cart:', error);
         } finally {
-            // Reset loading state
             setSearchResults(patch(searchResults(), [
                 { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: false }
             ]));
         }
     });
 
-    // Quick option choice click (SINGLE_OPTION products - click = add to cart)
+    // Quick option choice click (SINGLE_OPTION products)
     refs.searchResults.quickOption.choices.choiceButton.onclick(async ({ coordinate }) => {
         const [productId, choiceId] = coordinate;
         
-        // Find the product and choice
         const currentResults = searchResults();
         const productIndex = currentResults.findIndex(p => p._id === productId);
         if (productIndex === -1) return;
@@ -548,30 +516,27 @@ function ProductSearchInteractive(
             return;
         }
 
-        // Update loading state for this product
         setSearchResults(patch(currentResults, [
             { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: true }
         ]));
 
         try {
-            // Add the specific variant to cart
-            const optionId = product.quickOption._id
+            const optionId = product.quickOption._id;
             await storesContext.addToCart(productId, 1, {
-                options: {[optionId]: choice.choiceId},
+                options: { [optionId]: choice.choiceId },
                 modifiers: {},
                 customTextFields: {}
             });
         } catch (error) {
             console.error('Failed to add to cart:', error);
         } finally {
-            // Reset loading state
             setSearchResults(patch(searchResults(), [
                 { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: false }
             ]));
         }
     });
 
-    // View options button (NEEDS_CONFIGURATION products - navigate to product page)
+    // View options button (NEEDS_CONFIGURATION products)
     refs.searchResults.viewOptionsButton.onclick(({ coordinate }) => {
         const [productId] = coordinate;
         const product = searchResults().find(p => p._id === productId);
@@ -592,12 +557,9 @@ function ProductSearchInteractive(
             suggestions: suggestions(),
             filters: filters(),
             sortBy: sortBy(),
-            pagination: {
-                currentPage: pagination().currentPage,
-                totalPages: totalPages(),
-                hasNextPage: hasNextPage(),
-                hasPrevPage: hasPrevPage()
-            }
+            hasMore: hasMore(),
+            loadedCount: loadedCount(),
+            totalCount: totalCount()
         })
     };
 }
@@ -606,18 +568,16 @@ function ProductSearchInteractive(
  * Product Search Full-Stack Component
  * 
  * A complete headless product search component with server-side rendering,
- * filtering, sorting, pagination, and search suggestions.
+ * filtering, sorting, and "load more" functionality.
  * 
  * Rendering phases:
  * - Slow: Categories for filtering (relatively static)
- * - Fast: Products, search results, pagination (dynamic per request)
- * - Interactive: Search input, filter selections, sorting (client-side)
+ * - Fast: Products, search results, load more state (dynamic per request)
+ * - Interactive: Search input, filter selections, sorting, load more (client-side)
  * 
  * Usage:
  * ```typescript
  * import { productSearch } from '@jay-framework/wix-stores';
- * 
- * // Render the search component at /products route
  * ```
  */
 export const productSearch = makeJayStackComponent<ProductSearchContract>()

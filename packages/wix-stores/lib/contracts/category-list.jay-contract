@@ -1,0 +1,50 @@
+name: category-list
+tags:
+  # List of visible categories
+  - tag: categories
+    type: sub-contract
+    repeated: true
+    trackBy: _id
+    description: List of visible store categories
+    tags:
+      - tag: _id
+        type: data
+        dataType: string
+        description: Category GUID
+        
+      - tag: name
+        type: data
+        dataType: string
+        required: true
+        description: Category name
+        
+      - tag: slug
+        type: data
+        dataType: string
+        description: Category slug for URL
+        
+      - tag: description
+        type: data
+        dataType: string
+        description: Category description
+        
+      - tag: productCount
+        type: data
+        dataType: number
+        description: Number of products in category
+        
+      - tag: imageUrl
+        type: data
+        dataType: string
+        description: Category image URL
+        
+      - tag: categoryLink
+        type: interactive
+        elementType: HTMLAnchorElement
+        description: Link to category page
+
+  # Empty state
+  - tag: hasCategories
+    type: variant
+    dataType: boolean
+    description: Whether there are any categories
