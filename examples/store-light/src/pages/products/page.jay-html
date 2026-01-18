@@ -404,7 +404,7 @@
             <span class="label">Category</span>
             <div class="filter-categories">
               <label 
-                class="category-chip" 
+                class="category-chip {isSelected ? selected}" 
                 forEach="productSearch.filters.categoryFilter.categories" 
                 trackBy="categoryId"
               >
@@ -419,7 +419,7 @@
 
           <!-- In Stock Toggle -->
           <div class="filter-group-inline">
-            <label class="category-chip">
+            <label class="category-chip {productSearch.filters.inStockOnly ? selected}">
               <input 
                 type="checkbox"
                 ref="productSearch.filters.inStockOnly"
