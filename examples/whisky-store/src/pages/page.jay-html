@@ -1,0 +1,264 @@
+<html>
+  <head>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="category-list"
+            key="categoryList"
+    ></script>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="cart-indicator"
+            key="cartIndicator"
+    ></script>
+    <script type="application/jay-data">
+      data:
+    </script>
+    <link rel="stylesheet" href="../styles/whisky-theme.css" />
+    <style>
+      .home-page {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        padding: var(--section-gap) var(--page-padding);
+      }
+
+      /* Hero section */
+      .hero-section {
+        text-align: center;
+        padding: 60px 40px;
+        margin-bottom: 48px;
+        background: linear-gradient(135deg, var(--bg-header) 0%, var(--navy-light) 100%);
+        border-radius: var(--radius-lg);
+        color: var(--text-inverse);
+      }
+
+      .hero-section h1 {
+        font-family: var(--font-serif);
+        font-size: 3.5rem;
+        font-weight: 600;
+        margin-bottom: 16px;
+        color: var(--text-inverse);
+      }
+
+      .hero-section h1 span {
+        color: var(--accent);
+      }
+
+      .hero-section p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        max-width: 500px;
+        margin: 0 auto 28px;
+      }
+
+      .hero-cta {
+        display: inline-flex;
+        gap: 12px;
+      }
+
+      /* Categories section */
+      .categories-section {
+        margin-bottom: 48px;
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+
+      .section-header h2 {
+        font-family: var(--font-serif);
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .section-header a {
+        color: var(--navy);
+        font-weight: 500;
+        font-size: 14px;
+      }
+
+      .section-header a:hover {
+        color: var(--accent);
+      }
+
+      /* Categories grid */
+      .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 20px;
+      }
+
+      /* Category card */
+      .category-card {
+        position: relative;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        transition: all var(--transition-base);
+      }
+
+      .category-card:hover {
+        box-shadow: var(--shadow-card-hover);
+        transform: translateY(-2px);
+      }
+
+      .category-card-link {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .category-card-image {
+        width: 100%;
+        height: 140px;
+        background: linear-gradient(135deg, var(--bg-header) 0%, var(--navy-light) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      .category-card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .category-card-image .placeholder-icon {
+        font-size: 2.5rem;
+      }
+
+      .category-card-content {
+        padding: 16px;
+      }
+
+      .category-card-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+      }
+
+      .category-card-count {
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+
+      .category-card-arrow {
+        position: absolute;
+        bottom: 16px;
+        right: 16px;
+        font-size: 1rem;
+        color: var(--accent);
+        opacity: 0;
+        transition: opacity var(--transition-fast);
+      }
+
+      .category-card:hover .category-card-arrow {
+        opacity: 1;
+      }
+
+      /* Empty state */
+      .empty-state {
+        text-align: center;
+        padding: 48px 32px;
+        background: var(--bg-card);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border);
+      }
+
+      .empty-state h3 {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+        color: var(--text-primary);
+      }
+
+      .empty-state p {
+        color: var(--text-secondary);
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-wrapper">
+    <!-- Site Header -->
+    <header class="site-header">
+      <div class="header-top">
+        <a href="/" class="site-logo">
+          WHISKY <span class="logo-accent">store</span>
+        </a>
+        
+        <div class="header-actions">
+          <a href="/products" class="header-link">Products</a>
+          <a href="/cart" 
+             class="cart-indicator {cartIndicator.hasItems ? has-items} {cartIndicator.isLoading ? is-loading}" 
+             ref="cartIndicator.cartLink">
+            <span class="cart-indicator-icon">🛒</span>
+            <span>Basket</span>
+            <span class="cart-indicator-count" if="cartIndicator.hasItems">{cartIndicator.itemCount}</span>
+          </a>
+        </div>
+      </div>
+      
+      <nav class="main-nav">
+        <ul class="nav-links">
+          <li><a href="/" class="active">Home</a></li>
+          <li><a href="/products">All Products</a></li>
+          <li><a href="/products">Whisky</a></li>
+          <li><a href="/products">Rum</a></li>
+          <li><a href="/products">Gin</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <div class="home-page">
+      <!-- Hero Section -->
+      <section class="hero-section">
+        <h1>Welcome to <span>Whisky</span> Store</h1>
+        <p>Discover our curated collection of premium spirits from around the world.</p>
+        <div class="hero-cta">
+          <a href="/products" class="btn btn-primary btn-lg">Browse Collection</a>
+        </div>
+      </section>
+
+      <!-- Categories Section -->
+      <section class="categories-section">
+        <div class="section-header">
+          <h2>Shop by Category</h2>
+          <a href="/products">View all products →</a>
+        </div>
+
+        <!-- Categories Grid -->
+        <div class="categories-grid" if="categoryList.hasCategories">
+          <article class="category-card" 
+                   forEach="categoryList.categories" 
+                   trackBy="_id">
+            <a href="/categories/{slug}" class="category-card-link" ref="categoryList.categories.categoryLink">
+              <div class="category-card-image">
+                <img src="{imageUrl}" alt="{name}" if="imageUrl" loading="lazy" />
+                <span class="placeholder-icon" if="!imageUrl">🥃</span>
+              </div>
+              <div class="category-card-content">
+                <h3 class="category-card-name">{name}</h3>
+                <span class="category-card-count">{productCount} products</span>
+              </div>
+              <span class="category-card-arrow">→</span>
+            </a>
+          </article>
+        </div>
+
+        <!-- Empty state -->
+        <div class="empty-state" if="!categoryList.hasCategories">
+          <h3>No Categories Yet</h3>
+          <p>Categories will appear here once they're created.</p>
+          <a href="/products" class="btn btn-primary">Browse All Products</a>
+        </div>
+      </section>
+    </div>
+    </div>
+  </body>
+</html>

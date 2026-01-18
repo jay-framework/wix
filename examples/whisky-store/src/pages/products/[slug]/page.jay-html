@@ -1,0 +1,233 @@
+<html>
+  <head>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="product-page"
+            key="productPage"
+    ></script>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="cart-indicator"
+            key="cartIndicator"
+    ></script>
+    <script type="application/jay-data">
+      data:
+    </script>
+    <link rel="stylesheet" href="../../../styles/whisky-theme.css" />
+    <style>
+      .product-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: var(--section-gap) var(--page-padding);
+      }
+
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--text-secondary);
+        font-size: 14px;
+        margin-bottom: 24px;
+        transition: color var(--transition-base);
+      }
+
+      .back-link:hover {
+        color: var(--text-primary);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-wrapper">
+    <!-- Site Header -->
+    <header class="site-header">
+      <div class="header-top">
+        <a href="/" class="site-logo">
+          WHISKY <span class="logo-accent">store</span>
+        </a>
+        
+        <div class="header-actions">
+          <a href="/products" class="header-link">Products</a>
+          <a href="/cart" 
+             class="cart-indicator {cartIndicator.hasItems ? has-items} {cartIndicator.isLoading ? is-loading} {cartIndicator.justAdded ? just-added}" 
+             ref="cartIndicator.cartLink">
+            <span class="cart-indicator-icon">🛒</span>
+            <span>Basket</span>
+            <span class="cart-indicator-count" if="cartIndicator.hasItems">{cartIndicator.itemCount}</span>
+          </a>
+        </div>
+      </div>
+      
+      <nav class="main-nav">
+        <ul class="nav-links">
+          <li><a href="/products">All Products</a></li>
+          <li><a href="/products">Whisky</a></li>
+          <li><a href="/products">Rum</a></li>
+          <li><a href="/products">Gin</a></li>
+          <li><a href="/products">Other</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <div class="product-page">
+      <!-- Back Link -->
+      <a href="/products" class="back-link">
+        ← Back to Products
+      </a>
+
+      <div class="product-page-layout">
+        <!-- Gallery Section -->
+        <div class="product-gallery">
+          <div class="product-main-image">
+            <img src="{productPage.mediaGallery.selectedMedia.url}" alt="{productPage.productName}" />
+          </div>
+          <div class="product-thumbnails">
+            <div class="product-thumbnail {selected == selected ? selected}"
+                 forEach="productPage.mediaGallery.availableMedia" 
+                 trackBy="mediaId"
+                 ref="productPage.mediaGallery.availableMedia.selected">
+              <img src="{media.thumbnail_50x50}" alt="Product thumbnail" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Details Section -->
+        <div class="product-details">
+          <!-- Ribbon -->
+          <div class="badge badge-accent" style="margin-bottom: 16px;" if="productPage.ribbon">{productPage.ribbon}</div>
+
+          <!-- Product Type -->
+          <div class="product-type-badge physical" if="productPage.productType == PHYSICAL">
+            📦 Physical Product
+          </div>
+          <div class="product-type-badge digital" if="productPage.productType == DIGITAL">
+            ⚡ Digital Product
+          </div>
+
+          <!-- Brand -->
+          <div class="product-meta" if="productPage.brand">{productPage.brand}</div>
+
+          <!-- Product Name -->
+          <h1 class="product-name">{productPage.productName}</h1>
+
+          <!-- SKU -->
+          <div class="product-sku" if="productPage.sku">SKU: {productPage.sku}</div>
+
+          <!-- Price -->
+          <div class="product-price">
+            <span class="price">{productPage.price}</span>
+            <span class="strikethrough-price" if="productPage.strikethroughPrice">{productPage.strikethroughPrice}</span>
+          </div>
+          <div class="product-meta" if="productPage.pricePerUnit">Price per Unit: {productPage.pricePerUnit}</div>
+
+          <!-- Stock Status -->
+          <div class="badge badge-success" if="productPage.stockStatus == IN_STOCK" style="margin-bottom: 24px;">
+            In Stock
+          </div>
+          <div class="badge badge-error" if="productPage.stockStatus == OUT_OF_STOCK" style="margin-bottom: 24px;">
+            Out of Stock
+          </div>
+
+          <!-- Description -->
+          <div class="product-description" if="productPage.description">{productPage.description}</div>
+
+          <!-- Options (Variants like Size) -->
+          <div class="product-options" if="productPage.options">
+            <div class="option-group" forEach="productPage.options" trackBy="_id">
+              <div class="option-label">{name}</div>
+              
+              <!-- Text Choices as Dropdown -->
+              <select class="select" 
+                      if="optionRenderType == TEXT_CHOICES"
+                      ref="productPage.options.textChoice">
+                <option forEach="choices" trackBy="choiceId" value="{choiceId}">{name}</option>
+              </select>
+
+              <!-- Color Swatch Choices -->
+              <div class="option-choices" if="optionRenderType == COLOR_SWATCH_CHOICES">
+                <button class="choice-btn color-swatch {isSelected ? selected} {!inStock ? out-of-stock}"
+                        style="background-color: {colorCode}"
+                        forEach="choices" 
+                        trackBy="choiceId"
+                        ref="productPage.options.choices.choiceButton"
+                        title="{name}">
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modifiers -->
+          <div class="product-options" if="productPage.modifiers">
+            <div class="option-group" forEach="productPage.modifiers" trackBy="_id">
+              <div class="option-label">{name}</div>
+              
+              <!-- Text Choices Dropdown -->
+              <select class="select" 
+                      if="modifierType == TEXT_CHOICES"
+                      ref="productPage.modifiers.textModifier">
+                <option forEach="choices" trackBy="choiceId" value="{choiceId}">{name}</option>
+              </select>
+
+              <!-- Color Swatch Choices -->
+              <div class="option-choices" if="modifierType == COLOR_SWATCH_CHOICES">
+                <button class="choice-btn color-swatch {isSelected ? selected}"
+                        style="background-color: {colorCode}"
+                        forEach="choices" 
+                        trackBy="choiceId"
+                        ref="choiceButton"
+                        title="{name}">
+                </button>
+              </div>
+
+              <!-- Free Text Input -->
+              <input class="input" 
+                     type="text" 
+                     if="modifierType == FREE_TEXT"
+                     ref="productPage.modifiers.textInput"
+                     placeholder="Enter your custom text"
+                     maxlength="{textInputLength}" />
+            </div>
+          </div>
+
+          <!-- Quantity -->
+          <div class="quantity-section">
+            <div class="option-label">Quantity</div>
+            <div class="quantity-controls">
+              <button class="quantity-btn" ref="productPage.quantity.decrementButton">−</button>
+              <input class="quantity-input" 
+                     type="number" 
+                     value="{productPage.quantity.quantity}" 
+                     ref="productPage.quantity.quantity"
+                     min="1" />
+              <button class="quantity-btn" ref="productPage.quantity.incrementButton">+</button>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="product-actions">
+            <button class="btn btn-primary btn-lg" 
+                    style="flex: 1;"
+                    ref="productPage.addToCartButton"
+                    disabled="!productPage.actionsEnabled">
+              Add to Cart
+            </button>
+            <button class="btn btn-secondary btn-lg" 
+                    style="flex: 1;"
+                    ref="productPage.buyNowButton"
+                    disabled="!productPage.actionsEnabled">
+              Buy Now
+            </button>
+          </div>
+
+          <!-- Info Sections -->
+          <div class="info-sections" if="productPage.infoSections">
+            <div class="info-section" forEach="productPage.infoSections" trackBy="_id">
+              <div class="info-section-title">{title}</div>
+              <div class="info-section-content">{plainDescription}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </body>
+</html>
