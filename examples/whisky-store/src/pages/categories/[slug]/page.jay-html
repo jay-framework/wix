@@ -1,0 +1,365 @@
+<html>
+  <head>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="category-page"
+            key="categoryPage"
+    ></script>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="cart-indicator"
+            key="cartIndicator"
+    ></script>
+    <script type="application/jay-data">
+      data:
+    </script>
+    <link rel="stylesheet" href="../../../styles/whisky-theme.css" />
+    <style>
+      /* Category page styles */
+      .category-page {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        padding: var(--section-gap) var(--page-padding);
+      }
+
+      /* Breadcrumbs */
+      .breadcrumbs {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 24px;
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+
+      .breadcrumbs a {
+        color: var(--text-secondary);
+        transition: color var(--transition-fast);
+      }
+
+      .breadcrumbs a:hover {
+        color: var(--accent);
+      }
+
+      .breadcrumbs .separator {
+        color: var(--text-muted);
+      }
+
+      /* Category header */
+      .category-header {
+        margin-bottom: 32px;
+        text-align: center;
+      }
+
+      .category-header h1 {
+        font-family: var(--font-serif);
+        font-size: 2.5rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: var(--text-primary);
+      }
+
+      .category-header .description {
+        font-size: 1rem;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto 12px;
+      }
+
+      .category-header .product-count {
+        display: inline-block;
+        padding: 6px 14px;
+        background: var(--bg-hover);
+        border-radius: var(--radius-full);
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+
+      /* Category hero image */
+      .category-hero {
+        width: 100%;
+        height: 200px;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        margin-bottom: 32px;
+        background: linear-gradient(135deg, var(--bg-header) 0%, var(--navy-light) 100%);
+      }
+
+      .category-hero img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Product grid */
+      .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 24px;
+      }
+
+      /* Load more section */
+      .load-more-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        margin-top: 32px;
+        padding: 20px;
+      }
+
+      .load-more-section .loaded-info {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+
+      /* Loading state */
+      .loading-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 16px;
+        color: var(--text-secondary);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-wrapper">
+    <!-- Site Header -->
+    <header class="site-header">
+      <div class="header-top">
+        <a href="/" class="site-logo">
+          WHISKY <span class="logo-accent">store</span>
+        </a>
+        
+        <div class="header-actions">
+          <a href="/products" class="header-link">Products</a>
+          <a href="/cart" 
+             class="cart-indicator {cartIndicator.hasItems ? has-items} {cartIndicator.isLoading ? is-loading}" 
+             ref="cartIndicator.cartLink">
+            <span class="cart-indicator-icon">🛒</span>
+            <span>Basket</span>
+            <span class="cart-indicator-count" if="cartIndicator.hasItems">{cartIndicator.itemCount}</span>
+          </a>
+        </div>
+      </div>
+      
+      <nav class="main-nav">
+        <ul class="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/products">All Products</a></li>
+          <li><a href="/products">Whisky</a></li>
+          <li><a href="/products">Rum</a></li>
+          <li><a href="/products">Gin</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <div class="category-page">
+      <!-- Breadcrumbs -->
+      <nav class="breadcrumbs">
+        <a href="/">Home</a>
+        <span class="separator">/</span>
+        <span forEach="categoryPage.breadcrumbs" trackBy="categoryId">
+          <a href="/categories/{categorySlug}" 
+             ref="categoryPage.breadcrumbs.categoryLink">
+            {categoryName}
+          </a>
+          <span class="separator">/</span>
+        </span>
+      </nav>
+
+      <!-- Category Hero Image (if has media) -->
+      <div class="category-hero" if="categoryPage.media.mainMedia">
+        <img src="{categoryPage.media.mainMedia.url}" alt="{categoryPage.media.mainMedia.altText}" />
+      </div>
+
+      <!-- Category Header -->
+      <header class="category-header">
+        <h1>{categoryPage.name}</h1>
+        <p class="description" if="categoryPage.description">{categoryPage.description}</p>
+        <span class="product-count">{categoryPage.numberOfProducts} products</span>
+      </header>
+
+      <!-- Empty State -->
+      <div class="empty-state" if="!categoryPage.hasProducts">
+        <div class="empty-state-icon">🥃</div>
+        <h3 class="empty-state-title">No products found</h3>
+        <p class="empty-state-message">This category doesn't have any products yet.</p>
+        <a href="/products" class="btn btn-primary">Browse All Products</a>
+      </div>
+
+      <!-- Product Grid - Initial SSR products -->
+      <div class="product-grid" if="categoryPage.hasProducts">
+        <!-- SSR Products -->
+        <article class="product-card {isAddingToCart ? is-adding}" 
+                 forEach="categoryPage.products" 
+                 trackBy="_id">
+          <a href="{productUrl}" class="product-card-image">
+            <img src="{thumbnail.url}" alt="{thumbnail.altText}" loading="lazy" />
+            <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
+            <span class="badge badge-success stock-badge" if="inventory.availabilityStatus == IN_STOCK">
+              In Stock
+            </span>
+            <span class="badge badge-error stock-badge" if="inventory.availabilityStatus == OUT_OF_STOCK">
+              Out of Stock
+            </span>
+          </a>
+          
+          <div class="product-card-content">
+            <h3 class="product-card-name">
+              <a href="{productUrl}">{name}</a>
+            </h3>
+            <p class="product-card-meta" if="brand.name">{brand.name}</p>
+            
+            <div class="product-rating">
+              <div class="stars">
+                <span class="star filled">★</span>
+                <span class="star filled">★</span>
+                <span class="star filled">★</span>
+                <span class="star filled">★</span>
+                <span class="star">★</span>
+              </div>
+            </div>
+            
+            <div class="product-card-price">
+              <span class="current-price">{actualPriceRange.minValue.formattedAmount}</span>
+              <span class="original-price" if="hasDiscount">{compareAtPriceRange.minValue.formattedAmount}</span>
+            </div>
+            
+            <!-- SIMPLE: Regular add to cart -->
+            <button class="btn btn-primary btn-block" 
+                    ref="categoryPage.products.addToCartButton"
+                    if="quickAddType == SIMPLE && inventory.availabilityStatus == IN_STOCK">
+              Add to cart
+            </button>
+            
+            <!-- SINGLE_OPTION: Quick options -->
+            <div class="quick-options-area" if="quickAddType == SINGLE_OPTION && inventory.availabilityStatus != OUT_OF_STOCK">
+              <span class="select-option-hint">Select {quickOption.name}</span>
+              <div class="quick-options-buttons">
+                <button class="quick-option-btn {!inStock ? out-of-stock}"
+                        forEach="quickOption.choices" 
+                        trackBy="choiceId"
+                        ref="categoryPage.products.quickOption.choices.choiceButton"
+                        disabled="!inStock">
+                  {name}
+                </button>
+              </div>
+            </div>
+            
+            <!-- NEEDS_CONFIGURATION: View Options -->
+            <a href="{productUrl}" 
+               class="btn btn-secondary btn-block"
+               if="quickAddType == NEEDS_CONFIGURATION && inventory.availabilityStatus != OUT_OF_STOCK">
+              View Options
+            </a>
+            
+            <!-- Out of stock -->
+            <button class="btn btn-ghost btn-block" 
+                    disabled
+                    if="inventory.availabilityStatus == OUT_OF_STOCK">
+              Out of Stock
+            </button>
+          </div>
+        </article>
+        
+        <!-- Dynamically Loaded Products -->
+        <article class="product-card {isAddingToCart ? is-adding}" 
+                 forEach="categoryPage.loadedProducts" 
+                 trackBy="_id">
+          <a href="{productUrl}" class="product-card-image">
+            <img src="{thumbnail.url}" alt="{thumbnail.altText}" loading="lazy" />
+            <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
+            <span class="badge badge-success stock-badge" if="inventory.availabilityStatus == IN_STOCK">
+              In Stock
+            </span>
+            <span class="badge badge-error stock-badge" if="inventory.availabilityStatus == OUT_OF_STOCK">
+              Out of Stock
+            </span>
+          </a>
+          
+          <div class="product-card-content">
+            <h3 class="product-card-name">
+              <a href="{productUrl}">{name}</a>
+            </h3>
+            <p class="product-card-meta" if="brand.name">{brand.name}</p>
+            
+            <div class="product-rating">
+              <div class="stars">
+                <span class="star filled">★</span>
+                <span class="star filled">★</span>
+                <span class="star filled">★</span>
+                <span class="star filled">★</span>
+                <span class="star">★</span>
+              </div>
+            </div>
+            
+            <div class="product-card-price">
+              <span class="current-price">{actualPriceRange.minValue.formattedAmount}</span>
+              <span class="original-price" if="hasDiscount">{compareAtPriceRange.minValue.formattedAmount}</span>
+            </div>
+            
+            <!-- SIMPLE: Regular add to cart -->
+            <button class="btn btn-primary btn-block" 
+                    ref="categoryPage.loadedProducts.addToCartButton"
+                    if="quickAddType == SIMPLE && inventory.availabilityStatus == IN_STOCK">
+              Add to cart
+            </button>
+            
+            <!-- SINGLE_OPTION: Quick options -->
+            <div class="quick-options-area" if="quickAddType == SINGLE_OPTION && inventory.availabilityStatus != OUT_OF_STOCK">
+              <span class="select-option-hint">Select {quickOption.name}</span>
+              <div class="quick-options-buttons">
+                <button class="quick-option-btn {!inStock ? out-of-stock}"
+                        forEach="quickOption.choices" 
+                        trackBy="choiceId"
+                        ref="categoryPage.loadedProducts.quickOption.choices.choiceButton"
+                        disabled="!inStock">
+                  {name}
+                </button>
+              </div>
+            </div>
+            
+            <!-- NEEDS_CONFIGURATION: View Options -->
+            <a href="{productUrl}" 
+               class="btn btn-secondary btn-block"
+               ref="categoryPage.loadedProducts.viewOptionsButton"
+               if="quickAddType == NEEDS_CONFIGURATION && inventory.availabilityStatus != OUT_OF_STOCK">
+              View Options
+            </a>
+            
+            <!-- Out of stock -->
+            <button class="btn btn-ghost btn-block" 
+                    disabled
+                    if="inventory.availabilityStatus == OUT_OF_STOCK">
+              Out of Stock
+            </button>
+          </div>
+        </article>
+      </div>
+
+      <!-- Load More Section -->
+      <div class="load-more-section" if="categoryPage.hasProducts">
+        <span class="loaded-info">
+          Showing {categoryPage.loadedCount} of {categoryPage.numberOfProducts} products
+        </span>
+        
+        <!-- Loading indicator -->
+        <div class="loading-indicator" if="categoryPage.isLoading">
+          <div class="loading-spinner-inline"></div>
+          <span>Loading more products...</span>
+        </div>
+        
+        <!-- Load more button -->
+        <button class="btn btn-secondary" 
+                ref="categoryPage.loadMoreButton"
+                if="categoryPage.hasMore && !categoryPage.isLoading">
+          Load More Products
+        </button>
+      </div>
+    </div>
+    </div>
+  </body>
+</html>

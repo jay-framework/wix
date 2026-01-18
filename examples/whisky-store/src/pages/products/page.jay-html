@@ -20,6 +20,32 @@
         margin: 0 auto;
         padding: var(--section-gap) var(--page-padding);
       }
+      
+      .results-section {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        min-width: 0;
+      }
+      
+      .results-section .products-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        width: 100%;
+      }
+      
+      @media (max-width: 1200px) {
+        .results-section .products-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      
+      @media (max-width: 900px) {
+        .results-section .products-grid {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
   </head>
   <body>
@@ -79,13 +105,17 @@
           <div class="filter-section">
             <div class="filter-title">Hide out of stock</div>
             <div class="toggle-row" style="margin-top: 12px;">
-              <label class="checkbox-item">
-                <input 
-                  type="checkbox"
-                  ref="productSearch.filters.inStockOnly"
-                />
-                <span>Show in-stock only</span>
-              </label>
+              <div class="switch-group">
+                <span class="toggle-label">No</span>
+                <label class="switch">
+                  <input 
+                    type="checkbox"
+                    ref="productSearch.filters.inStockOnly"
+                  />
+                  <span class="switch-slider"></span>
+                </label>
+                <span class="toggle-label">Yes</span>
+              </div>
             </div>
           </div>
 
