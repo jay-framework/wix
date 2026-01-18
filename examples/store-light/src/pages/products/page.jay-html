@@ -544,35 +544,29 @@
         </div>
       </div>
 
-      <!-- Pagination -->
+      <!-- Load More Section -->
       <div class="pagination-section" if="productSearch.hasResults">
         <div class="pagination">
-          <button 
-            class="btn btn-ghost" 
-            ref="productSearch.pagination.prevButton"
-            disabled="!productSearch.pagination.hasPrevPage"
-          >
-            ← Previous
-          </button>
           <span class="pagination-info">
-            Page {productSearch.pagination.currentPage} of {productSearch.pagination.totalPages}
+            Showing {productSearch.loadedCount} of {productSearch.totalCount} pieces
           </span>
-          <button 
-            class="btn btn-ghost" 
-            ref="productSearch.pagination.nextButton"
-            disabled="!productSearch.pagination.hasNextPage"
-          >
-            Next →
-          </button>
+        </div>
+
+        <div class="loading-indicator" if="productSearch.isSearching">
+          <div class="loading-spinner"></div>
         </div>
 
         <button 
           class="btn btn-secondary" 
-          if="productSearch.pagination.hasNextPage"
-          ref="productSearch.pagination.loadMoreButton"
+          ref="productSearch.loadMoreButton"
+          if="productSearch.hasMore && !productSearch.isSearching"
         >
           Load More Pieces
         </button>
+        
+        <span class="pagination-info" if="!productSearch.hasMore && productSearch.totalCount > 0">
+          All pieces loaded
+        </span>
       </div>
     </div>
   </body>
