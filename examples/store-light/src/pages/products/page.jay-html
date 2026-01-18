@@ -433,9 +433,6 @@
             <button class="btn btn-ghost btn-sm" ref="productSearch.filters.clearFilters">
               Clear
             </button>
-            <button class="btn btn-primary btn-sm" ref="productSearch.filters.applyFilters">
-              Apply
-            </button>
           </div>
         </div>
       </div>

@@ -440,13 +440,6 @@ function ProductSearchInteractive(
         ]));
     });
 
-    // Apply filters button
-    refs.filters.applyFilters.onclick(() => {
-        if (submittedSearchTerm() === null) {
-            setSubmittedSearchTerm(searchExpression().trim());
-        }
-    });
-
     // Clear filters button
     refs.filters.clearFilters.onclick(() => {
         const currentFilters = filters();

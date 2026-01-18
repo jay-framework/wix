@@ -129,12 +129,6 @@ tags:
         elementType: HTMLInputElement
         description: Show only in-stock products checkbox
         
-      # Apply filters button
-      - tag: applyFilters
-        type: interactive
-        elementType: HTMLButtonElement
-        description: Apply all filters button
-        
       - tag: clearFilters
         type: interactive
         elementType: HTMLButtonElement

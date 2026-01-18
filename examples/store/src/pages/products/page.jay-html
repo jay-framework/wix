@@ -236,9 +236,6 @@
             </label>
           </div>
 
-          <button class="btn btn-primary btn-block" ref="productSearch.filters.applyFilters" style="margin-top: 24px;">
-            Apply Filters
-          </button>
         </aside>
 
         <!-- Results Section -->

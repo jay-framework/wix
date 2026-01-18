@@ -99,7 +99,6 @@ export interface ProductSearchRefs {
   searchResults: ProductCardRepeatedRefs,
   filters: {
     inStockOnly: HTMLElementProxy<FilterOfProductSearchViewState, HTMLInputElement>,
-    applyFilters: HTMLElementProxy<FilterOfProductSearchViewState, HTMLButtonElement>,
     clearFilters: HTMLElementProxy<FilterOfProductSearchViewState, HTMLButtonElement>,
     priceRange: {
       minPrice: HTMLElementProxy<PriceRangeOfFilterOfProductSearchViewState, HTMLInputElement>,
@@ -128,7 +127,6 @@ export interface ProductSearchRepeatedRefs {
   searchResults: ProductCardRepeatedRefs,
   filters: {
     inStockOnly: HTMLElementCollectionProxy<FilterOfProductSearchViewState, HTMLInputElement>,
-    applyFilters: HTMLElementCollectionProxy<FilterOfProductSearchViewState, HTMLButtonElement>,
     clearFilters: HTMLElementCollectionProxy<FilterOfProductSearchViewState, HTMLButtonElement>,
     priceRange: {
       minPrice: HTMLElementCollectionProxy<PriceRangeOfFilterOfProductSearchViewState, HTMLInputElement>,
