@@ -102,7 +102,7 @@ export interface CategoryPageViewState {
   hasProducts: boolean
 }
 
-export type CategoryPageSlowViewState = Pick<CategoryPageViewState, '_id' | 'name' | 'description' | 'slug' | 'visible' | 'numberOfProducts' | 'products' | 'isLoading' | 'hasProducts'> & {
+export type CategoryPageSlowViewState = Pick<CategoryPageViewState, '_id' | 'name' | 'description' | 'slug' | 'visible' | 'numberOfProducts'> & {
     media: {
     mainMedia: CategoryPageViewState['media']['mainMedia'];
     items: Array<Pick<CategoryPageViewState['media']['items'][number], '_id' | 'url' | 'altText' | 'title' | 'mediaType'> & {
@@ -110,19 +110,23 @@ export type CategoryPageSlowViewState = Pick<CategoryPageViewState, '_id' | 'nam
 }>;
 };
     breadcrumbs: Array<CategoryPageViewState['breadcrumbs'][number]>;
+};
+
+export type CategoryPageFastViewState = Pick<CategoryPageViewState, 'products' | 'isLoading' | 'hasProducts'> & {
     pagination: Pick<CategoryPageViewState['pagination'], 'currentPage' | 'totalPages' | 'totalProducts'> & {
     pageNumbers: Array<CategoryPageViewState['pagination']['pageNumbers'][number]>;
 };
     sortBy: CategoryPageViewState['sortBy'];
-};
-
-export type CategoryPageFastViewState = {
     filters: Pick<CategoryPageViewState['filters'], 'inStockOnly'> & {
     priceRange: CategoryPageViewState['filters']['priceRange'];
 };
 };
 
-export type CategoryPageInteractiveViewState = {
+export type CategoryPageInteractiveViewState = Pick<CategoryPageViewState, 'products' | 'isLoading' | 'hasProducts'> & {
+    pagination: Pick<CategoryPageViewState['pagination'], 'currentPage' | 'totalPages' | 'totalProducts'> & {
+    pageNumbers: Array<CategoryPageViewState['pagination']['pageNumbers'][number]>;
+};
+    sortBy: CategoryPageViewState['sortBy'];
     filters: Pick<CategoryPageViewState['filters'], 'inStockOnly'> & {
     priceRange: CategoryPageViewState['filters']['priceRange'];
 };

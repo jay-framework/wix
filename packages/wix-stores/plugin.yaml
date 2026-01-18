@@ -18,6 +18,10 @@ contracts:
     contract: cart-page.jay-contract
     component: cartPage
     description: Full cart page with line item management and checkout
+  - name: category-page
+    contract: category-page.jay-contract
+    component: categoryPage
+    description: Category page listing the details of the category and the products within
 
 # Server actions (named exports from main module)
 actions:

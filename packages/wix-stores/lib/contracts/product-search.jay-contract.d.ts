@@ -9,6 +9,7 @@ export interface PriceRangeOfFilterOfProductSearchViewState {
 export interface CategoryOfCategoryFilterOfFilterOfProductSearchViewState {
   categoryId: string,
   categoryName: string,
+  categorySlug: string,
   isSelected: boolean
 }
 
@@ -67,7 +68,7 @@ export interface ProductSearchViewState {
 export type ProductSearchSlowViewState = Pick<ProductSearchViewState, 'searchFields' | 'fuzzySearch' | 'emptyStateMessage'> & {
     filters: {
     categoryFilter: {
-    categories: Array<Pick<ProductSearchViewState['filters']['categoryFilter']['categories'][number], 'categoryId' | 'categoryName'>>;
+    categories: Array<Pick<ProductSearchViewState['filters']['categoryFilter']['categories'][number], 'categoryId' | 'categoryName' | 'categorySlug'>>;
 };
 };
 };

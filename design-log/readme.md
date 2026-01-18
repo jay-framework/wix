@@ -8,7 +8,7 @@ Design documentation for the Jay Framework Wix integration packages.
 |---|-------|--------|
 | 01 | [Wix Packages Structure](./01%20-%20wix%20packages%20structure.md) | Documentation |
 | 02 | [Product Card Quick Options](./02%20-%20product%20card%20quick%20options.md) | Draft |
-| 03 | [Category Pages](./03%20-%20category%20pages.md) | Design |
+| 03 | [Category Pages](./03%20-%20category%20pages.md) | Implemented |
 
 ## Packages Covered
 

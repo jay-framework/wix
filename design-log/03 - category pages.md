@@ -59,7 +59,7 @@ sequenceDiagram
     Page->>Categories: getCategory(slug) (slow render)
     Categories-->>Page: Category info
     
-    Page->>Categories: listItemsInCategory(categoryId, {limit: 20})
+    Page->>Categories: listItemsInCategory(categoryId, treeRef, {limit: 20})
     Categories-->>Page: Product IDs
     
     loop For each product ID
@@ -120,7 +120,8 @@ async function renderSlowlyChanging(
   // 2. Load products in category
   const productsResponse = await wixStores.categories.listItemsInCategory(
     category._id,
-    { useCategoryArrangement: true, limit: 20 }
+    { appNamespace: "@wix/stores" },
+    { useCategoryArrangement: true, cursorPaging: { limit: 20 } }
   );
   
   // 3. Fetch full product details
@@ -362,3 +363,46 @@ function CategoryPageInteractive(
 7. **Loading state**: Shows indicator during product reload
 8. **Add to cart**: Quick-add works on simple products
 9. **404 handling**: Invalid category slugs return 404
+
+---
+
+## Implementation Results
+
+### Files Modified
+
+**Contract:**
+- `wix/packages/wix-stores/lib/contracts/category-page.jay-contract` - Removed `async: true` from products, added `phase: fast+interactive` to products, pagination, sortBy, filters, isLoading, hasProducts
+- `wix/packages/wix-stores/lib/contracts/product-search.jay-contract` - Added `categorySlug` to category filter for URL generation
+
+**Component:**
+- `wix/packages/wix-stores/lib/components/category-page.ts` - New full implementation with:
+  - `loadCategoryParams` - yields all visible category slugs
+  - `renderSlowlyChanging` - loads category metadata, media, breadcrumbs
+  - `renderFastChanging` - loads products via listItemsInCategory + getProduct
+  - `CategoryPageInteractive` - handles sort, filter, pagination, add-to-cart
+
+**Context:**
+- `wix/packages/wix-stores/lib/contexts/wix-stores-context.ts` - Added `loadCategoryProducts()` method for interactive phase reloading
+
+**Exports:**
+- `wix/packages/wix-stores/lib/index.ts` - Added export for category-page component
+
+**Examples:**
+- `wix/examples/store/src/pages/categories/[slug]/page.jay-html` - Category detail page with products grid
+- `wix/examples/store/src/pages/categories/page.jay-html` - Category listing page using product-search categories
+
+### Files Deleted
+- `wix/packages/wix-stores/lib/components/category-page.ts.back` - Removed outdated backup
+
+### Deviations from Design
+
+1. **Products loaded in fast phase instead of slow**: Changed to `phase: fast+interactive` for products since they need client-side updates for pagination/sorting
+2. **Category listing reuses product-search**: Instead of a separate category listing component, the `/categories` page reuses `product-search` which already loads categories for filtering
+3. **Client-side sorting**: The `listItemsInCategory` API doesn't support server-side sorting, so sorting is done client-side in `loadCategoryProducts()`
+4. **API signature fix**: `listItemsInCategory` requires `treeReference` as second argument: `listItemsInCategory(categoryId, { appNamespace: "@wix/stores" }, options)`
+5. **Cursor-based pagination**: The API uses cursor paging, not offset paging. Initial implementation fetches first page only; cursor tracking for subsequent pages is a future enhancement
+
+### Next Steps
+1. Run contract type generation (`yarn build` in wix-stores package)
+2. Test with real Wix Stores data
+3. Add category images to listing page when available from API

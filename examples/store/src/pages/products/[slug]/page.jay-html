@@ -194,13 +194,13 @@
             <button class="btn btn-primary btn-lg" 
                     style="flex: 1;"
                     ref="productPage.addToCartButton"
-                    disabled="{!productPage.actionsEnabled}">
+                    disabled="!productPage.actionsEnabled">
               Add to Cart
             </button>
             <button class="btn btn-secondary btn-lg" 
                     style="flex: 1;"
                     ref="productPage.buyNowButton"
-                    disabled="{!productPage.actionsEnabled}">
+                    disabled="!productPage.actionsEnabled">
               Buy Now
             </button>
           </div>

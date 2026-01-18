@@ -281,7 +281,7 @@
                         forEach="quickOption.choices" 
                         trackBy="choiceId"
                         ref="productSearch.searchResults.quickOption.choices.choiceButton"
-                        disabled="{!inStock}"
+                        disabled="!inStock"
                       >
                         {name}
                       </button>
@@ -301,7 +301,7 @@
                   <!-- Out of stock (any type) -->
                   <button 
                     class="btn btn-ghost btn-block" 
-                    disabled="true"
+                    disabled
                     if="inventory.availabilityStatus === OUT_OF_STOCK"
                   >
                     Out of Stock
@@ -316,7 +316,7 @@
             <button 
               class="btn btn-ghost" 
               ref="productSearch.pagination.prevButton"
-              disabled="{!productSearch.pagination.hasPrevPage}"
+              disabled="!productSearch.pagination.hasPrevPage"
             >
               ← Previous
             </button>
@@ -326,7 +326,7 @@
             <button 
               class="btn btn-ghost" 
               ref="productSearch.pagination.nextButton"
-              disabled="{!productSearch.pagination.hasNextPage}"
+              disabled="!productSearch.pagination.hasNextPage"
             >
               Next →
             </button>

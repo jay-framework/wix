@@ -148,13 +148,14 @@ tags:
     type: sub-contract
     repeated: true
     trackBy: _id
-    async: true
-    description: Products in this category (loaded asynchronously)
+    phase: fast+interactive
+    description: Products in this category
     link: ./product-card
     
   # Pagination
   - tag: pagination
     type: sub-contract
+    phase: fast+interactive
     description: Pagination controls
     tags:
       - tag: currentPage
@@ -206,6 +207,7 @@ tags:
   # Sorting
   - tag: sortBy
     type: sub-contract
+    phase: fast+interactive
     description: Product sorting options
     tags:
       - tag: currentSort
@@ -221,6 +223,7 @@ tags:
   # Filters
   - tag: filters
     type: sub-contract
+    phase: fast+interactive
     description: Product filtering options
     tags:
       - tag: priceRange
@@ -259,11 +262,13 @@ tags:
   - tag: isLoading
     type: variant
     dataType: boolean
+    phase: fast+interactive
     description: Whether products are currently loading
     
   # Empty state
   - tag: hasProducts
     type: variant
     dataType: boolean
+    phase: fast+interactive
     description: Whether category has any products
 

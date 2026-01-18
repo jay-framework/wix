@@ -1,0 +1,193 @@
+<html>
+  <head>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="product-search"
+            key="productSearch"
+    ></script>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="cart-indicator"
+            key="cartIndicator"
+    ></script>
+    <script type="application/jay-data">
+      data:
+    </script>
+    <link rel="stylesheet" href="../../styles/store-theme.css" />
+    <style>
+      /* Categories listing page */
+      .categories-page {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        padding: var(--section-gap) var(--page-padding);
+      }
+
+      .categories-header {
+        text-align: center;
+        margin-bottom: 64px;
+      }
+
+      .categories-header h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+        background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .categories-header p {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      /* Categories grid */
+      .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 32px;
+      }
+
+      /* Category card */
+      .category-card {
+        position: relative;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        transition: all var(--transition-base);
+      }
+
+      .category-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-accent);
+      }
+
+      .category-card-link {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .category-card-image {
+        width: 100%;
+        height: 200px;
+        background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-elevated) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        color: var(--accent);
+      }
+
+      .category-card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .category-card-content {
+        padding: 24px;
+      }
+
+      .category-card-name {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+      }
+
+      .category-card-count {
+        font-size: 14px;
+        color: var(--text-muted);
+      }
+
+      .category-card-arrow {
+        position: absolute;
+        top: 50%;
+        right: 24px;
+        transform: translateY(-50%);
+        font-size: 1.5rem;
+        color: var(--accent);
+        opacity: 0;
+        transition: opacity var(--transition-fast);
+      }
+
+      .category-card:hover .category-card-arrow {
+        opacity: 1;
+      }
+
+      /* Empty state */
+      .empty-state {
+        text-align: center;
+        padding: 80px 40px;
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border);
+      }
+
+      .empty-state h2 {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+      }
+
+      .empty-state p {
+        color: var(--text-secondary);
+        margin-bottom: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="categories-page">
+      <!-- Site Header with Cart -->
+      <header class="site-header">
+        <a href="/products" class="site-logo">Store<span>.</span></a>
+        <nav class="site-nav">
+          <a href="/categories" class="active">Categories</a>
+          <a href="/products">Products</a>
+          <a href="/cart" 
+             class="cart-indicator {cartIndicator.hasItems ? has-items} {cartIndicator.isLoading ? is-loading}" 
+             ref="cartIndicator.cartLink">
+            <span class="cart-indicator-icon">🛒</span>
+            <span class="cart-indicator-count" if="cartIndicator.hasItems">{cartIndicator.itemCount}</span>
+          </a>
+        </nav>
+      </header>
+
+      <!-- Page Header -->
+      <header class="categories-header">
+        <h1>Shop by Category</h1>
+        <p>Browse our curated collections and find exactly what you're looking for.</p>
+      </header>
+
+      <!-- Categories Grid (uses categories from product-search filter) -->
+      <div class="categories-grid" if="productSearch.filters.categoryFilter.categories">
+        <article class="category-card" 
+                 forEach="productSearch.filters.categoryFilter.categories" 
+                 trackBy="categoryId">
+          <a href="/categories/{categorySlug}" class="category-card-link">
+            <div class="category-card-image">
+              📦
+            </div>
+            <div class="category-card-content">
+              <h2 class="category-card-name">{categoryName}</h2>
+              <span class="category-card-count">Browse collection →</span>
+            </div>
+            <span class="category-card-arrow">→</span>
+          </a>
+        </article>
+      </div>
+
+      <!-- Empty state (if no categories) -->
+      <div class="empty-state" if="!productSearch.filters.categoryFilter.categories">
+        <h2>No Categories</h2>
+        <p>No product categories have been created yet.</p>
+        <a href="/products" class="btn btn-primary">Browse All Products</a>
+      </div>
+    </div>
+  </body>
+</html>

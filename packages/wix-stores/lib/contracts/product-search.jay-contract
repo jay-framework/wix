@@ -111,6 +111,11 @@ tags:
                 dataType: string
                 description: Category name
                 
+              - tag: categorySlug
+                type: data
+                dataType: string
+                description: Category slug for URL
+                
               - tag: isSelected
                 type: [data, interactive]
                 dataType: boolean

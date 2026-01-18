@@ -83,7 +83,8 @@ async function renderSlowlyChanging(
         .toPhaseOutput(categories => {
             const categoryInfos: CategoryInfos = categories.map((cat) => ({
                 categoryId: cat._id || '',
-                categoryName: cat.name || ''
+                categoryName: cat.name || '',
+                categorySlug: cat.slug || ''
             }));
 
             return {

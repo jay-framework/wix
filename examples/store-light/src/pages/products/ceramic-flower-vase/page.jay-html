@@ -533,12 +533,12 @@
           <div class="actions-buttons">
             <button class="btn btn-secondary btn-lg" 
                     ref="productPage.buyNowButton"
-                    disabled="{!productPage.actionsEnabled}">
+                    disabled="!productPage.actionsEnabled">
               Buy Now
             </button>
             <button class="btn btn-primary btn-lg" 
                     ref="productPage.addToCartButton"
-                    disabled="{!productPage.actionsEnabled}">
+                    disabled="!productPage.actionsEnabled">
               Add to Cart
             </button>
           </div>

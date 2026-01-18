@@ -10,6 +10,7 @@ export * from './components/cart-page';
 export * from './components/product-search';
 export * from './components/product-page';
 export * from './components/cart-indicator';
+export * from './components/category-page';
 
 // Export server service
 export {
