@@ -7,7 +7,7 @@
 
 import { makeJayQuery, ActionError } from '@jay-framework/fullstack-component';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
-import { AvailabilityStatus, ProductCardViewState } from '../contracts/product-card.jay-contract';
+import { ProductCardViewState } from '../contracts/product-card.jay-contract';
 import { mapProductToCard } from '../utils/product-mapper.js';
 
 // ============================================================================
@@ -77,10 +77,16 @@ export interface GetProductBySlugInput {
 // ============================================================================
 
 /**
- * Search products using the Wix Stores Catalog V3 API.
+ * Search products using the Wix Stores Catalog V3 searchProducts API.
  *
- * Queries products and applies client-side filtering for search terms,
- * stock status, price range, and sorting.
+ * Uses server-side filtering and sorting for optimal performance:
+ * - Text search on name and description
+ * - Price range filtering
+ * - Stock status filtering
+ * - Category filtering
+ * - Price/name/date sorting
+ *
+ * @see https://dev.wix.com/docs/sdk/backend-modules/stores/catalog-v3/products-v3/search-products
  *
  * @example
  * ```typescript
@@ -88,7 +94,6 @@ export interface GetProductBySlugInput {
  *     query: 'shoes',
  *     filters: { inStockOnly: true, categoryIds: ['cat-123'] },
  *     sortBy: 'price_asc',
- *     page: 1,
  *     pageSize: 12
  * });
  * ```
@@ -108,80 +113,101 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
         } = input;
 
         try {
-            // Use queryProducts for all queries
-            // Include VARIANT_OPTION_CHOICE_NAMES for quick-add option display
-            let queryBuilder = wixStores.products.queryProducts({
-                fields: ['CURRENCY', 'VARIANT_OPTION_CHOICE_NAMES']
-            });
+            // Build server-side filter object
+            // See: https://dev.wix.com/docs/sdk/backend-modules/stores/catalog-v3/products-v3/search-products
+            const filter: Record<string, unknown> = {
+                // Only visible products
+                "visible": { "$eq": true }
+            };
 
-            // Apply sorting (using supported fields)
-            switch (sortBy) {
-                case 'newest':
-                    queryBuilder = queryBuilder.descending('_createdDate');
-                    break;
-                case 'name_asc':
-                    queryBuilder = queryBuilder.ascending('slug');
-                    break;
-                case 'name_desc':
-                    queryBuilder = queryBuilder.descending('slug');
-                    break;
-                // 'relevance', 'price_asc', 'price_desc' - will sort client-side
-            }
-
-            // Apply cursor-based pagination
-            queryBuilder = queryBuilder.limit(pageSize);
-            if (cursor) {
-                queryBuilder = queryBuilder.skipTo(cursor);
-            }
-
-            const queryResult = await queryBuilder.find();
-            let products = queryResult.items || [];
-
-            // Get cursor for next page
-            const nextCursor = queryResult.cursors?.next || null;
-            const totalCount = 0;
-
-            // Map products to card view state
-            let mappedProducts = products.map(p => mapProductToCard(p));
-
-            // Apply client-side search filtering if query provided
-            if (query && query.trim().length > 0) {
-                const searchLower = query.toLowerCase();
-                mappedProducts = mappedProducts.filter(p =>
-                    p.name.toLowerCase().includes(searchLower) ||
-                    p.slug.toLowerCase().includes(searchLower)
-                );
-            }
-
-            // Apply client-side stock filtering
-            if (filters.inStockOnly) {
-                mappedProducts = mappedProducts.filter(p =>
-                    p.inventory.availabilityStatus !== AvailabilityStatus.OUT_OF_STOCK
-                );
-            }
-
-            // Apply client-side price filtering
+            // Price range filters (both min and max can apply to same field)
+            const priceFilter: Record<string, string> = {};
             if (filters.minPrice !== undefined && filters.minPrice > 0) {
-                mappedProducts = mappedProducts.filter(p =>
-                    parseFloat(p.actualPriceRange.minValue.amount) >= filters.minPrice!
-                );
+                priceFilter["$gte"] = String(filters.minPrice);
             }
             if (filters.maxPrice !== undefined && filters.maxPrice > 0) {
-                mappedProducts = mappedProducts.filter(p =>
-                    parseFloat(p.actualPriceRange.minValue.amount) <= filters.maxPrice!
-                );
+                priceFilter["$lte"] = String(filters.maxPrice);
+            }
+            if (Object.keys(priceFilter).length > 0) {
+                filter["actualPriceRange.minValue.amount"] = priceFilter;
             }
 
-            // Client-side price sorting if needed
-            if (sortBy === 'price_asc') {
-                mappedProducts.sort((a, b) =>
-                    parseFloat(a.actualPriceRange.minValue.amount) - parseFloat(b.actualPriceRange.minValue.amount)
-                );
-            } else if (sortBy === 'price_desc') {
-                mappedProducts.sort((a, b) =>
-                    parseFloat(b.actualPriceRange.minValue.amount) - parseFloat(a.actualPriceRange.minValue.amount)
-                );
+            // Stock status filter
+            if (filters.inStockOnly) {
+                filter["inventory.availabilityStatus"] = { "$eq": "IN_STOCK" };
             }
+
+            // Category filter
+            if (filters.categoryIds && filters.categoryIds.length > 0) {
+                filter["allCategoriesInfo.categories"] = {
+                    "$matchItems": filters.categoryIds.map(id => ({ id: { "$eq": id } }))
+                };
+            }
+
+            // Build sort array
+            const sort: Array<{ fieldName: string; order: "ASC" | "DESC" }> = [];
+            switch (sortBy) {
+                case 'price_asc':
+                    sort.push({ fieldName: "actualPriceRange.minValue.amount", order: "ASC" });
+                    break;
+                case 'price_desc':
+                    sort.push({ fieldName: "actualPriceRange.minValue.amount", order: "DESC" });
+                    break;
+                case 'name_asc':
+                    sort.push({ fieldName: "name", order: "ASC" });
+                    break;
+                case 'name_desc':
+                    sort.push({ fieldName: "name", order: "DESC" });
+                    break;
+                case 'newest':
+                    sort.push({ fieldName: "_createdDate", order: "DESC" });
+                    break;
+                // 'relevance' - no sort, use search relevance
+            }
+
+            // Build cursor paging
+            const cursorPaging = cursor
+                ? { cursor, limit: pageSize }
+                : { limit: pageSize };
+
+            // Build search expression (for text search)
+            const hasSearchQuery = query && query.trim().length > 0;
+
+            // Build count filter (countProducts uses different syntax than searchProducts)
+            // Note: countProducts doesn't support text search, so count may differ when searching
+            const countFilter: Record<string, unknown> = {
+                visible: true
+            };
+            if (filters.categoryIds && filters.categoryIds.length > 0) {
+                countFilter['collections.id'] = { $hasSome: filters.categoryIds };
+            }
+
+            const search = hasSearchQuery ? {
+                expression: query.trim(),
+                fields: ["name", "description"] as ("name" | "description")[]
+            } : undefined
+
+
+            // Call searchProducts and countProducts in parallel
+            const [searchResult, countResult] = await Promise.all([
+                wixStores.products.searchProducts(
+                    {
+                        filter,
+                        // @ts-expect-error - Wix SDK types don't match actual API
+                        sort: sort.length > 0 ? sort : undefined,
+                        cursorPaging,
+                        search                    },
+                    { fields: ['CURRENCY', 'VARIANT_OPTION_CHOICE_NAMES'] }
+                ),
+                wixStores.products.countProducts({ filter, search })
+            ]);
+
+            const products = searchResult.products || [];
+            const nextCursor = searchResult.pagingMetadata?.cursors?.next || null;
+            const totalCount = countResult.count || 0;
+
+            // Map products to card view state
+            const mappedProducts = products.map(p => mapProductToCard(p));
 
             return {
                 products: mappedProducts,

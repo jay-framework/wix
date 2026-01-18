@@ -31,7 +31,6 @@ contracts:
 actions:
   # Product actions
   - searchProducts
-  - getAllProducts
   - getProductBySlug
   - getCategories
 

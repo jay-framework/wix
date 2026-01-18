@@ -652,3 +652,125 @@ sequenceDiagram
 1. Run contract type generation (`yarn build` in wix-stores package)
 2. Test with real Wix Stores data
 3. Add category images to listing page when available from API
+
+---
+
+## Revision 3: Switch to searchProducts API
+
+### Background
+
+The `queryProducts` API has limited filter and sort support:
+- **Sorting**: Only `_createdDate` and `slug` supported
+- **Filters**: Only basic fields (`visible`, `_id`, `slug`, etc.)
+- **No price filtering/sorting**
+- **No stock status filtering**
+- **No text search**
+
+The `searchProducts` API provides full search capabilities:
+- **Sorting**: Price, date, name, weight
+- **Filters**: Price range, stock status, categories
+- **Text search**: On `name`, `description`, `sku` fields
+
+Reference: https://dev.wix.com/docs/sdk/backend-modules/stores/catalog-v3/products-v3/search-products
+
+### searchProducts API Capabilities
+
+| Field | Search | Filter | Sort |
+|-------|--------|--------|------|
+| `name` | ✓ | ✓ ($eq, $begins, etc.) | ASC, DESC |
+| `description` | ✓ | ✗ | ✗ |
+| `actualPriceRange.minValue.amount` | ✗ | ✓ ($gt, $lt, $gte, $lte) | ASC, DESC |
+| `inventory.availabilityStatus` | ✗ | ✓ ($eq, $in) | ✗ |
+| `allCategoriesInfo.categories` | ✗ | ✓ ($matchItems) | ✗ |
+| `_createdDate` | ✗ | ✓ | ASC, DESC |
+
+### API Usage
+
+```typescript
+const filter = {
+  // Price filter
+  "actualPriceRange.minValue.amount": { "$gt": "50", "$lt": "200" },
+  // Stock filter
+  "inventory.availabilityStatus": { "$eq": "IN_STOCK" },
+  // Category filter
+  "allCategoriesInfo.categories": { 
+    "$matchItems": [{ id: { $eq: "category-id" } }] 
+  },
+  // Visibility
+  "visible": { "$eq": true }
+};
+
+const sort = [
+  { fieldName: "actualPriceRange.minValue.amount", order: "ASC" }
+];
+
+const response = await productsClient.searchProducts(
+  {
+    filter,
+    sort,
+    cursorPaging: { limit: 12 },
+    search: {
+      expression: "search term",
+      fields: ["name", "description"]
+    }
+  },
+  { fields: ['CURRENCY', 'VARIANT_OPTION_CHOICE_NAMES'] }
+);
+```
+
+### Implementation Changes
+
+1. **Replace `queryProducts` with `searchProducts`** in `stores-actions.ts`
+2. **Build server-side filters**:
+   - Price range → `actualPriceRange.minValue.amount` with `$gt`/`$lt`
+   - Stock → `inventory.availabilityStatus` with `$eq: "IN_STOCK"`
+   - Category → `allCategoriesInfo.categories` with `$matchItems`
+3. **Build server-side sorting**:
+   - `price_asc` → `{ fieldName: "actualPriceRange.minValue.amount", order: "ASC" }`
+   - `price_desc` → `{ fieldName: "actualPriceRange.minValue.amount", order: "DESC" }`
+   - `name_asc` → `{ fieldName: "name", order: "ASC" }`
+   - `name_desc` → `{ fieldName: "name", order: "DESC" }`
+   - `newest` → `{ fieldName: "_createdDate", order: "DESC" }`
+4. **Use search expression** for text search:
+   - `search: { expression: query, fields: ["name", "description"] }`
+5. **Remove client-side filters** - all done server-side now
+6. **Update `countProducts`** to use same filters for accurate count
+
+### Implementation Results (Revision 3)
+
+**Files Modified:**
+- `wix/packages/wix-stores/lib/actions/stores-actions.ts` - Rewrote `searchProducts` action
+
+**Key Changes:**
+
+| Before (queryProducts) | After (searchProducts) |
+|------------------------|------------------------|
+| Client-side text search | Server-side: `search: { expression, fields: ["name", "description"] }` |
+| Client-side price filter | Server-side: `actualPriceRange.minValue.amount` with `$gte`/`$lte` |
+| Client-side stock filter | Server-side: `inventory.availabilityStatus: { $eq: "IN_STOCK" }` |
+| Client-side price sorting | Server-side: `sort: [{ fieldName, order: "ASC"/"DESC" }]` |
+| Only `_createdDate`/`slug` sorting | Full sorting on price, name, date |
+
+**API Call Structure:**
+
+```typescript
+await wixStores.products.searchProducts(
+  {
+    filter: {
+      "visible": { "$eq": true },
+      "actualPriceRange.minValue.amount": { "$gte": "10", "$lte": "100" },
+      "inventory.availabilityStatus": { "$eq": "IN_STOCK" },
+      "allCategoriesInfo.categories": { 
+        "$matchItems": [{ id: { "$eq": "category-id" } }] 
+      }
+    },
+    sort: [{ fieldName: "actualPriceRange.minValue.amount", order: "ASC" }],
+    cursorPaging: { limit: 12 },
+    search: { expression: "search term", fields: ["name", "description"] }
+  },
+  { fields: ['CURRENCY', 'VARIANT_OPTION_CHOICE_NAMES'] }
+);
+```
+
+**Note on countProducts:**
+The `countProducts` API uses a different filter syntax than `searchProducts`. Currently only applying `visible` and `categoryIds` filters for count accuracy. Full filter parity would require translating all searchProducts filters to countProducts format.
