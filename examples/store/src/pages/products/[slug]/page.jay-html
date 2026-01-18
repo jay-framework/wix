@@ -100,7 +100,7 @@
 
                 </div>
               </div>
-              <div data-figma-id="424:391" data-figma-type="frame" style="position: absolute;top: 0px;left: 25.473529815673828px;width: 15.249337196350098px;height: 15.249337196350098px;background-image: linear-gradient(rgba(29, 54, 77, 1), rgba(29, 54, 77, 1));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-color: rgb(255, 255, 255); border-width: 1.143700361251831px; border-style: solid;border-radius: 9.149602890014648px;overflow: visible;display: flex;flex-direction: column;justify-content: center;align-items: center;gap: 7.624669075012207px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
+              <div data-figma-id="424:391" data-figma-type="frame" style="width: 15.249337196350098px;height: 15.249337196350098px;background-image: linear-gradient(rgba(29, 54, 77, 1), rgba(29, 54, 77, 1));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-color: rgb(255, 255, 255); border-width: 1.143700361251831px; border-style: solid;border-radius: 9.149602890014648px;overflow: visible;display: flex;flex-direction: column;justify-content: center;align-items: center;gap: 7.624669075012207px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
                 <!-- Frame 7 -->
                 <div data-figma-id="424:392" data-figma-type="vector" style="position: relative;width: 4.574801445007324px;height: 7.624668598175049px;box-sizing: border-box;">
                   <svg width="5" height="8" viewBox="0 0 5 8" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -551,7 +551,7 @@
             </div>
             <div data-figma-id="424:464" data-figma-type="frame" style="position: relative;width: 100%;height: 45px;background-image: linear-gradient(rgba(58, 73, 128, 1), rgba(58, 73, 128, 1));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-radius: 22.492773056030273px;overflow: visible;display: flex;flex-direction: column;justify-content: center;align-items: center;gap: 0px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;" ref="productPage.addToCartButton">
               <!-- add2cart -->
-              <div data-figma-id="424:465" data-figma-type="frame" style="position: relative;width: 100%;height: fit-content;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: row;justify-content: center;align-items: center;gap: 3px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
+              <div data-figma-id="424:465" data-figma-type="frame" style="position: relative;width: fit-content;height: fit-content;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: row;justify-content: center;align-items: center;gap: 3px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
                 <!-- Frame 27 -->
                 <div data-figma-id="424:466" data-figma-type="frame" style="position: relative;width: 16.011804580688477px;height: 16.011804580688477px;background: transparent;border-radius: 0px;overflow: hidden;box-sizing: border-box;">
                   <!-- Frame -->

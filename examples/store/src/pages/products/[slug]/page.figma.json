@@ -209,7 +209,7 @@
                   "parentLayoutMode": "HORIZONTAL",
                   "parentOverflowDirection": "NONE",
                   "x": 60.997352600097656,
-                  "y": 20.393037796020508,
+                  "y": 20.393035888671875,
                   "width": 478.1180419921875,
                   "height": 30,
                   "rotation": 0,
@@ -851,7 +851,7 @@
                                 "width": 15.249337196350098,
                                 "height": 15.249343872070312
                               },
-                              "layoutPositioning": "ABSOLUTE",
+                              "layoutPositioning": "AUTO",
                               "layoutGrow": 0,
                               "layoutAlign": "INHERIT",
                               "layoutSizingHorizontal": "FIXED",
@@ -945,7 +945,7 @@
                           "parentLayoutMode": "HORIZONTAL",
                           "parentOverflowDirection": "NONE",
                           "x": 47.72286605834961,
-                          "y": 1.0820274353027344,
+                          "y": 1.08203125,
                           "width": 38.12334442138672,
                           "height": 38.12334442138672,
                           "rotation": 0,
@@ -973,7 +973,7 @@
                               "parentId": "530:131",
                               "parentType": "GROUP",
                               "x": 47.72286605834961,
-                              "y": 1.0820274353027344,
+                              "y": 1.08203125,
                               "width": 38.12334442138672,
                               "height": 38.12334442138672,
                               "rotation": 0,
@@ -1001,7 +1001,7 @@
                                   "parentId": "424:382",
                                   "parentType": "GROUP",
                                   "x": 47.72286605834961,
-                                  "y": 1.0820274353027344,
+                                  "y": 1.08203125,
                                   "width": 38.12334442138672,
                                   "height": 38.12334442138672,
                                   "rotation": 0,
@@ -1049,7 +1049,7 @@
                                   "parentId": "424:382",
                                   "parentType": "GROUP",
                                   "x": 59.15999889373779,
-                                  "y": 12.519054412841797,
+                                  "y": 12.519058227539062,
                                   "width": 15.249337196350098,
                                   "height": 15.249337196350098,
                                   "rotation": 0,
@@ -1141,7 +1141,7 @@
                                   "parentId": "424:382",
                                   "parentType": "GROUP",
                                   "x": 77.59591293334961,
-                                  "y": 2.115184783935547,
+                                  "y": 2.1151885986328125,
                                   "width": 7.624668598175049,
                                   "height": 7.624668598175049,
                                   "rotation": 0,
@@ -33035,24 +33035,24 @@
                               "parentType": "FRAME",
                               "parentLayoutMode": "VERTICAL",
                               "parentOverflowDirection": "NONE",
-                              "x": 0,
+                              "x": 25.244098663330078,
                               "y": 14.494097709655762,
-                              "width": 140.5,
+                              "width": 90.01180267333984,
                               "height": 16.011804580688477,
                               "rotation": 0,
                               "opacity": 1,
                               "blendMode": "PASS_THROUGH",
                               "isMask": false,
                               "absoluteRenderBounds": {
-                                "x": 2582.54052734375,
+                                "x": 2607.78466796875,
                                 "y": 351.71466064453125,
-                                "width": 140.5,
+                                "width": 90.01180267333984,
                                 "height": 16.011810302734375
                               },
                               "layoutPositioning": "AUTO",
                               "layoutGrow": 0,
-                              "layoutAlign": "STRETCH",
-                              "layoutSizingHorizontal": "FILL",
+                              "layoutAlign": "INHERIT",
+                              "layoutSizingHorizontal": "HUG",
                               "layoutSizingVertical": "HUG",
                               "layoutMode": "HORIZONTAL",
                               "primaryAxisAlignItems": "CENTER",
@@ -33085,7 +33085,7 @@
                                   "parentType": "FRAME",
                                   "parentLayoutMode": "HORIZONTAL",
                                   "parentOverflowDirection": "NONE",
-                                  "x": 25.244098663330078,
+                                  "x": 0,
                                   "y": 0,
                                   "width": 16.011804580688477,
                                   "height": 16.011804580688477,
@@ -33179,7 +33179,7 @@
                                   "parentType": "FRAME",
                                   "parentLayoutMode": "HORIZONTAL",
                                   "parentOverflowDirection": "NONE",
-                                  "x": 44.25590515136719,
+                                  "x": 19.011804580688477,
                                   "y": 0.5059022903442383,
                                   "width": 71,
                                   "height": 15,
@@ -43808,51 +43808,6 @@
           ]
         }
       ],
-      "424:459": [
-        {
-          "pageContractPath": {
-            "pageUrl": "/products/:slug",
-            "pluginName": "@jay-framework/wix-stores",
-            "componentName": "product-page"
-          },
-          "jayPageSectionId": "424:364",
-          "tagPath": [
-            "/products/:slug|@jay-framework/wix-stores.product-page",
-            "quantity",
-            "incrementButton"
-          ]
-        }
-      ],
-      "424:460": [
-        {
-          "pageContractPath": {
-            "pageUrl": "/products/:slug",
-            "pluginName": "@jay-framework/wix-stores",
-            "componentName": "product-page"
-          },
-          "jayPageSectionId": "424:364",
-          "tagPath": [
-            "/products/:slug|@jay-framework/wix-stores.product-page",
-            "quantity",
-            "decrementButton"
-          ]
-        }
-      ],
-      "424:458": [
-        {
-          "pageContractPath": {
-            "pageUrl": "/products/:slug",
-            "pluginName": "@jay-framework/wix-stores",
-            "componentName": "product-page"
-          },
-          "jayPageSectionId": "424:364",
-          "tagPath": [
-            "/products/:slug|@jay-framework/wix-stores.product-page",
-            "quantity",
-            "quantity"
-          ]
-        }
-      ],
       "424:461": [
         {
           "pageContractPath": {
@@ -44100,6 +44055,51 @@
             "options",
             "choices",
             "name"
+          ]
+        }
+      ],
+      "424:459": [
+        {
+          "pageContractPath": {
+            "pageUrl": "/products/:slug",
+            "pluginName": "@jay-framework/wix-stores",
+            "componentName": "product-page"
+          },
+          "jayPageSectionId": "424:364",
+          "tagPath": [
+            "/products/:slug|@jay-framework/wix-stores.product-page",
+            "quantity",
+            "incrementButton"
+          ]
+        }
+      ],
+      "424:460": [
+        {
+          "pageContractPath": {
+            "pageUrl": "/products/:slug",
+            "pluginName": "@jay-framework/wix-stores",
+            "componentName": "product-page"
+          },
+          "jayPageSectionId": "424:364",
+          "tagPath": [
+            "/products/:slug|@jay-framework/wix-stores.product-page",
+            "quantity",
+            "decrementButton"
+          ]
+        }
+      ],
+      "424:458": [
+        {
+          "pageContractPath": {
+            "pageUrl": "/products/:slug",
+            "pluginName": "@jay-framework/wix-stores",
+            "componentName": "product-page"
+          },
+          "jayPageSectionId": "424:364",
+          "tagPath": [
+            "/products/:slug|@jay-framework/wix-stores.product-page",
+            "quantity",
+            "quantity"
           ]
         }
       ]
