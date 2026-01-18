@@ -191,15 +191,13 @@
               <input 
                 class="input" 
                 type="number" 
-                placeholder="Min" 
-                value="{productSearch.filters.priceRange.minPrice}"
+                placeholder="Min"
                 ref="productSearch.filters.priceRange.minPrice"
               />
               <input 
                 class="input" 
                 type="number" 
-                placeholder="Max" 
-                value="{productSearch.filters.priceRange.maxPrice}"
+                placeholder="Max"
                 ref="productSearch.filters.priceRange.maxPrice"
               />
             </div>
@@ -224,8 +222,9 @@
             </div>
           </div>
 
-          <!-- In Stock Only -->
+          <!-- Availability -->
           <div class="filter-group">
+            <label class="label">Availability</label>
             <label class="checkbox-item">
               <input 
                 class="checkbox" 
