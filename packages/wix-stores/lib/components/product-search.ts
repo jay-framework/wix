@@ -166,8 +166,9 @@ async function renderFastChanging(
                     filters: {
                         inStockOnly: false,
                         priceRange: {
-                            minPrice: 0,
-                            maxPrice: 0,
+                            // Initialize sliders to full range (bounds)
+                            minPrice: priceAgg.minBound,
+                            maxPrice: priceAgg.maxBound,
                             minBound: priceAgg.minBound,
                             maxBound: priceAgg.maxBound,
                             ranges: priceAgg.ranges

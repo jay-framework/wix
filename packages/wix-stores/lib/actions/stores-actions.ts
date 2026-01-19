@@ -158,40 +158,48 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
         } = input;
 
         try {
-            // Build server-side filter object
+            // Build server-side filter object using $and to combine all conditions
             // See: https://dev.wix.com/docs/sdk/backend-modules/stores/catalog-v3/products-v3/search-products
-            const filter: Record<string, unknown> = {
+            const filterConditions: Record<string, unknown>[] = [
                 // Only visible products
-                "visible": { "$eq": true }
-            };
+                { "visible": { "$eq": true } }
+            ];
 
-            // Price range filters - use $and when both min and max are present
+            // Price range filters
             const hasMinPrice = filters.minPrice !== undefined && filters.minPrice > 0;
             const hasMaxPrice = filters.maxPrice !== undefined && filters.maxPrice > 0;
             
-            if (hasMinPrice && hasMaxPrice) {
-                // Both filters: use $and to combine them
-                filter["$and"] = [
-                    { "actualPriceRange.minValue.amount": { "$gte": String(filters.minPrice) } },
-                    { "actualPriceRange.minValue.amount": { "$lte": String(filters.maxPrice) } }
-                ];
-            } else if (hasMinPrice) {
-                filter["actualPriceRange.minValue.amount"] = { "$gte": String(filters.minPrice) };
-            } else if (hasMaxPrice) {
-                filter["actualPriceRange.minValue.amount"] = { "$lte": String(filters.maxPrice) };
+            if (hasMinPrice) {
+                filterConditions.push({
+                    "actualPriceRange.minValue.amount": { "$gte": String(filters.minPrice) }
+                });
+            }
+            if (hasMaxPrice) {
+                filterConditions.push({
+                    "actualPriceRange.minValue.amount": { "$lte": String(filters.maxPrice) }
+                });
             }
 
             // Stock status filter
             if (filters.inStockOnly) {
-                filter["inventory.availabilityStatus"] = { "$eq": "IN_STOCK" };
+                filterConditions.push({
+                    "inventory.availabilityStatus": { "$eq": "IN_STOCK" }
+                });
             }
 
             // Category filter
             if (filters.categoryIds && filters.categoryIds.length > 0) {
-                filter["allCategoriesInfo.categories"] = {
-                    "$matchItems": filters.categoryIds.map(id => ({ id: { "$eq": id } }))
-                };
+                filterConditions.push({
+                    "allCategoriesInfo.categories": {
+                        "$matchItems": filters.categoryIds.map(id => ({ id: { "$eq": id } }))
+                    }
+                });
             }
+
+            // Combine all conditions with $and
+            const filter: Record<string, unknown> = filterConditions.length === 1 
+                ? filterConditions[0] 
+                : { "$and": filterConditions };
 
             // Build sort array
             const sort: Array<{ fieldName: string; order: "ASC" | "DESC" }> = [];
@@ -284,7 +292,6 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
             const maxPriceAgg = aggResults.find((a) => a.name === 'max-price')?.scalar as AggregationDataAggregationResultsScalarResult;
             
             const totalCount = totalCountAgg?.value ?? products.length;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const bucketsAgg = aggResults.find((a) => a.name === 'price-buckets').ranges as AggregationResultsRangeResults;
 
             const minBound = minPriceAgg?.value;
