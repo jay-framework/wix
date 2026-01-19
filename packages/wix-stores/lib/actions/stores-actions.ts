@@ -165,16 +165,20 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
                 "visible": { "$eq": true }
             };
 
-            // Price range filters (both min and max can apply to same field)
-            const priceFilter: Record<string, string> = {};
-            if (filters.minPrice !== undefined && filters.minPrice > 0) {
-                priceFilter["$gte"] = String(filters.minPrice);
-            }
-            if (filters.maxPrice !== undefined && filters.maxPrice > 0) {
-                priceFilter["$lte"] = String(filters.maxPrice);
-            }
-            if (Object.keys(priceFilter).length > 0) {
-                filter["actualPriceRange.minValue.amount"] = priceFilter;
+            // Price range filters - use $and when both min and max are present
+            const hasMinPrice = filters.minPrice !== undefined && filters.minPrice > 0;
+            const hasMaxPrice = filters.maxPrice !== undefined && filters.maxPrice > 0;
+            
+            if (hasMinPrice && hasMaxPrice) {
+                // Both filters: use $and to combine them
+                filter["$and"] = [
+                    { "actualPriceRange.minValue.amount": { "$gte": String(filters.minPrice) } },
+                    { "actualPriceRange.minValue.amount": { "$lte": String(filters.maxPrice) } }
+                ];
+            } else if (hasMinPrice) {
+                filter["actualPriceRange.minValue.amount"] = { "$gte": String(filters.minPrice) };
+            } else if (hasMaxPrice) {
+                filter["actualPriceRange.minValue.amount"] = { "$lte": String(filters.maxPrice) };
             }
 
             // Stock status filter
@@ -218,23 +222,21 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
             // Build search expression (for text search)
             const hasSearchQuery = query && query.trim().length > 0;
 
-            // Build count filter (countProducts uses different syntax than searchProducts)
-            // Note: countProducts doesn't support text search, so count may differ when searching
-            const countFilter: Record<string, unknown> = {
-                visible: true
-            };
-            if (filters.categoryIds && filters.categoryIds.length > 0) {
-                countFilter['collections.id'] = { $hasSome: filters.categoryIds };
-            }
-
             const search = hasSearchQuery ? {
                 expression: query.trim(),
                 fields: ["name", "description"] as ("name" | "description")[]
             } : undefined
 
 
-            // Build aggregations for price bounds and buckets
+            // Build aggregations for price bounds, buckets, and total count
             const aggregations = [
+                // Total count via COUNT_DISTINCT on slug
+                {
+                    fieldPath: 'slug',
+                    name: 'total-count',
+                    type: "SCALAR" as const,
+                    scalar: { type: "COUNT_DISTINCT" as const }
+                },
                 // Price buckets with product counts
                 {
                     fieldPath: 'actualPriceRange.minValue.amount',
@@ -258,39 +260,30 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
                 }
             ];
 
-            // Call searchProducts and countProducts in parallel
-            console.log(wixStores.products);
-            console.log(wixStores.products.searchProducts);
-            const [searchResult, countResult] = await Promise.all([
-                wixStores.products.searchProducts(
-                    {
-                        filter,
-                        // @ts-expect-error - Wix SDK types don't match actual API
-                        sort: sort.length > 0 ? sort : undefined,
-                        cursorPaging,
-                        search,
-                        // @ts-expect-error - Wix SDK types don't include aggregations
-                        aggregations
-                    },
-                    { fields: ['CURRENCY', 'VARIANT_OPTION_CHOICE_NAMES'] }
-                ),
-                wixStores.products.countProducts({ filter, search })
-            ]);
-
-            console.log('filter', JSON.stringify(filter, null, 2));
-            console.log('sort', JSON.stringify(sort, null, 2));
-            console.log('search', JSON.stringify(search, null, 2));
-            console.log('aggregations', JSON.stringify(aggregations, null, 2));
-            console.log('searchResult', JSON.stringify(searchResult, null, 2));
+            // Call searchProducts (includes aggregations for count, price bounds, and buckets)
+            const searchResult = await wixStores.products.searchProducts(
+                {
+                    filter,
+                    // @ts-expect-error - Wix SDK types don't match actual API
+                    sort: sort.length > 0 ? sort : undefined,
+                    cursorPaging,
+                    search,
+                    // @ts-expect-error - Wix SDK types don't include aggregations
+                    aggregations
+                },
+                { fields: ['CURRENCY', 'VARIANT_OPTION_CHOICE_NAMES'] }
+            );
 
             const products = searchResult.products || [];
             const nextCursor = searchResult.pagingMetadata?.cursors?.next || null;
-            const totalCount = countResult.count || 0;
 
             // Extract aggregation results
             const aggResults: AggregationDataAggregationResults[] = searchResult.aggregationData?.results || [];
-            const minPriceAgg = aggResults.find((a) => a.name === 'min-price').scalar as AggregationDataAggregationResultsScalarResult;
-            const maxPriceAgg = aggResults.find((a) => a.name === 'max-price').scalar as AggregationDataAggregationResultsScalarResult;
+            const totalCountAgg = aggResults.find((a) => a.name === 'total-count')?.scalar as AggregationDataAggregationResultsScalarResult;
+            const minPriceAgg = aggResults.find((a) => a.name === 'min-price')?.scalar as AggregationDataAggregationResultsScalarResult;
+            const maxPriceAgg = aggResults.find((a) => a.name === 'max-price')?.scalar as AggregationDataAggregationResultsScalarResult;
+            
+            const totalCount = totalCountAgg?.value ?? products.length;
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const bucketsAgg = aggResults.find((a) => a.name === 'price-buckets').ranges as AggregationResultsRangeResults;
 

@@ -41,7 +41,10 @@ async function queryProducts(wixClient: WixClient): Promise<void> {
 
         const cursorPaging = next !== 'initial'? { cursor: next, limit: 12 }: { limit: 12 };
         const filter = {
-            "actualPriceRange.minValue.amount": {"$gt": "50"},
+            "$and": [
+                {"actualPriceRange.minValue.amount": {"$gt": "50"}},
+                {"actualPriceRange.minValue.amount": {"$lt": "500"}}
+            ],
             "inventory.availabilityStatus": {"$eq": "IN_STOCK"},
             "allCategoriesInfo.categories": {"$matchItems": [
                     {
@@ -81,14 +84,15 @@ export async function aggregateProducts(wixClient: WixClient): Promise<void> {
     const productsClient = wixClient.use(productsV3);
 
     const result = await productsClient.searchProducts({
-        aggregations: [{
-            fieldPath: 'actualPriceRange.minValue.amount',
-            name: 'price-buckets',
-            type: "RANGE",
-            range: {
-                buckets: [{from: 0, to: 50}, {from: 50, to: 100}, {from: 100, to: 200}, {from: 200, to: 400}, {from: 400, to: 800}]
-            }
-        },
+        aggregations: [
+            {
+                fieldPath: 'actualPriceRange.minValue.amount',
+                name: 'price-buckets',
+                type: "RANGE",
+                range: {
+                    buckets: [{from: 0, to: 50}, {from: 50, to: 100}, {from: 100, to: 200}, {from: 200, to: 400}, {from: 400, to: 800}]
+                }
+            },
             {
                 fieldPath: 'actualPriceRange.minValue.amount',
                 name: 'min-price',
@@ -104,7 +108,20 @@ export async function aggregateProducts(wixClient: WixClient): Promise<void> {
                 scalar: {
                     type: "MAX"
                 }
-            }]
+            },
+            {
+                fieldPath: 'actualPriceRange.minValue.amount',
+                name: 'price-value',
+                type: "VALUE",
+                value: {}
+            },
+            {
+                fieldPath: 'slug',
+                name: 'slug',
+                type: "SCALAR",
+                scalar: { type: "COUNT_DISTINCT"}
+            }
+        ]
     })
     console.log("result:", JSON.stringify(result?.aggregationData?.results, undefined, 2));
 }
@@ -118,9 +135,9 @@ async function queryPlayground() {
 
         // await queryCategories(wixClient);
 
-        // await queryProducts(wixClient);
+        await queryProducts(wixClient);
 
-        await aggregateProducts(wixClient);
+        // await aggregateProducts(wixClient);
 
 
     } catch (error) {
