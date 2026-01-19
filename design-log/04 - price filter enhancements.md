@@ -269,14 +269,16 @@ A:
 ### 4. API Integration in `stores-actions.ts`
 
 ```typescript
-// Define price buckets for aggregation
-const PRICE_BUCKETS = [
-  { from: 0, to: 100 },
-  { from: 100, to: 200 },
-  { from: 200, to: 400 },
-  { from: 400, to: 600 },
-  { from: 600 }  // open-ended
-];
+// Logarithmic price bucket boundaries: 0, 20, 40, 100, 200, 400, 1000, 2000, 4000, 10000...
+// Each power of 10 is divided into 3 buckets using multipliers 2, 4, 10
+const PRICE_BUCKET_BOUNDARIES = [0, 20, 40, 100, 200, 400, 1000, 2000, 4000, 10000, 20000, 40000, 100000];
+
+const PRICE_BUCKETS = PRICE_BUCKET_BOUNDARIES.slice(0, -1).map((from, i) => ({
+    from,
+    to: PRICE_BUCKET_BOUNDARIES[i + 1]
+}));
+// Add open-ended last bucket
+PRICE_BUCKETS.push({ from: 100000 });
 
 // In searchProducts call, add aggregations:
 const response = await productsClient.searchProducts({
@@ -399,11 +401,10 @@ viewState.priceRange.maxPrice.onChange = handleSliderChange;
    - Only `searchProducts` supports the `aggregations` parameter
 2. Update `stores-actions.ts`:
    - Add aggregations to `searchProducts` call
-   - Define `PRICE_BUCKETS` constant for range aggregation
+   - Define logarithmic `PRICE_BUCKETS` (0-20, 20-40, 40-100, 100-200, etc.)
    - Extract min/max prices and bucket counts from response
-3. Update `product-mapper.ts`:
-   - Add `mapPriceRanges()` function to convert aggregation results
-   - Include currency symbol in labels
+   - Filter out empty buckets from results
+   - Map buckets to `PriceRangeBucket[]` with currency-formatted labels
 
 ### Phase 3: Component Implementation
 1. Update `product-search.ts`:

@@ -119,24 +119,25 @@
             </div>
           </div>
 
-          <!-- Price Range -->
+          <!-- Price Range Radio Buttons -->
           <div class="filter-section">
             <div class="filter-header">
               <span class="filter-title">Price</span>
             </div>
-            <div class="price-inputs">
-              <input 
-                class="input" 
-                type="number" 
-                placeholder="Min"
-                ref="productSearch.filters.priceRange.minPrice"
-              />
-              <input 
-                class="input" 
-                type="number" 
-                placeholder="Max"
-                ref="productSearch.filters.priceRange.maxPrice"
-              />
+            <div class="filter-options">
+              <label 
+                class="radio-item"
+                forEach="productSearch.filters.priceRange.ranges"
+                trackBy="rangeId"
+              >
+                <input 
+                  type="radio" 
+                  name="priceRange"
+                  ref="productSearch.filters.priceRange.ranges.isSelected"
+                />
+                <span class="radio-label">{label}</span>
+                <span class="radio-count" if="productCount">({productCount})</span>
+              </label>
             </div>
           </div>
 

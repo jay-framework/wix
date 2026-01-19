@@ -585,6 +585,48 @@ input, select, textarea {
   font-size: 13px;
 }
 
+/* Radio items for price ranges */
+.radio-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-secondary);
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.radio-item:last-child {
+  border-bottom: none;
+}
+
+.radio-item:hover {
+  color: var(--text-primary);
+}
+
+.radio-item input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--navy);
+  cursor: pointer;
+}
+
+.radio-item .radio-label {
+  flex: 1;
+}
+
+.radio-item .radio-count {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.filter-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
 /* Price range inputs */
 .price-inputs {
   display: flex;

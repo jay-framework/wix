@@ -184,22 +184,33 @@
             </button>
           </div>
 
-          <!-- Price Range -->
+          <!-- Price Range Slider -->
           <div class="filter-group">
             <label class="label">Price Range</label>
-            <div class="price-inputs">
-              <input 
-                class="input" 
-                type="number" 
-                placeholder="Min"
-                ref="productSearch.filters.priceRange.minPrice"
-              />
-              <input 
-                class="input" 
-                type="number" 
-                placeholder="Max"
-                ref="productSearch.filters.priceRange.maxPrice"
-              />
+            <div class="price-slider">
+              <div class="slider-values">
+                <span class="slider-value-min">${productSearch.filters.priceRange.minPrice}</span>
+                <span class="slider-value-divider">—</span>
+                <span class="slider-value-max">${productSearch.filters.priceRange.maxPrice}</span>
+              </div>
+              <div class="slider-track">
+                <input 
+                  type="range" 
+                  class="slider-handle slider-min"
+                  min="{productSearch.filters.priceRange.minBound}"
+                  max="{productSearch.filters.priceRange.maxBound}"
+                  value="{productSearch.filters.priceRange.minPrice}"
+                  ref="productSearch.filters.priceRange.minPrice"
+                />
+                <input 
+                  type="range" 
+                  class="slider-handle slider-max"
+                  min="{productSearch.filters.priceRange.minBound}"
+                  max="{productSearch.filters.priceRange.maxBound}"
+                  value="{productSearch.filters.priceRange.maxPrice}"
+                  ref="productSearch.filters.priceRange.maxPrice"
+                />
+              </div>
             </div>
           </div>
 

@@ -9,6 +9,7 @@ import { makeJayQuery, ActionError } from '@jay-framework/fullstack-component';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
 import { ProductCardViewState } from '../contracts/product-card.jay-contract';
 import { mapProductToCard } from '../utils/product-mapper.js';
+import { AggregationDataAggregationResults, AggregationDataAggregationResultsScalarResult, AggregationResultsRangeResults } from '@wix/auto_sdk_stores_products-v-3';
 
 // ============================================================================
 // Types
@@ -32,6 +33,48 @@ export interface ProductSearchFilters {
     /** Filter by category IDs */
     categoryIds?: string[];
 }
+
+/**
+ * Price range bucket for aggregation
+ */
+export interface PriceRangeBucket {
+    rangeId: string;
+    label: string;
+    minValue: number | null;
+    maxValue: number | null;
+    productCount: number;
+    isSelected: boolean;
+}
+
+/**
+ * Price aggregation data from search
+ */
+export interface PriceAggregationData {
+    /** Minimum price across all products */
+    minBound: number;
+    /** Maximum price across all products */
+    maxBound: number;
+    /** Price range buckets with product counts */
+    ranges: PriceRangeBucket[];
+}
+
+/**
+ * Pre-computed wide-range price buckets using logarithmic scale.
+ * Each power of 10 is divided into 3 buckets using multipliers 2, 4, 10.
+ * 
+ * Boundaries: 0, 20, 40, 100, 200, 400, 1000, 2000, 4000, 10000...
+ * Buckets: 0-20, 20-40, 40-100, 100-200, 200-400, 400-1000, etc.
+ * 
+ * We request all buckets and filter out empty ones from the response.
+ */
+const PRICE_BUCKET_BOUNDARIES = [0, 20, 40, 100, 200, 400, 1000, 2000, 4000, 10000, 20000, 40000, 100000];
+
+const PRICE_BUCKETS = PRICE_BUCKET_BOUNDARIES.slice(0, -1).map((from, i) => ({
+    from,
+    to: PRICE_BUCKET_BOUNDARIES[i + 1]
+}));
+// Add open-ended last bucket
+PRICE_BUCKETS.push({ from: PRICE_BUCKET_BOUNDARIES[PRICE_BUCKET_BOUNDARIES.length - 1] } as { from: number; to: number });
 
 /**
  * Input for searchProducts action
@@ -61,6 +104,8 @@ export interface SearchProductsOutput {
     nextCursor: string | null;
     /** Whether there are more results */
     hasMore: boolean;
+    /** Price aggregation data (bounds and ranges) */
+    priceAggregation?: PriceAggregationData;
 }
 
 /**
@@ -188,7 +233,34 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
             } : undefined
 
 
+            // Build aggregations for price bounds and buckets
+            const aggregations = [
+                // Price buckets with product counts
+                {
+                    fieldPath: 'actualPriceRange.minValue.amount',
+                    name: 'price-buckets',
+                    type: "RANGE" as const,
+                    range: { buckets: PRICE_BUCKETS }
+                },
+                // Min price for slider bound
+                {
+                    fieldPath: 'actualPriceRange.minValue.amount',
+                    name: 'min-price',
+                    type: "SCALAR" as const,
+                    scalar: { type: "MIN" as const }
+                },
+                // Max price for slider bound
+                {
+                    fieldPath: 'actualPriceRange.minValue.amount',
+                    name: 'max-price',
+                    type: "SCALAR" as const,
+                    scalar: { type: "MAX" as const }
+                }
+            ];
+
             // Call searchProducts and countProducts in parallel
+            console.log(wixStores.products);
+            console.log(wixStores.products.searchProducts);
             const [searchResult, countResult] = await Promise.all([
                 wixStores.products.searchProducts(
                     {
@@ -196,15 +268,67 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
                         // @ts-expect-error - Wix SDK types don't match actual API
                         sort: sort.length > 0 ? sort : undefined,
                         cursorPaging,
-                        search                    },
+                        search,
+                        // @ts-expect-error - Wix SDK types don't include aggregations
+                        aggregations
+                    },
                     { fields: ['CURRENCY', 'VARIANT_OPTION_CHOICE_NAMES'] }
                 ),
                 wixStores.products.countProducts({ filter, search })
             ]);
 
+            console.log('filter', JSON.stringify(filter, null, 2));
+            console.log('sort', JSON.stringify(sort, null, 2));
+            console.log('search', JSON.stringify(search, null, 2));
+            console.log('aggregations', JSON.stringify(aggregations, null, 2));
+            console.log('searchResult', JSON.stringify(searchResult, null, 2));
+
             const products = searchResult.products || [];
             const nextCursor = searchResult.pagingMetadata?.cursors?.next || null;
             const totalCount = countResult.count || 0;
+
+            // Extract aggregation results
+            const aggResults: AggregationDataAggregationResults[] = searchResult.aggregationData?.results || [];
+            const minPriceAgg = aggResults.find((a) => a.name === 'min-price').scalar as AggregationDataAggregationResultsScalarResult;
+            const maxPriceAgg = aggResults.find((a) => a.name === 'max-price').scalar as AggregationDataAggregationResultsScalarResult;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const bucketsAgg = aggResults.find((a) => a.name === 'price-buckets').ranges as AggregationResultsRangeResults;
+
+            const minBound = minPriceAgg?.value;
+            const maxBound = maxPriceAgg?.value;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const buckets = bucketsAgg.results || [];
+
+            // Get currency symbol from first product
+            const currencySymbol = products[0]?.currency === 'ILS' ? '₪' : 
+                                   products[0]?.currency === 'USD' ? '$' :
+                                   products[0]?.currency === 'EUR' ? '€' :
+                                   products[0]?.currency === 'GBP' ? '£' : '$';
+
+            // Map price ranges from aggregation
+            const priceRanges: PriceRangeBucket[] = [
+                { rangeId: 'all', label: 'Show all', minValue: null, maxValue: null, productCount: totalCount, isSelected: true }
+            ];
+            
+            const bucketRanges = buckets
+                .filter(bucket => (bucket.count ?? 0) > 0)
+                .map(bucket => {
+                    const from = bucket.from ?? 0;
+                    const to = bucket.to;
+                    const label = to 
+                        ? `${currencySymbol}${from} - ${currencySymbol}${to}`
+                        : `${currencySymbol}${from}+`;
+                    return {
+                        rangeId: `${from}-${to ?? 'plus'}`,
+                        label,
+                        minValue: from,
+                        maxValue: to ?? null,
+                        productCount: bucket.count ?? 0,
+                        isSelected: false
+                    };
+                });
+            
+            priceRanges.push(...bucketRanges);
 
             // Map products to card view state
             const mappedProducts = products.map(p => mapProductToCard(p));
@@ -213,7 +337,12 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
                 products: mappedProducts,
                 totalCount,
                 nextCursor,
-                hasMore: nextCursor !== null
+                hasMore: nextCursor !== null,
+                priceAggregation: {
+                    minBound,
+                    maxBound,
+                    ranges: priceRanges
+                }
             };
         } catch (error) {
             console.error('[wixStores.searchProducts] Search failed:', error);

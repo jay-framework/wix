@@ -15,6 +15,7 @@ import {
 } from '../contracts/product-search.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
 import { patch, REPLACE, ADD } from '@jay-framework/json-patch';
+import { runAction } from '@jay-framework/stack-server-runtime';
 import { searchProducts, ProductSortField } from '../actions/stores-actions';
 import { mapProductToCard } from '../utils/product-mapper';
 import { WIX_STORES_CONTEXT, WixStoresContext } from '../contexts/wix-stores-context';
@@ -109,54 +110,67 @@ async function renderSlowlyChanging(
 /**
  * Fast Rendering Phase
  * Loads dynamic data per request:
- * - Initial products
- * - Search results
+ * - Initial products (via searchProducts for aggregation support)
+ * - Price bounds and ranges from aggregations
  * - Load more state
  */
 async function renderFastChanging(
     props: PageProps,
     slowCarryForward: SearchSlowCarryForward,
-    wixStores: WixStoresService
+    _wixStores: WixStoresService
 ) {
     const Pipeline = RenderPipeline.for<ProductSearchFastViewState, SearchFastCarryForward>();
 
     return Pipeline
         .try(async () => {
-            // Load initial products
-            const productsResult = await wixStores.products.queryProducts({
-                fields: ['CURRENCY']
-            })
-                .limit(PAGE_SIZE)
-                .find();
+            // Use searchProducts action to get products with aggregations
+            // Note: Must use runAction for proper service injection in backend code
+            const result = await runAction(searchProducts, {
+                query: '',
+                pageSize: PAGE_SIZE
+            });
             
-            // Get total count - the Wix SDK returns items but not always total count
-            const items = productsResult.items || [];
-            const total = items.length; // Initial load, will be updated on search
-            
-            return { items, total };
+            return result;
         })
         .recover(error => {
             console.error('Failed to load products:', error);
-            return Pipeline.ok({ items: [], total: 0 });
+            return Pipeline.ok({
+                products: [],
+                totalCount: 0,
+                nextCursor: null,
+                hasMore: false,
+                priceAggregation: {
+                    minBound: 0,
+                    maxBound: 1000,
+                    ranges: [{ rangeId: 'all', label: 'Show all', minValue: null, maxValue: null, productCount: 0, isSelected: true }]
+                }
+            });
         })
-        .toPhaseOutput(({ items, total }) => {
-            const mappedProducts = items.map(p => mapProductToCard(p));
+        .toPhaseOutput((result) => {
+            const priceAgg = result.priceAggregation || {
+                minBound: 0,
+                maxBound: 1000,
+                ranges: [{ rangeId: 'all', label: 'Show all', minValue: null, maxValue: null, productCount: result.totalCount, isSelected: true }]
+            };
 
             return {
                 viewState: {
                     searchExpression: '',
                     isSearching: false,
                     hasSearched: false,
-                    searchResults: mappedProducts,
-                    resultCount: items.length,
-                    hasResults: items.length > 0,
+                    searchResults: result.products,
+                    resultCount: result.products.length,
+                    hasResults: result.products.length > 0,
                     hasSuggestions: false,
                     suggestions: [],
                     filters: {
                         inStockOnly: false,
                         priceRange: {
                             minPrice: 0,
-                            maxPrice: 0
+                            maxPrice: 0,
+                            minBound: priceAgg.minBound,
+                            maxBound: priceAgg.maxBound,
+                            ranges: priceAgg.ranges
                         },
                         categoryFilter: {
                             categories: slowCarryForward.categories.map(cat => ({
@@ -168,9 +182,9 @@ async function renderFastChanging(
                     sortBy: {
                         currentSort: CurrentSort.relevance
                     },
-                    hasMore: items.length < total,
-                    loadedCount: items.length,
-                    totalCount: total
+                    hasMore: result.hasMore,
+                    loadedCount: result.products.length,
+                    totalCount: result.totalCount
                 },
                 carryForward: {
                     searchFields: slowCarryForward.searchFields,
@@ -399,7 +413,7 @@ function ProductSearchInteractive(
         setSortBy({ currentSort: newSort });
     });
 
-    // Price range filters
+    // Price range input filters (works for both number inputs and range sliders)
     refs.filters.priceRange.minPrice.oninput(({ event }) => {
         const value = parseFloat((event.target as HTMLInputElement).value);
         const newValue = isNaN(value) ? 0 : value;
@@ -413,6 +427,32 @@ function ProductSearchInteractive(
         const newValue = isNaN(value) ? 0 : value;
         setFilters(patch(filters(), [
             { op: REPLACE, path: ['priceRange', 'maxPrice'], value: newValue }
+        ]));
+    });
+
+    // Price range radio buttons
+    refs.filters.priceRange.ranges.isSelected.oninput(({ event, coordinate }) => {
+        const [rangeId] = coordinate;
+        const currentFilters = filters();
+        const ranges = currentFilters.priceRange.ranges || [];
+        const selectedRange = ranges.find(r => r.rangeId === rangeId);
+        
+        if (!selectedRange) return;
+
+        // Update all ranges: deselect all, select the clicked one
+        const updatedRanges = ranges.map(r => ({
+            ...r,
+            isSelected: r.rangeId === rangeId
+        }));
+
+        // Set min/max based on selected range
+        const newMinPrice = selectedRange.minValue ?? 0;
+        const newMaxPrice = selectedRange.maxValue ?? 0;
+
+        setFilters(patch(currentFilters, [
+            { op: REPLACE, path: ['priceRange', 'ranges'], value: updatedRanges },
+            { op: REPLACE, path: ['priceRange', 'minPrice'], value: newMinPrice },
+            { op: REPLACE, path: ['priceRange', 'maxPrice'], value: newMaxPrice }
         ]));
     });
 
@@ -448,8 +488,20 @@ function ProductSearchInteractive(
             isSelected: false
         }));
         
+        // Reset price ranges - select "Show all"
+        const clearedRanges = (currentFilters.priceRange.ranges || []).map((r, i) => ({
+            ...r,
+            isSelected: i === 0 // First one is "Show all"
+        }));
+        
         setFilters({
-            priceRange: { minPrice: 0, maxPrice: 0 },
+            priceRange: { 
+                minPrice: 0, 
+                maxPrice: 0,
+                minBound: currentFilters.priceRange.minBound,
+                maxBound: currentFilters.priceRange.maxBound,
+                ranges: clearedRanges
+            },
             categoryFilter: { categories: clearedCategories },
             inStockOnly: false
         });

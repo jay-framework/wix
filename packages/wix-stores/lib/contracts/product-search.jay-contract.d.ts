@@ -1,9 +1,21 @@
 import {HTMLElementCollectionProxy, HTMLElementProxy, JayContract} from "@jay-framework/runtime";
 import {ProductCardViewState, ProductCardRefs, ProductCardRepeatedRefs} from "./product-card.jay-contract";
 
+export interface RangeOfPriceRangeOfFilterOfProductSearchViewState {
+  rangeId: string,
+  label: string,
+  minValue: number,
+  maxValue: number,
+  productCount: number,
+  isSelected: boolean
+}
+
 export interface PriceRangeOfFilterOfProductSearchViewState {
   minPrice: number,
-  maxPrice: number
+  maxPrice: number,
+  minBound: number,
+  maxBound: number,
+  ranges: Array<RangeOfPriceRangeOfFilterOfProductSearchViewState>
 }
 
 export interface CategoryOfCategoryFilterOfFilterOfProductSearchViewState {
@@ -70,7 +82,9 @@ export type ProductSearchSlowViewState = Pick<ProductSearchViewState, 'searchFie
 
 export type ProductSearchFastViewState = Pick<ProductSearchViewState, 'searchExpression' | 'isSearching' | 'hasSearched' | 'searchResults' | 'resultCount' | 'hasResults' | 'hasMore' | 'loadedCount' | 'totalCount' | 'hasSuggestions'> & {
     filters: Pick<ProductSearchViewState['filters'], 'inStockOnly'> & {
-    priceRange: ProductSearchViewState['filters']['priceRange'];
+    priceRange: Pick<ProductSearchViewState['filters']['priceRange'], 'minPrice' | 'maxPrice' | 'minBound' | 'maxBound'> & {
+    ranges: Array<ProductSearchViewState['filters']['priceRange']['ranges'][number]>;
+};
     categoryFilter: {
     categories: Array<Pick<ProductSearchViewState['filters']['categoryFilter']['categories'][number], 'categoryId' | 'isSelected'>>;
 };
@@ -81,7 +95,9 @@ export type ProductSearchFastViewState = Pick<ProductSearchViewState, 'searchExp
 
 export type ProductSearchInteractiveViewState = Pick<ProductSearchViewState, 'searchExpression' | 'isSearching' | 'hasSearched' | 'searchResults' | 'resultCount' | 'hasResults' | 'hasMore' | 'loadedCount' | 'totalCount' | 'hasSuggestions'> & {
     filters: Pick<ProductSearchViewState['filters'], 'inStockOnly'> & {
-    priceRange: ProductSearchViewState['filters']['priceRange'];
+    priceRange: Pick<ProductSearchViewState['filters']['priceRange'], 'minPrice' | 'maxPrice' | 'minBound' | 'maxBound'> & {
+    ranges: Array<ProductSearchViewState['filters']['priceRange']['ranges'][number]>;
+};
     categoryFilter: {
     categories: Array<Pick<ProductSearchViewState['filters']['categoryFilter']['categories'][number], 'categoryId' | 'isSelected'>>;
 };
@@ -102,7 +118,10 @@ export interface ProductSearchRefs {
     clearFilters: HTMLElementProxy<FilterOfProductSearchViewState, HTMLButtonElement>,
     priceRange: {
       minPrice: HTMLElementProxy<PriceRangeOfFilterOfProductSearchViewState, HTMLInputElement>,
-      maxPrice: HTMLElementProxy<PriceRangeOfFilterOfProductSearchViewState, HTMLInputElement>
+      maxPrice: HTMLElementProxy<PriceRangeOfFilterOfProductSearchViewState, HTMLInputElement>,
+      ranges: {
+        isSelected: HTMLElementCollectionProxy<RangeOfPriceRangeOfFilterOfProductSearchViewState, HTMLInputElement>
+      }
     },
     categoryFilter: {
       categories: {
@@ -130,7 +149,10 @@ export interface ProductSearchRepeatedRefs {
     clearFilters: HTMLElementCollectionProxy<FilterOfProductSearchViewState, HTMLButtonElement>,
     priceRange: {
       minPrice: HTMLElementCollectionProxy<PriceRangeOfFilterOfProductSearchViewState, HTMLInputElement>,
-      maxPrice: HTMLElementCollectionProxy<PriceRangeOfFilterOfProductSearchViewState, HTMLInputElement>
+      maxPrice: HTMLElementCollectionProxy<PriceRangeOfFilterOfProductSearchViewState, HTMLInputElement>,
+      ranges: {
+        isSelected: HTMLElementCollectionProxy<RangeOfPriceRangeOfFilterOfProductSearchViewState, HTMLInputElement>
+      }
     },
     categoryFilter: {
       categories: {

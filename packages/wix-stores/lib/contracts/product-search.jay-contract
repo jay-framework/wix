@@ -82,13 +82,60 @@ tags:
             type: [data, interactive]
             dataType: number
             elementType: HTMLInputElement
-            description: Minimum price input
+            description: Current minimum price filter (works with number input or range slider)
             
           - tag: maxPrice
             type: [data, interactive]
             dataType: number
             elementType: HTMLInputElement
-            description: Maximum price input
+            description: Current maximum price filter (works with number input or range slider)
+            
+          - tag: minBound
+            type: data
+            dataType: number
+            description: Absolute minimum price from product catalog (for slider min attribute)
+            
+          - tag: maxBound
+            type: data
+            dataType: number
+            description: Absolute maximum price from product catalog (for slider max attribute)
+            
+          - tag: ranges
+            type: sub-contract
+            repeated: true
+            trackBy: rangeId
+            description: Predefined price range options with product counts
+            tags:
+              - tag: rangeId
+                type: data
+                dataType: string
+                description: Unique range identifier
+                
+              - tag: label
+                type: data
+                dataType: string
+                description: Display label (e.g., "$0 - $100")
+                
+              - tag: minValue
+                type: data
+                dataType: number
+                description: Range minimum (null for "Show all")
+                
+              - tag: maxValue
+                type: data
+                dataType: number
+                description: Range maximum (null for open-ended like "$400+")
+                
+              - tag: productCount
+                type: data
+                dataType: number
+                description: Number of products in this price range
+                
+              - tag: isSelected
+                type: [data, interactive]
+                dataType: boolean
+                elementType: HTMLInputElement
+                description: Radio button for this range
       
       # Category filter (slow for category list, fast+interactive for selection)
       - tag: categoryFilter
