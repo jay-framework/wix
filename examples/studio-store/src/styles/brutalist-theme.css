@@ -519,14 +519,23 @@ input, select, textarea {
 .product-card {
   background: var(--bg-card);
   border: var(--border-width) solid var(--border);
-  overflow: visible;
+  overflow: hidden;
   transition: all var(--transition-fast);
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-card:hover {
   transform: translate(-4px, -4px);
   box-shadow: var(--shadow-lg);
+}
+
+.product-card-content {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-card-image {
@@ -583,10 +592,6 @@ input, select, textarea {
   font-size: 14px;
   font-weight: 700;
   color: var(--accent);
-}
-
-.product-card-content {
-  padding: 20px;
 }
 
 .product-card-brand {

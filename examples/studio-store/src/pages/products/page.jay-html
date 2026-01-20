@@ -154,36 +154,38 @@
         display: none;
       }
 
-      /* Grid with featured first */
+      /* Products Grid - Simple uniform layout */
       .products-grid-featured {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 24px;
+        align-items: start;
       }
 
-      .products-grid-featured .product-card:first-child {
-        grid-column: span 2;
-        grid-row: span 2;
+      /* Product card layout fixes */
+      .products-grid-featured .product-card {
+        display: flex;
+        flex-direction: column;
+        height: auto;
       }
 
-      .products-grid-featured .product-card:first-child .product-card-image {
-        aspect-ratio: 4/5;
+      .products-grid-featured .product-card-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
       }
 
-      .products-grid-featured .product-card:first-child .product-card-name {
-        font-size: 22px;
+      .products-grid-featured .product-card-price {
+        margin-top: auto;
       }
 
-      .products-grid-featured .product-card:first-child .current-price {
-        font-size: 26px;
+      /* Ensure buttons don't overflow */
+      .products-grid-featured .btn-block {
+        margin-top: 12px;
       }
 
-      .products-grid-featured .product-card:first-child .overlay-name {
-        font-size: 22px;
-      }
-
-      .products-grid-featured .product-card:first-child .overlay-price {
-        font-size: 18px;
+      .products-grid-featured .quick-options-area {
+        margin-top: 12px;
       }
 
       @media (max-width: 1024px) {
@@ -197,11 +199,6 @@
 
         .products-grid-featured {
           grid-template-columns: repeat(2, 1fr);
-        }
-
-        .products-grid-featured .product-card:first-child {
-          grid-column: span 2;
-          grid-row: span 1;
         }
       }
 
@@ -223,10 +220,6 @@
 
         .products-grid-featured {
           grid-template-columns: 1fr;
-        }
-
-        .products-grid-featured .product-card:first-child {
-          grid-column: span 1;
         }
       }
     </style>
