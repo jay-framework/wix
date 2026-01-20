@@ -1,0 +1,701 @@
+<html>
+  <head>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="product-page"
+            key="productPage"
+    ></script>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="cart-indicator"
+            key="cartIndicator"
+    ></script>
+    <script type="application/jay-data">
+      data:
+    </script>
+    <link rel="stylesheet" href="../../../styles/brutalist-theme.css" />
+    <style>
+      /* =====================================================
+         STUDIO PRODUCT PAGE - BRUTALIST DETAIL VIEW
+         ===================================================== */
+      
+      .product-page {
+        min-height: 100vh;
+        padding-bottom: 120px;
+      }
+
+      .product-container {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        padding: 48px var(--page-padding) 80px;
+      }
+
+      /* Breadcrumb */
+      .breadcrumb {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 32px;
+      }
+
+      .breadcrumb a:hover {
+        color: var(--accent-dark);
+      }
+
+      .breadcrumb-separator {
+        margin: 0 12px;
+        color: var(--border-light);
+      }
+
+      /* Two Column Layout */
+      .product-page-layout {
+        display: grid;
+        grid-template-columns: 1.3fr 1fr;
+        gap: 80px;
+        align-items: start;
+      }
+
+      /* Gallery */
+      .product-gallery {
+        position: sticky;
+        top: 100px;
+      }
+
+      .product-main-image {
+        aspect-ratio: 4/5;
+        overflow: hidden;
+        background: var(--bg-secondary);
+        border: var(--border-width) solid var(--border);
+        margin-bottom: 16px;
+        position: relative;
+      }
+
+      .product-main-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .product-main-image::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--accent);
+      }
+
+      .product-thumbnails {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+      }
+
+      .product-thumbnail {
+        width: 80px;
+        height: 100px;
+        overflow: hidden;
+        cursor: pointer;
+        border: 3px solid var(--border-light);
+        background: var(--bg-secondary);
+        transition: all var(--transition-fast);
+        flex-shrink: 0;
+      }
+
+      .product-thumbnail:hover,
+      .product-thumbnail.selected {
+        border-color: var(--border);
+      }
+
+      .product-thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Product Details */
+      .product-details {
+        padding-top: 0;
+      }
+
+      .product-badges {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+
+      .product-name {
+        font-size: clamp(36px, 5vw, 64px);
+        font-weight: 700;
+        text-transform: uppercase;
+        line-height: 0.95;
+        margin-bottom: 8px;
+        letter-spacing: -0.02em;
+      }
+
+      .product-sku {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        margin-bottom: 32px;
+        display: flex;
+        gap: 24px;
+      }
+
+      .product-price {
+        display: flex;
+        align-items: baseline;
+        gap: 16px;
+        margin-bottom: 8px;
+      }
+
+      .product-price .price {
+        font-family: var(--font-mono);
+        font-size: 42px;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      .product-price .strikethrough-price {
+        font-family: var(--font-mono);
+        font-size: 24px;
+        color: var(--text-muted);
+        text-decoration: line-through;
+      }
+
+      .product-price-per-unit {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        margin-bottom: 32px;
+      }
+
+      .product-description {
+        font-size: 16px;
+        line-height: 1.75;
+        color: var(--text-secondary);
+        margin-bottom: 40px;
+        padding: 24px;
+        background: var(--bg-secondary);
+        border-left: 4px solid var(--accent);
+      }
+
+      /* Options */
+      .product-options {
+        margin-bottom: 32px;
+      }
+
+      .option-group {
+        margin-bottom: 28px;
+      }
+
+      .option-label {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        margin-bottom: 14px;
+        display: block;
+      }
+
+      .option-choices {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .choice-btn {
+        padding: 14px 28px;
+        border: 3px solid var(--border);
+        background: var(--bg-primary);
+        font-family: var(--font-mono);
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        color: var(--text-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .choice-btn:hover {
+        background: var(--bg-secondary);
+      }
+
+      .choice-btn.selected {
+        background: var(--bg-inverse);
+        color: var(--text-inverse);
+        border-color: var(--bg-inverse);
+      }
+
+      .choice-btn.out-of-stock {
+        opacity: 0.35;
+        text-decoration: line-through;
+        cursor: not-allowed;
+      }
+
+      .color-swatch {
+        width: 48px;
+        height: 48px;
+        padding: 0;
+        position: relative;
+      }
+
+      .color-swatch.selected::after {
+        content: '+';
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 28px;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      }
+
+      /* Quantity */
+      .quantity-section {
+        margin-bottom: 32px;
+      }
+
+      .quantity-controls {
+        display: inline-flex;
+        align-items: center;
+        border: var(--border-width) solid var(--border);
+      }
+
+      .quantity-btn {
+        width: 56px;
+        height: 56px;
+        border: none;
+        background: var(--bg-secondary);
+        font-size: 28px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background var(--transition-fast);
+        color: var(--text-primary);
+      }
+
+      .quantity-btn:hover {
+        background: var(--accent);
+      }
+
+      .quantity-input {
+        width: 80px;
+        height: 56px;
+        border: none;
+        background: var(--bg-primary);
+        text-align: center;
+        font-family: var(--font-mono);
+        font-size: 20px;
+        font-weight: 700;
+        border-left: var(--border-width) solid var(--border);
+        border-right: var(--border-width) solid var(--border);
+        color: var(--text-primary);
+      }
+
+      .quantity-input:focus {
+        outline: none;
+      }
+
+      /* Sticky Action Bar */
+      .sticky-action-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--bg-inverse);
+        border-top: var(--border-width) solid var(--accent);
+        padding: 20px var(--page-padding);
+        z-index: 100;
+      }
+
+      .action-bar-inner {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+
+      .action-bar-price {
+        margin-right: auto;
+      }
+
+      .action-bar-price .price-label {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.6);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+      }
+
+      .action-bar-price .price-amount {
+        font-family: var(--font-mono);
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--accent);
+      }
+
+      .action-bar-buttons {
+        display: flex;
+        gap: 12px;
+      }
+
+      .action-bar-buttons .btn {
+        min-width: 160px;
+        border: none;
+      }
+
+      .action-bar-buttons .btn-primary {
+        background: var(--accent);
+        color: var(--text-primary);
+      }
+
+      .action-bar-buttons .btn-secondary {
+        background: transparent;
+        border: 2px solid var(--text-inverse);
+        color: var(--text-inverse);
+        box-shadow: none;
+      }
+
+      .action-bar-buttons .btn-secondary:hover {
+        background: var(--text-inverse);
+        color: var(--text-primary);
+      }
+
+      /* Info sections */
+      .info-sections {
+        border-top: var(--border-width) solid var(--border);
+        padding-top: 32px;
+      }
+
+      .info-section {
+        margin-bottom: 28px;
+      }
+
+      .info-section-title {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .info-section-title::before {
+        content: '';
+        width: 20px;
+        height: 3px;
+        background: var(--accent);
+      }
+
+      .info-section-content {
+        font-size: 15px;
+        line-height: 1.75;
+        color: var(--text-secondary);
+        padding-left: 32px;
+      }
+
+      /* Product type badge */
+      .product-type-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        border: 2px solid currentColor;
+      }
+
+      .product-type-badge.physical {
+        color: var(--text-secondary);
+      }
+
+      .product-type-badge.digital {
+        color: var(--accent-dark);
+      }
+
+      /* Stock indicator */
+      .stock-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        border: 2px solid currentColor;
+      }
+
+      .stock-indicator.in-stock {
+        color: #00CC6A;
+      }
+
+      .stock-indicator.out-of-stock {
+        color: var(--error);
+      }
+
+      @media (max-width: 1024px) {
+        .product-page-layout {
+          grid-template-columns: 1fr;
+          gap: 48px;
+        }
+
+        .product-gallery {
+          position: static;
+        }
+
+        .product-name {
+          font-size: 36px;
+        }
+
+        .product-price .price {
+          font-size: 32px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .action-bar-inner {
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .action-bar-price {
+          margin-right: 0;
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .action-bar-buttons {
+          width: 100%;
+        }
+
+        .action-bar-buttons .btn {
+          flex: 1;
+          min-width: auto;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .product-container {
+          padding: 32px var(--page-padding) 60px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="product-page">
+      <!-- Site Header -->
+      <header class="site-header">
+        <div class="header-inner">
+          <a href="/products" class="site-logo">
+            STUDIO<span class="logo-dot"></span>
+          </a>
+          <nav class="site-nav">
+            <a href="/products">Products</a>
+            <a href="/cart" 
+               class="cart-indicator {cartIndicator.hasItems ? has-items} {cartIndicator.isLoading ? is-loading} {cartIndicator.justAdded ? just-added}"
+               ref="cartIndicator.cartLink">
+              <span class="cart-indicator-icon">BAG</span>
+              <span class="cart-indicator-count" if="cartIndicator.hasItems">{cartIndicator.itemCount}</span>
+            </a>
+          </nav>
+        </div>
+      </header>
+
+      <div class="product-container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+          <a href="/products">PRODUCTS</a>
+          <span class="breadcrumb-separator">/</span>
+          <span>{productPage.productName}</span>
+        </nav>
+
+        <!-- Product Layout -->
+        <div class="product-page-layout">
+          <!-- Gallery -->
+          <div class="product-gallery">
+            <div class="product-main-image">
+              <img src="{productPage.mediaGallery.selectedMedia.url}" alt="{productPage.productName}" />
+            </div>
+            
+            <div class="product-thumbnails">
+              <div class="product-thumbnail {selected == selected ? selected}"
+                   forEach="productPage.mediaGallery.availableMedia" 
+                   trackBy="mediaId"
+                   ref="productPage.mediaGallery.availableMedia.selected">
+                <img src="{media.thumbnail_50x50}" alt="Thumbnail" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Details -->
+          <div class="product-details">
+            <!-- Product Badges -->
+            <div class="product-badges">
+              <div class="badge badge-accent" if="productPage.ribbon">{productPage.ribbon}</div>
+              <div class="product-type-badge physical" if="productPage.productType == PHYSICAL">
+                PHYSICAL
+              </div>
+              <div class="product-type-badge digital" if="productPage.productType == DIGITAL">
+                DIGITAL
+              </div>
+              <div class="stock-indicator in-stock" if="productPage.stockStatus == IN_STOCK">
+                ● IN STOCK
+              </div>
+              <div class="stock-indicator out-of-stock" if="productPage.stockStatus == OUT_OF_STOCK">
+                ○ SOLD OUT
+              </div>
+            </div>
+
+            <div class="product-brand" if="productPage.brand">{productPage.brand}</div>
+            <h1 class="product-name">{productPage.productName}</h1>
+            
+            <div class="product-sku">
+              <span if="productPage.sku">SKU: {productPage.sku}</span>
+            </div>
+
+            <!-- Price -->
+            <div class="product-price">
+              <span class="price">{productPage.price}</span>
+              <span class="strikethrough-price" if="productPage.strikethroughPrice">
+                {productPage.strikethroughPrice}
+              </span>
+              <span class="badge badge-error" if="productPage.strikethroughPrice">SALE</span>
+            </div>
+            
+            <p class="product-price-per-unit" if="productPage.pricePerUnit">
+              {productPage.pricePerUnit} PER UNIT
+            </p>
+
+            <!-- Description -->
+            <div class="product-description" if="productPage.description">
+              {productPage.description}
+            </div>
+
+            <!-- Options -->
+            <div class="product-options" if="productPage.options">
+              <div class="option-group" forEach="productPage.options" trackBy="_id">
+                <label class="option-label">{name}</label>
+                
+                <!-- Text Choices as Dropdown -->
+                <select class="select" 
+                        if="optionRenderType == TEXT_CHOICES"
+                        ref="productPage.options.textChoice">
+                  <option forEach="choices" trackBy="choiceId" value="{choiceId}">{name}</option>
+                </select>
+
+                <!-- Color Swatch Choices -->
+                <div class="option-choices" if="optionRenderType == COLOR_SWATCH_CHOICES">
+                  <button class="choice-btn color-swatch {isSelected ? selected} {!inStock ? out-of-stock}"
+                          style="background-color: {colorCode}"
+                          forEach="choices" 
+                          trackBy="choiceId"
+                          ref="productPage.options.choices.choiceButton"
+                          title="{name}">
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modifiers -->
+            <div class="product-options" if="productPage.modifiers">
+              <div class="option-group" forEach="productPage.modifiers" trackBy="_id">
+                <label class="option-label">{name}</label>
+                
+                <select class="select" 
+                        if="modifierType == TEXT_CHOICES"
+                        ref="productPage.modifiers.textModifier">
+                  <option forEach="choices" trackBy="choiceId" value="{choiceId}">{name}</option>
+                </select>
+
+                <div class="option-choices" if="modifierType == COLOR_SWATCH_CHOICES">
+                  <button class="choice-btn color-swatch {isSelected ? selected}"
+                          style="background-color: {colorCode}"
+                          forEach="choices" 
+                          trackBy="choiceId"
+                          ref="choiceButton"
+                          title="{name}">
+                  </button>
+                </div>
+
+                <input class="input" 
+                       type="text" 
+                       if="modifierType == FREE_TEXT"
+                       ref="productPage.modifiers.textInput"
+                       placeholder="ENTER CUSTOM TEXT"
+                       maxlength="{textInputLength}" />
+              </div>
+            </div>
+
+            <!-- Quantity -->
+            <div class="quantity-section">
+              <label class="option-label">QUANTITY</label>
+              <div class="quantity-controls">
+                <button class="quantity-btn" ref="productPage.quantity.decrementButton">−</button>
+                <input class="quantity-input" 
+                       type="number" 
+                       value="{productPage.quantity.quantity}" 
+                       ref="productPage.quantity.quantity"
+                       min="1" />
+                <button class="quantity-btn" ref="productPage.quantity.incrementButton">+</button>
+              </div>
+            </div>
+
+            <!-- Additional Info Sections -->
+            <div class="info-sections" if="productPage.infoSections">
+              <div class="info-section" forEach="productPage.infoSections" trackBy="_id">
+                <h4 class="info-section-title">{title}</h4>
+                <div class="info-section-content">{plainDescription}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sticky Action Bar -->
+      <div class="sticky-action-bar">
+        <div class="action-bar-inner">
+          <div class="action-bar-price">
+            <span class="price-label">TOTAL</span>
+            <span class="price-amount">{productPage.price}</span>
+          </div>
+          <div class="action-bar-buttons">
+            <button class="btn btn-secondary" 
+                    ref="productPage.buyNowButton"
+                    disabled="!productPage.actionsEnabled">
+              BUY NOW
+            </button>
+            <button class="btn btn-primary" 
+                    ref="productPage.addToCartButton"
+                    disabled="!productPage.actionsEnabled">
+              ADD TO BAG
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
