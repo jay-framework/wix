@@ -1,10 +1,10 @@
-# Design Log #001: Wix Data Plugin for Jay Framework
+# Design Log #05: Wix Data Plugin for Jay Framework
 
 ## Background
 
 The Jay Framework has a `wix-stores` plugin that provides headless components for e-commerce (product pages, category pages, cart, etc.). We need a similar plugin for **Wix Data** - a generic CMS/database system that allows site owners to create custom collections with arbitrary schemas.
 
-Unlike wix-stores which has a fixed schema (products, categories, cart), wix-data is schema-agnostic. The plugin must read collection schemas at build time and generate appropriate components based on configuration.
+Unlike wix-stores which has a fixed schema (products, categories, cart), wix-data is schema-agnostic. The plugin must read collection schemas at build time and generate appropriate contracts using the **dynamic contracts** pattern.
 
 ### Reference Implementation
 
@@ -15,6 +15,8 @@ The `wix-stores` plugin at `/wix/packages/wix-stores` demonstrates:
 - Actions using `makeJayQuery()`
 - Plugin initialization using `makeJayInit()`
 
+The dynamic contracts pattern is documented in `/jay/design-log/60 - plugin system refinement and dynamic contracts.md`.
+
 ## Problem
 
 Site developers using Wix Data need headless components to:
@@ -24,30 +26,40 @@ Site developers using Wix Data need headless components to:
 4. Embed item lists within other pages (table widget)
 5. Embed single items within other pages (card widget)
 
-The challenge: these components must be **configured** per-collection, not hardcoded like wix-stores.
+The challenge: contracts must be **generated dynamically** from collection schemas, not hardcoded.
 
 ## Questions and Answers
 
 ### Q1: How do we discover collection schemas?
-**A:** Use the Wix Data Collections API (`@wix/data` → `collections.getCollection()`) to read schema at build time. Cache results for the build session.
+**A:** Use the Wix Data Collections API:
+- `listDataCollections()` - https://dev.wix.com/docs/sdk/backend-modules/data/collections/list-data-collections
+- `getDataCollection()` - https://dev.wix.com/docs/sdk/backend-modules/data/collections/get-data-collection
+
+Read schemas at build time during contract generation.
 
 ### Q2: How do we configure which collections to expose?
-**A:** Configuration file (`wix-data.config.yaml` or `wix-data.config.ts`) that specifies:
+**A:** Configuration file (`wix-data.config.yaml`) that specifies:
 - Which collections to generate components for
-- Field mappings (slug field, title field, image field, etc.)
-- Reference configurations (which refs to embed, which to use as categories)
+- URL routing (slug field, path prefix)
+- Category relationships
+- Reference handling (embed vs link)
+- Which components to enable
 
 ### Q3: Should components be generated or configured at runtime?
-**A:** **Configured at build time**. Each collection gets its own component instance created via factory functions. The contract is generic but the component behavior is configured.
+**A:** Use **dynamic contracts** (see design log #60). The generator:
+1. Reads collection schema from Wix Data API
+2. Generates contracts with tags matching the actual fields
+3. All generated contracts share a single component implementation
+4. Component receives contract via `DYNAMIC_CONTRACT_SERVICE`
 
 ### Q4: How do we handle multi-reference fields for categories?
-**A:** Multi-reference fields in Wix Data link items to other collections. Configuration specifies which field to use as "category" and the plugin fetches related items.
+**A:** Configuration specifies which field is the "category" reference. The component queries items filtered by that reference.
 
 ### Q5: How do we handle dynamic schemas in contracts?
-**A:** Use a **generic contract** with field mappings. The contract defines slots like `title`, `description`, `image`, `fields[]` and configuration maps actual collection fields to these slots.
+**A:** Use **dynamic contracts** - the generator creates a contract per collection with tags for each field. No field-to-viewState mappings needed in config since the contract IS the schema.
 
 ### Q6: What about nested/embedded references?
-**A:** Configuration specifies which reference fields to "expand" - the plugin fetches related items and embeds them in the view state.
+**A:** Configuration specifies which reference fields to "expand" - the component fetches related items and embeds them in the view state.
 
 ## Design
 
@@ -61,33 +73,32 @@ wix/packages/wix-data/
 │   ├── init.ts                     # Plugin initialization
 │   ├── config/
 │   │   ├── config-types.ts         # Configuration types
-│   │   ├── config-loader.ts        # Load & validate config
-│   │   └── schema-reader.ts        # Read Wix Data schemas
+│   │   └── config-loader.ts        # Load & validate config
 │   ├── services/
 │   │   └── wix-data-service.ts     # Server-side data service
 │   ├── contexts/
 │   │   └── wix-data-context.ts     # Client-side context
 │   ├── components/
-│   │   ├── item-page.ts            # Single item page
-│   │   ├── index-page.ts           # Collection index page
-│   │   ├── category-page.ts        # Items by category
-│   │   ├── table-widget.ts         # Table widget
-│   │   └── card-widget.ts          # Card widget
-│   ├── contracts/
-│   │   ├── data-item.jay-contract  # Generic item contract
-│   │   ├── data-list.jay-contract  # List contract
-│   │   ├── data-table.jay-contract # Table widget contract
-│   │   └── data-card.jay-contract  # Card widget contract
+│   │   ├── collection-item.ts      # Shared component for item pages
+│   │   ├── collection-list.ts      # Shared component for list pages
+│   │   ├── collection-table.ts     # Shared component for tables
+│   │   └── collection-card.ts      # Shared component for cards
+│   ├── generators/
+│   │   ├── item-contract-generator.ts
+│   │   ├── list-contract-generator.ts
+│   │   ├── table-contract-generator.ts
+│   │   └── card-contract-generator.ts
 │   ├── actions/
 │   │   └── data-actions.ts         # Query actions
 │   └── utils/
+│       ├── schema-to-contract.ts   # Convert Wix schema to contract YAML
 │       └── item-mapper.ts          # Map data to view state
 ├── plugin.yaml
 ├── package.json
 └── README.md
 ```
 
-### Configuration Schema
+### Configuration Schema (Simplified - No Field Mappings)
 
 ```typescript
 // config-types.ts
@@ -103,8 +114,8 @@ export interface CollectionConfig {
   /** URL path prefix (e.g., "/blog" for blog posts) */
   pathPrefix: string;
   
-  /** Field mappings */
-  fields: FieldMappings;
+  /** Field to use as URL slug (required for routing) */
+  slugField: string;
   
   /** Reference field configurations */
   references?: ReferenceConfig[];
@@ -116,48 +127,20 @@ export interface CollectionConfig {
   components: ComponentsConfig;
 }
 
-export interface FieldMappings {
-  /** Field to use as URL slug (required) */
-  slug: string;
-  
-  /** Field to use as page title */
-  title: string;
-  
-  /** Field for main content/description */
-  description?: string;
-  
-  /** Field for main image */
-  image?: string;
-  
-  /** Additional fields to include */
-  additionalFields?: string[];
-}
-
 export interface ReferenceConfig {
   /** Reference field name */
   fieldName: string;
   
   /** How to handle: 'embed' (fetch & include) or 'link' (just ID/slug) */
   mode: 'embed' | 'link';
-  
-  /** Fields to include from referenced collection (if embed) */
-  includeFields?: string[];
 }
 
 export interface CategoryConfig {
   /** Multi-reference field that links to category collection */
   referenceField: string;
   
-  /** Category collection ID */
-  categoryCollectionId: string;
-  
-  /** Field mappings for category items */
-  categoryFields: {
-    slug: string;
-    title: string;
-    description?: string;
-    image?: string;
-  };
+  /** Field in category collection to use as slug */
+  categorySlugField: string;
 }
 
 export interface ComponentsConfig {
@@ -185,24 +168,13 @@ export interface ComponentsConfig {
 collections:
   - collectionId: "BlogPosts"
     pathPrefix: "/blog"
-    fields:
-      slug: "slug"
-      title: "title"
-      description: "content"
-      image: "featuredImage"
-      additionalFields: ["author", "publishDate", "readTime"]
+    slugField: "slug"
     references:
       - fieldName: "author"
         mode: embed
-        includeFields: ["name", "avatar", "bio"]
     category:
       referenceField: "categories"
-      categoryCollectionId: "BlogCategories"
-      categoryFields:
-        slug: "slug"
-        title: "name"
-        description: "description"
-        image: "image"
+      categorySlugField: "slug"
     components:
       itemPage: true
       indexPage: true
@@ -211,195 +183,339 @@ collections:
 
   - collectionId: "Team"
     pathPrefix: "/team"
-    fields:
-      slug: "slug"
-      title: "name"
-      description: "bio"
-      image: "photo"
-      additionalFields: ["role", "email", "linkedin"]
+    slugField: "slug"
     components:
       itemPage: true
       indexPage: true
       cardWidget: true
+      
+  - collectionId: "Products"
+    pathPrefix: "/products"
+    slugField: "sku"
+    references:
+      - fieldName: "manufacturer"
+        mode: embed
+    components:
+      itemPage: true
+      indexPage: true
+      tableWidget: true
 ```
 
-### Generic Contracts
+### Dynamic Contract Generation
 
-#### data-item.jay-contract (Item Page)
+#### Plugin YAML with Dynamic Contracts
 
 ```yaml
-name: data-item
-description: Generic data item page for any collection
+# plugin.yaml
+name: wix-data
 
-tags:
-  - {tag: _id, type: data, dataType: string, description: Item ID}
-  - {tag: slug, type: data, dataType: string, description: URL slug}
-  - {tag: title, type: data, dataType: string, required: true, description: Item title}
-  - {tag: description, type: data, dataType: string, description: Main content/description}
+# Dynamic contracts - generated from Wix Data schemas
+dynamic_contracts:
+  # Item pages - one contract per collection
+  - prefix: 'item'
+    component: ./components/collection-item
+    generator: ./generators/item-contract-generator.ts
+    
+  # List pages (index & category) - one contract per collection
+  - prefix: 'list'
+    component: ./components/collection-list
+    generator: ./generators/list-contract-generator.ts
+    
+  # Table widgets - one contract per collection
+  - prefix: 'table'
+    component: ./components/collection-table
+    generator: ./generators/table-contract-generator.ts
+    
+  # Card widgets - one contract per collection  
+  - prefix: 'card'
+    component: ./components/collection-card
+    generator: ./generators/card-contract-generator.ts
+
+actions:
+  - queryItems
+  - getItemBySlug
+  - getCategories
+```
+
+#### Contract Generator Implementation
+
+```typescript
+// generators/item-contract-generator.ts
+
+import { makeContractGenerator } from '@jay-framework/fullstack-component';
+import { WIX_DATA_SERVICE_MARKER } from '../services/wix-data-service';
+import { schemaToContractYaml } from '../utils/schema-to-contract';
+
+export const generator = makeContractGenerator()
+  .withServices(WIX_DATA_SERVICE_MARKER)
+  .generateWith(async (wixDataService) => {
+    const config = wixDataService.config;
+    const contracts: { name: string; yaml: string }[] = [];
+    
+    for (const collectionConfig of config.collections) {
+      if (!collectionConfig.components.itemPage) continue;
+      
+      // Fetch collection schema from Wix Data API
+      const schema = await wixDataService.collections.getDataCollection(
+        collectionConfig.collectionId
+      );
+      
+      // Generate contract YAML from schema
+      const yaml = schemaToContractYaml(schema, {
+        type: 'item',
+        embedReferences: collectionConfig.references?.filter(r => r.mode === 'embed'),
+      });
+      
+      contracts.push({
+        name: toPascalCase(collectionConfig.collectionId) + 'Item',
+        yaml,
+      });
+    }
+    
+    return contracts;
+  });
+
+function toPascalCase(str: string): string {
+  return str
+    .split(/[-_]/)
+    .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+    .join('');
+}
+```
+
+#### Schema to Contract Converter
+
+```typescript
+// utils/schema-to-contract.ts
+
+import { DataCollection, Field } from '@wix/data';
+
+interface ConversionOptions {
+  type: 'item' | 'list' | 'table' | 'card';
+  embedReferences?: { fieldName: string }[];
+}
+
+export function schemaToContractYaml(
+  collection: DataCollection,
+  options: ConversionOptions
+): string {
+  const tags: string[] = [];
   
-  - tag: image
+  // Always include _id
+  tags.push(`  - {tag: _id, type: data, dataType: string}`);
+  
+  // Map each field from schema
+  for (const field of collection.fields || []) {
+    const tag = fieldToTag(field, options);
+    if (tag) tags.push(tag);
+  }
+  
+  // Add interactive elements based on type
+  if (options.type === 'list') {
+    tags.push(`  - {tag: loadMoreButton, type: interactive, elementType: HTMLButtonElement}`);
+    tags.push(`  - {tag: hasMore, type: variant, dataType: boolean, phase: fast+interactive}`);
+    tags.push(`  - {tag: isLoading, type: variant, dataType: boolean, phase: fast+interactive}`);
+  }
+  
+  if (options.type === 'table') {
+    tags.push(`  - {tag: prevButton, type: interactive, elementType: HTMLButtonElement}`);
+    tags.push(`  - {tag: nextButton, type: interactive, elementType: HTMLButtonElement}`);
+  }
+  
+  if (options.type === 'card' || options.type === 'item') {
+    tags.push(`  - {tag: itemLink, type: interactive, elementType: HTMLAnchorElement}`);
+  }
+  
+  return `name: ${collection._id}
+tags:
+${tags.join('\n')}`;
+}
+
+function fieldToTag(field: Field, options: ConversionOptions): string | null {
+  const { key, type } = field;
+  
+  // Skip system fields
+  if (key.startsWith('_') && key !== '_id') return null;
+  
+  const dataType = mapWixTypeToJayType(type);
+  
+  // Check if this is an embedded reference
+  const isEmbedded = options.embedReferences?.some(r => r.fieldName === key);
+  
+  if (type === 'REFERENCE' || type === 'MULTI_REFERENCE') {
+    if (isEmbedded) {
+      // Embedded reference becomes a sub-contract
+      return `  - tag: ${key}
     type: sub-contract
-    description: Main image
+    ${type === 'MULTI_REFERENCE' ? 'repeated: true\n    trackBy: _id' : ''}
+    description: Embedded ${key} reference`;
+    } else {
+      // Linked reference is just an ID
+      return `  - {tag: ${key}, type: data, dataType: string, description: Reference ID}`;
+    }
+  }
+  
+  if (type === 'IMAGE') {
+    return `  - tag: ${key}
+    type: sub-contract
     tags:
       - {tag: url, type: data, dataType: string}
       - {tag: altText, type: data, dataType: string}
       - {tag: width, type: data, dataType: number}
-      - {tag: height, type: data, dataType: number}
+      - {tag: height, type: data, dataType: number}`;
+  }
   
-  # Dynamic fields array for additional configured fields
-  - tag: fields
-    type: sub-contract
-    repeated: true
-    trackBy: name
-    description: Additional fields from configuration
-    tags:
-      - {tag: name, type: data, dataType: string, description: Field name}
-      - {tag: value, type: data, dataType: string, description: Field value (stringified)}
-      - {tag: type, type: variant, dataType: "enum (TEXT | NUMBER | DATE | BOOLEAN | RICH_TEXT | IMAGE | REFERENCE)", description: Field type}
-      - {tag: label, type: data, dataType: string, description: Display label}
-  
-  # Embedded references
-  - tag: references
-    type: sub-contract
-    repeated: true
-    trackBy: fieldName
-    description: Embedded reference data
-    tags:
-      - {tag: fieldName, type: data, dataType: string}
-      - {tag: items, type: sub-contract, repeated: true, trackBy: _id}
-        # Each item has dynamic fields based on config
-  
-  # SEO data
-  - tag: seo
-    type: sub-contract
-    description: SEO metadata
-    tags:
-      - {tag: title, type: data, dataType: string}
-      - {tag: description, type: data, dataType: string}
-      - {tag: canonicalUrl, type: data, dataType: string}
+  return `  - {tag: ${key}, type: data, dataType: ${dataType}}`;
+}
+
+function mapWixTypeToJayType(wixType: string): string {
+  const typeMap: Record<string, string> = {
+    'TEXT': 'string',
+    'NUMBER': 'number',
+    'BOOLEAN': 'boolean',
+    'DATE': 'string',
+    'DATETIME': 'string',
+    'TIME': 'string',
+    'RICH_TEXT': 'string',
+    'URL': 'string',
+    'DOCUMENT': 'string',
+    'VIDEO': 'string',
+    'AUDIO': 'string',
+    'ARRAY': 'string',
+    'OBJECT': 'string',
+  };
+  return typeMap[wixType] || 'string';
+}
 ```
 
-#### data-list.jay-contract (Index/Category Page)
+### Shared Component Implementation
 
-```yaml
-name: data-list
-description: List of items from a collection
+```typescript
+// components/collection-item.ts
 
-tags:
-  - tag: items
-    type: sub-contract
-    repeated: true
-    trackBy: _id
-    link: ./data-card
-    description: Items in the list
+import {
+  makeJayStackComponent,
+  PageProps,
+  RenderPipeline,
+  Signals,
+  UrlParams,
+  DYNAMIC_CONTRACT_SERVICE,
+} from '@jay-framework/fullstack-component';
+import { Contract } from '@jay-framework/compiler-shared';
+import { WIX_DATA_SERVICE_MARKER, WixDataService } from '../services/wix-data-service';
+
+export interface ItemPageParams extends UrlParams {
+  slug: string;
+}
+
+/**
+ * Shared component for all collection item pages.
+ * Receives contract via DYNAMIC_CONTRACT_SERVICE to determine which collection to query.
+ */
+export const collectionItem = makeJayStackComponent<any>() // Dynamic contract type
+  .withProps<PageProps>()
+  .withServices(WIX_DATA_SERVICE_MARKER, DYNAMIC_CONTRACT_SERVICE)
+  .withLoadParams(loadItemParams)
+  .withSlowlyRender(renderSlowlyChanging);
+
+async function* loadItemParams(
+  [wixData, contract]: [WixDataService, Contract]
+): AsyncIterable<ItemPageParams[]> {
+  // Derive collection ID from contract name: "BlogPostsItem" -> "BlogPosts"
+  const collectionId = deriveCollectionId(contract.name);
+  const config = wixData.getCollectionConfig(collectionId);
   
-  - {tag: totalCount, type: data, dataType: number, description: Total items in collection}
-  - {tag: hasMore, type: variant, dataType: boolean, phase: fast+interactive, description: More items available}
-  - {tag: isLoading, type: variant, dataType: boolean, phase: fast+interactive, description: Loading state}
-  - {tag: loadMoreButton, type: interactive, elementType: HTMLButtonElement, description: Load more trigger}
+  if (!config) {
+    console.error(`No config found for collection: ${collectionId}`);
+    yield [];
+    return;
+  }
   
-  # For category pages
-  - tag: category
-    type: sub-contract
-    description: Current category (for category pages)
-    tags:
-      - {tag: _id, type: data, dataType: string}
-      - {tag: slug, type: data, dataType: string}
-      - {tag: title, type: data, dataType: string}
-      - {tag: description, type: data, dataType: string}
-      - tag: image
-        type: sub-contract
-        tags:
-          - {tag: url, type: data, dataType: string}
-          - {tag: altText, type: data, dataType: string}
+  try {
+    const result = await wixData.queryCollection(collectionId).find();
+    yield result.items.map(item => ({
+      slug: item.data?.[config.slugField] as string
+    }));
+  } catch (error) {
+    console.error(`Failed to load slugs for ${collectionId}:`, error);
+    yield [];
+  }
+}
+
+async function renderSlowlyChanging(
+  props: PageProps & ItemPageParams,
+  wixData: WixDataService,
+  contract: Contract
+) {
+  const collectionId = deriveCollectionId(contract.name);
+  const config = wixData.getCollectionConfig(collectionId);
   
-  # Breadcrumbs
-  - tag: breadcrumbs
-    type: sub-contract
-    repeated: true
-    trackBy: slug
-    description: Navigation breadcrumbs
-    tags:
-      - {tag: slug, type: data, dataType: string}
-      - {tag: title, type: data, dataType: string}
-      - {tag: url, type: data, dataType: string}
-```
-
-#### data-card.jay-contract (Card Widget)
-
-```yaml
-name: data-card
-description: Card representation of a data item
-
-tags:
-  - {tag: _id, type: data, dataType: string}
-  - {tag: slug, type: data, dataType: string}
-  - {tag: title, type: data, dataType: string, required: true}
-  - {tag: description, type: data, dataType: string, description: Truncated description for preview}
-  - {tag: url, type: data, dataType: string, description: Full URL to item page}
-  - {tag: itemLink, type: interactive, elementType: HTMLAnchorElement}
+  const Pipeline = RenderPipeline.for<any, { itemId: string }>();
   
-  - tag: image
-    type: sub-contract
-    tags:
-      - {tag: url, type: data, dataType: string}
-      - {tag: altText, type: data, dataType: string}
-  
-  # Preview of key fields
-  - tag: previewFields
-    type: sub-contract
-    repeated: true
-    trackBy: name
-    tags:
-      - {tag: name, type: data, dataType: string}
-      - {tag: value, type: data, dataType: string}
-      - {tag: label, type: data, dataType: string}
-```
+  return Pipeline
+    .try(async () => {
+      const result = await wixData.queryCollection(collectionId)
+        .eq(config!.slugField, props.slug)
+        .find();
+      
+      if (!result.items.length) {
+        throw new Error('Item not found');
+      }
+      
+      const item = result.items[0];
+      
+      // Fetch embedded references
+      const viewState = await mapItemToViewState(item, config!, wixData);
+      
+      return { item, viewState };
+    })
+    .recover(() => Pipeline.clientError(404, 'Item not found'))
+    .toPhaseOutput(({ item, viewState }) => ({
+      viewState,
+      carryForward: { itemId: item._id }
+    }));
+}
 
-#### data-table.jay-contract (Table Widget)
+function deriveCollectionId(contractName: string): string {
+  // "BlogPostsItem" -> "BlogPosts"
+  // "TeamItem" -> "Team"
+  return contractName.replace(/Item$/, '');
+}
 
-```yaml
-name: data-table
-description: Table view of collection items
+async function mapItemToViewState(
+  item: any,
+  config: CollectionConfig,
+  wixData: WixDataService
+): Promise<any> {
+  const viewState: any = { _id: item._id };
+  
+  // Map all data fields directly - contract matches schema
+  for (const [key, value] of Object.entries(item.data || {})) {
+    if (key.startsWith('_')) continue;
+    
+    // Check if this is an embedded reference
+    const refConfig = config.references?.find(r => r.fieldName === key);
+    if (refConfig?.mode === 'embed' && value) {
+      // Fetch referenced item(s)
+      viewState[key] = await fetchReference(value, wixData);
+    } else {
+      viewState[key] = value;
+    }
+  }
+  
+  return viewState;
+}
 
-tags:
-  - tag: columns
-    type: sub-contract
-    repeated: true
-    trackBy: fieldName
-    description: Table column definitions
-    tags:
-      - {tag: fieldName, type: data, dataType: string}
-      - {tag: label, type: data, dataType: string}
-      - {tag: sortable, type: variant, dataType: boolean}
-      - {tag: sortDirection, type: variant, dataType: "enum (NONE | ASC | DESC)", phase: fast+interactive}
-      - {tag: headerButton, type: interactive, elementType: HTMLButtonElement}
-  
-  - tag: rows
-    type: sub-contract
-    repeated: true
-    trackBy: _id
-    description: Table rows
-    tags:
-      - {tag: _id, type: data, dataType: string}
-      - {tag: url, type: data, dataType: string}
-      - {tag: rowLink, type: interactive, elementType: HTMLAnchorElement}
-      - tag: cells
-        type: sub-contract
-        repeated: true
-        trackBy: fieldName
-        tags:
-          - {tag: fieldName, type: data, dataType: string}
-          - {tag: value, type: data, dataType: string}
-  
-  - {tag: totalCount, type: data, dataType: number}
-  - {tag: currentPage, type: data, dataType: number, phase: fast+interactive}
-  - {tag: pageSize, type: data, dataType: number}
-  - {tag: totalPages, type: data, dataType: number}
-  - {tag: prevButton, type: interactive, elementType: HTMLButtonElement}
-  - {tag: nextButton, type: interactive, elementType: HTMLButtonElement}
-  - {tag: hasPrev, type: variant, dataType: boolean, phase: fast+interactive}
-  - {tag: hasNext, type: variant, dataType: boolean, phase: fast+interactive}
+async function fetchReference(refValue: any, wixData: WixDataService): Promise<any> {
+  // Handle single or multi-reference
+  if (Array.isArray(refValue)) {
+    return Promise.all(refValue.map(id => 
+      wixData.items.getDataItem(id).then(r => r.dataItem?.data)
+    ));
+  }
+  const result = await wixData.items.getDataItem(refValue);
+  return result.dataItem?.data;
+}
 ```
 
 ### Service Definition
@@ -418,7 +534,6 @@ export interface WixDataService {
   collections: ReturnType<typeof collections>;
   config: WixDataConfig;
   
-  // Helper methods
   getCollectionConfig(collectionId: string): CollectionConfig | undefined;
   queryCollection(collectionId: string): ReturnType<typeof items.queryDataItems>;
 }
@@ -426,7 +541,7 @@ export interface WixDataService {
 export const WIX_DATA_SERVICE_MARKER = createJayService<WixDataService>('Wix Data Service');
 
 export function provideWixDataService(
-  wixClient: WixClient, 
+  wixClient: WixClient,
   config: WixDataConfig
 ): WixDataService {
   const itemsClient = wixClient.use(items);
@@ -453,80 +568,7 @@ export function provideWixDataService(
 }
 ```
 
-### Component Factory Pattern
-
-```typescript
-// item-page.ts
-
-import {
-  makeJayStackComponent,
-  PageProps,
-  RenderPipeline,
-  UrlParams
-} from '@jay-framework/fullstack-component';
-import { DataItemContract } from '../contracts/data-item.jay-contract';
-import { WIX_DATA_SERVICE_MARKER, WixDataService } from '../services/wix-data-service';
-import { CollectionConfig } from '../config/config-types';
-import { mapItemToViewState } from '../utils/item-mapper';
-
-export interface ItemPageParams extends UrlParams {
-  slug: string;
-}
-
-/**
- * Factory function to create an item page component for a specific collection
- */
-export function createItemPage(collectionConfig: CollectionConfig) {
-  const { collectionId, fields } = collectionConfig;
-  
-  async function* loadItemParams(
-    [wixData]: [WixDataService]
-  ): AsyncIterable<ItemPageParams[]> {
-    try {
-      const result = await wixData.queryCollection(collectionId).find();
-      yield result.items.map(item => ({ 
-        slug: item.data?.[fields.slug] as string 
-      }));
-    } catch (error) {
-      console.error(`Failed to load slugs for ${collectionId}:`, error);
-      yield [];
-    }
-  }
-  
-  async function renderSlowlyChanging(
-    props: PageProps & ItemPageParams,
-    wixData: WixDataService
-  ) {
-    const Pipeline = RenderPipeline.for<DataItemSlowViewState, ItemCarryForward>();
-    
-    return Pipeline
-      .try(async () => {
-        const result = await wixData.queryCollection(collectionId)
-          .eq(fields.slug, props.slug)
-          .find();
-        
-        if (!result.items.length) {
-          throw new Error('Item not found');
-        }
-        
-        return result.items[0];
-      })
-      .recover(error => Pipeline.clientError(404, 'Item not found'))
-      .toPhaseOutput(item => ({
-        viewState: mapItemToViewState(item, collectionConfig),
-        carryForward: { itemId: item._id }
-      }));
-  }
-  
-  return makeJayStackComponent<DataItemContract>()
-    .withProps<PageProps>()
-    .withServices(WIX_DATA_SERVICE_MARKER)
-    .withLoadParams(loadItemParams)
-    .withSlowlyRender(renderSlowlyChanging);
-}
-```
-
-### Plugin Registration Pattern
+### Plugin Initialization
 
 ```typescript
 // init.ts
@@ -560,81 +602,38 @@ export const init = makeJayInit()
   });
 ```
 
-### Plugin YAML
-
-```yaml
-# plugin.yaml
-name: wix-data
-
-contracts:
-  - name: data-item
-    contract: data-item.jay-contract
-    component: createItemPage
-    description: Item page for a data collection item
-    factory: true  # Indicates component is created via factory
-    
-  - name: data-list
-    contract: data-list.jay-contract
-    component: createIndexPage
-    description: Index page listing all items in a collection
-    factory: true
-    
-  - name: category-page
-    contract: data-list.jay-contract
-    component: createCategoryPage
-    description: Category page showing items by reference
-    factory: true
-    
-  - name: data-table
-    contract: data-table.jay-contract
-    component: createTableWidget
-    description: Table widget for embedding item lists
-    factory: true
-    
-  - name: data-card
-    contract: data-card.jay-contract
-    component: createCardWidget
-    description: Card widget for embedding single items
-    factory: true
-
-actions:
-  - queryItems
-  - getItemBySlug
-  - getCategories
-```
-
 ## Implementation Plan
 
 ### Phase 1: Core Infrastructure
 1. Create package structure
 2. Implement configuration types and loader
-3. Implement schema reader (fetch Wix Data collection schemas)
-4. Create service definition and registration
+3. Create service definition and registration
+4. Set up plugin.yaml with dynamic_contracts
 
-### Phase 2: Generic Contracts
-1. Create `data-item.jay-contract`
-2. Create `data-card.jay-contract`
-3. Create `data-list.jay-contract`
-4. Create `data-table.jay-contract`
-5. Generate TypeScript definitions
+### Phase 2: Contract Generators
+1. Implement `schema-to-contract.ts` utility
+2. Implement item contract generator
+3. Implement list contract generator
+4. Implement table contract generator
+5. Implement card contract generator
 
 ### Phase 3: Item Page Component
-1. Implement item mapper utility
-2. Implement `createItemPage` factory
+1. Implement shared `collection-item.ts` component
+2. Add support for embedded references
 3. Implement slow/fast rendering phases
-4. Add support for embedded references
+4. Test with single collection
 
-### Phase 4: Index & Category Pages
-1. Implement `createIndexPage` factory
-2. Implement `createCategoryPage` factory
-3. Add pagination support
-4. Add interactive "load more" functionality
+### Phase 4: List Components
+1. Implement `collection-list.ts` component
+2. Add index page functionality
+3. Add category page filtering
+4. Add pagination and "load more"
 
-### Phase 5: Widgets
-1. Implement `createTableWidget` factory
-2. Implement `createCardWidget` factory
-3. Add sorting for table widget
-4. Add pagination for table widget
+### Phase 5: Widget Components
+1. Implement `collection-table.ts` component
+2. Implement `collection-card.ts` component
+3. Add sorting for table
+4. Add pagination for table
 
 ### Phase 6: Actions & Client Context
 1. Implement `queryItems` action
@@ -655,22 +654,51 @@ actions:
 <!-- blog/[slug].jay-html -->
 <script type="application/jay-headless"
         plugin="@jay-framework/wix-data"
-        contract="data-item"
+        contract="item/BlogPostsItem"
         key="post"
-        collection="BlogPosts"
 ></script>
 
 <article>
   <h1>{post.title}</h1>
-  <img src="{post.image.url}" alt="{post.image.altText}" />
-  <div class="content">{post.description}</div>
+  <img src="{post.featuredImage.url}" alt="{post.featuredImage.altText}" />
   
-  <aside class="meta">
-    <span forEach="post.fields" trackBy="name">
-      <strong>{label}:</strong> {value}
-    </span>
-  </aside>
+  <!-- Fields come directly from collection schema -->
+  <div class="content">{post.content}</div>
+  <time>{post.publishDate}</time>
+  <span>{post.readTime} min read</span>
+  
+  <!-- Embedded author reference -->
+  <div class="author">
+    <img src="{post.author.avatar.url}" alt="{post.author.name}" />
+    <span>{post.author.name}</span>
+    <p>{post.author.bio}</p>
+  </div>
 </article>
+```
+
+### Index Page
+
+```html
+<!-- blog/index.jay-html -->
+<script type="application/jay-headless"
+        plugin="@jay-framework/wix-data"
+        contract="list/BlogPostsList"
+        key="posts"
+></script>
+
+<section class="blog-posts">
+  <article forEach="posts.items" trackBy="_id">
+    <a href="/blog/{slug}">
+      <img src="{featuredImage.url}" alt="{title}" />
+      <h2>{title}</h2>
+      <p>{excerpt}</p>
+    </a>
+  </article>
+  
+  <button ref="posts.loadMoreButton" when="hasMore" is="true">
+    Load More
+  </button>
+</section>
 ```
 
 ### Table Widget
@@ -679,67 +707,61 @@ actions:
 <!-- admin/posts.jay-html -->
 <script type="application/jay-headless"
         plugin="@jay-framework/wix-data"
-        contract="data-table"
+        contract="table/BlogPostsTable"
         key="postsTable"
-        collection="BlogPosts"
-        pageSize="20"
 ></script>
 
 <table>
   <thead>
     <tr>
-      <th forEach="postsTable.columns" trackBy="fieldName">
-        <button ref="postsTable.columns.headerButton">
-          {label}
-          <span when="sortDirection" is="ASC">↑</span>
-          <span when="sortDirection" is="DESC">↓</span>
-        </button>
-      </th>
+      <th>Title</th>
+      <th>Author</th>
+      <th>Published</th>
+      <th>Status</th>
     </tr>
   </thead>
   <tbody>
     <tr forEach="postsTable.rows" trackBy="_id">
-      <td forEach="cells" trackBy="fieldName">{value}</td>
+      <td><a ref="postsTable.rows.itemLink">{title}</a></td>
+      <td>{author}</td>
+      <td>{publishDate}</td>
+      <td>{status}</td>
     </tr>
   </tbody>
 </table>
 
 <nav>
-  <button ref="postsTable.prevButton" disabled="{!hasPrev}">Previous</button>
-  <span>Page {currentPage} of {totalPages}</span>
-  <button ref="postsTable.nextButton" disabled="{!hasNext}">Next</button>
+  <button ref="postsTable.prevButton">Previous</button>
+  <button ref="postsTable.nextButton">Next</button>
 </nav>
 ```
 
 ## Trade-offs
 
-### Generic vs Typed Contracts
-- **Chosen:** Generic contracts with dynamic `fields[]` array
-- **Alternative:** Generate typed contracts per collection
-- **Rationale:** Generic contracts are simpler to maintain and work across all collections. Type safety is provided through configuration validation.
+### Dynamic vs Static Contracts
+- **Chosen:** Dynamic contracts generated from Wix Data schemas
+- **Alternative:** Static generic contracts with field mappings
+- **Rationale:** Dynamic contracts provide full type safety matching the actual schema. No need for field-to-viewState mappings since contract IS the schema.
 
-### Factory vs Instance Components
-- **Chosen:** Factory functions that create components per collection
-- **Alternative:** Single component that reads collection from props
-- **Rationale:** Factory pattern enables static generation of all item pages at build time. Props-based would require runtime configuration.
+### Single Shared Component vs Factory Pattern
+- **Chosen:** Single component per type (item, list, table, card) using `DYNAMIC_CONTRACT_SERVICE`
+- **Alternative:** Factory functions creating component instances per collection
+- **Rationale:** Dynamic contracts pattern uses shared components - simpler architecture, contract metadata available at runtime via service.
 
-### Configuration File vs API Discovery
-- **Chosen:** Explicit configuration file
-- **Alternative:** Auto-discover all collections
-- **Rationale:** Explicit config gives control over which collections to expose, field mappings, and URL structure. Auto-discovery would expose everything with less control.
-
-### Multi-Reference Categories vs Separate Category Collection
-- **Chosen:** Support both patterns via configuration
-- **Rationale:** Wix Data supports both multi-reference fields and separate category collections. Configuration should support both common patterns.
+### Configuration for Routing Only
+- **Chosen:** Config specifies routing (slug field, path prefix) and relationships only
+- **Alternative:** Full field mappings in config
+- **Rationale:** With dynamic contracts, fields come directly from schema. Only routing and reference handling need configuration.
 
 ## Verification Criteria
 
-1. **Item Page Works:** Can navigate to `/blog/my-post` and see the blog post
-2. **Index Page Works:** Can see list of all posts at `/blog`
-3. **Category Page Works:** Can see posts in category at `/blog/category/tech`
-4. **Table Widget Works:** Can embed sortable, paginated table in any page
-5. **Card Widget Works:** Can embed single item card in any page
-6. **Configuration Validated:** Invalid config produces clear error messages
+1. **Contract Generation:** Contracts are generated matching Wix Data collection schemas
+2. **Item Page Works:** Can navigate to `/blog/my-post` and see fields from schema
+3. **Index Page Works:** Can see list of all posts at `/blog`
+4. **Category Page Works:** Can see posts in category at `/blog/category/tech`
+5. **Table Widget Works:** Can embed sortable, paginated table in any page
+6. **Card Widget Works:** Can embed single item card in any page
 7. **References Embedded:** Author reference is expanded in blog post view
-8. **Load More Works:** Client-side pagination loads more items
-9. **Sorting Works:** Table columns can be sorted
+8. **Type Safety:** Generated contracts provide autocomplete in jay-html
+9. **Load More Works:** Client-side pagination loads more items
+10. **Sorting Works:** Table columns can be sorted
