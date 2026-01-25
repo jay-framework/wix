@@ -17,7 +17,9 @@ import {
 import { Props, createSignal } from '@jay-framework/component';
 import { WIX_DATA_SERVICE_MARKER, WixDataService } from '../services/wix-data-service';
 import { WIX_DATA_CONTEXT, WixDataContext } from '../contexts/wix-data-context';
-import { CollectionConfig } from '../config/config-types';
+import { CollectionConfig } from '../types';
+import { isTableField } from '../generators/contract-utils';
+import {WixDataItem} from "@wix/wix-data-items-sdk/build/cjs/src/data-v2-data-item-items.universal";
 
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -115,39 +117,32 @@ async function renderSlowlyChanging(
     
     return Pipeline
         .try(async () => {
-            const config = wixData.getCollectionConfig(collectionId);
+            // Use cached processed schema from service
+            const schema = await wixData.getProcessedSchema(collectionId);
             
-            if (!config) {
+            if (!schema) {
                 throw new Error(`Collection not configured: ${collectionId}`);
             }
             
-            // Fetch collection schema for column definitions
-            const schemaResponse = await wixData.collections.getDataCollection(collectionId);
-            const schema = schemaResponse.collection;
+            const config = schema.config;
             
-            // Build column definitions from schema (filter out system and complex fields)
-            const displayableFields = (schema?.fields || [])
-                .filter(field => !field.key?.startsWith('_'))
-                .filter(field => field.type !== 'REFERENCE' && field.type !== 'MULTI_REFERENCE')
-                .filter(field => field.type !== 'RICH_TEXT' && field.type !== 'RICH_CONTENT')
-                .filter(field => field.type !== 'IMAGE' && field.type !== 'VIDEO');
-            
-            const columns: TableColumn[] = displayableFields.map(field => ({
-                fieldName: field.key || '',
-                label: field.displayName || field.key || '',
-                sortable: ['TEXT', 'NUMBER', 'DATE', 'DATETIME'].includes(field.type || '')
+            // Build column definitions from processed schema, filtering for table-suitable fields
+            const tableFields = schema.fields.filter(isTableField);
+            const columns: TableColumn[] = tableFields.map(field => ({
+                fieldName: field.key,
+                label: field.displayName || field.key,
+                sortable: ['TEXT', 'NUMBER', 'DATE', 'DATETIME'].includes(field.wixType)
             }));
             
-            const columnNames = displayableFields.map(field => field.key || '');
+            const columnNames = tableFields.map(field => field.key);
             
             // Fetch first page of data
-            const result = await wixData.queryCollection(collectionId)
+            const result = await wixData.items.query(collectionId)
                 .limit(pageSize)
                 .find();
             
             // Map items to rows
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const rows: TableRow[] = result.items.map((item: any) => ({
+            const rows: TableRow[] = result.items.map((item: WixDataItem) => ({
                 _id: item._id!,
                 url: `${config.pathPrefix}/${item.data?.[config.slugField] || item._id}`,
                 cells: columnNames.map(fieldName => ({
@@ -235,7 +230,7 @@ function TableInteractive(
     refs: any,
     viewStateSignals: Signals<TableFastViewState>,
     fastCarryForward: TableFastCarryForward,
-    wixData: WixDataContext
+    wixDataContext: WixDataContext
 ) {
     const {
         currentPage: [currentPage, setCurrentPage],
@@ -256,18 +251,22 @@ function TableInteractive(
         setIsLoading(true);
         
         try {
-            const result = await wixData.queryItems(collectionId, {
-                limit: pageSize,
-                // Note: Would need to implement offset/skip in context
-            });
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const result = await (wixDataContext.items as any).queryDataItems({
+                dataCollectionId: collectionId
+            })
+                .limit(pageSize)
+                .skip((page - 1) * pageSize)
+                .find();
             
             // Update rows
-            const newRows = result.items.map(item => ({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const newRows = result.items.map((item: any) => ({
                 _id: item._id,
                 url: `/${collectionId.toLowerCase()}/${item._id}`,
                 cells: fastCarryForward.columns.map(fieldName => ({
                     fieldName,
-                    value: formatCellValue(item.data[fieldName])
+                    value: formatCellValue(item.data?.[fieldName])
                 }))
             }));
             

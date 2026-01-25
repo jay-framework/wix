@@ -9,12 +9,11 @@ import {
     makeJayStackComponent,
     PageProps,
     RenderPipeline,
-    SlowlyRenderResult,
     DYNAMIC_CONTRACT_SERVICE,
     DynamicContractMetadata,
 } from '@jay-framework/fullstack-component';
 import { WIX_DATA_SERVICE_MARKER, WixDataService } from '../services/wix-data-service';
-import { CollectionConfig } from '../config/config-types';
+import {WixDataItem} from "@wix/wix-data-items-sdk/build/cjs/src/data-v2-data-item-items.universal";
 
 /**
  * Props for card widget
@@ -72,17 +71,14 @@ async function renderSlowlyChanging(
                 throw new Error(`Collection not configured: ${collectionId}`);
             }
             
-            let item: { _id?: string; data?: Record<string, unknown> } | null = null;
+            let item: WixDataItem;
             
             if (props.itemId) {
                 // Fetch by ID
-                const result = await wixData.items.getDataItem(props.itemId, {
-                    dataCollectionId: collectionId
-                });
-                item = result.dataItem || null;
+                item = await wixData.items.get(collectionId, props.itemId);
             } else if (props.slug) {
                 // Fetch by slug
-                const result = await wixData.queryCollection(collectionId)
+                const result = await wixData.items.query(collectionId)
                     .eq(config.slugField, props.slug)
                     .find();
                 item = result.items[0] || null;

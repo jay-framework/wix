@@ -15,7 +15,7 @@ import {
     DynamicContractMetadata,
 } from '@jay-framework/fullstack-component';
 import { WIX_DATA_SERVICE_MARKER, WixDataService } from '../services/wix-data-service';
-import { CollectionConfig } from '../config/config-types';
+import { CollectionConfig } from '../types';
 
 /**
  * URL parameters for item page routes
@@ -57,10 +57,11 @@ async function* loadItemParams(
     }
     
     try {
-        const result = await wixData.queryCollection(collectionId).find();
+        const result = await wixData.items.query(collectionId)
+            .find();
         
         yield result.items.map(item => ({
-            slug: (item.data?.[config.slugField] as string) || item._id || ''
+            slug: (item[config.slugField] as string) || item._id
         }));
         
     } catch (error) {
@@ -80,7 +81,6 @@ async function renderSlowlyChanging(
 ) {
     const collectionId = deriveCollectionId(contractMeta.contractName);
     
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const Pipeline = RenderPipeline.for<any, ItemSlowCarryForward>();
     
     return Pipeline
@@ -92,7 +92,7 @@ async function renderSlowlyChanging(
             }
             
             // Query item by slug
-            const result = await wixData.queryCollection(collectionId)
+            const result = await wixData.items.query(collectionId)
                 .eq(config.slugField, props.slug)
                 .find();
             
@@ -193,7 +193,7 @@ async function fetchReference(
             const items = await Promise.all(
                 refValue.map(async (id: string) => {
                     try {
-                        const result = await wixData.items.getDataItem(id);
+                        const result = await wixData.items.get('', id);
                         return result.dataItem ? {
                             _id: result.dataItem._id,
                             ...result.dataItem.data
@@ -206,7 +206,7 @@ async function fetchReference(
             return items.filter(Boolean);
         } else if (typeof refValue === 'string') {
             // Single reference: fetch one item
-            const result = await wixData.items.getDataItem(refValue);
+            const result = await wixData.items.get('', refValue);
             return result.dataItem ? {
                 _id: result.dataItem._id,
                 ...result.dataItem.data

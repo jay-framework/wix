@@ -18,7 +18,7 @@ import {
 import { Props, createSignal } from '@jay-framework/component';
 import { WIX_DATA_SERVICE_MARKER, WixDataService } from '../services/wix-data-service';
 import { WIX_DATA_CONTEXT, WixDataContext } from '../contexts/wix-data-context';
-import { CollectionConfig } from '../config/config-types';
+import { CollectionConfig } from '../types';
 
 const PAGE_SIZE = 20;
 
@@ -115,7 +115,7 @@ async function* loadListParams(
     if (config.components.categoryPage && config.category) {
         try {
             // Query all items to extract unique category references
-            const result = await wixData.queryCollection(collectionId)
+            const result = await wixData.items.query(collectionId)
                 .limit(1000)
                 .find();
             
@@ -132,7 +132,7 @@ async function* loadListParams(
             const categoryResults = await Promise.all(
                 Array.from(categoryIds).map(async (catId) => {
                     try {
-                        const catResult = await wixData.items.getDataItem(catId);
+                        const catResult = await wixData.items.get('', catId);
                         return catResult.dataItem?.data?.[config.category!.categorySlugField] as string | undefined;
                     } catch {
                         return undefined;
@@ -173,8 +173,7 @@ async function renderSlowlyChanging(
                 throw new Error(`Collection not configured: ${collectionId}`);
             }
             
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            let query: any = wixData.queryCollection(collectionId).limit(PAGE_SIZE);
+            let query: any = wixData.items.query(collectionId).limit(PAGE_SIZE);
             let categoryData: ListSlowViewState['category'] | undefined;
             let categoryId: string | undefined;
             
@@ -183,9 +182,9 @@ async function renderSlowlyChanging(
                 // Find category by slug
                 // This assumes the category is in a separate collection
                 // We need to find the category ID first
-                const catQuery = wixData.items.queryDataItems({
-                    dataCollectionId: config.category.referenceField.split('.')[0] || collectionId
-                }).eq(config.category.categorySlugField, props.category);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const catQuery = wixData.items.query(config.category.referenceField.split('.')[0] || collectionId)
+                    .eq(config.category.categorySlugField, props.category);
                 
                 const catResult = await catQuery.find();
                 
@@ -290,7 +289,7 @@ function ListInteractive(
     refs: any,
     viewStateSignals: Signals<ListFastViewState>,
     fastCarryForward: ListFastCarryForward,
-    wixData: WixDataContext
+    wixDataContext: WixDataContext
 ) {
     const {
         hasMore: [hasMore, setHasMore],
@@ -307,14 +306,17 @@ function ListInteractive(
         setIsLoading(true);
         
         try {
-            const result = await wixData.queryItems(fastCarryForward.collectionId, {
-                cursor: currentCursor,
-                limit: PAGE_SIZE
-            });
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const result = await (wixDataContext.items as any).queryDataItems({
+                dataCollectionId: fastCarryForward.collectionId
+            })
+                .limit(PAGE_SIZE)
+                .skipTo(currentCursor)
+                .find();
             
             setLoadedItems([...loadedItems(), ...result.items]);
-            setHasMore(result.hasMore);
-            currentCursor = result.nextCursor;
+            setHasMore(result.hasNext?.() ?? false);
+            currentCursor = result.cursors?.next || null;
             
         } catch (error) {
             console.error('[wix-data] Failed to load more items:', error);
