@@ -4,4 +4,14 @@
  * Common utilities used across Wix plugins in Jay Framework.
  */
 
-export { formatWixMediaUrl, parseWixImageUrl, parseWixVideoUrl } from './media';
+export { 
+    formatWixMediaUrl, 
+    parseWixMediaUrl,
+    parseWixImageUrl, 
+    parseWixVideoUrl,
+    getVideoPosterUrl,
+    getDocumentUrl,
+    getAudioUrl,
+    type WixMediaType,
+    type ParsedWixMediaUrl
+} from './media';
