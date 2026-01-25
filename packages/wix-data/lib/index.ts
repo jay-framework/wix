@@ -1,42 +1,62 @@
-import { getClient } from "@jay-framework/wix-server-client";
-import { items, collections } from "@wix/data";
-
-// Re-export everything from @wix/data for convenience
-export * from "@wix/data";
-
-// Singleton instances
-let itemsClientInstance: typeof items | undefined;
-let collectionsClientInstance: typeof collections | undefined;
-
 /**
- * Get a configured Wix Data Items client (singleton)
+ * Wix Data Package - Server Entry Point
  * 
- * The Items API allows you to access and manage items in a Wix site's data collections.
- * 
- * @returns Items client instance from @wix/data
- * @see https://dev.wix.com/docs/sdk/backend-modules/data/items/introduction
+ * This is the main entry point for server-side imports.
+ * Provides services, actions, and component definitions.
  */
-export function getItemsClient() {
-    if (!itemsClientInstance) {
-        const wixClient = getClient();
-        itemsClientInstance = wixClient.use(items);
-    }
-    return itemsClientInstance;
-}
 
-/**
- * Get a configured Wix Data Collections client (singleton)
- * 
- * The Collections API allows you to manage a site's data collections.
- * 
- * @returns Collections client instance from @wix/data
- * @see https://dev.wix.com/docs/sdk/backend-modules/data/collections/introduction
- */
-export function getCollectionsClient() {
-    if (!collectionsClientInstance) {
-        const wixClient = getClient();
-        collectionsClientInstance = wixClient.use(collections);
-    }
-    return collectionsClientInstance;
-}
+// Export configuration types
+export type {
+    WixDataConfig,
+    CollectionConfig,
+    ReferenceConfig,
+    CategoryConfig,
+    ComponentsConfig,
+    CollectionSchema,
+    FieldSchema,
+    WixDataFieldType,
+    ResolvedWixDataConfig,
+} from './config/config-types';
 
+// Export config loader
+export { loadConfig, validateConfig, validateCollectionConfig } from './config/config-loader';
+
+// Export server service
+export {
+    provideWixDataService,
+    WIX_DATA_SERVICE_MARKER,
+    type WixDataService,
+} from './services/wix-data-service';
+
+// Export client context types (for type-only imports on server)
+export {
+    WIX_DATA_CONTEXT,
+    type WixDataContext,
+    type WixDataInitData,
+} from './contexts/wix-data-context';
+
+// Export components
+export { collectionItem } from './components/collection-item';
+export { collectionList } from './components/collection-list';
+export { collectionTable } from './components/collection-table';
+export { collectionCard } from './components/collection-card';
+
+// Export server actions
+export {
+    queryItems,
+    getItemBySlug,
+    getCategories,
+    type QueryItemsInput,
+    type QueryItemsOutput,
+    type GetItemBySlugInput,
+    type GetItemBySlugOutput,
+    type GetCategoriesInput,
+    type GetCategoriesOutput,
+    type CategoryItem,
+} from './actions/data-actions';
+
+// Export utilities
+export { schemaToContractYaml, toPascalCase } from './utils/schema-to-contract';
+
+// Export init
+export { init } from './init';

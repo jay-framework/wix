@@ -2,21 +2,24 @@
   "name": "@jay-framework/wix-data",
   "version": "1.0.0",
   "type": "module",
-  "description": "Wix Data API client for Jay Framework",
+  "description": "Wix Data plugin for Jay Framework with dynamic contract generation",
   "private": true,
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "files": [
-    "dist"
+    "dist",
+    "plugin.yaml"
   ],
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./client": "./dist/index.client.js",
+    "./plugin.yaml": "./plugin.yaml"
   },
   "scripts": {
-    "build": "npm run definitions && npm run build:js && npm run build:copy-contract",
-    "definitions": "jay-cli definitions lib",
-    "build:js": "vite build",
-    "build:copy-contract": "# cp lib/*.jay-contract* dist/",
+    "build": "npm run clean && npm run build:client && npm run build:server && npm run build:types",
+    "definitions": "echo 'No static contracts - using dynamic contracts'",
+    "build:client": "vite build",
+    "build:server": "vite build --ssr",
     "build:types": "tsup lib/index.ts --dts-only --format esm",
     "build:check-types": "tsc",
     "clean": "rimraf dist",
@@ -29,6 +32,8 @@
     "@jay-framework/reactive": "^0.10.0",
     "@jay-framework/runtime": "^0.10.0",
     "@jay-framework/secure": "^0.10.0",
+    "@jay-framework/stack-client-runtime": "^0.10.0",
+    "@jay-framework/stack-server-runtime": "^0.10.0",
     "@jay-framework/wix-server-client": "^1.0.0",
     "@wix/sdk": "^1.17.4",
     "@wix/data": "^1.0.341"
@@ -37,11 +42,13 @@
     "@babel/core": "^7.23.7",
     "@babel/preset-env": "^7.23.8",
     "@babel/preset-typescript": "^7.23.3",
+    "@jay-framework/compiler-jay-stack": "^0.10.0",
     "@jay-framework/jay-cli": "^0.10.0",
     "@jay-framework/vite-plugin": "^0.10.0",
     "nodemon": "^3.0.3",
     "rimraf": "^5.0.5",
     "tslib": "^2.6.2",
+    "tsup": "^8.5.1",
     "typescript": "^5.3.3",
     "vite": "^5.0.11",
     "vite-plugin-inspect": "^0.8.1"

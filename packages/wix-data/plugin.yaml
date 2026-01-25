@@ -1,0 +1,31 @@
+name: wix-data
+
+# Dynamic contracts - generated from Wix Data collection schemas at build time
+# Each prefix creates contracts like: item/BlogPostsItem, list/BlogPostsList, etc.
+
+dynamic_contracts:
+  # Item pages - one contract per collection with itemPage: true
+  - prefix: 'item'
+    component: ./components/collection-item
+    generator: ./generators/item-contract-generator.ts
+    
+  # List pages (index & category) - one contract per collection with indexPage: true
+  - prefix: 'list'
+    component: ./components/collection-list
+    generator: ./generators/list-contract-generator.ts
+    
+  # Table widgets - one contract per collection with tableWidget: true
+  - prefix: 'table'
+    component: ./components/collection-table
+    generator: ./generators/table-contract-generator.ts
+    
+  # Card widgets - one contract per collection with cardWidget: true
+  - prefix: 'card'
+    component: ./components/collection-card
+    generator: ./generators/card-contract-generator.ts
+
+# Server actions for querying data
+actions:
+  - queryItems
+  - getItemBySlug
+  - getCategories
