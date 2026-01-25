@@ -7,12 +7,11 @@
 
 import { WixClient } from '@wix/sdk';
 import { items, collections } from '@wix/data';
-import { Field } from '@wix/auto_sdk_data_collections';
+import { DataCollection } from '@wix/auto_sdk_data_collections';
 import { createJayService } from '@jay-framework/fullstack-component';
 import { registerService } from '@jay-framework/stack-server-runtime';
-import { WixDataConfig, CollectionConfig } from '../config/config-types';
+import { WixDataConfig, CollectionConfig } from '../types';
 import { ProcessedSchema, processSchema } from '../utils/processed-schema';
-import {DataCollection} from "@wix/auto_sdk_data_collections";
 
 type ItemsClient = typeof items;
 type CollectionsClient = typeof collections;
@@ -36,6 +35,11 @@ export interface WixDataService {
      * Get configuration for a specific collection
      */
     getCollectionConfig(collectionId: string): CollectionConfig | undefined;
+    
+    /**
+     * Get DataCollection from Wix API (cached)
+     */
+    getCollection(collectionId: string): Promise<DataCollection | null>;
     
     /**
      * Get processed schema for a collection (cached)
@@ -93,8 +97,37 @@ export function provideWixDataService(
     const itemsClient: ItemsClient = getItemsClient(wixClient);
     const collectionsClient: CollectionsClient = getCollectionsClient(wixClient);
     
-    // Schema cache: collectionId -> ProcessedSchema
-    const schemaCache = new Map<string, ProcessedSchema | null>();
+    // Collection cache: collectionId -> DataCollection
+    const collectionCache = new Map<string, DataCollection | null>();
+    
+    // Processed schema cache: collectionId -> ProcessedSchema
+    const processedSchemaCache = new Map<string, ProcessedSchema | null>();
+    
+    /**
+     * Fetch DataCollection from Wix Data API (with caching)
+     */
+    async function fetchCollection(collectionId: string): Promise<DataCollection | null> {
+        if (collectionCache.has(collectionId)) {
+            return collectionCache.get(collectionId) || null;
+        }
+        
+        try {
+            const collection: DataCollection = await collectionsClient.getDataCollection(collectionId);
+            
+            if (!collection) {
+                collectionCache.set(collectionId, null);
+                return null;
+            }
+            
+            collectionCache.set(collectionId, collection);
+            return collection;
+            
+        } catch (error) {
+            console.error(`[wix-data] Failed to fetch collection ${collectionId}:`, error);
+            collectionCache.set(collectionId, null);
+            return null;
+        }
+    }
     
     const service: WixDataService = {
         items: itemsClient,
@@ -105,47 +138,34 @@ export function provideWixDataService(
             return config.collections.find(c => c.collectionId === collectionId);
         },
         
+        async getCollection(collectionId: string): Promise<DataCollection | null> {
+            return fetchCollection(collectionId);
+        },
+        
         async getProcessedSchema(collectionId: string): Promise<ProcessedSchema | null> {
             // Return cached if available
-            if (schemaCache.has(collectionId)) {
-                return schemaCache.get(collectionId) || null;
+            if (processedSchemaCache.has(collectionId)) {
+                return processedSchemaCache.get(collectionId) || null;
             }
             
             const collectionConfig = config.collections.find(c => c.collectionId === collectionId);
             if (!collectionConfig) {
-                schemaCache.set(collectionId, null);
+                processedSchemaCache.set(collectionId, null);
                 return null;
             }
             
-            try {
-                const collection: DataCollection = await collectionsClient.getDataCollection(collectionId);
-                
-                if (!collection) {
-                    console.warn(`[wix-data] Collection not found: ${collectionId}`);
-                    schemaCache.set(collectionId, null);
-                    return null;
-                }
-                
-                const rawSchema = {
-                    _id: collection._id || collectionId,
-                    displayName: collection.displayName,
-                    fields: (collection.fields || []).map((f: Field) => ({
-                        key: f.key || '',
-                        displayName: f.displayName,
-                        type: f.type
-                    }))
-                };
-                
-                const processed = processSchema(rawSchema, collectionConfig);
-                schemaCache.set(collectionId, processed);
-                
-                return processed;
-                
-            } catch (error) {
-                console.error(`[wix-data] Failed to fetch schema for ${collectionId}:`, error);
-                schemaCache.set(collectionId, null);
+            const collection = await fetchCollection(collectionId);
+            if (!collection) {
+                console.warn(`[wix-data] Collection not found: ${collectionId}`);
+                processedSchemaCache.set(collectionId, null);
                 return null;
             }
+            
+            // Process schema with collection fetcher for embedded references
+            const processed = await processSchema(collection, collectionConfig, fetchCollection);
+            processedSchemaCache.set(collectionId, processed);
+            
+            return processed;
         },
         
         async getProcessedSchemas(filter: (config: CollectionConfig) => boolean): Promise<ProcessedSchema[]> {

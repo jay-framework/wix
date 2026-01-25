@@ -13,7 +13,8 @@ import {
     fieldToTag,
     categorySubContract,
     breadcrumbsSubContract,
-    toPascalCase
+    toPascalCase,
+    isContentField
 } from './contract-utils';
 
 /**
@@ -26,11 +27,10 @@ function buildContract(schema: ProcessedSchema): string {
     ];
     
     // Add all non-system fields
-    schema.fields
-        .filter(f => f.category !== 'system')
-        .map(f => fieldToTag(f))
-        .filter(Boolean)
-        .forEach(t => tags.push(t));
+    schema.fields.filter(isContentField).forEach(f => {
+        const tag = fieldToTag(f);
+        if (tag) tags.push(tag);
+    });
     
     // Add category if configured
     if (schema.hasCategory) {

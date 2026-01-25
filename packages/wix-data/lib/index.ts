@@ -16,10 +16,10 @@ export type {
     FieldSchema,
     WixDataFieldType,
     ResolvedWixDataConfig,
-} from './config/config-types';
+} from './types';
 
 // Export config loader
-export { loadConfig, validateConfig, validateCollectionConfig } from './config/config-loader';
+export { loadConfig, validateConfig, validateCollectionConfig } from './config-loader';
 
 // Export server service
 export {
@@ -56,8 +56,18 @@ export {
 } from './actions/data-actions';
 
 // Export utilities
-export { schemaToContractYaml, toPascalCase } from './utils/schema-to-contract';
-export { fetchCollectionSchema, type SchemaFetchResult, type ContractDefinition } from './utils/schema-fetcher';
+export { 
+    processSchema, 
+    type ProcessedSchema, 
+    type ProcessedField, 
+    type CollectionFetcher
+} from './utils/processed-schema';
+export { 
+    toPascalCase,
+    isCardField,
+    isTableField,
+    isContentField
+} from './generators/contract-utils';
 
 // Export init
 export { init } from './init';

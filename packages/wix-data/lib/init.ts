@@ -11,7 +11,7 @@
 import { makeJayInit } from '@jay-framework/fullstack-component';
 import { getService } from '@jay-framework/stack-server-runtime';
 import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
-import { loadConfig } from './config/config-loader';
+import { loadConfig } from './config-loader';
 import { provideWixDataService } from './services/wix-data-service';
 import { provideWixDataContext, type WixDataInitData } from './contexts/wix-data-context';
 

@@ -11,7 +11,8 @@ import {
     dataTag,
     interactiveTag,
     fieldToTag,
-    toPascalCase
+    toPascalCase,
+    isCardField
 } from './contract-utils';
 
 /**
@@ -25,7 +26,7 @@ function buildContract(schema: ProcessedSchema): string {
     ];
     
     // Add card-suitable fields
-    schema.cardFields.forEach(f => {
+    schema.fields.filter(isCardField).forEach(f => {
         const tag = fieldToTag(f);
         if (tag) tags.push(tag);
     });

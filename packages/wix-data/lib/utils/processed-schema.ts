@@ -5,7 +5,8 @@
  * Created once from Wix Data API response and reused by all contract generators.
  */
 
-import { CollectionConfig, ReferenceConfig } from '../config/config-types';
+import { DataCollection, Field } from '@wix/auto_sdk_data_collections';
+import { CollectionConfig, ReferenceConfig } from '../types';
 
 /**
  * Processed field with normalized types
@@ -21,6 +22,15 @@ export interface ProcessedField {
     
     /** Whether this reference should be embedded (full data fetched) */
     embedded?: boolean;
+    
+    /** 
+     * For embedded references: the processed schema of the referenced collection.
+     * Enables generating full sub-contracts from the referenced collection's fields.
+     */
+    embeddedSchema?: ProcessedSchema;
+    
+    /** Reference configuration (for embedded refs, includes nested references) */
+    referenceConfig?: ReferenceConfig;
 }
 
 /**
@@ -33,18 +43,6 @@ export interface ProcessedSchema {
     
     /** All fields with processed metadata */
     fields: ProcessedField[];
-    
-    /** Fields suitable for card/list display (excludes system, references, rich content) */
-    cardFields: ProcessedField[];
-    
-    /** Fields suitable for table display (excludes complex types) */
-    tableFields: ProcessedField[];
-    
-    /** Reference fields (both single and multi) */
-    referenceFields: ProcessedField[];
-    
-    /** Embedded reference fields */
-    embeddedReferences: ProcessedField[];
     
     /** Whether this collection has category support */
     hasCategory: boolean;
@@ -98,61 +96,95 @@ function getFieldCategory(key: string, wixType: string): ProcessedField['categor
 }
 
 /**
- * Process a raw schema from Wix Data API into our intermediate representation
+ * Collection fetcher function type - used for fetching referenced collections
  */
-export function processSchema(
-    rawSchema: { _id?: string; displayName?: string; fields?: Array<{ key?: string; displayName?: string; type?: string }> },
-    config: CollectionConfig
-): ProcessedSchema {
-    const embedRefs = new Set(
-        (config.references || [])
-            .filter(r => r.mode === 'embed')
-            .map(r => r.fieldName)
+export type CollectionFetcher = (collectionId: string) => Promise<DataCollection | null>;
+
+/**
+ * Extract the referenced collection ID from a field's type metadata
+ */
+function getReferencedCollectionId(field: Field): string | undefined {
+    const metadata = field.typeMetadata;
+    if (!metadata) return undefined;
+    
+    if (field.type === 'REFERENCE') {
+        return metadata.reference?.referencedCollectionId;
+    }
+    if (field.type === 'MULTI_REFERENCE') {
+        return metadata.multiReference?.referencedCollectionId;
+    }
+    return undefined;
+}
+
+/**
+ * Process a DataCollection from Wix Data API into our intermediate representation.
+ * 
+ * @param collection - DataCollection from Wix Data API
+ * @param config - Collection configuration
+ * @param collectionFetcher - Optional function to fetch collections for embedded references
+ */
+export async function processSchema(
+    collection: DataCollection,
+    config: CollectionConfig,
+    collectionFetcher?: CollectionFetcher
+): Promise<ProcessedSchema> {
+    // Build a map of field name -> reference config for quick lookup
+    const refConfigMap = new Map(
+        (config.references || []).map(r => [r.fieldName, r])
     );
     
     // Process all fields
-    const fields: ProcessedField[] = (rawSchema.fields || []).map(f => {
-        const key = f.key || '';
-        const wixType = f.type || 'TEXT';
-        const category = getFieldCategory(key, wixType);
-        
-        return {
-            key,
-            displayName: f.displayName,
-            jayType: mapWixTypeToJayType(wixType),
-            wixType,
-            category,
-            embedded: (category === 'reference' || category === 'multiReference') && embedRefs.has(key)
-        };
-    });
-    
-    // Derive filtered field sets
-    const cardFields = fields.filter(f => 
-        f.category !== 'system' && 
-        f.category !== 'reference' && 
-        f.category !== 'multiReference' && 
-        f.category !== 'richContent'
+    const fields: ProcessedField[] = await Promise.all(
+        (collection.fields || []).map(async (f: Field) => {
+            const key = f.key || '';
+            const wixType = f.type || 'TEXT';
+            const category = getFieldCategory(key, wixType);
+            
+            const refConfig = refConfigMap.get(key);
+            const isEmbedded = (category === 'reference' || category === 'multiReference') 
+                && refConfig?.mode === 'embed';
+            
+            const field: ProcessedField = {
+                key,
+                displayName: f.displayName,
+                jayType: mapWixTypeToJayType(wixType),
+                wixType,
+                category,
+                embedded: isEmbedded,
+                referenceConfig: isEmbedded ? refConfig : undefined
+            };
+            
+            // If embedded and we have a collection fetcher, fetch and process the referenced schema
+            if (isEmbedded && collectionFetcher && refConfig) {
+                const referencedCollectionId = getReferencedCollectionId(f);
+                
+                if (referencedCollectionId) {
+                    const referencedCollection = await collectionFetcher(referencedCollectionId);
+                    if (referencedCollection) {
+                        // Create a minimal config for the referenced collection
+                        const nestedConfig: CollectionConfig = {
+                            collectionId: referencedCollection._id || referencedCollectionId,
+                            pathPrefix: '',
+                            slugField: '',
+                            references: refConfig.references, // Pass nested references
+                            components: {}
+                        };
+                        
+                        // Recursively process the referenced collection
+                        field.embeddedSchema = await processSchema(referencedCollection, nestedConfig, collectionFetcher);
+                    }
+                }
+            }
+            
+            return field;
+        })
     );
-    
-    const tableFields = fields.filter(f =>
-        f.category === 'simple'
-    );
-    
-    const referenceFields = fields.filter(f =>
-        f.category === 'reference' || f.category === 'multiReference'
-    );
-    
-    const embeddedReferences = referenceFields.filter(f => f.embedded);
     
     return {
-        collectionId: rawSchema._id || config.collectionId,
-        displayName: rawSchema.displayName,
+        collectionId: collection._id || config.collectionId,
+        displayName: collection.displayName,
         config,
         fields,
-        cardFields,
-        tableFields,
-        referenceFields,
-        embeddedReferences,
         hasCategory: !!config.category,
         category: config.category
     };

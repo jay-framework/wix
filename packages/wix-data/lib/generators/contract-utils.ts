@@ -4,7 +4,7 @@
  * Shared building blocks for contract YAML generation.
  */
 
-import { ProcessedField } from '../utils/processed-schema';
+import { ProcessedField, ProcessedSchema } from '../utils/processed-schema';
 
 // ============================================================================
 // Tag Builders
@@ -68,18 +68,36 @@ ${innerPrefix}- {tag: city, type: data, dataType: string}
 ${innerPrefix}- {tag: country, type: data, dataType: string}`;
 }
 
-export function referenceSubContract(field: ProcessedField, indent = 2): string {
+/**
+ * Build a sub-contract for an embedded reference field.
+ * If the field has an embeddedSchema, generates tags from that schema's fields.
+ * Otherwise, falls back to a minimal id/title/slug structure.
+ */
+export function embeddedReferenceSubContract(field: ProcessedField, indent = 2): string {
     const prefix = ' '.repeat(indent);
-    const innerPrefix = ' '.repeat(indent + 2);
-    const repeated = field.category === 'multiReference' ? `\n${prefix}  repeated: true\n${prefix}  trackBy: _id` : '';
+    const isMulti = field.category === 'multiReference';
+    const repeated = isMulti ? `\n${prefix}  repeated: true\n${prefix}  trackBy: _id` : '';
+    
+    let innerTags: string[];
+    
+    if (field.embeddedSchema) {
+        // Generate full sub-contract from the embedded schema
+        innerTags = schemaToTags(field.embeddedSchema, indent + 2);
+    } else {
+        // Fallback: minimal structure
+        const innerPrefix = ' '.repeat(indent + 2);
+        innerTags = [
+            `${innerPrefix}- {tag: _id, type: data, dataType: string}`,
+            `${innerPrefix}- {tag: title, type: data, dataType: string}`,
+            `${innerPrefix}- {tag: slug, type: data, dataType: string}`
+        ];
+    }
     
     return `${prefix}- tag: ${field.key}
 ${prefix}  type: sub-contract${repeated}
 ${prefix}  description: ${field.displayName || field.key}
 ${prefix}  tags:
-${innerPrefix}- {tag: _id, type: data, dataType: string}
-${innerPrefix}- {tag: title, type: data, dataType: string}
-${innerPrefix}- {tag: slug, type: data, dataType: string}`;
+${innerTags.join('\n')}`;
 }
 
 export function categorySubContract(indent = 2): string {
@@ -115,6 +133,10 @@ ${innerPrefix}- {tag: link, type: interactive, elementType: HTMLAnchorElement}`;
 // Field to Tag Conversion
 // ============================================================================
 
+/**
+ * Convert a processed field to its contract tag representation.
+ * Handles all field types including embedded references with full sub-contracts.
+ */
 export function fieldToTag(field: ProcessedField, indent = 2): string {
     switch (field.category) {
         case 'system':
@@ -128,13 +150,56 @@ export function fieldToTag(field: ProcessedField, indent = 2): string {
         case 'reference':
         case 'multiReference':
             return field.embedded 
-                ? referenceSubContract(field, indent)
+                ? embeddedReferenceSubContract(field, indent)
                 : dataTag(field.key, 'string', `Reference ID${field.category === 'multiReference' ? 's' : ''}`, indent);
         case 'richContent':
             return dataTag(field.key, 'string', field.displayName, indent);
         default:
             return dataTag(field.key, field.jayType, field.displayName, indent);
     }
+}
+
+/**
+ * Convert a schema's fields to contract tags.
+ * Used for generating sub-contracts from embedded schemas.
+ */
+export function schemaToTags(schema: ProcessedSchema, indent = 2): string[] {
+    const tags: string[] = [];
+    
+    // Always include _id for embedded items
+    tags.push(dataTag('_id', 'string', 'Item ID', indent));
+    
+    // Add all non-system fields
+    schema.fields
+        .filter(f => f.category !== 'system')
+        .forEach(f => {
+            const tag = fieldToTag(f, indent);
+            if (tag) tags.push(tag);
+        });
+    
+    return tags;
+}
+
+// ============================================================================
+// Field Filters
+// ============================================================================
+
+/** Filter for fields suitable for card/list display (excludes system, references, rich content) */
+export function isCardField(f: ProcessedField): boolean {
+    return f.category !== 'system' 
+        && f.category !== 'reference' 
+        && f.category !== 'multiReference' 
+        && f.category !== 'richContent';
+}
+
+/** Filter for simple fields suitable for table display */
+export function isTableField(f: ProcessedField): boolean {
+    return f.category === 'simple';
+}
+
+/** Filter for non-system fields */
+export function isContentField(f: ProcessedField): boolean {
+    return f.category !== 'system';
 }
 
 // ============================================================================

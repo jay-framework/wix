@@ -14,7 +14,8 @@ import {
     fieldToTag,
     categorySubContract,
     breadcrumbsSubContract,
-    toPascalCase
+    toPascalCase,
+    isCardField
 } from './contract-utils';
 
 /**
@@ -27,7 +28,7 @@ function buildItemsSubContract(schema: ProcessedSchema): string {
         interactiveTag('itemLink', 'HTMLAnchorElement', undefined, 6)
     ];
     
-    schema.cardFields.forEach(f => {
+    schema.fields.filter(isCardField).forEach(f => {
         const tag = fieldToTag(f, 6);
         if (tag) cardTags.push(tag);
     });
