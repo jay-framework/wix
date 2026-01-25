@@ -6,8 +6,35 @@
 
 import { makeContractGenerator } from '@jay-framework/fullstack-component';
 import { WIX_DATA_SERVICE_MARKER } from '../services/wix-data-service';
-import { schemaToContractYaml, toPascalCase } from '../utils/schema-to-contract';
-import { fetchCollectionSchema, ContractDefinition } from '../utils/schema-fetcher';
+import { ProcessedSchema } from '../utils/processed-schema';
+import {
+    dataTag,
+    interactiveTag,
+    fieldToTag,
+    toPascalCase
+} from './contract-utils';
+
+/**
+ * Build card widget contract YAML
+ */
+function buildContract(schema: ProcessedSchema): string {
+    const tags: string[] = [
+        dataTag('_id', 'string'),
+        dataTag('url', 'string', 'Full URL to item page'),
+        interactiveTag('itemLink', 'HTMLAnchorElement')
+    ];
+    
+    // Add card-suitable fields
+    schema.cardFields.forEach(f => {
+        const tag = fieldToTag(f);
+        if (tag) tags.push(tag);
+    });
+    
+    return `name: ${toPascalCase(schema.collectionId)}Card
+description: Card widget for ${schema.displayName || schema.collectionId}
+tags:
+${tags.join('\n')}`;
+}
 
 /**
  * Generator for card widget contracts.
@@ -16,29 +43,18 @@ import { fetchCollectionSchema, ContractDefinition } from '../utils/schema-fetch
 export const generator = makeContractGenerator()
     .withServices(WIX_DATA_SERVICE_MARKER)
     .generateWith(async (wixDataService) => {
-        const collectionsWithCard = wixDataService.config.collections
-            .filter(c => c.components.cardWidget);
-        
-        const schemaResults = await Promise.all(
-            collectionsWithCard.map(c => fetchCollectionSchema(wixDataService, c))
+        const schemas = await wixDataService.getProcessedSchemas(
+            c => !!c.components.cardWidget
         );
         
-        const contracts: ContractDefinition[] = schemaResults
-            .filter((result): result is NonNullable<typeof result> => result !== null)
-            .map(({ collectionConfig, schema }) => {
-                const yaml = schemaToContractYaml(schema, {
-                    type: 'card',
-                });
-                
-                const contractName = toPascalCase(collectionConfig.collectionId) + 'Card';
-                console.log(`[wix-data] Generated card contract: ${contractName}`);
-                
-                return {
-                    name: contractName,
-                    yaml,
-                    description: `Card widget for ${schema.displayName || collectionConfig.collectionId}`
-                };
-            });
-        
-        return contracts;
+        return schemas.map(schema => {
+            const name = toPascalCase(schema.collectionId) + 'Card';
+            console.log(`[wix-data] Generated card contract: ${name}`);
+            
+            return {
+                name,
+                yaml: buildContract(schema),
+                description: `Card widget for ${schema.displayName || schema.collectionId}`
+            };
+        });
     });
