@@ -154,11 +154,9 @@ export const queryItems = makeJayQuery('wixData.queryItems')
             }
             
             // Apply filters
-            for (const [field, value] of Object.entries(filter)) {
-                if (value !== undefined && value !== null) {
-                    query = query.eq(field, value);
-                }
-            }
+            query = Object.entries(filter)
+                .filter(([, value]) => value !== undefined && value !== null)
+                .reduce((q, [field, value]) => q.eq(field, value), query);
             
             const result = await query.find();
             
@@ -274,39 +272,39 @@ export const getCategories = makeJayQuery('wixData.getCategories')
             const categoryCounts = new Map<string, number>();
             const categoryIds = new Set<string>();
             
-            for (const item of result.items) {
+            result.items.forEach(item => {
                 const catValue = item.data?.[config.category.referenceField];
-                if (Array.isArray(catValue)) {
-                    for (const catId of catValue) {
-                        categoryIds.add(catId);
-                        categoryCounts.set(catId, (categoryCounts.get(catId) || 0) + 1);
-                    }
-                } else if (typeof catValue === 'string') {
-                    categoryIds.add(catValue);
-                    categoryCounts.set(catValue, (categoryCounts.get(catValue) || 0) + 1);
-                }
-            }
+                const catIds = Array.isArray(catValue) ? catValue : 
+                               typeof catValue === 'string' ? [catValue] : [];
+                
+                catIds.forEach((catId: string) => {
+                    categoryIds.add(catId);
+                    categoryCounts.set(catId, (categoryCounts.get(catId) || 0) + 1);
+                });
+            });
             
-            // Fetch category details
-            const categories: CategoryItem[] = [];
-            
-            for (const catId of categoryIds) {
-                try {
-                    const catResult = await wixData.items.getDataItem(catId);
-                    const catData = catResult.dataItem?.data;
-                    
-                    if (catData) {
-                        categories.push({
+            // Fetch category details in parallel
+            const categoryResults = await Promise.all(
+                Array.from(categoryIds).map(async (catId): Promise<CategoryItem | null> => {
+                    try {
+                        const catResult = await wixData.items.getDataItem(catId);
+                        const catData = catResult.dataItem?.data;
+                        
+                        if (!catData) return null;
+                        
+                        return {
                             _id: catId,
                             slug: (catData[config.category.categorySlugField] as string) || catId,
                             title: (catData.title as string) || (catData.name as string) || catId,
                             itemCount: categoryCounts.get(catId) || 0
-                        });
+                        };
+                    } catch {
+                        return null;
                     }
-                } catch {
-                    // Skip categories that can't be fetched
-                }
-            }
+                })
+            );
+            
+            const categories = categoryResults.filter((c): c is CategoryItem => c !== null);
             
             // Sort by item count descending
             categories.sort((a, b) => b.itemCount - a.itemCount);

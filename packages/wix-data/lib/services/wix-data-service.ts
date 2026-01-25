@@ -11,10 +11,8 @@ import { createJayService } from '@jay-framework/fullstack-component';
 import { registerService } from '@jay-framework/stack-server-runtime';
 import { WixDataConfig, CollectionConfig } from '../config/config-types';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ItemsClient = any;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type CollectionsClient = any;
+type ItemsClient = typeof items;
+type CollectionsClient = typeof collections;
 
 /**
  * Wix Data Service interface
@@ -31,18 +29,6 @@ export interface WixDataService {
     /** Plugin configuration */
     config: WixDataConfig;
     
-    /**
-     * Get configuration for a specific collection
-     */
-    getCollectionConfig(collectionId: string): CollectionConfig | undefined;
-    
-    /**
-     * Create a query builder for a collection
-     * @param collectionId - The collection ID to query
-     * @returns A query builder
-     */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    queryCollection(collectionId: string): any;
 }
 
 /**
@@ -52,7 +38,7 @@ export interface WixDataService {
 export const WIX_DATA_SERVICE_MARKER = createJayService<WixDataService>('Wix Data Service');
 
 // Singleton instances
-let itemsClientInstance: ItemsClient | undefined;
+let itemsClientInstance: ItemsClient;
 let collectionsClientInstance: CollectionsClient | undefined;
 
 /**
@@ -60,7 +46,7 @@ let collectionsClientInstance: CollectionsClient | undefined;
  */
 function getItemsClient(wixClient: WixClient): ItemsClient {
     if (!itemsClientInstance) {
-        itemsClientInstance = wixClient.use(items);
+        itemsClientInstance = wixClient.use(items) as unknown as ItemsClient;
     }
     return itemsClientInstance;
 }
@@ -70,7 +56,7 @@ function getItemsClient(wixClient: WixClient): ItemsClient {
  */
 function getCollectionsClient(wixClient: WixClient): CollectionsClient {
     if (!collectionsClientInstance) {
-        collectionsClientInstance = wixClient.use(collections);
+        collectionsClientInstance = wixClient.use(collections) as unknown as CollectionsClient;
     }
     return collectionsClientInstance;
 }
@@ -86,24 +72,13 @@ export function provideWixDataService(
     wixClient: WixClient,
     config: WixDataConfig
 ): WixDataService {
-    const itemsClient = getItemsClient(wixClient);
-    const collectionsClient = getCollectionsClient(wixClient);
+    const itemsClient: ItemsClient = getItemsClient(wixClient);
+    const collectionsClient: CollectionsClient = getCollectionsClient(wixClient);
     
     const service: WixDataService = {
         items: itemsClient,
         collections: collectionsClient,
         config,
-        
-        getCollectionConfig(collectionId: string): CollectionConfig | undefined {
-            return config.collections.find(c => c.collectionId === collectionId);
-        },
-        
-        queryCollection(collectionId: string) {
-            // The Wix Data items SDK uses queryDataItems
-            return itemsClient.queryDataItems({
-                dataCollectionId: collectionId
-            });
-        }
     };
     
     registerService(WIX_DATA_SERVICE_MARKER, service);

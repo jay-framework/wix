@@ -129,33 +129,31 @@ async function mapItemToViewState(
     config: CollectionConfig,
     wixData: WixDataService
 ): Promise<Record<string, unknown>> {
-    const viewState: Record<string, unknown> = {
-        _id: item._id
-    };
-    
     const data = item.data || {};
     
-    // Process each field
-    for (const [key, value] of Object.entries(data)) {
-        // Skip internal fields
-        if (key.startsWith('_') && key !== '_id') continue;
-        
-        // Check if this is an embedded reference
-        const refConfig = config.references?.find(r => r.fieldName === key);
-        
-        if (refConfig?.mode === 'embed' && value) {
-            // Fetch referenced item(s)
-            viewState[key] = await fetchReference(value, wixData);
-        } else if (isImageValue(value)) {
-            // Map image fields
-            viewState[key] = mapImageValue(value);
-        } else {
-            // Pass through other values
-            viewState[key] = value;
-        }
-    }
+    // Filter out internal fields (except _id)
+    const processableEntries = Object.entries(data)
+        .filter(([key]) => !key.startsWith('_') || key === '_id');
     
-    return viewState;
+    // Process fields in parallel for embedded references
+    const mappedEntries = await Promise.all(
+        processableEntries.map(async ([key, value]): Promise<[string, unknown]> => {
+            const refConfig = config.references?.find(r => r.fieldName === key);
+            
+            if (refConfig?.mode === 'embed' && value) {
+                return [key, await fetchReference(value, wixData)];
+            } else if (isImageValue(value)) {
+                return [key, mapImageValue(value)];
+            } else {
+                return [key, value];
+            }
+        })
+    );
+    
+    return {
+        _id: item._id,
+        ...Object.fromEntries(mappedEntries)
+    };
 }
 
 /**

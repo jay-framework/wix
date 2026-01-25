@@ -125,24 +125,20 @@ async function renderSlowlyChanging(
             const schemaResponse = await wixData.collections.getDataCollection(collectionId);
             const schema = schemaResponse.collection;
             
-            // Build column definitions from schema
-            const columns: TableColumn[] = [];
-            const columnNames: string[] = [];
+            // Build column definitions from schema (filter out system and complex fields)
+            const displayableFields = (schema?.fields || [])
+                .filter(field => !field.key?.startsWith('_'))
+                .filter(field => field.type !== 'REFERENCE' && field.type !== 'MULTI_REFERENCE')
+                .filter(field => field.type !== 'RICH_TEXT' && field.type !== 'RICH_CONTENT')
+                .filter(field => field.type !== 'IMAGE' && field.type !== 'VIDEO');
             
-            for (const field of schema?.fields || []) {
-                // Skip system and complex fields
-                if (field.key?.startsWith('_')) continue;
-                if (field.type === 'REFERENCE' || field.type === 'MULTI_REFERENCE') continue;
-                if (field.type === 'RICH_TEXT' || field.type === 'RICH_CONTENT') continue;
-                if (field.type === 'IMAGE' || field.type === 'VIDEO') continue;
-                
-                columns.push({
-                    fieldName: field.key || '',
-                    label: field.displayName || field.key || '',
-                    sortable: ['TEXT', 'NUMBER', 'DATE', 'DATETIME'].includes(field.type || '')
-                });
-                columnNames.push(field.key || '');
-            }
+            const columns: TableColumn[] = displayableFields.map(field => ({
+                fieldName: field.key || '',
+                label: field.displayName || field.key || '',
+                sortable: ['TEXT', 'NUMBER', 'DATE', 'DATETIME'].includes(field.type || '')
+            }));
+            
+            const columnNames = displayableFields.map(field => field.key || '');
             
             // Fetch first page of data
             const result = await wixData.queryCollection(collectionId)

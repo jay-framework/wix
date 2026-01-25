@@ -57,6 +57,7 @@ export {
 
 // Export utilities
 export { schemaToContractYaml, toPascalCase } from './utils/schema-to-contract';
+export { fetchCollectionSchema, type SchemaFetchResult, type ContractDefinition } from './utils/schema-fetcher';
 
 // Export init
 export { init } from './init';

@@ -114,35 +114,36 @@ async function* loadListParams(
     // Category pages
     if (config.components.categoryPage && config.category) {
         try {
-            // Query all categories from the category collection
-            // The category field is a reference, so we need to get unique values
+            // Query all items to extract unique category references
             const result = await wixData.queryCollection(collectionId)
                 .limit(1000)
                 .find();
             
             // Extract unique category references
             const categoryIds = new Set<string>();
-            for (const item of result.items) {
-                const catValue = item.data?.[config.category.referenceField];
-                if (Array.isArray(catValue)) {
-                    catValue.forEach((id: string) => categoryIds.add(id));
-                } else if (typeof catValue === 'string') {
-                    categoryIds.add(catValue);
-                }
-            }
+            result.items.forEach(item => {
+                const catValue = item.data?.[config.category!.referenceField];
+                const catIds = Array.isArray(catValue) ? catValue : 
+                               typeof catValue === 'string' ? [catValue] : [];
+                catIds.forEach((id: string) => categoryIds.add(id));
+            });
             
-            // Fetch category details for slugs
-            for (const catId of categoryIds) {
-                try {
-                    const catResult = await wixData.items.getDataItem(catId);
-                    const slug = catResult.dataItem?.data?.[config.category.categorySlugField] as string;
-                    if (slug) {
-                        params.push({ category: slug });
+            // Fetch category details in parallel and filter valid slugs
+            const categoryResults = await Promise.all(
+                Array.from(categoryIds).map(async (catId) => {
+                    try {
+                        const catResult = await wixData.items.getDataItem(catId);
+                        return catResult.dataItem?.data?.[config.category!.categorySlugField] as string | undefined;
+                    } catch {
+                        return undefined;
                     }
-                } catch {
-                    // Skip categories that can't be fetched
-                }
-            }
+                })
+            );
+            
+            categoryResults
+                .filter((slug): slug is string => !!slug)
+                .forEach(slug => params.push({ category: slug }));
+                
         } catch (error) {
             console.error(`[wix-data] Failed to load category params:`, error);
         }

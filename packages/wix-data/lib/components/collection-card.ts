@@ -92,26 +92,21 @@ async function renderSlowlyChanging(
                 throw new Error('Item not found');
             }
             
-            // Build view state
+            // Map data fields (filter out system fields, transform images)
+            const dataFields = Object.entries(item.data || {})
+                .filter(([key]) => !key.startsWith('_'))
+                .map(([key, value]): [string, unknown] => {
+                    if (isImageValue(value)) {
+                        return [key, { url: value.src || value.url || '', altText: value.alt || '' }];
+                    }
+                    return [key, value];
+                });
+            
             const viewState: CardViewState = {
                 _id: item._id!,
-                url: `${config.pathPrefix}/${item.data?.[config.slugField] || item._id}`
+                url: `${config.pathPrefix}/${item.data?.[config.slugField] || item._id}`,
+                ...Object.fromEntries(dataFields)
             };
-            
-            // Add all data fields
-            for (const [key, value] of Object.entries(item.data || {})) {
-                if (key.startsWith('_')) continue;
-                
-                // Map image values
-                if (isImageValue(value)) {
-                    viewState[key] = {
-                        url: value.src || value.url || '',
-                        altText: value.alt || ''
-                    };
-                } else {
-                    viewState[key] = value;
-                }
-            }
             
             return { viewState, itemId: item._id! };
         })

@@ -64,10 +64,9 @@ function generateItemContract(
     tags.push('  - {tag: itemLink, type: interactive, elementType: HTMLAnchorElement, description: Link to item}');
     
     // Map each field from schema
-    for (const field of schema.fields) {
-        const fieldTags = fieldToTags(field, embedReferences);
-        tags.push(...fieldTags);
-    }
+    schema.fields
+        .flatMap(field => fieldToTags(field, embedReferences))
+        .forEach(tag => tags.push(tag));
     
     return `name: ${schema._id}Item
 description: Item page for ${schema.displayName || schema._id} collection
@@ -204,15 +203,13 @@ function generateCardTags(schema: CollectionSchema, indent: number): string {
     tags.push(`${prefix}- {tag: url, type: data, dataType: string, description: Full URL to item page}`);
     tags.push(`${prefix}- {tag: itemLink, type: interactive, elementType: HTMLAnchorElement}`);
     
-    // Add simplified fields for card display
-    for (const field of schema.fields) {
-        // Skip system fields and references in card view
-        if (field.key.startsWith('_')) continue;
-        if (field.type === 'REFERENCE' || field.type === 'MULTI_REFERENCE') continue;
-        if (field.type === 'RICH_TEXT' || field.type === 'RICH_CONTENT') continue;
-        
-        const dataType = mapWixTypeToJayType(field.type);
-        
+    // Add simplified fields for card display (skip system, reference, and rich text fields)
+    const cardFields = schema.fields
+        .filter(field => !field.key.startsWith('_'))
+        .filter(field => field.type !== 'REFERENCE' && field.type !== 'MULTI_REFERENCE')
+        .filter(field => field.type !== 'RICH_TEXT' && field.type !== 'RICH_CONTENT');
+    
+    cardFields.forEach(field => {
         if (field.type === 'IMAGE') {
             tags.push(`${prefix}- tag: ${field.key}
 ${prefix}  type: sub-contract
@@ -220,9 +217,10 @@ ${prefix}  tags:
 ${prefix}    - {tag: url, type: data, dataType: string}
 ${prefix}    - {tag: altText, type: data, dataType: string}`);
         } else {
+            const dataType = mapWixTypeToJayType(field.type);
             tags.push(`${prefix}- {tag: ${field.key}, type: data, dataType: ${dataType}}`);
         }
-    }
+    });
     
     return tags.join('\n');
 }

@@ -87,9 +87,8 @@ export function provideWixDataContext(): WixDataContext {
             
             // Apply filters if provided
             if (filter) {
-                for (const [key, value] of Object.entries(filter)) {
-                    query = query.eq(key, value);
-                }
+                query = Object.entries(filter)
+                    .reduce((q, [key, value]) => q.eq(key, value), query);
             }
             
             const result = await query.find();
