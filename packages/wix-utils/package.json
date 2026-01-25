@@ -1,0 +1,28 @@
+{
+  "name": "@jay-framework/wix-utils",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Shared utilities for Wix integrations in Jay Framework",
+  "private": true,
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "npm run clean && npm run build:lib && npm run build:types",
+    "build:lib": "vite build",
+    "build:types": "tsup lib/index.ts --dts-only --format esm",
+    "clean": "rimraf dist",
+    "test": ":"
+  },
+  "devDependencies": {
+    "rimraf": "^5.0.5",
+    "tsup": "^8.5.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11"
+  }
+}
