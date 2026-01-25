@@ -42,6 +42,7 @@
     "@jay-framework/stack-client-runtime": "^0.10.0",
     "@jay-framework/stack-server-runtime": "^0.10.0",
     "@jay-framework/wix-server-client": "^1.0.0",
+    "@jay-framework/wix-utils": "^1.0.0",
     "@wix/categories": "^1.0.165",
     "@wix/ecom": "^1.0.753",
     "@wix/sdk": "^1.17.4",

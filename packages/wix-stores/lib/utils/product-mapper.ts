@@ -17,49 +17,10 @@ import {
     OptionRenderType,
     ProductOptionsViewState
 } from '../contracts/product-options.jay-contract';
-
+import { formatWixMediaUrl } from '@jay-framework/wix-utils';
 // ============================================================================
 // Helper Functions
 // ============================================================================
-
-/**
- * Parse wix:image:// protocol URLs and extract the media ID
- * Format: wix:image://v1/{mediaId}/{filename}#{params}
- */
-function parseWixImageUrl(url: string): string | null {
-    const match = url.match(/^wix:image:\/\/v1\/([^/]+)\//);
-    return match ? match[1] : null;
-}
-
-/**
- * Format Wix media URL with optional resize parameters
- * Handles both regular URLs and wix:image:// protocol URLs
- */
-export function formatWixMediaUrl(
-    _id: string, 
-    url: string, 
-    resize?: { w: number; h: number }
-): string {
-    const resizeFragment = resize ?
-        `/v1/fit/w_${resize.w},h_${resize.h},q_90/file.jpg` :
-        '';
-    
-    // Handle wix:image:// protocol URLs
-    if (url?.startsWith('wix:image://')) {
-        const mediaId = parseWixImageUrl(url);
-        if (mediaId) {
-            return `https://static.wixstatic.com/media/${mediaId}${resizeFragment}`;
-        }
-    }
-    
-    // Return URL as-is if it's a valid http(s) URL
-    if (url?.startsWith('http://') || url?.startsWith('https://')) {
-        return url;
-    }
-    
-    // Fallback to constructing URL from ID
-    return `https://static.wixstatic.com/media/${_id}${resizeFragment}`;
-}
 
 /**
  * Map availability status string to enum

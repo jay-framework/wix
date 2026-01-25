@@ -7,6 +7,7 @@ import {
     UrlParams
 } from '@jay-framework/fullstack-component';
 import {createMemo, createSignal, Props} from '@jay-framework/component';
+import { formatWixMediaUrl } from '@jay-framework/wix-utils';
 import {
     ChoiceType,
     InfoSectionOfProductPageViewState,
@@ -126,18 +127,6 @@ function mapSeoData(seoData: SeoSchema): SeoDatumOfProductPageViewState {
     });
 }
 
-function formatWixMediaUrl(_id: string, url: string, mediaType: MediaType, resize?: {w: number, h: number}) {
-    const resizeFragment = resize?
-        `/v1/fit/w_${resize.w},h_${resize.h},q_90/file.jpg` :
-        ``;
-    if (url)
-        return url;
-    else if (mediaType === MediaType.IMAGE)
-        return `https://static.wixstatic.com/media/${_id}${resizeFragment}`
-    else if (mediaType === MediaType.VIDEO)
-        return `https://static.wixstatic.com/media/${_id}${resizeFragment}`
-}
-
 function mapMediaType(mediaType: MediaTypeWithLiterals): MediaType {
     if (mediaType === "VIDEO")
         return MediaType.VIDEO
@@ -149,17 +138,17 @@ function mapMedia(media: Media): MediaGalleryViewState {
     const mainMediaType = mapMediaType(media.main.mediaType);
     return {
         selectedMedia: {
-            url: formatWixMediaUrl(media.main._id, media.main.url, mainMediaType),
+            url: formatWixMediaUrl(media.main._id, media.main.url),
             mediaType: mainMediaType,
-            thumbnail_50x50: formatWixMediaUrl(media.main._id, media.main.url, mainMediaType, {w: 50, h: 50})
+            thumbnail_50x50: formatWixMediaUrl(media.main._id, media.main.url, {w: 50, h: 50})
 
         },
         availableMedia: media.itemsInfo?.items?.map(item => ({
             mediaId: item._id,
             media: {
-                url: formatWixMediaUrl(item._id, item.url, mainMediaType),
+                url: formatWixMediaUrl(item._id, item.url),
                 mediaType: (item.mediaType === 'IMAGE'? MediaType.IMAGE : MediaType.VIDEO),
-                thumbnail_50x50: formatWixMediaUrl(item._id, item.url, mainMediaType, {w: 50, h: 50})
+                thumbnail_50x50: formatWixMediaUrl(item._id, item.url, {w: 50, h: 50})
             },
             selected: (item._id === media.main._id)? Selected.selected : Selected.notSelected
         })) ?? [],

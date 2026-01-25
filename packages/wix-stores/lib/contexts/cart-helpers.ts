@@ -11,7 +11,7 @@ import type {
     LineItem,
     CartDiscount
 } from '@wix/auto_sdk_ecom_current-cart';
-import { formatWixMediaUrl } from '../utils/product-mapper';
+import { formatWixMediaUrl } from '@jay-framework/wix-utils';
 
 // ============================================================================
 // Types
