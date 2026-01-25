@@ -139,7 +139,7 @@ export const queryItems = makeJayQuery('wixData.queryItems')
         } = input;
         
         try {
-            let query = wixData.queryCollection(collectionId).limit(limit);
+            let query = wixData.items.query(collectionId).limit(limit);
             
             // Apply cursor pagination
             if (cursor) {
@@ -208,7 +208,7 @@ export const getItemBySlug = makeJayQuery('wixData.getItemBySlug')
         }
         
         try {
-            const result = await wixData.queryCollection(collectionId)
+            const result = await wixData.items.query(collectionId)
                 .eq(config.slugField, slug)
                 .find();
             
@@ -264,7 +264,7 @@ export const getCategories = makeJayQuery('wixData.getCategories')
         try {
             // Fetch all items to count by category
             // TODO: This could be optimized with aggregation if available
-            const result = await wixData.queryCollection(collectionId)
+            const result = await wixData.items.query(collectionId)
                 .limit(1000)
                 .find();
             
@@ -287,7 +287,7 @@ export const getCategories = makeJayQuery('wixData.getCategories')
             const categoryResults = await Promise.all(
                 Array.from(categoryIds).map(async (catId): Promise<CategoryItem | null> => {
                     try {
-                        const catResult = await wixData.items.getDataItem(catId);
+                        const catResult = await wixData.items.get('', catId);
                         const catData = catResult.dataItem?.data;
                         
                         if (!catData) return null;
