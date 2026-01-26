@@ -1,0 +1,4 @@
+used_components:
+  - plugin: "@jay-framework/wix-stores"
+    contract: product-page
+    key: productPage
