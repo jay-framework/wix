@@ -29,8 +29,8 @@ export const init = makeJayInit()
         // Get the server-side Wix client (authenticated with API key)
         const wixClient = getService(WIX_CLIENT_SERVICE);
 
-        // Load plugin configuration
-        const config = await loadConfig();
+        // Load plugin configuration (passes client to generate default config if needed)
+        const config = await loadConfig(wixClient);
 
         // Create and register the data service
         provideWixDataService(wixClient, config);
