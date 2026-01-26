@@ -1,0 +1,12 @@
+devServer:
+  portRange:
+    - 3200
+    - 3300
+  pagesBase: ./src/pages
+  componentsBase: ./src/components
+  publicFolder: ./public
+editorServer:
+  portRange:
+    - 3301
+    - 3400
+  editorId: cms-example-editor
