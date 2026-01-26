@@ -1,0 +1,459 @@
+<html>
+  <head>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="product-page"
+            key="productPage"
+    ></script>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="cart-indicator"
+            key="cartIndicator"
+    ></script>
+    <script type="application/jay-data">
+      data:
+    </script>
+    <link rel="stylesheet" href="../../../styles/whisky-theme.css" />
+    <style>
+      .product-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: var(--section-gap) var(--page-padding);
+      }
+
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--text-secondary);
+        font-size: 14px;
+        margin-bottom: 24px;
+        transition: color var(--transition-base);
+      }
+
+      .back-link:hover {
+        color: var(--text-primary);
+      }
+      
+      /* Product header - above gallery */
+      .product-header {
+        margin-bottom: 32px;
+      }
+      
+      .product-header .product-name {
+        font-family: var(--font-serif);
+        font-size: 32px;
+        font-weight: 600;
+        line-height: 1.3;
+        margin-bottom: 8px;
+        color: var(--text-primary);
+      }
+      
+      .product-header .product-meta {
+        font-size: 14px;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      
+      .product-header .product-sku {
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+      
+      /* Price display - large style */
+      .price-display {
+        margin-bottom: 24px;
+      }
+      
+      .price-display .price-main {
+        font-size: 36px;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+      
+      .price-display .price-cents {
+        font-size: 20px;
+        font-weight: 600;
+        vertical-align: super;
+      }
+      
+      /* Variant cards grid */
+      .variant-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 16px;
+        margin-bottom: 32px;
+      }
+      
+      .variant-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        background: var(--bg-card);
+        border: 2px solid var(--border);
+        border-radius: var(--radius-lg);
+        cursor: pointer;
+        transition: all var(--transition-base);
+        text-align: center;
+      }
+      
+      .variant-card:hover {
+        border-color: var(--border-hover);
+      }
+      
+      .variant-card.selected {
+        border-color: var(--navy);
+        box-shadow: 0 0 0 1px var(--navy);
+      }
+      
+      .variant-card.out-of-stock {
+        opacity: 0.6;
+      }
+      
+      .variant-card-image {
+        width: 80px;
+        height: 100px;
+        object-fit: contain;
+        margin-bottom: 12px;
+      }
+      
+      .variant-card-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+      }
+      
+      .variant-card-stock {
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+      
+      .variant-card-price {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-top: 4px;
+      }
+      
+      /* Color swatch circle with shadow */
+      .color-swatch-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-bottom: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(255, 255, 255, 0.3);
+      }
+      
+      /* Add to cart row - quantity inline with button */
+      .add-to-cart-row {
+        display: flex;
+        align-items: stretch;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      
+      .quantity-inline {
+        display: flex;
+        align-items: center;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-full);
+        padding: 4px;
+      }
+      
+      .quantity-inline .qty-btn {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        font-size: 20px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: color var(--transition-fast);
+      }
+      
+      .quantity-inline .qty-btn:hover {
+        color: var(--text-primary);
+      }
+      
+      .quantity-inline .qty-value {
+        width: 40px;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-primary);
+        background: transparent;
+        border: none;
+      }
+      
+      .quantity-inline .qty-value:focus {
+        outline: none;
+      }
+      
+      .btn-add-cart {
+        flex: 1;
+        padding: 16px 32px;
+        background: var(--accent);
+        color: var(--text-primary);
+        border: none;
+        border-radius: var(--radius-full);
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all var(--transition-base);
+      }
+      
+      .btn-add-cart:hover:not(:disabled) {
+        background: var(--accent-hover);
+      }
+      
+      .btn-add-cart:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      
+      /* Secondary action buttons */
+      .secondary-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+      
+      .btn-secondary-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 24px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-full);
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: all var(--transition-base);
+        width: fit-content;
+      }
+      
+      .btn-secondary-action:hover {
+        background: var(--bg-hover);
+        border-color: var(--border-hover);
+      }
+      
+      .btn-secondary-action .icon {
+        font-size: 18px;
+      }
+      
+      /* Stock info line */
+      .stock-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        color: var(--text-secondary);
+        padding: 16px 0;
+        border-top: 1px solid var(--border);
+      }
+      
+      .stock-info .icon {
+        font-size: 20px;
+        color: var(--text-muted);
+      }
+      
+      .stock-info strong {
+        color: var(--text-primary);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-wrapper">
+    <!-- Site Header -->
+    <header class="site-header">
+      <div class="header-top">
+        <a href="/" class="site-logo">
+          WHISKY <span class="logo-accent">store</span>
+        </a>
+        
+        <div class="header-actions">
+          <a href="/products" class="header-link">Products</a>
+          <a href="/cart" 
+             class="cart-indicator {cartIndicator.hasItems ? has-items} {cartIndicator.isLoading ? is-loading} {cartIndicator.justAdded ? just-added}" 
+             ref="cartIndicator.cartLink">
+            <span class="cart-indicator-icon">🛒</span>
+            <span>Basket</span>
+            <span class="cart-indicator-count" if="cartIndicator.hasItems">{cartIndicator.itemCount}</span>
+          </a>
+        </div>
+      </div>
+      
+      <nav class="main-nav">
+        <ul class="nav-links">
+          <li><a href="/products">All Products</a></li>
+          <li><a href="/products">Whisky</a></li>
+          <li><a href="/products">Rum</a></li>
+          <li><a href="/products">Gin</a></li>
+          <li><a href="/products">Other</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <div class="product-page">
+      <!-- Back Link -->
+      <a href="/products" class="back-link">
+        ← Back to Products
+      </a>
+
+      <!-- Product Title Section - Above Gallery -->
+      <div class="product-header">
+        <div class="product-meta" if="productPage.brand">{productPage.brand}</div>
+        <h1 class="product-name">{productPage.productName}</h1>
+        <div class="product-sku" if="productPage.sku">SKU: {productPage.sku}</div>
+      </div>
+
+      <div class="product-page-layout">
+        <!-- Gallery Section -->
+        <div class="product-gallery">
+          <div class="product-main-image">
+            <img src="{productPage.mediaGallery.selectedMedia.url}" alt="{productPage.productName}" />
+          </div>
+          <div class="product-thumbnails">
+            <div class="product-thumbnail {selected == selected ? selected}"
+                 forEach="productPage.mediaGallery.availableMedia" 
+                 trackBy="mediaId"
+                 ref="productPage.mediaGallery.availableMedia.selected">
+              <img src="{media.thumbnail_50x50}" alt="Product thumbnail" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Details Section -->
+        <div class="product-details">
+          <!-- Price - Large Display -->
+          <div class="price-display">
+            <span class="price-main">{productPage.price}</span>
+            <span class="strikethrough-price" if="productPage.strikethroughPrice" style="margin-left: 12px; font-size: 18px; color: var(--text-muted); text-decoration: line-through;">{productPage.strikethroughPrice}</span>
+          </div>
+
+          <!-- Options as Variant Cards -->
+          <div class="product-options" if="productPage.options">
+            <div forEach="productPage.options" trackBy="_id">
+              <!-- Variant Cards for Text Choices -->
+              <div class="variant-cards" if="optionRenderType == TEXT_CHOICES">
+                <div class="variant-card {isSelected ? selected} {!inStock ? out-of-stock}"
+                     forEach="choices" 
+                     trackBy="choiceId"
+                     ref="productPage.options.choices.choiceButton">
+                  <span class="variant-card-name">{name}</span>
+                  <span class="variant-card-stock" if="!inStock">(Out of stock)</span>
+                </div>
+              </div>
+
+              <!-- Color Swatch Choices -->
+              <div class="variant-cards" if="optionRenderType == COLOR_SWATCH_CHOICES">
+                <div class="variant-card {isSelected ? selected} {!inStock ? out-of-stock}"
+                     forEach="choices" 
+                     trackBy="choiceId"
+                     ref="productPage.options.choices.choiceButton">
+                  <div class="color-swatch-circle" style="background-color: {colorCode};"></div>
+                  <span class="variant-card-name">{name}</span>
+                  <span class="variant-card-stock" if="!inStock">(Out of stock)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modifiers -->
+          <div class="product-options" if="productPage.modifiers">
+            <div class="option-group" forEach="productPage.modifiers" trackBy="_id">
+              <div class="option-label">{name}</div>
+              
+              <!-- Text Choices Dropdown -->
+              <select class="select" 
+                      if="modifierType == TEXT_CHOICES"
+                      ref="productPage.modifiers.textModifier">
+                <option forEach="choices" trackBy="choiceId" value="{choiceId}">{name}</option>
+              </select>
+
+              <!-- Color Swatch Choices -->
+              <div class="option-choices" if="modifierType == COLOR_SWATCH_CHOICES">
+                <button class="choice-btn color-swatch {isSelected ? selected}"
+                        style="background-color: {colorCode}"
+                        forEach="choices" 
+                        trackBy="choiceId"
+                        ref="choiceButton"
+                        title="{name}">
+                </button>
+              </div>
+
+              <!-- Free Text Input -->
+              <input class="input" 
+                     type="text" 
+                     if="modifierType == FREE_TEXT"
+                     ref="productPage.modifiers.textInput"
+                     placeholder="Enter your custom text"
+                     maxlength="{textInputLength}" />
+            </div>
+          </div>
+
+          <!-- Add to Cart Row: Quantity + Button Inline -->
+          <div class="add-to-cart-row">
+            <div class="quantity-inline">
+              <button class="qty-btn" ref="productPage.quantity.decrementButton">−</button>
+              <input class="qty-value" 
+                     type="number" 
+                     value="{productPage.quantity.quantity}" 
+                     ref="productPage.quantity.quantity"
+                     min="1" />
+              <button class="qty-btn" ref="productPage.quantity.incrementButton">+</button>
+            </div>
+            <button class="btn-add-cart" 
+                    ref="productPage.addToCartButton"
+                    disabled="!productPage.actionsEnabled">
+              Add to cart
+            </button>
+          </div>
+
+          <!-- Secondary Actions -->
+          <div class="secondary-actions">
+            <button class="btn-secondary-action"
+                    ref="productPage.buyNowButton"
+                    disabled="!productPage.actionsEnabled">
+              <span class="icon">🎁</span>
+              Buy Now
+            </button>
+          </div>
+
+          <!-- Stock Info -->
+          <div class="stock-info" if="productPage.stockStatus == IN_STOCK">
+            <span class="icon">🕐</span>
+            <span><strong>In stock</strong>, ready to ship</span>
+          </div>
+          <div class="stock-info" if="productPage.stockStatus == OUT_OF_STOCK">
+            <span class="icon">⚠️</span>
+            <span><strong>Out of stock</strong></span>
+          </div>
+
+          <!-- Description -->
+          <div class="product-description" if="productPage.description" style="margin-top: 24px;">{productPage.description}</div>
+
+          <!-- Info Sections -->
+          <div class="info-sections" if="productPage.infoSections">
+            <div class="info-section" forEach="productPage.infoSections" trackBy="_id">
+              <div class="info-section-title">{title}</div>
+              <div class="info-section-content">{plainDescription}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </body>
+</html>

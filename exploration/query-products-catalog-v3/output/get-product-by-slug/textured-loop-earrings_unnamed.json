@@ -1,0 +1,105 @@
+{
+  "product": {
+    "revision": "1",
+    "numericId": "1737885155047000",
+    "name": "Textured Loop Earrings",
+    "slug": "textured-loop-earrings",
+    "visible": true,
+    "visibleInPos": true,
+    "media": {
+      "main": {
+        "image": "wix:image://v1/22e53e_8cbcee6500094796a3fc3730d52840f1~mv2.jpg/Earrings-Product%20(1).jpg#originWidth=3000&originHeight=3000",
+        "mediaType": "IMAGE",
+        "uploadId": "22e53e_8cbcee6500094796a3fc3730d52840f1~mv2.jpg",
+        "_id": "22e53e_8cbcee6500094796a3fc3730d52840f1~mv2.jpg"
+      }
+    },
+    "options": [],
+    "modifiers": [
+      {
+        "name": "Gift Card",
+        "modifierRenderType": "FREE_TEXT",
+        "mandatory": false,
+        "freeTextSettings": {
+          "minCharCount": 0,
+          "maxCharCount": 500,
+          "title": "Would you like to add a gift card? Please write your message here.",
+          "key": "Would you like to add a gift card? Please write your message here."
+        },
+        "key": "Gift Card",
+        "_id": "c28cb1ec-b383-47df-8d20-974e10ab234d"
+      }
+    ],
+    "infoSections": [
+      {
+        "_id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
+      },
+      {
+        "_id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
+      },
+      {
+        "_id": "57075b9e-ba33-401b-86bd-045d949c9283"
+      }
+    ],
+    "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
+    "inventory": {
+      "availabilityStatus": "IN_STOCK",
+      "preorderStatus": "DISABLED",
+      "preorderAvailability": "NO_VARIANTS"
+    },
+    "productType": "PHYSICAL",
+    "physicalProperties": {},
+    "handle": "Product_269b62d3-0294-4f3e-924c-161ab8a52827",
+    "actualPriceRange": {
+      "minValue": {
+        "amount": "269"
+      },
+      "maxValue": {
+        "amount": "269"
+      }
+    },
+    "compareAtPriceRange": {
+      "minValue": {
+        "amount": "0"
+      },
+      "maxValue": {
+        "amount": "0"
+      }
+    },
+    "variantsInfo": {
+      "variants": [
+        {
+          "visible": true,
+          "sku": "671253175371",
+          "choices": [],
+          "price": {
+            "actualPrice": {
+              "amount": "269"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_8cbcee6500094796a3fc3730d52840f1~mv2.jpg/Earrings-Product%20(1).jpg#originWidth=3000&originHeight=3000",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_8cbcee6500094796a3fc3730d52840f1~mv2.jpg",
+            "_id": "22e53e_8cbcee6500094796a3fc3730d52840f1~mv2.jpg"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "aebd3261-d48a-42e4-b0ed-63555cf56229"
+        }
+      ]
+    },
+    "flattenOptions": [],
+    "flattenModifiers": [],
+    "variantSummary": {
+      "variantCount": 1
+    },
+    "entityEventSequence": "3",
+    "_id": "d2dc8bef-0a26-414a-b1dc-7bbba867bc6a",
+    "_createdDate": "2025-01-26T09:52:35.233Z",
+    "_updatedDate": "2025-11-16T16:20:40.462Z"
+  }
+}

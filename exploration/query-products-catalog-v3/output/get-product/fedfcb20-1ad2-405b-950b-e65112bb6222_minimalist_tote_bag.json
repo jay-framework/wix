@@ -1,0 +1,223 @@
+{
+  "revision": "1",
+  "numericId": "1737889225263000",
+  "name": "Minimalist Tote Bag",
+  "slug": "minimalist-tote-bag",
+  "visible": true,
+  "visibleInPos": true,
+  "media": {
+    "main": {
+      "image": "wix:image://v1/22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg/Totebag-Product%20(1).jpg#originWidth=4000&originHeight=4000",
+      "mediaType": "IMAGE",
+      "uploadId": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg",
+      "_id": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg"
+    }
+  },
+  "options": [
+    {
+      "name": "Color",
+      "optionRenderType": "SWATCH_CHOICES",
+      "choicesSettings": {
+        "choices": [
+          {
+            "choiceId": "1137f00f-c9b0-48bd-b8fd-78aa0d92e2b5",
+            "linkedMedia": [
+              {
+                "image": "wix:image://v1/22e53e_403950cd77974f9887339264944d760e~mv2.jpg/Totebag-Product-White%20(1).jpg#originWidth=4000&originHeight=4000",
+                "mediaType": "IMAGE",
+                "uploadId": "22e53e_403950cd77974f9887339264944d760e~mv2.jpg",
+                "_id": "22e53e_403950cd77974f9887339264944d760e~mv2.jpg"
+              }
+            ],
+            "choiceType": "ONE_COLOR",
+            "key": "White",
+            "name": "White",
+            "inStock": true,
+            "visible": true,
+            "colorCode": "#FFFFFF"
+          },
+          {
+            "choiceId": "2c2ef949-2b83-48b7-8cb9-a588ad73547a",
+            "linkedMedia": [
+              {
+                "image": "wix:image://v1/22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg/Totebag-Product%20(1).jpg#originWidth=4000&originHeight=4000",
+                "mediaType": "IMAGE",
+                "uploadId": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg",
+                "_id": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg"
+              },
+              {
+                "image": "wix:image://v1/22e53e_9a8e513558f2438eb8e6dd6c6d6cdbf5~mv2.jpg/Tote-Bag-Context%20(1).jpg#originWidth=3522&originHeight=3522",
+                "mediaType": "IMAGE",
+                "uploadId": "22e53e_9a8e513558f2438eb8e6dd6c6d6cdbf5~mv2.jpg",
+                "_id": "22e53e_9a8e513558f2438eb8e6dd6c6d6cdbf5~mv2.jpg"
+              }
+            ],
+            "choiceType": "ONE_COLOR",
+            "key": "Purple",
+            "name": "Purple",
+            "inStock": true,
+            "visible": true,
+            "colorCode": "#CAB4E6"
+          }
+        ]
+      },
+      "key": "Color",
+      "_id": "1d926bdc-e161-4690-85c8-5e1dea5bde4c"
+    }
+  ],
+  "modifiers": [
+    {
+      "name": "Button Style",
+      "modifierRenderType": "TEXT_CHOICES",
+      "mandatory": true,
+      "choicesSettings": {
+        "choices": [
+          {
+            "choiceId": "556093db-abfa-442d-8f2b-af5d438c6dbf",
+            "linkedMedia": [
+              {
+                "image": "wix:image://v1/22e53e_403950cd77974f9887339264944d760e~mv2.jpg/Totebag-Product-White%20(1).jpg#originWidth=4000&originHeight=4000",
+                "mediaType": "IMAGE",
+                "uploadId": "22e53e_403950cd77974f9887339264944d760e~mv2.jpg",
+                "_id": "22e53e_403950cd77974f9887339264944d760e~mv2.jpg"
+              }
+            ],
+            "choiceType": "CHOICE_TEXT",
+            "key": "Big Round",
+            "name": "Big Round"
+          },
+          {
+            "choiceId": "154837fa-a89a-43bc-9e02-056019ad79c3",
+            "linkedMedia": [],
+            "choiceType": "CHOICE_TEXT",
+            "key": "Small Round",
+            "name": "Small Round"
+          },
+          {
+            "choiceId": "8d3d9cdc-4ca8-4699-908b-40de6d5ea8ae",
+            "linkedMedia": [],
+            "choiceType": "CHOICE_TEXT",
+            "key": "Medium Square",
+            "name": "Medium Square"
+          },
+          {
+            "choiceId": "30651a10-17fc-483a-8cb2-d9cdd2275838",
+            "linkedMedia": [],
+            "choiceType": "CHOICE_TEXT",
+            "key": "Diamonds",
+            "name": "Diamonds"
+          }
+        ]
+      },
+      "key": "Button Style",
+      "_id": "c259c6ec-adef-4589-9839-1d4d7322e14f"
+    }
+  ],
+  "infoSections": [
+    {
+      "_id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
+    },
+    {
+      "_id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
+    },
+    {
+      "_id": "57075b9e-ba33-401b-86bd-045d949c9283"
+    }
+  ],
+  "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
+  "inventory": {
+    "availabilityStatus": "IN_STOCK",
+    "preorderStatus": "DISABLED",
+    "preorderAvailability": "NO_VARIANTS"
+  },
+  "productType": "PHYSICAL",
+  "physicalProperties": {},
+  "handle": "Product_1515c6dc-51be-487d-b83c-73fb3639e7d6",
+  "actualPriceRange": {
+    "minValue": {
+      "amount": "20"
+    },
+    "maxValue": {
+      "amount": "20"
+    }
+  },
+  "compareAtPriceRange": {
+    "minValue": {
+      "amount": "0"
+    },
+    "maxValue": {
+      "amount": "0"
+    }
+  },
+  "variantsInfo": {
+    "variants": [
+      {
+        "visible": true,
+        "sku": "364215375135191",
+        "choices": [
+          {
+            "optionChoiceIds": {
+              "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+              "choiceId": "1137f00f-c9b0-48bd-b8fd-78aa0d92e2b5"
+            }
+          }
+        ],
+        "price": {
+          "actualPrice": {
+            "amount": "20"
+          }
+        },
+        "media": {
+          "image": "wix:image://v1/22e53e_403950cd77974f9887339264944d760e~mv2.jpg/Totebag-Product-White%20(1).jpg#originWidth=4000&originHeight=4000",
+          "mediaType": "IMAGE",
+          "uploadId": "22e53e_403950cd77974f9887339264944d760e~mv2.jpg",
+          "_id": "22e53e_403950cd77974f9887339264944d760e~mv2.jpg"
+        },
+        "physicalProperties": {},
+        "inventoryStatus": {
+          "inStock": true,
+          "preorderEnabled": false
+        },
+        "_id": "69ca8646-cc1f-4fbd-960d-5d754a7fb518"
+      },
+      {
+        "visible": true,
+        "sku": "364215375135192",
+        "choices": [
+          {
+            "optionChoiceIds": {
+              "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+              "choiceId": "2c2ef949-2b83-48b7-8cb9-a588ad73547a"
+            }
+          }
+        ],
+        "price": {
+          "actualPrice": {
+            "amount": "20"
+          }
+        },
+        "media": {
+          "image": "wix:image://v1/22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg/Totebag-Product%20(1).jpg#originWidth=4000&originHeight=4000",
+          "mediaType": "IMAGE",
+          "uploadId": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg",
+          "_id": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg"
+        },
+        "physicalProperties": {},
+        "inventoryStatus": {
+          "inStock": true,
+          "preorderEnabled": false
+        },
+        "_id": "0c660cc7-fe77-4394-b6cd-9c779338776c"
+      }
+    ]
+  },
+  "flattenOptions": [],
+  "flattenModifiers": [],
+  "variantSummary": {
+    "variantCount": 2
+  },
+  "entityEventSequence": "3",
+  "_id": "fedfcb20-1ad2-405b-950b-e65112bb6222",
+  "_createdDate": "2025-01-26T11:00:25.276Z",
+  "_updatedDate": "2025-11-16T16:20:39.578Z"
+}

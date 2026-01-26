@@ -1,0 +1,34 @@
+{
+  "name": "example-wix-cms",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "license": "Apache-2.0",
+  "scripts": {
+    "dev": "jay-stack-cli dev",
+    "validate": "jay-stack-cli validate",
+    "clean": "rimraf dist && rimraf build && rimraf -g 'src/**/*.d.ts'",
+    "definitions": "jay-cli definitions src",
+    "build": "npm run definitions & echo 'build not implemented yet'",
+    "build:check-types": "tsc",
+    "test": ":"
+  },
+  "dependencies": {
+    "@jay-framework/fullstack-component": "^0.10.0",
+    "@jay-framework/jay-stack-cli": "^0.10.0",
+    "@jay-framework/wix-server-client": "workspace:^",
+    "@jay-framework/wix-data": "workspace:^",
+    "compression": "^1.7.5",
+    "express": "^5.0.1",
+    "sirv": "^3.0.0"
+  },
+  "devDependencies": {
+    "@jay-framework/dev-environment": "^0.6.10",
+    "@jay-framework/jay-cli": "^0.10.0",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.0",
+    "cross-env": "^7.0.3",
+    "typescript": "~5.7.2",
+    "vite": "^6.0.1"
+  }
+}

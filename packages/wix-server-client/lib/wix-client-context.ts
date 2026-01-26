@@ -62,59 +62,35 @@ export function clearStoredTokens(): void {
 export async function provideWixClientContext(oauthClientId: string) {
     const existingTokens = getStoredTokens();
 
+    console.log('[wix-server-client] createClient with tokens: ', undefined);
     const wixClient = createClient({
         auth: OAuthStrategy({
             clientId: oauthClientId,
-            tokens: existingTokens || undefined,
+            tokens: existingTokens,
         }),
     });
 
-    // If no existing tokens, get the newly generated ones and store them
     if (!existingTokens) {
-        try {
-            const newTokens = await wixClient.auth.generateVisitorTokens();
-            storeTokens(newTokens);
-            console.log('[wix-server-client] New visitor session created');
-        } catch (error) {
-            console.error('[wix-server-client] Failed to generate visitor tokens:', error);
-        }
-    } else {
-        console.log('[wix-server-client] Resumed existing visitor session');
-
-        // Validate/refresh the token if needed
-        try {
-            const refreshedTokens = await wixClient.auth.generateVisitorTokens();
-            storeTokens(refreshedTokens);
-        } catch (error) {
-            console.warn('[wix-server-client] Token refresh failed, creating new session:', error);
-            const newTokens = await wixClient.auth.generateVisitorTokens();
-            storeTokens(newTokens);
-        }
+        const tokens = await wixClient.auth.generateVisitorTokens();
+        wixClient.auth.setTokens(tokens);
+        storeTokens(tokens);
     }
 
-    // Register the client context
     const clientContext: WixClientContext = {
         client: wixClient,
         isReady: true,
 
         getTokens(): Tokens | null {
-            if (!wixClient) return null;
             return wixClient.auth.getTokens();
         },
 
         async generateVisitorTokens(): Promise<Tokens> {
-            if (!wixClient) {
-                throw new Error('Wix client not initialized');
-            }
             const tokens = await wixClient.auth.generateVisitorTokens();
             storeTokens(tokens);
             return tokens;
         },
 
         async refreshToken(): Promise<Tokens> {
-            if (!wixClient) {
-                throw new Error('Wix client not initialized');
-            }
             const currentTokens = wixClient.auth.getTokens();
             if (!currentTokens?.refreshToken) {
                 throw new Error('No refresh token available');

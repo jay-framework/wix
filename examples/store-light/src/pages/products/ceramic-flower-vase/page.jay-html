@@ -1,0 +1,549 @@
+<html>
+  <head>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="product-page"
+            key="productPage"
+    ></script>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="cart-indicator"
+            key="cartIndicator"
+    ></script>
+    <script type="application/jay-data">
+      data:
+    </script>
+    <link rel="stylesheet" href="../../../styles/atelier-theme.css" />
+    <style>
+      /* =====================================================
+         CERAMIC FLOWER VASE - SPECIAL EDITORIAL LAYOUT
+         Full-size images in vertical scroll, immersive experience
+         ===================================================== */
+      
+      .vase-page {
+        min-height: 100vh;
+        background: var(--bg-primary);
+      }
+
+      /* Hero Image - Full Viewport */
+      .hero-image-section {
+        position: relative;
+        height: 85vh;
+        min-height: 600px;
+        overflow: hidden;
+        background: var(--bg-secondary);
+      }
+
+      .hero-image-section img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .hero-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 80px var(--page-padding) 60px;
+        background: linear-gradient(to top, rgba(45, 42, 38, 0.85), transparent);
+        color: var(--text-inverse);
+      }
+
+      .hero-badges {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      .hero-brand {
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        opacity: 0.8;
+        margin-bottom: 12px;
+      }
+
+      .hero-title {
+        font-family: var(--font-serif);
+        font-size: clamp(36px, 6vw, 64px);
+        font-weight: 500;
+        line-height: 1.1;
+        margin-bottom: 20px;
+        max-width: 700px;
+      }
+
+      .hero-price {
+        display: flex;
+        align-items: baseline;
+        gap: 16px;
+      }
+
+      .hero-price .main-price {
+        font-size: 32px;
+        font-weight: 600;
+      }
+
+      .hero-price .was-price {
+        font-size: 20px;
+        opacity: 0.7;
+        text-decoration: line-through;
+      }
+
+      /* Product Info Section */
+      .product-info-section {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 64px var(--page-padding);
+      }
+
+      .product-meta {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+      }
+
+      .product-sku-tag {
+        font-size: 12px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .stock-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: var(--radius-full);
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .stock-pill.available {
+        background: var(--success-bg);
+        color: var(--success);
+      }
+
+      .stock-pill.sold-out {
+        background: var(--error-bg);
+        color: var(--error);
+      }
+
+      .stock-pill .pulse-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+        animation: pulse-glow 2s infinite;
+      }
+
+      @keyframes pulse-glow {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
+      }
+
+      .description-block {
+        font-size: 18px;
+        line-height: 1.8;
+        color: var(--text-secondary);
+        margin-bottom: 48px;
+        padding: 32px;
+        background: var(--bg-secondary);
+        border-radius: var(--radius-xl);
+        border-left: 4px solid var(--accent);
+      }
+
+      /* Options Section */
+      .options-section {
+        margin-bottom: 48px;
+      }
+
+      .option-block {
+        margin-bottom: 32px;
+      }
+
+      .option-title {
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-primary);
+        margin-bottom: 16px;
+      }
+
+      .option-choices-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      /* Quantity and Actions - Sticky on Scroll */
+      .actions-section {
+        position: sticky;
+        bottom: 0;
+        background: var(--bg-card);
+        border-top: 1px solid var(--border);
+        padding: 20px var(--page-padding);
+        box-shadow: 0 -8px 32px rgba(45, 42, 38, 0.1);
+        z-index: 100;
+      }
+
+      .actions-inner {
+        max-width: 800px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+
+      .actions-price {
+        margin-right: auto;
+      }
+
+      .actions-price .label {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .actions-price .amount {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--accent);
+      }
+
+      .actions-buttons {
+        display: flex;
+        gap: 12px;
+      }
+
+      .actions-buttons .btn {
+        min-width: 160px;
+      }
+
+      /* Full-Width Image Gallery - All Images Large */
+      .image-gallery {
+        background: var(--bg-secondary);
+        padding: 80px 0;
+      }
+
+      .gallery-header {
+        max-width: 800px;
+        margin: 0 auto 48px;
+        padding: 0 var(--page-padding);
+        text-align: center;
+      }
+
+      .gallery-header h2 {
+        font-family: var(--font-serif);
+        font-size: 28px;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: 12px;
+      }
+
+      .gallery-header p {
+        color: var(--text-secondary);
+        font-size: 16px;
+      }
+
+      /* All images shown in full size, vertically stacked */
+      .gallery-images {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 var(--page-padding);
+      }
+
+      .gallery-image-item {
+        border-radius: var(--radius-2xl);
+        overflow: hidden;
+        box-shadow: var(--shadow-xl);
+        background: var(--bg-card);
+        cursor: pointer;
+        transition: transform var(--transition-slow), box-shadow var(--transition-slow);
+      }
+
+      .gallery-image-item:hover {
+        transform: scale(1.01);
+        box-shadow: 0 32px 64px rgba(45, 42, 38, 0.15);
+      }
+
+      .gallery-image-item img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .gallery-image-caption {
+        padding: 20px 24px;
+        font-size: 14px;
+        color: var(--text-secondary);
+        text-align: center;
+        background: var(--bg-card);
+        border-top: 1px solid var(--border);
+      }
+
+      /* Additional Info Accordion */
+      .info-accordion {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 64px var(--page-padding);
+      }
+
+      .accordion-item {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        margin-bottom: 12px;
+        overflow: hidden;
+      }
+
+      .accordion-header {
+        padding: 20px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        transition: background var(--transition-fast);
+      }
+
+      .accordion-header:hover {
+        background: var(--bg-hover);
+      }
+
+      .accordion-title {
+        font-family: var(--font-serif);
+        font-size: 16px;
+        font-weight: 500;
+        color: var(--text-primary);
+      }
+
+      .accordion-icon {
+        font-size: 20px;
+        color: var(--text-muted);
+      }
+
+      .accordion-content {
+        padding: 0 24px 24px;
+        font-size: 15px;
+        line-height: 1.75;
+        color: var(--text-secondary);
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .hero-image-section {
+          height: 70vh;
+          min-height: 500px;
+        }
+
+        .hero-overlay {
+          padding: 60px var(--page-padding) 40px;
+        }
+
+        .hero-title {
+          font-size: 32px;
+        }
+
+        .actions-inner {
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .actions-price {
+          margin-right: 0;
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .actions-buttons {
+          width: 100%;
+        }
+
+        .actions-buttons .btn {
+          flex: 1;
+          min-width: auto;
+        }
+
+        .gallery-images {
+          gap: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="vase-page">
+      <!-- Site Header -->
+      <header class="site-header">
+        <a href="/products" class="site-logo">Atelier<span>.</span></a>
+        <nav class="site-nav">
+          <a href="/products">Collection</a>
+          <a href="/cart" 
+             class="cart-indicator {cartIndicator.hasItems ? has-items} {cartIndicator.isLoading ? is-loading} {cartIndicator.justAdded ? just-added}" 
+             ref="cartIndicator.cartLink">
+            <span class="cart-indicator-icon">🛒</span>
+            <span class="cart-indicator-count" if="cartIndicator.hasItems">{cartIndicator.itemCount}</span>
+          </a>
+        </nav>
+      </header>
+
+      <!-- Hero - First Image Full Viewport -->
+      <section class="hero-image-section">
+        <img src="{productPage.mediaGallery.selectedMedia.url}" alt="{productPage.productName}" />
+        
+        <div class="hero-overlay">
+          <div class="hero-badges">
+            <div class="badge badge-accent" if="productPage.ribbon">{productPage.ribbon}</div>
+            <div class="product-type-badge physical" if="productPage.productType == PHYSICAL">
+              📦 Handcrafted
+            </div>
+          </div>
+          
+          <div class="hero-brand" if="productPage.brand">{productPage.brand}</div>
+          <h1 class="hero-title">{productPage.productName}</h1>
+          
+          <div class="hero-price">
+            <span class="main-price">{productPage.price}</span>
+            <span class="was-price" if="productPage.strikethroughPrice">{productPage.strikethroughPrice}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Product Info -->
+      <section class="product-info-section">
+        <div class="product-meta">
+          <span class="product-sku-tag" if="productPage.sku">SKU: {productPage.sku}</span>
+          <div class="stock-pill available" if="productPage.stockStatus == IN_STOCK">
+            <span class="pulse-dot"></span>
+            Available Now
+          </div>
+          <div class="stock-pill sold-out" if="productPage.stockStatus == OUT_OF_STOCK">
+            <span class="pulse-dot"></span>
+            Currently Unavailable
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="description-block" if="productPage.description">
+          {productPage.description}
+        </div>
+
+        <!-- Options -->
+        <div class="options-section" if="productPage.options">
+          <div class="option-block" forEach="productPage.options" trackBy="_id">
+            <div class="option-title">{name}</div>
+            
+            <select class="select" 
+                    if="optionRenderType == TEXT_CHOICES"
+                    ref="productPage.options.textChoice">
+              <option forEach="choices" trackBy="choiceId" value="{choiceId}">{name}</option>
+            </select>
+
+            <div class="option-choices-grid" if="optionRenderType == COLOR_SWATCH_CHOICES">
+              <button class="choice-btn color-swatch {isSelected ? selected} {!inStock ? out-of-stock}"
+                      style="background-color: {colorCode}"
+                      forEach="choices" 
+                      trackBy="choiceId"
+                      ref="productPage.options.choices.choiceButton"
+                      title="{name}">
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modifiers -->
+        <div class="options-section" if="productPage.modifiers">
+          <div class="option-block" forEach="productPage.modifiers" trackBy="_id">
+            <div class="option-title">{name}</div>
+            
+            <select class="select" 
+                    if="modifierType == TEXT_CHOICES"
+                    ref="productPage.modifiers.textModifier">
+              <option forEach="choices" trackBy="choiceId" value="{choiceId}">{name}</option>
+            </select>
+
+            <input class="input" 
+                   type="text" 
+                   if="modifierType == FREE_TEXT"
+                   ref="productPage.modifiers.textInput"
+                   placeholder="Custom engraving text"
+                   maxlength="{textInputLength}" />
+          </div>
+        </div>
+
+        <!-- Quantity -->
+        <div class="option-block">
+          <div class="option-title">Quantity</div>
+          <div class="quantity-controls">
+            <button class="quantity-btn" ref="productPage.quantity.decrementButton">−</button>
+            <input class="quantity-input" 
+                   type="number" 
+                   value="{productPage.quantity.quantity}" 
+                   ref="productPage.quantity.quantity"
+                   min="1" />
+            <button class="quantity-btn" ref="productPage.quantity.incrementButton">+</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Full-Size Image Gallery - All Images Shown Large -->
+      <section class="image-gallery">
+        <div class="gallery-header">
+          <h2>Every Angle</h2>
+          <p>Explore the craftsmanship in detail</p>
+        </div>
+        
+        <div class="gallery-images">
+          <div class="gallery-image-item" 
+               forEach="productPage.mediaGallery.availableMedia" 
+               trackBy="mediaId"
+               ref="productPage.mediaGallery.availableMedia.selected">
+            <img src="{media.url}" loading="lazy" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Info Accordion -->
+      <section class="info-accordion" if="productPage.infoSections">
+        <div class="accordion-item" forEach="productPage.infoSections" trackBy="_id">
+          <div class="accordion-header">
+            <span class="accordion-title">{title}</span>
+            <span class="accordion-icon">+</span>
+          </div>
+          <div class="accordion-content">{plainDescription}</div>
+        </div>
+      </section>
+
+      <!-- Sticky Actions Bar -->
+      <div class="actions-section">
+        <div class="actions-inner">
+          <div class="actions-price">
+            <span class="label">Total</span>
+            <span class="amount">{productPage.price}</span>
+          </div>
+          <div class="actions-buttons">
+            <button class="btn btn-secondary btn-lg" 
+                    ref="productPage.buyNowButton"
+                    disabled="!productPage.actionsEnabled">
+              Buy Now
+            </button>
+            <button class="btn btn-primary btn-lg" 
+                    ref="productPage.addToCartButton"
+                    disabled="!productPage.actionsEnabled">
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

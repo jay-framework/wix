@@ -1,0 +1,367 @@
+<html>
+  <head>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="category-page"
+            key="categoryPage"
+    ></script>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="cart-indicator"
+            key="cartIndicator"
+    ></script>
+    <script type="application/jay-data">
+      data:
+    </script>
+    <link rel="stylesheet" href="../../../styles/store-theme.css" />
+    <style>
+      /* Category page styles */
+      .category-page {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        padding: var(--section-gap) var(--page-padding);
+      }
+
+      /* Breadcrumbs */
+      .breadcrumbs {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 32px;
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+
+      .breadcrumbs a {
+        color: var(--text-secondary);
+        transition: color var(--transition-fast);
+      }
+
+      .breadcrumbs a:hover {
+        color: var(--accent);
+      }
+
+      .breadcrumbs .separator {
+        color: var(--text-muted);
+      }
+
+      .breadcrumbs .current {
+        color: var(--text-primary);
+        font-weight: 500;
+      }
+
+      /* Category header */
+      .category-header {
+        margin-bottom: 48px;
+        text-align: center;
+      }
+
+      .category-header h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+        background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .category-header .description {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto 16px;
+      }
+
+      .category-header .product-count {
+        display: inline-block;
+        padding: 6px 16px;
+        background: var(--bg-card);
+        border-radius: var(--radius-full);
+        font-size: 14px;
+        color: var(--text-muted);
+      }
+
+      /* Category hero image */
+      .category-hero {
+        width: 100%;
+        height: 300px;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        margin-bottom: 48px;
+        background: var(--bg-card);
+      }
+
+      .category-hero img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Empty state */
+      .empty-state {
+        text-align: center;
+        padding: 80px 40px;
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border);
+      }
+
+      .empty-state h2 {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+        color: var(--text-primary);
+      }
+
+      .empty-state p {
+        color: var(--text-secondary);
+        margin-bottom: 24px;
+      }
+
+      /* Product grid */
+      .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 24px;
+      }
+
+      /* Load more section */
+      .load-more-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        margin-top: 48px;
+        padding: 24px;
+      }
+
+      .load-more-section .loaded-info {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+
+      .load-more-section button {
+        min-width: 200px;
+      }
+
+      /* Loading state */
+      .loading-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 16px;
+        color: var(--text-secondary);
+      }
+
+      .loading-spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--border);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="category-page">
+      <!-- Site Header with Cart -->
+      <header class="site-header">
+        <a href="/" class="site-logo">Store<span>.</span></a>
+        <nav class="site-nav">
+          <a href="/">Home</a>
+          <a href="/products">Products</a>
+          <a href="/cart" 
+             class="cart-indicator {cartIndicator.hasItems ? has-items} {cartIndicator.isLoading ? is-loading}" 
+             ref="cartIndicator.cartLink">
+            <span class="cart-indicator-icon">🛒</span>
+            <span class="cart-indicator-count" if="cartIndicator.hasItems">{cartIndicator.itemCount}</span>
+          </a>
+        </nav>
+      </header>
+
+      <!-- Breadcrumbs -->
+      <nav class="breadcrumbs">
+        <a href="/">Home</a>
+        <span class="separator">/</span>
+        <span forEach="categoryPage.breadcrumbs" trackBy="categoryId">
+          <a href="/categories/{categorySlug}" 
+             ref="categoryPage.breadcrumbs.categoryLink">
+            {categoryName}
+          </a>
+          <span class="separator">/</span>
+        </span>
+      </nav>
+
+      <!-- Category Hero Image (if has media) -->
+      <div class="category-hero" if="categoryPage.media.mainMedia">
+        <img src="{categoryPage.media.mainMedia.url}" alt="{categoryPage.media.mainMedia.altText}" />
+      </div>
+
+      <!-- Category Header -->
+      <header class="category-header">
+        <h1>{categoryPage.name}</h1>
+        <p class="description" if="categoryPage.description">{categoryPage.description}</p>
+        <span class="product-count">{categoryPage.numberOfProducts} products</span>
+      </header>
+
+      <!-- Empty State -->
+      <div class="empty-state" if="!categoryPage.hasProducts">
+        <h2>No products found</h2>
+        <p>This category doesn't have any products yet.</p>
+        <a href="/products" class="btn btn-primary">Browse All Products</a>
+      </div>
+
+      <!-- Product Grid - Initial SSR products -->
+      <div class="product-grid" if="categoryPage.hasProducts">
+        <!-- SSR Products (slow phase) -->
+        <article class="product-card" 
+                 forEach="categoryPage.products" 
+                 trackBy="_id">
+          <div class="product-card-wrapper">
+            <a href="{productUrl}" class="product-card-image">
+              <img src="{thumbnail.url}" alt="{thumbnail.altText}" loading="lazy" />
+              <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
+            </a>
+            
+            <div class="product-card-content">
+              <a href="{productUrl}" class="product-card-name">{name}</a>
+              <span class="brand-text" if="brand.name">{brand.name}</span>
+              
+              <div class="product-card-price">
+                <span class="price">{actualPriceRange.minValue.formattedAmount}</span>
+                <span class="compare-price" if="hasDiscount">{compareAtPriceRange.minValue.formattedAmount}</span>
+              </div>
+              
+              <div class="stock-badge badge-success" if="inventory.availabilityStatus == IN_STOCK">
+                <span class="stock-dot"></span>
+                In Stock
+              </div>
+              <div class="stock-badge badge-error" if="inventory.availabilityStatus == OUT_OF_STOCK">
+                <span class="stock-dot"></span>
+                Out of Stock
+              </div>
+              
+              <!-- SIMPLE: Regular add to cart -->
+              <button class="btn btn-secondary btn-block {isAddingToCart ? is-loading}" 
+                      ref="categoryPage.products.addToCartButton"
+                      if="quickAddType == SIMPLE"
+                      disabled="inventory.availabilityStatus == OUT_OF_STOCK">
+                <span if="!isAddingToCart">Add to Cart</span>
+                <span if="isAddingToCart">Adding...</span>
+              </button>
+              
+              <!-- SINGLE_OPTION: Quick options -->
+              <div class="quick-options-area" if="quickAddType == SINGLE_OPTION">
+                <span class="select-option-hint">Select {quickOption.name}</span>
+                <div class="quick-options-buttons">
+                  <button class="quick-option-btn {!inStock ? out-of-stock} {isSelected ? selected}"
+                          forEach="quickOption.choices" 
+                          trackBy="choiceId"
+                          ref="categoryPage.products.quickOption.choices.choiceButton"
+                          disabled="!inStock">
+                    {name}
+                  </button>
+                </div>
+              </div>
+              
+              <!-- NEEDS_CONFIGURATION: View Options -->
+              <a href="{productUrl}" 
+                 class="btn btn-secondary btn-block"
+                 if="quickAddType == NEEDS_CONFIGURATION">
+                View Options
+              </a>
+            </div>
+          </div>
+        </article>
+        
+        <!-- Dynamically Loaded Products (interactive phase) -->
+        <article class="product-card" 
+                 forEach="categoryPage.loadedProducts" 
+                 trackBy="_id">
+          <div class="product-card-wrapper">
+            <a href="{productUrl}" class="product-card-image">
+              <img src="{thumbnail.url}" alt="{thumbnail.altText}" loading="lazy" />
+              <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
+            </a>
+            
+            <div class="product-card-content">
+              <a href="{productUrl}" class="product-card-name">{name}</a>
+              <span class="brand-text" if="brand.name">{brand.name}</span>
+              
+              <div class="product-card-price">
+                <span class="price">{actualPriceRange.minValue.formattedAmount}</span>
+                <span class="compare-price" if="hasDiscount">{compareAtPriceRange.minValue.formattedAmount}</span>
+              </div>
+              
+              <div class="stock-badge badge-success" if="inventory.availabilityStatus == IN_STOCK">
+                <span class="stock-dot"></span>
+                In Stock
+              </div>
+              <div class="stock-badge badge-error" if="inventory.availabilityStatus == OUT_OF_STOCK">
+                <span class="stock-dot"></span>
+                Out of Stock
+              </div>
+              
+              <!-- SIMPLE: Regular add to cart -->
+              <button class="btn btn-secondary btn-block {isAddingToCart ? is-loading}" 
+                      ref="categoryPage.loadedProducts.addToCartButton"
+                      if="quickAddType == SIMPLE"
+                      disabled="inventory.availabilityStatus == OUT_OF_STOCK">
+                <span if="!isAddingToCart">Add to Cart</span>
+                <span if="isAddingToCart">Adding...</span>
+              </button>
+              
+              <!-- SINGLE_OPTION: Quick options -->
+              <div class="quick-options-area" if="quickAddType == SINGLE_OPTION">
+                <span class="select-option-hint">Select {quickOption.name}</span>
+                <div class="quick-options-buttons">
+                  <button class="quick-option-btn {!inStock ? out-of-stock} {isSelected ? selected}"
+                          forEach="quickOption.choices" 
+                          trackBy="choiceId"
+                          ref="categoryPage.loadedProducts.quickOption.choices.choiceButton"
+                          disabled="!inStock">
+                    {name}
+                  </button>
+                </div>
+              </div>
+              
+              <!-- NEEDS_CONFIGURATION: View Options -->
+              <a href="{productUrl}" 
+                 class="btn btn-secondary btn-block"
+                 ref="categoryPage.loadedProducts.viewOptionsButton"
+                 if="quickAddType == NEEDS_CONFIGURATION">
+                View Options
+              </a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Load More Section -->
+      <div class="load-more-section" if="categoryPage.hasProducts">
+        <span class="loaded-info">
+          Showing {categoryPage.loadedCount} of {categoryPage.numberOfProducts} products
+        </span>
+        
+        <!-- Loading indicator -->
+        <div class="loading-indicator" if="categoryPage.isLoading">
+          <div class="loading-spinner"></div>
+          <span>Loading more products...</span>
+        </div>
+        
+        <!-- Load more button -->
+        <button class="btn btn-secondary" 
+                ref="categoryPage.loadMoreButton"
+                if="categoryPage.hasMore && !categoryPage.isLoading">
+          Load More Products
+        </button>
+      </div>
+    </div>
+  </body>
+</html>

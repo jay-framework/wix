@@ -1,5 +1,5 @@
 import {HTMLElementCollectionProxy, HTMLElementProxy, JayContract} from "@jay-framework/runtime";
-
+import {ProductOptionsViewState, ProductOptionsRefs, ProductOptionsRepeatedRefs} from "./product-options.jay-contract";
 
 export enum MediaType {
   IMAGE,
@@ -81,6 +81,12 @@ export enum ProductType {
   DIGITAL
 }
 
+export enum QuickAddType {
+  SIMPLE,
+  SINGLE_OPTION,
+  NEEDS_CONFIGURATION
+}
+
 export interface ProductCardViewState {
   _id: string,
   name: string,
@@ -98,10 +104,12 @@ export interface ProductCardViewState {
   brand: BrandOfProductCardViewState,
   productType: ProductType,
   visible: boolean,
-  isAddingToCart: boolean
+  isAddingToCart: boolean,
+  quickAddType: QuickAddType,
+  quickOption: ProductOptionsViewState
 }
 
-export type ProductCardSlowViewState = Pick<ProductCardViewState, '_id' | 'name' | 'slug' | 'productUrl' | 'currency' | 'hasDiscount' | 'hasRibbon' | 'productType' | 'visible' | 'isAddingToCart'> & {
+export type ProductCardSlowViewState = Pick<ProductCardViewState, '_id' | 'name' | 'slug' | 'productUrl' | 'currency' | 'hasDiscount' | 'hasRibbon' | 'productType' | 'visible' | 'quickAddType' | 'quickOption'> & {
     mainMedia: ProductCardViewState['mainMedia'];
     thumbnail: ProductCardViewState['thumbnail'];
     actualPriceRange: {
@@ -117,20 +125,24 @@ export type ProductCardSlowViewState = Pick<ProductCardViewState, '_id' | 'name'
     brand: ProductCardViewState['brand'];
 };
 
-export type ProductCardFastViewState = {};
+export type ProductCardFastViewState = Pick<ProductCardViewState, 'isAddingToCart'>;
 
-export type ProductCardInteractiveViewState = {};
+export type ProductCardInteractiveViewState = Pick<ProductCardViewState, 'isAddingToCart'>;
 
 
 export interface ProductCardRefs {
   productLink: HTMLElementProxy<ProductCardViewState, HTMLAnchorElement>,
-  addToCartButton: HTMLElementProxy<ProductCardViewState, HTMLButtonElement>
+  addToCartButton: HTMLElementProxy<ProductCardViewState, HTMLButtonElement>,
+  viewOptionsButton: HTMLElementProxy<ProductCardViewState, HTMLButtonElement>,
+  quickOption: ProductOptionsRefs
 }
 
 
 export interface ProductCardRepeatedRefs {
   productLink: HTMLElementCollectionProxy<ProductCardViewState, HTMLAnchorElement>,
-  addToCartButton: HTMLElementCollectionProxy<ProductCardViewState, HTMLButtonElement>
+  addToCartButton: HTMLElementCollectionProxy<ProductCardViewState, HTMLButtonElement>,
+  viewOptionsButton: HTMLElementCollectionProxy<ProductCardViewState, HTMLButtonElement>,
+  quickOption: ProductOptionsRepeatedRefs
 }
 
 export type ProductCardContract = JayContract<ProductCardViewState, ProductCardRefs, ProductCardSlowViewState, ProductCardFastViewState, ProductCardInteractiveViewState>

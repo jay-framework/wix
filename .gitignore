@@ -9,7 +9,7 @@ examples/**/lib/**/*.jay-html.ts
 **/coverage/
 .yarn/install-state.gz
 /.idea
-exploration
+exploration/tmp
 config
 
 

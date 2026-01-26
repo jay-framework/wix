@@ -1,0 +1,697 @@
+{
+  "revision": "1",
+  "numericId": "1737889225263000",
+  "name": "Minimalist Tote Bag",
+  "slug": "minimalist-tote-bag",
+  "plainDescription": "<p>I'm a product description. I'm a great place to add more details about your product such as sizing, material, care instructions and cleaning instructions.</p>",
+  "visible": true,
+  "visibleInPos": true,
+  "media": {
+    "main": {
+      "image": "wix:image://v1/22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg/Totebag-Product%20(1).jpg#originWidth=4000&originHeight=4000",
+      "mediaType": "IMAGE",
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "height": 50,
+        "width": 50
+      },
+      "uploadId": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg",
+      "_id": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg"
+    },
+    "itemsInfo": {
+      "items": [
+        {
+          "image": "wix:image://v1/22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg/Totebag-Product%20(1).jpg#originWidth=4000&originHeight=4000",
+          "mediaType": "IMAGE",
+          "thumbnail": {
+            "url": "https://static.wixstatic.com/media/22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+            "height": 50,
+            "width": 50
+          },
+          "uploadId": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg",
+          "_id": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg"
+        },
+        {
+          "image": "wix:image://v1/22e53e_9a8e513558f2438eb8e6dd6c6d6cdbf5~mv2.jpg/Tote-Bag-Context%20(1).jpg#originWidth=3522&originHeight=3522",
+          "mediaType": "IMAGE",
+          "thumbnail": {
+            "url": "https://static.wixstatic.com/media/22e53e_9a8e513558f2438eb8e6dd6c6d6cdbf5~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+            "height": 50,
+            "width": 50
+          },
+          "uploadId": "22e53e_9a8e513558f2438eb8e6dd6c6d6cdbf5~mv2.jpg",
+          "_id": "22e53e_9a8e513558f2438eb8e6dd6c6d6cdbf5~mv2.jpg"
+        },
+        {
+          "image": "wix:image://v1/22e53e_403950cd77974f9887339264944d760e~mv2.jpg/Totebag-Product-White%20(1).jpg#originWidth=4000&originHeight=4000",
+          "mediaType": "IMAGE",
+          "thumbnail": {
+            "url": "https://static.wixstatic.com/media/22e53e_403950cd77974f9887339264944d760e~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+            "height": 50,
+            "width": 50
+          },
+          "uploadId": "22e53e_403950cd77974f9887339264944d760e~mv2.jpg",
+          "_id": "22e53e_403950cd77974f9887339264944d760e~mv2.jpg"
+        }
+      ]
+    }
+  },
+  "options": [
+    {
+      "name": "Color",
+      "optionRenderType": "SWATCH_CHOICES",
+      "choicesSettings": {
+        "choices": [
+          {
+            "choiceId": "1137f00f-c9b0-48bd-b8fd-78aa0d92e2b5",
+            "linkedMedia": [
+              {
+                "image": "wix:image://v1/22e53e_403950cd77974f9887339264944d760e~mv2.jpg/Totebag-Product-White%20(1).jpg#originWidth=4000&originHeight=4000",
+                "mediaType": "IMAGE",
+                "thumbnail": {
+                  "url": "https://static.wixstatic.com/media/22e53e_403950cd77974f9887339264944d760e~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+                  "height": 50,
+                  "width": 50
+                },
+                "uploadId": "22e53e_403950cd77974f9887339264944d760e~mv2.jpg",
+                "_id": "22e53e_403950cd77974f9887339264944d760e~mv2.jpg"
+              }
+            ],
+            "choiceType": "ONE_COLOR",
+            "key": "White",
+            "name": "White",
+            "inStock": true,
+            "visible": true,
+            "colorCode": "#FFFFFF"
+          },
+          {
+            "choiceId": "2c2ef949-2b83-48b7-8cb9-a588ad73547a",
+            "linkedMedia": [
+              {
+                "image": "wix:image://v1/22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg/Totebag-Product%20(1).jpg#originWidth=4000&originHeight=4000",
+                "mediaType": "IMAGE",
+                "thumbnail": {
+                  "url": "https://static.wixstatic.com/media/22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+                  "height": 50,
+                  "width": 50
+                },
+                "uploadId": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg",
+                "_id": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg"
+              },
+              {
+                "image": "wix:image://v1/22e53e_9a8e513558f2438eb8e6dd6c6d6cdbf5~mv2.jpg/Tote-Bag-Context%20(1).jpg#originWidth=3522&originHeight=3522",
+                "mediaType": "IMAGE",
+                "thumbnail": {
+                  "url": "https://static.wixstatic.com/media/22e53e_9a8e513558f2438eb8e6dd6c6d6cdbf5~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+                  "height": 50,
+                  "width": 50
+                },
+                "uploadId": "22e53e_9a8e513558f2438eb8e6dd6c6d6cdbf5~mv2.jpg",
+                "_id": "22e53e_9a8e513558f2438eb8e6dd6c6d6cdbf5~mv2.jpg"
+              }
+            ],
+            "choiceType": "ONE_COLOR",
+            "key": "Purple",
+            "name": "Purple",
+            "inStock": true,
+            "visible": true,
+            "colorCode": "#CAB4E6"
+          }
+        ]
+      },
+      "key": "Color",
+      "_id": "1d926bdc-e161-4690-85c8-5e1dea5bde4c"
+    }
+  ],
+  "modifiers": [
+    {
+      "name": "Button Style",
+      "modifierRenderType": "TEXT_CHOICES",
+      "mandatory": true,
+      "choicesSettings": {
+        "choices": [
+          {
+            "choiceId": "556093db-abfa-442d-8f2b-af5d438c6dbf",
+            "linkedMedia": [
+              {
+                "image": "wix:image://v1/22e53e_403950cd77974f9887339264944d760e~mv2.jpg/Totebag-Product-White%20(1).jpg#originWidth=4000&originHeight=4000",
+                "mediaType": "IMAGE",
+                "thumbnail": {
+                  "url": "https://static.wixstatic.com/media/22e53e_403950cd77974f9887339264944d760e~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+                  "height": 50,
+                  "width": 50
+                },
+                "uploadId": "22e53e_403950cd77974f9887339264944d760e~mv2.jpg",
+                "_id": "22e53e_403950cd77974f9887339264944d760e~mv2.jpg"
+              }
+            ],
+            "choiceType": "CHOICE_TEXT",
+            "key": "Big Round",
+            "name": "Big Round"
+          },
+          {
+            "choiceId": "154837fa-a89a-43bc-9e02-056019ad79c3",
+            "linkedMedia": [],
+            "choiceType": "CHOICE_TEXT",
+            "key": "Small Round",
+            "name": "Small Round"
+          },
+          {
+            "choiceId": "8d3d9cdc-4ca8-4699-908b-40de6d5ea8ae",
+            "linkedMedia": [],
+            "choiceType": "CHOICE_TEXT",
+            "key": "Medium Square",
+            "name": "Medium Square"
+          },
+          {
+            "choiceId": "30651a10-17fc-483a-8cb2-d9cdd2275838",
+            "linkedMedia": [],
+            "choiceType": "CHOICE_TEXT",
+            "key": "Diamonds",
+            "name": "Diamonds"
+          }
+        ]
+      },
+      "key": "Button Style",
+      "_id": "c259c6ec-adef-4589-9839-1d4d7322e14f"
+    }
+  ],
+  "infoSections": [
+    {
+      "uniqueName": "Product Info",
+      "title": "Product Info",
+      "description": {
+        "nodes": [
+          {
+            "type": "PARAGRAPH",
+            "id": "foo",
+            "nodes": [
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "I'm a great place to add more information about your product, such as ",
+                  "decorations": []
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "sizing",
+                  "decorations": [
+                    {
+                      "type": "BOLD",
+                      "fontWeightValue": 700
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": ", ",
+                  "decorations": []
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "material",
+                  "decorations": [
+                    {
+                      "type": "BOLD",
+                      "fontWeightValue": 700
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": ", ",
+                  "decorations": []
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "care",
+                  "decorations": [
+                    {
+                      "type": "BOLD",
+                      "fontWeightValue": 700
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": ", and ",
+                  "decorations": []
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "cleaning instructions",
+                  "decorations": [
+                    {
+                      "type": "BOLD",
+                      "fontWeightValue": 700
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": ". This is also a great space to highlight what makes this product special and how your customers can benefit from this item.",
+                  "decorations": []
+                }
+              }
+            ],
+            "paragraphData": {
+              "textStyle": {
+                "textAlignment": "AUTO"
+              },
+              "indentation": 0
+            }
+          }
+        ],
+        "metadata": {
+          "version": 1,
+          "id": "cef828df-9af2-4f0b-8788-acfc8f8c30c3"
+        },
+        "documentStyle": {}
+      },
+      "plainDescription": "<p>I'm a great place to add more information about your product, such as <span style=\"font-weight: 700\">sizing</span>, <span style=\"font-weight: 700\">material</span>, <span style=\"font-weight: 700\">care</span>, and <span style=\"font-weight: 700\">cleaning instructions</span>. This is also a great space to highlight what makes this product special and how your customers can benefit from this item.</p>",
+      "_id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
+    },
+    {
+      "uniqueName": "Return & Refund Policy",
+      "title": "Return & Refund Policy",
+      "description": {
+        "nodes": [
+          {
+            "type": "PARAGRAPH",
+            "id": "foo",
+            "nodes": [
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "I’m a great place to let your customers know what to do in case they are dissatisfied with their purchase.",
+                  "decorations": []
+                }
+              }
+            ],
+            "paragraphData": {
+              "textStyle": {
+                "textAlignment": "AUTO"
+              },
+              "indentation": 0
+            }
+          },
+          {
+            "type": "DIVIDER",
+            "id": "e7j7p617",
+            "nodes": [],
+            "dividerData": {
+              "containerData": {
+                "width": {},
+                "alignment": "CENTER",
+                "spoiler": {},
+                "height": {},
+                "textWrap": false
+              },
+              "lineStyle": "SINGLE",
+              "width": "LARGE",
+              "alignment": "CENTER"
+            }
+          },
+          {
+            "type": "BULLETED_LIST",
+            "id": "611zx386",
+            "nodes": [
+              {
+                "type": "LIST_ITEM",
+                "id": "d7a1r387",
+                "nodes": [
+                  {
+                    "type": "PARAGRAPH",
+                    "id": "je7y7388",
+                    "nodes": [
+                      {
+                        "type": "TEXT",
+                        "id": "",
+                        "nodes": [],
+                        "textData": {
+                          "text": "Easy Returns & Exchanges",
+                          "decorations": [
+                            {
+                              "type": "BOLD",
+                              "fontWeightValue": 700
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "paragraphData": {
+                      "textStyle": {
+                        "textAlignment": "AUTO"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "LIST_ITEM",
+                "id": "ayutr390",
+                "nodes": [
+                  {
+                    "type": "PARAGRAPH",
+                    "id": "kwqgo391",
+                    "nodes": [
+                      {
+                        "type": "TEXT",
+                        "id": "",
+                        "nodes": [],
+                        "textData": {
+                          "text": "Hassle-Free Process",
+                          "decorations": [
+                            {
+                              "type": "BOLD",
+                              "fontWeightValue": 700
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "paragraphData": {
+                      "textStyle": {
+                        "textAlignment": "AUTO"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "LIST_ITEM",
+                "id": "nnvyg393",
+                "nodes": [
+                  {
+                    "type": "PARAGRAPH",
+                    "id": "0dmam394",
+                    "nodes": [
+                      {
+                        "type": "TEXT",
+                        "id": "",
+                        "nodes": [],
+                        "textData": {
+                          "text": "Builds Customer Confidence",
+                          "decorations": [
+                            {
+                              "type": "BOLD",
+                              "fontWeightValue": 700
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "paragraphData": {
+                      "textStyle": {
+                        "textAlignment": "AUTO"
+                      }
+                    }
+                  }
+                ]
+              }
+            ],
+            "bulletedListData": {
+              "indentation": 0
+            }
+          },
+          {
+            "type": "PARAGRAPH",
+            "id": "3mv7p396",
+            "nodes": [],
+            "paragraphData": {
+              "textStyle": {
+                "textAlignment": "AUTO"
+              }
+            }
+          },
+          {
+            "type": "PARAGRAPH",
+            "id": "92ur7709",
+            "nodes": [
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "Having a straightforward refund or exchange policy is a great way to build trust and reassure your customers that they can buy with confidence.",
+                  "decorations": []
+                }
+              }
+            ],
+            "paragraphData": {
+              "textStyle": {
+                "textAlignment": "AUTO"
+              }
+            }
+          }
+        ],
+        "metadata": {
+          "version": 1,
+          "id": "348a85e5-9341-4f49-bf74-8db013643be3"
+        },
+        "documentStyle": {}
+      },
+      "plainDescription": "<p>I’m a great place to let your customers know what to do in case they are dissatisfied with their purchase.</p><hr><ul><li><p><span style=\"font-weight: 700\">Easy Returns &amp; Exchanges</span></p></li><li><p><span style=\"font-weight: 700\">Hassle-Free Process</span></p></li><li><p><span style=\"font-weight: 700\">Builds Customer Confidence</span></p></li></ul><p>Having a straightforward refund or exchange policy is a great way to build trust and reassure your customers that they can buy with confidence.</p>",
+      "_id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
+    },
+    {
+      "uniqueName": "Shipping Info",
+      "title": "Shipping Info",
+      "description": {
+        "nodes": [
+          {
+            "type": "PARAGRAPH",
+            "id": "foo",
+            "nodes": [
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "I’m a great place to add more information about your ",
+                  "decorations": []
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "shipping methods",
+                  "decorations": [
+                    {
+                      "type": "BOLD",
+                      "fontWeightValue": 700
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": ", ",
+                  "decorations": []
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "packaging",
+                  "decorations": [
+                    {
+                      "type": "BOLD",
+                      "fontWeightValue": 700
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": ", and ",
+                  "decorations": []
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "cost",
+                  "decorations": [
+                    {
+                      "type": "BOLD",
+                      "fontWeightValue": 700
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": ".",
+                  "decorations": []
+                }
+              }
+            ],
+            "paragraphData": {
+              "textStyle": {
+                "textAlignment": "AUTO"
+              },
+              "indentation": 0
+            }
+          },
+          {
+            "type": "PARAGRAPH",
+            "id": "h67al1107",
+            "nodes": [],
+            "paragraphData": {
+              "textStyle": {
+                "textAlignment": "AUTO"
+              }
+            }
+          },
+          {
+            "type": "PARAGRAPH",
+            "id": "cnipn1472",
+            "nodes": [
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "Providing straightforward information about your ",
+                  "decorations": []
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": "shipping policy",
+                  "decorations": [
+                    {
+                      "type": "UNDERLINE"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "TEXT",
+                "id": "",
+                "nodes": [],
+                "textData": {
+                  "text": " is a great way to build trust and reassure your customers that they can buy from you with confidence.",
+                  "decorations": []
+                }
+              }
+            ],
+            "paragraphData": {
+              "textStyle": {
+                "textAlignment": "AUTO"
+              }
+            }
+          }
+        ],
+        "metadata": {
+          "version": 1,
+          "id": "65d8c66c-324f-45b9-9c51-10f093656c5f"
+        },
+        "documentStyle": {}
+      },
+      "plainDescription": "<p>I’m a great place to add more information about your <span style=\"font-weight: 700\">shipping methods</span>, <span style=\"font-weight: 700\">packaging</span>, and <span style=\"font-weight: 700\">cost</span>.</p><p>Providing straightforward information about your <u>shipping policy</u>&nbsp;is a great way to build trust and reassure your customers that they can buy from you with confidence.</p>",
+      "_id": "57075b9e-ba33-401b-86bd-045d949c9283"
+    }
+  ],
+  "directCategoriesInfo": {
+    "categories": [
+      {
+        "_id": "becc814c-0375-45e8-a826-cd0391f935ef"
+      }
+    ]
+  },
+  "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
+  "inventory": {
+    "availabilityStatus": "IN_STOCK",
+    "preorderStatus": "DISABLED",
+    "preorderAvailability": "NO_VARIANTS"
+  },
+  "productType": "PHYSICAL",
+  "physicalProperties": {},
+  "handle": "Product_1515c6dc-51be-487d-b83c-73fb3639e7d6",
+  "currency": "ILS",
+  "actualPriceRange": {
+    "minValue": {
+      "amount": "20.00",
+      "formattedAmount": "20.00 ₪"
+    },
+    "maxValue": {
+      "amount": "20.00",
+      "formattedAmount": "20.00 ₪"
+    }
+  },
+  "compareAtPriceRange": {
+    "minValue": {
+      "amount": "0.00",
+      "formattedAmount": "0.00 ₪"
+    },
+    "maxValue": {
+      "amount": "0.00",
+      "formattedAmount": "0.00 ₪"
+    }
+  },
+  "flattenOptions": [],
+  "flattenModifiers": [],
+  "variantSummary": {
+    "variantCount": 2
+  },
+  "entityEventSequence": "3",
+  "_id": "fedfcb20-1ad2-405b-950b-e65112bb6222",
+  "_createdDate": "2025-01-26T11:00:25.276Z",
+  "_updatedDate": "2025-11-16T16:20:39.578Z"
+}

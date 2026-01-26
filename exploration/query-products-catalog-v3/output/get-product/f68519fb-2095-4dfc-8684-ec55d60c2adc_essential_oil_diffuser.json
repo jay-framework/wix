@@ -1,0 +1,89 @@
+{
+  "revision": "1",
+  "numericId": "1737885351929000",
+  "name": "Essential Oil Diffuser",
+  "slug": "essential-oil-diffuser",
+  "visible": true,
+  "visibleInPos": true,
+  "media": {
+    "main": {
+      "image": "wix:image://v1/22e53e_b231b9c8053942b49508f464049db5c9~mv2.jpg/Diffuser-Product%20(1).jpg#originWidth=2000&originHeight=2000",
+      "mediaType": "IMAGE",
+      "uploadId": "22e53e_b231b9c8053942b49508f464049db5c9~mv2.jpg",
+      "_id": "22e53e_b231b9c8053942b49508f464049db5c9~mv2.jpg"
+    }
+  },
+  "options": [],
+  "modifiers": [],
+  "infoSections": [
+    {
+      "_id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
+    },
+    {
+      "_id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
+    },
+    {
+      "_id": "57075b9e-ba33-401b-86bd-045d949c9283"
+    }
+  ],
+  "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
+  "inventory": {
+    "availabilityStatus": "IN_STOCK",
+    "preorderStatus": "DISABLED",
+    "preorderAvailability": "NO_VARIANTS"
+  },
+  "productType": "PHYSICAL",
+  "physicalProperties": {},
+  "handle": "Product_21fbf544-c8ec-4a9e-af9f-d50582106300",
+  "actualPriceRange": {
+    "minValue": {
+      "amount": "119"
+    },
+    "maxValue": {
+      "amount": "119"
+    }
+  },
+  "compareAtPriceRange": {
+    "minValue": {
+      "amount": "0"
+    },
+    "maxValue": {
+      "amount": "0"
+    }
+  },
+  "variantsInfo": {
+    "variants": [
+      {
+        "visible": true,
+        "sku": "126351351935",
+        "choices": [],
+        "price": {
+          "actualPrice": {
+            "amount": "119"
+          }
+        },
+        "media": {
+          "image": "wix:image://v1/22e53e_b231b9c8053942b49508f464049db5c9~mv2.jpg/Diffuser-Product%20(1).jpg#originWidth=2000&originHeight=2000",
+          "mediaType": "IMAGE",
+          "uploadId": "22e53e_b231b9c8053942b49508f464049db5c9~mv2.jpg",
+          "_id": "22e53e_b231b9c8053942b49508f464049db5c9~mv2.jpg"
+        },
+        "physicalProperties": {},
+        "inventoryStatus": {
+          "inStock": true,
+          "preorderEnabled": false
+        },
+        "_id": "149119f2-7d5d-4efa-a3a3-393df631eb02"
+      }
+    ]
+  },
+  "flattenOptions": [],
+  "flattenModifiers": [],
+  "variantSummary": {
+    "variantCount": 1
+  },
+  "entityEventSequence": "3",
+  "_id": "f68519fb-2095-4dfc-8684-ec55d60c2adc",
+  "_createdDate": "2025-01-26T09:55:51.980Z",
+  "_updatedDate": "2025-11-16T16:20:40.714Z"
+}

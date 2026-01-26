@@ -1,0 +1,320 @@
+<html>
+  <head>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="product-search"
+            key="productSearch"
+    ></script>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="cart-indicator"
+            key="cartIndicator"
+    ></script>
+    <script type="application/jay-data">
+      data:
+    </script>
+    <link rel="stylesheet" href="../../styles/whisky-theme.css" />
+    <style>
+      .search-page {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        padding: var(--section-gap) var(--page-padding);
+      }
+      
+      .results-section {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        min-width: 0;
+      }
+      
+      .results-section .products-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        width: 100%;
+      }
+      
+      @media (max-width: 1200px) {
+        .results-section .products-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      
+      @media (max-width: 900px) {
+        .results-section .products-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-wrapper">
+    <!-- Site Header -->
+    <header class="site-header">
+      <div class="header-top">
+        <a href="/" class="site-logo">
+          WHISKY <span class="logo-accent">store</span>
+        </a>
+        
+        <div class="header-search">
+          <div class="header-search-box">
+            <input 
+              type="text" 
+              placeholder="Search our collection..." 
+              value="{productSearch.searchExpression}"
+              ref="productSearch.searchExpression"
+            />
+            <button ref="productSearch.searchButton">🔍</button>
+          </div>
+        </div>
+        
+        <div class="header-actions">
+          <a href="/cart" 
+             class="cart-indicator {cartIndicator.hasItems ? has-items} {cartIndicator.isLoading ? is-loading} {cartIndicator.justAdded ? just-added}"
+             ref="cartIndicator.cartLink">
+            <span class="cart-indicator-icon">🛒</span>
+            <span>Basket</span>
+            <span class="cart-indicator-count" if="cartIndicator.hasItems">{cartIndicator.itemCount}</span>
+          </a>
+        </div>
+      </div>
+      
+      <nav class="main-nav">
+        <ul class="nav-links">
+          <li><a href="/products" class="active">All Products</a></li>
+          <li><a href="/products">Whisky</a></li>
+          <li><a href="/products">Rum</a></li>
+          <li><a href="/products">Gin</a></li>
+          <li><a href="/products">Other</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <div class="search-page">
+      <!-- Loading Overlay -->
+      <div class="loading-overlay" if="productSearch.isSearching">
+        <div class="loading-spinner"></div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- Filters Sidebar -->
+        <aside class="filters-sidebar">
+          <!-- Hide out of stock -->
+          <div class="filter-section">
+            <div class="filter-title">Hide out of stock</div>
+            <div class="toggle-row" style="margin-top: 12px;">
+              <div class="switch-group">
+                <span class="toggle-label">No</span>
+                <label class="switch">
+                  <input 
+                    type="checkbox"
+                    ref="productSearch.filters.inStockOnly"
+                  />
+                  <span class="switch-slider"></span>
+                </label>
+                <span class="toggle-label">Yes</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Price Range Radio Buttons -->
+          <div class="filter-section">
+            <div class="filter-header">
+              <span class="filter-title">Price</span>
+            </div>
+            <div class="filter-options">
+              <label 
+                class="radio-item"
+                forEach="productSearch.filters.priceRange.ranges"
+                trackBy="rangeId"
+              >
+                <input 
+                  type="radio" 
+                  name="priceRange"
+                  ref="productSearch.filters.priceRange.ranges.isSelected"
+                />
+                <span class="radio-label">{label}</span>
+                <span class="radio-count" if="productCount">({productCount})</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Categories -->
+          <div class="filter-section">
+            <div class="filter-header">
+              <span class="filter-title">Category</span>
+            </div>
+            <div class="checkbox-group">
+              <label 
+                class="checkbox-item" 
+                forEach="productSearch.filters.categoryFilter.categories" 
+                trackBy="categoryId"
+              >
+                <input 
+                  type="checkbox"
+                  ref="productSearch.filters.categoryFilter.categories.isSelected"
+                />
+                <span>{categoryName}</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Clear Filters -->
+          <div class="filter-section">
+            <button class="btn btn-secondary btn-block btn-sm" ref="productSearch.filters.clearFilters">
+              Clear All Filters
+            </button>
+          </div>
+        </aside>
+
+        <!-- Results Section -->
+        <section class="results-section">
+          <!-- Results Header -->
+          <div class="results-header">
+            <div class="results-info">
+              <span class="results-count">
+                Showing <strong>{productSearch.loadedCount}</strong> of <strong>{productSearch.totalCount}</strong> products
+              </span>
+            </div>
+            <div class="results-controls">
+              <div class="sort-control">
+                <label>Sort by</label>
+                <select class="select" ref="productSearch.sortBy.sortDropdown">
+                  <option value="relevance">Relevance</option>
+                  <option value="newest">Newest First</option>
+                  <option value="priceAsc">Price: Low to High</option>
+                  <option value="priceDesc">Price: High to Low</option>
+                  <option value="nameAsc">Name: A to Z</option>
+                  <option value="nameDesc">Name: Z to A</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-state" if="!productSearch.hasResults">
+            <div class="empty-state-icon">🔍</div>
+            <h3 class="empty-state-title">No Products Found</h3>
+            <p class="empty-state-message">{productSearch.emptyStateMessage}</p>
+          </div>
+
+          <!-- Products Grid -->
+          <div class="products-grid" if="productSearch.hasResults">
+            <article class="product-card {isAddingToCart ? is-adding}" forEach="productSearch.searchResults" trackBy="_id">
+              <a href="{productUrl}" class="product-card-image">
+                <img 
+                  src="{thumbnail.url}" 
+                  alt="{thumbnail.altText}"
+                  loading="lazy"
+                />
+                
+                <!-- Badges -->
+                <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
+                <span class="badge badge-success stock-badge" if="inventory.availabilityStatus == IN_STOCK">
+                  In Stock
+                </span>
+                <span class="badge badge-error stock-badge" if="inventory.availabilityStatus == OUT_OF_STOCK">
+                  Out of Stock
+                </span>
+              </a>
+              
+              <div class="product-card-content">
+                <h3 class="product-card-name">
+                  <a href="{productUrl}" ref="productSearch.searchResults.productLink">{name}</a>
+                </h3>
+                <p class="product-card-meta" if="brand.name">{brand.name}</p>
+                
+                <!-- Star Rating (placeholder) -->
+                <div class="product-rating">
+                  <div class="stars">
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star">★</span>
+                  </div>
+                </div>
+                
+                <div class="product-card-price">
+                  <span class="current-price">{actualPriceRange.minValue.formattedAmount}</span>
+                  <span class="original-price" if="hasDiscount">
+                    {compareAtPriceRange.minValue.formattedAmount}
+                  </span>
+                </div>
+                
+                <!-- SIMPLE: Regular add to cart -->
+                <button 
+                  class="btn btn-primary btn-block" 
+                  ref="productSearch.searchResults.addToCartButton"
+                  if="quickAddType == SIMPLE && inventory.availabilityStatus == IN_STOCK"
+                >
+                  Add to cart
+                </button>
+                
+                <!-- SINGLE_OPTION: Quick option selection -->
+                <div class="quick-options-area" if="quickAddType == SINGLE_OPTION && inventory.availabilityStatus != OUT_OF_STOCK">
+                  <span class="select-option-hint">
+                    Select {quickOption.name}
+                  </span>
+                  <div class="quick-options-buttons">
+                    <button 
+                      class="quick-option-btn {!inStock ? out-of-stock}"
+                      forEach="quickOption.choices" 
+                      trackBy="choiceId"
+                      ref="productSearch.searchResults.quickOption.choices.choiceButton"
+                      disabled="!inStock"
+                    >
+                      {name}
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- NEEDS_CONFIGURATION: Link to product page -->
+                <a 
+                  href="{productUrl}" 
+                  class="btn btn-secondary btn-block"
+                  ref="productSearch.searchResults.viewOptionsButton"
+                  if="quickAddType == NEEDS_CONFIGURATION && inventory.availabilityStatus != OUT_OF_STOCK"
+                >
+                  View Options
+                </a>
+                
+                <!-- Out of stock -->
+                <button 
+                  class="btn btn-ghost btn-block" 
+                  disabled
+                  if="inventory.availabilityStatus == OUT_OF_STOCK"
+                >
+                  Out of Stock
+                </button>
+              </div>
+            </article>
+          </div>
+
+          <!-- Load More Section -->
+          <div class="load-more-section" if="productSearch.hasResults">
+            <div class="loading-indicator" if="productSearch.isSearching">
+              <div class="loading-spinner-inline"></div>
+              <span>Loading more products...</span>
+            </div>
+            
+            <button 
+              class="btn btn-secondary" 
+              ref="productSearch.loadMoreButton"
+              if="productSearch.hasMore && !productSearch.isSearching"
+            >
+              Load More Products
+            </button>
+            
+            <span class="loaded-info" if="!productSearch.hasMore">
+              All products loaded
+            </span>
+          </div>
+        </section>
+      </div>
+    </div>
+    </div>
+  </body>
+</html>

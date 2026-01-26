@@ -34,6 +34,8 @@ export default defineConfig(({ isSsrBuild }) => ({
                 '@jay-framework/secure',
                 '@jay-framework/wix-server-client',
                 '@jay-framework/wix-server-client/client',
+                '@wix/categories',
+                '@wix/sdk',
                 '@wix/stores',
                 '@wix/ecom',
             ],

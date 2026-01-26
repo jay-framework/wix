@@ -4,7 +4,7 @@ import {
     RenderPipeline,
     Signals
 } from '@jay-framework/fullstack-component';
-import { createSignal, createMemo, createEffect, Props } from '@jay-framework/component';
+import { createSignal, createEffect, Props } from '@jay-framework/component';
 import {
     CurrentSort,
     ProductSearchContract,
@@ -13,13 +13,12 @@ import {
     ProductSearchRefs,
     ProductSearchSlowViewState
 } from '../contracts/product-search.jay-contract';
-import { AvailabilityStatus } from '../contracts/product-card.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
-import { patch, REPLACE } from '@jay-framework/json-patch';
-import { searchProducts, ProductSortField } from '../actions/stores-actions.js';
+import { patch, REPLACE, ADD } from '@jay-framework/json-patch';
+import { runAction } from '@jay-framework/stack-server-runtime';
+import { searchProducts, ProductSortField } from '../actions/stores-actions';
 import { mapProductToCard } from '../utils/product-mapper';
-import { useGlobalContext } from '@jay-framework/runtime';
-import { WIX_STORES_CONTEXT } from '../contexts/wix-stores-context.js';
+import { WIX_STORES_CONTEXT, WixStoresContext } from '../contexts/wix-stores-context';
 
 /**
  * Search sort options
@@ -75,7 +74,6 @@ async function renderSlowlyChanging(
                 .eq('visible', true)
                 .find();
             
-            console.log('Categories loaded:', categoriesResult.items);
             return categoriesResult.items || [];
         })
         .recover(error => {
@@ -85,7 +83,8 @@ async function renderSlowlyChanging(
         .toPhaseOutput(categories => {
             const categoryInfos: CategoryInfos = categories.map((cat) => ({
                 categoryId: cat._id || '',
-                categoryName: cat.name || ''
+                categoryName: cat.name || '',
+                categorySlug: cat.slug || ''
             }));
 
             return {
@@ -111,51 +110,68 @@ async function renderSlowlyChanging(
 /**
  * Fast Rendering Phase
  * Loads dynamic data per request:
- * - Initial products
- * - Search results
- * - Pagination state
+ * - Initial products (via searchProducts for aggregation support)
+ * - Price bounds and ranges from aggregations
+ * - Load more state
  */
 async function renderFastChanging(
     props: PageProps,
     slowCarryForward: SearchSlowCarryForward,
-    wixStores: WixStoresService
+    _wixStores: WixStoresService
 ) {
     const Pipeline = RenderPipeline.for<ProductSearchFastViewState, SearchFastCarryForward>();
 
     return Pipeline
         .try(async () => {
-            // Load initial products
-            const productsResult = await wixStores.products.queryProducts({
-                fields: ['CURRENCY']
-            })
-                .limit(PAGE_SIZE)
-                .find();
+            // Use searchProducts action to get products with aggregations
+            // Note: Must use runAction for proper service injection in backend code
+            const result = await runAction(searchProducts, {
+                query: '',
+                pageSize: PAGE_SIZE
+            });
             
-            return productsResult.items || [];
+            return result;
         })
         .recover(error => {
             console.error('Failed to load products:', error);
-            return Pipeline.ok([]);
+            return Pipeline.ok({
+                products: [],
+                totalCount: 0,
+                nextCursor: null,
+                hasMore: false,
+                priceAggregation: {
+                    minBound: 0,
+                    maxBound: 1000,
+                    ranges: [{ rangeId: 'all', label: 'Show all', minValue: null, maxValue: null, productCount: 0, isSelected: true }]
+                }
+            });
         })
-        .toPhaseOutput(products => {
-            const mappedProducts = products.map(p => mapProductToCard(p));
-            const totalPages = Math.ceil(products.length / PAGE_SIZE) || 1;
+        .toPhaseOutput((result) => {
+            const priceAgg = result.priceAggregation || {
+                minBound: 0,
+                maxBound: 1000,
+                ranges: [{ rangeId: 'all', label: 'Show all', minValue: null, maxValue: null, productCount: result.totalCount, isSelected: true }]
+            };
 
             return {
                 viewState: {
                     searchExpression: '',
                     isSearching: false,
                     hasSearched: false,
-                    searchResults: mappedProducts,
-                    resultCount: products.length,
-                    hasResults: products.length > 0,
+                    searchResults: result.products,
+                    resultCount: result.products.length,
+                    hasResults: result.products.length > 0,
                     hasSuggestions: false,
                     suggestions: [],
                     filters: {
                         inStockOnly: false,
                         priceRange: {
-                            minPrice: 0,
-                            maxPrice: 0
+                            // Initialize sliders to full range (bounds)
+                            minPrice: priceAgg.minBound,
+                            maxPrice: priceAgg.maxBound,
+                            minBound: priceAgg.minBound,
+                            maxBound: priceAgg.maxBound,
+                            ranges: priceAgg.ranges
                         },
                         categoryFilter: {
                             categories: slowCarryForward.categories.map(cat => ({
@@ -167,12 +183,9 @@ async function renderFastChanging(
                     sortBy: {
                         currentSort: CurrentSort.relevance
                     },
-                    pagination: {
-                        currentPage: 1,
-                        totalPages,
-                        hasNextPage: totalPages > 1,
-                        hasPrevPage: false
-                    }
+                    hasMore: result.hasMore,
+                    loadedCount: result.products.length,
+                    totalCount: result.totalCount
                 },
                 carryForward: {
                     searchFields: slowCarryForward.searchFields,
@@ -189,25 +202,18 @@ async function renderFastChanging(
  * - Search input and submission
  * - Filtering (categories, price, stock)
  * - Sorting
- * - Pagination
+ * - Load more button
  * - Search suggestions
  * 
  * All state updates use immutable patterns with the patch utility.
- * 
- * Search trigger pattern:
- * - `searchExpression` is for live input display (typing doesn't trigger search)
- * - `submittedSearchTerm` is updated only when search button is clicked
- * - The effect depends on `submittedSearchTerm`, `filters`, `sortBy`, `pagination`
- *   so it runs reactively when any of these change
  */
 function ProductSearchInteractive(
     props: Props<PageProps>,
     refs: ProductSearchRefs,
     viewStateSignals: Signals<ProductSearchFastViewState>,
-    fastCarryForward: SearchFastCarryForward
+    fastCarryForward: SearchFastCarryForward,
+    storesContext: WixStoresContext
 ) {
-    // Get the stores context for cart operations
-    const storesContext = useGlobalContext(WIX_STORES_CONTEXT);
 
     const {
         searchExpression: [searchExpression, setSearchExpression],
@@ -220,21 +226,20 @@ function ProductSearchInteractive(
         suggestions: [suggestions, setSuggestions],
         filters: [filters, setFilters],
         sortBy: [sortBy, setSortBy],
-        pagination: [pagination, setPagination]
+        hasMore: [hasMore, setHasMore],
+        loadedCount: [loadedCount, setLoadedCount],
+        totalCount: [totalCount, setTotalCount]
     } = viewStateSignals;
 
     // Submitted search term - only updated when search button is clicked
-    // This separates "typing" from "searching"
     const [submittedSearchTerm, setSubmittedSearchTerm] = createSignal<string | null>(null);
-
-    // Computed pagination values
-    const totalPages = createMemo(() => Math.ceil(resultCount() / PAGE_SIZE) || 1);
-    const hasNextPage = createMemo(() => pagination().currentPage < totalPages());
-    const hasPrevPage = createMemo(() => pagination().currentPage > 1);
+    
+    // Current cursor for load more (internal state, not in view state)
+    let currentCursor: string | null = null;
 
     let isFirst = true;
     let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
-    let searchVersion = 0; // Incremented on each search to handle race conditions
+    let searchVersion = 0;
     const DEBOUNCE_MS = 300;
 
     // Map CurrentSort enum to action sort field
@@ -249,19 +254,17 @@ function ProductSearchInteractive(
         }
     };
 
-    // Perform the search - extracted so we can pass version for race condition handling
+    // Perform search (replaces results, resets cursor)
     const performSearch = async (
         version: number,
         searchTerm: string | null,
         currentFilters: ProductSearchFastViewState['filters'],
-        currentSort: CurrentSort,
-        currentPage: number
+        currentSort: CurrentSort
     ) => {
         setIsSearching(true);
         setHasSearched(true);
 
         try {
-            // Call the searchProducts action
             const result = await searchProducts({
                 query: searchTerm || '',
                 filters: {
@@ -273,89 +276,119 @@ function ProductSearchInteractive(
                     inStockOnly: currentFilters.inStockOnly
                 },
                 sortBy: mapSortToAction(currentSort),
-                page: currentPage,
+                // No cursor = start from beginning
                 pageSize: PAGE_SIZE
             });
 
-            // Check if a newer search was started - if so, ignore this result
+            // Check if a newer search was started
             if (version !== searchVersion) {
                 return;
             }
 
-            // Update the search results
             setSearchResults(result.products);
-            setResultCount(result.totalCount);
+            setResultCount(result.products.length);
+            setTotalCount(result.totalCount);
+            setLoadedCount(result.products.length);
+            setHasMore(result.hasMore);
             setHasResults(result.products.length > 0);
-            setPagination(patch(pagination(), [
-                { op: REPLACE, path: ['totalPages'], value: result.totalPages },
-                { op: REPLACE, path: ['hasNextPage'], value: result.hasNextPage },
-                { op: REPLACE, path: ['hasPrevPage'], value: currentPage > 1 }
-            ]));
+            
+            // Store cursor for load more
+            currentCursor = result.nextCursor;
 
         } catch (error) {
-            // Only log error if this is still the current search
             if (version === searchVersion) {
                 console.error('Search failed:', error);
             }
         } finally {
-            // Only update isSearching if this is still the current search
             if (version === searchVersion) {
                 setIsSearching(false);
             }
         }
     };
 
-    // Reactive search effect - runs when any search parameter changes
-    // Depends on: submittedSearchTerm, filters, sortBy, pagination (all reactive)
+    // Load more (appends results using cursor)
+    const performLoadMore = async () => {
+        if (isSearching() || !hasMore() || !currentCursor) return;
+
+        setIsSearching(true);
+
+        try {
+            const currentFilters = filters();
+            const currentSort = sortBy().currentSort;
+            const searchTerm = submittedSearchTerm();
+
+            const result = await searchProducts({
+                query: searchTerm || '',
+                filters: {
+                    minPrice: currentFilters.priceRange.minPrice || undefined,
+                    maxPrice: currentFilters.priceRange.maxPrice || undefined,
+                    categoryIds: currentFilters.categoryFilter.categories
+                        .filter(c => c.isSelected)
+                        .map(c => c.categoryId),
+                    inStockOnly: currentFilters.inStockOnly
+                },
+                sortBy: mapSortToAction(currentSort),
+                cursor: currentCursor,
+                pageSize: PAGE_SIZE
+            });
+
+            // Append new products to existing results
+            const currentResults = searchResults();
+            const newResults = [...currentResults, ...result.products];
+            
+            setSearchResults(newResults);
+            setResultCount(newResults.length);
+            setLoadedCount(newResults.length);
+            setHasMore(result.hasMore);
+            
+            // Update cursor for next load
+            currentCursor = result.nextCursor;
+
+        } catch (error) {
+            console.error('Load more failed:', error);
+        } finally {
+            setIsSearching(false);
+        }
+    };
+
+    // Reactive search effect - runs when search parameters change
     createEffect(() => {
-        // Access all reactive dependencies
         const searchTerm = submittedSearchTerm();
         const currentFilters = filters();
         const currentSort = sortBy().currentSort;
-        const currentPage = pagination().currentPage;
 
-        // Skip the initial run
         if (isFirst) {
             isFirst = false;
             return;
         }
 
-        // Clear any pending debounced search
         if (debounceTimeout) {
             clearTimeout(debounceTimeout);
         }
 
-        // Debounce the search
         debounceTimeout = setTimeout(() => {
-            // Increment version to invalidate any in-flight searches
             searchVersion++;
             const version = searchVersion;
-            performSearch(version, searchTerm, currentFilters, currentSort, currentPage);
+            performSearch(version, searchTerm, currentFilters, currentSort);
         }, DEBOUNCE_MS);
     });
 
-    // Search input handler - only updates live input, does not trigger search
+    // Search input handler
     refs.searchExpression.oninput(({ event }) => {
         const value = (event.target as HTMLInputElement).value;
         setSearchExpression(value);
     });
 
-    // Enter key in search input - triggers search
+    // Enter key triggers search
     refs.searchExpression.onkeydown(({ event }) => {
         if ((event as KeyboardEvent).key === 'Enter') {
             event.preventDefault();
-            setPagination(patch(pagination(), [
-                { op: REPLACE, path: ['currentPage'], value: 1 }
-            ]));
             setSubmittedSearchTerm(searchExpression().trim());
         }
     });
 
-    // Search button click - submits the current search term, triggering the effect
+    // Search button click
     refs.searchButton.onclick(() => {
-        setPagination(patch(pagination(), [
-            { op: REPLACE, path: ['currentPage'], value: 1 }
-        ]));
         setSubmittedSearchTerm(searchExpression().trim());
     });
 
@@ -364,12 +397,9 @@ function ProductSearchInteractive(
         setSearchExpression('');
         setSubmittedSearchTerm(null);
         setHasSearched(false);
-        setPagination(patch(pagination(), [
-            { op: REPLACE, path: ['currentPage'], value: 1 }
-        ]));
     });
 
-    // Sorting dropdown - updates sort, effect runs automatically if search was submitted
+    // Sorting dropdown
     refs.sortBy.sortDropdown.oninput(({ event }) => {
         const value = (event.target as HTMLSelectElement).value;
         const sortMap: Record<string, CurrentSort> = {
@@ -382,14 +412,9 @@ function ProductSearchInteractive(
         };
         const newSort = sortMap[value] ?? CurrentSort.relevance;
         setSortBy({ currentSort: newSort });
-        // Reset to page 1 when sort changes
-        setPagination(patch(pagination(), [
-            { op: REPLACE, path: ['currentPage'], value: 1 }
-        ]));
-        // Effect will run automatically since sortBy and pagination are dependencies
     });
 
-    // Price range filters - update filters immutably
+    // Price range input filters (works for both number inputs and range sliders)
     refs.filters.priceRange.minPrice.oninput(({ event }) => {
         const value = parseFloat((event.target as HTMLInputElement).value);
         const newValue = isNaN(value) ? 0 : value;
@@ -406,7 +431,33 @@ function ProductSearchInteractive(
         ]));
     });
 
-    // Category filter checkboxes - update categories immutably
+    // Price range radio buttons
+    refs.filters.priceRange.ranges.isSelected.oninput(({ event, coordinate }) => {
+        const [rangeId] = coordinate;
+        const currentFilters = filters();
+        const ranges = currentFilters.priceRange.ranges || [];
+        const selectedRange = ranges.find(r => r.rangeId === rangeId);
+        
+        if (!selectedRange) return;
+
+        // Update all ranges: deselect all, select the clicked one
+        const updatedRanges = ranges.map(r => ({
+            ...r,
+            isSelected: r.rangeId === rangeId
+        }));
+
+        // Set min/max based on selected range
+        const newMinPrice = selectedRange.minValue ?? 0;
+        const newMaxPrice = selectedRange.maxValue ?? 0;
+
+        setFilters(patch(currentFilters, [
+            { op: REPLACE, path: ['priceRange', 'ranges'], value: updatedRanges },
+            { op: REPLACE, path: ['priceRange', 'minPrice'], value: newMinPrice },
+            { op: REPLACE, path: ['priceRange', 'maxPrice'], value: newMaxPrice }
+        ]));
+    });
+
+    // Category filter checkboxes
     refs.filters.categoryFilter.categories.isSelected.oninput(({ event, coordinate }) => {
         const [categoryId] = coordinate;
         const currentFilters = filters();
@@ -430,132 +481,113 @@ function ProductSearchInteractive(
         ]));
     });
 
-    // Apply filters button - reset to page 1, effect runs automatically
-    refs.filters.applyFilters.onclick(() => {
-        setPagination(patch(pagination(), [
-            { op: REPLACE, path: ['currentPage'], value: 1 }
-        ]));
-        // If user hasn't searched yet, submit the current search term
-        if (submittedSearchTerm() === null) {
-            setSubmittedSearchTerm(searchExpression().trim());
-        }
-        // Effect will run automatically since filters and pagination are dependencies
-    });
-
-    // Clear filters button - reset all filter values
+    // Clear filters button
     refs.filters.clearFilters.onclick(() => {
         const currentFilters = filters();
-        // Reset all category selections
         const clearedCategories = currentFilters.categoryFilter.categories.map(cat => ({
             ...cat,
             isSelected: false
         }));
         
+        // Reset price ranges - select "Show all"
+        const clearedRanges = (currentFilters.priceRange.ranges || []).map((r, i) => ({
+            ...r,
+            isSelected: i === 0 // First one is "Show all"
+        }));
+        
         setFilters({
-            priceRange: { minPrice: 0, maxPrice: 0 },
+            priceRange: { 
+                minPrice: 0, 
+                maxPrice: 0,
+                minBound: currentFilters.priceRange.minBound,
+                maxBound: currentFilters.priceRange.maxBound,
+                ranges: clearedRanges
+            },
             categoryFilter: { categories: clearedCategories },
             inStockOnly: false
         });
-        
-        setPagination(patch(pagination(), [
-            { op: REPLACE, path: ['currentPage'], value: 1 }
-        ]));
-        // Effect will run automatically since filters and pagination are dependencies
     });
 
-    // Pagination - previous page
-    refs.pagination.prevButton.onclick(() => {
-        const currentPage = pagination().currentPage;
-        if (currentPage > 1) {
-            setPagination(patch(pagination(), [
-                { op: REPLACE, path: ['currentPage'], value: currentPage - 1 }
-            ]));
-            // Effect will run automatically since pagination is a dependency
-        }
+    // Load more button
+    refs.loadMoreButton.onclick(() => {
+        performLoadMore();
     });
 
-    // Pagination - next page
-    refs.pagination.nextButton.onclick(() => {
-        const currentPage = pagination().currentPage;
-        setPagination(patch(pagination(), [
-            { op: REPLACE, path: ['currentPage'], value: currentPage + 1 }
-        ]));
-        // Effect will run automatically since pagination is a dependency
-    });
-
-    // Load more button (infinite scroll alternative)
-    refs.pagination.loadMoreButton.onclick(() => {
-        const currentPage = pagination().currentPage;
-        setPagination(patch(pagination(), [
-            { op: REPLACE, path: ['currentPage'], value: currentPage + 1 }
-        ]));
-        // Effect will run automatically since pagination is a dependency
-    });
-
-    // Suggestion clicks - set search term and submit
+    // Suggestion clicks
     refs.suggestions.suggestionButton.onclick(({ coordinate }) => {
         const [suggestionId] = coordinate;
         const suggestion = suggestions().find(s => s.suggestionId === suggestionId);
         if (suggestion) {
             setSearchExpression(suggestion.suggestionText);
-            setPagination(patch(pagination(), [
-                { op: REPLACE, path: ['currentPage'], value: 1 }
-            ]));
             setSubmittedSearchTerm(suggestion.suggestionText);
-            // Effect will run automatically since submittedSearchTerm is a dependency
         }
     });
 
-    // Product card add to cart
+    // Product card add to cart (SIMPLE products)
     refs.searchResults.addToCartButton.onclick(async ({ coordinate }) => {
         const [productId] = coordinate;
         
-        // Find the product in results and set loading state
         const currentResults = searchResults();
         const productIndex = currentResults.findIndex(p => p._id === productId);
         if (productIndex === -1) return;
 
-        // Update loading state for this product
         setSearchResults(patch(currentResults, [
             { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: true }
         ]));
 
         try {
-            // Add to cart using the client context
-            await storesContext.cart.addToCurrentCart({
-                lineItems: [{
-                    catalogReference: {
-                        catalogItemId: productId,
-                        appId: '1380b703-ce81-ff05-f115-39571d94dfcd', // Wix Stores app ID
-                    },
-                    quantity: 1
-                }]
-            });
-
-            // Get updated cart to dispatch event
-            const cart = await storesContext.cart.getCurrentCart();
-            const itemCount = (cart?.lineItems || []).reduce(
-                (sum: number, item: { quantity?: number }) => sum + (item.quantity || 0),
-                0
-            );
-
-            console.log('Added to cart: 1 item');
-            
-            // Dispatch cart update event for cart indicator
-            window.dispatchEvent(new CustomEvent('wix-cart-updated', {
-                detail: {
-                    itemCount,
-                    hasItems: itemCount > 0,
-                    subtotal: { amount: '0', formattedAmount: '', currency: 'USD' }
-                }
-            }));
+            await storesContext.addToCart(productId, 1);
         } catch (error) {
             console.error('Failed to add to cart:', error);
         } finally {
-            // Reset loading state
             setSearchResults(patch(searchResults(), [
                 { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: false }
             ]));
+        }
+    });
+
+    // Quick option choice click (SINGLE_OPTION products)
+    refs.searchResults.quickOption.choices.choiceButton.onclick(async ({ coordinate }) => {
+        const [productId, choiceId] = coordinate;
+        
+        const currentResults = searchResults();
+        const productIndex = currentResults.findIndex(p => p._id === productId);
+        if (productIndex === -1) return;
+        
+        const product = currentResults[productIndex];
+        const choice = product.quickOption?.choices?.find(c => c.choiceId === choiceId);
+        
+        if (!choice || !choice.inStock) {
+            console.warn('Choice not available or out of stock');
+            return;
+        }
+
+        setSearchResults(patch(currentResults, [
+            { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: true }
+        ]));
+
+        try {
+            const optionId = product.quickOption._id;
+            await storesContext.addToCart(productId, 1, {
+                options: { [optionId]: choice.choiceId },
+                modifiers: {},
+                customTextFields: {}
+            });
+        } catch (error) {
+            console.error('Failed to add to cart:', error);
+        } finally {
+            setSearchResults(patch(searchResults(), [
+                { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: false }
+            ]));
+        }
+    });
+
+    // View options button (NEEDS_CONFIGURATION products)
+    refs.searchResults.viewOptionsButton.onclick(({ coordinate }) => {
+        const [productId] = coordinate;
+        const product = searchResults().find(p => p._id === productId);
+        if (product?.productUrl) {
+            window.location.href = product.productUrl;
         }
     });
 
@@ -571,12 +603,9 @@ function ProductSearchInteractive(
             suggestions: suggestions(),
             filters: filters(),
             sortBy: sortBy(),
-            pagination: {
-                currentPage: pagination().currentPage,
-                totalPages: totalPages(),
-                hasNextPage: hasNextPage(),
-                hasPrevPage: hasPrevPage()
-            }
+            hasMore: hasMore(),
+            loadedCount: loadedCount(),
+            totalCount: totalCount()
         })
     };
 }
@@ -585,23 +614,22 @@ function ProductSearchInteractive(
  * Product Search Full-Stack Component
  * 
  * A complete headless product search component with server-side rendering,
- * filtering, sorting, pagination, and search suggestions.
+ * filtering, sorting, and "load more" functionality.
  * 
  * Rendering phases:
  * - Slow: Categories for filtering (relatively static)
- * - Fast: Products, search results, pagination (dynamic per request)
- * - Interactive: Search input, filter selections, sorting (client-side)
+ * - Fast: Products, search results, load more state (dynamic per request)
+ * - Interactive: Search input, filter selections, sorting, load more (client-side)
  * 
  * Usage:
  * ```typescript
  * import { productSearch } from '@jay-framework/wix-stores';
- * 
- * // Render the search component at /products route
  * ```
  */
 export const productSearch = makeJayStackComponent<ProductSearchContract>()
     .withProps<PageProps>()
     .withServices(WIX_STORES_SERVICE_MARKER)
+    .withContexts(WIX_STORES_CONTEXT)
     .withSlowlyRender(renderSlowlyChanging)
     .withFastRender(renderFastChanging)
     .withInteractive(ProductSearchInteractive);

@@ -1,0 +1,190 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - Whisky Store</title>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="cart-page"
+            key="cartPage"
+    ></script>
+    <script type="application/jay-data">
+      data:
+    </script>
+    <link rel="stylesheet" href="../../styles/whisky-theme.css">
+</head>
+<body>
+    <div class="cart-page">
+        <!-- Site Header -->
+        <header class="site-header">
+          <div class="header-top">
+            <a href="/" class="site-logo">
+              WHISKY <span class="logo-accent">store</span>
+            </a>
+            
+            <div class="header-actions">
+              <a href="/products" class="header-link">Products</a>
+              <a href="/cart" class="cart-indicator cart-indicator-active">
+                <span class="cart-indicator-icon">🛒</span>
+                <span>Basket</span>
+                <span class="cart-indicator-count">{cartPage.summary.itemCount}</span>
+              </a>
+            </div>
+          </div>
+          
+          <nav class="main-nav">
+            <ul class="nav-links">
+              <li><a href="/products">All Products</a></li>
+              <li><a href="/products">Whisky</a></li>
+              <li><a href="/products">Rum</a></li>
+              <li><a href="/products">Gin</a></li>
+              <li><a href="/products">Other</a></li>
+            </ul>
+          </nav>
+        </header>
+
+        <div class="container">
+            <!-- Header -->
+            <div class="cart-header">
+                <div>
+                    <h1 class="page-title">Shopping Basket</h1>
+                    <p class="page-subtitle">
+                        {cartPage.summary.itemCount} items in your basket
+                    </p>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <a href="/products" ref="cartPage.continueShoppingLink" class="btn btn-ghost">
+                        ← Continue Shopping
+                    </a>
+                    <button ref="cartPage.clearCartButton" class="btn btn-ghost">
+                        Clear Basket
+                    </button>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div class="cart-loading" if="cartPage.isLoading">
+                <div class="spinner"></div>
+                <p style="color: var(--text-secondary);">Loading your basket...</p>
+            </div>
+
+            <!-- Empty Cart -->
+            <div class="empty-cart card-elevated" if="cartPage.isEmpty && !cartPage.isLoading">
+                <div class="empty-cart-icon">🛒</div>
+                <h2 class="empty-cart-title">Your basket is empty</h2>
+                <p class="empty-cart-message">
+                    {cartPage.emptyCartMessage}
+                </p>
+                <a href="/products" ref="cartPage.emptyCartLink" class="btn btn-primary btn-lg">
+                    Start Shopping
+                </a>
+            </div>
+
+            <!-- Cart Content -->
+            <div class="cart-content" if="!cartPage.isEmpty && !cartPage.isLoading">
+                <div class="cart-layout">
+                    <!-- Cart Items -->
+                    <div class="cart-items-section">
+                        <div class="cart-items">
+                            <article class="cart-item {isUpdatingQuantity ? updating} {isRemoving ? removing}"
+                                     forEach="cartPage.lineItems" 
+                                     trackBy="lineItemId">
+                                <a href="{productUrl}" ref="cartPage.lineItems.productLink">
+                                    <img class="cart-item-image"
+                                         src="{image.url}"
+                                         alt="{image.altText}"
+                                         loading="lazy">
+                                </a>
+
+                                <div class="cart-item-details">
+                                    <a href="{productUrl}" ref="cartPage.lineItems.productLink" class="cart-item-name">
+                                        {productName}
+                                    </a>
+                                    <span class="cart-item-variant" if="variantName">{variantName}</span>
+                                    <span class="cart-item-sku" if="sku">SKU: {sku}</span>
+                                </div>
+
+                                <div class="cart-item-actions">
+                                    <div class="cart-item-price">{lineTotal.formattedAmount}</div>
+                                    <span class="cart-item-discount" if="hasDiscount">{lineDiscount.formattedAmount}</span>
+
+                                    <div class="quantity-controls">
+                                        <button class="quantity-btn" ref="cartPage.lineItems.decrementButton">−</button>
+                                        <input type="number"
+                                               class="quantity-input"
+                                               ref="cartPage.lineItems.quantity"
+                                               value="{quantity}"
+                                               min="1"
+                                               max="99">
+                                        <button class="quantity-btn" ref="cartPage.lineItems.incrementButton">+</button>
+                                    </div>
+
+                                    <button class="remove-btn" ref="cartPage.lineItems.removeButton">
+                                        Remove
+                                    </button>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+
+                    <!-- Cart Summary -->
+                    <div class="cart-summary-section">
+                        <aside class="cart-summary">
+                            <h2 class="cart-summary-title">Order Summary</h2>
+
+                            <div class="summary-row">
+                                <span class="summary-row-label">Subtotal</span>
+                                <span class="summary-row-value">{cartPage.summary.subtotal.formattedAmount}</span>
+                            </div>
+
+                            <div class="summary-row" if="cartPage.summary.hasDiscount">
+                                <span class="summary-row-label">Discount</span>
+                                <span class="summary-row-value summary-discount">{cartPage.summary.discount.formattedAmount}</span>
+                            </div>
+
+                            <div class="summary-row" if="cartPage.summary.showTax">
+                                <span class="summary-row-label">Estimated Tax</span>
+                                <span class="summary-row-value">{cartPage.summary.estimatedTax.formattedAmount}</span>
+                            </div>
+
+                            <div class="summary-row total">
+                                <span class="summary-row-label">Total</span>
+                                <span class="summary-row-value">{cartPage.summary.estimatedTotal.formattedAmount}</span>
+                            </div>
+
+                            <!-- Coupon Section -->
+                            <div class="coupon-section">
+                                <div if="!cartPage.coupon.hasAppliedCoupon">
+                                    <div class="coupon-form">
+                                        <input type="text"
+                                               class="input coupon-input"
+                                               ref="cartPage.coupon.code"
+                                               value="{cartPage.coupon.code}"
+                                               placeholder="Enter coupon code">
+                                        <button class="btn btn-secondary" ref="cartPage.coupon.applyButton">
+                                            Apply
+                                        </button>
+                                    </div>
+                                    <p class="coupon-error" if="cartPage.coupon.hasError">{cartPage.coupon.errorMessage}</p>
+                                </div>
+
+                                <div class="coupon-applied" if="cartPage.coupon.hasAppliedCoupon">
+                                    <span>
+                                        Coupon: <span class="coupon-applied-code">{cartPage.coupon.appliedCode}</span>
+                                    </span>
+                                    <button class="remove-btn" ref="cartPage.coupon.removeButton">Remove</button>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary btn-lg checkout-btn" ref="cartPage.checkoutButton">
+                                <span if="!cartPage.isCheckingOut">Proceed to Checkout</span>
+                                <span if="cartPage.isCheckingOut">Processing...</span>
+                            </button>
+                        </aside>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

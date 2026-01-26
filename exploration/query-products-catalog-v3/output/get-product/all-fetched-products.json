@@ -1,0 +1,2110 @@
+[
+  {
+    "revision": "2",
+    "numericId": "1737889414721000",
+    "name": "Ceramic Flower Vase",
+    "slug": "ceramic-flower-vase",
+    "visible": true,
+    "visibleInPos": true,
+    "media": {
+      "main": {
+        "image": "wix:image://v1/22e53e_63dba6a8f31a4de7bfb453ed3d0a83dd~mv2.jpg/Vase-Context%20(1).jpg#originWidth=3000&originHeight=3000",
+        "mediaType": "IMAGE",
+        "uploadId": "22e53e_63dba6a8f31a4de7bfb453ed3d0a83dd~mv2.jpg",
+        "_id": "22e53e_63dba6a8f31a4de7bfb453ed3d0a83dd~mv2.jpg"
+      }
+    },
+    "options": [],
+    "modifiers": [],
+    "infoSections": [
+      {
+        "_id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
+      },
+      {
+        "_id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
+      },
+      {
+        "_id": "57075b9e-ba33-401b-86bd-045d949c9283"
+      }
+    ],
+    "ribbon": {
+      "name": "Best Seller",
+      "_id": "6b64ba2b-aa72-4c41-9a82-62e6816fc42b"
+    },
+    "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
+    "inventory": {
+      "availabilityStatus": "IN_STOCK",
+      "preorderStatus": "DISABLED",
+      "preorderAvailability": "NO_VARIANTS"
+    },
+    "productType": "PHYSICAL",
+    "physicalProperties": {
+      "pricePerUnit": {
+        "quantity": 10,
+        "measurementUnit": "G"
+      },
+      "pricePerUnitRange": {
+        "minValue": {
+          "value": "10.00"
+        },
+        "maxValue": {
+          "value": "10.00"
+        }
+      }
+    },
+    "handle": "Product_9d6f95b0-b08e-45d0-a4cc-dc276565d668",
+    "actualPriceRange": {
+      "minValue": {
+        "amount": "270"
+      },
+      "maxValue": {
+        "amount": "270"
+      }
+    },
+    "compareAtPriceRange": {
+      "minValue": {
+        "amount": "0"
+      },
+      "maxValue": {
+        "amount": "0"
+      }
+    },
+    "variantsInfo": {
+      "variants": [
+        {
+          "visible": true,
+          "sku": "364215376135191",
+          "choices": [],
+          "price": {
+            "actualPrice": {
+              "amount": "270"
+            }
+          },
+          "physicalProperties": {
+            "pricePerUnit": {
+              "settings": {
+                "quantity": 270,
+                "measurementUnit": "G"
+              },
+              "value": "10.00"
+            }
+          },
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "e5547ac4-8461-48fd-9b46-6d08b27aae0b"
+        }
+      ]
+    },
+    "flattenOptions": [],
+    "flattenModifiers": [],
+    "variantSummary": {
+      "variantCount": 1
+    },
+    "entityEventSequence": "4",
+    "_id": "af654225-662f-42e5-ac51-fbebc88f63ed",
+    "_createdDate": "2025-01-26T11:03:34.791Z",
+    "_updatedDate": "2025-11-18T07:41:44.875Z"
+  },
+  {
+    "revision": "1",
+    "numericId": "1737889225263000",
+    "name": "Minimalist Tote Bag",
+    "slug": "minimalist-tote-bag",
+    "visible": true,
+    "visibleInPos": true,
+    "media": {
+      "main": {
+        "image": "wix:image://v1/22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg/Totebag-Product%20(1).jpg#originWidth=4000&originHeight=4000",
+        "mediaType": "IMAGE",
+        "uploadId": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg",
+        "_id": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg"
+      }
+    },
+    "options": [
+      {
+        "name": "Color",
+        "optionRenderType": "SWATCH_CHOICES",
+        "choicesSettings": {
+          "choices": [
+            {
+              "choiceId": "1137f00f-c9b0-48bd-b8fd-78aa0d92e2b5",
+              "linkedMedia": [
+                {
+                  "image": "wix:image://v1/22e53e_403950cd77974f9887339264944d760e~mv2.jpg/Totebag-Product-White%20(1).jpg#originWidth=4000&originHeight=4000",
+                  "mediaType": "IMAGE",
+                  "uploadId": "22e53e_403950cd77974f9887339264944d760e~mv2.jpg",
+                  "_id": "22e53e_403950cd77974f9887339264944d760e~mv2.jpg"
+                }
+              ],
+              "choiceType": "ONE_COLOR",
+              "key": "White",
+              "name": "White",
+              "inStock": true,
+              "visible": true,
+              "colorCode": "#FFFFFF"
+            },
+            {
+              "choiceId": "2c2ef949-2b83-48b7-8cb9-a588ad73547a",
+              "linkedMedia": [
+                {
+                  "image": "wix:image://v1/22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg/Totebag-Product%20(1).jpg#originWidth=4000&originHeight=4000",
+                  "mediaType": "IMAGE",
+                  "uploadId": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg",
+                  "_id": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg"
+                },
+                {
+                  "image": "wix:image://v1/22e53e_9a8e513558f2438eb8e6dd6c6d6cdbf5~mv2.jpg/Tote-Bag-Context%20(1).jpg#originWidth=3522&originHeight=3522",
+                  "mediaType": "IMAGE",
+                  "uploadId": "22e53e_9a8e513558f2438eb8e6dd6c6d6cdbf5~mv2.jpg",
+                  "_id": "22e53e_9a8e513558f2438eb8e6dd6c6d6cdbf5~mv2.jpg"
+                }
+              ],
+              "choiceType": "ONE_COLOR",
+              "key": "Purple",
+              "name": "Purple",
+              "inStock": true,
+              "visible": true,
+              "colorCode": "#CAB4E6"
+            }
+          ]
+        },
+        "key": "Color",
+        "_id": "1d926bdc-e161-4690-85c8-5e1dea5bde4c"
+      }
+    ],
+    "modifiers": [
+      {
+        "name": "Button Style",
+        "modifierRenderType": "TEXT_CHOICES",
+        "mandatory": true,
+        "choicesSettings": {
+          "choices": [
+            {
+              "choiceId": "556093db-abfa-442d-8f2b-af5d438c6dbf",
+              "linkedMedia": [
+                {
+                  "image": "wix:image://v1/22e53e_403950cd77974f9887339264944d760e~mv2.jpg/Totebag-Product-White%20(1).jpg#originWidth=4000&originHeight=4000",
+                  "mediaType": "IMAGE",
+                  "uploadId": "22e53e_403950cd77974f9887339264944d760e~mv2.jpg",
+                  "_id": "22e53e_403950cd77974f9887339264944d760e~mv2.jpg"
+                }
+              ],
+              "choiceType": "CHOICE_TEXT",
+              "key": "Big Round",
+              "name": "Big Round"
+            },
+            {
+              "choiceId": "154837fa-a89a-43bc-9e02-056019ad79c3",
+              "linkedMedia": [],
+              "choiceType": "CHOICE_TEXT",
+              "key": "Small Round",
+              "name": "Small Round"
+            },
+            {
+              "choiceId": "8d3d9cdc-4ca8-4699-908b-40de6d5ea8ae",
+              "linkedMedia": [],
+              "choiceType": "CHOICE_TEXT",
+              "key": "Medium Square",
+              "name": "Medium Square"
+            },
+            {
+              "choiceId": "30651a10-17fc-483a-8cb2-d9cdd2275838",
+              "linkedMedia": [],
+              "choiceType": "CHOICE_TEXT",
+              "key": "Diamonds",
+              "name": "Diamonds"
+            }
+          ]
+        },
+        "key": "Button Style",
+        "_id": "c259c6ec-adef-4589-9839-1d4d7322e14f"
+      }
+    ],
+    "infoSections": [
+      {
+        "_id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
+      },
+      {
+        "_id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
+      },
+      {
+        "_id": "57075b9e-ba33-401b-86bd-045d949c9283"
+      }
+    ],
+    "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
+    "inventory": {
+      "availabilityStatus": "IN_STOCK",
+      "preorderStatus": "DISABLED",
+      "preorderAvailability": "NO_VARIANTS"
+    },
+    "productType": "PHYSICAL",
+    "physicalProperties": {},
+    "handle": "Product_1515c6dc-51be-487d-b83c-73fb3639e7d6",
+    "actualPriceRange": {
+      "minValue": {
+        "amount": "20"
+      },
+      "maxValue": {
+        "amount": "20"
+      }
+    },
+    "compareAtPriceRange": {
+      "minValue": {
+        "amount": "0"
+      },
+      "maxValue": {
+        "amount": "0"
+      }
+    },
+    "variantsInfo": {
+      "variants": [
+        {
+          "visible": true,
+          "sku": "364215375135191",
+          "choices": [
+            {
+              "optionChoiceIds": {
+                "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+                "choiceId": "1137f00f-c9b0-48bd-b8fd-78aa0d92e2b5"
+              }
+            }
+          ],
+          "price": {
+            "actualPrice": {
+              "amount": "20"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_403950cd77974f9887339264944d760e~mv2.jpg/Totebag-Product-White%20(1).jpg#originWidth=4000&originHeight=4000",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_403950cd77974f9887339264944d760e~mv2.jpg",
+            "_id": "22e53e_403950cd77974f9887339264944d760e~mv2.jpg"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "69ca8646-cc1f-4fbd-960d-5d754a7fb518"
+        },
+        {
+          "visible": true,
+          "sku": "364215375135192",
+          "choices": [
+            {
+              "optionChoiceIds": {
+                "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+                "choiceId": "2c2ef949-2b83-48b7-8cb9-a588ad73547a"
+              }
+            }
+          ],
+          "price": {
+            "actualPrice": {
+              "amount": "20"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg/Totebag-Product%20(1).jpg#originWidth=4000&originHeight=4000",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg",
+            "_id": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "0c660cc7-fe77-4394-b6cd-9c779338776c"
+        }
+      ]
+    },
+    "flattenOptions": [],
+    "flattenModifiers": [],
+    "variantSummary": {
+      "variantCount": 2
+    },
+    "entityEventSequence": "3",
+    "_id": "fedfcb20-1ad2-405b-950b-e65112bb6222",
+    "_createdDate": "2025-01-26T11:00:25.276Z",
+    "_updatedDate": "2025-11-16T16:20:39.578Z"
+  },
+  {
+    "revision": "2",
+    "numericId": "1737888979244000",
+    "name": "Hydrating Eye Serum - Pre Order",
+    "slug": "hydrating-eye-serum",
+    "visible": true,
+    "visibleInPos": true,
+    "media": {
+      "main": {
+        "image": "wix:image://v1/22e53e_45964e1ca2d844958c7348510063a4df~mv2.jpg/Serum-Product%20(1).jpg#originWidth=3941&originHeight=3941",
+        "mediaType": "IMAGE",
+        "uploadId": "22e53e_45964e1ca2d844958c7348510063a4df~mv2.jpg",
+        "_id": "22e53e_45964e1ca2d844958c7348510063a4df~mv2.jpg"
+      }
+    },
+    "options": [],
+    "modifiers": [
+      {
+        "name": "pattern",
+        "modifierRenderType": "SWATCH_CHOICES",
+        "mandatory": true,
+        "choicesSettings": {
+          "choices": [
+            {
+              "choiceId": "c5dd6bdc-3c1b-4c9c-b3b7-b67e459ea829",
+              "linkedMedia": [],
+              "choiceType": "ONE_COLOR",
+              "key": "red",
+              "name": "red",
+              "colorCode": "#FF0000"
+            },
+            {
+              "choiceId": "24ea84ff-35a8-40fe-a660-64849b195153",
+              "linkedMedia": [],
+              "choiceType": "ONE_COLOR",
+              "key": "green",
+              "name": "green",
+              "colorCode": "#008000"
+            },
+            {
+              "choiceId": "344112c7-19c8-4ad6-aae2-c4b504aa05c7",
+              "linkedMedia": [],
+              "choiceType": "ONE_COLOR",
+              "key": "yellow",
+              "name": "yellow",
+              "colorCode": "#FFFF00"
+            }
+          ]
+        },
+        "key": "pattern",
+        "_id": "436f3131-0638-4016-bd25-3418ad085d3b"
+      }
+    ],
+    "infoSections": [
+      {
+        "_id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
+      },
+      {
+        "_id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
+      },
+      {
+        "_id": "57075b9e-ba33-401b-86bd-045d949c9283"
+      }
+    ],
+    "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
+    "inventory": {
+      "availabilityStatus": "OUT_OF_STOCK",
+      "preorderStatus": "ENABLED",
+      "preorderAvailability": "ALL_VARIANTS"
+    },
+    "productType": "PHYSICAL",
+    "physicalProperties": {},
+    "handle": "Product_c79c2bc5-5e8e-403a-9d3e-323228c672fe",
+    "actualPriceRange": {
+      "minValue": {
+        "amount": "56"
+      },
+      "maxValue": {
+        "amount": "56"
+      }
+    },
+    "compareAtPriceRange": {
+      "minValue": {
+        "amount": "0"
+      },
+      "maxValue": {
+        "amount": "0"
+      }
+    },
+    "variantsInfo": {
+      "variants": [
+        {
+          "visible": true,
+          "sku": "364115376135191",
+          "choices": [],
+          "price": {
+            "actualPrice": {
+              "amount": "56"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_45964e1ca2d844958c7348510063a4df~mv2.jpg/Serum-Product%20(1).jpg#originWidth=3941&originHeight=3941",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_45964e1ca2d844958c7348510063a4df~mv2.jpg",
+            "_id": "22e53e_45964e1ca2d844958c7348510063a4df~mv2.jpg"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": false,
+            "preorderEnabled": true
+          },
+          "_id": "f978920c-b09d-4659-bf1d-387cf91954c1"
+        }
+      ]
+    },
+    "flattenOptions": [],
+    "flattenModifiers": [],
+    "variantSummary": {
+      "variantCount": 1
+    },
+    "entityEventSequence": "4",
+    "_id": "ca71fee6-1fc9-4a57-8fa7-967c8edcaabb",
+    "_createdDate": "2025-01-26T10:56:19.292Z",
+    "_updatedDate": "2025-11-16T16:23:56.371Z"
+  },
+  {
+    "revision": "2",
+    "numericId": "1737888849118000",
+    "name": "Knitted Golf Sweater",
+    "slug": "knitted-golf-sweater",
+    "visible": true,
+    "visibleInPos": true,
+    "media": {
+      "main": {
+        "image": "wix:image://v1/22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg/Sweater-Product%20(1).jpg#originWidth=2662&originHeight=2662",
+        "mediaType": "IMAGE",
+        "uploadId": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg",
+        "_id": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg"
+      }
+    },
+    "options": [
+      {
+        "name": "Size",
+        "optionRenderType": "TEXT_CHOICES",
+        "choicesSettings": {
+          "choices": [
+            {
+              "choiceId": "c73f73b6-ac0f-42b1-aad9-48bfb8a6afc3",
+              "linkedMedia": [],
+              "choiceType": "CHOICE_TEXT",
+              "key": "Small",
+              "name": "Small",
+              "inStock": true,
+              "visible": true
+            },
+            {
+              "choiceId": "804f3b49-c81e-43d0-8967-f691ac4e53d4",
+              "linkedMedia": [],
+              "choiceType": "CHOICE_TEXT",
+              "key": "Medium",
+              "name": "Medium",
+              "inStock": true,
+              "visible": true
+            },
+            {
+              "choiceId": "8fc8d3ec-ca94-44d4-bba8-2ac65e909599",
+              "linkedMedia": [],
+              "choiceType": "CHOICE_TEXT",
+              "key": "Large",
+              "name": "Large",
+              "inStock": true,
+              "visible": true
+            },
+            {
+              "choiceId": "53d872ce-7d9d-4d90-a4ff-1dbdfca55d24",
+              "linkedMedia": [],
+              "choiceType": "CHOICE_TEXT",
+              "key": "X-Large",
+              "name": "X-Large",
+              "inStock": true,
+              "visible": true
+            }
+          ]
+        },
+        "key": "Size",
+        "_id": "c4ced48a-4ced-47e1-a876-05f97a1e361b"
+      },
+      {
+        "name": "Color",
+        "optionRenderType": "SWATCH_CHOICES",
+        "choicesSettings": {
+          "choices": [
+            {
+              "choiceId": "1137f00f-c9b0-48bd-b8fd-78aa0d92e2b5",
+              "linkedMedia": [
+                {
+                  "image": "wix:image://v1/22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png/Sweater-Product%20White(1).png#originWidth=1024&originHeight=1024",
+                  "mediaType": "IMAGE",
+                  "uploadId": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png",
+                  "_id": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png"
+                }
+              ],
+              "choiceType": "ONE_COLOR",
+              "key": "White",
+              "name": "White",
+              "inStock": true,
+              "visible": true,
+              "colorCode": "#FFFFFF"
+            },
+            {
+              "choiceId": "20983c09-86e5-4ba4-9d94-3c776d2391ac",
+              "linkedMedia": [
+                {
+                  "image": "wix:image://v1/22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg/Sweater-Product%20(1).jpg#originWidth=2662&originHeight=2662",
+                  "mediaType": "IMAGE",
+                  "uploadId": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg",
+                  "_id": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg"
+                },
+                {
+                  "image": "wix:image://v1/22e53e_008b06daf2e844eb9b1626f6c8ea93bd~mv2.jpg/Sweater-Model%20(1).jpg#originWidth=3007&originHeight=3007",
+                  "mediaType": "IMAGE",
+                  "uploadId": "22e53e_008b06daf2e844eb9b1626f6c8ea93bd~mv2.jpg",
+                  "_id": "22e53e_008b06daf2e844eb9b1626f6c8ea93bd~mv2.jpg"
+                }
+              ],
+              "choiceType": "ONE_COLOR",
+              "key": "Dark Green",
+              "name": "Dark Green",
+              "inStock": true,
+              "visible": true,
+              "colorCode": "#395E55"
+            },
+            {
+              "choiceId": "0a7cb748-44d4-4bd2-b088-993989f02ac0",
+              "linkedMedia": [
+                {
+                  "image": "wix:image://v1/22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png/Sweater-Product%20Blue%20(1).jpg#originWidth=1024&originHeight=1024",
+                  "mediaType": "IMAGE",
+                  "uploadId": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png",
+                  "_id": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png"
+                }
+              ],
+              "choiceType": "ONE_COLOR",
+              "key": "Dark Blue",
+              "name": "Dark Blue",
+              "inStock": true,
+              "visible": true,
+              "colorCode": "#3E3E96"
+            }
+          ]
+        },
+        "key": "Color",
+        "_id": "1d926bdc-e161-4690-85c8-5e1dea5bde4c"
+      }
+    ],
+    "modifiers": [],
+    "infoSections": [
+      {
+        "_id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
+      },
+      {
+        "_id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
+      },
+      {
+        "_id": "57075b9e-ba33-401b-86bd-045d949c9283"
+      }
+    ],
+    "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
+    "inventory": {
+      "availabilityStatus": "IN_STOCK",
+      "preorderStatus": "DISABLED",
+      "preorderAvailability": "NO_VARIANTS"
+    },
+    "productType": "PHYSICAL",
+    "physicalProperties": {},
+    "handle": "Product_95c8f784-799c-4f33-b820-17b726a65296",
+    "actualPriceRange": {
+      "minValue": {
+        "amount": "270"
+      },
+      "maxValue": {
+        "amount": "310"
+      }
+    },
+    "compareAtPriceRange": {
+      "minValue": {
+        "amount": "0"
+      },
+      "maxValue": {
+        "amount": "0"
+      }
+    },
+    "variantsInfo": {
+      "variants": [
+        {
+          "visible": true,
+          "sku": "217537123517253",
+          "choices": [
+            {
+              "optionChoiceIds": {
+                "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+                "choiceId": "c73f73b6-ac0f-42b1-aad9-48bfb8a6afc3"
+              }
+            },
+            {
+              "optionChoiceIds": {
+                "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+                "choiceId": "1137f00f-c9b0-48bd-b8fd-78aa0d92e2b5"
+              }
+            }
+          ],
+          "price": {
+            "actualPrice": {
+              "amount": "280"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png/Sweater-Product%20White(1).png#originWidth=1024&originHeight=1024",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png",
+            "_id": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "f0348d42-7307-4825-bcd9-44997dd93e98"
+        },
+        {
+          "visible": true,
+          "choices": [
+            {
+              "optionChoiceIds": {
+                "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+                "choiceId": "c73f73b6-ac0f-42b1-aad9-48bfb8a6afc3"
+              }
+            },
+            {
+              "optionChoiceIds": {
+                "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+                "choiceId": "20983c09-86e5-4ba4-9d94-3c776d2391ac"
+              }
+            }
+          ],
+          "price": {
+            "actualPrice": {
+              "amount": "275"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg/Sweater-Product%20(1).jpg#originWidth=2662&originHeight=2662",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg",
+            "_id": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "66c683d6-622c-4f87-b67e-48e88db9e7d7"
+        },
+        {
+          "visible": true,
+          "choices": [
+            {
+              "optionChoiceIds": {
+                "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+                "choiceId": "c73f73b6-ac0f-42b1-aad9-48bfb8a6afc3"
+              }
+            },
+            {
+              "optionChoiceIds": {
+                "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+                "choiceId": "0a7cb748-44d4-4bd2-b088-993989f02ac0"
+              }
+            }
+          ],
+          "price": {
+            "actualPrice": {
+              "amount": "270"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png/Sweater-Product%20Blue%20(1).jpg#originWidth=1024&originHeight=1024",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png",
+            "_id": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "e722833d-5f30-4e3e-8694-f27ca3a1b1a3"
+        },
+        {
+          "visible": true,
+          "choices": [
+            {
+              "optionChoiceIds": {
+                "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+                "choiceId": "804f3b49-c81e-43d0-8967-f691ac4e53d4"
+              }
+            },
+            {
+              "optionChoiceIds": {
+                "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+                "choiceId": "1137f00f-c9b0-48bd-b8fd-78aa0d92e2b5"
+              }
+            }
+          ],
+          "price": {
+            "actualPrice": {
+              "amount": "275"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png/Sweater-Product%20White(1).png#originWidth=1024&originHeight=1024",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png",
+            "_id": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "6faf50a4-2dc5-4986-96a4-2a328118ffbf"
+        },
+        {
+          "visible": true,
+          "choices": [
+            {
+              "optionChoiceIds": {
+                "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+                "choiceId": "804f3b49-c81e-43d0-8967-f691ac4e53d4"
+              }
+            },
+            {
+              "optionChoiceIds": {
+                "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+                "choiceId": "20983c09-86e5-4ba4-9d94-3c776d2391ac"
+              }
+            }
+          ],
+          "price": {
+            "actualPrice": {
+              "amount": "300"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg/Sweater-Product%20(1).jpg#originWidth=2662&originHeight=2662",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg",
+            "_id": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "2034da09-f052-4942-ac91-b44366cd019d"
+        },
+        {
+          "visible": true,
+          "choices": [
+            {
+              "optionChoiceIds": {
+                "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+                "choiceId": "804f3b49-c81e-43d0-8967-f691ac4e53d4"
+              }
+            },
+            {
+              "optionChoiceIds": {
+                "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+                "choiceId": "0a7cb748-44d4-4bd2-b088-993989f02ac0"
+              }
+            }
+          ],
+          "price": {
+            "actualPrice": {
+              "amount": "310"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png/Sweater-Product%20Blue%20(1).jpg#originWidth=1024&originHeight=1024",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png",
+            "_id": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "c1df7354-ed67-45c7-8701-2a14557cd8a5"
+        },
+        {
+          "visible": true,
+          "choices": [
+            {
+              "optionChoiceIds": {
+                "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+                "choiceId": "8fc8d3ec-ca94-44d4-bba8-2ac65e909599"
+              }
+            },
+            {
+              "optionChoiceIds": {
+                "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+                "choiceId": "1137f00f-c9b0-48bd-b8fd-78aa0d92e2b5"
+              }
+            }
+          ],
+          "price": {
+            "actualPrice": {
+              "amount": "275"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png/Sweater-Product%20White(1).png#originWidth=1024&originHeight=1024",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png",
+            "_id": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "bb33d12b-a954-421d-ab0d-1ce18e2d8b61"
+        },
+        {
+          "visible": true,
+          "choices": [
+            {
+              "optionChoiceIds": {
+                "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+                "choiceId": "8fc8d3ec-ca94-44d4-bba8-2ac65e909599"
+              }
+            },
+            {
+              "optionChoiceIds": {
+                "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+                "choiceId": "20983c09-86e5-4ba4-9d94-3c776d2391ac"
+              }
+            }
+          ],
+          "price": {
+            "actualPrice": {
+              "amount": "275"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg/Sweater-Product%20(1).jpg#originWidth=2662&originHeight=2662",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg",
+            "_id": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "9bbf7977-245f-4dc4-a500-ebd3297e0ecf"
+        },
+        {
+          "visible": true,
+          "choices": [
+            {
+              "optionChoiceIds": {
+                "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+                "choiceId": "8fc8d3ec-ca94-44d4-bba8-2ac65e909599"
+              }
+            },
+            {
+              "optionChoiceIds": {
+                "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+                "choiceId": "0a7cb748-44d4-4bd2-b088-993989f02ac0"
+              }
+            }
+          ],
+          "price": {
+            "actualPrice": {
+              "amount": "275"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png/Sweater-Product%20Blue%20(1).jpg#originWidth=1024&originHeight=1024",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png",
+            "_id": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "dd8e116e-3e9c-4853-b09e-c1229dcf4bfe"
+        },
+        {
+          "visible": true,
+          "choices": [
+            {
+              "optionChoiceIds": {
+                "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+                "choiceId": "53d872ce-7d9d-4d90-a4ff-1dbdfca55d24"
+              }
+            },
+            {
+              "optionChoiceIds": {
+                "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+                "choiceId": "1137f00f-c9b0-48bd-b8fd-78aa0d92e2b5"
+              }
+            }
+          ],
+          "price": {
+            "actualPrice": {
+              "amount": "275"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png/Sweater-Product%20White(1).png#originWidth=1024&originHeight=1024",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png",
+            "_id": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "449e9087-a290-4ba9-8289-98f756409ef1"
+        },
+        {
+          "visible": true,
+          "choices": [
+            {
+              "optionChoiceIds": {
+                "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+                "choiceId": "53d872ce-7d9d-4d90-a4ff-1dbdfca55d24"
+              }
+            },
+            {
+              "optionChoiceIds": {
+                "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+                "choiceId": "20983c09-86e5-4ba4-9d94-3c776d2391ac"
+              }
+            }
+          ],
+          "price": {
+            "actualPrice": {
+              "amount": "275"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg/Sweater-Product%20(1).jpg#originWidth=2662&originHeight=2662",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg",
+            "_id": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "4f905739-5c78-407f-8f56-49aa8b3f586c"
+        },
+        {
+          "visible": true,
+          "choices": [
+            {
+              "optionChoiceIds": {
+                "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+                "choiceId": "53d872ce-7d9d-4d90-a4ff-1dbdfca55d24"
+              }
+            },
+            {
+              "optionChoiceIds": {
+                "optionId": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
+                "choiceId": "0a7cb748-44d4-4bd2-b088-993989f02ac0"
+              }
+            }
+          ],
+          "price": {
+            "actualPrice": {
+              "amount": "275"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png/Sweater-Product%20Blue%20(1).jpg#originWidth=1024&originHeight=1024",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png",
+            "_id": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "35ce2200-5e88-4e7f-985e-36d422913fe1"
+        }
+      ]
+    },
+    "flattenOptions": [],
+    "flattenModifiers": [],
+    "variantSummary": {
+      "variantCount": 12
+    },
+    "entityEventSequence": "4",
+    "_id": "99684dfe-d36a-4869-858a-dba67af9b993",
+    "_createdDate": "2025-01-26T10:54:09.139Z",
+    "_updatedDate": "2025-11-16T16:29:15.684Z"
+  },
+  {
+    "revision": "1",
+    "numericId": "1737888700441000",
+    "name": "Round Eyeglasses",
+    "slug": "round-eyeglasses",
+    "visible": true,
+    "visibleInPos": true,
+    "media": {
+      "main": {
+        "image": "wix:image://v1/22e53e_56f1f1a7011f4352b97a7b2334c63d05~mv2.jpg/Glasses-Product%20(1).jpg#originWidth=3708&originHeight=3709",
+        "mediaType": "IMAGE",
+        "uploadId": "22e53e_56f1f1a7011f4352b97a7b2334c63d05~mv2.jpg",
+        "_id": "22e53e_56f1f1a7011f4352b97a7b2334c63d05~mv2.jpg"
+      }
+    },
+    "options": [],
+    "modifiers": [],
+    "infoSections": [
+      {
+        "_id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
+      },
+      {
+        "_id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
+      },
+      {
+        "_id": "57075b9e-ba33-401b-86bd-045d949c9283"
+      }
+    ],
+    "ribbon": {
+      "name": "New",
+      "_id": "3fa3213f-63ae-4397-9657-bc88b1bfaf1e"
+    },
+    "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
+    "inventory": {
+      "availabilityStatus": "IN_STOCK",
+      "preorderStatus": "DISABLED",
+      "preorderAvailability": "NO_VARIANTS"
+    },
+    "productType": "PHYSICAL",
+    "physicalProperties": {},
+    "handle": "Product_6ed1f001-ec1a-4fb7-8187-39e3f60cdbd8",
+    "actualPriceRange": {
+      "minValue": {
+        "amount": "80"
+      },
+      "maxValue": {
+        "amount": "80"
+      }
+    },
+    "compareAtPriceRange": {
+      "minValue": {
+        "amount": "0"
+      },
+      "maxValue": {
+        "amount": "0"
+      }
+    },
+    "variantsInfo": {
+      "variants": [
+        {
+          "visible": true,
+          "sku": "366615376135191",
+          "choices": [],
+          "price": {
+            "actualPrice": {
+              "amount": "80"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_56f1f1a7011f4352b97a7b2334c63d05~mv2.jpg/Glasses-Product%20(1).jpg#originWidth=3708&originHeight=3709",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_56f1f1a7011f4352b97a7b2334c63d05~mv2.jpg",
+            "_id": "22e53e_56f1f1a7011f4352b97a7b2334c63d05~mv2.jpg"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "6a4b6309-92ee-49bd-a74b-552d91e5fa08"
+        }
+      ]
+    },
+    "flattenOptions": [],
+    "flattenModifiers": [],
+    "variantSummary": {
+      "variantCount": 1
+    },
+    "entityEventSequence": "3",
+    "_id": "d86d7bea-fe19-4654-a597-bfe8dd449407",
+    "_createdDate": "2025-01-26T10:51:40.953Z",
+    "_updatedDate": "2025-11-16T16:20:41.129Z"
+  },
+  {
+    "revision": "1",
+    "numericId": "1737888597899000",
+    "name": "Solid Wood Chair",
+    "slug": "solid-wood-chair",
+    "visible": true,
+    "visibleInPos": true,
+    "media": {
+      "main": {
+        "image": "wix:image://v1/22e53e_c93a1b96015f4f548df8d691e4b75f43~mv2.jpg/Chair-Product%20(1).jpg#originWidth=4000&originHeight=4000",
+        "mediaType": "IMAGE",
+        "uploadId": "22e53e_c93a1b96015f4f548df8d691e4b75f43~mv2.jpg",
+        "_id": "22e53e_c93a1b96015f4f548df8d691e4b75f43~mv2.jpg"
+      }
+    },
+    "options": [],
+    "modifiers": [],
+    "infoSections": [
+      {
+        "_id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
+      },
+      {
+        "_id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
+      },
+      {
+        "_id": "57075b9e-ba33-401b-86bd-045d949c9283"
+      }
+    ],
+    "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
+    "inventory": {
+      "availabilityStatus": "IN_STOCK",
+      "preorderStatus": "DISABLED",
+      "preorderAvailability": "NO_VARIANTS"
+    },
+    "productType": "PHYSICAL",
+    "physicalProperties": {},
+    "handle": "Product_7e8d0f14-3787-4041-aba7-96fc3084821c",
+    "actualPriceRange": {
+      "minValue": {
+        "amount": "690"
+      },
+      "maxValue": {
+        "amount": "690"
+      }
+    },
+    "compareAtPriceRange": {
+      "minValue": {
+        "amount": "0"
+      },
+      "maxValue": {
+        "amount": "0"
+      }
+    },
+    "variantsInfo": {
+      "variants": [
+        {
+          "visible": true,
+          "sku": "36523641234523",
+          "choices": [],
+          "price": {
+            "actualPrice": {
+              "amount": "690"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_c93a1b96015f4f548df8d691e4b75f43~mv2.jpg/Chair-Product%20(1).jpg#originWidth=4000&originHeight=4000",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_c93a1b96015f4f548df8d691e4b75f43~mv2.jpg",
+            "_id": "22e53e_c93a1b96015f4f548df8d691e4b75f43~mv2.jpg"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "8a5a94af-5c77-4488-b8cc-89661ea49d17"
+        }
+      ]
+    },
+    "flattenOptions": [],
+    "flattenModifiers": [],
+    "variantSummary": {
+      "variantCount": 1
+    },
+    "entityEventSequence": "3",
+    "_id": "42941ee7-1707-4b5d-a7d7-41e12da6ab9e",
+    "_createdDate": "2025-01-26T10:49:57.911Z",
+    "_updatedDate": "2025-11-16T16:20:39.500Z"
+  },
+  {
+    "revision": "1",
+    "numericId": "1737885783650000",
+    "name": "Foaming Facial Cleanser",
+    "slug": "foaming-facial-cleanser",
+    "visible": true,
+    "visibleInPos": true,
+    "media": {
+      "main": {
+        "image": "wix:image://v1/22e53e_ee2ff808d8aa4e47a793cef6550d2306~mv2.jpg/Cream-Context%20(1).jpg#originWidth=4000&originHeight=4000",
+        "mediaType": "IMAGE",
+        "uploadId": "22e53e_ee2ff808d8aa4e47a793cef6550d2306~mv2.jpg",
+        "_id": "22e53e_ee2ff808d8aa4e47a793cef6550d2306~mv2.jpg"
+      }
+    },
+    "options": [
+      {
+        "name": "Size",
+        "optionRenderType": "TEXT_CHOICES",
+        "choicesSettings": {
+          "choices": [
+            {
+              "choiceId": "94bb8f3a-38e3-4abc-b9e5-6f9244b914a9",
+              "linkedMedia": [],
+              "choiceType": "CHOICE_TEXT",
+              "key": "100ml",
+              "name": "100ml",
+              "inStock": true,
+              "visible": true
+            },
+            {
+              "choiceId": "231c9be9-02f0-4a26-bec7-55ed86033c5e",
+              "linkedMedia": [],
+              "choiceType": "CHOICE_TEXT",
+              "key": "150ml",
+              "name": "150ml",
+              "inStock": true,
+              "visible": true
+            },
+            {
+              "choiceId": "08423d75-7418-4b85-ac48-da3e34685c8a",
+              "linkedMedia": [],
+              "choiceType": "CHOICE_TEXT",
+              "key": "250ml",
+              "name": "250ml",
+              "inStock": true,
+              "visible": true
+            },
+            {
+              "choiceId": "498970f8-1e35-4e10-9212-e4c47d9c06cd",
+              "linkedMedia": [],
+              "choiceType": "CHOICE_TEXT",
+              "key": "500ml",
+              "name": "500ml",
+              "inStock": true,
+              "visible": true
+            }
+          ]
+        },
+        "key": "Size",
+        "_id": "c4ced48a-4ced-47e1-a876-05f97a1e361b"
+      }
+    ],
+    "modifiers": [],
+    "infoSections": [
+      {
+        "_id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
+      },
+      {
+        "_id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
+      },
+      {
+        "_id": "57075b9e-ba33-401b-86bd-045d949c9283"
+      }
+    ],
+    "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
+    "inventory": {
+      "availabilityStatus": "IN_STOCK",
+      "preorderStatus": "DISABLED",
+      "preorderAvailability": "NO_VARIANTS"
+    },
+    "productType": "PHYSICAL",
+    "physicalProperties": {},
+    "handle": "Product_baffb421-4b03-429e-8c7c-2c5dc4cd049a",
+    "actualPriceRange": {
+      "minValue": {
+        "amount": "85"
+      },
+      "maxValue": {
+        "amount": "85"
+      }
+    },
+    "compareAtPriceRange": {
+      "minValue": {
+        "amount": "0"
+      },
+      "maxValue": {
+        "amount": "0"
+      }
+    },
+    "variantsInfo": {
+      "variants": [
+        {
+          "visible": true,
+          "sku": "632835642834503",
+          "choices": [
+            {
+              "optionChoiceIds": {
+                "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+                "choiceId": "94bb8f3a-38e3-4abc-b9e5-6f9244b914a9"
+              }
+            }
+          ],
+          "price": {
+            "actualPrice": {
+              "amount": "85"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_ee2ff808d8aa4e47a793cef6550d2306~mv2.jpg/Cream-Context%20(1).jpg#originWidth=4000&originHeight=4000",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_ee2ff808d8aa4e47a793cef6550d2306~mv2.jpg",
+            "_id": "22e53e_ee2ff808d8aa4e47a793cef6550d2306~mv2.jpg"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "776c3f2b-c036-46ea-8710-93be1da707d2"
+        },
+        {
+          "visible": true,
+          "sku": "632835642834504",
+          "choices": [
+            {
+              "optionChoiceIds": {
+                "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+                "choiceId": "231c9be9-02f0-4a26-bec7-55ed86033c5e"
+              }
+            }
+          ],
+          "price": {
+            "actualPrice": {
+              "amount": "85"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_ee2ff808d8aa4e47a793cef6550d2306~mv2.jpg/Cream-Context%20(1).jpg#originWidth=4000&originHeight=4000",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_ee2ff808d8aa4e47a793cef6550d2306~mv2.jpg",
+            "_id": "22e53e_ee2ff808d8aa4e47a793cef6550d2306~mv2.jpg"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "a2d4a224-150d-4f0b-875b-21449f1c0d89"
+        },
+        {
+          "visible": true,
+          "sku": "632835642834505",
+          "choices": [
+            {
+              "optionChoiceIds": {
+                "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+                "choiceId": "08423d75-7418-4b85-ac48-da3e34685c8a"
+              }
+            }
+          ],
+          "price": {
+            "actualPrice": {
+              "amount": "85"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_ee2ff808d8aa4e47a793cef6550d2306~mv2.jpg/Cream-Context%20(1).jpg#originWidth=4000&originHeight=4000",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_ee2ff808d8aa4e47a793cef6550d2306~mv2.jpg",
+            "_id": "22e53e_ee2ff808d8aa4e47a793cef6550d2306~mv2.jpg"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "9b75cd22-bcb6-4f56-88cd-204b9a6cdc70"
+        },
+        {
+          "visible": true,
+          "sku": "632835642834506",
+          "choices": [
+            {
+              "optionChoiceIds": {
+                "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+                "choiceId": "498970f8-1e35-4e10-9212-e4c47d9c06cd"
+              }
+            }
+          ],
+          "price": {
+            "actualPrice": {
+              "amount": "85"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_ee2ff808d8aa4e47a793cef6550d2306~mv2.jpg/Cream-Context%20(1).jpg#originWidth=4000&originHeight=4000",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_ee2ff808d8aa4e47a793cef6550d2306~mv2.jpg",
+            "_id": "22e53e_ee2ff808d8aa4e47a793cef6550d2306~mv2.jpg"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "dff2a4eb-9cc5-4c71-89e4-2b14f36f9d34"
+        }
+      ]
+    },
+    "flattenOptions": [],
+    "flattenModifiers": [],
+    "variantSummary": {
+      "variantCount": 4
+    },
+    "entityEventSequence": "3",
+    "_id": "96ff5295-1660-40d1-89e4-d1f1a34309be",
+    "_createdDate": "2025-01-26T10:03:03.657Z",
+    "_updatedDate": "2025-11-16T16:20:39.662Z"
+  },
+  {
+    "revision": "3",
+    "numericId": "1737885561857000",
+    "name": "Baseball Cap",
+    "slug": "baseball-cap",
+    "visible": true,
+    "visibleInPos": true,
+    "media": {
+      "main": {
+        "image": "wix:image://v1/22e53e_71aca8b5483a4e5f80fb33cf76f9bc84~mv2.jpg/Cap-Product%20(1).jpg#originWidth=4000&originHeight=4000",
+        "mediaType": "IMAGE",
+        "uploadId": "22e53e_71aca8b5483a4e5f80fb33cf76f9bc84~mv2.jpg",
+        "_id": "22e53e_71aca8b5483a4e5f80fb33cf76f9bc84~mv2.jpg"
+      }
+    },
+    "options": [],
+    "modifiers": [
+      {
+        "name": "color",
+        "modifierRenderType": "SWATCH_CHOICES",
+        "mandatory": true,
+        "choicesSettings": {
+          "choices": [
+            {
+              "choiceId": "6f8172e5-81b4-49b7-870b-261a1bfd3b5a",
+              "linkedMedia": [],
+              "choiceType": "ONE_COLOR",
+              "key": "red",
+              "name": "red",
+              "colorCode": "#FF0000"
+            },
+            {
+              "choiceId": "15a38f2f-10dc-4527-bbd6-ab543c438cce",
+              "linkedMedia": [],
+              "choiceType": "ONE_COLOR",
+              "key": "yellow",
+              "name": "yellow",
+              "colorCode": "#FFFF00"
+            }
+          ]
+        },
+        "key": "color",
+        "_id": "8e73d45b-b669-4bfb-9292-8a08ee7f3a0e"
+      },
+      {
+        "name": "Symbol",
+        "modifierRenderType": "TEXT_CHOICES",
+        "mandatory": true,
+        "choicesSettings": {
+          "choices": [
+            {
+              "choiceId": "bb4ed555-eb30-49a9-a418-a2f67c3399b9",
+              "linkedMedia": [],
+              "choiceType": "CHOICE_TEXT",
+              "key": "star",
+              "name": "star"
+            },
+            {
+              "choiceId": "8bfcc5e4-abe1-434e-95bf-399bf89b3933",
+              "linkedMedia": [],
+              "choiceType": "CHOICE_TEXT",
+              "key": "dog",
+              "name": "dog"
+            },
+            {
+              "choiceId": "e5a83c7a-ba68-4e9b-9834-4a2a5d66bfe2",
+              "linkedMedia": [],
+              "choiceType": "CHOICE_TEXT",
+              "key": "cat",
+              "name": "cat"
+            }
+          ]
+        },
+        "key": "Symbol",
+        "_id": "dcca9a64-b405-48b5-a23a-912251b38db1"
+      },
+      {
+        "name": "text",
+        "modifierRenderType": "FREE_TEXT",
+        "mandatory": false,
+        "freeTextSettings": {
+          "minCharCount": 0,
+          "maxCharCount": 500,
+          "title": "What text to write on the hat?",
+          "key": "What text to write on the hat?"
+        },
+        "key": "text",
+        "_id": "8e76f0a9-37f8-4f7f-b15c-c5f8297f160d"
+      }
+    ],
+    "infoSections": [
+      {
+        "_id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
+      },
+      {
+        "_id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
+      },
+      {
+        "_id": "57075b9e-ba33-401b-86bd-045d949c9283"
+      }
+    ],
+    "ribbon": {
+      "name": "Sale",
+      "_id": "5d536f20-dbf0-4254-928e-8c9d911c34b0"
+    },
+    "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
+    "inventory": {
+      "availabilityStatus": "IN_STOCK",
+      "preorderStatus": "DISABLED",
+      "preorderAvailability": "NO_VARIANTS"
+    },
+    "productType": "PHYSICAL",
+    "physicalProperties": {},
+    "handle": "Product_04a36e81-2a67-4d6d-a0a6-eed28d1bafae",
+    "actualPriceRange": {
+      "minValue": {
+        "amount": "68"
+      },
+      "maxValue": {
+        "amount": "68"
+      }
+    },
+    "compareAtPriceRange": {
+      "minValue": {
+        "amount": "129"
+      },
+      "maxValue": {
+        "amount": "129"
+      }
+    },
+    "variantsInfo": {
+      "variants": [
+        {
+          "visible": true,
+          "sku": "632835642834572",
+          "choices": [],
+          "price": {
+            "actualPrice": {
+              "amount": "68"
+            },
+            "compareAtPrice": {
+              "amount": "129"
+            }
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "9b10eb5c-96fd-4601-9aa8-7c2adc1fca30"
+        }
+      ]
+    },
+    "flattenOptions": [],
+    "flattenModifiers": [],
+    "variantSummary": {
+      "variantCount": 1
+    },
+    "entityEventSequence": "5",
+    "_id": "618dcfe4-8d85-40a9-87c6-0dea57abe644",
+    "_createdDate": "2025-01-26T09:59:21.897Z",
+    "_updatedDate": "2025-11-18T07:36:40.456Z"
+  },
+  {
+    "revision": "1",
+    "numericId": "1737885454465000",
+    "name": "Stainless Steel Water Bottle",
+    "slug": "stainless-steel-water-bottle",
+    "visible": true,
+    "visibleInPos": true,
+    "media": {
+      "main": {
+        "image": "wix:image://v1/22e53e_1f43490f7e1845a5bf333f2784508a91~mv2.jpg/Bottle-Context%20(2).jpg#originWidth=4000&originHeight=4000",
+        "mediaType": "IMAGE",
+        "uploadId": "22e53e_1f43490f7e1845a5bf333f2784508a91~mv2.jpg",
+        "_id": "22e53e_1f43490f7e1845a5bf333f2784508a91~mv2.jpg"
+      }
+    },
+    "options": [],
+    "modifiers": [],
+    "infoSections": [
+      {
+        "_id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
+      },
+      {
+        "_id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
+      },
+      {
+        "_id": "57075b9e-ba33-401b-86bd-045d949c9283"
+      }
+    ],
+    "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
+    "inventory": {
+      "availabilityStatus": "IN_STOCK",
+      "preorderStatus": "DISABLED",
+      "preorderAvailability": "NO_VARIANTS"
+    },
+    "productType": "PHYSICAL",
+    "physicalProperties": {},
+    "handle": "Product_8f9eacb9-4cf4-4331-a0ee-0165f871e1b0",
+    "actualPriceRange": {
+      "minValue": {
+        "amount": "199"
+      },
+      "maxValue": {
+        "amount": "199"
+      }
+    },
+    "compareAtPriceRange": {
+      "minValue": {
+        "amount": "0"
+      },
+      "maxValue": {
+        "amount": "0"
+      }
+    },
+    "variantsInfo": {
+      "variants": [
+        {
+          "visible": true,
+          "sku": "284215376135191",
+          "choices": [],
+          "price": {
+            "actualPrice": {
+              "amount": "199"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_1f43490f7e1845a5bf333f2784508a91~mv2.jpg/Bottle-Context%20(2).jpg#originWidth=4000&originHeight=4000",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_1f43490f7e1845a5bf333f2784508a91~mv2.jpg",
+            "_id": "22e53e_1f43490f7e1845a5bf333f2784508a91~mv2.jpg"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "79040a57-27ad-4496-bc1d-402c5e678a47"
+        }
+      ]
+    },
+    "flattenOptions": [],
+    "flattenModifiers": [],
+    "variantSummary": {
+      "variantCount": 1
+    },
+    "entityEventSequence": "3",
+    "_id": "1190303d-1fb5-40ca-bb60-2d5c1af3ae97",
+    "_createdDate": "2025-01-26T09:57:34.474Z",
+    "_updatedDate": "2025-11-16T16:20:41.216Z"
+  },
+  {
+    "revision": "1",
+    "numericId": "1737885351929000",
+    "name": "Essential Oil Diffuser",
+    "slug": "essential-oil-diffuser",
+    "visible": true,
+    "visibleInPos": true,
+    "media": {
+      "main": {
+        "image": "wix:image://v1/22e53e_b231b9c8053942b49508f464049db5c9~mv2.jpg/Diffuser-Product%20(1).jpg#originWidth=2000&originHeight=2000",
+        "mediaType": "IMAGE",
+        "uploadId": "22e53e_b231b9c8053942b49508f464049db5c9~mv2.jpg",
+        "_id": "22e53e_b231b9c8053942b49508f464049db5c9~mv2.jpg"
+      }
+    },
+    "options": [],
+    "modifiers": [],
+    "infoSections": [
+      {
+        "_id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
+      },
+      {
+        "_id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
+      },
+      {
+        "_id": "57075b9e-ba33-401b-86bd-045d949c9283"
+      }
+    ],
+    "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
+    "inventory": {
+      "availabilityStatus": "IN_STOCK",
+      "preorderStatus": "DISABLED",
+      "preorderAvailability": "NO_VARIANTS"
+    },
+    "productType": "PHYSICAL",
+    "physicalProperties": {},
+    "handle": "Product_21fbf544-c8ec-4a9e-af9f-d50582106300",
+    "actualPriceRange": {
+      "minValue": {
+        "amount": "119"
+      },
+      "maxValue": {
+        "amount": "119"
+      }
+    },
+    "compareAtPriceRange": {
+      "minValue": {
+        "amount": "0"
+      },
+      "maxValue": {
+        "amount": "0"
+      }
+    },
+    "variantsInfo": {
+      "variants": [
+        {
+          "visible": true,
+          "sku": "126351351935",
+          "choices": [],
+          "price": {
+            "actualPrice": {
+              "amount": "119"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_b231b9c8053942b49508f464049db5c9~mv2.jpg/Diffuser-Product%20(1).jpg#originWidth=2000&originHeight=2000",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_b231b9c8053942b49508f464049db5c9~mv2.jpg",
+            "_id": "22e53e_b231b9c8053942b49508f464049db5c9~mv2.jpg"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "149119f2-7d5d-4efa-a3a3-393df631eb02"
+        }
+      ]
+    },
+    "flattenOptions": [],
+    "flattenModifiers": [],
+    "variantSummary": {
+      "variantCount": 1
+    },
+    "entityEventSequence": "3",
+    "_id": "f68519fb-2095-4dfc-8684-ec55d60c2adc",
+    "_createdDate": "2025-01-26T09:55:51.980Z",
+    "_updatedDate": "2025-11-16T16:20:40.714Z"
+  },
+  {
+    "revision": "1",
+    "numericId": "1737885155047000",
+    "name": "Textured Loop Earrings",
+    "slug": "textured-loop-earrings",
+    "visible": true,
+    "visibleInPos": true,
+    "media": {
+      "main": {
+        "image": "wix:image://v1/22e53e_8cbcee6500094796a3fc3730d52840f1~mv2.jpg/Earrings-Product%20(1).jpg#originWidth=3000&originHeight=3000",
+        "mediaType": "IMAGE",
+        "uploadId": "22e53e_8cbcee6500094796a3fc3730d52840f1~mv2.jpg",
+        "_id": "22e53e_8cbcee6500094796a3fc3730d52840f1~mv2.jpg"
+      }
+    },
+    "options": [],
+    "modifiers": [
+      {
+        "name": "Gift Card",
+        "modifierRenderType": "FREE_TEXT",
+        "mandatory": false,
+        "freeTextSettings": {
+          "minCharCount": 0,
+          "maxCharCount": 500,
+          "title": "Would you like to add a gift card? Please write your message here.",
+          "key": "Would you like to add a gift card? Please write your message here."
+        },
+        "key": "Gift Card",
+        "_id": "c28cb1ec-b383-47df-8d20-974e10ab234d"
+      }
+    ],
+    "infoSections": [
+      {
+        "_id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
+      },
+      {
+        "_id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
+      },
+      {
+        "_id": "57075b9e-ba33-401b-86bd-045d949c9283"
+      }
+    ],
+    "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
+    "inventory": {
+      "availabilityStatus": "IN_STOCK",
+      "preorderStatus": "DISABLED",
+      "preorderAvailability": "NO_VARIANTS"
+    },
+    "productType": "PHYSICAL",
+    "physicalProperties": {},
+    "handle": "Product_269b62d3-0294-4f3e-924c-161ab8a52827",
+    "actualPriceRange": {
+      "minValue": {
+        "amount": "269"
+      },
+      "maxValue": {
+        "amount": "269"
+      }
+    },
+    "compareAtPriceRange": {
+      "minValue": {
+        "amount": "0"
+      },
+      "maxValue": {
+        "amount": "0"
+      }
+    },
+    "variantsInfo": {
+      "variants": [
+        {
+          "visible": true,
+          "sku": "671253175371",
+          "choices": [],
+          "price": {
+            "actualPrice": {
+              "amount": "269"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_8cbcee6500094796a3fc3730d52840f1~mv2.jpg/Earrings-Product%20(1).jpg#originWidth=3000&originHeight=3000",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_8cbcee6500094796a3fc3730d52840f1~mv2.jpg",
+            "_id": "22e53e_8cbcee6500094796a3fc3730d52840f1~mv2.jpg"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "aebd3261-d48a-42e4-b0ed-63555cf56229"
+        }
+      ]
+    },
+    "flattenOptions": [],
+    "flattenModifiers": [],
+    "variantSummary": {
+      "variantCount": 1
+    },
+    "entityEventSequence": "3",
+    "_id": "d2dc8bef-0a26-414a-b1dc-7bbba867bc6a",
+    "_createdDate": "2025-01-26T09:52:35.233Z",
+    "_updatedDate": "2025-11-16T16:20:40.462Z"
+  },
+  {
+    "revision": "1",
+    "numericId": "1737884739644000",
+    "name": "Crew T-Shirt",
+    "slug": "crew-t-shirt",
+    "visible": true,
+    "visibleInPos": true,
+    "media": {
+      "main": {
+        "image": "wix:image://v1/22e53e_10c04dbf48294c92b8bf55ef38654f8a~mv2.jpg/Tshirt-Context%20(1).jpg#originWidth=3716&originHeight=3716",
+        "mediaType": "IMAGE",
+        "uploadId": "22e53e_10c04dbf48294c92b8bf55ef38654f8a~mv2.jpg",
+        "_id": "22e53e_10c04dbf48294c92b8bf55ef38654f8a~mv2.jpg"
+      }
+    },
+    "options": [
+      {
+        "name": "Size",
+        "optionRenderType": "TEXT_CHOICES",
+        "choicesSettings": {
+          "choices": [
+            {
+              "choiceId": "c73f73b6-ac0f-42b1-aad9-48bfb8a6afc3",
+              "linkedMedia": [],
+              "choiceType": "CHOICE_TEXT",
+              "key": "Small",
+              "name": "Small",
+              "inStock": true,
+              "visible": true
+            },
+            {
+              "choiceId": "804f3b49-c81e-43d0-8967-f691ac4e53d4",
+              "linkedMedia": [],
+              "choiceType": "CHOICE_TEXT",
+              "key": "Medium",
+              "name": "Medium",
+              "inStock": true,
+              "visible": true
+            },
+            {
+              "choiceId": "8fc8d3ec-ca94-44d4-bba8-2ac65e909599",
+              "linkedMedia": [],
+              "choiceType": "CHOICE_TEXT",
+              "key": "Large",
+              "name": "Large",
+              "inStock": true,
+              "visible": true
+            },
+            {
+              "choiceId": "53d872ce-7d9d-4d90-a4ff-1dbdfca55d24",
+              "linkedMedia": [],
+              "choiceType": "CHOICE_TEXT",
+              "key": "X-Large",
+              "name": "X-Large",
+              "inStock": true,
+              "visible": true
+            }
+          ]
+        },
+        "key": "Size",
+        "_id": "c4ced48a-4ced-47e1-a876-05f97a1e361b"
+      }
+    ],
+    "modifiers": [],
+    "infoSections": [
+      {
+        "_id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
+      },
+      {
+        "_id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
+      },
+      {
+        "_id": "57075b9e-ba33-401b-86bd-045d949c9283"
+      }
+    ],
+    "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
+    "inventory": {
+      "availabilityStatus": "PARTIALLY_OUT_OF_STOCK",
+      "preorderStatus": "ENABLED",
+      "preorderAvailability": "SOME_VARIANTS"
+    },
+    "productType": "PHYSICAL",
+    "physicalProperties": {},
+    "handle": "Product_d924b584-3b3b-4c54-88b5-3d1f0a8ee100",
+    "actualPriceRange": {
+      "minValue": {
+        "amount": "120"
+      },
+      "maxValue": {
+        "amount": "120"
+      }
+    },
+    "compareAtPriceRange": {
+      "minValue": {
+        "amount": "0"
+      },
+      "maxValue": {
+        "amount": "0"
+      }
+    },
+    "variantsInfo": {
+      "variants": [
+        {
+          "visible": true,
+          "sku": "21554345654",
+          "choices": [
+            {
+              "optionChoiceIds": {
+                "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+                "choiceId": "c73f73b6-ac0f-42b1-aad9-48bfb8a6afc3"
+              }
+            }
+          ],
+          "price": {
+            "actualPrice": {
+              "amount": "120"
+            }
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": true
+          },
+          "_id": "fef4869a-62bf-46bb-b7af-501d42d2ff36"
+        },
+        {
+          "visible": true,
+          "sku": "21554345655",
+          "choices": [
+            {
+              "optionChoiceIds": {
+                "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+                "choiceId": "804f3b49-c81e-43d0-8967-f691ac4e53d4"
+              }
+            }
+          ],
+          "price": {
+            "actualPrice": {
+              "amount": "120"
+            }
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": false,
+            "preorderEnabled": true
+          },
+          "_id": "9b165c78-3c0a-4d36-818c-6ca9b1be771b"
+        },
+        {
+          "visible": true,
+          "sku": "21554345656",
+          "choices": [
+            {
+              "optionChoiceIds": {
+                "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+                "choiceId": "8fc8d3ec-ca94-44d4-bba8-2ac65e909599"
+              }
+            }
+          ],
+          "price": {
+            "actualPrice": {
+              "amount": "120"
+            }
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": true
+          },
+          "_id": "a7d5c30e-6656-4c93-bec7-1fc4110bb8fd"
+        },
+        {
+          "visible": true,
+          "sku": "21554345657",
+          "choices": [
+            {
+              "optionChoiceIds": {
+                "optionId": "c4ced48a-4ced-47e1-a876-05f97a1e361b",
+                "choiceId": "53d872ce-7d9d-4d90-a4ff-1dbdfca55d24"
+              }
+            }
+          ],
+          "price": {
+            "actualPrice": {
+              "amount": "120"
+            }
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": true
+          },
+          "_id": "572e9206-6d33-4c92-bcb2-b72570f6fe80"
+        }
+      ]
+    },
+    "flattenOptions": [],
+    "flattenModifiers": [],
+    "variantSummary": {
+      "variantCount": 4
+    },
+    "entityEventSequence": "3",
+    "_id": "df8ae122-9a06-4fa2-96bb-4b058db5959f",
+    "_createdDate": "2025-01-26T09:45:39.663Z",
+    "_updatedDate": "2025-11-16T16:20:40.276Z"
+  }
+]

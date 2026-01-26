@@ -1,0 +1,110 @@
+{
+  "product": {
+    "revision": "2",
+    "numericId": "1737889414721000",
+    "name": "Ceramic Flower Vase",
+    "slug": "ceramic-flower-vase",
+    "visible": true,
+    "visibleInPos": true,
+    "media": {
+      "main": {
+        "image": "wix:image://v1/22e53e_63dba6a8f31a4de7bfb453ed3d0a83dd~mv2.jpg/Vase-Context%20(1).jpg#originWidth=3000&originHeight=3000",
+        "mediaType": "IMAGE",
+        "uploadId": "22e53e_63dba6a8f31a4de7bfb453ed3d0a83dd~mv2.jpg",
+        "_id": "22e53e_63dba6a8f31a4de7bfb453ed3d0a83dd~mv2.jpg"
+      }
+    },
+    "options": [],
+    "modifiers": [],
+    "infoSections": [
+      {
+        "_id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
+      },
+      {
+        "_id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
+      },
+      {
+        "_id": "57075b9e-ba33-401b-86bd-045d949c9283"
+      }
+    ],
+    "ribbon": {
+      "name": "Best Seller",
+      "_id": "6b64ba2b-aa72-4c41-9a82-62e6816fc42b"
+    },
+    "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
+    "inventory": {
+      "availabilityStatus": "IN_STOCK",
+      "preorderStatus": "DISABLED",
+      "preorderAvailability": "NO_VARIANTS"
+    },
+    "productType": "PHYSICAL",
+    "physicalProperties": {
+      "pricePerUnit": {
+        "quantity": 10,
+        "measurementUnit": "G"
+      },
+      "pricePerUnitRange": {
+        "minValue": {
+          "value": "10.00"
+        },
+        "maxValue": {
+          "value": "10.00"
+        }
+      }
+    },
+    "handle": "Product_9d6f95b0-b08e-45d0-a4cc-dc276565d668",
+    "actualPriceRange": {
+      "minValue": {
+        "amount": "270"
+      },
+      "maxValue": {
+        "amount": "270"
+      }
+    },
+    "compareAtPriceRange": {
+      "minValue": {
+        "amount": "0"
+      },
+      "maxValue": {
+        "amount": "0"
+      }
+    },
+    "variantsInfo": {
+      "variants": [
+        {
+          "visible": true,
+          "sku": "364215376135191",
+          "choices": [],
+          "price": {
+            "actualPrice": {
+              "amount": "270"
+            }
+          },
+          "physicalProperties": {
+            "pricePerUnit": {
+              "settings": {
+                "quantity": 270,
+                "measurementUnit": "G"
+              },
+              "value": "10.00"
+            }
+          },
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "e5547ac4-8461-48fd-9b46-6d08b27aae0b"
+        }
+      ]
+    },
+    "flattenOptions": [],
+    "flattenModifiers": [],
+    "variantSummary": {
+      "variantCount": 1
+    },
+    "entityEventSequence": "4",
+    "_id": "af654225-662f-42e5-ac51-fbebc88f63ed",
+    "_createdDate": "2025-01-26T11:03:34.791Z",
+    "_updatedDate": "2025-11-18T07:41:44.875Z"
+  }
+}

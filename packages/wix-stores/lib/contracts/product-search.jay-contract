@@ -82,13 +82,60 @@ tags:
             type: [data, interactive]
             dataType: number
             elementType: HTMLInputElement
-            description: Minimum price input
+            description: Current minimum price filter (works with number input or range slider)
             
           - tag: maxPrice
             type: [data, interactive]
             dataType: number
             elementType: HTMLInputElement
-            description: Maximum price input
+            description: Current maximum price filter (works with number input or range slider)
+            
+          - tag: minBound
+            type: data
+            dataType: number
+            description: Absolute minimum price from product catalog (for slider min attribute)
+            
+          - tag: maxBound
+            type: data
+            dataType: number
+            description: Absolute maximum price from product catalog (for slider max attribute)
+            
+          - tag: ranges
+            type: sub-contract
+            repeated: true
+            trackBy: rangeId
+            description: Predefined price range options with product counts
+            tags:
+              - tag: rangeId
+                type: data
+                dataType: string
+                description: Unique range identifier
+                
+              - tag: label
+                type: data
+                dataType: string
+                description: Display label (e.g., "$0 - $100")
+                
+              - tag: minValue
+                type: data
+                dataType: number
+                description: Range minimum (null for "Show all")
+                
+              - tag: maxValue
+                type: data
+                dataType: number
+                description: Range maximum (null for open-ended like "$400+")
+                
+              - tag: productCount
+                type: data
+                dataType: number
+                description: Number of products in this price range
+                
+              - tag: isSelected
+                type: [data, interactive]
+                dataType: boolean
+                elementType: HTMLInputElement
+                description: Radio button for this range
       
       # Category filter (slow for category list, fast+interactive for selection)
       - tag: categoryFilter
@@ -111,6 +158,11 @@ tags:
                 dataType: string
                 description: Category name
                 
+              - tag: categorySlug
+                type: data
+                dataType: string
+                description: Category slug for URL
+                
               - tag: isSelected
                 type: [data, interactive]
                 dataType: boolean
@@ -123,12 +175,6 @@ tags:
         dataType: boolean
         elementType: HTMLInputElement
         description: Show only in-stock products checkbox
-        
-      # Apply filters button
-      - tag: applyFilters
-        type: interactive
-        elementType: HTMLButtonElement
-        description: Apply all filters button
         
       - tag: clearFilters
         type: interactive
@@ -151,46 +197,29 @@ tags:
         elementType: HTMLSelectElement
         description: Dropdown to select sort option
   
-  # Pagination (fast+interactive)
-  - tag: pagination
-    type: sub-contract
+  # Load more (replaces pagination)
+  - tag: hasMore
+    type: variant
+    dataType: boolean
     phase: fast+interactive
-    description: Search results pagination
-    tags:
-      - tag: currentPage
-        type: data
-        dataType: number
-        description: Current page number
-        
-      - tag: totalPages
-        type: data
-        dataType: number
-        description: Total number of pages
-        
-      - tag: hasNextPage
-        type: variant
-        dataType: boolean
-        description: Whether there is a next page
-        
-      - tag: hasPrevPage
-        type: variant
-        dataType: boolean
-        description: Whether there is a previous page
-        
-      - tag: prevButton
-        type: interactive
-        elementType: HTMLButtonElement
-        description: Previous page button
-        
-      - tag: nextButton
-        type: interactive
-        elementType: HTMLButtonElement
-        description: Next page button
-        
-      - tag: loadMoreButton
-        type: interactive
-        elementType: HTMLButtonElement
-        description: Load more results button (infinite scroll option)
+    description: Whether there are more products to load
+    
+  - tag: loadMoreButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Button to load more products
+    
+  - tag: loadedCount
+    type: data
+    dataType: number
+    phase: fast+interactive
+    description: Number of products currently loaded
+    
+  - tag: totalCount
+    type: data
+    dataType: number
+    phase: fast+interactive
+    description: Total number of products matching search
   
   # Search suggestions (fast+interactive)
   - tag: hasSuggestions

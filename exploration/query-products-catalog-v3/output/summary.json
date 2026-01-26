@@ -1,0 +1,57 @@
+{
+  "totalProducts": 12,
+  "fetchedAt": "2025-11-18T07:42:07.678Z",
+  "pages": 1,
+  "productIds": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "productNames": [
+    {
+      "name": "Ceramic Flower Vase"
+    },
+    {
+      "name": "Minimalist Tote Bag"
+    },
+    {
+      "name": "Hydrating Eye Serum - Pre Order"
+    },
+    {
+      "name": "Knitted Golf Sweater"
+    },
+    {
+      "name": "Round Eyeglasses"
+    },
+    {
+      "name": "Solid Wood Chair"
+    },
+    {
+      "name": "Foaming Facial Cleanser"
+    },
+    {
+      "name": "Baseball Cap"
+    },
+    {
+      "name": "Stainless Steel Water Bottle"
+    },
+    {
+      "name": "Essential Oil Diffuser"
+    },
+    {
+      "name": "Textured Loop Earrings"
+    },
+    {
+      "name": "Crew T-Shirt"
+    }
+  ]
+}

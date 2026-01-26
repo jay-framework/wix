@@ -1,0 +1,25 @@
+{
+  "name": "query-products-catalog-v3",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Query Wix products using Catalog V3 API",
+  "private": true,
+  "scripts": {
+    "start": "node --loader ts-node/esm query-products.ts",
+    "get-product": "node --loader ts-node/esm get-product.ts",
+    "get-product-by-slug": "node --loader ts-node/esm get-product-by-slug.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@wix/sdk": "^1.17.4",
+    "@wix/stores": "^1.0.563",
+    "@wix/categories": "^1.0.165",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

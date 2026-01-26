@@ -6,28 +6,34 @@
  */
 
 // Export headless components
-export * from './components/index.js';
+export * from './components/cart-page';
+export * from './components/product-search';
+export * from './components/product-page';
+export * from './components/cart-indicator';
+export * from './components/category-page';
+export * from './components/category-list';
 
 // Export server service
 export {
     provideWixStoresService,
     WIX_STORES_SERVICE_MARKER,
     type WixStoresService,
-} from './services/index.js';
+} from './services/wix-stores-service';
 
 // Export client context types (for type-only imports on server)
 export {
-    WIX_STORES_CONTEXT,
-    type WixStoresContext,
-    type WixStoresInitData,
     type CartLineItem,
     type CartSummary,
     type CartState,
     type CartIndicatorState,
-} from './contexts/index.js';
-
+} from './contexts/cart-helpers';
+export {
+    WIX_STORES_CONTEXT,
+    type WixStoresContext,
+    type WixStoresInitData,
+} from './contexts/wix-stores-context';
 // Export server actions (search, product browsing)
-export * from './actions/index.js';
+export * from './actions/stores-actions';
 
 // Export init
 export { init } from './init.js';

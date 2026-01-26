@@ -1,0 +1,165 @@
+{
+  "product": {
+    "revision": "3",
+    "numericId": "1737885561857000",
+    "name": "Baseball Cap",
+    "slug": "baseball-cap",
+    "visible": true,
+    "visibleInPos": true,
+    "media": {
+      "main": {
+        "image": "wix:image://v1/22e53e_71aca8b5483a4e5f80fb33cf76f9bc84~mv2.jpg/Cap-Product%20(1).jpg#originWidth=4000&originHeight=4000",
+        "mediaType": "IMAGE",
+        "uploadId": "22e53e_71aca8b5483a4e5f80fb33cf76f9bc84~mv2.jpg",
+        "_id": "22e53e_71aca8b5483a4e5f80fb33cf76f9bc84~mv2.jpg"
+      }
+    },
+    "options": [],
+    "modifiers": [
+      {
+        "name": "color",
+        "modifierRenderType": "SWATCH_CHOICES",
+        "mandatory": true,
+        "choicesSettings": {
+          "choices": [
+            {
+              "choiceId": "6f8172e5-81b4-49b7-870b-261a1bfd3b5a",
+              "linkedMedia": [],
+              "choiceType": "ONE_COLOR",
+              "key": "red",
+              "name": "red",
+              "colorCode": "#FF0000"
+            },
+            {
+              "choiceId": "15a38f2f-10dc-4527-bbd6-ab543c438cce",
+              "linkedMedia": [],
+              "choiceType": "ONE_COLOR",
+              "key": "yellow",
+              "name": "yellow",
+              "colorCode": "#FFFF00"
+            }
+          ]
+        },
+        "key": "color",
+        "_id": "8e73d45b-b669-4bfb-9292-8a08ee7f3a0e"
+      },
+      {
+        "name": "Symbol",
+        "modifierRenderType": "TEXT_CHOICES",
+        "mandatory": true,
+        "choicesSettings": {
+          "choices": [
+            {
+              "choiceId": "bb4ed555-eb30-49a9-a418-a2f67c3399b9",
+              "linkedMedia": [],
+              "choiceType": "CHOICE_TEXT",
+              "key": "star",
+              "name": "star"
+            },
+            {
+              "choiceId": "8bfcc5e4-abe1-434e-95bf-399bf89b3933",
+              "linkedMedia": [],
+              "choiceType": "CHOICE_TEXT",
+              "key": "dog",
+              "name": "dog"
+            },
+            {
+              "choiceId": "e5a83c7a-ba68-4e9b-9834-4a2a5d66bfe2",
+              "linkedMedia": [],
+              "choiceType": "CHOICE_TEXT",
+              "key": "cat",
+              "name": "cat"
+            }
+          ]
+        },
+        "key": "Symbol",
+        "_id": "dcca9a64-b405-48b5-a23a-912251b38db1"
+      },
+      {
+        "name": "text",
+        "modifierRenderType": "FREE_TEXT",
+        "mandatory": false,
+        "freeTextSettings": {
+          "minCharCount": 0,
+          "maxCharCount": 500,
+          "title": "What text to write on the hat?",
+          "key": "What text to write on the hat?"
+        },
+        "key": "text",
+        "_id": "8e76f0a9-37f8-4f7f-b15c-c5f8297f160d"
+      }
+    ],
+    "infoSections": [
+      {
+        "_id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
+      },
+      {
+        "_id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
+      },
+      {
+        "_id": "57075b9e-ba33-401b-86bd-045d949c9283"
+      }
+    ],
+    "ribbon": {
+      "name": "Sale",
+      "_id": "5d536f20-dbf0-4254-928e-8c9d911c34b0"
+    },
+    "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
+    "inventory": {
+      "availabilityStatus": "IN_STOCK",
+      "preorderStatus": "DISABLED",
+      "preorderAvailability": "NO_VARIANTS"
+    },
+    "productType": "PHYSICAL",
+    "physicalProperties": {},
+    "handle": "Product_04a36e81-2a67-4d6d-a0a6-eed28d1bafae",
+    "actualPriceRange": {
+      "minValue": {
+        "amount": "68"
+      },
+      "maxValue": {
+        "amount": "68"
+      }
+    },
+    "compareAtPriceRange": {
+      "minValue": {
+        "amount": "129"
+      },
+      "maxValue": {
+        "amount": "129"
+      }
+    },
+    "variantsInfo": {
+      "variants": [
+        {
+          "visible": true,
+          "sku": "632835642834572",
+          "choices": [],
+          "price": {
+            "actualPrice": {
+              "amount": "68"
+            },
+            "compareAtPrice": {
+              "amount": "129"
+            }
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": true,
+            "preorderEnabled": false
+          },
+          "_id": "9b10eb5c-96fd-4601-9aa8-7c2adc1fca30"
+        }
+      ]
+    },
+    "flattenOptions": [],
+    "flattenModifiers": [],
+    "variantSummary": {
+      "variantCount": 1
+    },
+    "entityEventSequence": "5",
+    "_id": "618dcfe4-8d85-40a9-87c6-0dea57abe644",
+    "_createdDate": "2025-01-26T09:59:21.897Z",
+    "_updatedDate": "2025-11-18T07:36:40.456Z"
+  }
+}

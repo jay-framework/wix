@@ -1,7 +1,7 @@
 /**
  * Cart Indicator Component
  *
- * A lightweight cart indicator for site headers showing item count and subtotal.
+ * A lightweight cart indicator for site headers showing item count.
  * Uses the Wix eCommerce Cart API via client context.
  */
 
@@ -11,7 +11,7 @@ import {
     Signals,
     PageProps
 } from '@jay-framework/fullstack-component';
-import { createEffect, Props } from '@jay-framework/component';
+import { createEffect, createSignal, Props } from '@jay-framework/component';
 import { useGlobalContext } from '@jay-framework/runtime';
 import {
     CartIndicatorContract,
@@ -19,7 +19,7 @@ import {
     CartIndicatorRefs,
 } from '../contracts/cart-indicator.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
-import { WIX_STORES_CONTEXT, CartIndicatorState, mapCartToIndicator } from '../contexts/index.js';
+import {WIX_STORES_CONTEXT, WixStoresContext} from '../contexts/wix-stores-context';
 
 // ============================================================================
 // Types
@@ -50,11 +50,6 @@ async function renderFastChanging(
         viewState: {
             itemCount: 0,
             hasItems: false,
-            subtotal: {
-                amount: '0',
-                formattedAmount: '$0.00',
-                currency: 'USD'
-            },
             isLoading: true,
             justAdded: false
         },
@@ -63,89 +58,45 @@ async function renderFastChanging(
 }
 
 /**
- * Interactive phase - load cart data and set up reactivity
+ * Interactive phase - uses reactive global context signals
  */
 function CartIndicatorInteractive(
     _props: Props<PageProps>,
     refs: CartIndicatorRefs,
     viewStateSignals: Signals<CartIndicatorFastViewState>,
-    _carryForward: CartIndicatorFastCarryForward
+    _carryForward: CartIndicatorFastCarryForward,
+    storesContext: WixStoresContext
 ) {
-    // Get the stores context for client-side cart operations
-    const storesContext = useGlobalContext(WIX_STORES_CONTEXT);
 
-    // Get signal setters from viewStateSignals
+    // Get signal setters for loading and animation states
     const {
-        itemCount: [itemCount, setItemCount],
-        hasItems: [hasItems, setHasItems],
-        subtotal: [subtotal, setSubtotal],
         isLoading: [isLoading, setIsLoading],
         justAdded: [justAdded, setJustAdded]
     } = viewStateSignals;
+    
+    // Track previous item count for "just added" animation
+    const [prevItemCount, setPrevItemCount] = createSignal(storesContext.cartIndicator.itemCount());
 
-    // Load cart data using client context
-    async function loadCart() {
-        try {
-            setIsLoading(true);
-            const cart = await storesContext.cart.getCurrentCart();
-            const indicator = mapCartToIndicator(cart);
-            
-            setItemCount(indicator.itemCount);
-            setHasItems(indicator.hasItems);
-            setSubtotal({
-                amount: indicator.subtotal.amount,
-                formattedAmount: indicator.subtotal.formattedAmount,
-                currency: indicator.subtotal.currency
-            });
-        } catch (error) {
-            console.error('[CartIndicator] Failed to load cart:', error);
-        } finally {
-            setIsLoading(false);
+    // Watch for item count changes to trigger animation
+    createEffect(() => {
+        const currentCount = storesContext.cartIndicator.itemCount();
+        if (currentCount > prevItemCount()) {
+            // Items were added - trigger animation
+            setJustAdded(true);
+            setTimeout(() => setJustAdded(false), 1500);
         }
-    }
-
-    // Update cart state (called after add to cart events)
-    function updateCart(indicator: CartIndicatorState) {
-        setItemCount(indicator.itemCount);
-        setHasItems(indicator.hasItems);
-        setSubtotal({
-            amount: indicator.subtotal.amount,
-            formattedAmount: indicator.subtotal.formattedAmount,
-            currency: indicator.subtotal.currency
-        });
-        
-        // Trigger "just added" animation
-        setJustAdded(true);
-        setTimeout(() => setJustAdded(false), 1500);
-    }
-
-    // Listen for cart update events from other components
-    createEffect(() => {
-        const handleCartUpdate = (event: CustomEvent<CartIndicatorState>) => {
-            updateCart(event.detail);
-        };
-
-        window.addEventListener('wix-cart-updated' as keyof WindowEventMap, handleCartUpdate as EventListener);
-        return () => {
-            window.removeEventListener('wix-cart-updated' as keyof WindowEventMap, handleCartUpdate as EventListener);
-        };
+        setPrevItemCount(currentCount);
     });
 
-    // Set up cart link click handlers
-    createEffect(() => {
-        refs.cartLink?.onclick(() => {
-            // Navigation handled by anchor href
-        });
+    refs.cartLink?.onclick(() => {
+        // Navigation handled by anchor href
     });
-
-    // Load cart on mount
-    loadCart();
 
     return {
         render: () => ({
-            itemCount: itemCount(),
-            hasItems: hasItems(),
-            subtotal: subtotal(),
+            // Read directly from reactive global context signals
+            itemCount: storesContext.cartIndicator.itemCount(),
+            hasItems: storesContext.cartIndicator.hasItems(),
             isLoading: isLoading(),
             justAdded: justAdded()
         })
@@ -159,14 +110,12 @@ function CartIndicatorInteractive(
 /**
  * Cart Indicator Component
  *
- * Displays cart item count and optionally subtotal in site header.
+ * Displays cart item count in site header.
  * Automatically updates when items are added to cart.
  */
 export const cartIndicator = makeJayStackComponent<CartIndicatorContract>()
     .withProps<PageProps>()
     .withServices(WIX_STORES_SERVICE_MARKER)
+    .withContexts(WIX_STORES_CONTEXT)
     .withFastRender(renderFastChanging)
     .withInteractive(CartIndicatorInteractive);
-
-// Re-export types
-export type { CartIndicatorState };

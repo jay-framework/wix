@@ -1,0 +1,127 @@
+{
+  "product": {
+    "revision": "2",
+    "numericId": "1737888979244000",
+    "name": "Hydrating Eye Serum - Pre Order",
+    "slug": "hydrating-eye-serum",
+    "visible": true,
+    "visibleInPos": true,
+    "media": {
+      "main": {
+        "image": "wix:image://v1/22e53e_45964e1ca2d844958c7348510063a4df~mv2.jpg/Serum-Product%20(1).jpg#originWidth=3941&originHeight=3941",
+        "mediaType": "IMAGE",
+        "uploadId": "22e53e_45964e1ca2d844958c7348510063a4df~mv2.jpg",
+        "_id": "22e53e_45964e1ca2d844958c7348510063a4df~mv2.jpg"
+      }
+    },
+    "options": [],
+    "modifiers": [
+      {
+        "name": "pattern",
+        "modifierRenderType": "SWATCH_CHOICES",
+        "mandatory": true,
+        "choicesSettings": {
+          "choices": [
+            {
+              "choiceId": "c5dd6bdc-3c1b-4c9c-b3b7-b67e459ea829",
+              "linkedMedia": [],
+              "choiceType": "ONE_COLOR",
+              "key": "red",
+              "name": "red",
+              "colorCode": "#FF0000"
+            },
+            {
+              "choiceId": "24ea84ff-35a8-40fe-a660-64849b195153",
+              "linkedMedia": [],
+              "choiceType": "ONE_COLOR",
+              "key": "green",
+              "name": "green",
+              "colorCode": "#008000"
+            },
+            {
+              "choiceId": "344112c7-19c8-4ad6-aae2-c4b504aa05c7",
+              "linkedMedia": [],
+              "choiceType": "ONE_COLOR",
+              "key": "yellow",
+              "name": "yellow",
+              "colorCode": "#FFFF00"
+            }
+          ]
+        },
+        "key": "pattern",
+        "_id": "436f3131-0638-4016-bd25-3418ad085d3b"
+      }
+    ],
+    "infoSections": [
+      {
+        "_id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
+      },
+      {
+        "_id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
+      },
+      {
+        "_id": "57075b9e-ba33-401b-86bd-045d949c9283"
+      }
+    ],
+    "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
+    "inventory": {
+      "availabilityStatus": "OUT_OF_STOCK",
+      "preorderStatus": "ENABLED",
+      "preorderAvailability": "ALL_VARIANTS"
+    },
+    "productType": "PHYSICAL",
+    "physicalProperties": {},
+    "handle": "Product_c79c2bc5-5e8e-403a-9d3e-323228c672fe",
+    "actualPriceRange": {
+      "minValue": {
+        "amount": "56"
+      },
+      "maxValue": {
+        "amount": "56"
+      }
+    },
+    "compareAtPriceRange": {
+      "minValue": {
+        "amount": "0"
+      },
+      "maxValue": {
+        "amount": "0"
+      }
+    },
+    "variantsInfo": {
+      "variants": [
+        {
+          "visible": true,
+          "sku": "364115376135191",
+          "choices": [],
+          "price": {
+            "actualPrice": {
+              "amount": "56"
+            }
+          },
+          "media": {
+            "image": "wix:image://v1/22e53e_45964e1ca2d844958c7348510063a4df~mv2.jpg/Serum-Product%20(1).jpg#originWidth=3941&originHeight=3941",
+            "mediaType": "IMAGE",
+            "uploadId": "22e53e_45964e1ca2d844958c7348510063a4df~mv2.jpg",
+            "_id": "22e53e_45964e1ca2d844958c7348510063a4df~mv2.jpg"
+          },
+          "physicalProperties": {},
+          "inventoryStatus": {
+            "inStock": false,
+            "preorderEnabled": true
+          },
+          "_id": "f978920c-b09d-4659-bf1d-387cf91954c1"
+        }
+      ]
+    },
+    "flattenOptions": [],
+    "flattenModifiers": [],
+    "variantSummary": {
+      "variantCount": 1
+    },
+    "entityEventSequence": "4",
+    "_id": "ca71fee6-1fc9-4a57-8fa7-967c8edcaabb",
+    "_createdDate": "2025-01-26T10:56:19.292Z",
+    "_updatedDate": "2025-11-16T16:23:56.371Z"
+  }
+}

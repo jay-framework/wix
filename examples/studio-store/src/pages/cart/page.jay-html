@@ -1,0 +1,688 @@
+<html>
+  <head>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="cart-page"
+            key="cartPage"
+    ></script>
+    <script type="application/jay-data">
+      data:
+    </script>
+    <link rel="stylesheet" href="../../styles/brutalist-theme.css" />
+    <style>
+      /* =====================================================
+         STUDIO CART PAGE - BRUTALIST CHECKOUT
+         ===================================================== */
+      
+      .cart-page {
+        min-height: 100vh;
+        padding-bottom: 200px;
+      }
+
+      .cart-container {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        padding: 48px var(--page-padding) 80px;
+      }
+
+      /* Page Header */
+      .cart-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 48px;
+        padding-bottom: 32px;
+        border-bottom: var(--border-width) solid var(--border);
+      }
+
+      .cart-header .page-title {
+        font-size: clamp(48px, 8vw, 80px);
+        margin-bottom: 8px;
+      }
+
+      .cart-header-meta {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .cart-header-actions {
+        display: flex;
+        gap: 12px;
+      }
+
+      /* Cart Content - Centered Column */
+      .cart-content-area {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      /* Cart Items */
+      .cart-items-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .cart-line-item {
+        display: grid;
+        grid-template-columns: 100px 1fr;
+        gap: 24px;
+        padding: 24px;
+        background: var(--bg-card);
+        border: var(--border-width) solid var(--border);
+        border-bottom: none;
+        align-items: start;
+      }
+
+      .cart-line-item:last-child {
+        border-bottom: var(--border-width) solid var(--border);
+      }
+
+      .cart-line-item.removing {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+
+      .cart-line-item.updating {
+        opacity: 0.7;
+      }
+
+      .item-image-link {
+        display: block;
+      }
+
+      .item-image {
+        width: 100px;
+        height: 120px;
+        object-fit: cover;
+        border: 2px solid var(--border-light);
+        background: var(--bg-secondary);
+      }
+
+      .item-info {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 16px;
+      }
+
+      .item-name {
+        font-size: 16px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--text-primary);
+        line-height: 1.3;
+      }
+
+      .item-name:hover {
+        color: var(--accent-dark);
+      }
+
+      .item-price {
+        font-family: var(--font-mono);
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text-primary);
+        white-space: nowrap;
+      }
+
+      .item-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .item-variant {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background: var(--bg-secondary);
+        padding: 4px 10px;
+      }
+
+      .item-sku {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .item-discount-badge {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: #00CC6A;
+        font-weight: 700;
+      }
+
+      .item-actions-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: auto;
+        padding-top: 12px;
+      }
+
+      /* Quantity Controls */
+      .qty-controls {
+        display: inline-flex;
+        align-items: center;
+        border: 2px solid var(--border);
+      }
+
+      .qty-btn {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--bg-secondary);
+        border: none;
+        color: var(--text-primary);
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .qty-btn:hover:not(:disabled) {
+        background: var(--accent);
+      }
+
+      .qty-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      .qty-input {
+        width: 48px;
+        height: 36px;
+        text-align: center;
+        background: var(--bg-primary);
+        border: none;
+        border-left: 2px solid var(--border);
+        border-right: 2px solid var(--border);
+        color: var(--text-primary);
+        font-family: var(--font-mono);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .qty-input:focus {
+        outline: none;
+      }
+
+      .item-remove {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: color var(--transition-fast);
+      }
+
+      .item-remove:hover {
+        color: var(--error);
+      }
+
+      /* Floating Summary Bar */
+      .floating-summary {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--bg-inverse);
+        border-top: var(--border-width) solid var(--accent);
+        padding: 20px var(--page-padding);
+        z-index: 100;
+      }
+
+      .summary-bar-inner {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .summary-main-row {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+
+      .summary-totals {
+        flex: 1;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 32px;
+      }
+
+      .summary-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .summary-item .label {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.6);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+      }
+
+      .summary-item .value {
+        font-family: var(--font-mono);
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text-inverse);
+      }
+
+      .summary-item.total .value {
+        font-size: 28px;
+        color: var(--accent);
+      }
+
+      .summary-item.discount .value {
+        color: var(--success);
+      }
+
+      .summary-checkout {
+        flex-shrink: 0;
+      }
+
+      .summary-checkout .btn {
+        min-width: 200px;
+        background: var(--accent);
+        color: var(--text-primary);
+        border: none;
+      }
+
+      .summary-checkout .btn:hover:not(:disabled) {
+        background: var(--accent-hover);
+      }
+
+      /* Coupon Row */
+      .coupon-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 2px solid rgba(255, 255, 255, 0.15);
+      }
+
+      .coupon-row .input {
+        flex: 1;
+        max-width: 200px;
+        background: transparent;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: var(--text-inverse);
+        font-family: var(--font-mono);
+        text-transform: uppercase;
+        padding: 10px 14px;
+      }
+
+      .coupon-row .input::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+      }
+
+      .coupon-row .input:focus {
+        border-color: var(--accent);
+        box-shadow: none;
+      }
+
+      .coupon-row .btn {
+        background: transparent;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: var(--text-inverse);
+        box-shadow: none;
+      }
+
+      .coupon-row .btn:hover {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--text-primary);
+      }
+
+      .coupon-applied-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        background: rgba(0, 255, 136, 0.15);
+        border: 2px solid rgba(0, 255, 136, 0.3);
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--success);
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .coupon-remove {
+        background: none;
+        border: none;
+        color: var(--success);
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 700;
+        opacity: 0.7;
+        transition: opacity var(--transition-fast);
+      }
+
+      .coupon-remove:hover {
+        opacity: 1;
+      }
+
+      .coupon-error-text {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--error);
+        text-transform: uppercase;
+      }
+
+      /* Empty Cart */
+      .empty-cart-view {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 60vh;
+        text-align: center;
+        padding: 48px var(--page-padding);
+        border: var(--border-width) solid var(--border);
+        background: var(--bg-secondary);
+      }
+
+      .empty-icon {
+        font-size: 100px;
+        margin-bottom: 32px;
+        opacity: 0.15;
+      }
+
+      .empty-title {
+        font-size: 36px;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+        color: var(--text-primary);
+      }
+
+      .empty-message {
+        font-family: var(--font-mono);
+        font-size: 14px;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 36px;
+        max-width: 400px;
+      }
+
+      /* Loading State */
+      .cart-loading-view {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 50vh;
+        gap: 28px;
+      }
+
+      .loading-spinner-large {
+        width: 56px;
+        height: 56px;
+        border: 4px solid var(--border-light);
+        border-top-color: var(--accent);
+        animation: spin 0.6s linear infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      .loading-text {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .cart-page {
+          padding-bottom: 280px;
+        }
+
+        .cart-line-item {
+          grid-template-columns: 80px 1fr;
+          gap: 16px;
+          padding: 16px;
+        }
+
+        .item-image {
+          width: 80px;
+          height: 100px;
+        }
+
+        .item-header {
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .summary-main-row {
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .summary-totals {
+          width: 100%;
+          justify-content: space-between;
+        }
+
+        .summary-checkout {
+          width: 100%;
+        }
+
+        .summary-checkout .btn {
+          width: 100%;
+        }
+
+        .coupon-row {
+          flex-wrap: wrap;
+        }
+
+        .coupon-row .input {
+          max-width: none;
+          flex: 1 1 auto;
+        }
+
+        .cart-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 24px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .cart-header-actions {
+          flex-direction: column;
+          width: 100%;
+        }
+
+        .cart-header-actions .btn {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="cart-page">
+      <!-- Site Header -->
+      <header class="site-header">
+        <div class="header-inner">
+          <a href="/products" class="site-logo">
+            STUDIO<span class="logo-dot"></span>
+          </a>
+          <nav class="site-nav">
+            <a href="/products">Products</a>
+            <a href="/cart" class="cart-indicator cart-indicator-active">
+              <span class="cart-indicator-icon">BAG</span>
+              <span class="cart-indicator-count">{cartPage.summary.itemCount}</span>
+            </a>
+          </nav>
+        </div>
+      </header>
+
+      <div class="cart-container">
+        <!-- Page Header -->
+        <header class="cart-header">
+          <div>
+            <h1 class="page-title">YOUR BAG</h1>
+            <p class="cart-header-meta">{cartPage.summary.itemCount} ITEMS IN YOUR BAG</p>
+          </div>
+          <div class="cart-header-actions">
+            <a href="/products" ref="cartPage.continueShoppingLink" class="btn btn-ghost">
+              ← CONTINUE SHOPPING
+            </a>
+            <button ref="cartPage.clearCartButton" class="btn btn-ghost">
+              CLEAR BAG
+            </button>
+          </div>
+        </header>
+
+        <!-- Loading State -->
+        <div class="cart-loading-view" if="cartPage.isLoading">
+          <div class="loading-spinner-large"></div>
+          <p class="loading-text">LOADING YOUR BAG...</p>
+        </div>
+
+        <!-- Empty Cart -->
+        <div class="empty-cart-view" if="cartPage.isEmpty && !cartPage.isLoading">
+          <div class="empty-icon">○</div>
+          <h2 class="empty-title">BAG IS EMPTY</h2>
+          <p class="empty-message">{cartPage.emptyCartMessage}</p>
+          <a href="/products" ref="cartPage.emptyCartLink" class="btn btn-primary btn-lg">
+            BROWSE PRODUCTS
+          </a>
+        </div>
+
+        <!-- Cart Items -->
+        <div class="cart-content-area" if="!cartPage.isEmpty && !cartPage.isLoading">
+          <div class="cart-items-list">
+            <article class="cart-line-item {isUpdatingQuantity ? updating} {isRemoving ? removing}"
+                     forEach="cartPage.lineItems" 
+                     trackBy="lineItemId">
+              
+              <a href="{productUrl}" class="item-image-link" ref="cartPage.lineItems.productLink">
+                <img class="item-image"
+                     src="{image.url}"
+                     alt="{image.altText}"
+                     loading="lazy">
+              </a>
+
+              <div class="item-info">
+                <div class="item-header">
+                  <a href="{productUrl}" class="item-name" ref="cartPage.lineItems.productLink">
+                    {productName}
+                  </a>
+                  <span class="item-price">{lineTotal.formattedAmount}</span>
+                </div>
+
+                <div class="item-meta">
+                  <span class="item-variant" if="variantName">{variantName}</span>
+                  <span class="item-sku" if="sku">SKU: {sku}</span>
+                </div>
+
+                <span class="item-discount-badge" if="hasDiscount">
+                  SAVE {lineDiscount.formattedAmount}
+                </span>
+
+                <div class="item-actions-row">
+                  <div class="qty-controls">
+                    <button class="qty-btn" ref="cartPage.lineItems.decrementButton">−</button>
+                    <input type="number"
+                           class="qty-input"
+                           ref="cartPage.lineItems.quantity"
+                           value="{quantity}"
+                           min="1"
+                           max="99">
+                    <button class="qty-btn" ref="cartPage.lineItems.incrementButton">+</button>
+                  </div>
+                  <button class="item-remove" ref="cartPage.lineItems.removeButton">
+                    REMOVE
+                  </button>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating Summary Bar -->
+      <div class="floating-summary" if="!cartPage.isEmpty && !cartPage.isLoading">
+        <div class="summary-bar-inner">
+          <div class="summary-main-row">
+            <div class="summary-totals">
+              <div class="summary-item">
+                <span class="label">SUBTOTAL</span>
+                <span class="value">{cartPage.summary.subtotal.formattedAmount}</span>
+              </div>
+              <div class="summary-item discount" if="cartPage.summary.hasDiscount">
+                <span class="label">SAVINGS</span>
+                <span class="value">-{cartPage.summary.discount.formattedAmount}</span>
+              </div>
+              <div class="summary-item" if="cartPage.summary.showTax">
+                <span class="label">EST. TAX</span>
+                <span class="value">{cartPage.summary.estimatedTax.formattedAmount}</span>
+              </div>
+              <div class="summary-item total">
+                <span class="label">TOTAL</span>
+                <span class="value">{cartPage.summary.estimatedTotal.formattedAmount}</span>
+              </div>
+            </div>
+            <div class="summary-checkout">
+              <button class="btn btn-lg" ref="cartPage.checkoutButton">
+                <span if="!cartPage.isCheckingOut">CHECKOUT</span>
+                <span if="cartPage.isCheckingOut">PROCESSING...</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Coupon Row -->
+          <div class="coupon-row">
+            <div if="!cartPage.coupon.hasAppliedCoupon" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <input type="text"
+                     class="input"
+                     ref="cartPage.coupon.code"
+                     value="{cartPage.coupon.code}"
+                     placeholder="PROMO CODE">
+              <button class="btn btn-sm" ref="cartPage.coupon.applyButton">
+                APPLY
+              </button>
+              <span class="coupon-error-text" if="cartPage.coupon.hasError">{cartPage.coupon.errorMessage}</span>
+            </div>
+
+            <div class="coupon-applied-tag" if="cartPage.coupon.hasAppliedCoupon">
+              ✓ {cartPage.coupon.appliedCode}
+              <button class="coupon-remove" ref="cartPage.coupon.removeButton">×</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

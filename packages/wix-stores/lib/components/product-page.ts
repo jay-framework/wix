@@ -7,6 +7,7 @@ import {
     UrlParams
 } from '@jay-framework/fullstack-component';
 import {createMemo, createSignal, Props} from '@jay-framework/component';
+import { formatWixMediaUrl } from '@jay-framework/wix-utils';
 import {
     ChoiceType,
     InfoSectionOfProductPageViewState,
@@ -20,7 +21,7 @@ import {
     SeoDatumOfProductPageViewState,
     StockStatus
 } from '../contracts/product-page.jay-contract';
-import {WIX_STORES_SERVICE_MARKER, WixStoresService} from '../services';
+import {WIX_STORES_SERVICE_MARKER, WixStoresService} from '../services/wix-stores-service';
 import {
     ChoiceTypeWithLiterals,
     ConnectedModifier,
@@ -37,7 +38,7 @@ import {MediaGalleryViewState, Selected} from "../contracts/media-gallery.jay-co
 import {MediaType} from "../contracts/media.jay-contract";
 import {ADD, JSONPatchOperation, patch, REPLACE} from '@jay-framework/json-patch';
 import { useGlobalContext } from '@jay-framework/runtime';
-import { WIX_STORES_CONTEXT } from '../contexts/wix-stores-context.js';
+import {SelectedOptionsAndModifiers, WIX_STORES_CONTEXT, WixStoresContext} from '../contexts/wix-stores-context';
 
 /**
  * URL parameters for product page routes
@@ -126,18 +127,6 @@ function mapSeoData(seoData: SeoSchema): SeoDatumOfProductPageViewState {
     });
 }
 
-function formatWixMediaUrl(_id: string, url: string, mediaType: MediaType, resize?: {w: number, h: number}) {
-    const resizeFragment = resize?
-        `/v1/fit/w_${resize.w},h_${resize.h},q_90/file.jpg` :
-        ``;
-    if (url)
-        return url;
-    else if (mediaType === MediaType.IMAGE)
-        return `https://static.wixstatic.com/media/${_id}${resizeFragment}`
-    else if (mediaType === MediaType.VIDEO)
-        return `https://static.wixstatic.com/media/${_id}${resizeFragment}`
-}
-
 function mapMediaType(mediaType: MediaTypeWithLiterals): MediaType {
     if (mediaType === "VIDEO")
         return MediaType.VIDEO
@@ -149,17 +138,17 @@ function mapMedia(media: Media): MediaGalleryViewState {
     const mainMediaType = mapMediaType(media.main.mediaType);
     return {
         selectedMedia: {
-            url: formatWixMediaUrl(media.main._id, media.main.url, mainMediaType),
+            url: formatWixMediaUrl(media.main._id, media.main.url),
             mediaType: mainMediaType,
-            thumbnail_50x50: formatWixMediaUrl(media.main._id, media.main.url, mainMediaType, {w: 50, h: 50})
+            thumbnail_50x50: formatWixMediaUrl(media.main._id, media.main.url, {w: 50, h: 50})
 
         },
         availableMedia: media.itemsInfo?.items?.map(item => ({
             mediaId: item._id,
             media: {
-                url: formatWixMediaUrl(item._id, item.url, mainMediaType),
+                url: formatWixMediaUrl(item._id, item.url),
                 mediaType: (item.mediaType === 'IMAGE'? MediaType.IMAGE : MediaType.VIDEO),
-                thumbnail_50x50: formatWixMediaUrl(item._id, item.url, mainMediaType, {w: 50, h: 50})
+                thumbnail_50x50: formatWixMediaUrl(item._id, item.url, {w: 50, h: 50})
             },
             selected: (item._id === media.main._id)? Selected.selected : Selected.notSelected
         })) ?? [],
@@ -248,6 +237,52 @@ function mapVariants(variantsInfo: VariantsInfo): InteractiveVariant[]{
 }
 
 /**
+ * Build SelectedOptionsAndModifiers from the current viewState.
+ * Called on-demand when adding to cart to avoid duplicate state tracking.
+ * 
+ * Uses _id/choiceId - the addToCart function translates to API keys.
+ */
+function buildSelectionsFromViewState(
+    optionsVS: ProductPageFastViewState['options'],
+    modifiersVS: ProductPageFastViewState['modifiers']
+): SelectedOptionsAndModifiers {
+    // Build options record (optionId -> choiceId)
+    const options: Record<string, string> = {};
+    for (const option of optionsVS) {
+        if (option.textChoiceSelection) {
+            options[option._id] = option.textChoiceSelection;
+        } else {
+            const selectedChoice = option.choices.find(c => c.isSelected);
+            if (selectedChoice) {
+                options[option._id] = selectedChoice.choiceId;
+            }
+        }
+    }
+
+    // Build modifiers record (modifierId -> choiceId)
+    const modifiers: Record<string, string> = {};
+    const customTextFields: Record<string, string> = {};
+    
+    for (const modifier of modifiersVS) {
+        // Check for button-based swatch selection
+        const selectedChoice = modifier.choices.find(c => c.isSelected);
+        if (selectedChoice) {
+            modifiers[modifier._id] = selectedChoice.choiceId;
+        } else if (modifier.textModifierSelection) {
+            // For dropdown modifiers, textModifierSelection holds the selected choiceId
+            // For free text modifiers (no choices), it holds the user's input text
+            if (modifier.choices.length > 0) {
+                modifiers[modifier._id] = modifier.textModifierSelection;
+            } else {
+                customTextFields[modifier._id] = modifier.textModifierSelection;
+            }
+        }
+    }
+
+    return { options, modifiers, customTextFields };
+}
+
+/**
  * Slow Rendering Phase
  * Loads semi-static product data that doesn't change often:
  * - Product details (name, description, SKU)
@@ -272,7 +307,6 @@ async function renderSlowlyChanging(
             return Pipeline.clientError(404, 'not found')
         })
         .toPhaseOutput(getProductResponse => {
-            console.log('product\n', JSON.stringify(getProductResponse.product, null, 2))
             const product = getProductResponse.product;
             const { _id, name, plainDescription, options, modifiers, actualPriceRange, compareAtPriceRange, media, productType,
                 brand, ribbon, infoSections, seoData, physicalProperties, inventory, variantsInfo} = product
@@ -364,10 +398,11 @@ function ProductPageInteractive(
     props: Props<PageProps & ProductPageParams>,
     refs: ProductPageRefs,
     viewStateSignals: Signals<ProductPageFastViewState>,
-    fastCarryForward: ProductFastCarryForward
+    fastCarryForward: ProductFastCarryForward,
+    storesContext: WixStoresContext
 ) {
     // Get the stores context for cart operations
-    const storesContext = useGlobalContext(WIX_STORES_CONTEXT);
+    // const storesContext = useGlobalContext(WIX_STORES_CONTEXT);
 
     const [quantity, setQuantity] = createSignal(viewStateSignals.quantity[0]().quantity)
 
@@ -386,9 +421,27 @@ function ProductPageInteractive(
 
     const [isAddingToCart, setIsAddingToCart] = createSignal(false);
 
-    const [selectedOptions, setSelectedOptions] = createSignal<Record<string, string>>({});
     const [selectedMediaId, setSelectedMediaId] = createSignal<string>(null);
-    const selectedVariant = createMemo(() => findVariant(variants, selectedOptions()))
+    
+    // Derive selected options from viewState for variant matching
+    const selectedOptionsRecord = createMemo(() => {
+        const result: Record<string, string> = {};
+        for (const option of options()) {
+            // Check textChoiceSelection first (for dropdowns)
+            if (option.textChoiceSelection) {
+                result[option._id] = option.textChoiceSelection;
+            } else {
+                // Check button-based selection
+                const selectedChoice = option.choices.find(c => c.isSelected);
+                if (selectedChoice) {
+                    result[option._id] = selectedChoice.choiceId;
+                }
+            }
+        }
+        return result;
+    });
+    
+    const selectedVariant = createMemo(() => findVariant(variants, selectedOptionsRecord()))
     const sku = createMemo(() => selectedVariant().sku)
     const price = createMemo(() => selectedVariant().price)
     const strikethroughPrice = createMemo(() => selectedVariant().strikethroughPrice)
@@ -452,20 +505,14 @@ function ProductPageInteractive(
             { op: REPLACE, path: [optionIndex, 'choices', newChoiceIndex, 'isSelected'], value: true },
             ...removeSelectedPatch
         ]))
-        setSelectedOptions(patch(selectedOptions(), [
-            {op: ADD, path: [optionId], value: choiceId}
-        ]))
     });
 
     refs.options.textChoice.oninput(({event, viewState, coordinate}) => {
-        const [optionId, choiceId] = coordinate;
+        const [optionId] = coordinate;
         const optionIndex = options().findIndex(_ => _._id === optionId)
-        const textValue = (event.target as HTMLSelectElement).value;
+        const selectedChoiceId = (event.target as HTMLSelectElement).value;
         setOptions(patch(options(), [
-            { op: REPLACE, path: [optionIndex, 'textChoiceSelection'], value: textValue },
-        ]))
-        setSelectedOptions(patch(selectedOptions(), [
-            {op: ADD, path: [optionId], value: choiceId}
+            { op: REPLACE, path: [optionIndex, 'textChoiceSelection'], value: selectedChoiceId },
         ]))
     });
 
@@ -481,7 +528,6 @@ function ProductPageInteractive(
             { op: REPLACE, path: [modifierIndex, 'choices', newChoiceIndex, 'isSelected'], value: true },
             ...removeSelectedPatch
         ]))
-
     })
 
     refs.modifiers.textInput.oninput(({event, viewState, coordinate}) => {
@@ -494,11 +540,11 @@ function ProductPageInteractive(
     })
 
     refs.modifiers.textModifier.oninput(({event, viewState, coordinate}) => {
-        const [modifierId, choiceId] = coordinate;
+        const [modifierId] = coordinate;
         const modifierIndex = modifiers().findIndex(_ => _._id === modifierId)
-        const textValue = (event.target as HTMLSelectElement).value;
+        const selectedChoiceId = (event.target as HTMLSelectElement).value;
         setModifiers(patch(modifiers(), [
-            { op: REPLACE, path: [modifierIndex, 'textModifierSelection'], value: textValue },
+            { op: REPLACE, path: [modifierIndex, 'textModifierSelection'], value: selectedChoiceId },
         ]))
     });
 
@@ -510,34 +556,12 @@ function ProductPageInteractive(
 
         setIsAddingToCart(true);
         try {
-            // Add to cart using the client context
-            await storesContext.cart.addToCurrentCart({
-                lineItems: [{
-                    catalogReference: {
-                        catalogItemId: fastCarryForward.productId,
-                        appId: '1380b703-ce81-ff05-f115-39571d94dfcd', // Wix Stores app ID
-                    },
-                    quantity: quantity()
-                }]
-            });
-
-            // Get updated cart to dispatch event
-            const cart = await storesContext.cart.getCurrentCart();
-            const itemCount = (cart?.lineItems || []).reduce(
-                (sum: number, item: { quantity?: number }) => sum + (item.quantity || 0),
-                0
-            );
+            // Build selections from viewState
+            const selections = buildSelectionsFromViewState(options(), modifiers());
             
-            console.log('Added to cart:', quantity(), 'items');
-            
-            // Dispatch cart update event for cart indicator
-            window.dispatchEvent(new CustomEvent('wix-cart-updated', {
-                detail: {
-                    itemCount,
-                    hasItems: itemCount > 0,
-                    subtotal: { amount: '0', formattedAmount: '', currency: 'USD' }
-                }
-            }));
+            // Add to cart - signals are updated automatically
+            await storesContext.addToCart(fastCarryForward.productId, quantity(), selections);
+            console.log('Added to cart:', quantity(), 'items with selections:', selections);
         } catch (error) {
             console.error('Failed to add to cart:', error);
         } finally {
@@ -579,6 +603,7 @@ function ProductPageInteractive(
 export const productPage = makeJayStackComponent<ProductPageContract>()
     .withProps<PageProps>()
     .withServices(WIX_STORES_SERVICE_MARKER)
+    .withContexts(WIX_STORES_CONTEXT)
     .withLoadParams(loadProductParams)
     .withSlowlyRender(renderSlowlyChanging)
     .withFastRender(renderFastChanging)

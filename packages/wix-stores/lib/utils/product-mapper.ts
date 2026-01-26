@@ -9,29 +9,18 @@ import {
     MediaType,
     PreorderStatus,
     ProductCardViewState,
-    ProductType
+    ProductType,
+    QuickAddType
 } from '../contracts/product-card.jay-contract';
-
+import {
+    ChoiceType,
+    OptionRenderType,
+    ProductOptionsViewState
+} from '../contracts/product-options.jay-contract';
+import { formatWixMediaUrl } from '@jay-framework/wix-utils';
 // ============================================================================
 // Helper Functions
 // ============================================================================
-
-/**
- * Format Wix media URL with optional resize parameters
- */
-export function formatWixMediaUrl(
-    _id: string, 
-    url: string, 
-    resize?: { w: number; h: number }
-): string {
-    const resizeFragment = resize ?
-        `/v1/fit/w_${resize.w},h_${resize.h},q_90/file.jpg` :
-        '';
-    if (url)
-        return url;
-    else
-        return `https://static.wixstatic.com/media/${_id}${resizeFragment}`;
-}
 
 /**
  * Map availability status string to enum
@@ -76,6 +65,75 @@ function isValidPrice(amount: string | undefined): boolean {
     if (!amount) return false;
     const numAmount = parseFloat(amount);
     return !isNaN(numAmount) && numAmount > 0;
+}
+
+// ============================================================================
+// Quick Add Option Mapping
+// ============================================================================
+
+/**
+ * Determine the quick add behavior type for a product.
+ * - SIMPLE: No options, show regular Add to Cart button
+ * - SINGLE_OPTION: One option, show choices on hover (click = add to cart)
+ * - NEEDS_CONFIGURATION: Multiple options or modifiers, link to product page
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getQuickAddType(product: any): QuickAddType {
+    const optionCount = product.options?.length ?? 0;
+    const hasModifiers = (product.modifiers?.length ?? 0) > 0;
+    
+    if (hasModifiers || optionCount > 1) {
+        return QuickAddType.NEEDS_CONFIGURATION;
+    }
+    if (optionCount === 1) {
+        return QuickAddType.SINGLE_OPTION;
+    }
+    return QuickAddType.SIMPLE;
+}
+
+/**
+ * Map option render type string to enum
+ */
+function mapOptionRenderType(renderType: string | undefined): OptionRenderType {
+    return renderType === 'COLOR_SWATCH_CHOICES' 
+        ? OptionRenderType.COLOR_SWATCH_CHOICES 
+        : OptionRenderType.TEXT_CHOICES;
+}
+
+/**
+ * Map choice type string to enum
+ */
+function mapChoiceType(choiceType: string | undefined): ChoiceType {
+    return choiceType === 'ONE_COLOR' ? ChoiceType.ONE_COLOR : ChoiceType.CHOICE_TEXT;
+}
+
+/**
+ * Map the primary option for quick-add functionality.
+ * For single-option products, maps the option with variant info to determine stock.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function mapQuickOption(option: any, variantsInfo: any): ProductOptionsViewState | null {
+    if (!option) return null;
+    
+    const optionId = option._id;
+    const choices = option.choicesSettings?.choices || [];
+
+    return {
+        _id: optionId,
+        name: option.name || '',
+        optionRenderType: mapOptionRenderType(option.optionRenderType),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        choices: choices.map((choice: any) => {
+            return {
+                choiceId: choice.choiceId,
+                name: choice.name || '',
+                choiceType: mapChoiceType(choice.choiceType),
+                colorCode: choice.colorCode || '',
+                inStock: choice.inStock,
+                isSelected: false
+            };
+        })
+    };
 }
 
 // ============================================================================
@@ -172,7 +230,12 @@ export function mapProductToCard(
         },
         productType: mapProductType(product.productType),
         visible: product.visible !== false,
-        isAddingToCart: false
+        isAddingToCart: false,
+        // Quick add behavior
+        quickAddType: getQuickAddType(product),
+        quickOption: getQuickAddType(product) === QuickAddType.SINGLE_OPTION
+            ? mapQuickOption(product.options?.[0], product.variantsInfo)
+            : null
     };
 }
 

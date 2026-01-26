@@ -12,8 +12,8 @@ import { makeJayInit } from '@jay-framework/fullstack-component';
 import { getService } from '@jay-framework/stack-server-runtime';
 import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
 
-import { provideWixStoresService } from './services/wix-stores-service.js';
-import { provideWixStoresContext, type WixStoresInitData } from './contexts/wix-stores-context.js';
+import { provideWixStoresService } from './services/wix-stores-service';
+import { provideWixStoresContext, type WixStoresInitData } from './contexts/wix-stores-context';
 
 // Re-export types for consumers
 export type { WixStoresInitData } from './contexts/wix-stores-context.js';
@@ -46,8 +46,13 @@ export const init = makeJayInit()
 
         const { enableClientCart, enableClientSearch } = data;
 
-        // Register the Wix Stores context (uses WIX_CLIENT_CONTEXT internally)
-        provideWixStoresContext();
+        // Register the reactive Wix Stores context (uses WIX_CLIENT_CONTEXT internally)
+        const storesContext = provideWixStoresContext();
+        
+        // Load initial cart indicator state
+        if (enableClientCart) {
+            await storesContext.refreshCartIndicator();
+        }
 
         console.log('[wix-stores] Client initialization complete');
         console.log(`[wix-stores] Cart enabled: ${enableClientCart}, Search enabled: ${enableClientSearch}`);

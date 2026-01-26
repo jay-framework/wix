@@ -5,9 +5,24 @@
  * Used by both context and components.
  */
 
+import type { currentCart } from '@wix/ecom';
+import type {
+    Cart,
+    LineItem,
+    CartDiscount
+} from '@wix/auto_sdk_ecom_current-cart';
+import { formatWixMediaUrl } from '@jay-framework/wix-utils';
+
 // ============================================================================
 // Types
 // ============================================================================
+
+type CurrentCartClient = typeof currentCart;
+
+// Get the return type of estimateCurrentCartTotals
+// The client method returns a Promise, so we need to unwrap it
+type EstimateMethod = CurrentCartClient['estimateCurrentCartTotals'];
+type EstimateTotalsResult = Awaited<ReturnType<ReturnType<EstimateMethod>>>;
 
 /**
  * Cart line item for display
@@ -83,90 +98,110 @@ export interface CartState {
 export interface CartIndicatorState {
     itemCount: number;
     hasItems: boolean;
-    subtotal: {
-        amount: string;
-        formattedAmount: string;
-        currency: string;
-    };
 }
 
 // ============================================================================
 // Helper Functions
 // ============================================================================
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type WixCart = any;
-
 /**
  * Map cart line item from Wix API to our format
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function mapLineItem(item: any): CartLineItem {
-    const catalogRef = item.catalogReference || {};
-    const physicalProperties = item.physicalProperties || {};
-    const media = item.image || item.media?.mainMedia?.image || {};
-    const priceData = item.price || {};
+export function mapLineItem(item: LineItem): CartLineItem {
+    const catalogRef = item.catalogReference;
+    const physicalProperties = item.physicalProperties;
+    const priceData = item.price;
     const descriptionLines = item.descriptionLines || [];
     
     // Build variant description from options
     const variantParts = descriptionLines
-        .filter((line: { name?: { translated?: string } }) => line.name?.translated)
-        .map((line: { name?: { translated?: string }, colorInfo?: { translated?: string }, plainText?: { translated?: string } }) => 
+        .filter(line => line.name?.translated)
+        .map(line => 
             `${line.name?.translated}: ${line.colorInfo?.translated || line.plainText?.translated || ''}`
         );
 
     return {
         lineItemId: item._id || '',
-        productId: catalogRef.catalogItemId || '',
+        productId: catalogRef?.catalogItemId || '',
         productName: item.productName?.translated || item.productName?.original || '',
-        productUrl: `/products/${item.url?.relativePath || catalogRef.catalogItemId || ''}`,
+        productUrl: `/products/${item.url || catalogRef?.catalogItemId || ''}`,
         variantName: variantParts.join(' / '),
-        sku: physicalProperties.sku || '',
+        sku: physicalProperties?.sku || '',
         image: {
-            url: media.url || '',
-            altText: media.altText || item.productName?.translated || ''
+            url: formatWixMediaUrl('', item.image || ''),
+            altText: item.productName?.translated || ''
         },
         quantity: item.quantity || 1,
         unitPrice: {
-            amount: priceData.amount || '0',
-            formattedAmount: priceData.formattedAmount || ''
+            amount: priceData?.amount || '0',
+            formattedAmount: priceData?.formattedAmount || ''
         },
         lineTotal: {
             amount: item.lineItemPrice?.amount || '0',
             formattedAmount: item.lineItemPrice?.formattedAmount || ''
         },
         lineDiscount: {
-            amount: item.discount?.amount || '0',
-            formattedAmount: item.discount?.formattedAmount || ''
+            amount: '0',
+            formattedAmount: ''
         },
-        hasDiscount: parseFloat(item.discount?.amount || '0') > 0
+        hasDiscount: false
     };
 }
 
 /**
- * Map cart to our summary format
+ * Calculate total discount from cart discounts (merchantDiscount has amount)
  */
-export function mapCartSummary(cart: WixCart): CartSummary {
-    const subtotal = cart?.subtotal || {};
-    const appliedDiscounts = cart?.appliedDiscounts || [];
-    const totalDiscount = appliedDiscounts.reduce(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (sum: number, d: any) => sum + parseFloat(d.discountAmount?.amount || '0'), 
+function calculateTotalDiscount(appliedDiscounts: CartDiscount[] | undefined): number {
+    if (!appliedDiscounts) return 0;
+    return appliedDiscounts.reduce(
+        (sum, d) => sum + parseFloat(d.merchantDiscount?.amount?.amount || '0'),
         0
     );
+}
+
+/**
+ * Calculate item count from line items
+ */
+function calculateItemCount(lineItems: LineItem[] | undefined): number {
+    if (!lineItems) return 0;
+    return lineItems.reduce(
+        (sum, item) => sum + (item.quantity || 0),
+        0
+    );
+}
+
+/**
+ * Get empty summary
+ */
+function getEmptySummary(): CartSummary {
+    return {
+        itemCount: 0,
+        subtotal: { amount: '0', formattedAmount: '$0.00' },
+        discount: { amount: '0', formattedAmount: '' },
+        hasDiscount: false,
+        estimatedTax: { amount: '0', formattedAmount: '' },
+        showTax: false,
+        estimatedTotal: { amount: '0', formattedAmount: '$0.00' },
+        currency: 'USD'
+    };
+}
+
+/**
+ * Map cart to our summary format (basic - without estimate totals)
+ */
+export function mapCartSummary(cart: Cart | null): CartSummary {
+    if (!cart) {
+        return getEmptySummary();
+    }
     
-    const lineItems = cart?.lineItems || [];
-    const itemCount = lineItems.reduce(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (sum: number, item: any) => sum + (item.quantity || 0), 
-        0
-    );
+    const totalDiscount = calculateTotalDiscount(cart.appliedDiscounts);
+    const itemCount = calculateItemCount(cart.lineItems);
 
     return {
         itemCount,
         subtotal: {
-            amount: subtotal.amount || '0',
-            formattedAmount: subtotal.formattedAmount || '$0.00'
+            amount: '0',
+            formattedAmount: '$0.00'
         },
         discount: {
             amount: totalDiscount.toString(),
@@ -177,27 +212,30 @@ export function mapCartSummary(cart: WixCart): CartSummary {
             amount: '0',
             formattedAmount: ''
         },
-        showTax: false, // Tax calculated at checkout
+        showTax: false,
         estimatedTotal: {
-            amount: subtotal.amount || '0',
-            formattedAmount: subtotal.formattedAmount || '$0.00'
+            amount: '0',
+            formattedAmount: '$0.00'
         },
-        currency: cart?.currency || 'USD'
+        currency: cart.currency || 'USD'
     };
 }
 
 /**
- * Map cart to full state
+ * Map cart to full state (basic - without estimate totals)
  */
-export function mapCartToState(cart: WixCart): CartState {
-    const lineItems = (cart?.lineItems || []).map(mapLineItem);
-    const appliedCoupon = cart?.appliedDiscounts?.find(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (d: any) => d.coupon?.code
+export function mapCartToState(cart: Cart | null): CartState {
+    if (!cart) {
+        return getEmptyCartState();
+    }
+    
+    const lineItems = (cart.lineItems || []).map(mapLineItem);
+    const appliedCoupon = cart.appliedDiscounts?.find(
+        d => d.coupon?.code
     )?.coupon?.code || '';
 
     return {
-        cartId: cart?._id || '',
+        cartId: cart._id || '',
         isEmpty: lineItems.length === 0,
         lineItems,
         summary: mapCartSummary(cart),
@@ -214,16 +252,7 @@ export function getEmptyCartState(): CartState {
         cartId: '',
         isEmpty: true,
         lineItems: [],
-        summary: {
-            itemCount: 0,
-            subtotal: { amount: '0', formattedAmount: '$0.00' },
-            discount: { amount: '0', formattedAmount: '' },
-            hasDiscount: false,
-            estimatedTax: { amount: '0', formattedAmount: '' },
-            showTax: false,
-            estimatedTotal: { amount: '0', formattedAmount: '$0.00' },
-            currency: 'USD'
-        },
+        summary: getEmptySummary(),
         appliedCoupon: '',
         hasAppliedCoupon: false
     };
@@ -232,35 +261,143 @@ export function getEmptyCartState(): CartState {
 /**
  * Map cart to indicator state (lightweight)
  */
-export function mapCartToIndicator(cart: WixCart): CartIndicatorState {
+export function mapCartToIndicator(cart: Cart | null): CartIndicatorState {
     if (!cart || !cart.lineItems?.length) {
         return {
             itemCount: 0,
-            hasItems: false,
-            subtotal: {
-                amount: '0',
-                formattedAmount: '$0.00',
-                currency: 'USD'
-            }
+            hasItems: false
         };
     }
 
-    const itemCount = cart.lineItems.reduce(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (sum: number, item: any) => sum + (item.quantity || 0), 
-        0
-    );
+    const itemCount = calculateItemCount(cart.lineItems);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const cartAny = cart as any;
     return {
         itemCount,
-        hasItems: itemCount > 0,
-        subtotal: {
-            amount: cartAny.subtotal?.amount || '0',
-            formattedAmount: cartAny.subtotal?.formattedAmount || '$0.00',
-            currency: cartAny.currency || 'USD'
-        }
+        hasItems: itemCount > 0
     };
 }
 
+// ============================================================================
+// API Helpers
+// ============================================================================
+
+interface ErrorWithDetails {
+    response?: { status?: number };
+    status?: number;
+    code?: number;
+    message?: string;
+}
+
+/**
+ * Check if an error is a 404 "cart not found" error.
+ * The Wix Cart API returns 404 when no cart exists yet (before first item is added).
+ */
+function isCartNotFoundError(error: unknown): boolean {
+    const err = error as ErrorWithDetails;
+    // Check for HTTP 404 status
+    if (err?.response?.status === 404) return true;
+    if (err?.status === 404) return true;
+    if (err?.code === 404) return true;
+    // Check for error message patterns
+    const message = err?.message?.toLowerCase() || '';
+    if (message.includes('not found') && message.includes('cart')) return true;
+    return false;
+}
+
+/**
+ * Get the current cart, treating 404 as an empty cart.
+ * 
+ * The Wix Cart API returns 404 when no cart exists (before first item is added).
+ * This helper normalizes that case to return null, which the mappers handle as empty.
+ */
+export async function getCurrentCartOrNull(
+    cartClient: CurrentCartClient
+): Promise<Cart | null> {
+    try {
+        const response = await cartClient.getCurrentCart();
+        return response ?? null;
+    } catch (error) {
+        if (isCartNotFoundError(error)) {
+            return null;
+        }
+        throw error;
+    }
+}
+
+/**
+ * Estimate the current cart totals, treating 404 as an empty cart.
+ * 
+ * This API provides complete price totals including tax calculations.
+ * Use this for cart pages where accurate totals are needed.
+ * 
+ * @see https://dev.wix.com/docs/sdk/backend-modules/ecom/current-cart/estimate-current-cart-totals
+ */
+export async function estimateCurrentCartTotalsOrNull(
+    cartClient: CurrentCartClient
+): Promise<EstimateTotalsResult | null> {
+    try {
+        const response = await cartClient.estimateCurrentCartTotals({});
+        return response ?? null;
+    } catch (error) {
+        if (isCartNotFoundError(error)) {
+            return null;
+        }
+        throw error;
+    }
+}
+
+/**
+ * Map estimate totals response to CartState.
+ * The estimate response includes calculated totals with tax.
+ */
+export function mapEstimateTotalsToState(estimate: EstimateTotalsResult | null): CartState {
+    if (!estimate?.cart) {
+        return getEmptyCartState();
+    }
+
+    const cart = estimate.cart;
+    const lineItems = (cart.lineItems || []).map(mapLineItem);
+    const appliedCoupon = cart.appliedDiscounts?.find(
+        d => d.coupon?.code
+    )?.coupon?.code || '';
+
+    const itemCount = lineItems.reduce((sum, item) => sum + item.quantity, 0);
+
+    // Extract totals from priceSummary (more accurate)
+    const priceSummary = estimate.priceSummary;
+    const taxSummary = estimate.taxSummary;
+    
+    // Use priceSummary.discount which gives us the total discount amount
+    const discountAmount = parseFloat(priceSummary?.discount?.amount || '0');
+    const hasTax = parseFloat(taxSummary?.totalTax?.amount || '0') > 0;
+
+    return {
+        cartId: cart._id || '',
+        isEmpty: lineItems.length === 0,
+        lineItems,
+        summary: {
+            itemCount,
+            subtotal: {
+                amount: priceSummary?.subtotal?.amount || '0',
+                formattedAmount: priceSummary?.subtotal?.formattedAmount || '$0.00'
+            },
+            discount: {
+                amount: discountAmount.toString(),
+                formattedAmount: priceSummary?.discount?.formattedAmount || ''
+            },
+            hasDiscount: discountAmount > 0,
+            estimatedTax: {
+                amount: taxSummary?.totalTax?.amount || '0',
+                formattedAmount: taxSummary?.totalTax?.formattedAmount || ''
+            },
+            showTax: hasTax,
+            estimatedTotal: {
+                amount: priceSummary?.total?.amount || priceSummary?.subtotal?.amount || '0',
+                formattedAmount: priceSummary?.total?.formattedAmount || priceSummary?.subtotal?.formattedAmount || '$0.00'
+            },
+            currency: cart.currency || 'USD'
+        },
+        appliedCoupon,
+        hasAppliedCoupon: !!appliedCoupon
+    };
+}
