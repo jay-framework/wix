@@ -11,9 +11,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@wix/ecom": "^1.0.753",
     "@wix/sdk": "^1.17.4",
-    "@wix/stores": "^1.0.563",
-    "@wix/ecom": "^1.0.753"
+    "@wix/stores": "^1.0.563"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

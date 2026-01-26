@@ -36,8 +36,8 @@
     "@jay-framework/stack-server-runtime": "^0.10.0",
     "@jay-framework/wix-server-client": "^1.0.0",
     "@jay-framework/wix-utils": "^1.0.0",
-    "@wix/sdk": "^1.17.4",
-    "@wix/data": "^1.0.341"
+    "@wix/data": "^1.0.341",
+    "@wix/sdk": "^1.17.4"
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",

@@ -11,9 +11,9 @@
     "build": "tsc"
   },
   "dependencies": {
+    "@wix/categories": "^1.0.165",
     "@wix/sdk": "^1.17.4",
     "@wix/stores": "^1.0.563",
-    "@wix/categories": "^1.0.165",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
