@@ -139,7 +139,8 @@ export const queryItems = makeJayQuery('wixData.queryItems')
         } = input;
         
         try {
-            let query = wixData.items.query(collectionId).limit(limit);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            let query: any = wixData.items.query(collectionId).limit(limit);
             
             // Apply cursor pagination
             if (cursor) {
@@ -156,12 +157,12 @@ export const queryItems = makeJayQuery('wixData.queryItems')
             // Apply filters
             query = Object.entries(filter)
                 .filter(([, value]) => value !== undefined && value !== null)
-                .reduce((q, [field, value]) => q.eq(field, value), query);
+                .reduce((q: any, [field, value]) => q.eq(field, value), query);
             
             const result = await query.find();
             
             return {
-                items: result.items.map(item => ({
+                items: result.items.map((item: any) => ({
                     _id: item._id!,
                     data: item.data || {}
                 })),
