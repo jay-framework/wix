@@ -14,8 +14,8 @@
     "test": ":"
   },
   "dependencies": {
-    "@jay-framework/fullstack-component": "^0.10.0",
-    "@jay-framework/jay-stack-cli": "^0.10.0",
+    "@jay-framework/fullstack-component": "^0.11.0",
+    "@jay-framework/jay-stack-cli": "^0.11.0",
     "@jay-framework/wix-data": "workspace:^",
     "@jay-framework/wix-server-client": "workspace:^",
     "compression": "^1.7.5",
@@ -23,7 +23,7 @@
     "sirv": "^3.0.0"
   },
   "devDependencies": {
-    "@jay-framework/jay-cli": "^0.10.0",
+    "@jay-framework/jay-cli": "^0.11.0",
     "@jay-framework/wix-dev-environment": "workspace:^",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.0",
