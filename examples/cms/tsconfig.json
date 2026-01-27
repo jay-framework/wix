@@ -1,5 +1,5 @@
 {
-  "extends": "@jay-framework/dev-environment/examples/tsconfig.json",
+  "extends": "@jay-framework/wix-dev-environment/examples/tsconfig.json",
   "compilerOptions": {
     "outDir": "dist"
   },

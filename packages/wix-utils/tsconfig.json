@@ -1,17 +1,6 @@
 {
+  "extends": "@jay-framework/wix-dev-environment/examples/tsconfig.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "lib": ["ES2022", "DOM"],
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "declaration": true,
-    "declarationMap": true,
     "outDir": "dist",
-    "rootDir": "lib"
-  },
-  "include": ["lib/**/*"],
-  "exclude": ["node_modules", "dist"]
+  }
 }
