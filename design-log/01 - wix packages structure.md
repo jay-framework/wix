@@ -8,11 +8,16 @@ The wix monorepo contains packages for integrating Jay Framework applications wi
 
 ```mermaid
 graph TD
-    A[wix-server-client] --> B[wix-stores]
+    A[wix-server-client] --> B[wix-stores V3]
+    A --> B1[wix-stores-v1]
     A --> C[wix-data]
     B --> D[store example app]
+    B1 --> D1[whisky-store example]
     A --> D
+    A --> D1
 ```
+
+**Note**: `wix-stores` uses Catalog V3 API (`productsV3`, `@wix/categories`), while `wix-stores-v1` uses Catalog V1 API (`products`, `collections`). Both use `@wix/ecom` for cart/checkout.
 
 ## Package: `@jay-framework/wix-server-client`
 

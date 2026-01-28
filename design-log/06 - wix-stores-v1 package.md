@@ -285,6 +285,7 @@ Package created at `wix/packages/wix-stores-v1/` with:
 - `lib/components/product-page.ts` - Product detail page with options/variants
 - `lib/components/product-search.ts` - Search with filtering, sorting, page-based pagination
 - `lib/components/collection-list.ts` - List of store collections (V1 uses collections, not categories)
+- `lib/components/collection-page.ts` - Collection detail page with products
 
 **Key V1 Component Differences:**
 - Uses `WIX_STORES_V1_SERVICE_MARKER` and `WIX_STORES_V1_CONTEXT`
@@ -303,4 +304,94 @@ Package created at `wix/packages/wix-stores-v1/` with:
 - ✅ Build succeeds with `yarn build`
 - ✅ Contracts reused from V3 without changes
 - ✅ Cart operations use shared @wix/ecom code
-- ✅ All 5 components created and exported
+- ✅ All 6 components created and exported
+- ✅ Whisky-store example migrated and working with V1 package
+
+---
+
+## Future Consideration: Shared Cart/Ecom Package
+
+### Problem
+
+Cart and checkout code is duplicated between `wix-stores` (V3) and `wix-stores-v1`:
+
+| File | V3 Lines | V1 Lines | Difference |
+|------|----------|----------|------------|
+| `cart-helpers.ts` | 404 | 404 | Identical |
+| `cart-indicator.ts` | 121 | 121 | ~39 lines (service marker) |
+| `cart-page.ts` | 391 | 391 | ~108 lines (service marker/context) |
+| `wix-stores-context.ts` | 435 | 435 | ~50% cart operations identical |
+
+**Total duplicated cart code: ~1,350 lines**
+
+### Why This Works
+
+Cart/checkout uses `@wix/ecom` which is **identical for V1 and V3**:
+- `currentCart` module for cart operations
+- `checkout` module for checkout flow
+- Same API responses and data structures
+
+### Proposal: `@jay-framework/wix-cart` Package
+
+```
+wix-cart/
+├── lib/
+│   ├── index.ts              # Server exports
+│   ├── index.client.ts       # Client exports
+│   ├── init.ts               # Optional: standalone cart init
+│   ├── components/
+│   │   ├── cart-indicator.ts # Shared cart indicator component
+│   │   └── cart-page.ts      # Shared cart page component
+│   ├── contexts/
+│   │   ├── cart-context.ts   # Shared cart context (reactive state)
+│   │   └── cart-helpers.ts   # Cart data mapping utilities
+│   ├── services/
+│   │   └── cart-service.ts   # Server-side cart service
+│   └── contracts/
+│       ├── cart-indicator.jay-contract
+│       └── cart-page.jay-contract
+├── plugin.yaml
+└── package.json
+```
+
+### Integration Options
+
+**Option A: Direct dependency**
+```typescript
+// wix-stores-v1/lib/index.ts
+export { cartIndicator, cartPage } from '@jay-framework/wix-cart';
+export { WIX_CART_CONTEXT } from '@jay-framework/wix-cart';
+```
+
+**Option B: Composition (inject service)**
+```typescript
+// wix-stores-v1/lib/init.ts
+import { provideCartService } from '@jay-framework/wix-cart';
+
+export const init = makeJayInit()
+  .withServer(async () => {
+    const wixClient = getService(WIX_CLIENT_SERVICE);
+    provideWixStoresV1Service(wixClient);
+    provideCartService(wixClient);  // Shared cart
+  });
+```
+
+### Trade-offs
+
+| Approach | Benefit | Cost |
+|----------|---------|------|
+| Extract cart package | Single source of truth, reduced maintenance | Additional package, more complex dependency graph |
+| Keep duplicated | Simpler structure, packages are self-contained | ~1,350 lines duplicated, bug fixes needed in both |
+
+### Questions to Resolve
+
+1. **Should cart have its own init or piggyback on stores init?**
+2. **How to handle service marker naming?** (WIX_CART_SERVICE vs WIX_STORES_SERVICE.cart)
+3. **Should cart-context use WIX_CLIENT_CONTEXT directly or get injected?**
+
+### Decision
+
+**Deferred** - Current duplication is manageable. Consider extraction when:
+- Adding a third stores package (e.g., V2 or different region)
+- Significant cart feature additions
+- Bug fixes repeatedly needed in both packages
