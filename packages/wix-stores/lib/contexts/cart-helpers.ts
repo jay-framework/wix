@@ -119,12 +119,13 @@ export function mapLineItem(item: LineItem): CartLineItem {
         .map(line => 
             `${line.name?.translated}: ${line.colorInfo?.translated || line.plainText?.translated || ''}`
         );
+    const slug = item.url.split('/').pop();
 
     return {
         lineItemId: item._id || '',
         productId: catalogRef?.catalogItemId || '',
         productName: item.productName?.translated || item.productName?.original || '',
-        productUrl: `/products/${item.url || catalogRef?.catalogItemId || ''}`,
+        productUrl: `/products/${slug}`,
         variantName: variantParts.join(' / '),
         sku: physicalProperties?.sku || '',
         image: {
