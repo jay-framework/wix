@@ -2377,7 +2377,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jay-framework/wix-stores-v1@workspace:packages/wix-stores-v1":
+"@jay-framework/wix-stores-v1@workspace:^, @jay-framework/wix-stores-v1@workspace:packages/wix-stores-v1":
   version: 0.0.0-use.local
   resolution: "@jay-framework/wix-stores-v1@workspace:packages/wix-stores-v1"
   dependencies:
@@ -6088,7 +6088,7 @@ __metadata:
     "@jay-framework/jay-stack-cli": "npm:^0.11.0"
     "@jay-framework/wix-dev-environment": "workspace:^"
     "@jay-framework/wix-server-client": "workspace:^"
-    "@jay-framework/wix-stores": "workspace:^"
+    "@jay-framework/wix-stores-v1": "workspace:^"
     "@types/express": "npm:^5.0.0"
     "@types/node": "npm:^22.10.0"
     compression: "npm:^1.7.5"

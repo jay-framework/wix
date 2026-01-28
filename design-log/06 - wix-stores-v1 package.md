@@ -275,16 +275,32 @@ Package created at `wix/packages/wix-stores-v1/` with:
 **Deviations from Design:**
 1. **No getProductBySlug API** - V1 doesn't have `getProductBySlug()`, implemented via `queryProducts().eq('slug', slug)`
 2. **Sort field names** - V1 uses `priceData.price` and `lastUpdated` instead of `price.price` and `_createdDate`
-3. **Type casts needed** - Wix SDK types don't match actual V1 response structure, used `as any as V1Product` casts
-4. **Components not copied** - Deferred component copying; server actions + client context cover initial use cases
+3. **Type cleanup** - Removed custom type casts, now uses native Wix SDK types (`Product` from `@wix/auto_sdk_stores_products`, `Collection` from `@wix/auto_sdk_stores_collections`)
+
+### Components Added: 2026-01-28
+
+**Component Files Created:**
+- `lib/components/cart-indicator.ts` - Cart indicator for headers, uses V1 service/context
+- `lib/components/cart-page.ts` - Full cart page with line item management
+- `lib/components/product-page.ts` - Product detail page with options/variants
+- `lib/components/product-search.ts` - Search with filtering, sorting, page-based pagination
+- `lib/components/collection-list.ts` - List of store collections (V1 uses collections, not categories)
+
+**Key V1 Component Differences:**
+- Uses `WIX_STORES_V1_SERVICE_MARKER` and `WIX_STORES_V1_CONTEXT`
+- Product page maps V1 `productOptions` instead of V3 `options.choicesSettings`
+- Product search uses page-based pagination (`page: 1, 2, 3...`) instead of cursor-based
+- Collection list queries `collections` module instead of `categories`
+- V1 variant matching uses `variant.choices` (Record<optionName, choiceValue>)
 
 **Build Output:**
-- `dist/index.js` - Server bundle (12.68 KB)
-- `dist/index.client.js` - Client bundle (21.43 KB)
-- `dist/index.d.ts` - Type definitions (15.75 KB)
+- `dist/index.js` - Server bundle (26.28 KB)
+- `dist/index.client.js` - Client bundle (21.42 KB)
+- `dist/index.d.ts` - Type definitions (40.57 KB)
 - `dist/contracts/*.jay-contract*` - Contract files and definitions
 
 **Verification:**
 - ✅ Build succeeds with `yarn build`
 - ✅ Contracts reused from V3 without changes
 - ✅ Cart operations use shared @wix/ecom code
+- ✅ All 5 components created and exported

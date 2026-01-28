@@ -2,10 +2,18 @@
  * Wix Stores V1 Package - Client Entry Point
  * 
  * This is the entry point for client-side imports.
- * Provides the context for direct API access.
+ * Provides the context for direct API access and component definitions.
  * 
  * Uses Wix Catalog V1 API (products module) instead of V3 (productsV3).
  */
+
+// Export headless components
+export * from './components/cart-page';
+export * from './components/product-page';
+export * from './components/cart-indicator';
+export * from './components/product-search';
+export * from './components/collection-page';
+export * from './components/collection-list';
 
 // Export client context and types
 export {

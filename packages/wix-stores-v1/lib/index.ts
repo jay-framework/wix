@@ -31,7 +31,15 @@ export {
 export * from './actions/stores-v1-actions';
 
 // Export product mapper types
-export type { V1Product, CollectionViewState } from './utils/product-mapper-v1';
+export type { V1Collection, CollectionViewState } from './utils/product-mapper-v1';
+
+// Export components
+export { cartIndicator } from './components/cart-indicator';
+export { cartPage } from './components/cart-page';
+export { productPage, type ProductPageParams } from './components/product-page';
+export { productSearch } from './components/product-search';
+export { collectionList, categoryList } from './components/collection-list';
+export { collectionPage, categoryPage, type CollectionPageParams } from './components/collection-page';
 
 // Export init
 export { init } from './init.js';

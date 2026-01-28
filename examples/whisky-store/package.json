@@ -21,7 +21,7 @@
     "@jay-framework/fullstack-component": "^0.11.0",
     "@jay-framework/jay-stack-cli": "^0.11.0",
     "@jay-framework/wix-server-client": "workspace:^",
-    "@jay-framework/wix-stores": "workspace:^",
+    "@jay-framework/wix-stores-v1": "workspace:^",
     "compression": "^1.7.5",
     "express": "^5.0.1",
     "sirv": "^3.0.0"
