@@ -22,12 +22,17 @@ export const WIX_CLIENT_CONTEXT = createJayContext<WixClientContext>();
 
 const TOKENS_STORAGE_KEY = 'wix_visitor_tokens';
 
+interface StoredTokens {
+    tokens: Tokens,
+    oauthClientId: string
+}
+
 /**
  * Store visitor tokens in localStorage for session persistence.
  */
-function storeTokens(tokens: Tokens): void {
+function storeTokens(tokens: Tokens, oauthClientId: string): void {
     try {
-        localStorage.setItem(TOKENS_STORAGE_KEY, JSON.stringify(tokens));
+        localStorage.setItem(TOKENS_STORAGE_KEY, JSON.stringify({tokens, oauthClientId}));
     } catch (error) {
         console.warn('[WixClient] Failed to store tokens:', error);
     }
@@ -36,7 +41,7 @@ function storeTokens(tokens: Tokens): void {
 /**
  * Retrieve stored visitor tokens from localStorage.
  */
-function getStoredTokens(): Tokens | null {
+function getStoredTokens(): StoredTokens | null {
     try {
         const stored = localStorage.getItem(TOKENS_STORAGE_KEY);
         if (stored) {
@@ -60,20 +65,20 @@ export function clearStoredTokens(): void {
 }
 
 export async function provideWixClientContext(oauthClientId: string) {
-    const existingTokens = getStoredTokens();
+    const storedTokens = getStoredTokens();
 
     console.log('[wix-server-client] createClient with tokens: ', undefined);
     const wixClient = createClient({
         auth: OAuthStrategy({
             clientId: oauthClientId,
-            tokens: existingTokens,
+            tokens: (storedTokens?.oauthClientId === oauthClientId)?storedTokens.tokens: undefined,
         }),
     });
 
-    if (!existingTokens) {
+    if (!storedTokens || !storedTokens?.oauthClientId) {
         const tokens = await wixClient.auth.generateVisitorTokens();
         wixClient.auth.setTokens(tokens);
-        storeTokens(tokens);
+        storeTokens(tokens, oauthClientId);
     }
 
     const clientContext: WixClientContext = {
@@ -86,7 +91,7 @@ export async function provideWixClientContext(oauthClientId: string) {
 
         async generateVisitorTokens(): Promise<Tokens> {
             const tokens = await wixClient.auth.generateVisitorTokens();
-            storeTokens(tokens);
+            storeTokens(tokens, oauthClientId);
             return tokens;
         },
 
@@ -96,7 +101,7 @@ export async function provideWixClientContext(oauthClientId: string) {
                 throw new Error('No refresh token available');
             }
             const tokens = await wixClient.auth.renewToken(currentTokens.refreshToken);
-            storeTokens(tokens);
+            storeTokens(tokens, oauthClientId);
             return tokens;
         },
     };
