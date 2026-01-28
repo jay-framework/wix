@@ -1,0 +1,163 @@
+{
+  "name": "Octave Premium- Bowmore- 22Y- 53.7%",
+  "slug": "octave-premium-bowmore-22y-53-7",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Distilled at Bowmore distillery</p><p>Aged 22 years</p><p>Finished in a Sherry octave</p><p>Bottled at cask strength of 53.7%</p><p>No chilled filtration, no added coulors</p>",
+  "sku": "1-17-0037",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 1,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 3300,
+    "discountedPrice": 3300,
+    "formatted": {
+      "price": "€3,300.00",
+      "discountedPrice": "€3,300.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 3300,
+    "discountedPrice": 3300,
+    "formatted": {
+      "price": "€3,300.00",
+      "discountedPrice": "€3,300.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 3300,
+    "discountedPrice": 3300,
+    "formatted": {
+      "price": "€3,300.00",
+      "discountedPrice": "€3,300.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 3300,
+    "maxValue": 3300
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_a674d850d75047ff8bc67df429051b9a~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Bowmore 22",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_a674d850d75047ff8bc67df429051b9a~mv2.jpg/v1/fit/w_3000,h_3000,q_90/file.jpg",
+        "width": 3000,
+        "height": 3000
+      },
+      "_id": "9e37b5_a674d850d75047ff8bc67df429051b9a~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_a674d850d75047ff8bc67df429051b9a~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Bowmore 22",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_a674d850d75047ff8bc67df429051b9a~mv2.jpg/v1/fit/w_3000,h_3000,q_90/file.jpg",
+          "width": 3000,
+          "height": 3000
+        },
+        "_id": "9e37b5_a674d850d75047ff8bc67df429051b9a~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_b1b5cde692e44193bf273f9960e0ec5c~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Bowmor 22 B",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_b1b5cde692e44193bf273f9960e0ec5c~mv2.jpg/v1/fit/w_3000,h_1687,q_90/file.jpg",
+          "width": 3000,
+          "height": 1687
+        },
+        "_id": "9e37b5_b1b5cde692e44193bf273f9960e0ec5c~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/octave-premium-bowmore-22y-53-7"
+  },
+  "numericId": "1683473786927000",
+  "inventoryItemId": "cf453cd9-2a29-60a0-326e-2473ad278201",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "afbb8d22-bee3-0505-04e8-19b611c6cefd",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "cf6d654f-913c-89f8-1ecf-27e3d699ed91",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 3300,
+          "discountedPrice": 3300,
+          "formatted": {
+            "price": "€3,300.00",
+            "discountedPrice": "€3,300.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 3300,
+          "discountedPrice": 3300,
+          "formatted": {
+            "price": "€3,300.00",
+            "discountedPrice": "€3,300.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0037",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 1,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:30.916Z",
+  "ribbon": "",
+  "exportProductId": "product_30bac326-d5d6-9f5f-cd91-db8c52d87dfe",
+  "_id": "30bac326-d5d6-9f5f-cd91-db8c52d87dfe",
+  "_createdDate": "2023-05-07T15:36:26.927Z"
+}

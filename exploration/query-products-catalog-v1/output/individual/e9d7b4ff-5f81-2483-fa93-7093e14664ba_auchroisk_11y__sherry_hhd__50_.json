@@ -1,0 +1,150 @@
+{
+  "name": "Auchroisk 11y- Sherry HHD- 50%",
+  "slug": "auchroisk-11y-sherry-hhd-50",
+  "visible": true,
+  "productType": "physical",
+  "description": "",
+  "sku": "1-13-0141",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 9,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 390,
+    "discountedPrice": 390,
+    "formatted": {
+      "price": "€390.00",
+      "discountedPrice": "€390.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 390,
+    "discountedPrice": 390,
+    "formatted": {
+      "price": "€390.00",
+      "discountedPrice": "€390.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 390,
+    "discountedPrice": 390,
+    "formatted": {
+      "price": "€390.00",
+      "discountedPrice": "€390.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 390,
+    "maxValue": 390
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_b3dca80931364a13a6d3340e7810c1c4~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Auchroisk 11y- Sherry HHD- 50%.jpeg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_b3dca80931364a13a6d3340e7810c1c4~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+        "width": 2048,
+        "height": 2048
+      },
+      "_id": "9e37b5_b3dca80931364a13a6d3340e7810c1c4~mv2.jpeg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_b3dca80931364a13a6d3340e7810c1c4~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Auchroisk 11y- Sherry HHD- 50%.jpeg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_b3dca80931364a13a6d3340e7810c1c4~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+          "width": 2048,
+          "height": 2048
+        },
+        "_id": "9e37b5_b3dca80931364a13a6d3340e7810c1c4~mv2.jpeg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/auchroisk-11y-sherry-hhd-50"
+  },
+  "numericId": "1768150522953000",
+  "inventoryItemId": "16284b00-a07e-db7c-056c-8f6c1eb99b45",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "2c5a43aa-9722-192f-0419-196ed97df100",
+    "755de31a-1269-869e-349c-43886d8a449a",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "027e205e-bc32-8267-f8b0-7eb8ac411e39",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 390,
+          "discountedPrice": 390,
+          "formatted": {
+            "price": "€390.00",
+            "discountedPrice": "€390.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 390,
+          "discountedPrice": 390,
+          "formatted": {
+            "price": "€390.00",
+            "discountedPrice": "€390.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-13-0141",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 9,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-11T16:59:37.275Z",
+  "ribbon": "",
+  "exportProductId": "product_e9d7b4ff-5f81-2483-fa93-7093e14664ba",
+  "_id": "e9d7b4ff-5f81-2483-fa93-7093e14664ba",
+  "_createdDate": "2026-01-11T16:55:22.953Z"
+}

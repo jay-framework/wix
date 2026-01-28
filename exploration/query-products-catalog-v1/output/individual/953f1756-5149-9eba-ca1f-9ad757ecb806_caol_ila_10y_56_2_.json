@@ -1,0 +1,163 @@
+{
+  "name": "Caol Ila 10y 56.2%",
+  "slug": "caol-ila-10y-56-2",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><strong>Distilled at Caol Ila Distillery</strong></p><p>Matured in A first fill Oloroso Sherry Hogshead for 10 years</p><p>Bottled at a cask strength of 56.2%,<br>keeping its natural colour and without chill filtration</p><p>&nbsp;</p><p><strong><u>Tasting notes by the AlphaBet Whisky Advisory Board</u></strong></p><p><strong>Nose</strong></p><p>Bonfire, wood, dry earthy smoke from coals, pickled cucumbers brine, barbeque, Maple</p><p><strong>Palate</strong></p><p>Heavily caramelized onions, roasted pecans, smoke, caramel, ashes</p><p><strong>Finish</strong></p><p>Very Long and lasting finish, dryness, roasted pecans, sirup sweetness</p><p>&nbsp;</p><p>The Board's final word: <em><strong>do not destroy it with &nbsp;water</strong></em></p><p>&nbsp;</p>",
+  "sku": "1-12-0053",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 23,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 470,
+    "discountedPrice": 470,
+    "formatted": {
+      "price": "€470.00",
+      "discountedPrice": "€470.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 470,
+    "discountedPrice": 470,
+    "formatted": {
+      "price": "€470.00",
+      "discountedPrice": "€470.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 470,
+    "discountedPrice": 470,
+    "formatted": {
+      "price": "€470.00",
+      "discountedPrice": "€470.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 470,
+    "maxValue": 470
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_174b15c1f3e34aae9bb1200dd934bbd5~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251126_194615.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_174b15c1f3e34aae9bb1200dd934bbd5~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_174b15c1f3e34aae9bb1200dd934bbd5~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_174b15c1f3e34aae9bb1200dd934bbd5~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251126_194615.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_174b15c1f3e34aae9bb1200dd934bbd5~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_174b15c1f3e34aae9bb1200dd934bbd5~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_2abd3017603d4b49be382b7f58729df4~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Caol Ila 10.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_2abd3017603d4b49be382b7f58729df4~mv2.jpg/v1/fit/w_388,h_541,q_90/file.jpg",
+          "width": 388,
+          "height": 541
+        },
+        "_id": "9e37b5_2abd3017603d4b49be382b7f58729df4~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/caol-ila-10y-56-2"
+  },
+  "numericId": "1761832680043000",
+  "inventoryItemId": "6ac0e8a9-aeb6-6145-35e0-6528a81347f9",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "1c54c59f-7f38-1790-b8b6-a19bb70c51fc",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "d9b79021-229d-dbd2-7d1c-d7ca1570efe8",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 470,
+          "discountedPrice": 470,
+          "formatted": {
+            "price": "€470.00",
+            "discountedPrice": "€470.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 470,
+          "discountedPrice": 470,
+          "formatted": {
+            "price": "€470.00",
+            "discountedPrice": "€470.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-12-0053",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 23,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-08T13:35:05.936Z",
+  "ribbon": "",
+  "exportProductId": "product_953f1756-5149-9eba-ca1f-9ad757ecb806",
+  "_id": "953f1756-5149-9eba-ca1f-9ad757ecb806",
+  "_createdDate": "2025-10-30T13:58:00.043Z"
+}

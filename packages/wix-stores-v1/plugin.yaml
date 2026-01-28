@@ -1,0 +1,28 @@
+name: wix-stores-v1
+# Wix Stores package using Catalog V1 API
+
+contracts:
+  - name: product-page
+    contract: product-page.jay-contract
+    component: productPage
+    description: Complete headless product page with server-side rendering (Catalog V1)
+  - name: product-search
+    contract: product-search.jay-contract
+    component: productSearch
+    description: Headless product search page (Catalog V1)
+  - name: cart-indicator
+    contract: cart-indicator.jay-contract
+    component: cartIndicator
+    description: Lightweight cart indicator for site headers showing item count
+  - name: cart-page
+    contract: cart-page.jay-contract
+    component: cartPage
+    description: Full cart page with line item management and checkout
+
+# Server actions (named exports from main module)
+actions:
+  - searchProducts
+  - getProductBySlug
+  - getCollections
+
+# Plugin initialization uses makeJayInit pattern in lib/init.ts

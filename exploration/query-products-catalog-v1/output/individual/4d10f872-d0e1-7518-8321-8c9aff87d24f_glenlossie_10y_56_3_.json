@@ -1,0 +1,163 @@
+{
+  "name": "Glenlossie 10y 56.3%",
+  "slug": "glenlossie-10y-56-3",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><strong>Distilled at Glenlossie Distillery</strong></p><p><em>Matured in refill Bourbon Hogshead</em></p><p><em>Aged for 10 years and bottled at a cask strength of 56.3%,&nbsp;<br>keeping its&nbsp;natural colour and without&nbsp;chill filtration</em></p><p>&nbsp;</p><p><u><strong>Tasting notes by the AlphaBet Whisky Advisory Board</strong></u></p><p><strong>Nose </strong></p><p>Lemon tart, baked green apples, green almonds, white pepper, green grass, morning chill freshness</p><p><strong style=\"background-color: transparent;\">Palate</strong></p><p><span style=\"background-color: transparent;\">Nice and sweet. Continues the nose, adding to it- grapes peels and yellow apples</span></p><p><strong style=\"background-color: transparent;\">Finish</strong></p><p>long and warm. The sweetness continues mixed with&nbsp;bitterness from&nbsp;hops or from yellow grapefruit peels, dry seasoning herbs.</p><p>&nbsp;</p><p>The Board's&nbsp; final word: <em><strong>Scotland at it's best</strong></em>- you can add&nbsp;some water</p><p>&nbsp;</p>",
+  "sku": "1-12-0054",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 14,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 420,
+    "discountedPrice": 420,
+    "formatted": {
+      "price": "€420.00",
+      "discountedPrice": "€420.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 420,
+    "discountedPrice": 420,
+    "formatted": {
+      "price": "€420.00",
+      "discountedPrice": "€420.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 420,
+    "discountedPrice": 420,
+    "formatted": {
+      "price": "€420.00",
+      "discountedPrice": "€420.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 420,
+    "maxValue": 420
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_c041457511ec44a592f41e531b5d74e6~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251126_194230.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_c041457511ec44a592f41e531b5d74e6~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_c041457511ec44a592f41e531b5d74e6~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_c041457511ec44a592f41e531b5d74e6~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251126_194230.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_c041457511ec44a592f41e531b5d74e6~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_c041457511ec44a592f41e531b5d74e6~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_9da667e5b98144b6ab49dcf7ffc9bb33~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Glenlossie.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_9da667e5b98144b6ab49dcf7ffc9bb33~mv2.jpg/v1/fit/w_389,h_539,q_90/file.jpg",
+          "width": 389,
+          "height": 539
+        },
+        "_id": "9e37b5_9da667e5b98144b6ab49dcf7ffc9bb33~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/glenlossie-10y-56-3"
+  },
+  "numericId": "1761832806249000",
+  "inventoryItemId": "b2ef078d-2f1e-8ae7-7cde-736500782db0",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "1c54c59f-7f38-1790-b8b6-a19bb70c51fc",
+    "aa3374e6-8c2d-d7c4-e84b-58e469db25fd",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 420,
+          "discountedPrice": 420,
+          "formatted": {
+            "price": "€420.00",
+            "discountedPrice": "€420.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 420,
+          "discountedPrice": 420,
+          "formatted": {
+            "price": "€420.00",
+            "discountedPrice": "€420.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-12-0054",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 14,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-08T13:35:05.936Z",
+  "ribbon": "",
+  "exportProductId": "product_4d10f872-d0e1-7518-8321-8c9aff87d24f",
+  "_id": "4d10f872-d0e1-7518-8321-8c9aff87d24f",
+  "_createdDate": "2025-10-30T14:00:06.249Z"
+}

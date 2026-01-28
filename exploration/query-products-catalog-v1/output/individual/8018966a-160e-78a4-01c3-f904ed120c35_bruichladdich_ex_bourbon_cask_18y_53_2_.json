@@ -1,0 +1,163 @@
+{
+  "name": "Bruichladdich Ex Bourbon cask 18Y 53.2%",
+  "slug": "rbt-bruichladdich-ex-bourbon-cask-18y-53-2",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Distilled at Bruichladdich Distillery,&nbsp;</p><p>&nbsp;</p><p>Matured for 18&nbsp;years in an Ex-Bourbon Barrel</p><p>Bottled at 53.2%&nbsp;ABV without chilled filtration or coloring</p><p>&nbsp;</p><p><u><strong>Tasting notes by the AlphaBet Advisory Board</strong></u></p><p><strong>Nose:</strong></p><p><em>&nbsp; Green apple with red sugar glaze, honeycomb,&nbsp;&nbsp;nectar</em></p><p><em>&nbsp; After Water- bubblegum, marshmallow, warmed brown sugar</em></p><p><strong>Pallet</strong><em>:</em></p><p><em>&nbsp; Red apples, fried apple slices, apple puree.</em></p><p><em>&nbsp; After Water- Candy shop- all kinds of marshmallows, sweets, and sower candies together.</em></p><p><strong>Finish:</strong></p><p><em>&nbsp; Long. starting with caramel, apple-cinnamon marmalade, gentle woody bitterness, walnuts</em></p><p>&nbsp;</p><p><em><strong>the team's advice- You can try adding water but you don't have to</strong></em></p>",
+  "sku": "1-10-0012",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 23,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 990,
+    "maxValue": 990
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "AA- R&B WHISKY CS.JPG",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg/v1/fit/w_677,h_638,q_90/file.jpg",
+        "width": 677,
+        "height": 638
+      },
+      "_id": "9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "AA- R&B WHISKY CS.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg/v1/fit/w_677,h_638,q_90/file.jpg",
+          "width": 677,
+          "height": 638
+        },
+        "_id": "9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_fff7e59257284aa7b1e2fc3f361dcbf0~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "W- BRUICHLLADDICH 2004 - 13 BACK.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_fff7e59257284aa7b1e2fc3f361dcbf0~mv2.jpg/v1/fit/w_706,h_665,q_90/file.jpg",
+          "width": 706,
+          "height": 665
+        },
+        "_id": "9e37b5_fff7e59257284aa7b1e2fc3f361dcbf0~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/rbt-bruichladdich-ex-bourbon-cask-18y-53-2"
+  },
+  "numericId": "1729359922937000",
+  "inventoryItemId": "7fe76995-e9f1-875b-fe3c-06fb12edf3ca",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "68b702b3-fae1-92a2-e95b-3ea1f4527dec",
+    "2311636b-a702-fed0-2f80-ee0fdda0c837",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 990,
+          "discountedPrice": 990,
+          "formatted": {
+            "price": "€990.00",
+            "discountedPrice": "€990.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 990,
+          "discountedPrice": 990,
+          "formatted": {
+            "price": "€990.00",
+            "discountedPrice": "€990.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-10-0012",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 23,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:40.253Z",
+  "ribbon": "",
+  "exportProductId": "product_8018966a-160e-78a4-01c3-f904ed120c35",
+  "_id": "8018966a-160e-78a4-01c3-f904ed120c35",
+  "_createdDate": "2024-10-19T17:45:22.937Z"
+}

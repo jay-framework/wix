@@ -1,0 +1,149 @@
+{
+  "name": "Invergordon 14y- 53.1%",
+  "slug": "invergordon-14y-53-1",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><u><strong><em>Distilled at North British&nbsp;distillery-</em></strong></u></p><p><strong><em>This Whisky was aged in a bourbon cask&nbsp;for 14&nbsp;years. It was finished in a Sherry Octave and&nbsp;bottled at Cask strength of 53.1%</em></strong></p><p>&nbsp;</p><p><u><strong>Tasting notes by the AlphaBet Whisky Advisory Board</strong></u></p><p><strong>Nose </strong></p><p>Cough syrup, cocoa, café au lait, artificial cooking rum essence, a little touch of reduced balsamic vinegar, lemon zest</p><p><strong>Palate</strong></p><p>Brown butter, brown sugar</p><p><strong>Finish</strong></p><p>Extremely long and bitter, a touch of wild berries and of varnish</p><p>&nbsp;</p><p><strong><em>Teams advise- you can try adding a drop of water</em></strong></p>",
+  "sku": "1-17-0084",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 17,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 270,
+    "discountedPrice": 270,
+    "formatted": {
+      "price": "€270.00",
+      "discountedPrice": "€270.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 270,
+    "discountedPrice": 270,
+    "formatted": {
+      "price": "€270.00",
+      "discountedPrice": "€270.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 270,
+    "discountedPrice": 270,
+    "formatted": {
+      "price": "€270.00",
+      "discountedPrice": "€270.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 270,
+    "maxValue": 270
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_2fa4139670724d399b6bd918a92237e8~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251203_115912.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_2fa4139670724d399b6bd918a92237e8~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_2fa4139670724d399b6bd918a92237e8~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_2fa4139670724d399b6bd918a92237e8~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251203_115912.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_2fa4139670724d399b6bd918a92237e8~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_2fa4139670724d399b6bd918a92237e8~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/invergordon-14y-53-1"
+  },
+  "numericId": "1765300307603000",
+  "inventoryItemId": "8e42b661-69b6-9735-34c1-d36692348bc3",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "d585e961-a952-a3fa-3ac3-6b505715ca74",
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "ea47b020-c4f2-1d81-ffb1-86f71ae4dc71",
+    "de7f068a-f629-229c-e178-ac88520f8b0e",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 270,
+          "discountedPrice": 270,
+          "formatted": {
+            "price": "€270.00",
+            "discountedPrice": "€270.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 270,
+          "discountedPrice": 270,
+          "formatted": {
+            "price": "€270.00",
+            "discountedPrice": "€270.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0084",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 17,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-09T18:27:34.159Z",
+  "ribbon": "",
+  "exportProductId": "product_71bd499e-9649-68ca-cb3e-2c996dcb743c",
+  "_id": "71bd499e-9649-68ca-cb3e-2c996dcb743c",
+  "_createdDate": "2025-12-09T17:11:47.603Z"
+}

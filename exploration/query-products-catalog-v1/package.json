@@ -1,0 +1,22 @@
+{
+  "name": "query-products-catalog-v1",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Query Wix products using Catalog V1 API",
+  "private": true,
+  "scripts": {
+    "start": "node --loader ts-node/esm query-products.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@wix/sdk": "^1.17.4",
+    "@wix/stores": "^1.0.563",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

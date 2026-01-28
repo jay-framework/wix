@@ -1,0 +1,149 @@
+{
+  "name": "Peat's Beast- PX finish- 54.1%",
+  "slug": "peat-s-beast-px-finish-54-1",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><u><strong><em>Distilled at an un-disclosed (non Islay) distillery-</em></strong></u></p><p><strong><em>This Whisky was aged in bourbon casks and finished in PX casks for seseral months before it was bottled at batch strength of 54.1%</em></strong></p><p>&nbsp;</p><p><strong>A perfect balance between the peat and the sherry.</strong></p>",
+  "sku": "1-11-0001",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 24,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 289,
+    "discountedPrice": 289,
+    "formatted": {
+      "price": "€289.00",
+      "discountedPrice": "€289.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 289,
+    "discountedPrice": 289,
+    "formatted": {
+      "price": "€289.00",
+      "discountedPrice": "€289.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 289,
+    "discountedPrice": 289,
+    "formatted": {
+      "price": "€289.00",
+      "discountedPrice": "€289.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 289,
+    "maxValue": 289
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_05b114a6943d4aa8b02d9875bf05eec8~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "PEATS BEAST PX.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_05b114a6943d4aa8b02d9875bf05eec8~mv2.jpg/v1/fit/w_1280,h_1280,q_90/file.jpg",
+        "width": 1280,
+        "height": 1280
+      },
+      "_id": "9e37b5_05b114a6943d4aa8b02d9875bf05eec8~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_05b114a6943d4aa8b02d9875bf05eec8~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "PEATS BEAST PX.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_05b114a6943d4aa8b02d9875bf05eec8~mv2.jpg/v1/fit/w_1280,h_1280,q_90/file.jpg",
+          "width": 1280,
+          "height": 1280
+        },
+        "_id": "9e37b5_05b114a6943d4aa8b02d9875bf05eec8~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/peat-s-beast-px-finish-54-1"
+  },
+  "numericId": "1611844783710000",
+  "inventoryItemId": "35e698f4-ba17-36fb-0f47-6ea9add61410",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "cab06e2a-d8da-5086-ea76-7daa259f8725",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "933d2237-9afc-5600-3dc5-2873671ee4f5",
+    "3cc3b025-51dd-7aec-23bf-91a5c11daf8c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 289,
+          "discountedPrice": 289,
+          "formatted": {
+            "price": "€289.00",
+            "discountedPrice": "€289.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 289,
+          "discountedPrice": 289,
+          "formatted": {
+            "price": "€289.00",
+            "discountedPrice": "€289.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-11-0001",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 24,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:47.965Z",
+  "ribbon": "",
+  "exportProductId": "product_ca19670b-45e8-c904-f0b8-91565229ebef",
+  "_id": "ca19670b-45e8-c904-f0b8-91565229ebef",
+  "_createdDate": "2021-01-28T14:39:43.710Z"
+}

@@ -1,0 +1,150 @@
+{
+  "name": "Tormore 14y- Tawny Port Barrique- 50%",
+  "slug": "tormore-14y-tawny-port-barrique-50",
+  "visible": true,
+  "productType": "physical",
+  "description": "",
+  "sku": "1-13-0139",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 22,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 390,
+    "discountedPrice": 390,
+    "formatted": {
+      "price": "€390.00",
+      "discountedPrice": "€390.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 390,
+    "discountedPrice": 390,
+    "formatted": {
+      "price": "€390.00",
+      "discountedPrice": "€390.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 390,
+    "discountedPrice": 390,
+    "formatted": {
+      "price": "€390.00",
+      "discountedPrice": "€390.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 390,
+    "maxValue": 390
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_6f14aa84150e4f89884cfde1310297aa~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Tormore 14y- Tawny Port Barrique- 50%.jpeg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_6f14aa84150e4f89884cfde1310297aa~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+        "width": 2048,
+        "height": 2048
+      },
+      "_id": "9e37b5_6f14aa84150e4f89884cfde1310297aa~mv2.jpeg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_6f14aa84150e4f89884cfde1310297aa~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Tormore 14y- Tawny Port Barrique- 50%.jpeg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_6f14aa84150e4f89884cfde1310297aa~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+          "width": 2048,
+          "height": 2048
+        },
+        "_id": "9e37b5_6f14aa84150e4f89884cfde1310297aa~mv2.jpeg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/tormore-14y-tawny-port-barrique-50"
+  },
+  "numericId": "1768150395749000",
+  "inventoryItemId": "e9b90181-af3a-e889-511b-758fd81b46ba",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "755de31a-1269-869e-349c-43886d8a449a",
+    "fbf35435-9c8b-2579-b218-99c98fa03bc6",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "027e205e-bc32-8267-f8b0-7eb8ac411e39",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 390,
+          "discountedPrice": 390,
+          "formatted": {
+            "price": "€390.00",
+            "discountedPrice": "€390.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 390,
+          "discountedPrice": 390,
+          "formatted": {
+            "price": "€390.00",
+            "discountedPrice": "€390.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-13-0139",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 22,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-11T16:53:16.135Z",
+  "ribbon": "",
+  "exportProductId": "product_1646fe7e-50c5-1776-aee4-8a7027e4b945",
+  "_id": "1646fe7e-50c5-1776-aee4-8a7027e4b945",
+  "_createdDate": "2026-01-11T16:53:15.749Z"
+}

@@ -1,0 +1,147 @@
+{
+  "name": "Indian Summer Gin- Ex-Highland Sherry cask 48.1%",
+  "slug": "indian-sumer-gin-ex-highland-sherry-cask-48-1",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Finished in Ex-Highland Whisky Sherry cask</p>",
+  "sku": "1-17-9502",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 26,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 220,
+    "discountedPrice": 160,
+    "formatted": {
+      "price": "€220.00",
+      "discountedPrice": "€160.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 220,
+    "discountedPrice": 160,
+    "formatted": {
+      "price": "€220.00",
+      "discountedPrice": "€160.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 220,
+    "discountedPrice": 160,
+    "formatted": {
+      "price": "€220.00",
+      "discountedPrice": "€160.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 220,
+    "maxValue": 220
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_7a5d52dd122442f1aec3f9d1f4baf3ab~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Sherry Ex Highland cask Gin 48.1%.jpeg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_7a5d52dd122442f1aec3f9d1f4baf3ab~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+        "width": 2048,
+        "height": 2048
+      },
+      "_id": "9e37b5_7a5d52dd122442f1aec3f9d1f4baf3ab~mv2.jpeg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_7a5d52dd122442f1aec3f9d1f4baf3ab~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Sherry Ex Highland cask Gin 48.1%.jpeg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_7a5d52dd122442f1aec3f9d1f4baf3ab~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+          "width": 2048,
+          "height": 2048
+        },
+        "_id": "9e37b5_7a5d52dd122442f1aec3f9d1f4baf3ab~mv2.jpeg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/indian-sumer-gin-ex-highland-sherry-cask-48-1"
+  },
+  "numericId": "1687082416063000",
+  "inventoryItemId": "e3f721ba-7b09-ff63-703c-94e15dc77e30",
+  "discount": {
+    "type": "AMOUNT",
+    "value": 60
+  },
+  "collectionIds": [
+    "6578e61a-631b-0067-5db7-f810c4bcd634",
+    "f14e6cb5-00bf-b4af-eafd-4b38851dd728",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 220,
+          "discountedPrice": 160,
+          "formatted": {
+            "price": "€220.00",
+            "discountedPrice": "€160.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 220,
+          "discountedPrice": 160,
+          "formatted": {
+            "price": "€220.00",
+            "discountedPrice": "€160.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-9502",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 26,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:30.916Z",
+  "ribbon": "",
+  "exportProductId": "product_1c08de45-84f6-009c-8fc3-6b1ea23881cf",
+  "_id": "1c08de45-84f6-009c-8fc3-6b1ea23881cf",
+  "_createdDate": "2023-06-18T10:00:16.063Z"
+}

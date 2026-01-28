@@ -1,0 +1,149 @@
+{
+  "name": "Teaninich 9y- 46%",
+  "slug": "teaninich-9y-46",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><strong>Distilled at Teaninich distillery</strong></p><p>Aged 9&nbsp;years in an ex-bourbon casks</p><p>Bottled at 46%</p><p>No chilled filtration, no added coulors</p><p>&nbsp;</p><p><u><strong>Tasting notes by the AlphaBet Whisky Advisory Board</strong></u></p><p><strong>Nose </strong></p><p>Banana Lotti, caramelized banana, tropical, wax, soap, vanilla, persimmon, chamomile &nbsp;</p><p><strong>Palate</strong></p><p>Green banana, malted barley, persimmon, orange melon</p><p><strong style=\"background-color: transparent;\">Finish</strong></p><p>Long like an extra-long banana, white pepper, black pepper, wood, gentle sweet bitterness</p>",
+  "sku": "1-17-0087",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 21,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 270,
+    "discountedPrice": 270,
+    "formatted": {
+      "price": "€270.00",
+      "discountedPrice": "€270.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 270,
+    "discountedPrice": 270,
+    "formatted": {
+      "price": "€270.00",
+      "discountedPrice": "€270.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 270,
+    "discountedPrice": 270,
+    "formatted": {
+      "price": "€270.00",
+      "discountedPrice": "€270.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 270,
+    "maxValue": 270
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_dc41de9f16b6419fa803b04e0cf06f40~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251203_121148.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_dc41de9f16b6419fa803b04e0cf06f40~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_dc41de9f16b6419fa803b04e0cf06f40~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_dc41de9f16b6419fa803b04e0cf06f40~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251203_121148.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_dc41de9f16b6419fa803b04e0cf06f40~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_dc41de9f16b6419fa803b04e0cf06f40~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/teaninich-9y-46"
+  },
+  "numericId": "1765197493588000",
+  "inventoryItemId": "1d62b3eb-8ee6-4c28-74bd-27008c837438",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "6ea88cd0-3a19-b91d-118e-10b713441c6a",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "5df2afce-722d-e48a-ba54-be3dea5a6573",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 270,
+          "discountedPrice": 270,
+          "formatted": {
+            "price": "€270.00",
+            "discountedPrice": "€270.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 270,
+          "discountedPrice": 270,
+          "formatted": {
+            "price": "€270.00",
+            "discountedPrice": "€270.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0087",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 21,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-08T13:43:57.519Z",
+  "ribbon": "",
+  "exportProductId": "product_e29d4c14-7119-b3d7-8b42-d8ff737c8bc7",
+  "_id": "e29d4c14-7119-b3d7-8b42-d8ff737c8bc7",
+  "_createdDate": "2025-12-08T12:38:13.588Z"
+}

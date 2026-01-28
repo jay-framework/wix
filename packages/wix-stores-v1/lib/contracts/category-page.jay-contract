@@ -1,0 +1,193 @@
+name: category-page
+tags:
+  # Category/Collection information (from Wix Stores Collection API)
+  - tag: _id
+    type: data
+    dataType: string
+    description: Collection GUID
+    
+  - tag: name
+    type: data
+    dataType: string
+    required: true
+    description: Collection name
+    
+  - tag: description
+    type: data
+    dataType: string
+    description: Collection description
+    
+  - tag: slug
+    type: data
+    dataType: string
+    description: Collection slug
+    
+  - tag: visible
+    type: data
+    dataType: boolean
+    description: Collection visibility (impacts dynamic pages only)
+    
+  - tag: numberOfProducts
+    type: data
+    dataType: number
+    description: Number of products in the collection
+    
+  # Media (from Wix Stores Collection API)
+  - tag: media
+    type: sub-contract
+    description: Media items associated with this collection
+    tags:
+      - tag: mainMedia
+        type: sub-contract
+        description: Primary media for the collection
+        tags:
+          - tag: _id
+            type: data
+            dataType: string
+            description: Media GUID
+            
+          - tag: url
+            type: data
+            dataType: string
+            description: Media URL
+            
+          - tag: altText
+            type: data
+            dataType: string
+            description: Media alt text
+            
+          - tag: mediaType
+            type: data
+            dataType: enum (IMAGE | VIDEO | AUDIO | DOCUMENT | ZIP)
+            description: Media item type
+            
+      - tag: items
+        type: sub-contract
+        repeated: true
+        trackBy: _id
+        description: All media items
+        tags:
+          - tag: _id
+            type: data
+            dataType: string
+            description: Media GUID
+            
+          - tag: url
+            type: data
+            dataType: string
+            description: Media URL
+            
+          - tag: altText
+            type: data
+            dataType: string
+            description: Media alt text
+            
+          - tag: title
+            type: data
+            dataType: string
+            description: Media item title
+            
+          - tag: mediaType
+            type: data
+            dataType: enum (IMAGE | VIDEO | AUDIO | DOCUMENT | ZIP)
+            description: Media item type
+            
+          - tag: thumbnail
+            type: sub-contract
+            description: Media thumbnail
+            tags:
+              - tag: url
+                type: data
+                dataType: string
+                description: Thumbnail URL
+                
+              - tag: width
+                type: data
+                dataType: number
+                description: Thumbnail width in pixels
+                
+              - tag: height
+                type: data
+                dataType: number
+                description: Thumbnail height in pixels
+                
+              - tag: format
+                type: data
+                dataType: string
+                description: Media format (mp4, png, etc.)
+    
+  # Breadcrumbs navigation
+  - tag: breadcrumbs
+    type: sub-contract
+    repeated: true
+    trackBy: categoryId
+    description: Breadcrumb navigation path
+    tags:
+      - tag: categoryId
+        type: data
+        dataType: string
+        description: Category GUID
+        
+      - tag: categoryName
+        type: data
+        dataType: string
+        description: Category name in breadcrumb
+        
+      - tag: categorySlug
+        type: data
+        dataType: string
+        description: Category slug for link
+        
+      - tag: categoryLink
+        type: interactive
+        elementType: HTMLAnchorElement
+        description: Link to category
+  
+  # Initial products (SSR - loaded in slow phase)
+  - tag: products
+    type: sub-contract
+    repeated: true
+    trackBy: _id
+    description: Initial products in this category (rendered server-side)
+    link: ./product-card
+    
+  # Additional products (loaded on client via "load more")
+  - tag: loadedProducts
+    type: sub-contract
+    repeated: true
+    trackBy: _id
+    phase: fast+interactive
+    description: Additional products loaded on the client
+    link: ./product-card
+    
+  # Load more functionality
+  - tag: hasMore
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether there are more products to load
+    
+  - tag: loadMoreButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Button to load more products
+    
+  - tag: loadedCount
+    type: data
+    dataType: number
+    phase: fast+interactive
+    description: Number of products currently loaded
+  
+  # Loading state
+  - tag: isLoading
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether products are currently loading
+    
+  # Empty state
+  - tag: hasProducts
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether category has any products

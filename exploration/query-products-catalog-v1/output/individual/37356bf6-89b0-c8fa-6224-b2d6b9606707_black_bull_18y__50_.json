@@ -1,0 +1,162 @@
+{
+  "name": "Black Bull 18y- 50%",
+  "slug": "black-bull-18y-50",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>This&nbsp;18 years old Blended Scotch contains 50% Malt and 50% Grain whiskies and is bottled at 50% ABV.<br>&nbsp;</p><p><strong><u>This is a special bottling for the Nick Faldo Collection</u></strong></p><p>&nbsp;</p>",
+  "sku": "1-17-9906",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 11,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 600,
+    "discountedPrice": 600,
+    "formatted": {
+      "price": "€600.00",
+      "discountedPrice": "€600.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 600,
+    "discountedPrice": 600,
+    "formatted": {
+      "price": "€600.00",
+      "discountedPrice": "€600.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 600,
+    "discountedPrice": 600,
+    "formatted": {
+      "price": "€600.00",
+      "discountedPrice": "€600.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 600,
+    "maxValue": 600
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_0e5692453f27486394ff9d60094df10e~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Black Bull 18",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_0e5692453f27486394ff9d60094df10e~mv2.jpg/v1/fit/w_3000,h_3000,q_90/file.jpg",
+        "width": 3000,
+        "height": 3000
+      },
+      "_id": "9e37b5_0e5692453f27486394ff9d60094df10e~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_0e5692453f27486394ff9d60094df10e~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Black Bull 18",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_0e5692453f27486394ff9d60094df10e~mv2.jpg/v1/fit/w_3000,h_3000,q_90/file.jpg",
+          "width": 3000,
+          "height": 3000
+        },
+        "_id": "9e37b5_0e5692453f27486394ff9d60094df10e~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_c3e1c45867054d519e934d9b7deccb0a~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Black Bull 18 B",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_c3e1c45867054d519e934d9b7deccb0a~mv2.jpg/v1/fit/w_3000,h_3000,q_90/file.jpg",
+          "width": 3000,
+          "height": 3000
+        },
+        "_id": "9e37b5_c3e1c45867054d519e934d9b7deccb0a~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/black-bull-18y-50"
+  },
+  "numericId": "1683476441819000",
+  "inventoryItemId": "c8ca9409-764f-3705-9ddb-4d29469f98f8",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "0f9ef8d1-1117-c712-c54b-53b57509d36e",
+    "b6b13b58-d47c-4d49-0852-d8a309076095",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 600,
+          "discountedPrice": 600,
+          "formatted": {
+            "price": "€600.00",
+            "discountedPrice": "€600.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 600,
+          "discountedPrice": 600,
+          "formatted": {
+            "price": "€600.00",
+            "discountedPrice": "€600.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-9906",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 11,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:36.193Z",
+  "ribbon": "",
+  "exportProductId": "product_37356bf6-89b0-c8fa-6224-b2d6b9606707",
+  "_id": "37356bf6-89b0-c8fa-6224-b2d6b9606707",
+  "_createdDate": "2023-05-07T16:20:41.819Z"
+}

@@ -1,0 +1,149 @@
+{
+  "name": "Linkwood- 10y- 46%",
+  "slug": "linkwood-10y-46",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><strong>Distilled at Linkwood&nbsp;distillery</strong></p><p>Aged 10&nbsp;years in an ex-bourbon casks</p><p>Bottled at 46%</p><p>No chilled filtration, no added coulors</p><p>&nbsp;</p><p><u><strong>Tasting notes by the AlphaBet Whisky Advisory Board</strong></u></p><p><strong>Nose </strong></p><p>Lavender, violets, lilac, anis, fresh grass, blueberries, mint, white pepper, concentrated grape juice&nbsp;</p><p><strong>Palate</strong></p><p>Sweet and bitter, grass, blueberries muffin,</p><p><strong style=\"background-color: transparent;\">Finish</strong></p><p>Long, bitter-sweet</p><p>&nbsp;</p>",
+  "sku": "1-17-0085",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 20,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 280,
+    "discountedPrice": 280,
+    "formatted": {
+      "price": "€280.00",
+      "discountedPrice": "€280.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 280,
+    "discountedPrice": 280,
+    "formatted": {
+      "price": "€280.00",
+      "discountedPrice": "€280.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 280,
+    "discountedPrice": 280,
+    "formatted": {
+      "price": "€280.00",
+      "discountedPrice": "€280.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 280,
+    "maxValue": 280
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_c466ba78df3a404e94362ec180cb4ec9~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251203_120942.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_c466ba78df3a404e94362ec180cb4ec9~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_c466ba78df3a404e94362ec180cb4ec9~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_c466ba78df3a404e94362ec180cb4ec9~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251203_120942.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_c466ba78df3a404e94362ec180cb4ec9~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_c466ba78df3a404e94362ec180cb4ec9~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/linkwood-10y-46"
+  },
+  "numericId": "1765196114735000",
+  "inventoryItemId": "f26e0716-94ca-fa97-6abe-dfbd1d57627a",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "6ea88cd0-3a19-b91d-118e-10b713441c6a",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "49ced078-6728-62e1-dcdf-10d18fde6c53",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 280,
+          "discountedPrice": 280,
+          "formatted": {
+            "price": "€280.00",
+            "discountedPrice": "€280.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 280,
+          "discountedPrice": 280,
+          "formatted": {
+            "price": "€280.00",
+            "discountedPrice": "€280.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0085",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 20,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-08T13:43:58.979Z",
+  "ribbon": "",
+  "exportProductId": "product_0d91f8e9-6b35-0568-9541-2042e2a89d85",
+  "_id": "0d91f8e9-6b35-0568-9541-2042e2a89d85",
+  "_createdDate": "2025-12-08T12:15:14.735Z"
+}

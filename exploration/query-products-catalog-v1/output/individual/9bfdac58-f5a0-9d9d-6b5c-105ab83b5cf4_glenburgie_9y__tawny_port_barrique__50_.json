@@ -1,0 +1,149 @@
+{
+  "name": "Glenburgie 9y- Tawny Port Barrique- 50%",
+  "slug": "glenburgie-9y-tawny-port-barrique-50",
+  "visible": true,
+  "productType": "physical",
+  "description": "",
+  "sku": "1-13-0140",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 20,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 390,
+    "discountedPrice": 390,
+    "formatted": {
+      "price": "€390.00",
+      "discountedPrice": "€390.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 390,
+    "discountedPrice": 390,
+    "formatted": {
+      "price": "€390.00",
+      "discountedPrice": "€390.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 390,
+    "discountedPrice": 390,
+    "formatted": {
+      "price": "€390.00",
+      "discountedPrice": "€390.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 390,
+    "maxValue": 390
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_5d07f83cbc724cb7a1bb7a9a87666139~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Glenburgie 9y- Tawny Port Barrique- 50%.jpeg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_5d07f83cbc724cb7a1bb7a9a87666139~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+        "width": 2048,
+        "height": 2048
+      },
+      "_id": "9e37b5_5d07f83cbc724cb7a1bb7a9a87666139~mv2.jpeg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_5d07f83cbc724cb7a1bb7a9a87666139~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Glenburgie 9y- Tawny Port Barrique- 50%.jpeg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_5d07f83cbc724cb7a1bb7a9a87666139~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+          "width": 2048,
+          "height": 2048
+        },
+        "_id": "9e37b5_5d07f83cbc724cb7a1bb7a9a87666139~mv2.jpeg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/glenburgie-9y-tawny-port-barrique-50"
+  },
+  "numericId": "1768150459662000",
+  "inventoryItemId": "640253a7-0a5f-6262-94a3-efa547c4a30b",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "755de31a-1269-869e-349c-43886d8a449a",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "027e205e-bc32-8267-f8b0-7eb8ac411e39",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 390,
+          "discountedPrice": 390,
+          "formatted": {
+            "price": "€390.00",
+            "discountedPrice": "€390.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 390,
+          "discountedPrice": 390,
+          "formatted": {
+            "price": "€390.00",
+            "discountedPrice": "€390.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-13-0140",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 20,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-11T17:00:46.140Z",
+  "ribbon": "",
+  "exportProductId": "product_9bfdac58-f5a0-9d9d-6b5c-105ab83b5cf4",
+  "_id": "9bfdac58-f5a0-9d9d-6b5c-105ab83b5cf4",
+  "_createdDate": "2026-01-11T16:54:19.662Z"
+}

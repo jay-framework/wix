@@ -1,0 +1,149 @@
+{
+  "name": "Bruichladdich 22y- 56.7%",
+  "slug": "bruichladdich-22y-56-7",
+  "visible": true,
+  "productType": "physical",
+  "description": "",
+  "sku": "1-19-0001",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 0,
+    "inStock": false,
+    "inventoryStatus": "OUT_OF_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 880,
+    "discountedPrice": 880,
+    "formatted": {
+      "price": "€880.00",
+      "discountedPrice": "€880.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 880,
+    "discountedPrice": 880,
+    "formatted": {
+      "price": "€880.00",
+      "discountedPrice": "€880.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 880,
+    "discountedPrice": 880,
+    "formatted": {
+      "price": "€880.00",
+      "discountedPrice": "€880.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 880,
+    "maxValue": 880
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_a71e3ea8ddd54a49bfb800ec1fcebdbc~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "1000271183.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_a71e3ea8ddd54a49bfb800ec1fcebdbc~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_a71e3ea8ddd54a49bfb800ec1fcebdbc~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_a71e3ea8ddd54a49bfb800ec1fcebdbc~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "1000271183.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_a71e3ea8ddd54a49bfb800ec1fcebdbc~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_a71e3ea8ddd54a49bfb800ec1fcebdbc~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/bruichladdich-22y-56-7"
+  },
+  "numericId": "1769434755576000",
+  "inventoryItemId": "d78d20a6-b599-6d71-9f52-71c33dbdb2a0",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "2311636b-a702-fed0-2f80-ee0fdda0c837",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "2364bc89-230c-a8a5-49ba-67ac639db012",
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 880,
+          "discountedPrice": 880,
+          "formatted": {
+            "price": "€880.00",
+            "discountedPrice": "€880.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 880,
+          "discountedPrice": 880,
+          "formatted": {
+            "price": "€880.00",
+            "discountedPrice": "€880.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-19-0001",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 0,
+        "inStock": false
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-26T14:27:41.706Z",
+  "ribbon": "",
+  "exportProductId": "product_2872df59-4a66-928e-60ad-8e3cc2424d5f",
+  "_id": "2872df59-4a66-928e-60ad-8e3cc2424d5f",
+  "_createdDate": "2026-01-26T13:39:15.576Z"
+}

@@ -1,0 +1,149 @@
+{
+  "name": "LTG Glenlossie 11yo, Oloroso Finish, 58.4%",
+  "slug": "ltg-glenlossie-11yo-oloroso-finish-58-4",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>&nbsp;</p><p>&nbsp;</p>",
+  "sku": "1-15-0061",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 13,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 380,
+    "discountedPrice": 380,
+    "formatted": {
+      "price": "€380.00",
+      "discountedPrice": "€380.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 380,
+    "discountedPrice": 380,
+    "formatted": {
+      "price": "€380.00",
+      "discountedPrice": "€380.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 380,
+    "discountedPrice": 380,
+    "formatted": {
+      "price": "€380.00",
+      "discountedPrice": "€380.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 380,
+    "maxValue": 380
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_c5bb764080c0474cb68d52290c6b0799~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251217_085227.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_c5bb764080c0474cb68d52290c6b0799~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_c5bb764080c0474cb68d52290c6b0799~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_c5bb764080c0474cb68d52290c6b0799~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251217_085227.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_c5bb764080c0474cb68d52290c6b0799~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_c5bb764080c0474cb68d52290c6b0799~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/ltg-glenlossie-11yo-oloroso-finish-58-4"
+  },
+  "numericId": "1765730574646000",
+  "inventoryItemId": "0311063a-c7fe-6146-9200-c08a6a4971c2",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "9e2982d5-9e2c-72f5-73a7-b91756692a1a",
+    "aa3374e6-8c2d-d7c4-e84b-58e469db25fd",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 380,
+          "discountedPrice": 380,
+          "formatted": {
+            "price": "€380.00",
+            "discountedPrice": "€380.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 380,
+          "discountedPrice": 380,
+          "formatted": {
+            "price": "€380.00",
+            "discountedPrice": "€380.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-15-0061",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 13,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-17T07:00:55.195Z",
+  "ribbon": "",
+  "exportProductId": "product_fceef9c5-3801-9eb9-6dff-3f7595b68e3d",
+  "_id": "fceef9c5-3801-9eb9-6dff-3f7595b68e3d",
+  "_createdDate": "2025-12-14T16:42:54.646Z"
+}

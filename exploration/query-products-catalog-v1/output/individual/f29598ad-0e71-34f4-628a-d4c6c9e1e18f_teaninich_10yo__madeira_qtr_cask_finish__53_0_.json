@@ -1,0 +1,149 @@
+{
+  "name": "Teaninich 10yo, Madeira Qtr Cask Finish, 53.0%",
+  "slug": "teaninich-10yo-madeira-qtr-cask-finish-53-0",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>&nbsp;</p><p>&nbsp;</p>",
+  "sku": "1-15-0060",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 17,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 420,
+    "discountedPrice": 420,
+    "formatted": {
+      "price": "€420.00",
+      "discountedPrice": "€420.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 420,
+    "discountedPrice": 420,
+    "formatted": {
+      "price": "€420.00",
+      "discountedPrice": "€420.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 420,
+    "discountedPrice": 420,
+    "formatted": {
+      "price": "€420.00",
+      "discountedPrice": "€420.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 420,
+    "maxValue": 420
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_c48a9752053f4d21ae6a6533fecac465~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251217_084102.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_c48a9752053f4d21ae6a6533fecac465~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_c48a9752053f4d21ae6a6533fecac465~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_c48a9752053f4d21ae6a6533fecac465~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251217_084102.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_c48a9752053f4d21ae6a6533fecac465~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_c48a9752053f4d21ae6a6533fecac465~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/teaninich-10yo-madeira-qtr-cask-finish-53-0"
+  },
+  "numericId": "1765730516843000",
+  "inventoryItemId": "0d6a6752-f18e-cb0b-9d75-2b39361e1e70",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "5df2afce-722d-e48a-ba54-be3dea5a6573",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "9e2982d5-9e2c-72f5-73a7-b91756692a1a",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 420,
+          "discountedPrice": 420,
+          "formatted": {
+            "price": "€420.00",
+            "discountedPrice": "€420.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 420,
+          "discountedPrice": 420,
+          "formatted": {
+            "price": "€420.00",
+            "discountedPrice": "€420.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-15-0060",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 17,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-13T11:40:46.001Z",
+  "ribbon": "",
+  "exportProductId": "product_f29598ad-0e71-34f4-628a-d4c6c9e1e18f",
+  "_id": "f29598ad-0e71-34f4-628a-d4c6c9e1e18f",
+  "_createdDate": "2025-12-14T16:41:56.843Z"
+}

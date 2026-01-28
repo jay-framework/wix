@@ -1,0 +1,162 @@
+{
+  "name": "Black Bull 30y- 50%",
+  "slug": "black-bull-30y-50",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>This 30&nbsp;years old Blended Scotch contains 50% Malt and 50% Grain whiskies and is bottled at 50% ABV.<br>&nbsp;</p><p><strong><u>This is a special bottling for the Nick Faldo Collection</u></strong></p><p>&nbsp;</p>",
+  "sku": "1-17-9907",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 0,
+    "inStock": false,
+    "inventoryStatus": "OUT_OF_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 1400,
+    "discountedPrice": 1400,
+    "formatted": {
+      "price": "€1,400.00",
+      "discountedPrice": "€1,400.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 1400,
+    "discountedPrice": 1400,
+    "formatted": {
+      "price": "€1,400.00",
+      "discountedPrice": "€1,400.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 1400,
+    "discountedPrice": 1400,
+    "formatted": {
+      "price": "€1,400.00",
+      "discountedPrice": "€1,400.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 1400,
+    "maxValue": 1400
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_2a28ba396c15498ba5459f853659b092~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Black Bull 30",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_2a28ba396c15498ba5459f853659b092~mv2.jpg/v1/fit/w_3000,h_3000,q_90/file.jpg",
+        "width": 3000,
+        "height": 3000
+      },
+      "_id": "9e37b5_2a28ba396c15498ba5459f853659b092~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_2a28ba396c15498ba5459f853659b092~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Black Bull 30",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_2a28ba396c15498ba5459f853659b092~mv2.jpg/v1/fit/w_3000,h_3000,q_90/file.jpg",
+          "width": 3000,
+          "height": 3000
+        },
+        "_id": "9e37b5_2a28ba396c15498ba5459f853659b092~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_f4a219f4a31442cc94212310f68dc198~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Black bull 30 B",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_f4a219f4a31442cc94212310f68dc198~mv2.jpg/v1/fit/w_3000,h_3000,q_90/file.jpg",
+          "width": 3000,
+          "height": 3000
+        },
+        "_id": "9e37b5_f4a219f4a31442cc94212310f68dc198~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/black-bull-30y-50"
+  },
+  "numericId": "1683476529721000",
+  "inventoryItemId": "25824262-3e05-a48b-53fb-c8352c01c6df",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "b6b13b58-d47c-4d49-0852-d8a309076095",
+    "0f9ef8d1-1117-c712-c54b-53b57509d36e",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 1400,
+          "discountedPrice": 1400,
+          "formatted": {
+            "price": "€1,400.00",
+            "discountedPrice": "€1,400.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 1400,
+          "discountedPrice": 1400,
+          "formatted": {
+            "price": "€1,400.00",
+            "discountedPrice": "€1,400.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-9907",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 0,
+        "inStock": false
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:47.965Z",
+  "ribbon": "",
+  "exportProductId": "product_da7dbd9d-c1fa-5b74-ac04-37cad3fe3920",
+  "_id": "da7dbd9d-c1fa-5b74-ac04-37cad3fe3920",
+  "_createdDate": "2023-05-07T16:22:09.721Z"
+}

@@ -1,0 +1,162 @@
+{
+  "name": "Tullibardine 8y- 57.4%",
+  "slug": "tullibardine-8y-57-4",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><strong>Distilled at Tullibardine Distillery&nbsp;</strong></p><p><em>Aged for 8 years. Finished in 1st fill PX Hogshead and bottled at a cask strength of 57.4%,&nbsp;<br>keeping its&nbsp;natural color and without&nbsp;chill filtration</em></p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p><u><strong>Tasting notes by the AlphaBet Whisky Advisory Board</strong></u></p><p><strong>Nose </strong></p><p>Wax, sunflower oil, white sultanas, dried apricot, garam masala, white miso, plums, clove</p><p><strong style=\"background-color: transparent;\">Palate</strong></p><p>Oil, plums, beef stock with cooked dried fruits and spices.</p><p><strong style=\"background-color: transparent;\">Finish</strong></p><p>Long. very sweet, yet also bitter.&nbsp; Churchkhela (a traditional Georgian candle-shaped candy made from of grape must, nuts, and flour)</p><p>&nbsp;</p><p>Board final word: YAMMY</p>",
+  "sku": "1-12-0039",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 8,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 440,
+    "discountedPrice": 440,
+    "formatted": {
+      "price": "€440.00",
+      "discountedPrice": "€440.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 440,
+    "discountedPrice": 440,
+    "formatted": {
+      "price": "€440.00",
+      "discountedPrice": "€440.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 440,
+    "discountedPrice": 440,
+    "formatted": {
+      "price": "€440.00",
+      "discountedPrice": "€440.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 440,
+    "maxValue": 440
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_06568d35d0e644d78d005c468ac48b43~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "result_img_2024_12_15_09_54_09.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_06568d35d0e644d78d005c468ac48b43~mv2.jpg/v1/fit/w_2381,h_2381,q_90/file.jpg",
+        "width": 2381,
+        "height": 2381
+      },
+      "_id": "9e37b5_06568d35d0e644d78d005c468ac48b43~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_06568d35d0e644d78d005c468ac48b43~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "result_img_2024_12_15_09_54_09.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_06568d35d0e644d78d005c468ac48b43~mv2.jpg/v1/fit/w_2381,h_2381,q_90/file.jpg",
+          "width": 2381,
+          "height": 2381
+        },
+        "_id": "9e37b5_06568d35d0e644d78d005c468ac48b43~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_bd631b2ee65f44c4960c1103a2b0b27e~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Tullibardine 8y 57.4.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_bd631b2ee65f44c4960c1103a2b0b27e~mv2.jpg/v1/fit/w_594,h_824,q_90/file.jpg",
+          "width": 594,
+          "height": 824
+        },
+        "_id": "9e37b5_bd631b2ee65f44c4960c1103a2b0b27e~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/tullibardine-8y-57-4"
+  },
+  "numericId": "1711294536951000",
+  "inventoryItemId": "553d3a45-a087-76f4-00b3-77b684a6521b",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "1c54c59f-7f38-1790-b8b6-a19bb70c51fc",
+    "665e8b2a-df8d-3b61-b43b-9a7eef21ec4b",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 440,
+          "discountedPrice": 440,
+          "formatted": {
+            "price": "€440.00",
+            "discountedPrice": "€440.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 440,
+          "discountedPrice": 440,
+          "formatted": {
+            "price": "€440.00",
+            "discountedPrice": "€440.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-12-0039",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 8,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:40.253Z",
+  "ribbon": "",
+  "exportProductId": "product_aac2c5ba-5f78-890b-ff4c-88497b59ade4",
+  "_id": "aac2c5ba-5f78-890b-ff4c-88497b59ade4",
+  "_createdDate": "2024-03-24T15:35:36.951Z"
+}

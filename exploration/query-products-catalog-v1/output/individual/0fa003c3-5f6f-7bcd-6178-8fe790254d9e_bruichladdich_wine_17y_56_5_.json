@@ -1,0 +1,167 @@
+{
+  "name": "Bruichladdich Wine 17y 56.5%",
+  "slug": "bruichladdich-wine-17y-56-5",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Distilled at Bruichladdich Distillery,&nbsp;</p><p>&nbsp;</p><p>Matured for 17&nbsp;years in a&nbsp;Wine Hogshead</p><p>Bottled at 56.5%&nbsp;ABV without chilled filtration or coloring</p><p>&nbsp;</p><p><u><strong>Tasting notes by the AlphaBet Advisory Board</strong></u></p><p><strong>Nose:</strong></p><p><em>&nbsp; Rosted pinecones, gentle sulfur note, peaches, caramel, cinnamon, clove, semi-dried grapes</em></p><p><strong>Pallet</strong><em>:</em></p><p><em>&nbsp; A Bolshoi ballerina in the middle of the pirouette, cherries, red plums</em></p><p><strong>Finish:</strong></p><p><em>&nbsp; Very long.&nbsp;Almonds bitterness, wood bitterness</em></p><p>&nbsp;</p><p><em><strong>the team's advice- DO NOT ADD ANY WATER</strong></em></p>",
+  "sku": "1-10-0011",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 4,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 990,
+    "maxValue": 990
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 4 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "AA- R&B WHISKY CS.JPG",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg/v1/fit/w_677,h_638,q_90/file.jpg",
+        "width": 677,
+        "height": 638
+      },
+      "_id": "9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "AA- R&B WHISKY CS.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg/v1/fit/w_677,h_638,q_90/file.jpg",
+          "width": 677,
+          "height": 638
+        },
+        "_id": "9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_3af6513308f34e80a8593cc8f9f5b382~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "W- BRUICHLLADDICH 2014 BACK.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_3af6513308f34e80a8593cc8f9f5b382~mv2.jpg/v1/fit/w_702,h_661,q_90/file.jpg",
+          "width": 702,
+          "height": 661
+        },
+        "_id": "9e37b5_3af6513308f34e80a8593cc8f9f5b382~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/bruichladdich-wine-17y-56-5"
+  },
+  "numericId": "1729359852892000",
+  "inventoryItemId": "f05ffc3c-a090-8432-9e87-70186fdab261",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "68b702b3-fae1-92a2-e95b-3ea1f4527dec",
+    "2311636b-a702-fed0-2f80-ee0fdda0c837",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 990,
+          "discountedPrice": 990,
+          "formatted": {
+            "price": "€990.00",
+            "discountedPrice": "€990.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 990,
+          "discountedPrice": 990,
+          "formatted": {
+            "price": "€990.00",
+            "discountedPrice": "€990.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-10-0011",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 4,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-27T13:56:44.953Z",
+  "ribbon": "Only 4 left",
+  "exportProductId": "product_0fa003c3-5f6f-7bcd-6178-8fe790254d9e",
+  "_id": "0fa003c3-5f6f-7bcd-6178-8fe790254d9e",
+  "_createdDate": "2024-10-19T17:44:12.892Z"
+}

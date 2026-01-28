@@ -1,0 +1,146 @@
+{
+  "name": "ערב טעימות פרימיום- דנקן טיילור- 26/2/26",
+  "slug": "ערב-טעימות-פרימיום-דנקן-טיילור-26-2-26",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p style=\"direction: rtl; \">דנקן טיילור מהוותיקים בתחום ופועלים כמבקבק עצמאי וברוקר משנת 1938<br>הם&nbsp;ידועים בביקבוקים איכותיים בגישה די מסורתית- בלי משחקי חביות מתוחכמים ומתחכמים.</p><p style=\"direction: rtl; \">הפעם יש לנו קצת חריגות מהנורמה וכמה חביו תשבעבר לא ניתן היה למצוא אצל דנקן טיילור:</p><p style=\"direction: rtl; \">&nbsp;</p><p style=\"direction: rtl; \"><strong><u><span><span style=\"background-color: transparent; font-family: var(--wix-font-stack,&quot;HelveticaNeueW01-55Roma&quot;,&quot;HelveticaNeueW02-55Roma&quot;,&quot;HelveticaNeueW10-55Roma&quot;,sans-serif);\">אז מה יהיה לנו (לא בהכרח בסדר הזה)</span></span></u></strong></p><p dir=\"rtl\"><strong>3 ביקבוקים מסדרת BATTLEHILL- באטצ'ים קטנים ב- 46%- לרוב חביות אקס ברבן:</strong></p><p dir=\"rtl\">טיניניך 9&nbsp;שנים- 46%</p><p dir=\"rtl\">לינקווד 10 שנים- 46%</p><p dir=\"rtl\">מילטונדאף 12 שנה- 46%</p><p dir=\"rtl\"><strong>3 ביקבוקים מסדרת האוקטב של דנקן טיילור- פיניש בחביות אוקטב יחידות:</strong></p><p dir=\"rtl\">מזקקת היילנד סודית- 16&nbsp;שנה- 55%- פיניש באוקטב אולורוסו</p><p dir=\"rtl\">מזקקת ספייסייד סודית- 16 שנה- 53%- פיניש באוקטב אולורוסו</p><p dir=\"rtl\">מנוכמו- 10 שנים- 54.1%- פיניש באוקטב מדירה</p><p dir=\"rtl\"><strong>2 ביקבוקים מסדרת החביות&nbsp;היחידות של דנקן טיילור:</strong></p><p dir=\"rtl\">מזקקת איילה סודית- 16 שנה- 54.4% בחבית אקס ברבן</p><p dir=\"rtl\">בונהאבן 15 שנה- 54.6%- בחבית אקס ברבן</p><p dir=\"rtl\"><strong>בקבוק אחד מסדרת האוקטב&nbsp;פרימיום:</strong></p><p dir=\"rtl\">דומברטון בן 35 שנה- 49.4% (מזקקת גריין שנסגרה- זוקק ב- 1987)</p><p dir=\"rtl\">&nbsp;</p><p dir=\"rtl\"><u><strong><span><span><span>שימו לב לימים ולתאריכים</span></span></span></strong></u></p><p style=\"direction: rtl; \"><span><span><span>מפגש ראשון ביום רביעי 25/2/26, בשעה 20:30 בביתי בכוכב יאיר</span></span></span></p><p style=\"direction: rtl; \"><span><span><span>מפגש שני ביום חמישי 26/2/26, בשעה 20:30 בביתי בכוכב יאיר</span></span></span></p><p style=\"direction: rtl;\">&nbsp;</p><p style=\"direction: rtl; \"><span><span><span>בכל ערב יש 15 מקומות בלבד (+ אחד לעבדכם הנאמן)</span></span></span></p><p style=\"direction: rtl; \"><span><span><span>כמיטב המסורת- כיבוד עשיר וכשר שיכלול מגוון בשרים קרים ונקניקי גורמה ממעדניית בוטיק</span><span>, </span></span></span></p><p style=\"direction: rtl; \"><span><span><span>ירקות טריים, אגוזים, לחמים ומגוון ממרחים (טבעונים&nbsp;וצמחונים- נא להתריע מראש ונדאג לכם)</span></span></span></p><p style=\"direction: rtl;\">&nbsp;</p><p style=\"direction: rtl; \"><span><span><span>למי שלא מכיר- זו לא הרצאה ולא ערב לימודי אלא ערב טעימות של כייף- </span></span></span></p><p style=\"direction: rtl; \"><span><span><span>שותים, נהנים&nbsp;ועל הדרך מקשקשים&nbsp;על הויסקי ועל כל נושא שבעולם (חוץ מפוליטיקה)</span></span></span></p>",
+  "sku": "1-*99-0068",
+  "weight": 0,
+  "weightRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 0,
+    "inStock": false,
+    "inventoryStatus": "OUT_OF_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 270,
+    "discountedPrice": 270,
+    "formatted": {
+      "price": "€270.00",
+      "discountedPrice": "€270.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 270,
+    "discountedPrice": 270,
+    "formatted": {
+      "price": "€270.00",
+      "discountedPrice": "€270.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 270,
+    "discountedPrice": 270,
+    "formatted": {
+      "price": "€270.00",
+      "discountedPrice": "€270.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 270,
+    "maxValue": 270
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Duncan Taylor.JPG",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg/v1/fit/w_221,h_195,q_90/file.jpg",
+        "width": 221,
+        "height": 195
+      },
+      "_id": "9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Duncan Taylor.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg/v1/fit/w_221,h_195,q_90/file.jpg",
+          "width": 221,
+          "height": 195
+        },
+        "_id": "9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/ערב-טעימות-פרימיום-דנקן-טיילור-26-2-26"
+  },
+  "numericId": "1768308682591000",
+  "inventoryItemId": "6ae15808-c6aa-cc3b-6e73-a87f1c72ba3f",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "7ba7403c-6935-8237-645a-65d0b21130cf",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 270,
+          "discountedPrice": 270,
+          "formatted": {
+            "price": "€270.00",
+            "discountedPrice": "€270.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 270,
+          "discountedPrice": 270,
+          "formatted": {
+            "price": "€270.00",
+            "discountedPrice": "€270.00"
+          }
+        },
+        "weight": 0,
+        "sku": "1-*99-0068",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 0,
+        "inStock": false
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-13T20:47:48.650Z",
+  "ribbon": "",
+  "exportProductId": "product_951ea7f7-3955-33c4-918c-5780e38d45c0",
+  "_id": "951ea7f7-3955-33c4-918c-5780e38d45c0",
+  "_createdDate": "2026-01-13T12:51:22.591Z"
+}

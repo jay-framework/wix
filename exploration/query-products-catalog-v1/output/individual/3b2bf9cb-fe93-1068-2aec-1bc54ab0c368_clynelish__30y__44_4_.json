@@ -1,0 +1,152 @@
+{
+  "name": "Clynelish- 30y- 44.4%",
+  "slug": "pre-sale-clynelish-30y-44-4",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Distilled on 20/10/1993 and aged in a&nbsp;Bourbon Barrel</p><p>&nbsp;</p><p>Situated on the North East coast of Scotland, Clynelish Distillery is world renowned for creating a truly unique, rich, waxy distillate. This whisky is true to form, with that distinctive waxy profile still present after 30 years of maturation while bursting with fresh stone fruits.</p><p>&nbsp;</p><p><font face=\"HelveticaNeueW01-65Medi, HelveticaNeueW02-65Medi, HelveticaNeueW10-65Medi, sans-serif\"><b><i>Tasting notes by the Claxton's team:</i></b></font></p><p><u><strong>Nose:</strong></u><br>Tablet and vanilla fudge. Waxed hard fruits. Vanilla pods.<br><u><strong>Palate:</strong></u><br>Sweet and herbal with a waxy-fruitiness and a mild oakiness.<br><u><strong>Finish:</strong></u><br>Hint of tobacco, fresh bread and a softly spicy aftertaste</p>",
+  "sku": "1-13-0114",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 1,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 4500,
+    "discountedPrice": 4500,
+    "formatted": {
+      "price": "€4,500.00",
+      "discountedPrice": "€4,500.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 4500,
+    "discountedPrice": 4500,
+    "formatted": {
+      "price": "€4,500.00",
+      "discountedPrice": "€4,500.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 4500,
+    "discountedPrice": 4500,
+    "formatted": {
+      "price": "€4,500.00",
+      "discountedPrice": "€4,500.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 4500,
+    "maxValue": 4500
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 1 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_019f4826fec94ae8ab52b4dd2f9c438f~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Claxton- Claynelish 30y.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_019f4826fec94ae8ab52b4dd2f9c438f~mv2.jpg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+        "width": 2048,
+        "height": 2048
+      },
+      "_id": "9e37b5_019f4826fec94ae8ab52b4dd2f9c438f~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_019f4826fec94ae8ab52b4dd2f9c438f~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Claxton- Claynelish 30y.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_019f4826fec94ae8ab52b4dd2f9c438f~mv2.jpg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+          "width": 2048,
+          "height": 2048
+        },
+        "_id": "9e37b5_019f4826fec94ae8ab52b4dd2f9c438f~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/pre-sale-clynelish-30y-44-4"
+  },
+  "numericId": "1728745717587000",
+  "inventoryItemId": "c4d40634-016c-ef97-d513-e43ab54f3c97",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "6488a591-9bfa-caa7-055d-8d0a1bb67d4e",
+    "ef77601a-6607-2011-20a1-66ca087b1f45",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 4500,
+          "discountedPrice": 4500,
+          "formatted": {
+            "price": "€4,500.00",
+            "discountedPrice": "€4,500.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 4500,
+          "discountedPrice": 4500,
+          "formatted": {
+            "price": "€4,500.00",
+            "discountedPrice": "€4,500.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-13-0114",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 1,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:36.193Z",
+  "ribbon": "Only 1 left",
+  "exportProductId": "product_3b2bf9cb-fe93-1068-2aec-1bc54ab0c368",
+  "_id": "3b2bf9cb-fe93-1068-2aec-1bc54ab0c368",
+  "_createdDate": "2024-10-12T15:08:37.587Z"
+}

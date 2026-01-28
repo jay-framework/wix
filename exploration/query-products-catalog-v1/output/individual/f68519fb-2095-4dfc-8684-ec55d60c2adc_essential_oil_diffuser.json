@@ -1,0 +1,158 @@
+{
+  "name": "Essential Oil Diffuser",
+  "slug": "essential-oil-diffuser",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>I'm a product description. I'm a great place to add more details about your product such as sizing, material, care instructions and cleaning instructions.</p>",
+  "sku": "126351351935",
+  "stock": {
+    "trackInventory": false,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "ILS",
+    "price": 119,
+    "discountedPrice": 119,
+    "formatted": {
+      "price": "119.00 ₪",
+      "discountedPrice": "119.00 ₪"
+    }
+  },
+  "priceData": {
+    "currency": "ILS",
+    "price": 119,
+    "discountedPrice": 119,
+    "formatted": {
+      "price": "119.00 ₪",
+      "discountedPrice": "119.00 ₪"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "ILS",
+    "price": 119,
+    "discountedPrice": 119,
+    "formatted": {
+      "price": "119.00 ₪",
+      "discountedPrice": "119.00 ₪"
+    }
+  },
+  "additionalInfoSections": [
+    {
+      "title": "Product Info",
+      "description": "<p>I'm a great place to add more information about your product, such as <span style=\"font-weight: 700\">sizing</span>, <span style=\"font-weight: 700\">material</span>, <span style=\"font-weight: 700\">care</span>, and <span style=\"font-weight: 700\">cleaning instructions</span>. This is also a great space to highlight what makes this product special and how your customers can benefit from this item.</p>"
+    },
+    {
+      "title": "Return & Refund Policy",
+      "description": "<p>I’m a great place to let your customers know what to do in case they are dissatisfied with their purchase.</p><hr><ul><li><p><span style=\"font-weight: 700\">Easy Returns &amp; Exchanges</span></p></li><li><p><span style=\"font-weight: 700\">Hassle-Free Process</span></p></li><li><p><span style=\"font-weight: 700\">Builds Customer Confidence</span></p></li></ul><p>Having a straightforward refund or exchange policy is a great way to build trust and reassure your customers that they can buy with confidence.</p>"
+    },
+    {
+      "title": "Shipping Info",
+      "description": "<p>I’m a great place to add more information about your <span style=\"font-weight: 700\">shipping methods</span>, <span style=\"font-weight: 700\">packaging</span>, and <span style=\"font-weight: 700\">cost</span>.</p><p>Providing straightforward information about your <u>shipping policy</u>&nbsp;is a great way to build trust and reassure your customers that they can buy from you with confidence.</p>"
+    }
+  ],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/22e53e_b231b9c8053942b49508f464049db5c9~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Diffuser-Product (1).jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/22e53e_b231b9c8053942b49508f464049db5c9~mv2.jpg",
+        "width": 2000,
+        "height": 2000
+      },
+      "_id": "22e53e_b231b9c8053942b49508f464049db5c9~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/22e53e_b231b9c8053942b49508f464049db5c9~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Diffuser-Product (1).jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/22e53e_b231b9c8053942b49508f464049db5c9~mv2.jpg",
+          "width": 2000,
+          "height": 2000
+        },
+        "_id": "22e53e_b231b9c8053942b49508f464049db5c9~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/22e53e_9d6ef0a55ff4434c9fa4af0e3b8e92a9~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Diffuser-Context (1).jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/22e53e_9d6ef0a55ff4434c9fa4af0e3b8e92a9~mv2.jpg",
+          "width": 2895,
+          "height": 2895
+        },
+        "_id": "22e53e_9d6ef0a55ff4434c9fa4af0e3b8e92a9~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/essential-oil-diffuser"
+  },
+  "numericId": "1737885351929000",
+  "inventoryItemId": "f68519fb-2095-4dfc-8684-ec55d60c2adc",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "bc0990ba-e6c6-450c-94cc-a0c62543eb13",
+    "becc814c-0375-45e8-a826-cd0391f935ef"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "ILS",
+          "price": 119,
+          "discountedPrice": 119,
+          "formatted": {
+            "price": "119.00 ₪",
+            "discountedPrice": "119.00 ₪"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "ILS",
+          "price": 119,
+          "discountedPrice": 119,
+          "formatted": {
+            "price": "119.00 ₪",
+            "discountedPrice": "119.00 ₪"
+          }
+        },
+        "weight": 0,
+        "sku": "126351351935",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": false,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-18T16:02:44.003Z",
+  "exportProductId": "Product_21fbf544-c8ec-4a9e-af9f-d50582106300",
+  "_id": "f68519fb-2095-4dfc-8684-ec55d60c2adc",
+  "_createdDate": "2025-01-26T09:55:51.980Z"
+}

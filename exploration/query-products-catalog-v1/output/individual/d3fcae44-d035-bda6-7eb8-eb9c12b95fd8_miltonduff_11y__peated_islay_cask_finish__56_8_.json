@@ -1,0 +1,149 @@
+{
+  "name": "Miltonduff 11y, Peated Islay Cask Finish, 56.8%",
+  "slug": "miltonduff-11y-peatedislay-caskfinish-56-8",
+  "visible": true,
+  "productType": "physical",
+  "description": "",
+  "sku": "1-15-0051",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 7,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 360,
+    "discountedPrice": 360,
+    "formatted": {
+      "price": "€360.00",
+      "discountedPrice": "€360.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 360,
+    "discountedPrice": 360,
+    "formatted": {
+      "price": "€360.00",
+      "discountedPrice": "€360.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 360,
+    "discountedPrice": 360,
+    "formatted": {
+      "price": "€360.00",
+      "discountedPrice": "€360.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 360,
+    "maxValue": 360
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_a318a22de4904f18aca523a05051a782~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "E-MILTONDUFF 11_edited.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_a318a22de4904f18aca523a05051a782~mv2.jpg/v1/fit/w_522,h_522,q_90/file.jpg",
+        "width": 522,
+        "height": 522
+      },
+      "_id": "9e37b5_a318a22de4904f18aca523a05051a782~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_a318a22de4904f18aca523a05051a782~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "E-MILTONDUFF 11_edited.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_a318a22de4904f18aca523a05051a782~mv2.jpg/v1/fit/w_522,h_522,q_90/file.jpg",
+          "width": 522,
+          "height": 522
+        },
+        "_id": "9e37b5_a318a22de4904f18aca523a05051a782~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/miltonduff-11y-peatedislay-caskfinish-56-8"
+  },
+  "numericId": "1764508160342000",
+  "inventoryItemId": "2c0351bb-2fca-4259-8147-1463ed46a027",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "9e2982d5-9e2c-72f5-73a7-b91756692a1a",
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "2c128003-cc78-0639-fdbc-c734d5ca0ff4",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 360,
+          "discountedPrice": 360,
+          "formatted": {
+            "price": "€360.00",
+            "discountedPrice": "€360.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 360,
+          "discountedPrice": 360,
+          "formatted": {
+            "price": "€360.00",
+            "discountedPrice": "€360.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-15-0051",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 7,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-30T13:29:43.114Z",
+  "ribbon": "",
+  "exportProductId": "product_d3fcae44-d035-bda6-7eb8-eb9c12b95fd8",
+  "_id": "d3fcae44-d035-bda6-7eb8-eb9c12b95fd8",
+  "_createdDate": "2025-11-30T13:09:20.342Z"
+}

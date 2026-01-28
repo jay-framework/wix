@@ -1,0 +1,149 @@
+{
+  "name": "Torabhaig 7y, 1st fill Bourbon, 60.4%",
+  "slug": "torabhaig-7y-1st-fill-bourbon-60-4",
+  "visible": true,
+  "productType": "physical",
+  "description": "",
+  "sku": "1-15-0053",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 0,
+    "inStock": false,
+    "inventoryStatus": "OUT_OF_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 420,
+    "discountedPrice": 420,
+    "formatted": {
+      "price": "€420.00",
+      "discountedPrice": "€420.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 420,
+    "discountedPrice": 420,
+    "formatted": {
+      "price": "€420.00",
+      "discountedPrice": "€420.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 420,
+    "discountedPrice": 420,
+    "formatted": {
+      "price": "€420.00",
+      "discountedPrice": "€420.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 420,
+    "maxValue": 420
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_a91ab3d4f48e4b7fb9e520fd42a51f64~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "E-TORABHAIG 7_edited.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_a91ab3d4f48e4b7fb9e520fd42a51f64~mv2.jpg/v1/fit/w_618,h_618,q_90/file.jpg",
+        "width": 618,
+        "height": 618
+      },
+      "_id": "9e37b5_a91ab3d4f48e4b7fb9e520fd42a51f64~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_a91ab3d4f48e4b7fb9e520fd42a51f64~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "E-TORABHAIG 7_edited.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_a91ab3d4f48e4b7fb9e520fd42a51f64~mv2.jpg/v1/fit/w_618,h_618,q_90/file.jpg",
+          "width": 618,
+          "height": 618
+        },
+        "_id": "9e37b5_a91ab3d4f48e4b7fb9e520fd42a51f64~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/torabhaig-7y-1st-fill-bourbon-60-4"
+  },
+  "numericId": "1764507889510000",
+  "inventoryItemId": "a71997ff-0c02-06bc-dcf3-94a76adf776c",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "9e2982d5-9e2c-72f5-73a7-b91756692a1a",
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "52c575de-17c3-1b2a-cbbb-3e28e9efdb08",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 420,
+          "discountedPrice": 420,
+          "formatted": {
+            "price": "€420.00",
+            "discountedPrice": "€420.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 420,
+          "discountedPrice": 420,
+          "formatted": {
+            "price": "€420.00",
+            "discountedPrice": "€420.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-15-0053",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 0,
+        "inStock": false
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-13T14:27:51.366Z",
+  "ribbon": "",
+  "exportProductId": "product_58e66800-f3fd-f943-230c-6b5895208893",
+  "_id": "58e66800-f3fd-f943-230c-6b5895208893",
+  "_createdDate": "2025-11-30T13:04:49.510Z"
+}

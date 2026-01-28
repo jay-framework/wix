@@ -1,0 +1,150 @@
+{
+  "name": "An Islay 16y- 54.4%",
+  "slug": "an-islay-16y-54-4",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><u><strong><em>Distilled at an undosclosed Islay distillery-</em></strong></u></p><p><strong><em>This Whisky was aged in a bourbon cask&nbsp;for 16&nbsp;years. Bottled at Cask strength of 54.6%</em></strong></p><p>&nbsp;</p><p><em><u><strong>Tasting notes by the AlphaBet Whisky Advisory Board</strong></u></em></p><p><em><strong>Nose </strong></em></p><p><em>Clean bonfire smoke, black dried Persian lemon, salt, dough, barbeque</em></p><p><em><strong>Palate</strong></em></p><p><em>Smoke, dough, grapefruit, citric acid</em></p><p><em><strong>Finish</strong></em></p><p><em>Long. Sweet smoke, bonfire marshmallow, Lemon meringue pie sprinkled with kosher salt&nbsp;</em></p><p>&nbsp;</p><p><strong><em>Teams summery- Fun-to-drink Whisky</em></strong></p><p>&nbsp;</p><p><u><em><strong>Tasting notes by the Duncan Taylor team</strong></em></u></p><p><em>Bonfire smoke, lemon zest, vanilla fudge and a touch of pepper</em></p><p>&nbsp;</p>",
+  "sku": "1-17-0083",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 17,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 600,
+    "discountedPrice": 600,
+    "formatted": {
+      "price": "€600.00",
+      "discountedPrice": "€600.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 600,
+    "discountedPrice": 600,
+    "formatted": {
+      "price": "€600.00",
+      "discountedPrice": "€600.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 600,
+    "discountedPrice": 600,
+    "formatted": {
+      "price": "€600.00",
+      "discountedPrice": "€600.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 600,
+    "maxValue": 600
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_739f339500bd4b22bdfd5b3df4175c42~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251203_120119.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_739f339500bd4b22bdfd5b3df4175c42~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_739f339500bd4b22bdfd5b3df4175c42~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_739f339500bd4b22bdfd5b3df4175c42~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251203_120119.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_739f339500bd4b22bdfd5b3df4175c42~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_739f339500bd4b22bdfd5b3df4175c42~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/an-islay-16y-54-4"
+  },
+  "numericId": "1765301657928000",
+  "inventoryItemId": "a49d51a7-48e2-deed-4122-4a2252ded078",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "6ea88cd0-3a19-b91d-118e-10b713441c6a",
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "d3f11c62-317b-e5c9-e464-c16423ab0158",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "3cc3b025-51dd-7aec-23bf-91a5c11daf8c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 600,
+          "discountedPrice": 600,
+          "formatted": {
+            "price": "€600.00",
+            "discountedPrice": "€600.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 600,
+          "discountedPrice": 600,
+          "formatted": {
+            "price": "€600.00",
+            "discountedPrice": "€600.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0083",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 17,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-09T18:27:30.031Z",
+  "ribbon": "",
+  "exportProductId": "product_5b62ae58-b71d-2112-bedd-b5ddad212f87",
+  "_id": "5b62ae58-b71d-2112-bedd-b5ddad212f87",
+  "_createdDate": "2025-12-09T17:34:17.928Z"
+}

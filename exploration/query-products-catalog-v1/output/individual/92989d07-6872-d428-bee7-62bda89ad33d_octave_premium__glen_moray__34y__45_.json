@@ -1,0 +1,167 @@
+{
+  "name": "Octave Premium- Glen Moray- 34Y- 45%",
+  "slug": "octave-premium-glen-moray-34y-45",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Distilled at Glen Moray distillery</p><p>Aged 34 years</p><p>Finished in a Sherry octave</p><p>Bottled at cask strength of 45%</p><p>No chilled filtration, no added coulors</p>",
+  "sku": "1-17-0040",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 2,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 2900,
+    "discountedPrice": 2900,
+    "formatted": {
+      "price": "€2,900.00",
+      "discountedPrice": "€2,900.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 2900,
+    "discountedPrice": 2900,
+    "formatted": {
+      "price": "€2,900.00",
+      "discountedPrice": "€2,900.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 2900,
+    "discountedPrice": 2900,
+    "formatted": {
+      "price": "€2,900.00",
+      "discountedPrice": "€2,900.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 2900,
+    "maxValue": 2900
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 2 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_e53e4b65c20c4974b69784adc6da06ad~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Glen Moray 34",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_e53e4b65c20c4974b69784adc6da06ad~mv2.jpg/v1/fit/w_3000,h_3000,q_90/file.jpg",
+        "width": 3000,
+        "height": 3000
+      },
+      "_id": "9e37b5_e53e4b65c20c4974b69784adc6da06ad~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_e53e4b65c20c4974b69784adc6da06ad~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Glen Moray 34",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_e53e4b65c20c4974b69784adc6da06ad~mv2.jpg/v1/fit/w_3000,h_3000,q_90/file.jpg",
+          "width": 3000,
+          "height": 3000
+        },
+        "_id": "9e37b5_e53e4b65c20c4974b69784adc6da06ad~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_16996218c81e422696b20a6dab4b38b3~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Glen Moray 34 B",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_16996218c81e422696b20a6dab4b38b3~mv2.jpg/v1/fit/w_3000,h_1687,q_90/file.jpg",
+          "width": 3000,
+          "height": 1687
+        },
+        "_id": "9e37b5_16996218c81e422696b20a6dab4b38b3~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/octave-premium-glen-moray-34y-45"
+  },
+  "numericId": "1683475380323000",
+  "inventoryItemId": "6d6762f8-978d-2bd7-4118-9d4257652cc2",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "afbb8d22-bee3-0505-04e8-19b611c6cefd",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "52f1cf2a-7dc6-3e39-f55c-ec0ae4477a16",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 2900,
+          "discountedPrice": 2900,
+          "formatted": {
+            "price": "€2,900.00",
+            "discountedPrice": "€2,900.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 2900,
+          "discountedPrice": 2900,
+          "formatted": {
+            "price": "€2,900.00",
+            "discountedPrice": "€2,900.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0040",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 2,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:40.253Z",
+  "ribbon": "Only 2 left",
+  "exportProductId": "product_92989d07-6872-d428-bee7-62bda89ad33d",
+  "_id": "92989d07-6872-d428-bee7-62bda89ad33d",
+  "_createdDate": "2023-05-07T16:03:00.323Z"
+}

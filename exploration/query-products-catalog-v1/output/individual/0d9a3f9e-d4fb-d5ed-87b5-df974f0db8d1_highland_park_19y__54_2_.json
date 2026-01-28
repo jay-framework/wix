@@ -1,0 +1,148 @@
+{
+  "name": "Highland Park 19Y- 54.2%",
+  "slug": "highland-park-19y-54-2",
+  "visible": true,
+  "productType": "physical",
+  "description": "",
+  "sku": "1-17-0060",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 10,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 1400,
+    "discountedPrice": 1400,
+    "formatted": {
+      "price": "€1,400.00",
+      "discountedPrice": "€1,400.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 1400,
+    "discountedPrice": 1400,
+    "formatted": {
+      "price": "€1,400.00",
+      "discountedPrice": "€1,400.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 1400,
+    "discountedPrice": 1400,
+    "formatted": {
+      "price": "€1,400.00",
+      "discountedPrice": "€1,400.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 1400,
+    "maxValue": 1400
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Duncan Taylor.JPG",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg/v1/fit/w_221,h_195,q_90/file.jpg",
+        "width": 221,
+        "height": 195
+      },
+      "_id": "9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Duncan Taylor.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg/v1/fit/w_221,h_195,q_90/file.jpg",
+          "width": 221,
+          "height": 195
+        },
+        "_id": "9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/highland-park-19y-54-2"
+  },
+  "numericId": "1716810213938000",
+  "inventoryItemId": "f265c061-2b04-2a12-784a-2068b0f2472e",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "ae29628d-2b04-ac94-a30f-d5382eacd5ff",
+    "6ea88cd0-3a19-b91d-118e-10b713441c6a",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 1400,
+          "discountedPrice": 1400,
+          "formatted": {
+            "price": "€1,400.00",
+            "discountedPrice": "€1,400.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 1400,
+          "discountedPrice": 1400,
+          "formatted": {
+            "price": "€1,400.00",
+            "discountedPrice": "€1,400.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0060",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 10,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:30.916Z",
+  "ribbon": "",
+  "exportProductId": "product_0d9a3f9e-d4fb-d5ed-87b5-df974f0db8d1",
+  "_id": "0d9a3f9e-d4fb-d5ed-87b5-df974f0db8d1",
+  "_createdDate": "2024-05-27T11:43:33.938Z"
+}

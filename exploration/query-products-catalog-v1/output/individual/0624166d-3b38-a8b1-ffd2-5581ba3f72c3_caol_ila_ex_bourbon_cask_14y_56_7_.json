@@ -1,0 +1,148 @@
+{
+  "name": "Caol Ila Ex-Bourbon cask 14Y 56.7%",
+  "slug": "caol-ila-ex-bourbon-cask-14y-56-7",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Distilled at Caol Ila Distillery,&nbsp;</p><p>&nbsp;</p><p>Matured for 14 years in an Ex-Bourbon Hogshead</p><p>Bottled at 56.7%&nbsp;ABV without chilled filtration or coloring</p><p>&nbsp;</p><p>&nbsp;</p>",
+  "sku": "1-10-0021",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 11,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 490,
+    "discountedPrice": 490,
+    "formatted": {
+      "price": "€490.00",
+      "discountedPrice": "€490.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 490,
+    "discountedPrice": 490,
+    "formatted": {
+      "price": "€490.00",
+      "discountedPrice": "€490.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 490,
+    "discountedPrice": 490,
+    "formatted": {
+      "price": "€490.00",
+      "discountedPrice": "€490.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 490,
+    "maxValue": 490
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_a405d59d11914fcfb29c6c89e1469c40~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Rest & Be Thankful - Caol Ila 14y.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_a405d59d11914fcfb29c6c89e1469c40~mv2.jpg/v1/fit/w_1496,h_1496,q_90/file.jpg",
+        "width": 1496,
+        "height": 1496
+      },
+      "_id": "9e37b5_a405d59d11914fcfb29c6c89e1469c40~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_a405d59d11914fcfb29c6c89e1469c40~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Rest & Be Thankful - Caol Ila 14y.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_a405d59d11914fcfb29c6c89e1469c40~mv2.jpg/v1/fit/w_1496,h_1496,q_90/file.jpg",
+          "width": 1496,
+          "height": 1496
+        },
+        "_id": "9e37b5_a405d59d11914fcfb29c6c89e1469c40~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/caol-ila-ex-bourbon-cask-14y-56-7"
+  },
+  "numericId": "1756388428628000",
+  "inventoryItemId": "f9dbe992-c4c7-574e-002d-aa7e45c08d3c",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "d9b79021-229d-dbd2-7d1c-d7ca1570efe8",
+    "68b702b3-fae1-92a2-e95b-3ea1f4527dec",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 490,
+          "discountedPrice": 490,
+          "formatted": {
+            "price": "€490.00",
+            "discountedPrice": "€490.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 490,
+          "discountedPrice": 490,
+          "formatted": {
+            "price": "€490.00",
+            "discountedPrice": "€490.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-10-0021",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 11,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-23T10:01:43.571Z",
+  "ribbon": "",
+  "exportProductId": "product_0624166d-3b38-a8b1-ffd2-5581ba3f72c3",
+  "_id": "0624166d-3b38-a8b1-ffd2-5581ba3f72c3",
+  "_createdDate": "2025-08-28T13:40:28.628Z"
+}

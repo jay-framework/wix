@@ -1,0 +1,148 @@
+{
+  "name": "Dalgety- Glen Spey 10y- 50.2%",
+  "slug": "dalgety-glen-spey-10y-50-2",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>&nbsp;</p>",
+  "sku": "1-15-0045",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 10,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 430,
+    "discountedPrice": 430,
+    "formatted": {
+      "price": "€430.00",
+      "discountedPrice": "€430.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 430,
+    "discountedPrice": 430,
+    "formatted": {
+      "price": "€430.00",
+      "discountedPrice": "€430.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 430,
+    "discountedPrice": 430,
+    "formatted": {
+      "price": "€430.00",
+      "discountedPrice": "€430.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 430,
+    "maxValue": 430
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_7fc02b50c7294b3ab4cd367ceebc270c~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Dalgety- Glen Spey 10.jpeg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_7fc02b50c7294b3ab4cd367ceebc270c~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+        "width": 2048,
+        "height": 2048
+      },
+      "_id": "9e37b5_7fc02b50c7294b3ab4cd367ceebc270c~mv2.jpeg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_7fc02b50c7294b3ab4cd367ceebc270c~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Dalgety- Glen Spey 10.jpeg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_7fc02b50c7294b3ab4cd367ceebc270c~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+          "width": 2048,
+          "height": 2048
+        },
+        "_id": "9e37b5_7fc02b50c7294b3ab4cd367ceebc270c~mv2.jpeg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/dalgety-glen-spey-10y-50-2"
+  },
+  "numericId": "1721138319538000",
+  "inventoryItemId": "3b4b3c1f-838f-6a50-a4f0-9887ae9cb896",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "c51d1d92-eb68-ac06-1893-e8aa02ce7708",
+    "9e2982d5-9e2c-72f5-73a7-b91756692a1a",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 430,
+          "discountedPrice": 430,
+          "formatted": {
+            "price": "€430.00",
+            "discountedPrice": "€430.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 430,
+          "discountedPrice": 430,
+          "formatted": {
+            "price": "€430.00",
+            "discountedPrice": "€430.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-15-0045",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 10,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:40.253Z",
+  "ribbon": "",
+  "exportProductId": "product_c4b4c3e0-7c70-95af-5b0f-677851634769",
+  "_id": "c4b4c3e0-7c70-95af-5b0f-677851634769",
+  "_createdDate": "2024-07-16T13:58:39.538Z"
+}

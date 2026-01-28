@@ -1,0 +1,148 @@
+{
+  "name": "Aberlour 11y- 55.1%",
+  "slug": "aberlour-11y-55-1",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Distilled on 16/5/2013 in Aberlour Distillery and finished in a&nbsp;Fresh Oloroso Quarter Cask</p><p>&nbsp;</p><p>Bottled at Cask Streanght of 55.1% without colouring and without chilled filtaration</p>",
+  "sku": "1-13-0132",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 14,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 500,
+    "discountedPrice": 500,
+    "formatted": {
+      "price": "€500.00",
+      "discountedPrice": "€500.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 500,
+    "discountedPrice": 500,
+    "formatted": {
+      "price": "€500.00",
+      "discountedPrice": "€500.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 500,
+    "discountedPrice": 500,
+    "formatted": {
+      "price": "€500.00",
+      "discountedPrice": "€500.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 500,
+    "maxValue": 500
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_d844e96fb7cf4f1c8fc8a5a0b8ef7124~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Claxton Aberlour 11y 55.1% Oloroso Quarter Cask.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_d844e96fb7cf4f1c8fc8a5a0b8ef7124~mv2.jpg/v1/fit/w_1149,h_940,q_90/file.jpg",
+        "width": 1149,
+        "height": 940
+      },
+      "_id": "9e37b5_d844e96fb7cf4f1c8fc8a5a0b8ef7124~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_d844e96fb7cf4f1c8fc8a5a0b8ef7124~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Claxton Aberlour 11y 55.1% Oloroso Quarter Cask.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_d844e96fb7cf4f1c8fc8a5a0b8ef7124~mv2.jpg/v1/fit/w_1149,h_940,q_90/file.jpg",
+          "width": 1149,
+          "height": 940
+        },
+        "_id": "9e37b5_d844e96fb7cf4f1c8fc8a5a0b8ef7124~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/aberlour-11y-55-1"
+  },
+  "numericId": "1757784802177000",
+  "inventoryItemId": "3894b279-d8c5-e3d1-e9a6-f592f05cbfa8",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "6488a591-9bfa-caa7-055d-8d0a1bb67d4e",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "ab35fe66-57fd-a070-5b9e-d23655e97974",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 500,
+          "discountedPrice": 500,
+          "formatted": {
+            "price": "€500.00",
+            "discountedPrice": "€500.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 500,
+          "discountedPrice": 500,
+          "formatted": {
+            "price": "€500.00",
+            "discountedPrice": "€500.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-13-0132",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 14,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:47.965Z",
+  "ribbon": "",
+  "exportProductId": "product_c76b4d86-273a-1c2e-1659-0a6d0fa34057",
+  "_id": "c76b4d86-273a-1c2e-1659-0a6d0fa34057",
+  "_createdDate": "2025-09-13T17:33:22.177Z"
+}

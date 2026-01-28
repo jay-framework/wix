@@ -1,0 +1,150 @@
+{
+  "name": "Lochindaal 11y 62.6% (cask #LOC001)",
+  "slug": "lochindaal-11y-62-6-cask-loc001",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><em><strong><u>Distilled at Bruichladdich-</u></strong></em></p><p><strong><em>Aged in an&nbsp;Ex-bourbon Barrel for 11&nbsp;years</em></strong></p><p><strong><em>Bottled at cask strength of 62.6%</em></strong></p><p>&nbsp;</p><p>&nbsp;</p>",
+  "sku": "1-16-0009",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 9,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 920,
+    "discountedPrice": 920,
+    "formatted": {
+      "price": "€920.00",
+      "discountedPrice": "€920.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 920,
+    "discountedPrice": 920,
+    "formatted": {
+      "price": "€920.00",
+      "discountedPrice": "€920.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 920,
+    "discountedPrice": 920,
+    "formatted": {
+      "price": "€920.00",
+      "discountedPrice": "€920.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 920,
+    "maxValue": 920
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_36a3593e221a4fd3a547629cbb343ccb~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "LOCHINDAAL 11- 62.6% THE SINGLE CASK.JPG",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_36a3593e221a4fd3a547629cbb343ccb~mv2.jpg/v1/fit/w_2949,h_2949,q_90/file.jpg",
+        "width": 2949,
+        "height": 2949
+      },
+      "_id": "9e37b5_36a3593e221a4fd3a547629cbb343ccb~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_36a3593e221a4fd3a547629cbb343ccb~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "LOCHINDAAL 11- 62.6% THE SINGLE CASK.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_36a3593e221a4fd3a547629cbb343ccb~mv2.jpg/v1/fit/w_2949,h_2949,q_90/file.jpg",
+          "width": 2949,
+          "height": 2949
+        },
+        "_id": "9e37b5_36a3593e221a4fd3a547629cbb343ccb~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/lochindaal-11y-62-6-cask-loc001"
+  },
+  "numericId": "1618324112500000",
+  "inventoryItemId": "283b25d2-a784-e218-b44b-2c88541fd787",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "2311636b-a702-fed0-2f80-ee0fdda0c837",
+    "e7ae7736-6c81-116d-0e22-b5e09f80f4f4",
+    "5e41cbc8-c0c5-9d18-0043-ed1c349d083a",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "933d2237-9afc-5600-3dc5-2873671ee4f5",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 920,
+          "discountedPrice": 920,
+          "formatted": {
+            "price": "€920.00",
+            "discountedPrice": "€920.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 920,
+          "discountedPrice": 920,
+          "formatted": {
+            "price": "€920.00",
+            "discountedPrice": "€920.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-16-0009",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 9,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:47.965Z",
+  "ribbon": "",
+  "exportProductId": "product_d7c4da2d-587b-1de7-4bb4-d377abe02878",
+  "_id": "d7c4da2d-587b-1de7-4bb4-d377abe02878",
+  "_createdDate": "2021-04-13T14:28:32.500Z"
+}

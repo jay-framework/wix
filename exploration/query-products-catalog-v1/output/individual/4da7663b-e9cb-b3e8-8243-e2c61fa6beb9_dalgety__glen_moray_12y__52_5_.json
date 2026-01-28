@@ -1,0 +1,148 @@
+{
+  "name": "Dalgety- Glen Moray 12y- 52.5%",
+  "slug": "dalgety-glen-moray-12y-52-5",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Hogshead with Profiler Barrique Finish</p>",
+  "sku": "1-15-0044",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 12,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 440,
+    "discountedPrice": 440,
+    "formatted": {
+      "price": "€440.00",
+      "discountedPrice": "€440.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 440,
+    "discountedPrice": 440,
+    "formatted": {
+      "price": "€440.00",
+      "discountedPrice": "€440.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 440,
+    "discountedPrice": 440,
+    "formatted": {
+      "price": "€440.00",
+      "discountedPrice": "€440.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 440,
+    "maxValue": 440
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_69e08552adc5446e88fabfb6a2510297~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Dalgety- Glen Moray 12.jpeg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_69e08552adc5446e88fabfb6a2510297~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+        "width": 2048,
+        "height": 2048
+      },
+      "_id": "9e37b5_69e08552adc5446e88fabfb6a2510297~mv2.jpeg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_69e08552adc5446e88fabfb6a2510297~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Dalgety- Glen Moray 12.jpeg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_69e08552adc5446e88fabfb6a2510297~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+          "width": 2048,
+          "height": 2048
+        },
+        "_id": "9e37b5_69e08552adc5446e88fabfb6a2510297~mv2.jpeg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/dalgety-glen-moray-12y-52-5"
+  },
+  "numericId": "1721138216036000",
+  "inventoryItemId": "b25899c4-1634-4c17-7dbc-1d39e0594146",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "52f1cf2a-7dc6-3e39-f55c-ec0ae4477a16",
+    "9e2982d5-9e2c-72f5-73a7-b91756692a1a",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 440,
+          "discountedPrice": 440,
+          "formatted": {
+            "price": "€440.00",
+            "discountedPrice": "€440.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 440,
+          "discountedPrice": 440,
+          "formatted": {
+            "price": "€440.00",
+            "discountedPrice": "€440.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-15-0044",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 12,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:36.193Z",
+  "ribbon": "",
+  "exportProductId": "product_4da7663b-e9cb-b3e8-8243-e2c61fa6beb9",
+  "_id": "4da7663b-e9cb-b3e8-8243-e2c61fa6beb9",
+  "_createdDate": "2024-07-16T13:56:56.036Z"
+}

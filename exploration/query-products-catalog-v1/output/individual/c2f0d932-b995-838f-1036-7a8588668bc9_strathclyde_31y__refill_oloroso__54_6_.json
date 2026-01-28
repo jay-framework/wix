@@ -1,0 +1,149 @@
+{
+  "name": "Strathclyde 31y, Refill Oloroso, 54.6%",
+  "slug": "strathclyde-31y-refill-oloroso-54-6",
+  "visible": true,
+  "productType": "physical",
+  "description": "",
+  "sku": "1-15-0052",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 10,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 590,
+    "discountedPrice": 590,
+    "formatted": {
+      "price": "€590.00",
+      "discountedPrice": "€590.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 590,
+    "discountedPrice": 590,
+    "formatted": {
+      "price": "€590.00",
+      "discountedPrice": "€590.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 590,
+    "discountedPrice": 590,
+    "formatted": {
+      "price": "€590.00",
+      "discountedPrice": "€590.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 590,
+    "maxValue": 590
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_186d84c9ebce4c33aab8fb4c52b738af~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "E-STRATHCLYDE 31_edited.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_186d84c9ebce4c33aab8fb4c52b738af~mv2.jpg/v1/fit/w_621,h_621,q_90/file.jpg",
+        "width": 621,
+        "height": 621
+      },
+      "_id": "9e37b5_186d84c9ebce4c33aab8fb4c52b738af~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_186d84c9ebce4c33aab8fb4c52b738af~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "E-STRATHCLYDE 31_edited.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_186d84c9ebce4c33aab8fb4c52b738af~mv2.jpg/v1/fit/w_621,h_621,q_90/file.jpg",
+          "width": 621,
+          "height": 621
+        },
+        "_id": "9e37b5_186d84c9ebce4c33aab8fb4c52b738af~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/strathclyde-31y-refill-oloroso-54-6"
+  },
+  "numericId": "1764507648934000",
+  "inventoryItemId": "3d0f26cd-466a-7c70-efc9-857a77997436",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "9e2982d5-9e2c-72f5-73a7-b91756692a1a",
+    "85e4e91a-979a-dad4-6c9a-58ea4f2912b3",
+    "ea47b020-c4f2-1d81-ffb1-86f71ae4dc71",
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 590,
+          "discountedPrice": 590,
+          "formatted": {
+            "price": "€590.00",
+            "discountedPrice": "€590.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 590,
+          "discountedPrice": 590,
+          "formatted": {
+            "price": "€590.00",
+            "discountedPrice": "€590.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-15-0052",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 10,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-30T13:28:59.519Z",
+  "ribbon": "",
+  "exportProductId": "product_c2f0d932-b995-838f-1036-7a8588668bc9",
+  "_id": "c2f0d932-b995-838f-1036-7a8588668bc9",
+  "_createdDate": "2025-11-30T13:00:48.934Z"
+}

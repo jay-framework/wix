@@ -1,0 +1,149 @@
+{
+  "name": "A Highland Distillery 16y- 55%",
+  "slug": "highland-distillery-16y-55",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><u><strong><em>Distilled at un disclosed Highland distillery-</em></strong></u></p><p><strong><em>This Whisky was aged in a bourbon cask&nbsp;for 16&nbsp;years. It was finished in a Sherry Octave and&nbsp;bottled at Cask strength of 55%</em></strong></p><p>&nbsp;</p><p><u><strong>Tasting notes by the AlphaBet Whisky Advisory Board</strong></u></p><p><strong>Nose </strong></p><p>Violets, green grass, mustard flowers, orange, pepper, mocha, yeast, malt, sour bread</p><p><strong>Palate</strong></p><p>Coffee candies, artificial sweetener sweetness, pop candy</p><p><strong>Finish</strong></p><p>Quite long, Salty and sweet bitterness</p><p>&nbsp;</p>",
+  "sku": "1-17-0080",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 28,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 530,
+    "discountedPrice": 530,
+    "formatted": {
+      "price": "€530.00",
+      "discountedPrice": "€530.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 530,
+    "discountedPrice": 530,
+    "formatted": {
+      "price": "€530.00",
+      "discountedPrice": "€530.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 530,
+    "discountedPrice": 530,
+    "formatted": {
+      "price": "€530.00",
+      "discountedPrice": "€530.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 530,
+    "maxValue": 530
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_9f943708de2147a5ba7f41d5e460a0d1~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251203_115545.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_9f943708de2147a5ba7f41d5e460a0d1~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_9f943708de2147a5ba7f41d5e460a0d1~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_9f943708de2147a5ba7f41d5e460a0d1~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251203_115545.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_9f943708de2147a5ba7f41d5e460a0d1~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_9f943708de2147a5ba7f41d5e460a0d1~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/highland-distillery-16y-55"
+  },
+  "numericId": "1765301064698000",
+  "inventoryItemId": "0f5b08f4-6763-e5b0-5ac3-942bf8bfc05e",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "d585e961-a952-a3fa-3ac3-6b505715ca74",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "3cc3b025-51dd-7aec-23bf-91a5c11daf8c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 530,
+          "discountedPrice": 530,
+          "formatted": {
+            "price": "€530.00",
+            "discountedPrice": "€530.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 530,
+          "discountedPrice": 530,
+          "formatted": {
+            "price": "€530.00",
+            "discountedPrice": "€530.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0080",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 28,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-10T14:35:09.019Z",
+  "ribbon": "",
+  "exportProductId": "product_f0a4f70b-989c-1a4f-a53c-6bd407403fa1",
+  "_id": "f0a4f70b-989c-1a4f-a53c-6bd407403fa1",
+  "_createdDate": "2025-12-09T17:24:24.698Z"
+}

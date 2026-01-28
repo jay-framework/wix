@@ -1,0 +1,149 @@
+{
+  "name": "Bruichladdich 15y, 1st Fill Bourbon, 52%",
+  "slug": "bruichladdich-15y-1st-fill-bourbon-52",
+  "visible": true,
+  "productType": "physical",
+  "description": "",
+  "sku": "1-15-0048",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 14,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 790,
+    "discountedPrice": 790,
+    "formatted": {
+      "price": "€790.00",
+      "discountedPrice": "€790.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 790,
+    "discountedPrice": 790,
+    "formatted": {
+      "price": "€790.00",
+      "discountedPrice": "€790.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 790,
+    "discountedPrice": 790,
+    "formatted": {
+      "price": "€790.00",
+      "discountedPrice": "€790.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 790,
+    "maxValue": 790
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_de13ffc3b6134744ab8306c5ffef4fd9~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "E-BRUICHLADDICH 15_edited.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_de13ffc3b6134744ab8306c5ffef4fd9~mv2.jpg/v1/fit/w_639,h_639,q_90/file.jpg",
+        "width": 639,
+        "height": 639
+      },
+      "_id": "9e37b5_de13ffc3b6134744ab8306c5ffef4fd9~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_de13ffc3b6134744ab8306c5ffef4fd9~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "E-BRUICHLADDICH 15_edited.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_de13ffc3b6134744ab8306c5ffef4fd9~mv2.jpg/v1/fit/w_639,h_639,q_90/file.jpg",
+          "width": 639,
+          "height": 639
+        },
+        "_id": "9e37b5_de13ffc3b6134744ab8306c5ffef4fd9~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/bruichladdich-15y-1st-fill-bourbon-52"
+  },
+  "numericId": "1764508546979000",
+  "inventoryItemId": "bc29d52b-5f65-9c9e-9f9b-a904a917669e",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "9e2982d5-9e2c-72f5-73a7-b91756692a1a",
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "2311636b-a702-fed0-2f80-ee0fdda0c837",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 790,
+          "discountedPrice": 790,
+          "formatted": {
+            "price": "€790.00",
+            "discountedPrice": "€790.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 790,
+          "discountedPrice": 790,
+          "formatted": {
+            "price": "€790.00",
+            "discountedPrice": "€790.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-15-0048",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 14,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-30T13:40:18.543Z",
+  "ribbon": "",
+  "exportProductId": "product_43d62ad4-a09a-6361-6064-56fb56e89961",
+  "_id": "43d62ad4-a09a-6361-6064-56fb56e89961",
+  "_createdDate": "2025-11-30T13:15:46.979Z"
+}

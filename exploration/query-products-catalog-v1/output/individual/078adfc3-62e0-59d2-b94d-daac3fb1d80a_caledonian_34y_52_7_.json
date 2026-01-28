@@ -1,0 +1,152 @@
+{
+  "name": "Caledonian 34y 52.7%",
+  "slug": "caledonian-34y-52-7",
+  "visible": true,
+  "productType": "physical",
+  "description": "",
+  "sku": "1-17-0045",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 5,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 2200,
+    "discountedPrice": 2200,
+    "formatted": {
+      "price": "€2,200.00",
+      "discountedPrice": "€2,200.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 2200,
+    "discountedPrice": 2200,
+    "formatted": {
+      "price": "€2,200.00",
+      "discountedPrice": "€2,200.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 2200,
+    "discountedPrice": 2200,
+    "formatted": {
+      "price": "€2,200.00",
+      "discountedPrice": "€2,200.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 2200,
+    "maxValue": 2200
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 5 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_072e2b716a4143b6a441cd2b1d32048b~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Caledonian 34y",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_072e2b716a4143b6a441cd2b1d32048b~mv2.jpg/v1/fit/w_3000,h_3000,q_90/file.jpg",
+        "width": 3000,
+        "height": 3000
+      },
+      "_id": "9e37b5_072e2b716a4143b6a441cd2b1d32048b~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_072e2b716a4143b6a441cd2b1d32048b~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Caledonian 34y",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_072e2b716a4143b6a441cd2b1d32048b~mv2.jpg/v1/fit/w_3000,h_3000,q_90/file.jpg",
+          "width": 3000,
+          "height": 3000
+        },
+        "_id": "9e37b5_072e2b716a4143b6a441cd2b1d32048b~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/caledonian-34y-52-7"
+  },
+  "numericId": "1683476209367000",
+  "inventoryItemId": "f875203c-9d1f-a62d-46b2-2553c04e27f5",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "6ea88cd0-3a19-b91d-118e-10b713441c6a",
+    "ea47b020-c4f2-1d81-ffb1-86f71ae4dc71",
+    "80637b0c-13c0-c5fb-bbea-1b1ab6490bf5",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 2200,
+          "discountedPrice": 2200,
+          "formatted": {
+            "price": "€2,200.00",
+            "discountedPrice": "€2,200.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 2200,
+          "discountedPrice": 2200,
+          "formatted": {
+            "price": "€2,200.00",
+            "discountedPrice": "€2,200.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0045",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 5,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:30.916Z",
+  "ribbon": "Only 5 left",
+  "exportProductId": "product_078adfc3-62e0-59d2-b94d-daac3fb1d80a",
+  "_id": "078adfc3-62e0-59d2-b94d-daac3fb1d80a",
+  "_createdDate": "2023-05-07T16:16:49.367Z"
+}

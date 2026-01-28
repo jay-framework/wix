@@ -1,0 +1,147 @@
+{
+  "name": "Peat's Beast- 46%",
+  "slug": "peat-s-beast-46",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><u><strong><em>Distilled at an un-disclosed (non Islay) distillery-</em></strong></u></p><p><strong><em>This Whisky was aged in bourbon casks and&nbsp;bottled at 46%</em></strong></p><p>&nbsp;</p><p>&nbsp;</p>",
+  "sku": "1-11-0004",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 117,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 199,
+    "discountedPrice": 199,
+    "formatted": {
+      "price": "€199.00",
+      "discountedPrice": "€199.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 199,
+    "discountedPrice": 199,
+    "formatted": {
+      "price": "€199.00",
+      "discountedPrice": "€199.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 199,
+    "discountedPrice": 199,
+    "formatted": {
+      "price": "€199.00",
+      "discountedPrice": "€199.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 199,
+    "maxValue": 199
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_fc8fce9c51d1418a978a01bcaf5af9e8~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Peat Beast 46%.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_fc8fce9c51d1418a978a01bcaf5af9e8~mv2.jpg/v1/fit/w_3024,h_3024,q_90/file.jpg",
+        "width": 3024,
+        "height": 3024
+      },
+      "_id": "9e37b5_fc8fce9c51d1418a978a01bcaf5af9e8~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_fc8fce9c51d1418a978a01bcaf5af9e8~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Peat Beast 46%.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_fc8fce9c51d1418a978a01bcaf5af9e8~mv2.jpg/v1/fit/w_3024,h_3024,q_90/file.jpg",
+          "width": 3024,
+          "height": 3024
+        },
+        "_id": "9e37b5_fc8fce9c51d1418a978a01bcaf5af9e8~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/peat-s-beast-46"
+  },
+  "numericId": "1633449077595000",
+  "inventoryItemId": "bd69c0bf-337b-2597-875b-431853cde8d0",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "cab06e2a-d8da-5086-ea76-7daa259f8725",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 199,
+          "discountedPrice": 199,
+          "formatted": {
+            "price": "€199.00",
+            "discountedPrice": "€199.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 199,
+          "discountedPrice": 199,
+          "formatted": {
+            "price": "€199.00",
+            "discountedPrice": "€199.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-11-0004",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 117,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:36.193Z",
+  "ribbon": "",
+  "exportProductId": "product_42963f40-cc84-da68-78a4-bce7ac32172f",
+  "_id": "42963f40-cc84-da68-78a4-bce7ac32172f",
+  "_createdDate": "2021-10-05T15:51:17.595Z"
+}

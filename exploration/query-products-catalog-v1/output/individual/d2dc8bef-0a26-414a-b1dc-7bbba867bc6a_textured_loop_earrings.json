@@ -1,0 +1,163 @@
+{
+  "name": "Textured Loop Earrings",
+  "slug": "textured-loop-earrings",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>I'm a product description. I'm a great place to add more details about your product such as sizing, material, care instructions and cleaning instructions.</p>",
+  "sku": "671253175371",
+  "stock": {
+    "trackInventory": false,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "ILS",
+    "price": 269,
+    "discountedPrice": 269,
+    "formatted": {
+      "price": "269.00 ₪",
+      "discountedPrice": "269.00 ₪"
+    }
+  },
+  "priceData": {
+    "currency": "ILS",
+    "price": 269,
+    "discountedPrice": 269,
+    "formatted": {
+      "price": "269.00 ₪",
+      "discountedPrice": "269.00 ₪"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "ILS",
+    "price": 269,
+    "discountedPrice": 269,
+    "formatted": {
+      "price": "269.00 ₪",
+      "discountedPrice": "269.00 ₪"
+    }
+  },
+  "additionalInfoSections": [
+    {
+      "title": "Product Info",
+      "description": "<p>I'm a great place to add more information about your product, such as <span style=\"font-weight: 700\">sizing</span>, <span style=\"font-weight: 700\">material</span>, <span style=\"font-weight: 700\">care</span>, and <span style=\"font-weight: 700\">cleaning instructions</span>. This is also a great space to highlight what makes this product special and how your customers can benefit from this item.</p>"
+    },
+    {
+      "title": "Return & Refund Policy",
+      "description": "<p>I’m a great place to let your customers know what to do in case they are dissatisfied with their purchase.</p><hr><ul><li><p><span style=\"font-weight: 700\">Easy Returns &amp; Exchanges</span></p></li><li><p><span style=\"font-weight: 700\">Hassle-Free Process</span></p></li><li><p><span style=\"font-weight: 700\">Builds Customer Confidence</span></p></li></ul><p>Having a straightforward refund or exchange policy is a great way to build trust and reassure your customers that they can buy with confidence.</p>"
+    },
+    {
+      "title": "Shipping Info",
+      "description": "<p>I’m a great place to add more information about your <span style=\"font-weight: 700\">shipping methods</span>, <span style=\"font-weight: 700\">packaging</span>, and <span style=\"font-weight: 700\">cost</span>.</p><p>Providing straightforward information about your <u>shipping policy</u>&nbsp;is a great way to build trust and reassure your customers that they can buy from you with confidence.</p>"
+    }
+  ],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/22e53e_8cbcee6500094796a3fc3730d52840f1~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Earrings-Product (1).jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/22e53e_8cbcee6500094796a3fc3730d52840f1~mv2.jpg",
+        "width": 3000,
+        "height": 3000
+      },
+      "_id": "22e53e_8cbcee6500094796a3fc3730d52840f1~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/22e53e_8cbcee6500094796a3fc3730d52840f1~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Earrings-Product (1).jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/22e53e_8cbcee6500094796a3fc3730d52840f1~mv2.jpg",
+          "width": 3000,
+          "height": 3000
+        },
+        "_id": "22e53e_8cbcee6500094796a3fc3730d52840f1~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/22e53e_7157f1b241bd4a1c8f3360be859fde55~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Earrings-Context (1).jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/22e53e_7157f1b241bd4a1c8f3360be859fde55~mv2.jpg",
+          "width": 2000,
+          "height": 2000
+        },
+        "_id": "22e53e_7157f1b241bd4a1c8f3360be859fde55~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [
+    {
+      "title": "Would you like to add a gift card? Please write your message here.",
+      "maxLength": 500,
+      "mandatory": false
+    }
+  ],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/textured-loop-earrings"
+  },
+  "numericId": "1737885155047000",
+  "inventoryItemId": "d2dc8bef-0a26-414a-b1dc-7bbba867bc6a",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "becc814c-0375-45e8-a826-cd0391f935ef"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "ILS",
+          "price": 269,
+          "discountedPrice": 269,
+          "formatted": {
+            "price": "269.00 ₪",
+            "discountedPrice": "269.00 ₪"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "ILS",
+          "price": 269,
+          "discountedPrice": 269,
+          "formatted": {
+            "price": "269.00 ₪",
+            "discountedPrice": "269.00 ₪"
+          }
+        },
+        "weight": 0,
+        "sku": "671253175371",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": false,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-16T16:20:40.462Z",
+  "exportProductId": "Product_269b62d3-0294-4f3e-924c-161ab8a52827",
+  "_id": "d2dc8bef-0a26-414a-b1dc-7bbba867bc6a",
+  "_createdDate": "2025-01-26T09:52:35.233Z"
+}

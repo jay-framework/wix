@@ -1,0 +1,163 @@
+{
+  "name": "Balblair 14y 52.5%",
+  "slug": "balbalir-14y-52-5",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><strong>Distilled at Balblair Distillery</strong></p><p>Matured in A first fill Oloroso Sherry for 14 years</p><p>Bottled at a cask strength of 52.5%,<br>keeping its natural colour and without chill filtration</p><p>&nbsp;</p><p><strong><u>Tasting notes by the AlphaBet Whisky Advisory Board</u></strong></p><p><strong>Nose</strong></p><p>Dark and milk chocolate, instant coffee powder, Capuchino, wild berries</p><p><strong>Palate</strong></p><p>Milk chocolate, condensed milk, wild berries compote</p><p><strong>Finish</strong></p><p>Long yet gentle, dry, dark chocolate, coffee, cocoa, sourness</p><p>&nbsp;</p><p>The Board's final word: <strong>YAMMY !!! <em>do not water</em></strong></p><p>&nbsp;</p>",
+  "sku": "1-12-0052",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 10,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 640,
+    "discountedPrice": 640,
+    "formatted": {
+      "price": "€640.00",
+      "discountedPrice": "€640.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 640,
+    "discountedPrice": 640,
+    "formatted": {
+      "price": "€640.00",
+      "discountedPrice": "€640.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 640,
+    "discountedPrice": 640,
+    "formatted": {
+      "price": "€640.00",
+      "discountedPrice": "€640.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 640,
+    "maxValue": 640
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_c8dbdb443f17488f8231f758e22c999f~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251126_194534.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_c8dbdb443f17488f8231f758e22c999f~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_c8dbdb443f17488f8231f758e22c999f~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_c8dbdb443f17488f8231f758e22c999f~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251126_194534.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_c8dbdb443f17488f8231f758e22c999f~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_c8dbdb443f17488f8231f758e22c999f~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_5249d1df16cc4759894797b63dd40a7e~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Balblair 14.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_5249d1df16cc4759894797b63dd40a7e~mv2.jpg/v1/fit/w_555,h_773,q_90/file.jpg",
+          "width": 555,
+          "height": 773
+        },
+        "_id": "9e37b5_5249d1df16cc4759894797b63dd40a7e~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/balbalir-14y-52-5"
+  },
+  "numericId": "1761830881469000",
+  "inventoryItemId": "c3ee7339-e17b-2b55-a78c-c31ac0a1e122",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "1c54c59f-7f38-1790-b8b6-a19bb70c51fc",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "6f302b54-a86a-515d-b025-2f0f053444d4",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 640,
+          "discountedPrice": 640,
+          "formatted": {
+            "price": "€640.00",
+            "discountedPrice": "€640.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 640,
+          "discountedPrice": 640,
+          "formatted": {
+            "price": "€640.00",
+            "discountedPrice": "€640.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-12-0052",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 10,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-08T13:35:05.936Z",
+  "ribbon": "",
+  "exportProductId": "product_3c118cc6-1e84-d4aa-5873-3ce53f5e1edd",
+  "_id": "3c118cc6-1e84-d4aa-5873-3ce53f5e1edd",
+  "_createdDate": "2025-10-30T13:28:01.469Z"
+}

@@ -1,0 +1,149 @@
+{
+  "name": "Miltonduff- 12y- 46%",
+  "slug": "miltonduff-12y-46",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><strong>Distilled at Miltonduff distillery</strong></p><p>Aged 12&nbsp;years in an ex-bourbon casks</p><p>Bottled at 46%</p><p>No chilled filtration, no added coulors</p><p>&nbsp;</p><p><u><strong>Tasting notes by the AlphaBet Whisky Advisory Board</strong></u></p><p><strong>Nose </strong></p><p>Salt and sour, grinded black pepper, swimming pool, dampness, sulfur&nbsp;</p><p><strong>Palate</strong></p><p>Wax, varnish, black and white pepper, cranberries</p><p><strong style=\"background-color: transparent;\">Finish</strong></p><p>Medium-long, gentle bitterness of celery and cilantro, salt, bitter-lemon</p>",
+  "sku": "1-17-0086",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 17,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 330,
+    "discountedPrice": 330,
+    "formatted": {
+      "price": "€330.00",
+      "discountedPrice": "€330.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 330,
+    "discountedPrice": 330,
+    "formatted": {
+      "price": "€330.00",
+      "discountedPrice": "€330.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 330,
+    "discountedPrice": 330,
+    "formatted": {
+      "price": "€330.00",
+      "discountedPrice": "€330.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 330,
+    "maxValue": 330
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_8ecb645b29ab466c9c03a6ce4bbbc942~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251203_121100.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_8ecb645b29ab466c9c03a6ce4bbbc942~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_8ecb645b29ab466c9c03a6ce4bbbc942~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_8ecb645b29ab466c9c03a6ce4bbbc942~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251203_121100.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_8ecb645b29ab466c9c03a6ce4bbbc942~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_8ecb645b29ab466c9c03a6ce4bbbc942~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/miltonduff-12y-46"
+  },
+  "numericId": "1765196648890000",
+  "inventoryItemId": "5008ecfa-9ba0-49aa-77b4-c128b9bc5a45",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "6ea88cd0-3a19-b91d-118e-10b713441c6a",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "2c128003-cc78-0639-fdbc-c734d5ca0ff4",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 330,
+          "discountedPrice": 330,
+          "formatted": {
+            "price": "€330.00",
+            "discountedPrice": "€330.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 330,
+          "discountedPrice": 330,
+          "formatted": {
+            "price": "€330.00",
+            "discountedPrice": "€330.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0086",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 17,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-08T13:43:58.271Z",
+  "ribbon": "",
+  "exportProductId": "product_aff71305-645f-b655-884b-3ed74643a5ba",
+  "_id": "aff71305-645f-b655-884b-3ed74643a5ba",
+  "_createdDate": "2025-12-08T12:24:08.890Z"
+}

@@ -1,0 +1,166 @@
+{
+  "name": "Guyana Diamond Rum- 10y- 55%",
+  "slug": "guyana-diamando-rim-10y-55",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>&nbsp;</p>",
+  "sku": "1-12-0034",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 4,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 550,
+    "discountedPrice": 550,
+    "formatted": {
+      "price": "€550.00",
+      "discountedPrice": "€550.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 550,
+    "discountedPrice": 550,
+    "formatted": {
+      "price": "€550.00",
+      "discountedPrice": "€550.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 550,
+    "discountedPrice": 550,
+    "formatted": {
+      "price": "€550.00",
+      "discountedPrice": "€550.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 550,
+    "maxValue": 550
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 4 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_184450fc7d324431a3b7cca3a4009ad3~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "result_img_2024_12_15_09_59_15.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_184450fc7d324431a3b7cca3a4009ad3~mv2.jpg/v1/fit/w_2136,h_2136,q_90/file.jpg",
+        "width": 2136,
+        "height": 2136
+      },
+      "_id": "9e37b5_184450fc7d324431a3b7cca3a4009ad3~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_184450fc7d324431a3b7cca3a4009ad3~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "result_img_2024_12_15_09_59_15.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_184450fc7d324431a3b7cca3a4009ad3~mv2.jpg/v1/fit/w_2136,h_2136,q_90/file.jpg",
+          "width": 2136,
+          "height": 2136
+        },
+        "_id": "9e37b5_184450fc7d324431a3b7cca3a4009ad3~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_97c06c3c5de844e3afac8adb7ccbd3f1~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "E- Diamond  rum.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_97c06c3c5de844e3afac8adb7ccbd3f1~mv2.jpg/v1/fit/w_576,h_805,q_90/file.jpg",
+          "width": 576,
+          "height": 805
+        },
+        "_id": "9e37b5_97c06c3c5de844e3afac8adb7ccbd3f1~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/guyana-diamando-rim-10y-55"
+  },
+  "numericId": "1690297964783000",
+  "inventoryItemId": "568c2f00-5187-75ac-189a-1e0cfb2e492e",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "1c54c59f-7f38-1790-b8b6-a19bb70c51fc",
+    "a25cffb0-a5a9-aefb-c6f4-3eca9b87486c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 550,
+          "discountedPrice": 550,
+          "formatted": {
+            "price": "€550.00",
+            "discountedPrice": "€550.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 550,
+          "discountedPrice": 550,
+          "formatted": {
+            "price": "€550.00",
+            "discountedPrice": "€550.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-12-0034",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 4,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-22T18:06:13.452Z",
+  "ribbon": "Only 4 left",
+  "exportProductId": "product_a973d0ff-ae78-8a53-e765-e1f304d1b6d1",
+  "_id": "a973d0ff-ae78-8a53-e765-e1f304d1b6d1",
+  "_createdDate": "2023-07-25T15:12:44.783Z"
+}

@@ -1,0 +1,150 @@
+{
+  "name": "Caol Ila 9y- PX HHD- 50%",
+  "slug": "caol-ila-9y-px-hhd-50",
+  "visible": true,
+  "productType": "physical",
+  "description": "",
+  "sku": "1-13-0143",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 32,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 380,
+    "discountedPrice": 380,
+    "formatted": {
+      "price": "€380.00",
+      "discountedPrice": "€380.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 380,
+    "discountedPrice": 380,
+    "formatted": {
+      "price": "€380.00",
+      "discountedPrice": "€380.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 380,
+    "discountedPrice": 380,
+    "formatted": {
+      "price": "€380.00",
+      "discountedPrice": "€380.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 380,
+    "maxValue": 380
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_354b696339054500b05de376b446701a~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Caol Ila 9y- PX Sherry Barrique- 50%.jpeg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_354b696339054500b05de376b446701a~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+        "width": 2048,
+        "height": 2048
+      },
+      "_id": "9e37b5_354b696339054500b05de376b446701a~mv2.jpeg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_354b696339054500b05de376b446701a~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Caol Ila 9y- PX Sherry Barrique- 50%.jpeg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_354b696339054500b05de376b446701a~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+          "width": 2048,
+          "height": 2048
+        },
+        "_id": "9e37b5_354b696339054500b05de376b446701a~mv2.jpeg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/caol-ila-9y-px-hhd-50"
+  },
+  "numericId": "1768151162425000",
+  "inventoryItemId": "22edc503-091d-42bb-c906-375110806c08",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "755de31a-1269-869e-349c-43886d8a449a",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "027e205e-bc32-8267-f8b0-7eb8ac411e39",
+    "d9b79021-229d-dbd2-7d1c-d7ca1570efe8",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 380,
+          "discountedPrice": 380,
+          "formatted": {
+            "price": "€380.00",
+            "discountedPrice": "€380.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 380,
+          "discountedPrice": 380,
+          "formatted": {
+            "price": "€380.00",
+            "discountedPrice": "€380.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-13-0143",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 32,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-11T17:06:02.744Z",
+  "ribbon": "",
+  "exportProductId": "product_dd123afc-f6e2-bd44-36f9-c8aeef7f93f7",
+  "_id": "dd123afc-f6e2-bd44-36f9-c8aeef7f93f7",
+  "_createdDate": "2026-01-11T17:06:02.425Z"
+}

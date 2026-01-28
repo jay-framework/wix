@@ -1,0 +1,149 @@
+{
+  "name": "Port Charlotte Ex-Bourbon cask 15Y 60.1%",
+  "slug": "port-charlotte-ex-bourbon-cask-15y-60-1",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Distilled at Bruichladdich Distillery,&nbsp;</p><p>&nbsp;</p><p>Matured for 15&nbsp;years in an Ex-Bourbon Hogshead</p><p>Bottled at 60.1%&nbsp;ABV without chilled filtration or coloring</p><p>&nbsp;</p><p>&nbsp;</p>",
+  "sku": "1-10-0022",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 15,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 990,
+    "maxValue": 990
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_522a45843cf245e59181b32b028f8c15~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Rest & Be Thankful- Port Charlotte 15y.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_522a45843cf245e59181b32b028f8c15~mv2.jpg/v1/fit/w_1496,h_1496,q_90/file.jpg",
+        "width": 1496,
+        "height": 1496
+      },
+      "_id": "9e37b5_522a45843cf245e59181b32b028f8c15~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_522a45843cf245e59181b32b028f8c15~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Rest & Be Thankful- Port Charlotte 15y.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_522a45843cf245e59181b32b028f8c15~mv2.jpg/v1/fit/w_1496,h_1496,q_90/file.jpg",
+          "width": 1496,
+          "height": 1496
+        },
+        "_id": "9e37b5_522a45843cf245e59181b32b028f8c15~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/port-charlotte-ex-bourbon-cask-15y-60-1"
+  },
+  "numericId": "1756388541964000",
+  "inventoryItemId": "70ccd7ac-e8e8-752e-b387-6962200352f4",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "68b702b3-fae1-92a2-e95b-3ea1f4527dec",
+    "2311636b-a702-fed0-2f80-ee0fdda0c837",
+    "41b4784b-f2c5-4f43-bc9b-a2eb425302a2",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 990,
+          "discountedPrice": 990,
+          "formatted": {
+            "price": "€990.00",
+            "discountedPrice": "€990.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 990,
+          "discountedPrice": 990,
+          "formatted": {
+            "price": "€990.00",
+            "discountedPrice": "€990.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-10-0022",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 15,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-23T10:01:43.571Z",
+  "ribbon": "",
+  "exportProductId": "product_8f332853-1717-8ad1-4c78-969ddffcad0b",
+  "_id": "8f332853-1717-8ad1-4c78-969ddffcad0b",
+  "_createdDate": "2025-08-28T13:42:21.964Z"
+}

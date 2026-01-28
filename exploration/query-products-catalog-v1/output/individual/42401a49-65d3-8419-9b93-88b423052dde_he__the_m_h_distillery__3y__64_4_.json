@@ -1,0 +1,179 @@
+{
+  "name": "HE- The M&H distillery- 3y- 64.4%",
+  "slug": "he-the-m-h-distillery-3y-64-4",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Distilled at Milk &amp; Honey Distillery from a 40ppm peated barley.</p><p>This whisky was aged for 18 months in first fill PX hogshead and then re-racked into 2 ex-Islay quarter casks for another 18 months- aging for a total of 3 years.&nbsp;</p><p>It was bottled at a cask strength of 64.4% keeping its natural colour without chill-filtration.&nbsp;</p><p>The bottle includes two 24ml samples to demonstrate the evolvement of the spirit:</p><p>&gt; A New Make spirit at 64.5% abv</p><p>&gt; A Half Way spirit from the re-racking day at 63.7% abv</p>",
+  "sku": "1-88-0005",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 18,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 360,
+    "discountedPrice": 360,
+    "formatted": {
+      "price": "€360.00",
+      "discountedPrice": "€360.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 360,
+    "discountedPrice": 360,
+    "formatted": {
+      "price": "€360.00",
+      "discountedPrice": "€360.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 360,
+    "discountedPrice": 360,
+    "formatted": {
+      "price": "€360.00",
+      "discountedPrice": "€360.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 360,
+    "maxValue": 360
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_43de38f54651477898f71d70db7f0c62~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Alpha Bet -He'- M&H 3y 64.4%.jpeg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_43de38f54651477898f71d70db7f0c62~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+        "width": 2048,
+        "height": 2048
+      },
+      "_id": "9e37b5_43de38f54651477898f71d70db7f0c62~mv2.jpeg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_43de38f54651477898f71d70db7f0c62~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Alpha Bet -He'- M&H 3y 64.4%.jpeg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_43de38f54651477898f71d70db7f0c62~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+          "width": 2048,
+          "height": 2048
+        },
+        "_id": "9e37b5_43de38f54651477898f71d70db7f0c62~mv2.jpeg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_165dcf9c941e447c990a042c115af60f~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Alpha Bet -He'- M&H 3y 64.4%- B.jpeg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_165dcf9c941e447c990a042c115af60f~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+          "width": 2048,
+          "height": 2048
+        },
+        "_id": "9e37b5_165dcf9c941e447c990a042c115af60f~mv2.jpeg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_eac75f3bb3f04ee08a24e6cdcce3770c~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "He' front labels.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_eac75f3bb3f04ee08a24e6cdcce3770c~mv2.jpg/v1/fit/w_809,h_686,q_90/file.jpg",
+          "width": 809,
+          "height": 686
+        },
+        "_id": "9e37b5_eac75f3bb3f04ee08a24e6cdcce3770c~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/he-the-m-h-distillery-3y-64-4"
+  },
+  "numericId": "1692626195635000",
+  "inventoryItemId": "bdbfe5b6-9a2c-7be6-646c-774bdcfad221",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "954f3636-06a9-edba-6991-dd100ebcc88a",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "933d2237-9afc-5600-3dc5-2873671ee4f5",
+    "b538f68b-fed4-86e4-d199-b3db28e7bde7",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 360,
+          "discountedPrice": 360,
+          "formatted": {
+            "price": "€360.00",
+            "discountedPrice": "€360.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 360,
+          "discountedPrice": 360,
+          "formatted": {
+            "price": "€360.00",
+            "discountedPrice": "€360.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-88-0005",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 18,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:36.193Z",
+  "ribbon": "",
+  "exportProductId": "product_42401a49-65d3-8419-9b93-88b423052dde",
+  "_id": "42401a49-65d3-8419-9b93-88b423052dde",
+  "_createdDate": "2023-08-21T13:56:35.635Z"
+}

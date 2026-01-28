@@ -1,0 +1,147 @@
+{
+  "name": "Indian Summer Gin- 46%",
+  "slug": "indian-sumer-gin-46",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Saffron infused Gin</p>",
+  "sku": "1-17-9501",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 71,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 140,
+    "discountedPrice": 110,
+    "formatted": {
+      "price": "€140.00",
+      "discountedPrice": "€110.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 140,
+    "discountedPrice": 110,
+    "formatted": {
+      "price": "€140.00",
+      "discountedPrice": "€110.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 140,
+    "discountedPrice": 110,
+    "formatted": {
+      "price": "€140.00",
+      "discountedPrice": "€110.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 140,
+    "maxValue": 140
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_d29ded13a0284fd58a37b2c67af8a22b~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Indian Summer Gin 46%.jpeg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_d29ded13a0284fd58a37b2c67af8a22b~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+        "width": 2048,
+        "height": 2048
+      },
+      "_id": "9e37b5_d29ded13a0284fd58a37b2c67af8a22b~mv2.jpeg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_d29ded13a0284fd58a37b2c67af8a22b~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Indian Summer Gin 46%.jpeg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_d29ded13a0284fd58a37b2c67af8a22b~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+          "width": 2048,
+          "height": 2048
+        },
+        "_id": "9e37b5_d29ded13a0284fd58a37b2c67af8a22b~mv2.jpeg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/indian-sumer-gin-46"
+  },
+  "numericId": "1687082278579000",
+  "inventoryItemId": "17a37eeb-cc91-d6bf-ccb0-1d6a800382a5",
+  "discount": {
+    "type": "AMOUNT",
+    "value": 30
+  },
+  "collectionIds": [
+    "6578e61a-631b-0067-5db7-f810c4bcd634",
+    "f14e6cb5-00bf-b4af-eafd-4b38851dd728",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 140,
+          "discountedPrice": 110,
+          "formatted": {
+            "price": "€140.00",
+            "discountedPrice": "€110.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 140,
+          "discountedPrice": 110,
+          "formatted": {
+            "price": "€140.00",
+            "discountedPrice": "€110.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-9501",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 71,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:47.965Z",
+  "ribbon": "",
+  "exportProductId": "product_e85c8114-336e-2940-334f-e2957ffc7d5a",
+  "_id": "e85c8114-336e-2940-334f-e2957ffc7d5a",
+  "_createdDate": "2023-06-18T09:57:58.579Z"
+}

@@ -9,6 +9,9 @@ Design documentation for the Jay Framework Wix integration packages.
 | 01 | [Wix Packages Structure](./01%20-%20wix%20packages%20structure.md) | Documentation |
 | 02 | [Product Card Quick Options](./02%20-%20product%20card%20quick%20options.md) | Draft |
 | 03 | [Category Pages](./03%20-%20category%20pages.md) | Implemented |
+| 04 | [Price Filter Enhancements](./04%20-%20price%20filter%20enhancements.md) | - |
+| 05 | [Wix Data Plugin](./05%20-%20wix-data%20plugin.md) | - |
+| 06 | [Wix Stores V1 Package](./06%20-%20wix-stores-v1%20package.md) | Implemented |
 
 ## Packages Covered
 

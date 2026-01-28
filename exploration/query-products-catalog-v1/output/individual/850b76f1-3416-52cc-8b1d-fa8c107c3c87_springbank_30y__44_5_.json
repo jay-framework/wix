@@ -1,0 +1,152 @@
+{
+  "name": "Springbank 30y- 44.5%",
+  "slug": "pre-sale-springbank-30y-44-5",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Distilled on 28/5/1993 and aged in an Bourbon Hogshead</p><p>&nbsp;</p><p>From one of the most revered and cult coastal distilleries in Scotland, this Springbank&nbsp;has all of the complexity that you would expect from a 30 year old whisky of its kind.<br>Sweet yet spicy with tropical fruits and bubble gum. A fantastic dram from start&nbsp;to finish.</p><p>&nbsp;</p><p><font face=\"HelveticaNeueW01-65Medi, HelveticaNeueW02-65Medi, HelveticaNeueW10-65Medi, sans-serif\"><b><i>Tasting notes by the Claxton's team:</i></b></font></p><p><strong><u>Nose:</u></strong><br>Icing sugar, cannoli, nutmeg. Dunnage warehouse. Custard and gentle smoke.<br><strong><u>Palate:</u></strong><br>Softly sweet and spicy at first. Green apples, oaky and bittersweet. Subtle peat.<br><strong><u>Finish:</u></strong><br>A long and changing finish with oak, fruit, bubblegum and vanilla. Rocky minerality.</p>",
+  "sku": "1-13-0112",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 1,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 7800,
+    "discountedPrice": 7800,
+    "formatted": {
+      "price": "€7,800.00",
+      "discountedPrice": "€7,800.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 7800,
+    "discountedPrice": 7800,
+    "formatted": {
+      "price": "€7,800.00",
+      "discountedPrice": "€7,800.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 7800,
+    "discountedPrice": 7800,
+    "formatted": {
+      "price": "€7,800.00",
+      "discountedPrice": "€7,800.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 7800,
+    "maxValue": 7800
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 1 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_b8094dfa55234ceba25ce22eae211c1a~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Claxton- Springbank 30y.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_b8094dfa55234ceba25ce22eae211c1a~mv2.jpg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+        "width": 2048,
+        "height": 2048
+      },
+      "_id": "9e37b5_b8094dfa55234ceba25ce22eae211c1a~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_b8094dfa55234ceba25ce22eae211c1a~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Claxton- Springbank 30y.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_b8094dfa55234ceba25ce22eae211c1a~mv2.jpg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+          "width": 2048,
+          "height": 2048
+        },
+        "_id": "9e37b5_b8094dfa55234ceba25ce22eae211c1a~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/pre-sale-springbank-30y-44-5"
+  },
+  "numericId": "1728746051914000",
+  "inventoryItemId": "7af4890e-cbe9-ad33-74e2-0573ef83c378",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "6488a591-9bfa-caa7-055d-8d0a1bb67d4e",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "f2579689-19c5-4eb8-e7d0-7d40340cdbde",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 7800,
+          "discountedPrice": 7800,
+          "formatted": {
+            "price": "€7,800.00",
+            "discountedPrice": "€7,800.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 7800,
+          "discountedPrice": 7800,
+          "formatted": {
+            "price": "€7,800.00",
+            "discountedPrice": "€7,800.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-13-0112",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 1,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:40.253Z",
+  "ribbon": "Only 1 left",
+  "exportProductId": "product_850b76f1-3416-52cc-8b1d-fa8c107c3c87",
+  "_id": "850b76f1-3416-52cc-8b1d-fa8c107c3c87",
+  "_createdDate": "2024-10-12T15:14:11.914Z"
+}

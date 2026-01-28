@@ -1,0 +1,153 @@
+{
+  "name": "Ben Nevis 26yo 1998 Hogshead, 43.2%",
+  "slug": "ben-nevis-26yo-1998-hogshead-43-2",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><u><strong><em>Distilled at Ben Nevis distillery-</em></strong></u></p><p><strong><em>This Whisky was aged in a refill&nbsp;bourbon hogshead&nbsp;for 26 years. Bottled at Cask strength of 43.2%</em></strong></p><p>&nbsp;</p><p>&nbsp;</p>",
+  "sku": "1-15-0054",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 4,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 1450,
+    "discountedPrice": 1450,
+    "formatted": {
+      "price": "€1,450.00",
+      "discountedPrice": "€1,450.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 1450,
+    "discountedPrice": 1450,
+    "formatted": {
+      "price": "€1,450.00",
+      "discountedPrice": "€1,450.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 1450,
+    "discountedPrice": 1450,
+    "formatted": {
+      "price": "€1,450.00",
+      "discountedPrice": "€1,450.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 1450,
+    "maxValue": 1450
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 4 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_d0498cc4f46447dda32167f5095cd73e~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251210_230000.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_d0498cc4f46447dda32167f5095cd73e~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_d0498cc4f46447dda32167f5095cd73e~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_d0498cc4f46447dda32167f5095cd73e~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251210_230000.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_d0498cc4f46447dda32167f5095cd73e~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_d0498cc4f46447dda32167f5095cd73e~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/ben-nevis-26yo-1998-hogshead-43-2"
+  },
+  "numericId": "1765729802525000",
+  "inventoryItemId": "ebe49731-ddeb-9ed8-f5d8-165e69da3a44",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "3a6fed87-c6c0-ab78-021f-7c278ee1d5b8",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "9e2982d5-9e2c-72f5-73a7-b91756692a1a",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 1450,
+          "discountedPrice": 1450,
+          "formatted": {
+            "price": "€1,450.00",
+            "discountedPrice": "€1,450.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 1450,
+          "discountedPrice": 1450,
+          "formatted": {
+            "price": "€1,450.00",
+            "discountedPrice": "€1,450.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-15-0054",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 4,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-13T11:40:46.001Z",
+  "ribbon": "Only 4 left",
+  "exportProductId": "product_141b68ce-2214-6127-0a27-e9a19625c5bb",
+  "_id": "141b68ce-2214-6127-0a27-e9a19625c5bb",
+  "_createdDate": "2025-12-14T16:30:02.525Z"
+}

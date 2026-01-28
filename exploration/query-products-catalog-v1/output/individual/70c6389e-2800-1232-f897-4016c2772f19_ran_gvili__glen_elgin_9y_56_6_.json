@@ -1,0 +1,162 @@
+{
+  "name": "RAN GVILI- Glen Elgin 9y 56.6%",
+  "slug": "ran-gvili-glen-elgin-9y-56-6",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><font face=\"HelveticaNeueW01-65Medi, HelveticaNeueW02-65Medi, HelveticaNeueW10-65Medi, sans-serif\"><b>רן גואילי הוא החטוף האחרון שמוחזק על ידי החמאס בעזה</b></font></p><p><font face=\"HelveticaNeueW01-65Medi, HelveticaNeueW02-65Medi, HelveticaNeueW10-65Medi, sans-serif\"><b>כל הרווחים מבקבוק זה יועברו למשפחתו של רן לצורך סיוע במאבק להחזרת בנם מעזה</b></font></p>",
+  "sku": "1-89-0006",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 12,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 500,
+    "discountedPrice": 500,
+    "formatted": {
+      "price": "€500.00",
+      "discountedPrice": "€500.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 500,
+    "discountedPrice": 500,
+    "formatted": {
+      "price": "€500.00",
+      "discountedPrice": "€500.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 500,
+    "discountedPrice": 500,
+    "formatted": {
+      "price": "€500.00",
+      "discountedPrice": "€500.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 500,
+    "maxValue": 500
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_859ce58b16c145c2a56dcb7ad8dd82aa~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251231_111746.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_859ce58b16c145c2a56dcb7ad8dd82aa~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_859ce58b16c145c2a56dcb7ad8dd82aa~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_859ce58b16c145c2a56dcb7ad8dd82aa~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251231_111746.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_859ce58b16c145c2a56dcb7ad8dd82aa~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_859ce58b16c145c2a56dcb7ad8dd82aa~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_60040ba8330641f8974b0fa553276a20~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "ELGIN FRONT.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_60040ba8330641f8974b0fa553276a20~mv2.jpg/v1/fit/w_802,h_679,q_90/file.jpg",
+          "width": 802,
+          "height": 679
+        },
+        "_id": "9e37b5_60040ba8330641f8974b0fa553276a20~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/ran-gvili-glen-elgin-9y-56-6"
+  },
+  "numericId": "1766931700094000",
+  "inventoryItemId": "8f39c761-d7ff-edcd-0768-bfe93d88d0e6",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "d6faede3-3cca-5974-836d-a1078313ab04",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 500,
+          "discountedPrice": 500,
+          "formatted": {
+            "price": "€500.00",
+            "discountedPrice": "€500.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 500,
+          "discountedPrice": 500,
+          "formatted": {
+            "price": "€500.00",
+            "discountedPrice": "€500.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-89-0006",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 12,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-13T12:52:48.820Z",
+  "ribbon": "",
+  "exportProductId": "product_70c6389e-2800-1232-f897-4016c2772f19",
+  "_id": "70c6389e-2800-1232-f897-4016c2772f19",
+  "_createdDate": "2025-12-28T14:21:40.094Z"
+}

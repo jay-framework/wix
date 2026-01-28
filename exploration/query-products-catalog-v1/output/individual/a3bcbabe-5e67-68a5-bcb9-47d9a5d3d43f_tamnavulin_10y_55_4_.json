@@ -1,0 +1,163 @@
+{
+  "name": "Tamnavulin 10y 55.4%",
+  "slug": "tamnavulin-10y-55-4",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><strong>Distilled at Tamnavulin Distillery</strong></p><p>Matured in A first fill Pineau De Charentes Barrique for 10 years</p><p>Bottled at a cask strength of 55.4%,<br>keeping its natural colour and without chill filtration</p><p>&nbsp;</p><p><strong><u>Tasting notes by the AlphaBet Whisky Advisory Board</u></strong></p><p><strong>Nose</strong></p><p>Dates, resins, Dried figs and apricots, over-ripped banana</p><p><strong>Palate</strong></p><p>Custard, icing, dates sirup nuts</p><p><strong>Finish</strong></p><p>Dates puree, dates sirup, clove. cardamom, gingerbread</p><p>&nbsp;</p><p>The Board's final word: it’s better without water</p>",
+  "sku": "1-12-0055",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 12,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 440,
+    "discountedPrice": 440,
+    "formatted": {
+      "price": "€440.00",
+      "discountedPrice": "€440.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 440,
+    "discountedPrice": 440,
+    "formatted": {
+      "price": "€440.00",
+      "discountedPrice": "€440.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 440,
+    "discountedPrice": 440,
+    "formatted": {
+      "price": "€440.00",
+      "discountedPrice": "€440.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 440,
+    "maxValue": 440
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_f8725f5e40c14c24b5eae749436f6f1f~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251126_194558.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_f8725f5e40c14c24b5eae749436f6f1f~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_f8725f5e40c14c24b5eae749436f6f1f~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_f8725f5e40c14c24b5eae749436f6f1f~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251126_194558.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_f8725f5e40c14c24b5eae749436f6f1f~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_f8725f5e40c14c24b5eae749436f6f1f~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_0b746640affa4bf8bfe0f18d6f1cd3a6~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Tamnavulin .jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_0b746640affa4bf8bfe0f18d6f1cd3a6~mv2.jpg/v1/fit/w_388,h_541,q_90/file.jpg",
+          "width": 388,
+          "height": 541
+        },
+        "_id": "9e37b5_0b746640affa4bf8bfe0f18d6f1cd3a6~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/tamnavulin-10y-55-4"
+  },
+  "numericId": "1761832978441000",
+  "inventoryItemId": "5c434541-a198-975a-4346-b8265a2c2bc0",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "1c54c59f-7f38-1790-b8b6-a19bb70c51fc",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "fd46bc6a-5766-5439-54e0-37003b2e79b9",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 440,
+          "discountedPrice": 440,
+          "formatted": {
+            "price": "€440.00",
+            "discountedPrice": "€440.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 440,
+          "discountedPrice": 440,
+          "formatted": {
+            "price": "€440.00",
+            "discountedPrice": "€440.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-12-0055",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 12,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-08T13:35:05.936Z",
+  "ribbon": "",
+  "exportProductId": "product_a3bcbabe-5e67-68a5-bcb9-47d9a5d3d43f",
+  "_id": "a3bcbabe-5e67-68a5-bcb9-47d9a5d3d43f",
+  "_createdDate": "2025-10-30T14:02:58.441Z"
+}

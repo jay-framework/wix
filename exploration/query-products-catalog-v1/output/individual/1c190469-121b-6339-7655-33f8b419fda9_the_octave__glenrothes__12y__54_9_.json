@@ -1,0 +1,152 @@
+{
+  "name": "The Octave- Glenrothes- 12y- 54.9%",
+  "slug": "the-octave-glenrothes-12y-54-9",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><u><strong><em>Distilled at Glenrothes distillery-</em></strong></u></p><p><strong><em>This Whisky was aged in a bourbon cask&nbsp;for 15&nbsp;years. It was finished in a Sherry Octave and&nbsp;bottled at Cask strength of 54.9%</em></strong></p><p>&nbsp;</p>",
+  "sku": "1-17-0068",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 5,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 470,
+    "discountedPrice": 470,
+    "formatted": {
+      "price": "€470.00",
+      "discountedPrice": "€470.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 470,
+    "discountedPrice": 470,
+    "formatted": {
+      "price": "€470.00",
+      "discountedPrice": "€470.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 470,
+    "discountedPrice": 470,
+    "formatted": {
+      "price": "€470.00",
+      "discountedPrice": "€470.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 470,
+    "maxValue": 470
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 5 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_3962fd94a7ad45b4a0b7c27df21f92c9~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Glenrothes 12.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_3962fd94a7ad45b4a0b7c27df21f92c9~mv2.jpg/v1/fit/w_1496,h_1496,q_90/file.jpg",
+        "width": 1496,
+        "height": 1496
+      },
+      "_id": "9e37b5_3962fd94a7ad45b4a0b7c27df21f92c9~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_3962fd94a7ad45b4a0b7c27df21f92c9~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Glenrothes 12.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_3962fd94a7ad45b4a0b7c27df21f92c9~mv2.jpg/v1/fit/w_1496,h_1496,q_90/file.jpg",
+          "width": 1496,
+          "height": 1496
+        },
+        "_id": "9e37b5_3962fd94a7ad45b4a0b7c27df21f92c9~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/the-octave-glenrothes-12y-54-9"
+  },
+  "numericId": "1739282381759000",
+  "inventoryItemId": "e3e6fb96-ede4-9cc6-89aa-cc074be60256",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "644630f5-1464-5a67-80ec-98d1c79ca982",
+    "d585e961-a952-a3fa-3ac3-6b505715ca74",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 470,
+          "discountedPrice": 470,
+          "formatted": {
+            "price": "€470.00",
+            "discountedPrice": "€470.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 470,
+          "discountedPrice": 470,
+          "formatted": {
+            "price": "€470.00",
+            "discountedPrice": "€470.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0068",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 5,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-09T17:03:36.434Z",
+  "ribbon": "Only 5 left",
+  "exportProductId": "product_1c190469-121b-6339-7655-33f8b419fda9",
+  "_id": "1c190469-121b-6339-7655-33f8b419fda9",
+  "_createdDate": "2025-02-11T13:59:41.759Z"
+}

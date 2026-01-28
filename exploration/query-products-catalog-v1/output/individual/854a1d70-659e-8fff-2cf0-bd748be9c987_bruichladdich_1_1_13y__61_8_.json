@@ -1,0 +1,154 @@
+{
+  "name": "Bruichladdich 1.1-13y- 61.8%",
+  "slug": "bruichladdich-1-1-13y-61-8",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Distilled at Bruchladdich&nbsp;</p><p>Aged in a First fill Bordeaux Cask for 13 years</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>",
+  "sku": "1-18-0002",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 1,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 1900,
+    "discountedPrice": 1900,
+    "formatted": {
+      "price": "€1,900.00",
+      "discountedPrice": "€1,900.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 1900,
+    "discountedPrice": 1900,
+    "formatted": {
+      "price": "€1,900.00",
+      "discountedPrice": "€1,900.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 1900,
+    "discountedPrice": 1900,
+    "formatted": {
+      "price": "€1,900.00",
+      "discountedPrice": "€1,900.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 1900,
+    "maxValue": 1900
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 1 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_b01c160716fc46db8055937de365cc0d~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Dramfool%20Bruichladdich%201_edited.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_b01c160716fc46db8055937de365cc0d~mv2.jpg/v1/fit/w_2250,h_2250,q_90/file.jpg",
+        "width": 2250,
+        "height": 2250
+      },
+      "_id": "9e37b5_b01c160716fc46db8055937de365cc0d~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_b01c160716fc46db8055937de365cc0d~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Dramfool%20Bruichladdich%201_edited.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_b01c160716fc46db8055937de365cc0d~mv2.jpg/v1/fit/w_2250,h_2250,q_90/file.jpg",
+          "width": 2250,
+          "height": 2250
+        },
+        "_id": "9e37b5_b01c160716fc46db8055937de365cc0d~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/bruichladdich-1-1-13y-61-8"
+  },
+  "numericId": "1622368185348000",
+  "inventoryItemId": "7ab5e28f-9a61-7000-d30f-428b74163678",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "2311636b-a702-fed0-2f80-ee0fdda0c837",
+    "396e59f7-7619-85d4-aad2-810ff6dbaae2",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "933d2237-9afc-5600-3dc5-2873671ee4f5",
+    "68928243-ac00-e35f-c6c0-eb0ef313d9ec",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 1900,
+          "discountedPrice": 1900,
+          "formatted": {
+            "price": "€1,900.00",
+            "discountedPrice": "€1,900.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 1900,
+          "discountedPrice": 1900,
+          "formatted": {
+            "price": "€1,900.00",
+            "discountedPrice": "€1,900.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-18-0002",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 1,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:40.253Z",
+  "ribbon": "Only 1 left",
+  "exportProductId": "product_854a1d70-659e-8fff-2cf0-bd748be9c987",
+  "_id": "854a1d70-659e-8fff-2cf0-bd748be9c987",
+  "_createdDate": "2021-05-30T09:49:45.348Z"
+}

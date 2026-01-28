@@ -1,0 +1,148 @@
+{
+  "name": "CHET- Blended Scotch- 18y- 42.9%",
+  "slug": "chet-blended-scotch-18y-42-9",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>18 years old Blended Scotch whsky- finished in Oloroso Quarter Cask and bottled at cask strength of 42.9%</p><p>&nbsp;</p><p><strong><u>Tasting notes by the ABW Advisory Board:</u></strong></p><p>&nbsp;</p><p><strong>Nose:</strong>&nbsp;Fresh garden flowers, iron, dried cranberies, salt, yiest, wet wood.</p><p>&nbsp;</p><p><strong>Palet:</strong>&nbsp; salt, mayple syrup, red apples, rolled pancake- stuffed withsoft white chees and sultanas</p><p>&nbsp;</p><p><strong>Finish:&nbsp;</strong>Long and full. Mayple, salt, almonds bitterness, green almonds&nbsp;</p><p>&nbsp;</p><p><strong>The board's final words:</strong>&nbsp;Great whisky</p>",
+  "sku": "1-88-0008",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 65,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 260,
+    "discountedPrice": 260,
+    "formatted": {
+      "price": "€260.00",
+      "discountedPrice": "€260.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 260,
+    "discountedPrice": 260,
+    "formatted": {
+      "price": "€260.00",
+      "discountedPrice": "€260.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 260,
+    "discountedPrice": 260,
+    "formatted": {
+      "price": "€260.00",
+      "discountedPrice": "€260.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 260,
+    "maxValue": 260
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_6a5af466ac9f4eaea1673856cae02b0b~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "CHET_edited.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_6a5af466ac9f4eaea1673856cae02b0b~mv2.jpg/v1/fit/w_570,h_570,q_90/file.jpg",
+        "width": 570,
+        "height": 570
+      },
+      "_id": "9e37b5_6a5af466ac9f4eaea1673856cae02b0b~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_6a5af466ac9f4eaea1673856cae02b0b~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "CHET_edited.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_6a5af466ac9f4eaea1673856cae02b0b~mv2.jpg/v1/fit/w_570,h_570,q_90/file.jpg",
+          "width": 570,
+          "height": 570
+        },
+        "_id": "9e37b5_6a5af466ac9f4eaea1673856cae02b0b~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/chet-blended-scotch-18y-42-9"
+  },
+  "numericId": "1766665658601000",
+  "inventoryItemId": "02a38e68-5e61-745d-8678-8e3bd24aa5d0",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "b6b13b58-d47c-4d49-0852-d8a309076095",
+    "b538f68b-fed4-86e4-d199-b3db28e7bde7",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 260,
+          "discountedPrice": 260,
+          "formatted": {
+            "price": "€260.00",
+            "discountedPrice": "€260.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 260,
+          "discountedPrice": 260,
+          "formatted": {
+            "price": "€260.00",
+            "discountedPrice": "€260.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-88-0008",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 65,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-28T14:36:14.301Z",
+  "ribbon": "",
+  "exportProductId": "product_fd5c7197-a19e-8ba2-7987-71c42db55a2f",
+  "_id": "fd5c7197-a19e-8ba2-7987-71c42db55a2f",
+  "_createdDate": "2025-12-25T12:27:38.601Z"
+}

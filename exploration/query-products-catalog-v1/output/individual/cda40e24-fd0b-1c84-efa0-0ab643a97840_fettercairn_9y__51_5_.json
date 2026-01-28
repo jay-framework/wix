@@ -1,0 +1,148 @@
+{
+  "name": "Fettercairn 9y- 51.5%",
+  "slug": "fettercairn-9y-51-5",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Distilled on 15/6/2015&nbsp;in Fettercairn Distillery and finished in a&nbsp;re-fill Tawny Port&nbsp;Octave</p><p>&nbsp;</p><p>Bottled at Cask Streanght of 51.5% without colouring and without chilled filtaration</p>",
+  "sku": "1-13-0136",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 8,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 420,
+    "discountedPrice": 420,
+    "formatted": {
+      "price": "€420.00",
+      "discountedPrice": "€420.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 420,
+    "discountedPrice": 420,
+    "formatted": {
+      "price": "€420.00",
+      "discountedPrice": "€420.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 420,
+    "discountedPrice": 420,
+    "formatted": {
+      "price": "€420.00",
+      "discountedPrice": "€420.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 420,
+    "maxValue": 420
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_91db28504eed40b8ab79973c8eeec476~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Claxton- Fettercairn 9y 51.5% Re-fill Tawny Port Octave.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_91db28504eed40b8ab79973c8eeec476~mv2.jpg/v1/fit/w_1134,h_937,q_90/file.jpg",
+        "width": 1134,
+        "height": 937
+      },
+      "_id": "9e37b5_91db28504eed40b8ab79973c8eeec476~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_91db28504eed40b8ab79973c8eeec476~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Claxton- Fettercairn 9y 51.5% Re-fill Tawny Port Octave.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_91db28504eed40b8ab79973c8eeec476~mv2.jpg/v1/fit/w_1134,h_937,q_90/file.jpg",
+          "width": 1134,
+          "height": 937
+        },
+        "_id": "9e37b5_91db28504eed40b8ab79973c8eeec476~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/fettercairn-9y-51-5"
+  },
+  "numericId": "1757785488721000",
+  "inventoryItemId": "325bf1db-02f4-e37b-105f-f549bc5687bf",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "6488a591-9bfa-caa7-055d-8d0a1bb67d4e",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "24236236-b88e-d83d-e551-af75c05a3138",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 420,
+          "discountedPrice": 420,
+          "formatted": {
+            "price": "€420.00",
+            "discountedPrice": "€420.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 420,
+          "discountedPrice": 420,
+          "formatted": {
+            "price": "€420.00",
+            "discountedPrice": "€420.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-13-0136",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 8,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:47.965Z",
+  "ribbon": "",
+  "exportProductId": "product_cda40e24-fd0b-1c84-efa0-0ab643a97840",
+  "_id": "cda40e24-fd0b-1c84-efa0-0ab643a97840",
+  "_createdDate": "2025-09-13T17:44:48.721Z"
+}

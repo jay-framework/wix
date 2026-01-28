@@ -1,0 +1,167 @@
+{
+  "name": "Strathenry (Un-Peated Inchdairnie) Sherry finish 6Y 46%",
+  "slug": "strathenry-un-peated-inchdairnie-sherry-finish-6y-46",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><span style=\"background-color: transparent; font-family: var(--wix-font-stack,&quot;HelveticaNeueW01-55Roma&quot;,&quot;HelveticaNeueW02-55Roma&quot;,&quot;HelveticaNeueW10-55Roma&quot;,sans-serif);\">Distilled at Inchdairnie Distillery</span></p><p>&nbsp;</p><p><span style=\"background-color: transparent; font-family: var(--wix-font-stack,&quot;HelveticaNeueW01-55Roma&quot;,&quot;HelveticaNeueW02-55Roma&quot;,&quot;HelveticaNeueW10-55Roma&quot;,sans-serif);\">A small batch.</span></p><p>Matured for 6 years in&nbsp;Ex-Bourbon casks and finished in Ex-Sherry</p><p>Bottled at 46% ABV without chilled filtration or coloring</p><p>&nbsp;</p><p><u><strong>Tasting note by the AlphaBet Advisory Board</strong></u></p><p><strong>Nose:</strong></p><p><strong><em>&nbsp; </em></strong><em>Orange, grapefruit, leather, minerals, a little swamp notes</em></p><p><strong>Pallet</strong><em>:</em></p><p><em>&nbsp; A marmalade of orange peels with a ginger touch. sour apple stone fruits, tannins</em></p><p><strong>Finish:</strong></p><p><em>&nbsp; medium length.&nbsp;</em><em>&nbsp; oranges, wet wood, green bitter almonds</em></p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>",
+  "sku": "1-10-0014",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 2,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 270,
+    "discountedPrice": 270,
+    "formatted": {
+      "price": "€270.00",
+      "discountedPrice": "€270.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 270,
+    "discountedPrice": 270,
+    "formatted": {
+      "price": "€270.00",
+      "discountedPrice": "€270.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 270,
+    "discountedPrice": 270,
+    "formatted": {
+      "price": "€270.00",
+      "discountedPrice": "€270.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 270,
+    "maxValue": 270
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 2 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_525a647b4bcf4463878413ef982fef43~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "AA- R&B WHISKY.JPG",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_525a647b4bcf4463878413ef982fef43~mv2.jpg/v1/fit/w_711,h_664,q_90/file.jpg",
+        "width": 711,
+        "height": 664
+      },
+      "_id": "9e37b5_525a647b4bcf4463878413ef982fef43~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_525a647b4bcf4463878413ef982fef43~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "AA- R&B WHISKY.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_525a647b4bcf4463878413ef982fef43~mv2.jpg/v1/fit/w_711,h_664,q_90/file.jpg",
+          "width": 711,
+          "height": 664
+        },
+        "_id": "9e37b5_525a647b4bcf4463878413ef982fef43~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_a7af83e96bdc4ffba8563ba78a3ea1be~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "W- SRATHENRY 2016 BACK.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_a7af83e96bdc4ffba8563ba78a3ea1be~mv2.jpg/v1/fit/w_702,h_661,q_90/file.jpg",
+          "width": 702,
+          "height": 661
+        },
+        "_id": "9e37b5_a7af83e96bdc4ffba8563ba78a3ea1be~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/strathenry-un-peated-inchdairnie-sherry-finish-6y-46"
+  },
+  "numericId": "1729360191967000",
+  "inventoryItemId": "009df8c6-7422-eb58-582c-dca1d00a9470",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "dae3b16c-0a08-9ed7-389f-a0d8e8275ee5",
+    "68b702b3-fae1-92a2-e95b-3ea1f4527dec",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 270,
+          "discountedPrice": 270,
+          "formatted": {
+            "price": "€270.00",
+            "discountedPrice": "€270.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 270,
+          "discountedPrice": 270,
+          "formatted": {
+            "price": "€270.00",
+            "discountedPrice": "€270.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-10-0014",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 2,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-25T17:06:01.186Z",
+  "ribbon": "Only 2 left",
+  "exportProductId": "product_ff620739-8bdd-14a7-a7d3-235e2ff56b8f",
+  "_id": "ff620739-8bdd-14a7-a7d3-235e2ff56b8f",
+  "_createdDate": "2024-10-19T17:49:51.967Z"
+}

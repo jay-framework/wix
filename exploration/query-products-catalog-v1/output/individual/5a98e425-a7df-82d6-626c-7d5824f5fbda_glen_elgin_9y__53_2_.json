@@ -1,0 +1,152 @@
+{
+  "name": "Glen Elgin 9y- 53.2%",
+  "slug": "glen-elgin-9y-53-2",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Distilled on 27/1/2016&nbsp;in Glen Elgin Distillery and finished in a&nbsp;Fresh Brendy Octave</p><p>&nbsp;</p><p>Bottled at Cask Streanght of 53.2% without colouring and without chilled filtaration</p>",
+  "sku": "1-13-0137",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 2,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 400,
+    "discountedPrice": 400,
+    "formatted": {
+      "price": "€400.00",
+      "discountedPrice": "€400.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 400,
+    "discountedPrice": 400,
+    "formatted": {
+      "price": "€400.00",
+      "discountedPrice": "€400.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 400,
+    "discountedPrice": 400,
+    "formatted": {
+      "price": "€400.00",
+      "discountedPrice": "€400.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 400,
+    "maxValue": 400
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 2 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_f29aebcd7ced4250b917ff990670e5b5~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Claxton- Glen Elgin 9y 53.2% Brendy Octave.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_f29aebcd7ced4250b917ff990670e5b5~mv2.jpg/v1/fit/w_1135,h_940,q_90/file.jpg",
+        "width": 1135,
+        "height": 940
+      },
+      "_id": "9e37b5_f29aebcd7ced4250b917ff990670e5b5~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_f29aebcd7ced4250b917ff990670e5b5~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Claxton- Glen Elgin 9y 53.2% Brendy Octave.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_f29aebcd7ced4250b917ff990670e5b5~mv2.jpg/v1/fit/w_1135,h_940,q_90/file.jpg",
+          "width": 1135,
+          "height": 940
+        },
+        "_id": "9e37b5_f29aebcd7ced4250b917ff990670e5b5~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/glen-elgin-9y-53-2"
+  },
+  "numericId": "1757785606871000",
+  "inventoryItemId": "a5671bda-5820-7d29-9d93-82a7db0a0425",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "6488a591-9bfa-caa7-055d-8d0a1bb67d4e",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "b53f163d-6884-bbab-ecdc-089e9691a29f",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 400,
+          "discountedPrice": 400,
+          "formatted": {
+            "price": "€400.00",
+            "discountedPrice": "€400.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 400,
+          "discountedPrice": 400,
+          "formatted": {
+            "price": "€400.00",
+            "discountedPrice": "€400.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-13-0137",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 2,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-27T13:56:44.829Z",
+  "ribbon": "Only 2 left",
+  "exportProductId": "product_5a98e425-a7df-82d6-626c-7d5824f5fbda",
+  "_id": "5a98e425-a7df-82d6-626c-7d5824f5fbda",
+  "_createdDate": "2025-09-13T17:46:46.871Z"
+}

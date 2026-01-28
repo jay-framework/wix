@@ -1,0 +1,735 @@
+{
+  "name": "Knitted Golf Sweater",
+  "slug": "knitted-golf-sweater",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>I'm a product description. I'm a great place to add more details about your product such as sizing, material, care instructions and cleaning instructions.</p>",
+  "stock": {
+    "trackInventory": false,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "ILS",
+    "price": 270,
+    "discountedPrice": 270,
+    "formatted": {
+      "price": "270.00 ₪",
+      "discountedPrice": "270.00 ₪"
+    }
+  },
+  "priceData": {
+    "currency": "ILS",
+    "price": 270,
+    "discountedPrice": 270,
+    "formatted": {
+      "price": "270.00 ₪",
+      "discountedPrice": "270.00 ₪"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "ILS",
+    "price": 270,
+    "discountedPrice": 270,
+    "formatted": {
+      "price": "270.00 ₪",
+      "discountedPrice": "270.00 ₪"
+    }
+  },
+  "additionalInfoSections": [
+    {
+      "title": "Product Info",
+      "description": "<p>I'm a great place to add more information about your product, such as <span style=\"font-weight: 700\">sizing</span>, <span style=\"font-weight: 700\">material</span>, <span style=\"font-weight: 700\">care</span>, and <span style=\"font-weight: 700\">cleaning instructions</span>. This is also a great space to highlight what makes this product special and how your customers can benefit from this item.</p>"
+    },
+    {
+      "title": "Return & Refund Policy",
+      "description": "<p>I’m a great place to let your customers know what to do in case they are dissatisfied with their purchase.</p><hr><ul><li><p><span style=\"font-weight: 700\">Easy Returns &amp; Exchanges</span></p></li><li><p><span style=\"font-weight: 700\">Hassle-Free Process</span></p></li><li><p><span style=\"font-weight: 700\">Builds Customer Confidence</span></p></li></ul><p>Having a straightforward refund or exchange policy is a great way to build trust and reassure your customers that they can buy with confidence.</p>"
+    },
+    {
+      "title": "Shipping Info",
+      "description": "<p>I’m a great place to add more information about your <span style=\"font-weight: 700\">shipping methods</span>, <span style=\"font-weight: 700\">packaging</span>, and <span style=\"font-weight: 700\">cost</span>.</p><p>Providing straightforward information about your <u>shipping policy</u>&nbsp;is a great way to build trust and reassure your customers that they can buy from you with confidence.</p>"
+    }
+  ],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Sweater-Product (1).jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg",
+        "width": 2662,
+        "height": 2662
+      },
+      "_id": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Sweater-Product (1).jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg",
+          "width": 2662,
+          "height": 2662
+        },
+        "_id": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/22e53e_008b06daf2e844eb9b1626f6c8ea93bd~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Sweater-Model (1).jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/22e53e_008b06daf2e844eb9b1626f6c8ea93bd~mv2.jpg",
+          "width": 3007,
+          "height": 3007
+        },
+        "_id": "22e53e_008b06daf2e844eb9b1626f6c8ea93bd~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png/v1/fit/w_50,h_50,q_90/file.png",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Sweater-Product White(1).png",
+        "image": {
+          "url": "https://static.wixstatic.com/media/22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png",
+          "width": 1024,
+          "height": 1024
+        },
+        "_id": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png/v1/fit/w_50,h_50,q_90/file.png",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Sweater-Product Blue (1).jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png",
+          "width": 1024,
+          "height": 1024
+        },
+        "_id": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": true,
+  "productOptions": [
+    {
+      "optionType": "drop_down",
+      "name": "Size",
+      "choices": [
+        {
+          "value": "Small",
+          "description": "Small",
+          "inStock": true,
+          "visible": true
+        },
+        {
+          "value": "Medium",
+          "description": "Medium",
+          "inStock": true,
+          "visible": true
+        },
+        {
+          "value": "Large",
+          "description": "Large",
+          "inStock": true,
+          "visible": true
+        },
+        {
+          "value": "X-Large",
+          "description": "X-Large",
+          "inStock": true,
+          "visible": true
+        }
+      ]
+    },
+    {
+      "optionType": "color",
+      "name": "Color",
+      "choices": [
+        {
+          "value": "#FFFFFF",
+          "description": "White",
+          "media": {
+            "mainMedia": {
+              "thumbnail": {
+                "url": "https://static.wixstatic.com/media/22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png/v1/fit/w_50,h_50,q_90/file.png",
+                "width": 50,
+                "height": 50
+              },
+              "mediaType": "image",
+              "title": "Sweater-Product White(1).png",
+              "image": {
+                "url": "https://static.wixstatic.com/media/22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png",
+                "width": 1024,
+                "height": 1024
+              },
+              "_id": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png"
+            },
+            "items": [
+              {
+                "thumbnail": {
+                  "url": "https://static.wixstatic.com/media/22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png/v1/fit/w_50,h_50,q_90/file.png",
+                  "width": 50,
+                  "height": 50
+                },
+                "mediaType": "image",
+                "title": "Sweater-Product White(1).png",
+                "image": {
+                  "url": "https://static.wixstatic.com/media/22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png",
+                  "width": 1024,
+                  "height": 1024
+                },
+                "_id": "22e53e_6c3dfaa0972b4cc1962e6b6fc0e5cf96~mv2.png"
+              }
+            ]
+          },
+          "inStock": true,
+          "visible": true
+        },
+        {
+          "value": "#395E55",
+          "description": "Dark Green",
+          "media": {
+            "mainMedia": {
+              "thumbnail": {
+                "url": "https://static.wixstatic.com/media/22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+                "width": 50,
+                "height": 50
+              },
+              "mediaType": "image",
+              "title": "Sweater-Product (1).jpg",
+              "image": {
+                "url": "https://static.wixstatic.com/media/22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg",
+                "width": 2662,
+                "height": 2662
+              },
+              "_id": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg"
+            },
+            "items": [
+              {
+                "thumbnail": {
+                  "url": "https://static.wixstatic.com/media/22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+                  "width": 50,
+                  "height": 50
+                },
+                "mediaType": "image",
+                "title": "Sweater-Product (1).jpg",
+                "image": {
+                  "url": "https://static.wixstatic.com/media/22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg",
+                  "width": 2662,
+                  "height": 2662
+                },
+                "_id": "22e53e_a383423cefa645b3be584349a6071bc0~mv2.jpg"
+              },
+              {
+                "thumbnail": {
+                  "url": "https://static.wixstatic.com/media/22e53e_008b06daf2e844eb9b1626f6c8ea93bd~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+                  "width": 50,
+                  "height": 50
+                },
+                "mediaType": "image",
+                "title": "Sweater-Model (1).jpg",
+                "image": {
+                  "url": "https://static.wixstatic.com/media/22e53e_008b06daf2e844eb9b1626f6c8ea93bd~mv2.jpg",
+                  "width": 3007,
+                  "height": 3007
+                },
+                "_id": "22e53e_008b06daf2e844eb9b1626f6c8ea93bd~mv2.jpg"
+              }
+            ]
+          },
+          "inStock": true,
+          "visible": true
+        },
+        {
+          "value": "#3E3E96",
+          "description": "Dark Blue",
+          "media": {
+            "mainMedia": {
+              "thumbnail": {
+                "url": "https://static.wixstatic.com/media/22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png/v1/fit/w_50,h_50,q_90/file.png",
+                "width": 50,
+                "height": 50
+              },
+              "mediaType": "image",
+              "title": "Sweater-Product Blue (1).jpg",
+              "image": {
+                "url": "https://static.wixstatic.com/media/22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png",
+                "width": 1024,
+                "height": 1024
+              },
+              "_id": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png"
+            },
+            "items": [
+              {
+                "thumbnail": {
+                  "url": "https://static.wixstatic.com/media/22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png/v1/fit/w_50,h_50,q_90/file.png",
+                  "width": 50,
+                  "height": 50
+                },
+                "mediaType": "image",
+                "title": "Sweater-Product Blue (1).jpg",
+                "image": {
+                  "url": "https://static.wixstatic.com/media/22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png",
+                  "width": 1024,
+                  "height": 1024
+                },
+                "_id": "22e53e_51ecfc7bfafc49cda82cd5fd6b6239b8~mv2.png"
+              }
+            ]
+          },
+          "inStock": true,
+          "visible": true
+        }
+      ]
+    }
+  ],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/knitted-golf-sweater"
+  },
+  "numericId": "1737888849118000",
+  "inventoryItemId": "99684dfe-d36a-4869-858a-dba67af9b993",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "becc814c-0375-45e8-a826-cd0391f935ef"
+  ],
+  "variants": [
+    {
+      "choices": {
+        "Size": "Small",
+        "Color": "White"
+      },
+      "variant": {
+        "priceData": {
+          "currency": "ILS",
+          "price": 280,
+          "discountedPrice": 280,
+          "formatted": {
+            "price": "280.00 ₪",
+            "discountedPrice": "280.00 ₪"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "ILS",
+          "price": 280,
+          "discountedPrice": 280,
+          "formatted": {
+            "price": "280.00 ₪",
+            "discountedPrice": "280.00 ₪"
+          }
+        },
+        "weight": 0,
+        "sku": "217537123517253",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": false,
+        "inStock": true
+      },
+      "_id": "f0348d42-7307-4825-bcd9-44997dd93e98"
+    },
+    {
+      "choices": {
+        "Size": "Small",
+        "Color": "Dark Green"
+      },
+      "variant": {
+        "priceData": {
+          "currency": "ILS",
+          "price": 275,
+          "discountedPrice": 275,
+          "formatted": {
+            "price": "275.00 ₪",
+            "discountedPrice": "275.00 ₪"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "ILS",
+          "price": 275,
+          "discountedPrice": 275,
+          "formatted": {
+            "price": "275.00 ₪",
+            "discountedPrice": "275.00 ₪"
+          }
+        },
+        "weight": 0,
+        "sku": "",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": false,
+        "inStock": true
+      },
+      "_id": "66c683d6-622c-4f87-b67e-48e88db9e7d7"
+    },
+    {
+      "choices": {
+        "Size": "Small",
+        "Color": "Dark Blue"
+      },
+      "variant": {
+        "priceData": {
+          "currency": "ILS",
+          "price": 270,
+          "discountedPrice": 270,
+          "formatted": {
+            "price": "270.00 ₪",
+            "discountedPrice": "270.00 ₪"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "ILS",
+          "price": 270,
+          "discountedPrice": 270,
+          "formatted": {
+            "price": "270.00 ₪",
+            "discountedPrice": "270.00 ₪"
+          }
+        },
+        "weight": 0,
+        "sku": "",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": false,
+        "inStock": true
+      },
+      "_id": "e722833d-5f30-4e3e-8694-f27ca3a1b1a3"
+    },
+    {
+      "choices": {
+        "Size": "Medium",
+        "Color": "White"
+      },
+      "variant": {
+        "priceData": {
+          "currency": "ILS",
+          "price": 275,
+          "discountedPrice": 275,
+          "formatted": {
+            "price": "275.00 ₪",
+            "discountedPrice": "275.00 ₪"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "ILS",
+          "price": 275,
+          "discountedPrice": 275,
+          "formatted": {
+            "price": "275.00 ₪",
+            "discountedPrice": "275.00 ₪"
+          }
+        },
+        "weight": 0,
+        "sku": "",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": false,
+        "inStock": true
+      },
+      "_id": "6faf50a4-2dc5-4986-96a4-2a328118ffbf"
+    },
+    {
+      "choices": {
+        "Size": "Medium",
+        "Color": "Dark Green"
+      },
+      "variant": {
+        "priceData": {
+          "currency": "ILS",
+          "price": 300,
+          "discountedPrice": 300,
+          "formatted": {
+            "price": "300.00 ₪",
+            "discountedPrice": "300.00 ₪"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "ILS",
+          "price": 300,
+          "discountedPrice": 300,
+          "formatted": {
+            "price": "300.00 ₪",
+            "discountedPrice": "300.00 ₪"
+          }
+        },
+        "weight": 0,
+        "sku": "",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": false,
+        "inStock": true
+      },
+      "_id": "2034da09-f052-4942-ac91-b44366cd019d"
+    },
+    {
+      "choices": {
+        "Size": "Medium",
+        "Color": "Dark Blue"
+      },
+      "variant": {
+        "priceData": {
+          "currency": "ILS",
+          "price": 310,
+          "discountedPrice": 310,
+          "formatted": {
+            "price": "310.00 ₪",
+            "discountedPrice": "310.00 ₪"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "ILS",
+          "price": 310,
+          "discountedPrice": 310,
+          "formatted": {
+            "price": "310.00 ₪",
+            "discountedPrice": "310.00 ₪"
+          }
+        },
+        "weight": 0,
+        "sku": "",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": false,
+        "inStock": true
+      },
+      "_id": "c1df7354-ed67-45c7-8701-2a14557cd8a5"
+    },
+    {
+      "choices": {
+        "Size": "Large",
+        "Color": "White"
+      },
+      "variant": {
+        "priceData": {
+          "currency": "ILS",
+          "price": 275,
+          "discountedPrice": 275,
+          "formatted": {
+            "price": "275.00 ₪",
+            "discountedPrice": "275.00 ₪"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "ILS",
+          "price": 275,
+          "discountedPrice": 275,
+          "formatted": {
+            "price": "275.00 ₪",
+            "discountedPrice": "275.00 ₪"
+          }
+        },
+        "weight": 0,
+        "sku": "",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": false,
+        "inStock": true
+      },
+      "_id": "bb33d12b-a954-421d-ab0d-1ce18e2d8b61"
+    },
+    {
+      "choices": {
+        "Size": "Large",
+        "Color": "Dark Green"
+      },
+      "variant": {
+        "priceData": {
+          "currency": "ILS",
+          "price": 275,
+          "discountedPrice": 275,
+          "formatted": {
+            "price": "275.00 ₪",
+            "discountedPrice": "275.00 ₪"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "ILS",
+          "price": 275,
+          "discountedPrice": 275,
+          "formatted": {
+            "price": "275.00 ₪",
+            "discountedPrice": "275.00 ₪"
+          }
+        },
+        "weight": 0,
+        "sku": "",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": false,
+        "inStock": true
+      },
+      "_id": "9bbf7977-245f-4dc4-a500-ebd3297e0ecf"
+    },
+    {
+      "choices": {
+        "Size": "Large",
+        "Color": "Dark Blue"
+      },
+      "variant": {
+        "priceData": {
+          "currency": "ILS",
+          "price": 275,
+          "discountedPrice": 275,
+          "formatted": {
+            "price": "275.00 ₪",
+            "discountedPrice": "275.00 ₪"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "ILS",
+          "price": 275,
+          "discountedPrice": 275,
+          "formatted": {
+            "price": "275.00 ₪",
+            "discountedPrice": "275.00 ₪"
+          }
+        },
+        "weight": 0,
+        "sku": "",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": false,
+        "inStock": true
+      },
+      "_id": "dd8e116e-3e9c-4853-b09e-c1229dcf4bfe"
+    },
+    {
+      "choices": {
+        "Size": "X-Large",
+        "Color": "White"
+      },
+      "variant": {
+        "priceData": {
+          "currency": "ILS",
+          "price": 275,
+          "discountedPrice": 275,
+          "formatted": {
+            "price": "275.00 ₪",
+            "discountedPrice": "275.00 ₪"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "ILS",
+          "price": 275,
+          "discountedPrice": 275,
+          "formatted": {
+            "price": "275.00 ₪",
+            "discountedPrice": "275.00 ₪"
+          }
+        },
+        "weight": 0,
+        "sku": "",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": false,
+        "inStock": true
+      },
+      "_id": "449e9087-a290-4ba9-8289-98f756409ef1"
+    },
+    {
+      "choices": {
+        "Size": "X-Large",
+        "Color": "Dark Green"
+      },
+      "variant": {
+        "priceData": {
+          "currency": "ILS",
+          "price": 275,
+          "discountedPrice": 275,
+          "formatted": {
+            "price": "275.00 ₪",
+            "discountedPrice": "275.00 ₪"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "ILS",
+          "price": 275,
+          "discountedPrice": 275,
+          "formatted": {
+            "price": "275.00 ₪",
+            "discountedPrice": "275.00 ₪"
+          }
+        },
+        "weight": 0,
+        "sku": "",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": false,
+        "inStock": true
+      },
+      "_id": "4f905739-5c78-407f-8f56-49aa8b3f586c"
+    },
+    {
+      "choices": {
+        "Size": "X-Large",
+        "Color": "Dark Blue"
+      },
+      "variant": {
+        "priceData": {
+          "currency": "ILS",
+          "price": 275,
+          "discountedPrice": 275,
+          "formatted": {
+            "price": "275.00 ₪",
+            "discountedPrice": "275.00 ₪"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "ILS",
+          "price": 275,
+          "discountedPrice": 275,
+          "formatted": {
+            "price": "275.00 ₪",
+            "discountedPrice": "275.00 ₪"
+          }
+        },
+        "weight": 0,
+        "sku": "",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": false,
+        "inStock": true
+      },
+      "_id": "35ce2200-5e88-4e7f-985e-36d422913fe1"
+    }
+  ],
+  "lastUpdated": "2025-11-16T16:29:15.684Z",
+  "exportProductId": "Product_95c8f784-799c-4f33-b820-17b726a65296",
+  "_id": "99684dfe-d36a-4869-858a-dba67af9b993",
+  "_createdDate": "2025-01-26T10:54:09.139Z"
+}

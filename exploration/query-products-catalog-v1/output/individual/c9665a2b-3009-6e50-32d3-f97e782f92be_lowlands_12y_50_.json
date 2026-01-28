@@ -1,0 +1,167 @@
+{
+  "name": "Lowlands 12y 50%",
+  "slug": "lowlands-12y-50",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><u><em><strong>Distilled at an undisclosed Lowland Distillery</strong></em></u></p><p><em><strong>Aged 12&nbsp;years&nbsp;</strong></em><em><strong>in a&nbsp;Rubby Port Barrique</strong></em></p><p><em><strong>Bottled at a cask strength of 50%</strong></em></p><p><em><strong>No chilled filtration, no added coulors</strong></em></p><p>&nbsp;</p>",
+  "sku": "1-13-0108",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 6,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 410,
+    "discountedPrice": 410,
+    "formatted": {
+      "price": "€410.00",
+      "discountedPrice": "€410.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 410,
+    "discountedPrice": 410,
+    "formatted": {
+      "price": "€410.00",
+      "discountedPrice": "€410.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 410,
+    "discountedPrice": 410,
+    "formatted": {
+      "price": "€410.00",
+      "discountedPrice": "€410.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 410,
+    "maxValue": 410
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 6 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_8eb4b95b97bb469cbd0410090d59378d~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Claxton- Lowlands 12.jpeg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_8eb4b95b97bb469cbd0410090d59378d~mv2.jpeg/v1/fit/w_1512,h_1512,q_90/file.jpg",
+        "width": 1512,
+        "height": 1512
+      },
+      "_id": "9e37b5_8eb4b95b97bb469cbd0410090d59378d~mv2.jpeg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_8eb4b95b97bb469cbd0410090d59378d~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Claxton- Lowlands 12.jpeg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_8eb4b95b97bb469cbd0410090d59378d~mv2.jpeg/v1/fit/w_1512,h_1512,q_90/file.jpg",
+          "width": 1512,
+          "height": 1512
+        },
+        "_id": "9e37b5_8eb4b95b97bb469cbd0410090d59378d~mv2.jpeg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_0574f996ed8d47f28f3c551ac647de27~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "LOWLANDS.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_0574f996ed8d47f28f3c551ac647de27~mv2.jpg/v1/fit/w_726,h_674,q_90/file.jpg",
+          "width": 726,
+          "height": 674
+        },
+        "_id": "9e37b5_0574f996ed8d47f28f3c551ac647de27~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/lowlands-12y-50"
+  },
+  "numericId": "1718203048317000",
+  "inventoryItemId": "3699a5d4-cff6-91af-cd2c-068187d06d41",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "c434bd06-174a-2dfb-8ee1-ace0a74d8207",
+    "027e205e-bc32-8267-f8b0-7eb8ac411e39",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 410,
+          "discountedPrice": 410,
+          "formatted": {
+            "price": "€410.00",
+            "discountedPrice": "€410.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 410,
+          "discountedPrice": 410,
+          "formatted": {
+            "price": "€410.00",
+            "discountedPrice": "€410.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-13-0108",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 6,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-01T14:52:02.019Z",
+  "ribbon": "Only 6 left",
+  "exportProductId": "product_c9665a2b-3009-6e50-32d3-f97e782f92be",
+  "_id": "c9665a2b-3009-6e50-32d3-f97e782f92be",
+  "_createdDate": "2024-06-12T14:37:28.317Z"
+}

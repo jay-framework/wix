@@ -1,0 +1,177 @@
+{
+  "name": "Black Bull 40y- 47.6%",
+  "slug": "black-bull-40y-47-6",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>This&nbsp;40 year old unique Blended Scotch contains 86% Malt and 14% Grain whiskies and is bottled at 47.6% ABV</p><p>&nbsp;</p><p>this is an amazing vatting of old and rare single malts and grains- some of them from long-closed distilleries.</p><p>Please see the pictures for a full listing of the distilleries in the vatting and their vintages</p><p>&nbsp;</p><p>&nbsp;</p>",
+  "sku": "1-17-9905",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 3,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 3800,
+    "discountedPrice": 3800,
+    "formatted": {
+      "price": "€3,800.00",
+      "discountedPrice": "€3,800.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 3800,
+    "discountedPrice": 3800,
+    "formatted": {
+      "price": "€3,800.00",
+      "discountedPrice": "€3,800.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 3800,
+    "discountedPrice": 3800,
+    "formatted": {
+      "price": "€3,800.00",
+      "discountedPrice": "€3,800.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 3800,
+    "maxValue": 3800
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_5a5d8bde11a944dc982352f61fdbdfb1~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Black Bull 40.jpeg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_5a5d8bde11a944dc982352f61fdbdfb1~mv2.jpeg/v1/fit/w_1512,h_1512,q_90/file.jpg",
+        "width": 1512,
+        "height": 1512
+      },
+      "_id": "9e37b5_5a5d8bde11a944dc982352f61fdbdfb1~mv2.jpeg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_5a5d8bde11a944dc982352f61fdbdfb1~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Black Bull 40.jpeg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_5a5d8bde11a944dc982352f61fdbdfb1~mv2.jpeg/v1/fit/w_1512,h_1512,q_90/file.jpg",
+          "width": 1512,
+          "height": 1512
+        },
+        "_id": "9e37b5_5a5d8bde11a944dc982352f61fdbdfb1~mv2.jpeg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_bf04dce093ba42a9b49fcb7e208da27f~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Black Bull 40 in box.jpeg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_bf04dce093ba42a9b49fcb7e208da27f~mv2.jpeg/v1/fit/w_1512,h_1512,q_90/file.jpg",
+          "width": 1512,
+          "height": 1512
+        },
+        "_id": "9e37b5_bf04dce093ba42a9b49fcb7e208da27f~mv2.jpeg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_d47370970dc047eb833ed3b474ba608a~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Black Bull 40 componants.jpeg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_d47370970dc047eb833ed3b474ba608a~mv2.jpeg/v1/fit/w_1200,h_1600,q_90/file.jpg",
+          "width": 1200,
+          "height": 1600
+        },
+        "_id": "9e37b5_d47370970dc047eb833ed3b474ba608a~mv2.jpeg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/black-bull-40y-47-6"
+  },
+  "numericId": "1650965674694000",
+  "inventoryItemId": "bf928aca-2f9c-062f-6556-2dc143760813",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "b6b13b58-d47c-4d49-0852-d8a309076095",
+    "0f9ef8d1-1117-c712-c54b-53b57509d36e",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 3800,
+          "discountedPrice": 3800,
+          "formatted": {
+            "price": "€3,800.00",
+            "discountedPrice": "€3,800.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 3800,
+          "discountedPrice": 3800,
+          "formatted": {
+            "price": "€3,800.00",
+            "discountedPrice": "€3,800.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-9905",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 3,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:36.193Z",
+  "ribbon": "",
+  "exportProductId": "product_406d7535-d063-f9d0-9aa9-d23ebc89f7ec",
+  "_id": "406d7535-d063-f9d0-9aa9-d23ebc89f7ec",
+  "_createdDate": "2022-04-26T09:34:34.694Z"
+}

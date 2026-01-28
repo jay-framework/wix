@@ -1,0 +1,148 @@
+{
+  "name": "Glenrothes 10y- 56.4%",
+  "slug": "glenrothes-10y-56-4",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Distilled on 8/5/2014&nbsp;in Glenrothes Distillery and finished in a&nbsp;First Fill Calvados Barrique</p><p>&nbsp;</p><p>Bottled at Cask Streanght of 56.4% without colouring and without chilled filtaration</p>",
+  "sku": "1-13-0129",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 8,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 450,
+    "discountedPrice": 450,
+    "formatted": {
+      "price": "€450.00",
+      "discountedPrice": "€450.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 450,
+    "discountedPrice": 450,
+    "formatted": {
+      "price": "€450.00",
+      "discountedPrice": "€450.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 450,
+    "discountedPrice": 450,
+    "formatted": {
+      "price": "€450.00",
+      "discountedPrice": "€450.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 450,
+    "maxValue": 450
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_fb99218ab68e4dcbbc64950a72d731e0~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Claxton Glenrothes 10y 56.4% Calvados Barrique.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_fb99218ab68e4dcbbc64950a72d731e0~mv2.jpg/v1/fit/w_1137,h_937,q_90/file.jpg",
+        "width": 1137,
+        "height": 937
+      },
+      "_id": "9e37b5_fb99218ab68e4dcbbc64950a72d731e0~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_fb99218ab68e4dcbbc64950a72d731e0~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Claxton Glenrothes 10y 56.4% Calvados Barrique.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_fb99218ab68e4dcbbc64950a72d731e0~mv2.jpg/v1/fit/w_1137,h_937,q_90/file.jpg",
+          "width": 1137,
+          "height": 937
+        },
+        "_id": "9e37b5_fb99218ab68e4dcbbc64950a72d731e0~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/glenrothes-10y-56-4"
+  },
+  "numericId": "1757784310639000",
+  "inventoryItemId": "154703ac-09cf-4cd8-e96f-9f7249df7064",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "644630f5-1464-5a67-80ec-98d1c79ca982",
+    "6488a591-9bfa-caa7-055d-8d0a1bb67d4e",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 450,
+          "discountedPrice": 450,
+          "formatted": {
+            "price": "€450.00",
+            "discountedPrice": "€450.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 450,
+          "discountedPrice": 450,
+          "formatted": {
+            "price": "€450.00",
+            "discountedPrice": "€450.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-13-0129",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 8,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:47.965Z",
+  "ribbon": "",
+  "exportProductId": "product_eab8fc53-f630-b327-1690-608db6208f9b",
+  "_id": "eab8fc53-f630-b327-1690-608db6208f9b",
+  "_createdDate": "2025-09-13T17:25:10.639Z"
+}

@@ -1,0 +1,152 @@
+{
+  "name": "Glenallachie 8y- 53.8%",
+  "slug": "glenallachie-8y-53-8",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><strong>Distilled In Glenallachie Distilery&nbsp;</strong></p><p><em>Aged for 8&nbsp;years. Finished in 1st fill PX Sherry But and bottled at a cask strength of 53.8%,&nbsp;<br>keeping its&nbsp;natural color and without&nbsp;chill filtration</em></p><p>&nbsp;</p><p>&nbsp;</p><p><u><strong>Tasting notes by the AlphaBet Whisky Advisory Board</strong></u></p><p><strong>Nose </strong></p><p>Sweet white wine, yeast, grapes, cheerios cornflakes, allspice</p><p><strong style=\"background-color: transparent;\">Palate</strong></p><p>A dive into the rabbit hole- Cardamon. allspice, honey, greed pulm sourness, green grapes, Tamagoyaki, Edible wild mushrooms, oregano</p><p><strong style=\"background-color: transparent;\">Finish</strong></p><p>Long. Dry, very gentle, a little salt, a little sweet, a pinch of bitterness, green plum sourness</p><p>&nbsp;</p><p>Board final word: High ABV desert wine- Do not add water</p>",
+  "sku": "1-12-0045",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 6,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 530,
+    "discountedPrice": 530,
+    "formatted": {
+      "price": "€530.00",
+      "discountedPrice": "€530.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 530,
+    "discountedPrice": 530,
+    "formatted": {
+      "price": "€530.00",
+      "discountedPrice": "€530.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 530,
+    "discountedPrice": 530,
+    "formatted": {
+      "price": "€530.00",
+      "discountedPrice": "€530.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 530,
+    "maxValue": 530
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 6 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_f3c6d2f030124aeea00c700f5ddca669~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Dram Mor- Glenallachie 8 yo 53.8%.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_f3c6d2f030124aeea00c700f5ddca669~mv2.jpg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+        "width": 2048,
+        "height": 2048
+      },
+      "_id": "9e37b5_f3c6d2f030124aeea00c700f5ddca669~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_f3c6d2f030124aeea00c700f5ddca669~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Dram Mor- Glenallachie 8 yo 53.8%.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_f3c6d2f030124aeea00c700f5ddca669~mv2.jpg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+          "width": 2048,
+          "height": 2048
+        },
+        "_id": "9e37b5_f3c6d2f030124aeea00c700f5ddca669~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/glenallachie-8y-53-8"
+  },
+  "numericId": "1737916678873000",
+  "inventoryItemId": "24f9476a-3f4b-0dd5-8a48-9c2236b5c176",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "1c54c59f-7f38-1790-b8b6-a19bb70c51fc",
+    "8ec7d356-2cda-d9ef-3b4f-c52ba01a34e5",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 530,
+          "discountedPrice": 530,
+          "formatted": {
+            "price": "€530.00",
+            "discountedPrice": "€530.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 530,
+          "discountedPrice": 530,
+          "formatted": {
+            "price": "€530.00",
+            "discountedPrice": "€530.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-12-0045",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 6,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:47.965Z",
+  "ribbon": "Only 6 left",
+  "exportProductId": "product_db06b895-c0b4-f22a-75b7-63ddc94a3e89",
+  "_id": "db06b895-c0b4-f22a-75b7-63ddc94a3e89",
+  "_createdDate": "2025-01-26T18:37:58.873Z"
+}

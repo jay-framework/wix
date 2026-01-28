@@ -1,0 +1,153 @@
+{
+  "name": "Noth British 17y- 54.2%",
+  "slug": "noth-british-17y-54-2",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><u><strong><em>Distilled at North British&nbsp;distillery-</em></strong></u></p><p><strong><em>This Whisky was aged in a bourbon cask&nbsp;for 17&nbsp;years. It was finished in a Sherry Octave and&nbsp;bottled at Cask strength of 54.2%</em></strong></p><p>&nbsp;</p>",
+  "sku": "1-17-0077",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 3,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 310,
+    "discountedPrice": 310,
+    "formatted": {
+      "price": "€310.00",
+      "discountedPrice": "€310.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 310,
+    "discountedPrice": 310,
+    "formatted": {
+      "price": "€310.00",
+      "discountedPrice": "€310.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 310,
+    "discountedPrice": 310,
+    "formatted": {
+      "price": "€310.00",
+      "discountedPrice": "€310.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 310,
+    "maxValue": 310
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 3 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_57d50a92143843418a727dc2a6fd247f~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251203_115340.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_57d50a92143843418a727dc2a6fd247f~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_57d50a92143843418a727dc2a6fd247f~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_57d50a92143843418a727dc2a6fd247f~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251203_115340.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_57d50a92143843418a727dc2a6fd247f~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_57d50a92143843418a727dc2a6fd247f~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/noth-british-17y-54-2"
+  },
+  "numericId": "1765300129816000",
+  "inventoryItemId": "b6960d0c-317a-22ba-e170-9c52e8f30e9b",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "d585e961-a952-a3fa-3ac3-6b505715ca74",
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "6d41635f-a82e-8e9b-d775-957aef317088",
+    "ea47b020-c4f2-1d81-ffb1-86f71ae4dc71",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 310,
+          "discountedPrice": 310,
+          "formatted": {
+            "price": "€310.00",
+            "discountedPrice": "€310.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 310,
+          "discountedPrice": 310,
+          "formatted": {
+            "price": "€310.00",
+            "discountedPrice": "€310.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0077",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 3,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-26T16:14:38.711Z",
+  "ribbon": "Only 3 left",
+  "exportProductId": "product_4969f2f3-ce85-dd45-1e8f-63ad170cf164",
+  "_id": "4969f2f3-ce85-dd45-1e8f-63ad170cf164",
+  "_createdDate": "2025-12-09T17:08:49.816Z"
+}

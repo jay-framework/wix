@@ -1,0 +1,149 @@
+{
+  "name": "A Speyside Distillery 16y- 53%",
+  "slug": "a-speyside-distillery-16y-53",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><u><strong><em>Distilled at un disclosed Speyside distillery-</em></strong></u></p><p><strong><em>This Whisky was aged in a bourbon cask&nbsp;for 16&nbsp;years. It was finished in a Sherry Octave and&nbsp;bottled at Cask strength of 53%</em></strong></p><p>&nbsp;</p><p><u><strong>Tasting notes by the AlphaBet Whisky Advisory Board</strong></u></p><p><strong>Nose </strong></p><p>Pears, white pepper, honey. vanilla, caramel</p><p><strong>Palate</strong></p><p>Grapefruit, vanilla, maple, clove, cinnamon</p><p><strong>Finish</strong></p><p>Medium length. Wet wood, maple, cinnamon, spices, very gentle grapefruit bitterness</p><p><strong><em>Teams summery- It’s A CANDY- don’t add water</em></strong></p>",
+  "sku": "1-17-0081",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 19,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 560,
+    "discountedPrice": 560,
+    "formatted": {
+      "price": "€560.00",
+      "discountedPrice": "€560.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 560,
+    "discountedPrice": 560,
+    "formatted": {
+      "price": "€560.00",
+      "discountedPrice": "€560.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 560,
+    "discountedPrice": 560,
+    "formatted": {
+      "price": "€560.00",
+      "discountedPrice": "€560.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 560,
+    "maxValue": 560
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_6d8c27aed7734310af2d962702282c6b~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251203_115647.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_6d8c27aed7734310af2d962702282c6b~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_6d8c27aed7734310af2d962702282c6b~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_6d8c27aed7734310af2d962702282c6b~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251203_115647.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_6d8c27aed7734310af2d962702282c6b~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_6d8c27aed7734310af2d962702282c6b~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/a-speyside-distillery-16y-53"
+  },
+  "numericId": "1765301164473000",
+  "inventoryItemId": "07239620-77db-6088-5f2a-6244af49be9b",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "d585e961-a952-a3fa-3ac3-6b505715ca74",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "3cc3b025-51dd-7aec-23bf-91a5c11daf8c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 560,
+          "discountedPrice": 560,
+          "formatted": {
+            "price": "€560.00",
+            "discountedPrice": "€560.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 560,
+          "discountedPrice": 560,
+          "formatted": {
+            "price": "€560.00",
+            "discountedPrice": "€560.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0081",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 19,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-09T18:27:32.115Z",
+  "ribbon": "",
+  "exportProductId": "product_f8dc69df-8824-9f77-a0d5-9dbb50b64164",
+  "_id": "f8dc69df-8824-9f77-a0d5-9dbb50b64164",
+  "_createdDate": "2025-12-09T17:26:04.473Z"
+}

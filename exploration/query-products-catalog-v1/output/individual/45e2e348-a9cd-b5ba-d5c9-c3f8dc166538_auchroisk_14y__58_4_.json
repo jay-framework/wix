@@ -1,0 +1,153 @@
+{
+  "name": "Auchroisk 14y- 58.4%",
+  "slug": "auchroisk-14y-58-4",
+  "visible": true,
+  "productType": "physical",
+  "description": "",
+  "sku": "1-19-0004",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 4,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 360,
+    "discountedPrice": 360,
+    "formatted": {
+      "price": "€360.00",
+      "discountedPrice": "€360.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 360,
+    "discountedPrice": 360,
+    "formatted": {
+      "price": "€360.00",
+      "discountedPrice": "€360.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 360,
+    "discountedPrice": 360,
+    "formatted": {
+      "price": "€360.00",
+      "discountedPrice": "€360.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 360,
+    "maxValue": 360
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 4 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_74cae83833e7418080381c1df19683b5~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "1000271184.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_74cae83833e7418080381c1df19683b5~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_74cae83833e7418080381c1df19683b5~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_74cae83833e7418080381c1df19683b5~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "1000271184.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_74cae83833e7418080381c1df19683b5~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_74cae83833e7418080381c1df19683b5~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/auchroisk-14y-58-4"
+  },
+  "numericId": "1769434942390000",
+  "inventoryItemId": "ba1d1cb7-5632-4a45-2a36-3c0723e99ac7",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "2364bc89-230c-a8a5-49ba-67ac639db012",
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "2c5a43aa-9722-192f-0419-196ed97df100",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 360,
+          "discountedPrice": 360,
+          "formatted": {
+            "price": "€360.00",
+            "discountedPrice": "€360.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 360,
+          "discountedPrice": 360,
+          "formatted": {
+            "price": "€360.00",
+            "discountedPrice": "€360.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-19-0004",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 4,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-26T16:16:37.272Z",
+  "ribbon": "Only 4 left",
+  "exportProductId": "product_45e2e348-a9cd-b5ba-d5c9-c3f8dc166538",
+  "_id": "45e2e348-a9cd-b5ba-d5c9-c3f8dc166538",
+  "_createdDate": "2026-01-26T13:42:22.390Z"
+}

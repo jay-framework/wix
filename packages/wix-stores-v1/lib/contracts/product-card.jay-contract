@@ -1,0 +1,239 @@
+name: product-card
+tags:
+  # Product basic info (from Wix Stores Product API)
+  - tag: _id
+    type: data
+    dataType: string
+    description: Product GUID
+    
+  - tag: name
+    type: data
+    dataType: string
+    required: true
+    description: Product name
+    
+  - tag: slug
+    type: data
+    dataType: string
+    description: Product slug for URL
+    
+  - tag: productUrl
+    type: data
+    dataType: string
+    description: Full URL path to product page (e.g., /products/my-product)
+    
+  - tag: productLink
+    type: interactive
+    elementType: HTMLAnchorElement
+    description: Link to product page
+    
+  # Media (from Wix Stores Product API)
+  - tag: mainMedia
+    type: sub-contract
+    description: Main product media
+    tags:
+      - tag: url
+        type: data
+        dataType: string
+        description: Media URL
+        
+      - tag: altText
+        type: data
+        dataType: string
+        description: Media alt text
+        
+      - tag: mediaType
+        type: data
+        dataType: enum (IMAGE | VIDEO)
+        description: Media type
+        
+  - tag: thumbnail
+    type: sub-contract
+    description: Thumbnail image optimized for listings
+    tags:
+      - tag: url
+        type: data
+        dataType: string
+        description: Thumbnail URL
+        
+      - tag: altText
+        type: data
+        dataType: string
+        description: Thumbnail alt text
+        
+      - tag: width
+        type: data
+        dataType: number
+        description: Thumbnail width in pixels
+        
+      - tag: height
+        type: data
+        dataType: number
+        description: Thumbnail height in pixels
+    
+  # Price information (from Wix Stores Product API)
+  - tag: actualPriceRange
+    type: sub-contract
+    description: Product price range (minimum and maximum prices)
+    tags:
+      - tag: minValue
+        type: sub-contract
+        description: Minimum price
+        tags:
+          - tag: amount
+            type: data
+            dataType: string
+            description: Price amount (e.g., "29.99")
+            
+          - tag: formattedAmount
+            type: data
+            dataType: string
+            description: Formatted price (e.g., "$29.99")
+            
+      - tag: maxValue
+        type: sub-contract
+        description: Maximum price
+        tags:
+          - tag: amount
+            type: data
+            dataType: string
+            description: Price amount
+            
+          - tag: formattedAmount
+            type: data
+            dataType: string
+            description: Formatted price
+            
+  - tag: compareAtPriceRange
+    type: sub-contract
+    description: Compare-at price range (original prices before discount)
+    tags:
+      - tag: minValue
+        type: sub-contract
+        description: Minimum compare-at price
+        tags:
+          - tag: amount
+            type: data
+            dataType: string
+            description: Price amount
+            
+          - tag: formattedAmount
+            type: data
+            dataType: string
+            description: Formatted price
+            
+      - tag: maxValue
+        type: sub-contract
+        description: Maximum compare-at price
+        tags:
+          - tag: amount
+            type: data
+            dataType: string
+            description: Price amount
+            
+          - tag: formattedAmount
+            type: data
+            dataType: string
+            description: Formatted price
+            
+  - tag: currency
+    type: data
+    dataType: string
+    description: Currency code in ISO-4217 format (e.g., "USD")
+    
+  - tag: hasDiscount
+    type: variant
+    dataType: boolean
+    description: Whether product has a discount (compareAtPrice > actualPrice)
+    
+  # Inventory (from Wix Stores Product API)
+  - tag: inventory
+    type: sub-contract
+    description: Product inventory information
+    tags:
+      - tag: availabilityStatus
+        type: variant
+        dataType: enum (IN_STOCK | OUT_OF_STOCK | PARTIALLY_OUT_OF_STOCK)
+        description: Current availability status
+        
+      - tag: preorderStatus
+        type: data
+        dataType: enum (ENABLED | DISABLED | PARTIALLY_ENABLED)
+        description: Current preorder status
+        
+  # Product ribbon (from Wix Stores Product API)
+  - tag: ribbon
+    type: sub-contract
+    description: Product ribbon/badge
+    tags:
+      - tag: _id
+        type: data
+        dataType: string
+        description: Ribbon GUID
+        
+      - tag: name
+        type: data
+        dataType: string
+        description: Ribbon text (e.g., "New", "Sale", "Best Seller")
+        
+  - tag: hasRibbon
+    type: variant
+    dataType: boolean
+    description: Whether product has a ribbon/badge
+    
+  # Brand (from Wix Stores Product API)
+  - tag: brand
+    type: sub-contract
+    description: Product brand
+    tags:
+      - tag: _id
+        type: data
+        dataType: string
+        description: Brand GUID
+        
+      - tag: name
+        type: data
+        dataType: string
+        description: Brand name
+        
+  # Additional product metadata
+  - tag: productType
+    type: data
+    dataType: enum (PHYSICAL | DIGITAL)
+    description: Product type
+    
+  - tag: visible
+    type: data
+    dataType: boolean
+    description: Whether product is visible to site visitors
+    
+  # Quick actions
+  - tag: addToCartButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Quick add to cart button (for SIMPLE products with no options)
+    
+  - tag: isAddingToCart
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether add to cart is in progress
+
+  # Quick-add behavior
+  - tag: quickAddType
+    type: variant
+    dataType: enum (SIMPLE | SINGLE_OPTION | NEEDS_CONFIGURATION)
+    description: |
+      SIMPLE = no options, show Add to Cart button
+      SINGLE_OPTION = one option, show choices on hover (click = add to cart)
+      NEEDS_CONFIGURATION = multiple options or modifiers, link to product page
+
+  - tag: quickOption
+    type: sub-contract
+    description: Primary option for quick selection (only when quickAddType = SINGLE_OPTION)
+    link: ./product-options
+
+  - tag: viewOptionsButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Button to navigate to product page (when quickAddType = NEEDS_CONFIGURATION)

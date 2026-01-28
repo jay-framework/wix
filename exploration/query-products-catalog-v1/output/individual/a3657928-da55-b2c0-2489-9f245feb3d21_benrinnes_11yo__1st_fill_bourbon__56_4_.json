@@ -1,0 +1,149 @@
+{
+  "name": "Benrinnes 11yo, 1st Fill Bourbon, 56.4%",
+  "slug": "benrinnes-11yo-1st-fill-bourbon-56-4",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>&nbsp;</p><p>&nbsp;</p>",
+  "sku": "1-15-0059",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 9,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 370,
+    "discountedPrice": 370,
+    "formatted": {
+      "price": "€370.00",
+      "discountedPrice": "€370.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 370,
+    "discountedPrice": 370,
+    "formatted": {
+      "price": "€370.00",
+      "discountedPrice": "€370.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 370,
+    "discountedPrice": 370,
+    "formatted": {
+      "price": "€370.00",
+      "discountedPrice": "€370.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 370,
+    "maxValue": 370
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_93da313f70364aed8eb52c2c9902fbe8~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251217_085421.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_93da313f70364aed8eb52c2c9902fbe8~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_93da313f70364aed8eb52c2c9902fbe8~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_93da313f70364aed8eb52c2c9902fbe8~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251217_085421.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_93da313f70364aed8eb52c2c9902fbe8~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_93da313f70364aed8eb52c2c9902fbe8~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/benrinnes-11yo-1st-fill-bourbon-56-4"
+  },
+  "numericId": "1765730436705000",
+  "inventoryItemId": "5c9a86d7-25aa-4d3f-db76-60dba014c2de",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "9e2982d5-9e2c-72f5-73a7-b91756692a1a",
+    "c9a3e322-9494-b273-529a-7135118dfd91",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 370,
+          "discountedPrice": 370,
+          "formatted": {
+            "price": "€370.00",
+            "discountedPrice": "€370.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 370,
+          "discountedPrice": 370,
+          "formatted": {
+            "price": "€370.00",
+            "discountedPrice": "€370.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-15-0059",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 9,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-17T07:01:53.972Z",
+  "ribbon": "",
+  "exportProductId": "product_a3657928-da55-b2c0-2489-9f245feb3d21",
+  "_id": "a3657928-da55-b2c0-2489-9f245feb3d21",
+  "_createdDate": "2025-12-14T16:40:36.705Z"
+}

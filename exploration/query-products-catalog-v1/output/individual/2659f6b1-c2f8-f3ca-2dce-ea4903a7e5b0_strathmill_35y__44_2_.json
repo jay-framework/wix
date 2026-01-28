@@ -1,0 +1,152 @@
+{
+  "name": "Strathmill 35y- 44.2%",
+  "slug": "strathmill-35y-44-2",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Distilled on 18/03/1998 in Strathmill Distillery and finished in an Oloroso Octave</p><p>&nbsp;</p><p>Bottled at Cask Streanght of 44.2% without colouring and without chilled filtaration</p>",
+  "sku": "1-13-0121",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 4,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 1600,
+    "discountedPrice": 1600,
+    "formatted": {
+      "price": "€1,600.00",
+      "discountedPrice": "€1,600.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 1600,
+    "discountedPrice": 1600,
+    "formatted": {
+      "price": "€1,600.00",
+      "discountedPrice": "€1,600.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 1600,
+    "discountedPrice": 1600,
+    "formatted": {
+      "price": "€1,600.00",
+      "discountedPrice": "€1,600.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 1600,
+    "maxValue": 1600
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 4 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_4a0b50390a7c42c598ed17ed887c6b82~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Claxton- Strathmill 35y.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_4a0b50390a7c42c598ed17ed887c6b82~mv2.jpg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+        "width": 2048,
+        "height": 2048
+      },
+      "_id": "9e37b5_4a0b50390a7c42c598ed17ed887c6b82~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_4a0b50390a7c42c598ed17ed887c6b82~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Claxton- Strathmill 35y.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_4a0b50390a7c42c598ed17ed887c6b82~mv2.jpg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+          "width": 2048,
+          "height": 2048
+        },
+        "_id": "9e37b5_4a0b50390a7c42c598ed17ed887c6b82~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/strathmill-35y-44-2"
+  },
+  "numericId": "1740417729238000",
+  "inventoryItemId": "d9a6094e-3d07-0c35-d231-15b6fc581a4f",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "6488a591-9bfa-caa7-055d-8d0a1bb67d4e",
+    "33f798f6-7792-7be4-7703-bcd8d6816c45",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 1600,
+          "discountedPrice": 1600,
+          "formatted": {
+            "price": "€1,600.00",
+            "discountedPrice": "€1,600.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 1600,
+          "discountedPrice": 1600,
+          "formatted": {
+            "price": "€1,600.00",
+            "discountedPrice": "€1,600.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-13-0121",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 4,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-26T12:29:31.896Z",
+  "ribbon": "Only 4 left",
+  "exportProductId": "product_2659f6b1-c2f8-f3ca-2dce-ea4903a7e5b0",
+  "_id": "2659f6b1-c2f8-f3ca-2dce-ea4903a7e5b0",
+  "_createdDate": "2025-02-24T17:22:09.238Z"
+}

@@ -1,0 +1,149 @@
+{
+  "name": "Bunnahabhain 15y- 54.6%",
+  "slug": "bunnahabhain-15y-54-6",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><u><strong><em>Distilled at Bunnahabhain distillery-</em></strong></u></p><p><strong><em>This Whisky was aged in a bourbon cask&nbsp;for 15&nbsp;years. Bottled at Cask strength of 54.6%</em></strong></p><p>&nbsp;</p><p><u><em><strong>Tasting notes by the Duncan Taylor team</strong></em></u></p><p><em>Floral, honeyed and nutty with notes of marzipan, frangipane and raspberry jam. Reminiscent of a bakewell tart.</em></p><p>&nbsp;</p><p><em><u><strong>Tasting notes by the AlphaBet Whisky Advisory Board</strong></u></em></p><p><em><strong>Nose</strong></em></p><p><em>Yeast, dough, white wine sweetness, sugared ginger, fermented vegetables</em></p><p><em><strong>Palate</strong></em></p><p><em>Sweet to sour to bitter and dry. Vanilla, pink sweet coconut candy</em></p><p><em><strong>Finish</strong></em></p><p><em>Medium- long. Bitterness, coconut</em></p><p>&nbsp;</p>",
+  "sku": "1-17-0082",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 13,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 560,
+    "discountedPrice": 560,
+    "formatted": {
+      "price": "€560.00",
+      "discountedPrice": "€560.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 560,
+    "discountedPrice": 560,
+    "formatted": {
+      "price": "€560.00",
+      "discountedPrice": "€560.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 560,
+    "discountedPrice": 560,
+    "formatted": {
+      "price": "€560.00",
+      "discountedPrice": "€560.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 560,
+    "maxValue": 560
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_59d5ea003f174761b3f205429fecd666~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251203_115756.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_59d5ea003f174761b3f205429fecd666~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_59d5ea003f174761b3f205429fecd666~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_59d5ea003f174761b3f205429fecd666~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251203_115756.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_59d5ea003f174761b3f205429fecd666~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_59d5ea003f174761b3f205429fecd666~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/bunnahabhain-15y-54-6"
+  },
+  "numericId": "1765301529477000",
+  "inventoryItemId": "a478f406-aaa0-66a6-be9b-df87f3c877e0",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "6ea88cd0-3a19-b91d-118e-10b713441c6a",
+    "e5f40b54-e252-88dd-cdd1-6b506d5fb51c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 560,
+          "discountedPrice": 560,
+          "formatted": {
+            "price": "€560.00",
+            "discountedPrice": "€560.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 560,
+          "discountedPrice": 560,
+          "formatted": {
+            "price": "€560.00",
+            "discountedPrice": "€560.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0082",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 13,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-14T16:20:34.003Z",
+  "ribbon": "",
+  "exportProductId": "product_5b870bf9-555f-9959-4164-20780c37881f",
+  "_id": "5b870bf9-555f-9959-4164-20780c37881f",
+  "_createdDate": "2025-12-09T17:32:09.477Z"
+}

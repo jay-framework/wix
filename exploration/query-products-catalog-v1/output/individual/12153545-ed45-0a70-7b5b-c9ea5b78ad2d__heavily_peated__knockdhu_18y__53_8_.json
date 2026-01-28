@@ -1,0 +1,152 @@
+{
+  "name": "\"Heavily Peated\" Knockdhu 18y- 53.8%",
+  "slug": "heavily-peated-knockdhu-18y-53-8",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Distilled on 28/3/2006 in Knockdhue Distillery and age in a&nbsp;Bourboun Barrel</p><p>&nbsp;</p><p>Bottled at Cask Streanght of 53.8% without colouring and without chilled filtaration</p>",
+  "sku": "1-13-0130",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 3,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 990,
+    "maxValue": 990
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 3 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_c1f481b679544ab9b960d8f698d0cc47~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Claxton Knockdhu 18y 53.8% Bourbon Barrel.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_c1f481b679544ab9b960d8f698d0cc47~mv2.jpg/v1/fit/w_1132,h_934,q_90/file.jpg",
+        "width": 1132,
+        "height": 934
+      },
+      "_id": "9e37b5_c1f481b679544ab9b960d8f698d0cc47~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_c1f481b679544ab9b960d8f698d0cc47~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Claxton Knockdhu 18y 53.8% Bourbon Barrel.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_c1f481b679544ab9b960d8f698d0cc47~mv2.jpg/v1/fit/w_1132,h_934,q_90/file.jpg",
+          "width": 1132,
+          "height": 934
+        },
+        "_id": "9e37b5_c1f481b679544ab9b960d8f698d0cc47~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/heavily-peated-knockdhu-18y-53-8"
+  },
+  "numericId": "1757784494505000",
+  "inventoryItemId": "edeacaba-12ba-f58f-84a4-3615a48752d2",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "f64e5895-f315-6142-b6ea-40d58cf4489d",
+    "6488a591-9bfa-caa7-055d-8d0a1bb67d4e",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 990,
+          "discountedPrice": 990,
+          "formatted": {
+            "price": "€990.00",
+            "discountedPrice": "€990.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 990,
+          "discountedPrice": 990,
+          "formatted": {
+            "price": "€990.00",
+            "discountedPrice": "€990.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-13-0130",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 3,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-27T13:56:44.930Z",
+  "ribbon": "Only 3 left",
+  "exportProductId": "product_12153545-ed45-0a70-7b5b-c9ea5b78ad2d",
+  "_id": "12153545-ed45-0a70-7b5b-c9ea5b78ad2d",
+  "_createdDate": "2025-09-13T17:28:14.505Z"
+}

@@ -1,0 +1,147 @@
+{
+  "name": "RUM Uitvlugt- 30y- 50.2%",
+  "slug": "rum-uitvlugt-30y-50-2",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><u><strong><em>Distilled at Uitvlugt Distillery- Guyana</em></strong></u></p><p>&nbsp;</p>",
+  "sku": "1-17-9401",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 9,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 1290,
+    "discountedPrice": 1290,
+    "formatted": {
+      "price": "€1,290.00",
+      "discountedPrice": "€1,290.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 1290,
+    "discountedPrice": 1290,
+    "formatted": {
+      "price": "€1,290.00",
+      "discountedPrice": "€1,290.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 1290,
+    "discountedPrice": 1290,
+    "formatted": {
+      "price": "€1,290.00",
+      "discountedPrice": "€1,290.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 1290,
+    "maxValue": 1290
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_e94666aa52df4aebbd50c396f88503f2~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20231214_150454.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_e94666aa52df4aebbd50c396f88503f2~mv2.jpg/v1/fit/w_3000,h_3000,q_90/file.jpg",
+        "width": 3000,
+        "height": 3000
+      },
+      "_id": "9e37b5_e94666aa52df4aebbd50c396f88503f2~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_e94666aa52df4aebbd50c396f88503f2~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20231214_150454.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_e94666aa52df4aebbd50c396f88503f2~mv2.jpg/v1/fit/w_3000,h_3000,q_90/file.jpg",
+          "width": 3000,
+          "height": 3000
+        },
+        "_id": "9e37b5_e94666aa52df4aebbd50c396f88503f2~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/rum-uitvlugt-30y-50-2"
+  },
+  "numericId": "1702822144048000",
+  "inventoryItemId": "9779871d-2a9c-976a-a92a-58a10d58b366",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "933d2237-9afc-5600-3dc5-2873671ee4f5",
+    "a25cffb0-a5a9-aefb-c6f4-3eca9b87486c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 1290,
+          "discountedPrice": 1290,
+          "formatted": {
+            "price": "€1,290.00",
+            "discountedPrice": "€1,290.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 1290,
+          "discountedPrice": 1290,
+          "formatted": {
+            "price": "€1,290.00",
+            "discountedPrice": "€1,290.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-9401",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 9,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:36.193Z",
+  "ribbon": "",
+  "exportProductId": "product_688678e2-d563-6895-56d5-a75ef2a74c99",
+  "_id": "688678e2-d563-6895-56d5-a75ef2a74c99",
+  "_createdDate": "2023-12-17T14:09:04.048Z"
+}

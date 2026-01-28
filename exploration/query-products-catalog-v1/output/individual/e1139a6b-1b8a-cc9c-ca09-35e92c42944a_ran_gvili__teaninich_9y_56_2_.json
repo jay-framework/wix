@@ -1,0 +1,162 @@
+{
+  "name": "RAN GVILI- Teaninich 9y 56.2%",
+  "slug": "ran-gvili-teaninich-9y-56-2",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><font face=\"HelveticaNeueW01-65Medi, HelveticaNeueW02-65Medi, HelveticaNeueW10-65Medi, sans-serif\"><b>רן גואילי הוא החטוף האחרון שמוחזק על ידי החמאס בעזה</b></font></p><p><font face=\"HelveticaNeueW01-65Medi, HelveticaNeueW02-65Medi, HelveticaNeueW10-65Medi, sans-serif\"><b>כל הרווחים מבקבוק זה יועברו למשפחתו של רן לצורך סיוע במאבק להחזרת בנם מעזה</b></font></p>",
+  "sku": "1-89-0007",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 0,
+    "inStock": false,
+    "inventoryStatus": "OUT_OF_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 500,
+    "discountedPrice": 500,
+    "formatted": {
+      "price": "€500.00",
+      "discountedPrice": "€500.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 500,
+    "discountedPrice": 500,
+    "formatted": {
+      "price": "€500.00",
+      "discountedPrice": "€500.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 500,
+    "discountedPrice": 500,
+    "formatted": {
+      "price": "€500.00",
+      "discountedPrice": "€500.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 500,
+    "maxValue": 500
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_f2a30a62bee14aceae9e1b6ca7747615~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251231_111756.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_f2a30a62bee14aceae9e1b6ca7747615~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_f2a30a62bee14aceae9e1b6ca7747615~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_f2a30a62bee14aceae9e1b6ca7747615~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251231_111756.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_f2a30a62bee14aceae9e1b6ca7747615~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_f2a30a62bee14aceae9e1b6ca7747615~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_2e4452ffe7e841fca069fc783833739b~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "TEANINICH FRONT TEMP.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_2e4452ffe7e841fca069fc783833739b~mv2.jpg/v1/fit/w_697,h_594,q_90/file.jpg",
+          "width": 697,
+          "height": 594
+        },
+        "_id": "9e37b5_2e4452ffe7e841fca069fc783833739b~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/ran-gvili-teaninich-9y-56-2"
+  },
+  "numericId": "1766931772171000",
+  "inventoryItemId": "1eec6594-e475-3363-35f6-ca16d3bd6bb5",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "d6faede3-3cca-5974-836d-a1078313ab04",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 500,
+          "discountedPrice": 500,
+          "formatted": {
+            "price": "€500.00",
+            "discountedPrice": "€500.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 500,
+          "discountedPrice": 500,
+          "formatted": {
+            "price": "€500.00",
+            "discountedPrice": "€500.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-89-0007",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 0,
+        "inStock": false
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-05T16:01:26.588Z",
+  "ribbon": "",
+  "exportProductId": "product_e1139a6b-1b8a-cc9c-ca09-35e92c42944a",
+  "_id": "e1139a6b-1b8a-cc9c-ca09-35e92c42944a",
+  "_createdDate": "2025-12-28T14:22:52.171Z"
+}

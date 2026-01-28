@@ -1,0 +1,149 @@
+{
+  "name": "Mannochmore 9y- 46%",
+  "slug": "mannochmore-9y-46",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><strong>Distilled at Mannochmore distillery</strong></p><p>Aged 9&nbsp;years in an ex-bourbon casks</p><p>Bottled at 46%</p><p>No chilled filtration, no added coulors</p><p>&nbsp;</p><p><u><strong>Tasting notes by the AlphaBet Whisky Advisory Board</strong></u></p><p><strong>Nose </strong></p><p><span style=\"background-color: transparent;\">Summer on the beach, the salt and minerals from lime stone that was washed by the waves and dried, light honey, papaya, white peper, capers</span></p><p><strong style=\"background-color: transparent;\">Palate</strong></p><p>melon, white peper, custard, a touch of pink salt</p><p><strong style=\"background-color: transparent;\">Finish</strong></p><p>Medium-long. Citrus bitterness (pomelo, grapefruit) candied citrus peals, sour candy</p><p>&nbsp;</p><p>Board recommendation: Do not add any water</p>",
+  "sku": "1-17-0075",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 24,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 300,
+    "discountedPrice": 300,
+    "formatted": {
+      "price": "€300.00",
+      "discountedPrice": "€300.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 300,
+    "discountedPrice": 300,
+    "formatted": {
+      "price": "€300.00",
+      "discountedPrice": "€300.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 300,
+    "discountedPrice": 300,
+    "formatted": {
+      "price": "€300.00",
+      "discountedPrice": "€300.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 300,
+    "maxValue": 300
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_0b078286c1fa49b3a7d88b93865c633a~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Mannochmore9 Battlehill 9- 46%.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_0b078286c1fa49b3a7d88b93865c633a~mv2.jpg/v1/fit/w_1496,h_1496,q_90/file.jpg",
+        "width": 1496,
+        "height": 1496
+      },
+      "_id": "9e37b5_0b078286c1fa49b3a7d88b93865c633a~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_0b078286c1fa49b3a7d88b93865c633a~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Mannochmore9 Battlehill 9- 46%.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_0b078286c1fa49b3a7d88b93865c633a~mv2.jpg/v1/fit/w_1496,h_1496,q_90/file.jpg",
+          "width": 1496,
+          "height": 1496
+        },
+        "_id": "9e37b5_0b078286c1fa49b3a7d88b93865c633a~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/mannochmore-9y-46"
+  },
+  "numericId": "1739283360077000",
+  "inventoryItemId": "5f63cd1c-29a8-ffd2-b2b0-068850f5bb92",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "6ea88cd0-3a19-b91d-118e-10b713441c6a",
+    "1ec66085-f9b1-0c24-9df0-0bc39c871c67",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 300,
+          "discountedPrice": 300,
+          "formatted": {
+            "price": "€300.00",
+            "discountedPrice": "€300.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 300,
+          "discountedPrice": 300,
+          "formatted": {
+            "price": "€300.00",
+            "discountedPrice": "€300.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0075",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 24,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-08T13:35:05.936Z",
+  "ribbon": "",
+  "exportProductId": "product_a09c32e3-d657-002d-4d4f-f977af0a446d",
+  "_id": "a09c32e3-d657-002d-4d4f-f977af0a446d",
+  "_createdDate": "2025-02-11T14:16:00.077Z"
+}

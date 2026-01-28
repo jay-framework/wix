@@ -1,0 +1,167 @@
+{
+  "name": "Bruichladdich Ex Rivesaltes cask 18Y 54.8%",
+  "slug": "bruichladdich-ex-rivesaltes-cask-18y-54-8",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Distilled at Bruichladdich Distillery,&nbsp;</p><p>&nbsp;</p><p>Matured for 18&nbsp;years in an Ex-Revesaltes Hogshead</p><p>Bottled at 54.8%&nbsp;ABV without chilled filtration or coloring</p><p>&nbsp;</p><p><u><strong>Tasting notes by the AlphaBet Advisory Board</strong></u></p><p><strong>Nose:</strong></p><p><em>&nbsp; Blue cheese, ripe buche de chevre cheese, thyme, tangerine peels, lactic, a compost pile in the farm, barbequed turkey, lemon,&nbsp;</em></p><p><strong>Pallet</strong><em>:</em></p><p><em>&nbsp; Zabaione, condensed milk, sour milk, bread pudding with lemon zest, chard</em></p><p><strong>Finish:</strong></p><p><em>&nbsp; Long and sweet. Hard fruit candies with icing sugar coat, citrus bitterness, lemon zest, nutmeg</em></p><p>&nbsp;</p><p><em><strong>the team's advice- Add a few drops of water</strong></em></p>",
+  "sku": "1-10-0007",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 3,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 990,
+    "maxValue": 990
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 3 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "AA- R&B WHISKY CS.JPG",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg/v1/fit/w_677,h_638,q_90/file.jpg",
+        "width": 677,
+        "height": 638
+      },
+      "_id": "9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "AA- R&B WHISKY CS.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg/v1/fit/w_677,h_638,q_90/file.jpg",
+          "width": 677,
+          "height": 638
+        },
+        "_id": "9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_612e4bddcef648bfb2690826267420a6~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "W- BRUICHLLADDICH 2005 - 11 BACK.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_612e4bddcef648bfb2690826267420a6~mv2.jpg/v1/fit/w_718,h_670,q_90/file.jpg",
+          "width": 718,
+          "height": 670
+        },
+        "_id": "9e37b5_612e4bddcef648bfb2690826267420a6~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/bruichladdich-ex-rivesaltes-cask-18y-54-8"
+  },
+  "numericId": "1729359478979000",
+  "inventoryItemId": "885fa6aa-9a8e-f96a-ee14-dd511f120605",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "68b702b3-fae1-92a2-e95b-3ea1f4527dec",
+    "2311636b-a702-fed0-2f80-ee0fdda0c837",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 990,
+          "discountedPrice": 990,
+          "formatted": {
+            "price": "€990.00",
+            "discountedPrice": "€990.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 990,
+          "discountedPrice": 990,
+          "formatted": {
+            "price": "€990.00",
+            "discountedPrice": "€990.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-10-0007",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 3,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-27T13:56:44.627Z",
+  "ribbon": "Only 3 left",
+  "exportProductId": "product_77a05955-6571-0695-11eb-22aee0edf9fa",
+  "_id": "77a05955-6571-0695-11eb-22aee0edf9fa",
+  "_createdDate": "2024-10-19T17:37:58.979Z"
+}

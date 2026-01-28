@@ -1,0 +1,167 @@
+{
+  "name": "Bruichladdich Ex Mourvedre Red Wine cask 17Y 58.4%",
+  "slug": "bruichladdich-ex-mourvedre-red-wine-cask-17y-58-4",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Distilled at Bruichladdich Distillery,&nbsp;</p><p>&nbsp;</p><p>Matured for 17&nbsp;years in an Ex-Mourvedre Red&nbsp;Wine Hogshead</p><p>Bottled at 58.4%&nbsp;ABV without chilled filtration or coloring</p><p>&nbsp;</p><p><u><strong>Tasting notes by the AlphaBet Advisory Board</strong></u></p><p><strong>Nose:</strong></p><p><em>&nbsp; Spices honey with thyme, sage, Rosmarin, and nutmeg, half-backed cookie daw, salt, white pepper, Argan oil</em></p><p><strong>Pallet</strong><em>:</em></p><p><em>&nbsp; Very oily. Custard, black licorice candy, brazil nuts, sage.</em></p><p><strong>Finish:</strong></p><p><em>&nbsp; Beautiful long bitterness.&nbsp;wood, walnuts, vanilla, sage infusion</em></p><p>&nbsp;</p><p><em><strong>the team's advice- DO NOT ADD ANY WATER</strong></em></p>",
+  "sku": "1-10-0009",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 3,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 990,
+    "maxValue": 990
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 3 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "AA- R&B WHISKY CS.JPG",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg/v1/fit/w_677,h_638,q_90/file.jpg",
+        "width": 677,
+        "height": 638
+      },
+      "_id": "9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "AA- R&B WHISKY CS.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg/v1/fit/w_677,h_638,q_90/file.jpg",
+          "width": 677,
+          "height": 638
+        },
+        "_id": "9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_9b38834dc5f643348db7d40dbc100998~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "W- BRUICHLLADDICH 2006 - 14 BACK.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_9b38834dc5f643348db7d40dbc100998~mv2.jpg/v1/fit/w_708,h_665,q_90/file.jpg",
+          "width": 708,
+          "height": 665
+        },
+        "_id": "9e37b5_9b38834dc5f643348db7d40dbc100998~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/bruichladdich-ex-mourvedre-red-wine-cask-17y-58-4"
+  },
+  "numericId": "1729359712019000",
+  "inventoryItemId": "95b163cf-04d1-69be-6755-d738887538f8",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "68b702b3-fae1-92a2-e95b-3ea1f4527dec",
+    "2311636b-a702-fed0-2f80-ee0fdda0c837",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 990,
+          "discountedPrice": 990,
+          "formatted": {
+            "price": "€990.00",
+            "discountedPrice": "€990.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 990,
+          "discountedPrice": 990,
+          "formatted": {
+            "price": "€990.00",
+            "discountedPrice": "€990.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-10-0009",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 3,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-27T13:56:44.809Z",
+  "ribbon": "Only 3 left",
+  "exportProductId": "product_6a4e9c30-fb2e-9641-98aa-28c7778ac707",
+  "_id": "6a4e9c30-fb2e-9641-98aa-28c7778ac707",
+  "_createdDate": "2024-10-19T17:41:52.019Z"
+}

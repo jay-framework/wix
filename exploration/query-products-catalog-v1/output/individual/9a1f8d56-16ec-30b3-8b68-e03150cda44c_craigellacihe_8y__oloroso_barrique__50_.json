@@ -1,0 +1,150 @@
+{
+  "name": "Craigellacihe 8y- Oloroso Barrique- 50%",
+  "slug": "craigellacihe-8y-oloroso-barrique-50",
+  "visible": true,
+  "productType": "physical",
+  "description": "",
+  "sku": "1-13-0142",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 23,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 350,
+    "discountedPrice": 350,
+    "formatted": {
+      "price": "€350.00",
+      "discountedPrice": "€350.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 350,
+    "discountedPrice": 350,
+    "formatted": {
+      "price": "€350.00",
+      "discountedPrice": "€350.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 350,
+    "discountedPrice": 350,
+    "formatted": {
+      "price": "€350.00",
+      "discountedPrice": "€350.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 350,
+    "maxValue": 350
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_fe1df4d36b7b44dc82d1c72965d58cad~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Craigellachie 8- Oloroso Barrique- 50%.jpeg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_fe1df4d36b7b44dc82d1c72965d58cad~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+        "width": 2048,
+        "height": 2048
+      },
+      "_id": "9e37b5_fe1df4d36b7b44dc82d1c72965d58cad~mv2.jpeg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_fe1df4d36b7b44dc82d1c72965d58cad~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Craigellachie 8- Oloroso Barrique- 50%.jpeg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_fe1df4d36b7b44dc82d1c72965d58cad~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+          "width": 2048,
+          "height": 2048
+        },
+        "_id": "9e37b5_fe1df4d36b7b44dc82d1c72965d58cad~mv2.jpeg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/craigellacihe-8y-oloroso-barrique-50"
+  },
+  "numericId": "1768150643099000",
+  "inventoryItemId": "65e072a9-e913-cf4c-7497-1fceaf325bb3",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "755de31a-1269-869e-349c-43886d8a449a",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "027e205e-bc32-8267-f8b0-7eb8ac411e39",
+    "0c7a0843-a99e-aa97-7a0f-c835a37c78b9",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 350,
+          "discountedPrice": 350,
+          "formatted": {
+            "price": "€350.00",
+            "discountedPrice": "€350.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 350,
+          "discountedPrice": 350,
+          "formatted": {
+            "price": "€350.00",
+            "discountedPrice": "€350.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-13-0142",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 23,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-11T17:01:46.422Z",
+  "ribbon": "",
+  "exportProductId": "product_9a1f8d56-16ec-30b3-8b68-e03150cda44c",
+  "_id": "9a1f8d56-16ec-30b3-8b68-e03150cda44c",
+  "_createdDate": "2026-01-11T16:57:23.099Z"
+}

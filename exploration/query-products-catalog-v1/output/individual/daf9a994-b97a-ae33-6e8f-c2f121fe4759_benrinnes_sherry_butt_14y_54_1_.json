@@ -1,0 +1,163 @@
+{
+  "name": "Benrinnes Sherry Butt 14Y 54.1%",
+  "slug": "benrinnes-sherry-butt-14y-54-1",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Distilled at Benrinnes Distillery,&nbsp;</p><p>&nbsp;</p><p>Matured for 14 years in a&nbsp;Sherry Butt</p><p>Bottled at 54.1%&nbsp;ABV without chilled filtration or coloring</p><p>&nbsp;</p><p><u><strong>Tasting notes by the AlphaBet Advisory Board</strong></u></p><p><strong>Nose:</strong></p><p><em>&nbsp; White honey, a field of daisies, mowed grass, white pepper</em></p><p><strong>Pallet</strong><em>:</em></p><p><em>&nbsp; Wax, hot honey, toast, white pepper</em></p><p><strong>Finish:</strong></p><p><em>&nbsp; Never-ending finish of warm honey, gently spiced with nutmeg and cardamon</em></p><p>&nbsp;</p><p><em><strong>the team's advice- Do Not Add Water</strong></em></p>",
+  "sku": "1-10-0006",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 37,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 550,
+    "discountedPrice": 550,
+    "formatted": {
+      "price": "€550.00",
+      "discountedPrice": "€550.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 550,
+    "discountedPrice": 550,
+    "formatted": {
+      "price": "€550.00",
+      "discountedPrice": "€550.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 550,
+    "discountedPrice": 550,
+    "formatted": {
+      "price": "€550.00",
+      "discountedPrice": "€550.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 550,
+    "maxValue": 550
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "AA- R&B WHISKY CS.JPG",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg/v1/fit/w_677,h_638,q_90/file.jpg",
+        "width": 677,
+        "height": 638
+      },
+      "_id": "9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "AA- R&B WHISKY CS.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg/v1/fit/w_677,h_638,q_90/file.jpg",
+          "width": 677,
+          "height": 638
+        },
+        "_id": "9e37b5_2bf739c019ad4bf38c5b80dfa3e655b2~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_987b8117b1974a15abe4ff9be9c6bbca~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "W- BENRINNES 2009 BACK.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_987b8117b1974a15abe4ff9be9c6bbca~mv2.jpg/v1/fit/w_705,h_658,q_90/file.jpg",
+          "width": 705,
+          "height": 658
+        },
+        "_id": "9e37b5_987b8117b1974a15abe4ff9be9c6bbca~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/benrinnes-sherry-butt-14y-54-1"
+  },
+  "numericId": "1729359298766000",
+  "inventoryItemId": "2506566b-4685-51cc-9170-3d0ede01b8a6",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "68b702b3-fae1-92a2-e95b-3ea1f4527dec",
+    "c9a3e322-9494-b273-529a-7135118dfd91",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 550,
+          "discountedPrice": 550,
+          "formatted": {
+            "price": "€550.00",
+            "discountedPrice": "€550.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 550,
+          "discountedPrice": 550,
+          "formatted": {
+            "price": "€550.00",
+            "discountedPrice": "€550.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-10-0006",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 37,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-30T07:41:29.486Z",
+  "ribbon": "",
+  "exportProductId": "product_daf9a994-b97a-ae33-6e8f-c2f121fe4759",
+  "_id": "daf9a994-b97a-ae33-6e8f-c2f121fe4759",
+  "_createdDate": "2024-10-19T17:34:58.766Z"
+}

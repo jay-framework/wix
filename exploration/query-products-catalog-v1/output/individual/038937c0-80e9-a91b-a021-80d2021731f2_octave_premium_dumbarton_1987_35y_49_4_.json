@@ -1,0 +1,152 @@
+{
+  "name": "Octave Premium Dumbarton 1987 35y 49.4%",
+  "slug": "octave-premium-dumbarton-1987-35y-49-4",
+  "visible": true,
+  "productType": "physical",
+  "description": "",
+  "sku": "1-17-0078",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 5,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 1440,
+    "discountedPrice": 1440,
+    "formatted": {
+      "price": "€1,440.00",
+      "discountedPrice": "€1,440.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 1440,
+    "discountedPrice": 1440,
+    "formatted": {
+      "price": "€1,440.00",
+      "discountedPrice": "€1,440.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 1440,
+    "discountedPrice": 1440,
+    "formatted": {
+      "price": "€1,440.00",
+      "discountedPrice": "€1,440.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 1440,
+    "maxValue": 1440
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 5 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Duncan Taylor.JPG",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg/v1/fit/w_221,h_195,q_90/file.jpg",
+        "width": 221,
+        "height": 195
+      },
+      "_id": "9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Duncan Taylor.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg/v1/fit/w_221,h_195,q_90/file.jpg",
+          "width": 221,
+          "height": 195
+        },
+        "_id": "9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/octave-premium-dumbarton-1987-35y-49-4"
+  },
+  "numericId": "1764480598541000",
+  "inventoryItemId": "fc76c83f-7f16-56e4-5fde-7f2dfde8ce0d",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "970ccb54-9196-1923-0d41-e0c01a003d4e",
+    "afbb8d22-bee3-0505-04e8-19b611c6cefd",
+    "ea47b020-c4f2-1d81-ffb1-86f71ae4dc71",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 1440,
+          "discountedPrice": 1440,
+          "formatted": {
+            "price": "€1,440.00",
+            "discountedPrice": "€1,440.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 1440,
+          "discountedPrice": 1440,
+          "formatted": {
+            "price": "€1,440.00",
+            "discountedPrice": "€1,440.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0078",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 5,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-01T15:01:19.673Z",
+  "ribbon": "Only 5 left",
+  "exportProductId": "product_038937c0-80e9-a91b-a021-80d2021731f2",
+  "_id": "038937c0-80e9-a91b-a021-80d2021731f2",
+  "_createdDate": "2025-11-30T05:29:58.541Z"
+}

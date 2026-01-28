@@ -1,0 +1,152 @@
+{
+  "name": "Islay 15y- 46%",
+  "slug": "islay-15y-46",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><strong>Distilled in an undisclosed Islay distillery</strong></p><p>Aged 15&nbsp;years in an ex-bourbon casks</p><p>Bottled at 46%</p><p>No chilled filtration, no added coulors</p><p>&nbsp;</p><p><u><strong>Tasting notes by the AlphaBet Whisky Advisory Board</strong></u></p><p><strong>Nose </strong></p><p><span style=\"background-color: transparent;\">Smoked mackerels, salt, sea, grilled Tyme branches, grilled green olives, rosemary, oregano</span></p><p><strong style=\"background-color: transparent;\">Palate</strong></p><p>Salt, salt and salt, very oil, pickled fish, sourness</p><p><strong style=\"background-color: transparent;\">Finish</strong></p><p>Long. a bucket full of salty sea water, Krispy fish on the grill, a little blueberries sweetness, vanila cream</p><p>&nbsp;</p><p>Board recommendation: A fish that don't like water</p>",
+  "sku": "1-17-0074",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 2,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 460,
+    "discountedPrice": 460,
+    "formatted": {
+      "price": "€460.00",
+      "discountedPrice": "€460.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 460,
+    "discountedPrice": 460,
+    "formatted": {
+      "price": "€460.00",
+      "discountedPrice": "€460.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 460,
+    "discountedPrice": 460,
+    "formatted": {
+      "price": "€460.00",
+      "discountedPrice": "€460.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 460,
+    "maxValue": 460
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 2 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_4537cc093b06466fb80892fcdcb278c3~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Islay 15 Battlehill 46%.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_4537cc093b06466fb80892fcdcb278c3~mv2.jpg/v1/fit/w_1496,h_1496,q_90/file.jpg",
+        "width": 1496,
+        "height": 1496
+      },
+      "_id": "9e37b5_4537cc093b06466fb80892fcdcb278c3~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_4537cc093b06466fb80892fcdcb278c3~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Islay 15 Battlehill 46%.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_4537cc093b06466fb80892fcdcb278c3~mv2.jpg/v1/fit/w_1496,h_1496,q_90/file.jpg",
+          "width": 1496,
+          "height": 1496
+        },
+        "_id": "9e37b5_4537cc093b06466fb80892fcdcb278c3~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/islay-15y-46"
+  },
+  "numericId": "1739283290843000",
+  "inventoryItemId": "72c649b5-b232-2993-1332-1dc7df3bcbe2",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "6ea88cd0-3a19-b91d-118e-10b713441c6a",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "d3f11c62-317b-e5c9-e464-c16423ab0158",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 460,
+          "discountedPrice": 460,
+          "formatted": {
+            "price": "€460.00",
+            "discountedPrice": "€460.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 460,
+          "discountedPrice": 460,
+          "formatted": {
+            "price": "€460.00",
+            "discountedPrice": "€460.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0074",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 2,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:40.253Z",
+  "ribbon": "Only 2 left",
+  "exportProductId": "product_8d39b64a-4dcd-d66c-eccd-e23820c4341d",
+  "_id": "8d39b64a-4dcd-d66c-eccd-e23820c4341d",
+  "_createdDate": "2025-02-11T14:14:50.843Z"
+}

@@ -1,0 +1,153 @@
+{
+  "name": "Craigellachie 17y- 54%",
+  "slug": "craigellachie-17y-54",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><u><strong><em>Distilled at Craigellachie distillery-</em></strong></u></p><p><strong><em>This Whisky was aged in a bourbon cask&nbsp;for 17&nbsp;years. Bottled at Cask strength of 54%</em></strong></p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>",
+  "sku": "1-17-0076",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 4,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 550,
+    "discountedPrice": 550,
+    "formatted": {
+      "price": "€550.00",
+      "discountedPrice": "€550.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 550,
+    "discountedPrice": 550,
+    "formatted": {
+      "price": "€550.00",
+      "discountedPrice": "€550.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 550,
+    "discountedPrice": 550,
+    "formatted": {
+      "price": "€550.00",
+      "discountedPrice": "€550.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 550,
+    "maxValue": 550
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 4 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_576c388b04104544baecdf26211d2d5b~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251203_115233.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_576c388b04104544baecdf26211d2d5b~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_576c388b04104544baecdf26211d2d5b~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_576c388b04104544baecdf26211d2d5b~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251203_115233.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_576c388b04104544baecdf26211d2d5b~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_576c388b04104544baecdf26211d2d5b~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/craigellachie-17y-54"
+  },
+  "numericId": "1765301372168000",
+  "inventoryItemId": "627b1e56-fb7c-e7e0-a70b-d1fe33fd1f40",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "0c7a0843-a99e-aa97-7a0f-c835a37c78b9",
+    "6ea88cd0-3a19-b91d-118e-10b713441c6a",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 550,
+          "discountedPrice": 550,
+          "formatted": {
+            "price": "€550.00",
+            "discountedPrice": "€550.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 550,
+          "discountedPrice": 550,
+          "formatted": {
+            "price": "€550.00",
+            "discountedPrice": "€550.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0076",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 4,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-27T13:56:44.975Z",
+  "ribbon": "Only 4 left",
+  "exportProductId": "product_9d84e1a9-0483-181f-58f4-2e01cc02e0bf",
+  "_id": "9d84e1a9-0483-181f-58f4-2e01cc02e0bf",
+  "_createdDate": "2025-12-09T17:29:32.168Z"
+}

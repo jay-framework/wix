@@ -1,0 +1,163 @@
+{
+  "name": "Caol Ila 14Y- 54.1%",
+  "slug": "caol-ila-14y-54-1",
+  "visible": true,
+  "productType": "physical",
+  "description": "",
+  "sku": "1-17-0069",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 17,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 780,
+    "discountedPrice": 780,
+    "formatted": {
+      "price": "€780.00",
+      "discountedPrice": "€780.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 780,
+    "discountedPrice": 780,
+    "formatted": {
+      "price": "€780.00",
+      "discountedPrice": "€780.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 780,
+    "discountedPrice": 780,
+    "formatted": {
+      "price": "€780.00",
+      "discountedPrice": "€780.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 780,
+    "maxValue": 780
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_57a2370926a541a192af5cfb14c87879~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Caol Ila 14.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_57a2370926a541a192af5cfb14c87879~mv2.jpg/v1/fit/w_1496,h_1496,q_90/file.jpg",
+        "width": 1496,
+        "height": 1496
+      },
+      "_id": "9e37b5_57a2370926a541a192af5cfb14c87879~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_57a2370926a541a192af5cfb14c87879~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Caol Ila 14.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_57a2370926a541a192af5cfb14c87879~mv2.jpg/v1/fit/w_1496,h_1496,q_90/file.jpg",
+          "width": 1496,
+          "height": 1496
+        },
+        "_id": "9e37b5_57a2370926a541a192af5cfb14c87879~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Duncan Taylor.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg/v1/fit/w_221,h_195,q_90/file.jpg",
+          "width": 221,
+          "height": 195
+        },
+        "_id": "9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/caol-ila-14y-54-1"
+  },
+  "numericId": "1739282553616000",
+  "inventoryItemId": "eb671eec-5406-2ab2-f638-69487abf6681",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "6ea88cd0-3a19-b91d-118e-10b713441c6a",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "d9b79021-229d-dbd2-7d1c-d7ca1570efe8",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 780,
+          "discountedPrice": 780,
+          "formatted": {
+            "price": "€780.00",
+            "discountedPrice": "€780.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 780,
+          "discountedPrice": 780,
+          "formatted": {
+            "price": "€780.00",
+            "discountedPrice": "€780.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0069",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 17,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:30.916Z",
+  "ribbon": "",
+  "exportProductId": "product_1498e113-abf9-d54d-09c7-96b78540997e",
+  "_id": "1498e113-abf9-d54d-09c7-96b78540997e",
+  "_createdDate": "2025-02-11T14:02:33.616Z"
+}

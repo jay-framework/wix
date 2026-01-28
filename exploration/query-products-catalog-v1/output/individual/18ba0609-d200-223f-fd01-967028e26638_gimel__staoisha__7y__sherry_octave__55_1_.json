@@ -1,0 +1,183 @@
+{
+  "name": "Gimel- Staoisha- 7y- Sherry octave- 55.1%",
+  "slug": "gimel-staoish-7y-sherry-octave-55-1",
+  "visible": true,
+  "productType": "physical",
+  "description": "",
+  "sku": "1-88-0003",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 3,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 390,
+    "discountedPrice": 390,
+    "formatted": {
+      "price": "€390.00",
+      "discountedPrice": "€390.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 390,
+    "discountedPrice": 390,
+    "formatted": {
+      "price": "€390.00",
+      "discountedPrice": "€390.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 390,
+    "discountedPrice": 390,
+    "formatted": {
+      "price": "€390.00",
+      "discountedPrice": "€390.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 390,
+    "maxValue": 390
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 3 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_b4282f8129554a5eb5a7a18cb5a5fa7f~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Gimel- Bunnahabhain",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_b4282f8129554a5eb5a7a18cb5a5fa7f~mv2.jpeg/v1/fit/w_1512,h_1512,q_90/file.jpg",
+        "width": 1512,
+        "height": 1512
+      },
+      "_id": "9e37b5_b4282f8129554a5eb5a7a18cb5a5fa7f~mv2.jpeg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_b4282f8129554a5eb5a7a18cb5a5fa7f~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Gimel- Bunnahabhain",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_b4282f8129554a5eb5a7a18cb5a5fa7f~mv2.jpeg/v1/fit/w_1512,h_1512,q_90/file.jpg",
+          "width": 1512,
+          "height": 1512
+        },
+        "_id": "9e37b5_b4282f8129554a5eb5a7a18cb5a5fa7f~mv2.jpeg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_e0f17338358d48c1a8c353569da3b00b~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Gimel- Front label.jpeg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_e0f17338358d48c1a8c353569da3b00b~mv2.jpeg/v1/fit/w_1098,h_1570,q_90/file.jpg",
+          "width": 1098,
+          "height": 1570
+        },
+        "_id": "9e37b5_e0f17338358d48c1a8c353569da3b00b~mv2.jpeg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_53ac02ea04694ea99cbbded5d18d787e~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Gimel-back label.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_53ac02ea04694ea99cbbded5d18d787e~mv2.jpg/v1/fit/w_709,h_1063,q_90/file.jpg",
+          "width": 709,
+          "height": 1063
+        },
+        "_id": "9e37b5_53ac02ea04694ea99cbbded5d18d787e~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/gimel-staoish-7y-sherry-octave-55-1"
+  },
+  "numericId": "1649072092657000",
+  "inventoryItemId": "e745f9f6-2dff-ddc0-02fe-698fd71d99c7",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "933d2237-9afc-5600-3dc5-2873671ee4f5",
+    "e5f40b54-e252-88dd-cdd1-6b506d5fb51c",
+    "b538f68b-fed4-86e4-d199-b3db28e7bde7",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 390,
+          "discountedPrice": 390,
+          "formatted": {
+            "price": "€390.00",
+            "discountedPrice": "€390.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 390,
+          "discountedPrice": 390,
+          "formatted": {
+            "price": "€390.00",
+            "discountedPrice": "€390.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-88-0003",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 3,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:30.916Z",
+  "ribbon": "Only 3 left",
+  "exportProductId": "product_18ba0609-d200-223f-fd01-967028e26638",
+  "_id": "18ba0609-d200-223f-fd01-967028e26638",
+  "_createdDate": "2022-04-04T11:34:52.657Z"
+}

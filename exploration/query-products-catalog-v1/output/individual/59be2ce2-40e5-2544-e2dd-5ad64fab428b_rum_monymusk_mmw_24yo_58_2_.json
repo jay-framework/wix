@@ -1,0 +1,162 @@
+{
+  "name": "RUM Monymusk MMW 24yo 58.2%",
+  "slug": "rum-monymusk-mmw-24yo-58-2",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>&nbsp;</p>",
+  "sku": "1-10-0018",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 15,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 990,
+    "maxValue": 990
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "AA- R&B RUM.JPG",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg/v1/fit/w_702,h_665,q_90/file.jpg",
+        "width": 702,
+        "height": 665
+      },
+      "_id": "9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "AA- R&B RUM.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg/v1/fit/w_702,h_665,q_90/file.jpg",
+          "width": 702,
+          "height": 665
+        },
+        "_id": "9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_27fdb889d37248cb93750c26bf242b37~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Monymusk 1998 BACK.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_27fdb889d37248cb93750c26bf242b37~mv2.jpg/v1/fit/w_711,h_662,q_90/file.jpg",
+          "width": 711,
+          "height": 662
+        },
+        "_id": "9e37b5_27fdb889d37248cb93750c26bf242b37~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/rum-monymusk-mmw-24yo-58-2"
+  },
+  "numericId": "1729360768565000",
+  "inventoryItemId": "a641d31d-bf1a-dabb-1d22-a529b054bd74",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "68b702b3-fae1-92a2-e95b-3ea1f4527dec",
+    "a25cffb0-a5a9-aefb-c6f4-3eca9b87486c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 990,
+          "discountedPrice": 990,
+          "formatted": {
+            "price": "€990.00",
+            "discountedPrice": "€990.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 990,
+          "discountedPrice": 990,
+          "formatted": {
+            "price": "€990.00",
+            "discountedPrice": "€990.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-10-0018",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 15,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:36.193Z",
+  "ribbon": "",
+  "exportProductId": "product_59be2ce2-40e5-2544-e2dd-5ad64fab428b",
+  "_id": "59be2ce2-40e5-2544-e2dd-5ad64fab428b",
+  "_createdDate": "2024-10-19T17:59:28.565Z"
+}

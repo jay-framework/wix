@@ -1,0 +1,148 @@
+{
+  "name": "Peat's Beast- 52.1%",
+  "slug": "peat-s-beast-52-1",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><u><strong><em>Distilled at an un-disclosed (non Islay) distillery-</em></strong></u></p><p><strong><em>This Whisky was aged in bourbon casks and&nbsp;bottled at batch strength of 52.1%</em></strong></p><p>&nbsp;</p><p>&nbsp;</p>",
+  "sku": "1-11-0005",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 150,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 269,
+    "discountedPrice": 269,
+    "formatted": {
+      "price": "€269.00",
+      "discountedPrice": "€269.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 269,
+    "discountedPrice": 269,
+    "formatted": {
+      "price": "€269.00",
+      "discountedPrice": "€269.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 269,
+    "discountedPrice": 269,
+    "formatted": {
+      "price": "€269.00",
+      "discountedPrice": "€269.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 269,
+    "maxValue": 269
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_7a2d4dad7f2148ff97a040d25300f0e9~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Peat Beast 52.1%.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_7a2d4dad7f2148ff97a040d25300f0e9~mv2.jpg/v1/fit/w_3024,h_3024,q_90/file.jpg",
+        "width": 3024,
+        "height": 3024
+      },
+      "_id": "9e37b5_7a2d4dad7f2148ff97a040d25300f0e9~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_7a2d4dad7f2148ff97a040d25300f0e9~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Peat Beast 52.1%.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_7a2d4dad7f2148ff97a040d25300f0e9~mv2.jpg/v1/fit/w_3024,h_3024,q_90/file.jpg",
+          "width": 3024,
+          "height": 3024
+        },
+        "_id": "9e37b5_7a2d4dad7f2148ff97a040d25300f0e9~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/peat-s-beast-52-1"
+  },
+  "numericId": "1633449011019000",
+  "inventoryItemId": "dd48d825-3910-3074-4467-4ad90e577813",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "cab06e2a-d8da-5086-ea76-7daa259f8725",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "3cc3b025-51dd-7aec-23bf-91a5c11daf8c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 269,
+          "discountedPrice": 269,
+          "formatted": {
+            "price": "€269.00",
+            "discountedPrice": "€269.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 269,
+          "discountedPrice": 269,
+          "formatted": {
+            "price": "€269.00",
+            "discountedPrice": "€269.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-11-0005",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 150,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:30.916Z",
+  "ribbon": "",
+  "exportProductId": "product_22b727da-c6ef-cf8b-bb98-b526f1a887ec",
+  "_id": "22b727da-c6ef-cf8b-bb98-b526f1a887ec",
+  "_createdDate": "2021-10-05T15:50:11.019Z"
+}

@@ -1,0 +1,158 @@
+{
+  "name": "Solid Wood Chair",
+  "slug": "solid-wood-chair",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>I'm a product description. I'm a great place to add more details about your product such as sizing, material, care instructions and cleaning instructions.</p>",
+  "sku": "36523641234523",
+  "stock": {
+    "trackInventory": false,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "ILS",
+    "price": 690,
+    "discountedPrice": 690,
+    "formatted": {
+      "price": "690.00 ₪",
+      "discountedPrice": "690.00 ₪"
+    }
+  },
+  "priceData": {
+    "currency": "ILS",
+    "price": 690,
+    "discountedPrice": 690,
+    "formatted": {
+      "price": "690.00 ₪",
+      "discountedPrice": "690.00 ₪"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "ILS",
+    "price": 690,
+    "discountedPrice": 690,
+    "formatted": {
+      "price": "690.00 ₪",
+      "discountedPrice": "690.00 ₪"
+    }
+  },
+  "additionalInfoSections": [
+    {
+      "title": "Product Info",
+      "description": "<p>I'm a great place to add more information about your product, such as <span style=\"font-weight: 700\">sizing</span>, <span style=\"font-weight: 700\">material</span>, <span style=\"font-weight: 700\">care</span>, and <span style=\"font-weight: 700\">cleaning instructions</span>. This is also a great space to highlight what makes this product special and how your customers can benefit from this item.</p>"
+    },
+    {
+      "title": "Return & Refund Policy",
+      "description": "<p>I’m a great place to let your customers know what to do in case they are dissatisfied with their purchase.</p><hr><ul><li><p><span style=\"font-weight: 700\">Easy Returns &amp; Exchanges</span></p></li><li><p><span style=\"font-weight: 700\">Hassle-Free Process</span></p></li><li><p><span style=\"font-weight: 700\">Builds Customer Confidence</span></p></li></ul><p>Having a straightforward refund or exchange policy is a great way to build trust and reassure your customers that they can buy with confidence.</p>"
+    },
+    {
+      "title": "Shipping Info",
+      "description": "<p>I’m a great place to add more information about your <span style=\"font-weight: 700\">shipping methods</span>, <span style=\"font-weight: 700\">packaging</span>, and <span style=\"font-weight: 700\">cost</span>.</p><p>Providing straightforward information about your <u>shipping policy</u>&nbsp;is a great way to build trust and reassure your customers that they can buy from you with confidence.</p>"
+    }
+  ],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/22e53e_c93a1b96015f4f548df8d691e4b75f43~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Chair-Product (1).jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/22e53e_c93a1b96015f4f548df8d691e4b75f43~mv2.jpg",
+        "width": 4000,
+        "height": 4000
+      },
+      "_id": "22e53e_c93a1b96015f4f548df8d691e4b75f43~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/22e53e_c93a1b96015f4f548df8d691e4b75f43~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Chair-Product (1).jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/22e53e_c93a1b96015f4f548df8d691e4b75f43~mv2.jpg",
+          "width": 4000,
+          "height": 4000
+        },
+        "_id": "22e53e_c93a1b96015f4f548df8d691e4b75f43~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/22e53e_d2475ef5e62b4727850754bb0e3a3d0f~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Chair-Context (1).jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/22e53e_d2475ef5e62b4727850754bb0e3a3d0f~mv2.jpg",
+          "width": 2000,
+          "height": 2000
+        },
+        "_id": "22e53e_d2475ef5e62b4727850754bb0e3a3d0f~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/solid-wood-chair"
+  },
+  "numericId": "1737888597899000",
+  "inventoryItemId": "42941ee7-1707-4b5d-a7d7-41e12da6ab9e",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "becc814c-0375-45e8-a826-cd0391f935ef",
+    "bc0990ba-e6c6-450c-94cc-a0c62543eb13"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "ILS",
+          "price": 690,
+          "discountedPrice": 690,
+          "formatted": {
+            "price": "690.00 ₪",
+            "discountedPrice": "690.00 ₪"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "ILS",
+          "price": 690,
+          "discountedPrice": 690,
+          "formatted": {
+            "price": "690.00 ₪",
+            "discountedPrice": "690.00 ₪"
+          }
+        },
+        "weight": 0,
+        "sku": "36523641234523",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": false,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-18T16:02:44.072Z",
+  "exportProductId": "Product_7e8d0f14-3787-4041-aba7-96fc3084821c",
+  "_id": "42941ee7-1707-4b5d-a7d7-41e12da6ab9e",
+  "_createdDate": "2025-01-26T10:49:57.911Z"
+}

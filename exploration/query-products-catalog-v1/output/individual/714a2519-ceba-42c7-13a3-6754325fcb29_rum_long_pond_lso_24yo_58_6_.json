@@ -1,0 +1,162 @@
+{
+  "name": "RUM Long Pond LSO 24yo 58.6%",
+  "slug": "rum-long-pond-lso-24yo-58-6",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>&nbsp;</p>",
+  "sku": "1-10-0019",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 22,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 990,
+    "maxValue": 990
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "AA- R&B RUM.JPG",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg/v1/fit/w_702,h_665,q_90/file.jpg",
+        "width": 702,
+        "height": 665
+      },
+      "_id": "9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "AA- R&B RUM.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg/v1/fit/w_702,h_665,q_90/file.jpg",
+          "width": 702,
+          "height": 665
+        },
+        "_id": "9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_af69f8b369614285bc93b194831ab9d2~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Long Pond 1998 BACK.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_af69f8b369614285bc93b194831ab9d2~mv2.jpg/v1/fit/w_701,h_660,q_90/file.jpg",
+          "width": 701,
+          "height": 660
+        },
+        "_id": "9e37b5_af69f8b369614285bc93b194831ab9d2~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/rum-long-pond-lso-24yo-58-6"
+  },
+  "numericId": "1729360856210000",
+  "inventoryItemId": "8eb5dae6-3145-bd38-ec5c-98abcda034d6",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "68b702b3-fae1-92a2-e95b-3ea1f4527dec",
+    "a25cffb0-a5a9-aefb-c6f4-3eca9b87486c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 990,
+          "discountedPrice": 990,
+          "formatted": {
+            "price": "€990.00",
+            "discountedPrice": "€990.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 990,
+          "discountedPrice": 990,
+          "formatted": {
+            "price": "€990.00",
+            "discountedPrice": "€990.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-10-0019",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 22,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:40.253Z",
+  "ribbon": "",
+  "exportProductId": "product_714a2519-ceba-42c7-13a3-6754325fcb29",
+  "_id": "714a2519-ceba-42c7-13a3-6754325fcb29",
+  "_createdDate": "2024-10-19T18:00:56.210Z"
+}

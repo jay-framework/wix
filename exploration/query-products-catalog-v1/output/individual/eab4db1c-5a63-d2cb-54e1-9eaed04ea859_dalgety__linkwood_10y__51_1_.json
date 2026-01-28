@@ -1,0 +1,148 @@
+{
+  "name": "Dalgety- Linkwood 10y- 51.1%",
+  "slug": "dalgety-linkwood-10y-51-1",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>&nbsp;</p>",
+  "sku": "1-15-0046",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 9,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 430,
+    "discountedPrice": 430,
+    "formatted": {
+      "price": "€430.00",
+      "discountedPrice": "€430.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 430,
+    "discountedPrice": 430,
+    "formatted": {
+      "price": "€430.00",
+      "discountedPrice": "€430.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 430,
+    "discountedPrice": 430,
+    "formatted": {
+      "price": "€430.00",
+      "discountedPrice": "€430.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 430,
+    "maxValue": 430
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_5b5684dc479f499681147f210b689aa7~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Dalgety- Linkwood 10.jpeg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_5b5684dc479f499681147f210b689aa7~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+        "width": 2048,
+        "height": 2048
+      },
+      "_id": "9e37b5_5b5684dc479f499681147f210b689aa7~mv2.jpeg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_5b5684dc479f499681147f210b689aa7~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Dalgety- Linkwood 10.jpeg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_5b5684dc479f499681147f210b689aa7~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+          "width": 2048,
+          "height": 2048
+        },
+        "_id": "9e37b5_5b5684dc479f499681147f210b689aa7~mv2.jpeg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/dalgety-linkwood-10y-51-1"
+  },
+  "numericId": "1721138373780000",
+  "inventoryItemId": "154b24e3-a59c-2d34-ab1e-61512fb157a6",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "49ced078-6728-62e1-dcdf-10d18fde6c53",
+    "9e2982d5-9e2c-72f5-73a7-b91756692a1a",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 430,
+          "discountedPrice": 430,
+          "formatted": {
+            "price": "€430.00",
+            "discountedPrice": "€430.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 430,
+          "discountedPrice": 430,
+          "formatted": {
+            "price": "€430.00",
+            "discountedPrice": "€430.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-15-0046",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 9,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:47.965Z",
+  "ribbon": "",
+  "exportProductId": "product_eab4db1c-5a63-d2cb-54e1-9eaed04ea859",
+  "_id": "eab4db1c-5a63-d2cb-54e1-9eaed04ea859",
+  "_createdDate": "2024-07-16T13:59:33.780Z"
+}

@@ -1,0 +1,148 @@
+{
+  "name": "Dalmunach- 8y- 46%",
+  "slug": "dalmunach-8y-46",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><strong>Distilled at Dalmunach distillery</strong></p><p>Aged 8&nbsp;years in an ex-bourbon caskד</p><p>Bottled at 46%</p><p>No chilled filtration, no added coulors</p><p>&nbsp;</p><p><u><strong>Tasting notes by the AlphaBet Whisky Advisory Board</strong></u></p><p><strong>Nose </strong></p><p>Warm briosh. yeast, butter, dough, green apples, pears</p><p><strong>Palate</strong></p><p><span style=\"background-color: transparent;\">Sour yellow apples, carambula,&nbsp;</span></p><p><strong style=\"background-color: transparent;\">Finish</strong></p><p>Not very long. Bitter, Sour, dry,&nbsp;loquat</p><p>&nbsp;</p><p>A spring whisky- Shavu'ot festival in the Kibbutz</p>",
+  "sku": "1-17-0073",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 12,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 290,
+    "discountedPrice": 290,
+    "formatted": {
+      "price": "€290.00",
+      "discountedPrice": "€290.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 290,
+    "discountedPrice": 290,
+    "formatted": {
+      "price": "€290.00",
+      "discountedPrice": "€290.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 290,
+    "discountedPrice": 290,
+    "formatted": {
+      "price": "€290.00",
+      "discountedPrice": "€290.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 290,
+    "maxValue": 290
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_42a0c6b436324395803e098be9a444c2~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Dalmunach 8 Battlehill 46%.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_42a0c6b436324395803e098be9a444c2~mv2.jpg/v1/fit/w_1496,h_1496,q_90/file.jpg",
+        "width": 1496,
+        "height": 1496
+      },
+      "_id": "9e37b5_42a0c6b436324395803e098be9a444c2~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_42a0c6b436324395803e098be9a444c2~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Dalmunach 8 Battlehill 46%.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_42a0c6b436324395803e098be9a444c2~mv2.jpg/v1/fit/w_1496,h_1496,q_90/file.jpg",
+          "width": 1496,
+          "height": 1496
+        },
+        "_id": "9e37b5_42a0c6b436324395803e098be9a444c2~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/dalmunach-8y-46"
+  },
+  "numericId": "1739283133972000",
+  "inventoryItemId": "e44f6461-2ba6-505f-6e20-41fc565b375a",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "a2a53183-ff7f-84c4-4525-dbfb7f001cd5",
+    "6ea88cd0-3a19-b91d-118e-10b713441c6a",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 290,
+          "discountedPrice": 290,
+          "formatted": {
+            "price": "€290.00",
+            "discountedPrice": "€290.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 290,
+          "discountedPrice": 290,
+          "formatted": {
+            "price": "€290.00",
+            "discountedPrice": "€290.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0073",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 12,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:30.916Z",
+  "ribbon": "",
+  "exportProductId": "product_1bb09b9e-d459-afa0-91df-be03a9a4c8a5",
+  "_id": "1bb09b9e-d459-afa0-91df-be03a9a4c8a5",
+  "_createdDate": "2025-02-11T14:12:13.972Z"
+}

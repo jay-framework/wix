@@ -1,0 +1,162 @@
+{
+  "name": "Dumbarton Rock- 46%",
+  "slug": "dumbarton-rock-46",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><strong>A blended Malt&nbsp;</strong></p><p><em>Bottled at&nbsp;46%,&nbsp;keeping its&nbsp;natural color and without&nbsp;chill filtration</em></p>",
+  "sku": "1-12-0043",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 31,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 280,
+    "discountedPrice": 280,
+    "formatted": {
+      "price": "€280.00",
+      "discountedPrice": "€280.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 280,
+    "discountedPrice": 280,
+    "formatted": {
+      "price": "€280.00",
+      "discountedPrice": "€280.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 280,
+    "discountedPrice": 280,
+    "formatted": {
+      "price": "€280.00",
+      "discountedPrice": "€280.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 280,
+    "maxValue": 280
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_56422efe9a25412796ac3880f2edcacf~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "result_img_2025_01_26_15_18_02.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_56422efe9a25412796ac3880f2edcacf~mv2.jpg/v1/fit/w_2580,h_2580,q_90/file.jpg",
+        "width": 2580,
+        "height": 2580
+      },
+      "_id": "9e37b5_56422efe9a25412796ac3880f2edcacf~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_56422efe9a25412796ac3880f2edcacf~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "result_img_2025_01_26_15_18_02.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_56422efe9a25412796ac3880f2edcacf~mv2.jpg/v1/fit/w_2580,h_2580,q_90/file.jpg",
+          "width": 2580,
+          "height": 2580
+        },
+        "_id": "9e37b5_56422efe9a25412796ac3880f2edcacf~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_8372d889c9e64306a76da87f8e82cc0c~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Dumbarton Rock 46.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_8372d889c9e64306a76da87f8e82cc0c~mv2.jpg/v1/fit/w_695,h_677,q_90/file.jpg",
+          "width": 695,
+          "height": 677
+        },
+        "_id": "9e37b5_8372d889c9e64306a76da87f8e82cc0c~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/dumbarton-rock-46"
+  },
+  "numericId": "1711295284343000",
+  "inventoryItemId": "f3361696-7e58-b6bd-d856-0c505bfabe3e",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "2ba11a0d-f83a-dfe6-16a4-4171fb562531",
+    "1c54c59f-7f38-1790-b8b6-a19bb70c51fc",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 280,
+          "discountedPrice": 280,
+          "formatted": {
+            "price": "€280.00",
+            "discountedPrice": "€280.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 280,
+          "discountedPrice": 280,
+          "formatted": {
+            "price": "€280.00",
+            "discountedPrice": "€280.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-12-0043",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 31,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:30.916Z",
+  "ribbon": "",
+  "exportProductId": "product_0cc9e969-81a7-4942-27a9-f3afa40541c1",
+  "_id": "0cc9e969-81a7-4942-27a9-f3afa40541c1",
+  "_createdDate": "2024-03-24T15:48:04.343Z"
+}

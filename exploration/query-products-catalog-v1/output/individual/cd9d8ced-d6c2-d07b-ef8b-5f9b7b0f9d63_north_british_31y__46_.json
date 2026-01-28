@@ -1,0 +1,148 @@
+{
+  "name": "North British 31Y- 46%",
+  "slug": "north-british-31y-46",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><strong><u><em>Tasting notes by the Duncen Taylor team</em></u></strong></p><p>Sweet and buttery, toffee popcorn, candied citrus peel and gentle oak spice.</p>",
+  "sku": "1-17-0061",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 12,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 990,
+    "discountedPrice": 990,
+    "formatted": {
+      "price": "€990.00",
+      "discountedPrice": "€990.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 990,
+    "maxValue": 990
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Duncan Taylor.JPG",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg/v1/fit/w_221,h_195,q_90/file.jpg",
+        "width": 221,
+        "height": 195
+      },
+      "_id": "9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Duncan Taylor.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg/v1/fit/w_221,h_195,q_90/file.jpg",
+          "width": 221,
+          "height": 195
+        },
+        "_id": "9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/north-british-31y-46"
+  },
+  "numericId": "1716810309718000",
+  "inventoryItemId": "32627312-293d-2f84-1074-a06484f0629c",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "6d41635f-a82e-8e9b-d775-957aef317088",
+    "ea47b020-c4f2-1d81-ffb1-86f71ae4dc71",
+    "6ea88cd0-3a19-b91d-118e-10b713441c6a",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 990,
+          "discountedPrice": 990,
+          "formatted": {
+            "price": "€990.00",
+            "discountedPrice": "€990.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 990,
+          "discountedPrice": 990,
+          "formatted": {
+            "price": "€990.00",
+            "discountedPrice": "€990.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0061",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 12,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-09T17:35:43.352Z",
+  "ribbon": "",
+  "exportProductId": "product_cd9d8ced-d6c2-d07b-ef8b-5f9b7b0f9d63",
+  "_id": "cd9d8ced-d6c2-d07b-ef8b-5f9b7b0f9d63",
+  "_createdDate": "2024-05-27T11:45:09.718Z"
+}

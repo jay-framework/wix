@@ -1,0 +1,148 @@
+{
+  "name": "Glen Moray- 15y- 51.8%",
+  "slug": "glen-moray-15y-51-8",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><u><strong><em>Distilled at Glen Moray Distillery-</em></strong></u></p><p><strong><em>This Whisky was aged in a bourbon cask&nbsp;for 15 years and&nbsp;bottled at a Cask strength of 51.8%</em></strong></p><p>&nbsp;</p>",
+  "sku": "1-17-0049",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 9,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 580,
+    "discountedPrice": 580,
+    "formatted": {
+      "price": "€580.00",
+      "discountedPrice": "€580.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 580,
+    "discountedPrice": 580,
+    "formatted": {
+      "price": "€580.00",
+      "discountedPrice": "€580.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 580,
+    "discountedPrice": 580,
+    "formatted": {
+      "price": "€580.00",
+      "discountedPrice": "€580.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 580,
+    "maxValue": 580
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_17638988416047e9a3020c959da2150a~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20231214_145945.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_17638988416047e9a3020c959da2150a~mv2.jpg/v1/fit/w_3000,h_3000,q_90/file.jpg",
+        "width": 3000,
+        "height": 3000
+      },
+      "_id": "9e37b5_17638988416047e9a3020c959da2150a~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_17638988416047e9a3020c959da2150a~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20231214_145945.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_17638988416047e9a3020c959da2150a~mv2.jpg/v1/fit/w_3000,h_3000,q_90/file.jpg",
+          "width": 3000,
+          "height": 3000
+        },
+        "_id": "9e37b5_17638988416047e9a3020c959da2150a~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/glen-moray-15y-51-8"
+  },
+  "numericId": "1702819390821000",
+  "inventoryItemId": "1d947c4a-5817-c852-3d13-b9a886295adb",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "6ea88cd0-3a19-b91d-118e-10b713441c6a",
+    "52f1cf2a-7dc6-3e39-f55c-ec0ae4477a16",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 580,
+          "discountedPrice": 580,
+          "formatted": {
+            "price": "€580.00",
+            "discountedPrice": "€580.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 580,
+          "discountedPrice": 580,
+          "formatted": {
+            "price": "€580.00",
+            "discountedPrice": "€580.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0049",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 9,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:47.965Z",
+  "ribbon": "",
+  "exportProductId": "product_e26b83b5-a7e8-37ad-c2ec-465779d6a524",
+  "_id": "e26b83b5-a7e8-37ad-c2ec-465779d6a524",
+  "_createdDate": "2023-12-17T13:23:10.821Z"
+}

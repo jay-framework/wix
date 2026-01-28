@@ -1,0 +1,149 @@
+{
+  "name": "Linkwood 15y- 57.5%",
+  "slug": "linkwood-15y-57-5",
+  "visible": true,
+  "productType": "physical",
+  "description": "",
+  "sku": "1-19-0003",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 0,
+    "inStock": false,
+    "inventoryStatus": "OUT_OF_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 420,
+    "discountedPrice": 420,
+    "formatted": {
+      "price": "€420.00",
+      "discountedPrice": "€420.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 420,
+    "discountedPrice": 420,
+    "formatted": {
+      "price": "€420.00",
+      "discountedPrice": "€420.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 420,
+    "discountedPrice": 420,
+    "formatted": {
+      "price": "€420.00",
+      "discountedPrice": "€420.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 420,
+    "maxValue": 420
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_41e78f8e6f6c44a3b1d137f5ce5e93f1~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "1000271185.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_41e78f8e6f6c44a3b1d137f5ce5e93f1~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_41e78f8e6f6c44a3b1d137f5ce5e93f1~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_41e78f8e6f6c44a3b1d137f5ce5e93f1~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "1000271185.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_41e78f8e6f6c44a3b1d137f5ce5e93f1~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_41e78f8e6f6c44a3b1d137f5ce5e93f1~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/linkwood-15y-57-5"
+  },
+  "numericId": "1769434888835000",
+  "inventoryItemId": "d0b624dd-82b8-0eb2-7d87-4fea12483c4b",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "2364bc89-230c-a8a5-49ba-67ac639db012",
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "49ced078-6728-62e1-dcdf-10d18fde6c53",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 420,
+          "discountedPrice": 420,
+          "formatted": {
+            "price": "€420.00",
+            "discountedPrice": "€420.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 420,
+          "discountedPrice": 420,
+          "formatted": {
+            "price": "€420.00",
+            "discountedPrice": "€420.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-19-0003",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 0,
+        "inStock": false
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-26T15:30:00.735Z",
+  "ribbon": "",
+  "exportProductId": "product_2f49db22-7d47-f14d-8278-b015edb7c3b4",
+  "_id": "2f49db22-7d47-f14d-8278-b015edb7c3b4",
+  "_createdDate": "2026-01-26T13:41:28.835Z"
+}

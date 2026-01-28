@@ -1,0 +1,163 @@
+{
+  "name": "Dailuaine 12y 55.7%",
+  "slug": "dailuaine-12y-55-7",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><strong>Distilled at Dailuaine Distillery</strong></p><p>Matured in A first fill Bourbon for 12 years</p><p>Bottled at a cask strength of 55.7%,<br>keeping its natural colour and without chill filtration</p><p>&nbsp;</p><p><strong><u>Tasting notes by the AlphaBet Whisky Advisory Board</u></strong></p><p><strong>Nose</strong></p><p>Brown butter, sweetness, bread pudding, vanilla, dark chocolate, nutmeg, cinnamon, lime stone</p><p><strong>Palate</strong></p><p>burnt wood, salt, cashew, honey.</p><p><strong>Finish</strong></p><p>relatively short, dates sirup, butter,</p><p>&nbsp;</p><p>The Board's final word: DO NOT ADD water</p>",
+  "sku": "1-12-0056",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 7,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 440,
+    "discountedPrice": 440,
+    "formatted": {
+      "price": "€440.00",
+      "discountedPrice": "€440.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 440,
+    "discountedPrice": 440,
+    "formatted": {
+      "price": "€440.00",
+      "discountedPrice": "€440.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 440,
+    "discountedPrice": 440,
+    "formatted": {
+      "price": "€440.00",
+      "discountedPrice": "€440.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 440,
+    "maxValue": 440
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_56f91b968ab94ba28f4d2b973975be23~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251126_194423.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_56f91b968ab94ba28f4d2b973975be23~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_56f91b968ab94ba28f4d2b973975be23~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_56f91b968ab94ba28f4d2b973975be23~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251126_194423.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_56f91b968ab94ba28f4d2b973975be23~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_56f91b968ab94ba28f4d2b973975be23~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_6c24ae02faf24b0094354ef872cff934~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Dailuaine.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_6c24ae02faf24b0094354ef872cff934~mv2.jpg/v1/fit/w_388,h_538,q_90/file.jpg",
+          "width": 388,
+          "height": 538
+        },
+        "_id": "9e37b5_6c24ae02faf24b0094354ef872cff934~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/dailuaine-12y-55-7"
+  },
+  "numericId": "1761833135767000",
+  "inventoryItemId": "ac530621-879b-8aa0-43f4-c2ae969b5783",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "36f8c0da-13c5-3405-a212-09aae9d58d32",
+    "1c54c59f-7f38-1790-b8b6-a19bb70c51fc",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 440,
+          "discountedPrice": 440,
+          "formatted": {
+            "price": "€440.00",
+            "discountedPrice": "€440.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 440,
+          "discountedPrice": 440,
+          "formatted": {
+            "price": "€440.00",
+            "discountedPrice": "€440.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-12-0056",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 7,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-08T13:35:05.936Z",
+  "ribbon": "",
+  "exportProductId": "product_53acf9de-7864-755f-bc0b-3d516964a87c",
+  "_id": "53acf9de-7864-755f-bc0b-3d516964a87c",
+  "_createdDate": "2025-10-30T14:05:35.767Z"
+}

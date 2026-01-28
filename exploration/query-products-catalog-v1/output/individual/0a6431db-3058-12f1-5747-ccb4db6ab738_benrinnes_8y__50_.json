@@ -1,0 +1,152 @@
+{
+  "name": "Benrinnes 8y- 50%",
+  "slug": "benrinnes-8y-50",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Distilled&nbsp;at Benrinnes Distillery and finished in a&nbsp;Tawny Port Quarter Cask</p><p>&nbsp;</p><p>Bottled at 50% without colouring and without chilled filtaration</p>",
+  "sku": "1-13-0122",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 1,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 350,
+    "discountedPrice": 350,
+    "formatted": {
+      "price": "€350.00",
+      "discountedPrice": "€350.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 350,
+    "discountedPrice": 350,
+    "formatted": {
+      "price": "€350.00",
+      "discountedPrice": "€350.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 350,
+    "discountedPrice": 350,
+    "formatted": {
+      "price": "€350.00",
+      "discountedPrice": "€350.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 350,
+    "maxValue": 350
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 1 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_dda78e40a0444c46ad06819e3c3781b5~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Claxton- Benrinnes 8y.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_dda78e40a0444c46ad06819e3c3781b5~mv2.jpg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+        "width": 2048,
+        "height": 2048
+      },
+      "_id": "9e37b5_dda78e40a0444c46ad06819e3c3781b5~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_dda78e40a0444c46ad06819e3c3781b5~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Claxton- Benrinnes 8y.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_dda78e40a0444c46ad06819e3c3781b5~mv2.jpg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+          "width": 2048,
+          "height": 2048
+        },
+        "_id": "9e37b5_dda78e40a0444c46ad06819e3c3781b5~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/benrinnes-8y-50"
+  },
+  "numericId": "1740418032747000",
+  "inventoryItemId": "f59bce24-cfa7-ed0e-a8b8-334b249548c7",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "c9a3e322-9494-b273-529a-7135118dfd91",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "027e205e-bc32-8267-f8b0-7eb8ac411e39",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 350,
+          "discountedPrice": 350,
+          "formatted": {
+            "price": "€350.00",
+            "discountedPrice": "€350.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 350,
+          "discountedPrice": 350,
+          "formatted": {
+            "price": "€350.00",
+            "discountedPrice": "€350.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-13-0122",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 1,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-21T14:58:57.829Z",
+  "ribbon": "Only 1 left",
+  "exportProductId": "product_0a6431db-3058-12f1-5747-ccb4db6ab738",
+  "_id": "0a6431db-3058-12f1-5747-ccb4db6ab738",
+  "_createdDate": "2025-02-24T17:27:12.747Z"
+}

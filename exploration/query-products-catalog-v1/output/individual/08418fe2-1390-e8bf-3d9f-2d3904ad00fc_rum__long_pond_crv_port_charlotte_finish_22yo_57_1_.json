@@ -1,0 +1,166 @@
+{
+  "name": "RUM- Long Pond CRV Port Charlotte finish 22yo 57.1%",
+  "slug": "rum-long-pond-crv-port-charlotte-finish-22yo-57-1",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>&nbsp;</p>",
+  "sku": "1-10-0017",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 3,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 880,
+    "discountedPrice": 880,
+    "formatted": {
+      "price": "€880.00",
+      "discountedPrice": "€880.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 880,
+    "discountedPrice": 880,
+    "formatted": {
+      "price": "€880.00",
+      "discountedPrice": "€880.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 880,
+    "discountedPrice": 880,
+    "formatted": {
+      "price": "€880.00",
+      "discountedPrice": "€880.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 880,
+    "maxValue": 880
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 3 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "AA- R&B RUM.JPG",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg/v1/fit/w_702,h_665,q_90/file.jpg",
+        "width": 702,
+        "height": 665
+      },
+      "_id": "9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "AA- R&B RUM.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg/v1/fit/w_702,h_665,q_90/file.jpg",
+          "width": 702,
+          "height": 665
+        },
+        "_id": "9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_f5120839c8ed4a728f3a7064fcbce342~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Long Pond CRV 2001 BACK.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_f5120839c8ed4a728f3a7064fcbce342~mv2.jpg/v1/fit/w_529,h_499,q_90/file.jpg",
+          "width": 529,
+          "height": 499
+        },
+        "_id": "9e37b5_f5120839c8ed4a728f3a7064fcbce342~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/rum-long-pond-crv-port-charlotte-finish-22yo-57-1"
+  },
+  "numericId": "1729360700591000",
+  "inventoryItemId": "f7be701d-ec6f-1740-c260-d2c6fb52ff03",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "68b702b3-fae1-92a2-e95b-3ea1f4527dec",
+    "a25cffb0-a5a9-aefb-c6f4-3eca9b87486c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 880,
+          "discountedPrice": 880,
+          "formatted": {
+            "price": "€880.00",
+            "discountedPrice": "€880.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 880,
+          "discountedPrice": 880,
+          "formatted": {
+            "price": "€880.00",
+            "discountedPrice": "€880.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-10-0017",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 3,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-16T14:18:23.396Z",
+  "ribbon": "Only 3 left",
+  "exportProductId": "product_08418fe2-1390-e8bf-3d9f-2d3904ad00fc",
+  "_id": "08418fe2-1390-e8bf-3d9f-2d3904ad00fc",
+  "_createdDate": "2024-10-19T17:58:20.591Z"
+}

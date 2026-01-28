@@ -1,0 +1,167 @@
+{
+  "name": "Bruichladdich 32Y- 45.4%",
+  "slug": "bruichladdich-32y-45-4",
+  "visible": true,
+  "productType": "physical",
+  "description": "",
+  "sku": "1-17-0071",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 4,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 3300,
+    "discountedPrice": 3300,
+    "formatted": {
+      "price": "€3,300.00",
+      "discountedPrice": "€3,300.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 3300,
+    "discountedPrice": 3300,
+    "formatted": {
+      "price": "€3,300.00",
+      "discountedPrice": "€3,300.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 3300,
+    "discountedPrice": 3300,
+    "formatted": {
+      "price": "€3,300.00",
+      "discountedPrice": "€3,300.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 3300,
+    "maxValue": 3300
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 4 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_209e0ce66c3c4bdeb37b97c9d81effcf~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Bruichladdich 32.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_209e0ce66c3c4bdeb37b97c9d81effcf~mv2.jpg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+        "width": 2048,
+        "height": 2048
+      },
+      "_id": "9e37b5_209e0ce66c3c4bdeb37b97c9d81effcf~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_209e0ce66c3c4bdeb37b97c9d81effcf~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Bruichladdich 32.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_209e0ce66c3c4bdeb37b97c9d81effcf~mv2.jpg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+          "width": 2048,
+          "height": 2048
+        },
+        "_id": "9e37b5_209e0ce66c3c4bdeb37b97c9d81effcf~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Duncan Taylor.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg/v1/fit/w_221,h_195,q_90/file.jpg",
+          "width": 221,
+          "height": 195
+        },
+        "_id": "9e37b5_da92616454d2497c97bd9809832177be~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/bruichladdich-32y-45-4"
+  },
+  "numericId": "1739282750580000",
+  "inventoryItemId": "35c5619b-38f9-41b9-da19-e22237a80bea",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "6ea88cd0-3a19-b91d-118e-10b713441c6a",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "2311636b-a702-fed0-2f80-ee0fdda0c837",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 3300,
+          "discountedPrice": 3300,
+          "formatted": {
+            "price": "€3,300.00",
+            "discountedPrice": "€3,300.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 3300,
+          "discountedPrice": 3300,
+          "formatted": {
+            "price": "€3,300.00",
+            "discountedPrice": "€3,300.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0071",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 4,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:47.965Z",
+  "ribbon": "Only 4 left",
+  "exportProductId": "product_ca3a9e64-c706-be46-25e6-1dddc857f415",
+  "_id": "ca3a9e64-c706-be46-25e6-1dddc857f415",
+  "_createdDate": "2025-02-11T14:05:50.580Z"
+}

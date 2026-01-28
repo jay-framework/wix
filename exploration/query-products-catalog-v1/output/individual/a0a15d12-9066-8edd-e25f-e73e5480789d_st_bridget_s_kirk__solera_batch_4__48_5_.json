@@ -1,0 +1,148 @@
+{
+  "name": "St Bridget's Kirk- Solera batch 4- 48.5%",
+  "slug": "st-bridget-s-kirk-solera-batch-4-48-5",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>A solera cask- managed by the team of the Lady</p><p>Batch #4- bottled at 48.5%</p><p>&nbsp;</p><p><u><strong>Tasting notes by the AlphaBet Whisky Advisory Board</strong></u></p><p><strong>Nose </strong></p><p>Toffee, icing sugar, peat, light but dirty smoke, salted caramel, hay, incense</p><p><strong>Palate</strong></p><p>Sweet, grape marmalade, peat</p><p><strong style=\"background-color: transparent;\">Finish</strong></p><p>Long. Peat, sour, bitter, industrial sweetness, citric acid</p>",
+  "sku": "1-15-0064",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 14,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 300,
+    "discountedPrice": 300,
+    "formatted": {
+      "price": "€300.00",
+      "discountedPrice": "€300.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 300,
+    "discountedPrice": 300,
+    "formatted": {
+      "price": "€300.00",
+      "discountedPrice": "€300.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 300,
+    "discountedPrice": 300,
+    "formatted": {
+      "price": "€300.00",
+      "discountedPrice": "€300.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 300,
+    "maxValue": 300
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_5ca5662876a144e682a14c91277e7cf4~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251203_121458.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_5ca5662876a144e682a14c91277e7cf4~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_5ca5662876a144e682a14c91277e7cf4~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_5ca5662876a144e682a14c91277e7cf4~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251203_121458.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_5ca5662876a144e682a14c91277e7cf4~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_5ca5662876a144e682a14c91277e7cf4~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/st-bridget-s-kirk-solera-batch-4-48-5"
+  },
+  "numericId": "1765197979913000",
+  "inventoryItemId": "5f5ea2ed-6f99-7122-1da0-18c1ab7f8762",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "2ba11a0d-f83a-dfe6-16a4-4171fb562531",
+    "9e2982d5-9e2c-72f5-73a7-b91756692a1a",
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 300,
+          "discountedPrice": 300,
+          "formatted": {
+            "price": "€300.00",
+            "discountedPrice": "€300.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 300,
+          "discountedPrice": 300,
+          "formatted": {
+            "price": "€300.00",
+            "discountedPrice": "€300.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-15-0064",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 14,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-13T11:40:46.001Z",
+  "ribbon": "",
+  "exportProductId": "product_a0a15d12-9066-8edd-e25f-e73e5480789d",
+  "_id": "a0a15d12-9066-8edd-e25f-e73e5480789d",
+  "_createdDate": "2025-12-08T12:46:19.913Z"
+}

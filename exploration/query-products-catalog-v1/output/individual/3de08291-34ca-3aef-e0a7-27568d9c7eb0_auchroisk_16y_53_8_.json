@@ -1,0 +1,163 @@
+{
+  "name": "Auchroisk 16y 53.8%",
+  "slug": "auchroisk-16y-53-8",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><strong>Distilled at Auchroisk Distillery</strong></p><p><em>Matured in First fill Bourbon Barrel for 16 years</em></p><p><em>Bottled at a cask strength of 53.8%,&nbsp;<br>keeping its&nbsp;natural colour and without&nbsp;chill filtration</em></p><p>&nbsp;</p><p><u><strong>Tasting notes by the AlphaBet Whisky Advisory Board</strong></u></p><p><strong>Nose </strong></p><p>Yeast. White wine, muscat grapes, olives, white mushrooms, green almonds, mold, fruit Compote with green grapes, peach and apples (and with no added sugar), clove, nutmeg&nbsp;</p><p><strong style=\"background-color: transparent;\">Palate</strong></p><p><span style=\"background-color: transparent;\">Wet wood, dryness,&nbsp;green plums, yellow dates.</span></p><p><strong style=\"background-color: transparent;\">Finish</strong></p><p>Wood bitterness. peach, dates, almonds</p><p>&nbsp;</p><p>The Board's&nbsp;final word: <font face=\"HelveticaNeueW01-65Medi, HelveticaNeueW02-65Medi, HelveticaNeueW10-65Medi, sans-serif\"><b><i>DO NOT ADD&nbsp; water</i></b></font></p>",
+  "sku": "1-12-0051",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 9,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 630,
+    "discountedPrice": 630,
+    "formatted": {
+      "price": "€630.00",
+      "discountedPrice": "€630.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 630,
+    "discountedPrice": 630,
+    "formatted": {
+      "price": "€630.00",
+      "discountedPrice": "€630.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 630,
+    "discountedPrice": 630,
+    "formatted": {
+      "price": "€630.00",
+      "discountedPrice": "€630.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 630,
+    "maxValue": 630
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_9f1e8048557441c2965135ae16069207~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251126_194358.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_9f1e8048557441c2965135ae16069207~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_9f1e8048557441c2965135ae16069207~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_9f1e8048557441c2965135ae16069207~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251126_194358.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_9f1e8048557441c2965135ae16069207~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_9f1e8048557441c2965135ae16069207~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_22be9b2bf6b54ede9d1f47a1323a49c1~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Auchroisk 16.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_22be9b2bf6b54ede9d1f47a1323a49c1~mv2.jpg/v1/fit/w_389,h_542,q_90/file.jpg",
+          "width": 389,
+          "height": 542
+        },
+        "_id": "9e37b5_22be9b2bf6b54ede9d1f47a1323a49c1~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/auchroisk-16y-53-8"
+  },
+  "numericId": "1761830708372000",
+  "inventoryItemId": "c21f7d6e-cb35-c510-1f58-d8a97263814f",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "1c54c59f-7f38-1790-b8b6-a19bb70c51fc",
+    "2c5a43aa-9722-192f-0419-196ed97df100",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 630,
+          "discountedPrice": 630,
+          "formatted": {
+            "price": "€630.00",
+            "discountedPrice": "€630.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 630,
+          "discountedPrice": 630,
+          "formatted": {
+            "price": "€630.00",
+            "discountedPrice": "€630.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-12-0051",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 9,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-08T13:35:05.936Z",
+  "ribbon": "",
+  "exportProductId": "product_3de08291-34ca-3aef-e0a7-27568d9c7eb0",
+  "_id": "3de08291-34ca-3aef-e0a7-27568d9c7eb0",
+  "_createdDate": "2025-10-30T13:25:08.372Z"
+}

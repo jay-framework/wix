@@ -1,0 +1,147 @@
+{
+  "name": "Indian Summer Gin- Ex-Speyside Sherry cask 50.2%",
+  "slug": "indian-sumer-gin-ex-speyside-sherry-cask-50-2",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>Finished in Ex-Speyside Whisky Sherry cask</p>",
+  "sku": "1-17-9503",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 27,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 220,
+    "discountedPrice": 160,
+    "formatted": {
+      "price": "€220.00",
+      "discountedPrice": "€160.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 220,
+    "discountedPrice": 160,
+    "formatted": {
+      "price": "€220.00",
+      "discountedPrice": "€160.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 220,
+    "discountedPrice": 160,
+    "formatted": {
+      "price": "€220.00",
+      "discountedPrice": "€160.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 220,
+    "maxValue": 220
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_63f970e33b0d466d8154c36baa53ad21~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Sherry Ex Speyside cask Gin 50.2%.jpeg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_63f970e33b0d466d8154c36baa53ad21~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+        "width": 2048,
+        "height": 2048
+      },
+      "_id": "9e37b5_63f970e33b0d466d8154c36baa53ad21~mv2.jpeg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_63f970e33b0d466d8154c36baa53ad21~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Sherry Ex Speyside cask Gin 50.2%.jpeg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_63f970e33b0d466d8154c36baa53ad21~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+          "width": 2048,
+          "height": 2048
+        },
+        "_id": "9e37b5_63f970e33b0d466d8154c36baa53ad21~mv2.jpeg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/indian-sumer-gin-ex-speyside-sherry-cask-50-2"
+  },
+  "numericId": "1687082474391000",
+  "inventoryItemId": "e005867b-6140-ef83-3a34-6987de56c626",
+  "discount": {
+    "type": "AMOUNT",
+    "value": 60
+  },
+  "collectionIds": [
+    "6578e61a-631b-0067-5db7-f810c4bcd634",
+    "f14e6cb5-00bf-b4af-eafd-4b38851dd728",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 220,
+          "discountedPrice": 160,
+          "formatted": {
+            "price": "€220.00",
+            "discountedPrice": "€160.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 220,
+          "discountedPrice": 160,
+          "formatted": {
+            "price": "€220.00",
+            "discountedPrice": "€160.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-9503",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 27,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:30.916Z",
+  "ribbon": "",
+  "exportProductId": "product_1ffa7984-9ebf-107c-c5cb-967821a939d9",
+  "_id": "1ffa7984-9ebf-107c-c5cb-967821a939d9",
+  "_createdDate": "2023-06-18T10:01:14.391Z"
+}

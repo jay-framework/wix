@@ -1,0 +1,149 @@
+{
+  "name": "Bunnahabhain- 20y- 54.3%",
+  "slug": "bunnahabhain-20y-54-3",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><u><strong><em>Distilled at Bunnahabhain Distillery-</em></strong></u></p><p><strong><em>This Whisky was aged in a Sherry cask&nbsp;for 20&nbsp;years and&nbsp;bottled at a Cask strength of 54.3%</em></strong></p><p>&nbsp;</p>",
+  "sku": "1-17-0050",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 0,
+    "inStock": false,
+    "inventoryStatus": "OUT_OF_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 1100,
+    "discountedPrice": 1100,
+    "formatted": {
+      "price": "€1,100.00",
+      "discountedPrice": "€1,100.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 1100,
+    "discountedPrice": 1100,
+    "formatted": {
+      "price": "€1,100.00",
+      "discountedPrice": "€1,100.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 1100,
+    "discountedPrice": 1100,
+    "formatted": {
+      "price": "€1,100.00",
+      "discountedPrice": "€1,100.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 1100,
+    "maxValue": 1100
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_ccb4595386a34ed8a65c37a771f5fc57~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20231214_150319.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_ccb4595386a34ed8a65c37a771f5fc57~mv2.jpg/v1/fit/w_3000,h_3000,q_90/file.jpg",
+        "width": 3000,
+        "height": 3000
+      },
+      "_id": "9e37b5_ccb4595386a34ed8a65c37a771f5fc57~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_ccb4595386a34ed8a65c37a771f5fc57~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20231214_150319.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_ccb4595386a34ed8a65c37a771f5fc57~mv2.jpg/v1/fit/w_3000,h_3000,q_90/file.jpg",
+          "width": 3000,
+          "height": 3000
+        },
+        "_id": "9e37b5_ccb4595386a34ed8a65c37a771f5fc57~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/bunnahabhain-20y-54-3"
+  },
+  "numericId": "1702819548641000",
+  "inventoryItemId": "e9355c98-fafd-4476-ca49-a2b6333ee153",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "6ea88cd0-3a19-b91d-118e-10b713441c6a",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "933d2237-9afc-5600-3dc5-2873671ee4f5",
+    "e5f40b54-e252-88dd-cdd1-6b506d5fb51c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 1100,
+          "discountedPrice": 1100,
+          "formatted": {
+            "price": "€1,100.00",
+            "discountedPrice": "€1,100.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 1100,
+          "discountedPrice": 1100,
+          "formatted": {
+            "price": "€1,100.00",
+            "discountedPrice": "€1,100.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0050",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 0,
+        "inStock": false
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-28T07:11:36.994Z",
+  "ribbon": "",
+  "exportProductId": "product_16caa367-0502-bb89-35b6-5d49ccc11eac",
+  "_id": "16caa367-0502-bb89-35b6-5d49ccc11eac",
+  "_createdDate": "2023-12-17T13:25:48.641Z"
+}

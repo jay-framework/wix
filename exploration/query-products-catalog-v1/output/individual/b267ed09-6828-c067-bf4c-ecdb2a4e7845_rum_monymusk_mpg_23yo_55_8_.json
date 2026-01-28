@@ -1,0 +1,166 @@
+{
+  "name": "RUM Monymusk MPG 23yo 55.8%",
+  "slug": "rum-monymusk-mpg-23yo-55-8",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p>&nbsp;</p>",
+  "sku": "1-10-0020",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 4,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 880,
+    "discountedPrice": 880,
+    "formatted": {
+      "price": "€880.00",
+      "discountedPrice": "€880.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 880,
+    "discountedPrice": 880,
+    "formatted": {
+      "price": "€880.00",
+      "discountedPrice": "€880.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 880,
+    "discountedPrice": 880,
+    "formatted": {
+      "price": "€880.00",
+      "discountedPrice": "€880.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 880,
+    "maxValue": 880
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 4 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "AA- R&B RUM.JPG",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg/v1/fit/w_702,h_665,q_90/file.jpg",
+        "width": 702,
+        "height": 665
+      },
+      "_id": "9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "AA- R&B RUM.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg/v1/fit/w_702,h_665,q_90/file.jpg",
+          "width": 702,
+          "height": 665
+        },
+        "_id": "9e37b5_8f70fb6e1d8e46e08c697b37541f8114~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_d1f97404dc4d4b4f9cb7a1ba1d84f7a8~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Monymusk 1999 BACK.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_d1f97404dc4d4b4f9cb7a1ba1d84f7a8~mv2.jpg/v1/fit/w_700,h_658,q_90/file.jpg",
+          "width": 700,
+          "height": 658
+        },
+        "_id": "9e37b5_d1f97404dc4d4b4f9cb7a1ba1d84f7a8~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/rum-monymusk-mpg-23yo-55-8"
+  },
+  "numericId": "1729360929025000",
+  "inventoryItemId": "4d9812f6-97d7-3f98-40b3-1324d5b187ba",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "68b702b3-fae1-92a2-e95b-3ea1f4527dec",
+    "a25cffb0-a5a9-aefb-c6f4-3eca9b87486c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 880,
+          "discountedPrice": 880,
+          "formatted": {
+            "price": "€880.00",
+            "discountedPrice": "€880.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 880,
+          "discountedPrice": 880,
+          "formatted": {
+            "price": "€880.00",
+            "discountedPrice": "€880.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-10-0020",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 4,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-11-05T14:28:40.253Z",
+  "ribbon": "Only 4 left",
+  "exportProductId": "product_b267ed09-6828-c067-bf4c-ecdb2a4e7845",
+  "_id": "b267ed09-6828-c067-bf4c-ecdb2a4e7845",
+  "_createdDate": "2024-10-19T18:02:09.025Z"
+}

@@ -1,0 +1,150 @@
+{
+  "name": "Royal Brakla 7y- PX HHD- 50%",
+  "slug": "royal-brakla-7y-px-hhd-50",
+  "visible": true,
+  "productType": "physical",
+  "description": "",
+  "sku": "1-13-0144",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 8,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 390,
+    "discountedPrice": 390,
+    "formatted": {
+      "price": "€390.00",
+      "discountedPrice": "€390.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 390,
+    "discountedPrice": 390,
+    "formatted": {
+      "price": "€390.00",
+      "discountedPrice": "€390.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 390,
+    "discountedPrice": 390,
+    "formatted": {
+      "price": "€390.00",
+      "discountedPrice": "€390.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 390,
+    "maxValue": 390
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_b82f8a7aa5954a7aabcf70761b9a9e69~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Royal Brakla 7y- PX HHD- 50%.jpeg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_b82f8a7aa5954a7aabcf70761b9a9e69~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+        "width": 2048,
+        "height": 2048
+      },
+      "_id": "9e37b5_b82f8a7aa5954a7aabcf70761b9a9e69~mv2.jpeg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_b82f8a7aa5954a7aabcf70761b9a9e69~mv2.jpeg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Royal Brakla 7y- PX HHD- 50%.jpeg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_b82f8a7aa5954a7aabcf70761b9a9e69~mv2.jpeg/v1/fit/w_2048,h_2048,q_90/file.jpg",
+          "width": 2048,
+          "height": 2048
+        },
+        "_id": "9e37b5_b82f8a7aa5954a7aabcf70761b9a9e69~mv2.jpeg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/royal-brakla-7y-px-hhd-50"
+  },
+  "numericId": "1768150984117000",
+  "inventoryItemId": "c302e0ee-e18e-ed95-413e-b71d1c6882a1",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "755de31a-1269-869e-349c-43886d8a449a",
+    "89b437d2-789f-f269-73a1-aeb3d9aa1464",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "027e205e-bc32-8267-f8b0-7eb8ac411e39",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 390,
+          "discountedPrice": 390,
+          "formatted": {
+            "price": "€390.00",
+            "discountedPrice": "€390.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 390,
+          "discountedPrice": 390,
+          "formatted": {
+            "price": "€390.00",
+            "discountedPrice": "€390.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-13-0144",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 8,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-11T17:06:42.409Z",
+  "ribbon": "",
+  "exportProductId": "product_3cfd1f11-1e71-126a-bec1-48e2e3977d5e",
+  "_id": "3cfd1f11-1e71-126a-bec1-48e2e3977d5e",
+  "_createdDate": "2026-01-11T17:03:04.117Z"
+}

@@ -1,0 +1,149 @@
+{
+  "name": "Ben Nevis- 12y- 46%",
+  "slug": "ben-nevis-12y-46",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><strong>Distilled at Ben Nevis distillery</strong></p><p>Aged 12 years in an ex-bourbon casks</p><p>Bottled at 46%</p><p>No chilled filtration, no added coulors</p><p>&nbsp;</p><p><u><strong>Tasting notes by the AlphaBet Whisky Advisory Board</strong></u></p><p><strong>Nose </strong></p><p>Peaches, green bananas / plantain, green pineapple, green grapes,&nbsp;</p><p><strong>Palate</strong></p><p>Green apples, stevia sweetness, white honey</p><p><strong style=\"background-color: transparent;\">Finish</strong></p><p>Medium. Almond's bitterness, cherry kernels, yellow peach, sour candy</p><p>&nbsp;</p><p>Board recommandation: Try to add 1 or 2 drops of water</p>",
+  "sku": "1-17-0072",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 35,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 380,
+    "discountedPrice": 380,
+    "formatted": {
+      "price": "€380.00",
+      "discountedPrice": "€380.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 380,
+    "discountedPrice": 380,
+    "formatted": {
+      "price": "€380.00",
+      "discountedPrice": "€380.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 380,
+    "discountedPrice": 380,
+    "formatted": {
+      "price": "€380.00",
+      "discountedPrice": "€380.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 380,
+    "maxValue": 380
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_54168b89e25e4533b86a103ed8b0ba6f~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "Ben Nevis 12 Battlehill 46%.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_54168b89e25e4533b86a103ed8b0ba6f~mv2.jpg/v1/fit/w_1496,h_1496,q_90/file.jpg",
+        "width": 1496,
+        "height": 1496
+      },
+      "_id": "9e37b5_54168b89e25e4533b86a103ed8b0ba6f~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_54168b89e25e4533b86a103ed8b0ba6f~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "Ben Nevis 12 Battlehill 46%.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_54168b89e25e4533b86a103ed8b0ba6f~mv2.jpg/v1/fit/w_1496,h_1496,q_90/file.jpg",
+          "width": 1496,
+          "height": 1496
+        },
+        "_id": "9e37b5_54168b89e25e4533b86a103ed8b0ba6f~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/ben-nevis-12y-46"
+  },
+  "numericId": "1739283014079000",
+  "inventoryItemId": "ccc01678-f673-958c-45c5-7bdcbd2830ca",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "3a6fed87-c6c0-ab78-021f-7c278ee1d5b8",
+    "6ea88cd0-3a19-b91d-118e-10b713441c6a",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 380,
+          "discountedPrice": 380,
+          "formatted": {
+            "price": "€380.00",
+            "discountedPrice": "€380.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 380,
+          "discountedPrice": 380,
+          "formatted": {
+            "price": "€380.00",
+            "discountedPrice": "€380.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0072",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 35,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-08T13:35:05.936Z",
+  "ribbon": "",
+  "exportProductId": "product_333fe987-098c-6a73-ba3a-842342d7cf35",
+  "_id": "333fe987-098c-6a73-ba3a-842342d7cf35",
+  "_createdDate": "2025-02-11T14:10:14.079Z"
+}

@@ -1,0 +1,149 @@
+{
+  "name": "Mannochmore 10y- 54.1%",
+  "slug": "mannochmore-10y-54-1",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><u><strong><em>Distilled at Mannochmore distillery-</em></strong></u></p><p><strong><em>This Whisky was aged in a bourbon cask&nbsp;for 10&nbsp;years. It was finished in a Sherry Octave and&nbsp;bottled at Cask strength of 54.1%</em></strong></p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>",
+  "sku": "1-17-0079",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 25,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 340,
+    "discountedPrice": 340,
+    "formatted": {
+      "price": "€340.00",
+      "discountedPrice": "€340.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 340,
+    "discountedPrice": 340,
+    "formatted": {
+      "price": "€340.00",
+      "discountedPrice": "€340.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 340,
+    "discountedPrice": 340,
+    "formatted": {
+      "price": "€340.00",
+      "discountedPrice": "€340.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 340,
+    "maxValue": 340
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_c82106d453f742ab80e7537df2f68c01~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "20251203_115436.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_c82106d453f742ab80e7537df2f68c01~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+        "width": 2992,
+        "height": 2992
+      },
+      "_id": "9e37b5_c82106d453f742ab80e7537df2f68c01~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_c82106d453f742ab80e7537df2f68c01~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "20251203_115436.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_c82106d453f742ab80e7537df2f68c01~mv2.jpg/v1/fit/w_2992,h_2992,q_90/file.jpg",
+          "width": 2992,
+          "height": 2992
+        },
+        "_id": "9e37b5_c82106d453f742ab80e7537df2f68c01~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/mannochmore-10y-54-1"
+  },
+  "numericId": "1765300850849000",
+  "inventoryItemId": "02651d70-114d-5394-7767-2c2784ad4cff",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "d585e961-a952-a3fa-3ac3-6b505715ca74",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "b293b9c1-cbe6-a3cf-6b9b-19d20e5f34d6",
+    "1ec66085-f9b1-0c24-9df0-0bc39c871c67",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 340,
+          "discountedPrice": 340,
+          "formatted": {
+            "price": "€340.00",
+            "discountedPrice": "€340.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 340,
+          "discountedPrice": 340,
+          "formatted": {
+            "price": "€340.00",
+            "discountedPrice": "€340.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-17-0079",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 25,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2025-12-09T18:27:33.667Z",
+  "ribbon": "",
+  "exportProductId": "product_fd9ae28f-eeb2-ac6b-8898-d3d87b52b300",
+  "_id": "fd9ae28f-eeb2-ac6b-8898-d3d87b52b300",
+  "_createdDate": "2025-12-09T17:20:50.849Z"
+}

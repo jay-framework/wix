@@ -1,0 +1,167 @@
+{
+  "name": "Macduff 9y- Sherry Butt- 58%",
+  "slug": "macduff-9y-serry-butt-58",
+  "visible": true,
+  "productType": "physical",
+  "description": "<p><strong>Distilled at Macduff Distillery&nbsp;</strong></p><p><em>Aged for&nbsp; years. Aged in a&nbsp;Sherry Butt and bottled at a cask strength of 58%,&nbsp;<br>keeping its&nbsp;natural color and without&nbsp;chill filtration</em></p>",
+  "sku": "1-12-0028",
+  "weight": 1,
+  "weightRange": {
+    "minValue": 1,
+    "maxValue": 1
+  },
+  "stock": {
+    "trackInventory": true,
+    "quantity": 1,
+    "inStock": true,
+    "inventoryStatus": "IN_STOCK"
+  },
+  "price": {
+    "currency": "EUR",
+    "price": 550,
+    "discountedPrice": 550,
+    "formatted": {
+      "price": "€550.00",
+      "discountedPrice": "€550.00"
+    }
+  },
+  "priceData": {
+    "currency": "EUR",
+    "price": 550,
+    "discountedPrice": 550,
+    "formatted": {
+      "price": "€550.00",
+      "discountedPrice": "€550.00"
+    }
+  },
+  "convertedPriceData": {
+    "currency": "EUR",
+    "price": 550,
+    "discountedPrice": 550,
+    "formatted": {
+      "price": "€550.00",
+      "discountedPrice": "€550.00"
+    }
+  },
+  "priceRange": {
+    "minValue": 550,
+    "maxValue": 550
+  },
+  "costRange": {
+    "minValue": 0,
+    "maxValue": 0
+  },
+  "additionalInfoSections": [],
+  "ribbons": [
+    {
+      "text": "Only 1 left"
+    }
+  ],
+  "media": {
+    "mainMedia": {
+      "thumbnail": {
+        "url": "https://static.wixstatic.com/media/9e37b5_af09750facac4103928cd6e435f00da4~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+        "width": 50,
+        "height": 50
+      },
+      "mediaType": "image",
+      "title": "result_img_2024_12_15_10_03_50.jpg",
+      "image": {
+        "url": "https://static.wixstatic.com/media/9e37b5_af09750facac4103928cd6e435f00da4~mv2.jpg/v1/fit/w_1894,h_1894,q_90/file.jpg",
+        "width": 1894,
+        "height": 1894
+      },
+      "_id": "9e37b5_af09750facac4103928cd6e435f00da4~mv2.jpg"
+    },
+    "items": [
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_af09750facac4103928cd6e435f00da4~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "result_img_2024_12_15_10_03_50.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_af09750facac4103928cd6e435f00da4~mv2.jpg/v1/fit/w_1894,h_1894,q_90/file.jpg",
+          "width": 1894,
+          "height": 1894
+        },
+        "_id": "9e37b5_af09750facac4103928cd6e435f00da4~mv2.jpg"
+      },
+      {
+        "thumbnail": {
+          "url": "https://static.wixstatic.com/media/9e37b5_ee7698097fbd421fbcde795e6b3b5752~mv2.jpg/v1/fit/w_50,h_50,q_90/file.jpg",
+          "width": 50,
+          "height": 50
+        },
+        "mediaType": "image",
+        "title": "E- Macduff 9.JPG",
+        "image": {
+          "url": "https://static.wixstatic.com/media/9e37b5_ee7698097fbd421fbcde795e6b3b5752~mv2.jpg/v1/fit/w_578,h_818,q_90/file.jpg",
+          "width": 578,
+          "height": 818
+        },
+        "_id": "9e37b5_ee7698097fbd421fbcde795e6b3b5752~mv2.jpg"
+      }
+    ]
+  },
+  "customTextFields": [],
+  "manageVariants": false,
+  "productOptions": [],
+  "productPageUrl": {
+    "base": "",
+    "path": "/product-page/macduff-9y-serry-butt-58"
+  },
+  "numericId": "1690297047277000",
+  "inventoryItemId": "21743f9b-cd62-5619-9b8d-337327534fe9",
+  "discount": {
+    "type": "NONE",
+    "value": 0
+  },
+  "collectionIds": [
+    "1c54c59f-7f38-1790-b8b6-a19bb70c51fc",
+    "465b88b0-1c67-7ed4-e087-df0c62371bc3",
+    "33381f2f-f319-a1ef-5faa-286f39214c4c",
+    "00000000-000000-000000-000000000001"
+  ],
+  "variants": [
+    {
+      "choices": {},
+      "variant": {
+        "priceData": {
+          "currency": "EUR",
+          "price": 550,
+          "discountedPrice": 550,
+          "formatted": {
+            "price": "€550.00",
+            "discountedPrice": "€550.00"
+          }
+        },
+        "convertedPriceData": {
+          "currency": "EUR",
+          "price": 550,
+          "discountedPrice": 550,
+          "formatted": {
+            "price": "€550.00",
+            "discountedPrice": "€550.00"
+          }
+        },
+        "weight": 1,
+        "sku": "1-12-0028",
+        "visible": true
+      },
+      "stock": {
+        "trackQuantity": true,
+        "quantity": 1,
+        "inStock": true
+      },
+      "_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "lastUpdated": "2026-01-01T14:51:08.743Z",
+  "ribbon": "Only 1 left",
+  "exportProductId": "product_de8bc064-329d-a9e6-6472-cc8cd8acb016",
+  "_id": "de8bc064-329d-a9e6-6472-cc8cd8acb016",
+  "_createdDate": "2023-07-25T14:57:27.277Z"
+}
