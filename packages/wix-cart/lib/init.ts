@@ -9,6 +9,10 @@
  */
 
 import { makeJayInit } from '@jay-framework/fullstack-component';
+import { getService } from '@jay-framework/stack-server-runtime';
+import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
+
+import { provideWixCartService } from './services/wix-cart-service';
 import { provideWixCartContext, type WixCartInitData } from './contexts/wix-cart-context';
 
 // Re-export types for consumers
@@ -22,11 +26,6 @@ export const init = makeJayInit()
     .withServer(async (): Promise<WixCartInitData> => {
         console.log('[wix-cart] Initializing Wix Cart service...');
 
-        // Dynamic imports for server-only modules to avoid bundling in client
-        const { getService } = await import('@jay-framework/stack-server-runtime');
-        const { WIX_CLIENT_SERVICE } = await import('@jay-framework/wix-server-client');
-        const { provideWixCartService } = await import('./services/wix-cart-service');
-
         // Get the server-side Wix client (authenticated with API key)
         const wixClient = getService(WIX_CLIENT_SERVICE);
 
@@ -35,7 +34,6 @@ export const init = makeJayInit()
 
         console.log('[wix-cart] Server initialization complete');
 
-        // Pass cart configuration to the client
         return {
             enableClientCart: true,
         };

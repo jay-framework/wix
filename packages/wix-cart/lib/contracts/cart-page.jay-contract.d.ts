@@ -92,34 +92,14 @@ export interface CartPageViewState {
 export type CartPageSlowViewState = Pick<CartPageViewState, 'cartId' | 'emptyCartMessage'>;
 
 export type CartPageFastViewState = Pick<CartPageViewState, 'isEmpty' | 'isLoading' | 'isCheckingOut'> & {
-    lineItems: Array<Pick<CartPageViewState['lineItems'][number], 'lineItemId' | 'productId' | 'productName' | 'productUrl' | 'variantName' | 'sku' | 'quantity' | 'isUpdatingQuantity' | 'hasDiscount' | 'isRemoving'> & {
-    image: CartPageViewState['lineItems'][number]['image'];
-    unitPrice: CartPageViewState['lineItems'][number]['unitPrice'];
-    lineTotal: CartPageViewState['lineItems'][number]['lineTotal'];
-    lineDiscount: CartPageViewState['lineItems'][number]['lineDiscount'];
-}>;
-    summary: Pick<CartPageViewState['summary'], 'itemCount' | 'hasDiscount' | 'showTax' | 'currency'> & {
-    subtotal: CartPageViewState['summary']['subtotal'];
-    discount: CartPageViewState['summary']['discount'];
-    estimatedTax: CartPageViewState['summary']['estimatedTax'];
-    estimatedTotal: CartPageViewState['summary']['estimatedTotal'];
-};
+    lineItems: Array<CartPageViewState['lineItems'][number]>;
+    summary: CartPageViewState['summary'];
     coupon: CartPageViewState['coupon'];
 };
 
 export type CartPageInteractiveViewState = Pick<CartPageViewState, 'isEmpty' | 'isLoading' | 'isCheckingOut'> & {
-    lineItems: Array<Pick<CartPageViewState['lineItems'][number], 'lineItemId' | 'productId' | 'productName' | 'productUrl' | 'variantName' | 'sku' | 'quantity' | 'isUpdatingQuantity' | 'hasDiscount' | 'isRemoving'> & {
-    image: CartPageViewState['lineItems'][number]['image'];
-    unitPrice: CartPageViewState['lineItems'][number]['unitPrice'];
-    lineTotal: CartPageViewState['lineItems'][number]['lineTotal'];
-    lineDiscount: CartPageViewState['lineItems'][number]['lineDiscount'];
-}>;
-    summary: Pick<CartPageViewState['summary'], 'itemCount' | 'hasDiscount' | 'showTax' | 'currency'> & {
-    subtotal: CartPageViewState['summary']['subtotal'];
-    discount: CartPageViewState['summary']['discount'];
-    estimatedTax: CartPageViewState['summary']['estimatedTax'];
-    estimatedTotal: CartPageViewState['summary']['estimatedTotal'];
-};
+    lineItems: Array<CartPageViewState['lineItems'][number]>;
+    summary: CartPageViewState['summary'];
     coupon: CartPageViewState['coupon'];
 };
 

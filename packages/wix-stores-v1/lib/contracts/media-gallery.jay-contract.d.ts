@@ -17,8 +17,11 @@ export interface MediaGalleryViewState {
   availableMedia: Array<AvailableMediaOfMediaGalleryViewState>
 }
 
-export type MediaGallerySlowViewState = Pick<MediaGalleryViewState, 'selectedMedia'> & {
-    availableMedia: Array<Pick<MediaGalleryViewState['availableMedia'][number], 'mediaId' | 'media'>>;
+export type MediaGallerySlowViewState = {
+    selectedMedia: MediaGalleryViewState['selectedMedia'];
+    availableMedia: Array<Pick<MediaGalleryViewState['availableMedia'][number], 'mediaId'> & {
+    media: MediaGalleryViewState['availableMedia'][number]['media'];
+}>;
 };
 
 export type MediaGalleryFastViewState = {

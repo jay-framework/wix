@@ -80,11 +80,10 @@ export type ProductSearchSlowViewState = Pick<ProductSearchViewState, 'searchFie
 };
 };
 
-export type ProductSearchFastViewState = Pick<ProductSearchViewState, 'searchExpression' | 'isSearching' | 'hasSearched' | 'searchResults' | 'resultCount' | 'hasResults' | 'hasMore' | 'loadedCount' | 'totalCount' | 'hasSuggestions'> & {
+export type ProductSearchFastViewState = Pick<ProductSearchViewState, 'searchExpression' | 'isSearching' | 'hasSearched' | 'resultCount' | 'hasResults' | 'hasMore' | 'loadedCount' | 'totalCount' | 'hasSuggestions'> & {
+    searchResults: Array<ProductSearchViewState['searchResults'][number]>;
     filters: Pick<ProductSearchViewState['filters'], 'inStockOnly'> & {
-    priceRange: Pick<ProductSearchViewState['filters']['priceRange'], 'minPrice' | 'maxPrice' | 'minBound' | 'maxBound'> & {
-    ranges: Array<ProductSearchViewState['filters']['priceRange']['ranges'][number]>;
-};
+    priceRange: ProductSearchViewState['filters']['priceRange'];
     categoryFilter: {
     categories: Array<Pick<ProductSearchViewState['filters']['categoryFilter']['categories'][number], 'categoryId' | 'isSelected'>>;
 };
@@ -93,11 +92,10 @@ export type ProductSearchFastViewState = Pick<ProductSearchViewState, 'searchExp
     suggestions: Array<ProductSearchViewState['suggestions'][number]>;
 };
 
-export type ProductSearchInteractiveViewState = Pick<ProductSearchViewState, 'searchExpression' | 'isSearching' | 'hasSearched' | 'searchResults' | 'resultCount' | 'hasResults' | 'hasMore' | 'loadedCount' | 'totalCount' | 'hasSuggestions'> & {
+export type ProductSearchInteractiveViewState = Pick<ProductSearchViewState, 'searchExpression' | 'isSearching' | 'hasSearched' | 'resultCount' | 'hasResults' | 'hasMore' | 'loadedCount' | 'totalCount' | 'hasSuggestions'> & {
+    searchResults: Array<ProductSearchViewState['searchResults'][number]>;
     filters: Pick<ProductSearchViewState['filters'], 'inStockOnly'> & {
-    priceRange: Pick<ProductSearchViewState['filters']['priceRange'], 'minPrice' | 'maxPrice' | 'minBound' | 'maxBound'> & {
-    ranges: Array<ProductSearchViewState['filters']['priceRange']['ranges'][number]>;
-};
+    priceRange: ProductSearchViewState['filters']['priceRange'];
     categoryFilter: {
     categories: Array<Pick<ProductSearchViewState['filters']['categoryFilter']['categories'][number], 'categoryId' | 'isSelected'>>;
 };

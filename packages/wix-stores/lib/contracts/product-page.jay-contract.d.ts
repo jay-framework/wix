@@ -140,18 +140,11 @@ export type ProductPageSlowViewState = Pick<ProductPageViewState, '_id' | 'produ
     modifiers: Array<Pick<ProductPageViewState['modifiers'][number], '_id' | 'name' | 'modifierType' | 'textInputLength' | 'textInputRequired'> & {
     choices: Array<Pick<ProductPageViewState['modifiers'][number]['choices'][number], 'choiceId' | 'choiceType' | 'name' | 'colorCode'>>;
 }>;
-    seoData: {
-    tags: Array<Pick<ProductPageViewState['seoData']['tags'][number], 'position' | 'type' | 'children'> & {
-    props: Array<ProductPageViewState['seoData']['tags'][number]['props'][number]>;
-    meta: Array<ProductPageViewState['seoData']['tags'][number]['meta'][number]>;
-}>;
-    settings: Pick<ProductPageViewState['seoData']['settings'], 'preventAutoRedirect'> & {
-    keywords: Array<ProductPageViewState['seoData']['settings']['keywords'][number]>;
-};
-};
+    seoData: ProductPageViewState['seoData'];
 };
 
-export type ProductPageFastViewState = Pick<ProductPageViewState, 'mediaGallery' | 'sku' | 'price' | 'strikethroughPrice' | 'pricePerUnit' | 'stockStatus' | 'actionsEnabled'> & {
+export type ProductPageFastViewState = Pick<ProductPageViewState, 'sku' | 'price' | 'strikethroughPrice' | 'pricePerUnit' | 'stockStatus' | 'actionsEnabled'> & {
+    mediaGallery: ProductPageViewState['mediaGallery'];
     quantity: ProductPageViewState['quantity'];
     options: Array<Pick<ProductPageViewState['options'][number], '_id' | 'textChoiceSelection'> & {
     choices: Array<Pick<ProductPageViewState['options'][number]['choices'][number], 'choiceId' | 'isSelected'>>;
@@ -161,7 +154,8 @@ export type ProductPageFastViewState = Pick<ProductPageViewState, 'mediaGallery'
 }>;
 };
 
-export type ProductPageInteractiveViewState = Pick<ProductPageViewState, 'mediaGallery' | 'sku' | 'price' | 'strikethroughPrice' | 'pricePerUnit' | 'stockStatus' | 'actionsEnabled'> & {
+export type ProductPageInteractiveViewState = Pick<ProductPageViewState, 'sku' | 'price' | 'strikethroughPrice' | 'pricePerUnit' | 'stockStatus' | 'actionsEnabled'> & {
+    mediaGallery: ProductPageViewState['mediaGallery'];
     quantity: ProductPageViewState['quantity'];
     options: Array<Pick<ProductPageViewState['options'][number], '_id' | 'textChoiceSelection'> & {
     choices: Array<Pick<ProductPageViewState['options'][number]['choices'][number], 'choiceId' | 'isSelected'>>;

@@ -109,25 +109,30 @@ export interface ProductCardViewState {
   quickOption: ProductOptionsViewState
 }
 
-export type ProductCardSlowViewState = Pick<ProductCardViewState, '_id' | 'name' | 'slug' | 'productUrl' | 'currency' | 'hasDiscount' | 'hasRibbon' | 'productType' | 'visible' | 'quickAddType' | 'quickOption'> & {
+export type ProductCardSlowViewState = Pick<ProductCardViewState, '_id' | 'name' | 'slug' | 'productUrl' | 'currency' | 'hasDiscount' | 'hasRibbon' | 'productType' | 'visible' | 'quickAddType'> & {
     mainMedia: ProductCardViewState['mainMedia'];
     thumbnail: ProductCardViewState['thumbnail'];
-    actualPriceRange: {
-    minValue: ProductCardViewState['actualPriceRange']['minValue'];
-    maxValue: ProductCardViewState['actualPriceRange']['maxValue'];
-};
-    compareAtPriceRange: {
-    minValue: ProductCardViewState['compareAtPriceRange']['minValue'];
-    maxValue: ProductCardViewState['compareAtPriceRange']['maxValue'];
-};
+    actualPriceRange: ProductCardViewState['actualPriceRange'];
+    compareAtPriceRange: ProductCardViewState['compareAtPriceRange'];
     inventory: ProductCardViewState['inventory'];
     ribbon: ProductCardViewState['ribbon'];
     brand: ProductCardViewState['brand'];
+    quickOption: Pick<ProductCardViewState['quickOption'], '_id' | 'name' | 'optionRenderType'> & {
+    choices: Array<Pick<ProductCardViewState['quickOption']['choices'][number], 'choiceId' | 'name' | 'choiceType' | 'colorCode' | 'variantId'>>;
+};
 };
 
-export type ProductCardFastViewState = Pick<ProductCardViewState, 'isAddingToCart'>;
+export type ProductCardFastViewState = Pick<ProductCardViewState, 'isAddingToCart'> & {
+    quickOption: {
+    choices: Array<Pick<ProductCardViewState['quickOption']['choices'][number], 'choiceId' | 'inStock' | 'isSelected'>>;
+};
+};
 
-export type ProductCardInteractiveViewState = Pick<ProductCardViewState, 'isAddingToCart'>;
+export type ProductCardInteractiveViewState = Pick<ProductCardViewState, 'isAddingToCart'> & {
+    quickOption: {
+    choices: Array<Pick<ProductCardViewState['quickOption']['choices'][number], 'choiceId' | 'inStock' | 'isSelected'>>;
+};
+};
 
 
 export interface ProductCardRefs {

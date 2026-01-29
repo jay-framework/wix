@@ -197,7 +197,7 @@
                  forEach="categoryPage.products" 
                  trackBy="_id">
           <a href="{productUrl}" class="product-card-image">
-            <img src="{thumbnail.url}" alt="{thumbnail.altText}" loading="lazy" />
+            <img src="{mainMedia.url}" alt="{mainMedia.altText}" loading="lazy" />
             <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
             <span class="badge badge-success stock-badge" if="inventory.availabilityStatus == IN_STOCK">
               In Stock
@@ -212,17 +212,7 @@
               <a href="{productUrl}">{name}</a>
             </h3>
             <p class="product-card-meta" if="brand.name">{brand.name}</p>
-            
-            <div class="product-rating">
-              <div class="stars">
-                <span class="star filled">★</span>
-                <span class="star filled">★</span>
-                <span class="star filled">★</span>
-                <span class="star filled">★</span>
-                <span class="star">★</span>
-              </div>
-            </div>
-            
+
             <div class="product-card-price">
               <span class="current-price">{actualPriceRange.minValue.formattedAmount}</span>
               <span class="original-price" if="hasDiscount">{compareAtPriceRange.minValue.formattedAmount}</span>

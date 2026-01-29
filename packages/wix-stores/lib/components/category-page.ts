@@ -287,6 +287,18 @@ async function renderFastChanging(
         .toPhaseOutput((data) => {
             return {
                 viewState: {
+                    // Products array with fast+interactive properties for SSR items
+                    products: data.products.map(p => ({
+                        _id: p._id,
+                        isAddingToCart: false,
+                        quickOption: p.quickOption ? {
+                            choices: p.quickOption.choices.map(c => ({
+                                choiceId: c.choiceId,
+                                inStock: c.inStock,
+                                isSelected: c.isSelected
+                            }))
+                        } : { choices: [] }
+                    })),
                     loadedProducts: [],
                     hasMore: data.nextCursor !== null,
                     loadedCount: data.products.length,
@@ -314,6 +326,7 @@ function CategoryPageInteractive(
     storesContext: WixStoresContext
 ) {
     const {
+        products: [products],
         loadedProducts: [loadedProducts, setLoadedProducts],
         hasMore: [hasMore, setHasMore],
         loadedCount: [loadedCount, setLoadedCount],
@@ -427,6 +440,7 @@ function CategoryPageInteractive(
 
     return {
         render: () => ({
+            products: products(),
             loadedProducts: loadedProducts(),
             hasMore: hasMore(),
             loadedCount: loadedCount(),
