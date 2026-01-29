@@ -7,6 +7,24 @@
  * Uses Wix Catalog V1 API (products module) instead of V3 (productsV3).
  */
 
+// Re-export cart components from wix-cart (shared package)
+export { cartIndicator, cartPage } from '@jay-framework/wix-cart';
+export { 
+    WIX_CART_SERVICE, 
+    WIX_CART_CONTEXT,
+    provideWixCartService,
+    provideWixCartContext
+} from '@jay-framework/wix-cart';
+export type { 
+    WixCartService, 
+    WixCartContext,
+    CartLineItem,
+    CartSummary,
+    CartState,
+    CartIndicatorState,
+    AddToCartOptions
+} from '@jay-framework/wix-cart';
+
 // Export server service
 export {
     provideWixStoresV1Service,
@@ -14,13 +32,7 @@ export {
     type WixStoresV1Service,
 } from './services/wix-stores-v1-service';
 
-// Export client context types (for type-only imports on server)
-export {
-    type CartLineItem,
-    type CartSummary,
-    type CartState,
-    type CartIndicatorState,
-} from './contexts/cart-helpers';
+// Export stores V1 client context 
 export {
     WIX_STORES_V1_CONTEXT,
     type WixStoresV1Context,
@@ -33,9 +45,7 @@ export * from './actions/stores-v1-actions';
 // Export product mapper types
 export type { V1Collection, CollectionViewState } from './utils/product-mapper-v1';
 
-// Export components
-export { cartIndicator } from './components/cart-indicator';
-export { cartPage } from './components/cart-page';
+// Export stores-specific components
 export { productPage, type ProductPageParams } from './components/product-page';
 export { productSearch } from './components/product-search';
 export { collectionList, categoryList } from './components/collection-list';

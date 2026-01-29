@@ -5,7 +5,10 @@
  * initialization in a single file.
  *
  * Server: Registers the WixStoresV1Service for server-side rendering.
- * Client: Provides WixStoresV1Context for client-side API access via OAuth authentication.
+ * Client: Provides WixStoresV1Context for client-side API access.
+ * 
+ * Note: Cart functionality is provided by the wix-cart plugin (dependency).
+ * WIX_CART_SERVICE and WIX_CART_CONTEXT are initialized by wix-cart.
  */
 
 import { makeJayInit } from '@jay-framework/fullstack-component';
@@ -29,12 +32,12 @@ export const init = makeJayInit()
         // Get the server-side Wix client (authenticated with API key)
         const wixClient = getService(WIX_CLIENT_SERVICE);
 
-        // Create and register the stores V1 service
+        // Create and register the stores V1 service (products, collections, inventory)
+        // Note: Cart service is registered by wix-cart plugin
         provideWixStoresV1Service(wixClient);
 
         console.log('[wix-stores-v1] Server initialization complete');
 
-        // Pass store configuration to the client
         return {
             enableClientCart: true,
             enableClientSearch: true,
@@ -43,16 +46,10 @@ export const init = makeJayInit()
     .withClient(async (data: WixStoresV1InitData) => {
         console.log('[wix-stores-v1] Initializing client-side stores context...');
 
-        const { enableClientCart, enableClientSearch } = data;
-
-        // Register the reactive Wix Stores V1 context
-        const storesContext = provideWixStoresV1Context();
-        
-        // Load initial cart indicator state
-        if (enableClientCart) {
-            await storesContext.refreshCartIndicator();
-        }
+        // Register the stores V1 context (delegates cart operations to WIX_CART_CONTEXT)
+        // Note: WIX_CART_CONTEXT is already initialized by wix-cart plugin
+        provideWixStoresV1Context();
 
         console.log('[wix-stores-v1] Client initialization complete');
-        console.log(`[wix-stores-v1] Cart enabled: ${enableClientCart}, Search enabled: ${enableClientSearch}`);
+        console.log(`[wix-stores-v1] Search enabled: ${data.enableClientSearch}`);
     });

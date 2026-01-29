@@ -10,14 +10,22 @@ The wix monorepo contains packages for integrating Jay Framework applications wi
 graph TD
     A[wix-server-client] --> B[wix-stores V3]
     A --> B1[wix-stores-v1]
+    A --> Cart[wix-cart]
     A --> C[wix-data]
+    Cart --> B
+    Cart --> B1
     B --> D[store example app]
     B1 --> D1[whisky-store example]
+    Cart --> D
+    Cart --> D1
     A --> D
     A --> D1
 ```
 
-**Note**: `wix-stores` uses Catalog V3 API (`productsV3`, `@wix/categories`), while `wix-stores-v1` uses Catalog V1 API (`products`, `collections`). Both use `@wix/ecom` for cart/checkout.
+**Note**: 
+- `wix-stores` uses Catalog V3 API (`productsV3`, `@wix/categories`)
+- `wix-stores-v1` uses Catalog V1 API (`products`, `collections`)
+- Both depend on `wix-cart` for shared cart/checkout functionality (`@wix/ecom`)
 
 ## Package: `@jay-framework/wix-server-client`
 

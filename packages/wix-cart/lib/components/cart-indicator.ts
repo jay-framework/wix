@@ -1,11 +1,8 @@
 /**
- * Cart Indicator Component (V1)
+ * Cart Indicator Component
  *
  * A lightweight cart indicator for site headers showing item count.
  * Uses the Wix eCommerce Cart API via client context.
- * 
- * Note: Cart operations are identical between V1 and V3 packages
- * as they both use @wix/ecom.
  */
 
 import {
@@ -20,12 +17,16 @@ import {
     CartIndicatorFastViewState,
     CartIndicatorRefs,
 } from '../contracts/cart-indicator.jay-contract';
-import { WIX_STORES_V1_SERVICE_MARKER, WixStoresV1Service } from '../services/wix-stores-v1-service.js';
-import { WIX_STORES_V1_CONTEXT, WixStoresV1Context } from '../contexts/wix-stores-v1-context';
+import { WIX_CART_SERVICE, WixCartService } from '../services/wix-cart-service-marker';
+import { WIX_CART_CONTEXT, WixCartContext } from '../contexts/wix-cart-context';
 
 // ============================================================================
 // Types
 // ============================================================================
+
+interface CartIndicatorSlowCarryForward {
+    // No data to carry forward from slow phase
+}
 
 interface CartIndicatorFastCarryForward {
     // No data to carry forward from fast phase
@@ -40,7 +41,7 @@ interface CartIndicatorFastCarryForward {
  */
 async function renderFastChanging(
     _props: PageProps,
-    _wixStores: WixStoresV1Service
+    _wixCart: WixCartService
 ) {
     const Pipeline = RenderPipeline.for<CartIndicatorFastViewState, CartIndicatorFastCarryForward>();
 
@@ -63,7 +64,7 @@ function CartIndicatorInteractive(
     refs: CartIndicatorRefs,
     viewStateSignals: Signals<CartIndicatorFastViewState>,
     _carryForward: CartIndicatorFastCarryForward,
-    storesContext: WixStoresV1Context
+    cartContext: WixCartContext
 ) {
 
     // Get signal setters for loading and animation states
@@ -73,11 +74,11 @@ function CartIndicatorInteractive(
     } = viewStateSignals;
     
     // Track previous item count for "just added" animation
-    const [prevItemCount, setPrevItemCount] = createSignal(storesContext.cartIndicator.itemCount());
+    const [prevItemCount, setPrevItemCount] = createSignal(cartContext.cartIndicator.itemCount());
 
     // Watch for item count changes to trigger animation
     createEffect(() => {
-        const currentCount = storesContext.cartIndicator.itemCount();
+        const currentCount = cartContext.cartIndicator.itemCount();
         if (currentCount > prevItemCount()) {
             // Items were added - trigger animation
             setJustAdded(true);
@@ -93,8 +94,8 @@ function CartIndicatorInteractive(
     return {
         render: () => ({
             // Read directly from reactive global context signals
-            itemCount: storesContext.cartIndicator.itemCount(),
-            hasItems: storesContext.cartIndicator.hasItems(),
+            itemCount: cartContext.cartIndicator.itemCount(),
+            hasItems: cartContext.cartIndicator.hasItems(),
             isLoading: isLoading(),
             justAdded: justAdded()
         })
@@ -106,14 +107,14 @@ function CartIndicatorInteractive(
 // ============================================================================
 
 /**
- * Cart Indicator Component (V1)
+ * Cart Indicator Component
  *
  * Displays cart item count in site header.
  * Automatically updates when items are added to cart.
  */
 export const cartIndicator = makeJayStackComponent<CartIndicatorContract>()
     .withProps<PageProps>()
-    .withServices(WIX_STORES_V1_SERVICE_MARKER)
-    .withContexts(WIX_STORES_V1_CONTEXT)
+    .withServices(WIX_CART_SERVICE)
+    .withContexts(WIX_CART_CONTEXT)
     .withFastRender(renderFastChanging)
     .withInteractive(CartIndicatorInteractive);

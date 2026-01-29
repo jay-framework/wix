@@ -5,15 +5,24 @@
  * Provides the context for direct API access and component definitions.
  */
 
-// Export headless components
-export * from './components/cart-page';
+// Re-export cart components from wix-cart (shared package)
+export { cartIndicator, cartPage } from '@jay-framework/wix-cart/client';
+export { WIX_CART_CONTEXT } from '@jay-framework/wix-cart/client';
+export type { 
+    WixCartContext,
+    CartLineItem,
+    CartSummary,
+    CartState,
+    CartIndicatorState,
+} from '@jay-framework/wix-cart/client';
+
+// Export stores-specific headless components
 export * from './components/product-page';
-export * from './components/cart-indicator';
 export * from './components/product-search';
 export * from './components/category-page';
 export * from './components/category-list';
 
-// Export client context and types
+// Export stores client context and types
 export {
     WIX_STORES_CONTEXT,
     provideWixStoresContext,
@@ -22,17 +31,6 @@ export {
     type ReactiveCartIndicator,
     type CartOperationResult,
 } from './contexts/wix-stores-context';
-export {
-    type CartLineItem,
-    type CartSummary,
-    type CartState,
-    type CartIndicatorState,
-    mapLineItem,
-    mapCartSummary,
-    mapCartToState,
-    mapCartToIndicator,
-    getEmptyCartState,
-} from './contexts/cart-helpers';
 
 // Note: Actions should be imported directly from '@jay-framework/wix-stores/actions'
 // or from the specific action files. They are NOT re-exported here because the

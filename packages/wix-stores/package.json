@@ -41,6 +41,7 @@
     "@jay-framework/secure": "^0.11.0",
     "@jay-framework/stack-client-runtime": "^0.11.0",
     "@jay-framework/stack-server-runtime": "^0.11.0",
+    "@jay-framework/wix-cart": "^1.0.0",
     "@jay-framework/wix-server-client": "^1.0.0",
     "@jay-framework/wix-utils": "^1.0.0",
     "@wix/categories": "^1.0.165",

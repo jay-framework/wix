@@ -5,11 +5,27 @@
  * Provides services, actions, and component definitions.
  */
 
-// Export headless components
-export * from './components/cart-page';
+// Re-export cart components from wix-cart (shared package)
+export { cartIndicator, cartPage } from '@jay-framework/wix-cart';
+export { 
+    WIX_CART_SERVICE, 
+    WIX_CART_CONTEXT,
+    provideWixCartService,
+    provideWixCartContext
+} from '@jay-framework/wix-cart';
+export type { 
+    WixCartService, 
+    WixCartContext,
+    CartLineItem,
+    CartSummary,
+    CartState,
+    CartIndicatorState,
+    AddToCartOptions
+} from '@jay-framework/wix-cart';
+
+// Export stores-specific headless components
 export * from './components/product-search';
 export * from './components/product-page';
-export * from './components/cart-indicator';
 export * from './components/category-page';
 export * from './components/category-list';
 
@@ -20,18 +36,13 @@ export {
     type WixStoresService,
 } from './services/wix-stores-service';
 
-// Export client context types (for type-only imports on server)
-export {
-    type CartLineItem,
-    type CartSummary,
-    type CartState,
-    type CartIndicatorState,
-} from './contexts/cart-helpers';
+// Export stores client context 
 export {
     WIX_STORES_CONTEXT,
     type WixStoresContext,
     type WixStoresInitData,
 } from './contexts/wix-stores-context';
+
 // Export server actions (search, product browsing)
 export * from './actions/stores-actions';
 

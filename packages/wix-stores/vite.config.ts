@@ -26,12 +26,14 @@ export default defineConfig(({ isSsrBuild }) => ({
             external: [
                 '@jay-framework/component',
                 '@jay-framework/fullstack-component',
-                '@jay-framework/stack-client-runtime', // For action callers in client bundle
+                '@jay-framework/stack-client-runtime',
                 '@jay-framework/stack-server-runtime',
                 '@jay-framework/reactive',
                 '@jay-framework/runtime',
                 '@jay-framework/json-patch',
                 '@jay-framework/secure',
+                '@jay-framework/wix-cart',
+                '@jay-framework/wix-cart/client',
                 '@jay-framework/wix-server-client',
                 '@jay-framework/wix-server-client/client',
                 '@wix/categories',

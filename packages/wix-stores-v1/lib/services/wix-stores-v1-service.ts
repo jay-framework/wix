@@ -3,10 +3,13 @@
  * 
  * Provides access to Wix Stores Catalog V1 APIs on the server using API Key authentication.
  * Used with .withServices(WIX_STORES_V1_SERVICE_MARKER) in component definitions.
+ * 
+ * Note: Cart service is provided separately by WIX_CART_SERVICE from wix-cart package.
  */
 
 import { WixClient } from '@wix/sdk';
-import { getCollectionsClient, getCurrentCartClient, getInventoryClient, getProductsClient } from '../utils/wix-store-v1-api';
+import { getCollectionsClient, getInventoryClient, getProductsClient } from '../utils/wix-store-v1-api';
+import { getCurrentCartClient } from '@jay-framework/wix-cart';
 import { createJayService } from '@jay-framework/fullstack-component';
 import { registerService } from '@jay-framework/stack-server-runtime';
 
@@ -14,6 +17,7 @@ export interface WixStoresV1Service {
     products: ReturnType<typeof getProductsClient>;
     collections: ReturnType<typeof getCollectionsClient>;
     inventory: ReturnType<typeof getInventoryClient>;
+    /** @deprecated Use WIX_CART_SERVICE from @jay-framework/wix-cart instead */
     cart: ReturnType<typeof getCurrentCartClient>;
 }
 
@@ -32,6 +36,7 @@ export function provideWixStoresV1Service(wixClient: WixClient): WixStoresV1Serv
         products: getProductsClient(wixClient),
         collections: getCollectionsClient(wixClient),
         inventory: getInventoryClient(wixClient),
+        // Keep cart for backward compatibility, but prefer WIX_CART_SERVICE
         cart: getCurrentCartClient(wixClient),
     };
 

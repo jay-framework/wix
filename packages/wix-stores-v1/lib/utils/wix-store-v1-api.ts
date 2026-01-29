@@ -7,22 +7,21 @@
  * Key difference from V3:
  * - Uses `products` module instead of `productsV3`
  * - Uses `collections` module instead of `@wix/categories`
+ * 
+ * Note: Cart client is provided by @jay-framework/wix-cart package.
  */
 
 import { WixClient } from "@wix/sdk";
 import { products, collections, inventory } from "@wix/stores";
-import { currentCart } from "@wix/ecom";
 
 const instances: {
     productsClientInstance: typeof products | undefined;
     collectionsClientInstance: typeof collections | undefined;
     inventoryClientInstance: typeof inventory | undefined;
-    currentCartInstance: typeof currentCart | undefined;
 } = {
     productsClientInstance: undefined,
     collectionsClientInstance: undefined,
     inventoryClientInstance: undefined,
-    currentCartInstance: undefined
 };
 
 /**
@@ -71,18 +70,5 @@ export function getInventoryClient(wixClient: WixClient): typeof inventory {
     return instances.inventoryClientInstance;
 }
 
-/**
- * Get a configured Wix eCommerce Current Cart client (singleton)
- *
- * The Current Cart API allows you to manage the visitor's shopping cart.
- * This is shared between V1 and V3 packages.
- *
- * @returns Current Cart client instance from @wix/ecom
- * @see https://dev.wix.com/docs/sdk/backend-modules/ecom/current-cart/introduction
- */
-export function getCurrentCartClient(wixClient: WixClient): typeof currentCart {
-    if (!instances.currentCartInstance) {
-        instances.currentCartInstance = wixClient.use(currentCart) as unknown as typeof currentCart;
-    }
-    return instances.currentCartInstance;
-}
+// Note: Cart client is now provided by @jay-framework/wix-cart package
+// Use: import { getCurrentCartClient } from '@jay-framework/wix-cart'

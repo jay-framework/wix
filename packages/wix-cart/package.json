@@ -1,8 +1,8 @@
 {
-  "name": "@jay-framework/wix-stores-v1",
+  "name": "@jay-framework/wix-cart",
   "version": "1.0.0",
   "type": "module",
-  "description": "Wix Stores Catalog V1 API client for Jay Framework",
+  "description": "Wix Cart/Ecom shared package for Jay Framework",
   "private": true,
   "license": "Apache-2.0",
   "main": "dist/index.js",
@@ -14,12 +14,8 @@
     ".": "./dist/index.js",
     "./client": "./dist/index.client.js",
     "./plugin.yaml": "./plugin.yaml",
-    "./product-page.jay-contract": "./dist/contracts/product-page.jay-contract",
-    "./product-search.jay-contract": "./dist/contracts/product-search.jay-contract",
     "./cart-indicator.jay-contract": "./dist/contracts/cart-indicator.jay-contract",
-    "./cart-page.jay-contract": "./dist/contracts/cart-page.jay-contract",
-    "./category-page.jay-contract": "./dist/contracts/category-page.jay-contract",
-    "./category-list.jay-contract": "./dist/contracts/category-list.jay-contract"
+    "./cart-page.jay-contract": "./dist/contracts/cart-page.jay-contract"
   },
   "scripts": {
     "build": "npm run clean && npm run definitions && npm run build:client && npm run build:server && npm run build:copy-contract && npm run build:types",
@@ -41,11 +37,10 @@
     "@jay-framework/secure": "^0.11.0",
     "@jay-framework/stack-client-runtime": "^0.11.0",
     "@jay-framework/stack-server-runtime": "^0.11.0",
-    "@jay-framework/wix-cart": "^1.0.0",
     "@jay-framework/wix-server-client": "^1.0.0",
     "@jay-framework/wix-utils": "^1.0.0",
-    "@wix/sdk": "^1.17.4",
-    "@wix/stores": "^1.0.563"
+    "@wix/ecom": "^1.0.753",
+    "@wix/sdk": "^1.17.4"
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",
@@ -54,12 +49,13 @@
     "@jay-framework/compiler-jay-stack": "^0.11.0",
     "@jay-framework/jay-cli": "^0.11.0",
     "@jay-framework/vite-plugin": "^0.11.0",
+    "@jay-framework/wix-dev-environment": "workspace:^",
     "nodemon": "^3.0.3",
     "rimraf": "^5.0.5",
     "tslib": "^2.6.2",
     "tsup": "^8.5.1",
     "typescript": "^5.3.3",
     "vite": "^5.0.11",
-    "vite-plugin-inspect": "^0.8.1"
+    "vitest": "^1.2.0"
   }
 }

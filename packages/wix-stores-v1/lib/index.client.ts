@@ -7,15 +7,24 @@
  * Uses Wix Catalog V1 API (products module) instead of V3 (productsV3).
  */
 
-// Export headless components
-export * from './components/cart-page';
+// Re-export cart components from wix-cart (shared package)
+export { cartIndicator, cartPage } from '@jay-framework/wix-cart/client';
+export { WIX_CART_CONTEXT } from '@jay-framework/wix-cart/client';
+export type { 
+    WixCartContext,
+    CartLineItem,
+    CartSummary,
+    CartState,
+    CartIndicatorState,
+} from '@jay-framework/wix-cart/client';
+
+// Export stores-specific headless components
 export * from './components/product-page';
-export * from './components/cart-indicator';
 export * from './components/product-search';
 export * from './components/collection-page';
 export * from './components/collection-list';
 
-// Export client context and types
+// Export stores V1 client context and types
 export {
     WIX_STORES_V1_CONTEXT,
     provideWixStoresV1Context,
@@ -24,18 +33,6 @@ export {
     type ReactiveCartIndicator,
     type CartOperationResult,
 } from './contexts/wix-stores-v1-context';
-
-export {
-    type CartLineItem,
-    type CartSummary,
-    type CartState,
-    type CartIndicatorState,
-    mapLineItem,
-    mapCartSummary,
-    mapCartToState,
-    mapCartToIndicator,
-    getEmptyCartState,
-} from './contexts/cart-helpers';
 
 // Export init
 export { init } from './init.js';

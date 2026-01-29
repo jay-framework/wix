@@ -1,0 +1,14 @@
+name: wix-cart
+# Shared Wix Cart/Ecom package for Jay Framework
+
+contracts:
+  - name: cart-indicator
+    contract: cart-indicator.jay-contract
+    component: cartIndicator
+    description: Lightweight cart indicator for site headers showing item count
+  - name: cart-page
+    contract: cart-page.jay-contract
+    component: cartPage
+    description: Full cart page with line item management and checkout
+
+# Plugin initialization uses makeJayInit pattern in lib/init.ts

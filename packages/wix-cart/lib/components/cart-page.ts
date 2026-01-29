@@ -12,7 +12,6 @@ import {
     PageProps
 } from '@jay-framework/fullstack-component';
 import { Props } from '@jay-framework/component';
-import { useGlobalContext } from '@jay-framework/runtime';
 import {
     CartPageContract,
     CartPageFastViewState,
@@ -20,10 +19,8 @@ import {
     CartPageSlowViewState,
     LineItemOfCartPageViewState
 } from '../contracts/cart-page.jay-contract';
-import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
-import {
-    WIX_STORES_CONTEXT, WixStoresContext,
-} from '../contexts/wix-stores-context';
+import { WIX_CART_SERVICE, WixCartService } from '../services/wix-cart-service-marker';
+import { WIX_CART_CONTEXT, WixCartContext } from '../contexts/wix-cart-context';
 import {
     CartState,
     CartLineItem,
@@ -137,7 +134,7 @@ function createEmptyCartViewState(): CartPageFastViewState {
  */
 async function renderSlowlyChanging(
     _props: PageProps,
-    _wixStores: WixStoresService
+    _wixCart: WixCartService
 ) {
     const Pipeline = RenderPipeline.for<CartPageSlowViewState, CartPageSlowCarryForward>();
 
@@ -156,7 +153,7 @@ async function renderSlowlyChanging(
 async function renderFastChanging(
     _props: PageProps,
     _slowCarryForward: CartPageSlowCarryForward,
-    _wixStores: WixStoresService
+    _wixCart: WixCartService
 ) {
     const Pipeline = RenderPipeline.for<CartPageFastViewState, CartPageFastCarryForward>();
 
@@ -174,7 +171,7 @@ function CartPageInteractive(
     refs: CartPageRefs,
     viewStateSignals: Signals<CartPageFastViewState>,
     _carryForward: CartPageFastCarryForward,
-    storesContext: WixStoresContext
+    cartContext: WixCartContext
 ) {
 
     // Get signal setters from viewStateSignals
@@ -192,7 +189,7 @@ function CartPageInteractive(
     async function loadCart() {
         try {
             setIsLoading(true);
-            const cartState = await storesContext.getEstimatedCart();
+            const cartState = await cartContext.getEstimatedCart();
             const viewState = mapCartStateToViewState(cartState);
             
             setIsEmpty(viewState.isEmpty);
@@ -217,7 +214,7 @@ function CartPageInteractive(
         ]));
 
         try {
-            await storesContext.updateLineItemQuantity(lineItemId, newQuantity);
+            await cartContext.updateLineItemQuantity(lineItemId, newQuantity);
             // Reload cart to get accurate totals from estimate API
             await loadCart();
         } catch (error) {
@@ -239,7 +236,7 @@ function CartPageInteractive(
         ]));
 
         try {
-            await storesContext.removeLineItems([lineItemId]);
+            await cartContext.removeLineItems([lineItemId]);
             // Reload cart to get accurate totals from estimate API
             await loadCart();
         } catch (error) {
@@ -254,7 +251,7 @@ function CartPageInteractive(
     async function handleClearCart() {
         try {
             setIsLoading(true);
-            await storesContext.clearCart();
+            await cartContext.clearCart();
             await loadCart();
         } catch (error) {
             console.error('[CartPage] Failed to clear cart:', error);
@@ -274,7 +271,7 @@ function CartPageInteractive(
         ]));
 
         try {
-            await storesContext.applyCoupon(code);
+            await cartContext.applyCoupon(code);
             // Reload cart to get accurate totals from estimate API
             await loadCart();
         } catch (error) {
@@ -290,7 +287,7 @@ function CartPageInteractive(
     // Handle coupon removal
     async function handleRemoveCoupon() {
         try {
-            await storesContext.removeCoupon();
+            await cartContext.removeCoupon();
             // Reload cart to get accurate totals from estimate API
             await loadCart();
         } catch (error) {
@@ -384,8 +381,8 @@ function CartPageInteractive(
  */
 export const cartPage = makeJayStackComponent<CartPageContract>()
     .withProps<PageProps>()
-    .withServices(WIX_STORES_SERVICE_MARKER)
-    .withContexts(WIX_STORES_CONTEXT)
+    .withServices(WIX_CART_SERVICE)
+    .withContexts(WIX_CART_CONTEXT)
     .withSlowlyRender(renderSlowlyChanging)
     .withFastRender(renderFastChanging)
     .withInteractive(CartPageInteractive);
