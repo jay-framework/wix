@@ -205,8 +205,8 @@
             <article class="product-card {isAddingToCart ? is-adding}" forEach="productSearch.searchResults" trackBy="_id">
               <a href="{productUrl}" class="product-card-image">
                 <img 
-                  src="{thumbnail.url}" 
-                  alt="{thumbnail.altText}"
+                  src="{mainMedia.url}"
+                  alt="{mainMedia.altText}"
                   loading="lazy"
                 />
                 
