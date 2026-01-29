@@ -6,7 +6,7 @@
             key="productSearch"
     ></script>
     <script type="application/jay-headless"
-            plugin="@jay-framework/wix-stores"
+            plugin="@jay-framework/wix-cart"
             contract="cart-indicator"
             key="cartIndicator"
     ></script>

@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Cart - Whisky Store</title>
     <script type="application/jay-headless"
-            plugin="@jay-framework/wix-stores-v1"
+            plugin="@jay-framework/wix-cart"
             contract="cart-page"
             key="cartPage"
     ></script>

@@ -10,14 +10,6 @@ contracts:
     contract: product-search.jay-contract
     component: productSearch
     description: Headless product search page (Catalog V1)
-  - name: cart-indicator
-    contract: cart-indicator.jay-contract
-    component: cartIndicator
-    description: Lightweight cart indicator for site headers showing item count
-  - name: cart-page
-    contract: cart-page.jay-contract
-    component: cartPage
-    description: Full cart page with line item management and checkout
   - name: category-page
     contract: category-page.jay-contract
     component: categoryPage

@@ -16,8 +16,6 @@
     "./plugin.yaml": "./plugin.yaml",
     "./product-page.jay-contract": "./dist/contracts/product-page.jay-contract",
     "./product-search.jay-contract": "./dist/contracts/product-search.jay-contract",
-    "./cart-indicator.jay-contract": "./dist/contracts/cart-indicator.jay-contract",
-    "./cart-page.jay-contract": "./dist/contracts/cart-page.jay-contract",
     "./category-page.jay-contract": "./dist/contracts/category-page.jay-contract",
     "./category-list.jay-contract": "./dist/contracts/category-list.jay-contract"
   },
@@ -45,7 +43,6 @@
     "@jay-framework/wix-server-client": "^1.0.0",
     "@jay-framework/wix-utils": "^1.0.0",
     "@wix/categories": "^1.0.165",
-    "@wix/ecom": "^1.0.753",
     "@wix/sdk": "^1.17.4",
     "@wix/stores": "^1.0.563"
   },

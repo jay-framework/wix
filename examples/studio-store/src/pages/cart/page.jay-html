@@ -1,7 +1,7 @@
 <html>
   <head>
     <script type="application/jay-headless"
-            plugin="@jay-framework/wix-stores"
+            plugin="@jay-framework/wix-cart"
             contract="cart-page"
             key="cartPage"
     ></script>
