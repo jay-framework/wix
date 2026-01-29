@@ -28,7 +28,6 @@ import { WIX_STORES_V1_SERVICE_MARKER, WixStoresV1Service } from '../services/wi
 import { patch, REPLACE } from '@jay-framework/json-patch';
 import { runAction } from '@jay-framework/stack-server-runtime';
 import { searchProducts, ProductSortField } from '../actions/stores-v1-actions';
-import { mapProductToCard } from '../utils/product-mapper-v1';
 import { WIX_STORES_V1_CONTEXT, WixStoresV1Context } from '../contexts/wix-stores-v1-context';
 
 /**
