@@ -32,7 +32,7 @@ interface StoredTokens {
  */
 function storeTokens(tokens: Tokens, oauthClientId: string): void {
     try {
-        localStorage.setItem(TOKENS_STORAGE_KEY, JSON.stringify({tokens, oauthClientId}));
+        localStorage.setItem(TOKENS_STORAGE_KEY+oauthClientId, JSON.stringify({tokens, oauthClientId}));
     } catch (error) {
         console.warn('[WixClient] Failed to store tokens:', error);
     }
@@ -41,9 +41,9 @@ function storeTokens(tokens: Tokens, oauthClientId: string): void {
 /**
  * Retrieve stored visitor tokens from localStorage.
  */
-function getStoredTokens(): StoredTokens | null {
+function getStoredTokens(oauthClientId: string): StoredTokens | null {
     try {
-        const stored = localStorage.getItem(TOKENS_STORAGE_KEY);
+        const stored = localStorage.getItem(TOKENS_STORAGE_KEY+oauthClientId);
         if (stored) {
             return JSON.parse(stored);
         }
@@ -65,7 +65,7 @@ export function clearStoredTokens(): void {
 }
 
 export async function provideWixClientContext(oauthClientId: string) {
-    const storedTokens = getStoredTokens();
+    const storedTokens = getStoredTokens(oauthClientId);
 
     console.log('[wix-server-client] createClient with tokens: ', undefined);
     const wixClient = createClient({
