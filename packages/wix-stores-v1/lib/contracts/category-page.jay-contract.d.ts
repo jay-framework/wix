@@ -71,11 +71,9 @@ export interface CategoryPageViewState {
 export type CategoryPageSlowViewState = Pick<CategoryPageViewState, '_id' | 'name' | 'description' | 'slug' | 'visible' | 'numberOfProducts'> & {
     media: CategoryPageViewState['media'];
     breadcrumbs: Array<CategoryPageViewState['breadcrumbs'][number]>;
-    products: Array<Pick<CategoryPageViewState['products'][number], '_id' | 'name' | 'slug' | 'productUrl' | 'currency' | 'hasDiscount' | 'hasRibbon' | 'productType' | 'visible' | 'quickAddType'> & {
+    products: Array<Pick<CategoryPageViewState['products'][number], '_id' | 'name' | 'slug' | 'productUrl' | 'hasDiscount' | 'hasRibbon' | 'productType' | 'quickAddType'> & {
     mainMedia: CategoryPageViewState['products'][number]['mainMedia'];
     thumbnail: CategoryPageViewState['products'][number]['thumbnail'];
-    actualPriceRange: CategoryPageViewState['products'][number]['actualPriceRange'];
-    compareAtPriceRange: CategoryPageViewState['products'][number]['compareAtPriceRange'];
     inventory: CategoryPageViewState['products'][number]['inventory'];
     ribbon: CategoryPageViewState['products'][number]['ribbon'];
     brand: CategoryPageViewState['products'][number]['brand'];
@@ -86,7 +84,7 @@ export type CategoryPageSlowViewState = Pick<CategoryPageViewState, '_id' | 'nam
 };
 
 export type CategoryPageFastViewState = Pick<CategoryPageViewState, 'hasMore' | 'loadedCount' | 'isLoading' | 'hasProducts'> & {
-    products: Array<Pick<CategoryPageViewState['products'][number], '_id' | 'isAddingToCart'> & {
+    products: Array<Pick<CategoryPageViewState['products'][number], '_id' | 'price' | 'strikethroughPrice' | 'isAddingToCart'> & {
     quickOption: {
     choices: Array<Pick<CategoryPageViewState['products'][number]['quickOption']['choices'][number], 'choiceId' | 'inStock' | 'isSelected'>>;
 };
@@ -95,7 +93,7 @@ export type CategoryPageFastViewState = Pick<CategoryPageViewState, 'hasMore' | 
 };
 
 export type CategoryPageInteractiveViewState = Pick<CategoryPageViewState, 'hasMore' | 'loadedCount' | 'isLoading' | 'hasProducts'> & {
-    products: Array<Pick<CategoryPageViewState['products'][number], '_id' | 'isAddingToCart'> & {
+    products: Array<Pick<CategoryPageViewState['products'][number], '_id' | 'price' | 'strikethroughPrice' | 'isAddingToCart'> & {
     quickOption: {
     choices: Array<Pick<CategoryPageViewState['products'][number]['quickOption']['choices'][number], 'choiceId' | 'inStock' | 'isSelected'>>;
 };

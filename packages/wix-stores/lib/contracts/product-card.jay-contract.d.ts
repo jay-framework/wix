@@ -19,36 +19,6 @@ export interface ThumbnailOfProductCardViewState {
   height: number
 }
 
-export interface MinValueOfActualPriceRangeOfProductCardViewState {
-  amount: string,
-  formattedAmount: string
-}
-
-export interface MaxValueOfActualPriceRangeOfProductCardViewState {
-  amount: string,
-  formattedAmount: string
-}
-
-export interface ActualPriceRangeOfProductCardViewState {
-  minValue: MinValueOfActualPriceRangeOfProductCardViewState,
-  maxValue: MaxValueOfActualPriceRangeOfProductCardViewState
-}
-
-export interface MinValueOfCompareAtPriceRangeOfProductCardViewState {
-  amount: string,
-  formattedAmount: string
-}
-
-export interface MaxValueOfCompareAtPriceRangeOfProductCardViewState {
-  amount: string,
-  formattedAmount: string
-}
-
-export interface CompareAtPriceRangeOfProductCardViewState {
-  minValue: MinValueOfCompareAtPriceRangeOfProductCardViewState,
-  maxValue: MaxValueOfCompareAtPriceRangeOfProductCardViewState
-}
-
 export enum AvailabilityStatus {
   IN_STOCK,
   OUT_OF_STOCK,
@@ -94,26 +64,22 @@ export interface ProductCardViewState {
   productUrl: string,
   mainMedia: MainMediaOfProductCardViewState,
   thumbnail: ThumbnailOfProductCardViewState,
-  actualPriceRange: ActualPriceRangeOfProductCardViewState,
-  compareAtPriceRange: CompareAtPriceRangeOfProductCardViewState,
-  currency: string,
+  price: string,
+  strikethroughPrice: string,
   hasDiscount: boolean,
   inventory: InventoryOfProductCardViewState,
   ribbon: RibbonOfProductCardViewState,
   hasRibbon: boolean,
   brand: BrandOfProductCardViewState,
   productType: ProductType,
-  visible: boolean,
   isAddingToCart: boolean,
   quickAddType: QuickAddType,
   quickOption: ProductOptionsViewState
 }
 
-export type ProductCardSlowViewState = Pick<ProductCardViewState, '_id' | 'name' | 'slug' | 'productUrl' | 'currency' | 'hasDiscount' | 'hasRibbon' | 'productType' | 'visible' | 'quickAddType'> & {
+export type ProductCardSlowViewState = Pick<ProductCardViewState, '_id' | 'name' | 'slug' | 'productUrl' | 'hasDiscount' | 'hasRibbon' | 'productType' | 'quickAddType'> & {
     mainMedia: ProductCardViewState['mainMedia'];
     thumbnail: ProductCardViewState['thumbnail'];
-    actualPriceRange: ProductCardViewState['actualPriceRange'];
-    compareAtPriceRange: ProductCardViewState['compareAtPriceRange'];
     inventory: ProductCardViewState['inventory'];
     ribbon: ProductCardViewState['ribbon'];
     brand: ProductCardViewState['brand'];
@@ -122,13 +88,13 @@ export type ProductCardSlowViewState = Pick<ProductCardViewState, '_id' | 'name'
 };
 };
 
-export type ProductCardFastViewState = Pick<ProductCardViewState, 'isAddingToCart'> & {
+export type ProductCardFastViewState = Pick<ProductCardViewState, 'price' | 'strikethroughPrice' | 'isAddingToCart'> & {
     quickOption: {
     choices: Array<Pick<ProductCardViewState['quickOption']['choices'][number], 'choiceId' | 'inStock' | 'isSelected'>>;
 };
 };
 
-export type ProductCardInteractiveViewState = Pick<ProductCardViewState, 'isAddingToCart'> & {
+export type ProductCardInteractiveViewState = Pick<ProductCardViewState, 'price' | 'strikethroughPrice' | 'isAddingToCart'> & {
     quickOption: {
     choices: Array<Pick<ProductCardViewState['quickOption']['choices'][number], 'choiceId' | 'inStock' | 'isSelected'>>;
 };

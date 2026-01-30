@@ -527,7 +527,7 @@
               <!-- Hover Overlay with Name & Price -->
               <div class="product-image-overlay">
                 <h4 class="overlay-name">{name}</h4>
-                <span class="overlay-price">{actualPriceRange.minValue.formattedAmount}</span>
+                <span class="overlay-price">{price}</span>
               </div>
               
               <!-- Badges -->
@@ -545,9 +545,9 @@
                 <a href="{productUrl}" ref="productSearch.searchResults.productLink">{name}</a>
               </h3>
               <div class="product-card-price">
-                <span class="current-price">{actualPriceRange.minValue.formattedAmount}</span>
+                <span class="current-price">{price}</span>
                 <span class="original-price" if="hasDiscount">
-                  {compareAtPriceRange.minValue.formattedAmount}
+                  {strikethroughPrice}
                 </span>
                 <span class="badge badge-error" if="hasDiscount">Sale</span>
               </div>

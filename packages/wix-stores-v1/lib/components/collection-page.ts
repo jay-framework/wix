@@ -204,6 +204,8 @@ async function renderFastChanging(
                     // Products array with fast+interactive properties for SSR items
                     products: data.products.map(p => ({
                         _id: p._id,
+                        price: p.price,
+                        strikethroughPrice: p.strikethroughPrice,
                         isAddingToCart: false,
                         quickOption: p.quickOption ? {
                             choices: p.quickOption.choices.map(c => ({

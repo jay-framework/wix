@@ -188,28 +188,9 @@ export function mapProductToCard(
             width: mainMedia?.thumbnail?.width || 300,
             height: mainMedia?.thumbnail?.height || 300
         },
-        // Convert V1 number prices to string amounts
-        actualPriceRange: {
-            minValue: {
-                amount: String(actualPrice),
-                formattedAmount: formattedActualPrice
-            },
-            maxValue: {
-                amount: String(product.priceRange?.maxValue ?? actualPrice),
-                formattedAmount: formattedActualPrice
-            }
-        },
-        compareAtPriceRange: {
-            minValue: {
-                amount: String(compareAtPrice),
-                formattedAmount: hasDiscount ? formattedCompareAtPrice : ''
-            },
-            maxValue: {
-                amount: String(compareAtPrice),
-                formattedAmount: hasDiscount ? formattedCompareAtPrice : ''
-            }
-        },
-        currency: product.price?.currency || 'USD',
+        // Simplified price fields
+        price: formattedActualPrice,
+        strikethroughPrice: hasDiscount ? formattedCompareAtPrice : '',
         hasDiscount,
         inventory: {
             // V1 uses stock.inventoryStatus
@@ -226,7 +207,6 @@ export function mapProductToCard(
             name: product.brand || ''
         },
         productType: mapProductType(product.productType),
-        visible: product.visible !== false,
         isAddingToCart: false,
         // Quick add behavior
         quickAddType: getQuickAddType(product),

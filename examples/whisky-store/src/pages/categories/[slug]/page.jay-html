@@ -214,8 +214,8 @@
             <p class="product-card-meta" if="brand.name">{brand.name}</p>
 
             <div class="product-card-price">
-              <span class="current-price">{actualPriceRange.minValue.formattedAmount}</span>
-              <span class="original-price" if="hasDiscount">{compareAtPriceRange.minValue.formattedAmount}</span>
+              <span class="current-price">{price}</span>
+              <span class="original-price" if="hasDiscount">{strikethroughPrice}</span>
             </div>
             
             <!-- SIMPLE: Regular add to cart -->
@@ -287,8 +287,8 @@
             </div>
             
             <div class="product-card-price">
-              <span class="current-price">{actualPriceRange.minValue.formattedAmount}</span>
-              <span class="original-price" if="hasDiscount">{compareAtPriceRange.minValue.formattedAmount}</span>
+              <span class="current-price">{price}</span>
+              <span class="original-price" if="hasDiscount">{strikethroughPrice}</span>
             </div>
             
             <!-- SIMPLE: Regular add to cart -->

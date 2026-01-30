@@ -234,8 +234,8 @@
               <span class="brand-text" if="brand.name">{brand.name}</span>
               
               <div class="product-card-price">
-                <span class="price">{actualPriceRange.minValue.formattedAmount}</span>
-                <span class="compare-price" if="hasDiscount">{compareAtPriceRange.minValue.formattedAmount}</span>
+                <span class="price">{price}</span>
+                <span class="compare-price" if="hasDiscount">{strikethroughPrice}</span>
               </div>
               
               <div class="stock-badge badge-success" if="inventory.availabilityStatus == IN_STOCK">
@@ -295,8 +295,8 @@
               <span class="brand-text" if="brand.name">{brand.name}</span>
               
               <div class="product-card-price">
-                <span class="price">{actualPriceRange.minValue.formattedAmount}</span>
-                <span class="compare-price" if="hasDiscount">{compareAtPriceRange.minValue.formattedAmount}</span>
+                <span class="price">{price}</span>
+                <span class="compare-price" if="hasDiscount">{strikethroughPrice}</span>
               </div>
               
               <div class="stock-badge badge-success" if="inventory.availabilityStatus == IN_STOCK">

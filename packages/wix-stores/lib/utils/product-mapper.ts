@@ -193,27 +193,9 @@ export function mapProductToCard(
             width: 300,
             height: 300
         },
-        actualPriceRange: {
-            minValue: {
-                amount: actualAmount,
-                formattedAmount: actualFormattedAmount
-            },
-            maxValue: {
-                amount: product.actualPriceRange?.maxValue?.amount || actualAmount,
-                formattedAmount: product.actualPriceRange?.maxValue?.formattedAmount || actualFormattedAmount
-            }
-        },
-        compareAtPriceRange: {
-            minValue: {
-                amount: compareAtAmount || '0',
-                formattedAmount: hasDiscount ? compareAtFormattedAmount : ''
-            },
-            maxValue: {
-                amount: product.compareAtPriceRange?.maxValue?.amount || compareAtAmount || '0',
-                formattedAmount: hasDiscount ? (product.compareAtPriceRange?.maxValue?.formattedAmount || compareAtFormattedAmount) : ''
-            }
-        },
-        currency: product.currency || 'USD',
+        // Simplified price fields
+        price: actualFormattedAmount,
+        strikethroughPrice: hasDiscount ? compareAtFormattedAmount : '',
         hasDiscount,
         inventory: {
             availabilityStatus: mapAvailabilityStatus(product.inventory?.availabilityStatus),
@@ -229,7 +211,6 @@ export function mapProductToCard(
             name: product.brand?.name || ''
         },
         productType: mapProductType(product.productType),
-        visible: product.visible !== false,
         isAddingToCart: false,
         // Quick add behavior
         quickAddType: getQuickAddType(product),
