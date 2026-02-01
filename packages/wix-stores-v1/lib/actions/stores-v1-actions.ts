@@ -87,14 +87,24 @@ export interface GetProductBySlugInput {
 /**
  * Search products using the Wix Stores Catalog V1 queryProducts API.
  *
- * V1 uses skip-based pagination and different query syntax.
- * Note: V1 API has limited server-side filtering compared to V3.
+ * V1 uses skip-based pagination and query builder syntax.
+ * 
+ * Server-side filtering/sorting:
+ * - name: startsWith() for text search
+ * - collectionIds: hasSome() for collection filtering
+ * - priceData.price: ge()/le() for price range
+ * - Sorting: ascending()/descending() on price, name, lastUpdated
+ * 
+ * Client-side filtering (not supported by API):
+ * - inStockOnly: stock.inStock is not a filterable field
+ *
+ * @see https://dev.wix.com/docs/sdk/backend-modules/stores/products/query-products
  *
  * @example
  * ```typescript
  * const results = await searchProducts({
  *     query: 'whisky',
- *     filters: { inStockOnly: true },
+ *     filters: { inStockOnly: true, minPrice: 50, maxPrice: 200 },
  *     sortBy: 'price_asc',
  *     pageSize: 12,
  *     page: 1
@@ -132,6 +142,14 @@ export const searchProducts = makeJayQuery('wixStoresV1.searchProducts')
                 productQuery = productQuery.hasSome('collectionIds', filters.collectionIds);
             }
 
+            // Server-side price filtering using priceData.price
+            if (filters.minPrice !== undefined && filters.minPrice > 0) {
+                productQuery = productQuery.ge('priceData.price', filters.minPrice);
+            }
+            if (filters.maxPrice !== undefined && filters.maxPrice > 0) {
+                productQuery = productQuery.le('priceData.price', filters.maxPrice);
+            }
+
             // Apply sorting
             // V1 sort syntax is different from V3
             switch (sortBy) {
@@ -158,15 +176,9 @@ export const searchProducts = makeJayQuery('wixStoresV1.searchProducts')
             // Get all products for filtering
             let products: Product[] = (result.items || []);
 
-            // Client-side filtering for features V1 API doesn't support server-side
+            // Client-side filtering for stock (V1 API doesn't support server-side stock filtering)
             if (filters.inStockOnly) {
                 products = products.filter(p => p.stock?.inStock === true);
-            }
-            if (filters.minPrice !== undefined && filters.minPrice > 0) {
-                products = products.filter(p => (p.price?.discountedPrice || 0) >= filters.minPrice!);
-            }
-            if (filters.maxPrice !== undefined && filters.maxPrice > 0) {
-                products = products.filter(p => (p.price?.discountedPrice || 0) <= filters.maxPrice!);
             }
 
             // Calculate pagination info
