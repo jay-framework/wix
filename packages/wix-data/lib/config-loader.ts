@@ -12,9 +12,10 @@ import { collections } from '@wix/data';
 import * as yaml from 'js-yaml';
 import { WixDataConfig, CollectionConfig, ReferenceConfig } from './types';
 
-// Configuration file path (relative to project root)
+// Configuration file paths (relative to project root)
 const CONFIG_DIR = 'config';
 const CONFIG_FILE_NAME = 'wix-data.yaml';
+const DOCS_FILE_NAME = 'wix-data-collections.md';
 
 /**
  * Get the config file path
@@ -42,8 +43,12 @@ export async function loadConfig(wixClient: WixClient): Promise<WixDataConfig> {
     
     // No config file - generate default and save
     console.log(`[wix-data] No config found at ${configPath}, generating default...`);
-    const defaultConfig = await generateDefaultConfig(wixClient);
+    const { config: defaultConfig, collectionData } = await generateDefaultConfig(wixClient);
     await saveConfig(defaultConfig, configPath);
+    
+    // Also generate documentation file
+    const docsPath = path.join(process.cwd(), CONFIG_DIR, DOCS_FILE_NAME);
+    await saveDocumentation(collectionData, docsPath);
     
     return defaultConfig;
 }
@@ -131,14 +136,33 @@ function generateConfigYaml(config: WixDataConfig): string {
 }
 
 /**
+ * Collection data for documentation generation
+ */
+interface CollectionDocData {
+    id: string;
+    displayName: string;
+    fields: Array<{
+        key: string;
+        displayName: string;
+        type: string;
+    }>;
+    references: Array<{
+        fieldName: string;
+        fieldDisplayName: string;
+        targetCollection: string;
+        isMulti: boolean;
+    }>;
+}
+
+/**
  * Generate a default configuration by fetching all collections from Wix Data API.
  * 
- * The generated config:
- * - Lists all collections with their references
- * - Sets visible: false (hidden by default)
- * - Sets empty components
+ * Returns both the config and raw collection data for documentation.
  */
-async function generateDefaultConfig(wixClient: WixClient): Promise<WixDataConfig> {
+async function generateDefaultConfig(wixClient: WixClient): Promise<{
+    config: WixDataConfig;
+    collectionData: CollectionDocData[];
+}> {
     const collectionsClient = wixClient.use(collections) as unknown as typeof collections;
     
     try {
@@ -148,50 +172,236 @@ async function generateDefaultConfig(wixClient: WixClient): Promise<WixDataConfi
         
         console.log(`[wix-data] Found ${dataCollections.length} collections from Wix API`);
         
-        // Map each collection to a config entry
-        const collectionConfigs: CollectionConfig[] = dataCollections
-            .filter(c => c._id && !c._id.startsWith('_')) // Skip system collections
-            .map(collection => {
-                const collectionId = collection._id!;
+        // Filter out system collections
+        const userCollections = dataCollections.filter(c => c._id && !c._id.startsWith('_'));
+        
+        // Build documentation data and config simultaneously
+        const collectionData: CollectionDocData[] = [];
+        const collectionConfigs: CollectionConfig[] = [];
+        
+        userCollections.forEach(collection => {
+            const collectionId = collection._id!;
+            const fields = collection.fields || [];
+            
+            // Build reference configs and doc data
+            const referenceFields = fields.filter(f => f.type === 'REFERENCE' || f.type === 'MULTI_REFERENCE');
+            
+            const references: ReferenceConfig[] = referenceFields.map(f => ({
+                fieldName: f.key || '',
+                mode: 'link' as const
+            }));
+            
+            // Extract target collection from field metadata
+            const docReferences = referenceFields.map(f => {
+                const meta = f as { typeMetadata?: { reference?: { referencedCollectionId?: string }, multiReference?: { referencedCollectionId?: string } } };
+                const targetCollection = 
+                    meta.typeMetadata?.reference?.referencedCollectionId ||
+                    meta.typeMetadata?.multiReference?.referencedCollectionId ||
+                    'unknown';
                 
-                // Find reference fields
-                const references: ReferenceConfig[] = (collection.fields || [])
-                    .filter(f => f.type === 'REFERENCE' || f.type === 'MULTI_REFERENCE')
-                    .map(f => ({
-                        fieldName: f.key || '',
-                        mode: 'link' as const
-                    }));
-                
-                // Find a suitable slug field (prefer 'slug', then 'title', then '_id')
-                const fields = collection.fields || [];
-                const slugField = fields.find(f => f.key === 'slug')?.key
-                    || fields.find(f => f.key === 'title')?.key
-                    || '_id';
-                
-                const config: CollectionConfig = {
-                    collectionId,
-                    visible: false, // Hidden by default
-                    pathPrefix: `/${collectionId.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
-                    slugField,
-                    components: {} // No components enabled by default
+                return {
+                    fieldName: f.key || '',
+                    fieldDisplayName: f.displayName || f.key || '',
+                    targetCollection,
+                    isMulti: f.type === 'MULTI_REFERENCE'
                 };
-                
-                // Only add references if there are any
-                if (references.length > 0) {
-                    config.references = references;
-                }
-                
-                return config;
             });
+            
+            // Add to documentation data
+            collectionData.push({
+                id: collectionId,
+                displayName: collection.displayName || collectionId,
+                fields: fields.map(f => ({
+                    key: f.key || '',
+                    displayName: f.displayName || f.key || '',
+                    type: f.type || 'unknown'
+                })),
+                references: docReferences
+            });
+            
+            // Find a suitable slug field
+            const slugField = fields.find(f => f.key === 'slug')?.key
+                || fields.find(f => f.key === 'title')?.key
+                || '_id';
+            
+            const config: CollectionConfig = {
+                collectionId,
+                visible: false,
+                pathPrefix: `/${collectionId.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+                slugField,
+                components: {}
+            };
+            
+            if (references.length > 0) {
+                config.references = references;
+            }
+            
+            collectionConfigs.push(config);
+        });
         
         console.log(`[wix-data] Generated config for ${collectionConfigs.length} collections (all hidden by default)`);
         
-        return { collections: collectionConfigs };
+        return {
+            config: { collections: collectionConfigs },
+            collectionData
+        };
         
     } catch (error) {
         console.error('[wix-data] Failed to fetch collections from Wix Data API:', error);
-        return { collections: [] };
+        return {
+            config: { collections: [] },
+            collectionData: []
+        };
     }
+}
+
+/**
+ * Save documentation markdown file with collection info and relationship diagram
+ */
+async function saveDocumentation(collectionData: CollectionDocData[], docsPath: string): Promise<void> {
+    if (collectionData.length === 0) {
+        return;
+    }
+    
+    try {
+        const markdown = generateDocumentationMarkdown(collectionData);
+        fs.writeFileSync(docsPath, markdown, 'utf-8');
+        console.log(`[wix-data] Saved collection documentation to ${docsPath}`);
+    } catch (error) {
+        console.error('[wix-data] Failed to save documentation file:', error);
+    }
+}
+
+/**
+ * Generate markdown documentation for collections
+ */
+function generateDocumentationMarkdown(collectionData: CollectionDocData[]): string {
+    const sections: string[] = [];
+    
+    // Header
+    sections.push(`# Wix Data Collections
+
+This document was auto-generated from your Wix Data collections.
+It provides an overview of your data model and relationships.
+
+Generated: ${new Date().toISOString()}
+
+---
+`);
+    
+    // Collection summary table
+    sections.push(`## Collections Overview
+
+| Collection | Display Name | Fields | References |
+|------------|--------------|--------|------------|
+${collectionData.map(c => 
+    `| ${c.id} | ${c.displayName} | ${c.fields.length} | ${c.references.length} |`
+).join('\n')}
+
+---
+`);
+    
+    // Mermaid flowchart diagram
+    sections.push(`## Relationships Diagram
+
+\`\`\`mermaid
+flowchart LR
+${generateMermaidDiagram(collectionData)}
+\`\`\`
+
+---
+`);
+    
+    // Detailed collection info
+    sections.push(`## Collection Details
+`);
+    
+    collectionData.forEach(collection => {
+        sections.push(`### ${collection.displayName} (\`${collection.id}\`)
+
+**Fields:**
+
+| Field | Display Name | Type |
+|-------|--------------|------|
+${collection.fields.map(f => `| ${f.key} | ${f.displayName} | ${f.type} |`).join('\n')}
+`);
+        
+        if (collection.references.length > 0) {
+            sections.push(`
+**References:**
+
+| Field | Target Collection | Type |
+|-------|-------------------|------|
+${collection.references.map(r => 
+    `| ${r.fieldName} (${r.fieldDisplayName}) | ${r.targetCollection} | ${r.isMulti ? 'Multi-Reference' : 'Reference'} |`
+).join('\n')}
+`);
+        }
+        
+        sections.push(`
+---
+`);
+    });
+    
+    return sections.join('\n');
+}
+
+/**
+ * Generate Mermaid flowchart content for collection relationships
+ */
+function generateMermaidDiagram(collectionData: CollectionDocData[]): string {
+    const lines: string[] = [];
+    const collectionIds = new Set(collectionData.map(c => c.id));
+    
+    // Define nodes (collections) with display names
+    collectionData.forEach(collection => {
+        const nodeId = sanitizeMermaidId(collection.id);
+        const label = sanitizeMermaidLabel(collection.displayName || collection.id);
+        lines.push(`    ${nodeId}["${label}"]`);
+    });
+    
+    lines.push('');
+    
+    // Add relationships as edges
+    collectionData.forEach(collection => {
+        const sourceId = sanitizeMermaidId(collection.id);
+        
+        collection.references.forEach(ref => {
+            // Only add relationship if target collection exists in our data
+            if (collectionIds.has(ref.targetCollection)) {
+                const targetId = sanitizeMermaidId(ref.targetCollection);
+                const arrow = ref.isMulti ? '-->|*|' : '-->|1|';
+                const label = ref.fieldDisplayName || ref.fieldName;
+                lines.push(`    ${sourceId} ${arrow} ${targetId}`);
+                lines.push(`    linkStyle ${lines.filter(l => l.includes('-->')).length - 1} stroke:#666`);
+            }
+        });
+    });
+    
+    // Remove linkStyle lines and simplify
+    const filteredLines = lines.filter(l => !l.includes('linkStyle'));
+    
+    return filteredLines.join('\n');
+}
+
+/**
+ * Sanitize ID for use in Mermaid diagrams (node identifiers)
+ */
+function sanitizeMermaidId(id: string): string {
+    return id.replace(/[^a-zA-Z0-9_]/g, '_');
+}
+
+/**
+ * Sanitize label text for Mermaid diagrams (displayed text)
+ * Escapes characters that break Mermaid syntax
+ */
+function sanitizeMermaidLabel(label: string): string {
+    return label
+        .replace(/"/g, "'")      // Replace double quotes with single
+        .replace(/\[/g, '(')     // Replace brackets that conflict with node syntax
+        .replace(/\]/g, ')')
+        .replace(/[{}]/g, '')    // Remove braces
+        .replace(/[<>]/g, '');   // Remove angle brackets
 }
 
 /**
