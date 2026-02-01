@@ -19,7 +19,7 @@ export type {
 } from './types';
 
 // Export config loader
-export { loadConfig, validateConfig, validateCollectionConfig } from './config-loader';
+export { loadConfig, validateConfig, validateCollectionConfig, getVisibleCollections } from './config-loader';
 
 // Export server service
 export {

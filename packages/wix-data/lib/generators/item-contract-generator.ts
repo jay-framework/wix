@@ -48,13 +48,13 @@ ${tags.join('\n')}`;
 
 /**
  * Generator for item page contracts.
- * Creates one contract per collection that has itemPage: true in config.
+ * Creates one contract per visible collection that has itemPage: true in config.
  */
 export const generator = makeContractGenerator()
     .withServices(WIX_DATA_SERVICE_MARKER)
     .generateWith(async (wixDataService) => {
         const schemas = await wixDataService.getProcessedSchemas(
-            c => !!c.components.itemPage
+            c => c.visible === true && !!c.components.itemPage
         );
         
         return schemas.map(schema => {

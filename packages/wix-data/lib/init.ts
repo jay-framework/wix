@@ -35,11 +35,12 @@ export const init = makeJayInit()
         // Create and register the data service
         provideWixDataService(wixClient, config);
 
-        console.log(`[wix-data] Server initialization complete. ${config.collections.length} collections configured.`);
+        const visibleCount = config.collections.filter(c => c.visible).length;
+        console.log(`[wix-data] Server initialization complete. ${visibleCount}/${config.collections.length} collections visible.`);
 
-        // Pass collection info to the client
+        // Pass visible collection info to the client
         return {
-            collections: config.collections.map(c => c.collectionId)
+            collections: config.collections.filter(c => c.visible).map(c => c.collectionId)
         };
     })
     .withClient(async (data: WixDataInitData) => {

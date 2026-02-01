@@ -12,6 +12,12 @@ export interface CollectionConfig {
     /** Wix Data collection ID */
     collectionId: string;
     
+    /** 
+     * Whether this collection is visible (generates contracts).
+     * Default: false (hidden) - must be explicitly enabled.
+     */
+    visible?: boolean;
+    
     /** URL path prefix (e.g., "/blog" for blog posts) */
     pathPrefix: string;
     

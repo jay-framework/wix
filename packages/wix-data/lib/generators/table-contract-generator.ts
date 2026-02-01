@@ -75,13 +75,13 @@ ${tags.join('\n')}`;
 
 /**
  * Generator for table widget contracts.
- * Creates one contract per collection that has tableWidget: true in config.
+ * Creates one contract per visible collection that has tableWidget: true in config.
  */
 export const generator = makeContractGenerator()
     .withServices(WIX_DATA_SERVICE_MARKER)
     .generateWith(async (wixDataService) => {
         const schemas = await wixDataService.getProcessedSchemas(
-            c => !!c.components.tableWidget
+            c => c.visible === true && !!c.components.tableWidget
         );
         
         return schemas.map(schema => {

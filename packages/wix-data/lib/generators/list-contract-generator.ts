@@ -73,13 +73,13 @@ ${tags.join('\n')}`;
 
 /**
  * Generator for list page contracts.
- * Creates one contract per collection that has indexPage or categoryPage: true in config.
+ * Creates one contract per visible collection that has indexPage or categoryPage: true in config.
  */
 export const generator = makeContractGenerator()
     .withServices(WIX_DATA_SERVICE_MARKER)
     .generateWith(async (wixDataService) => {
         const schemas = await wixDataService.getProcessedSchemas(
-            c => !!c.components.indexPage || !!c.components.categoryPage
+            c => c.visible === true && (!!c.components.indexPage || !!c.components.categoryPage)
         );
         
         return schemas.map(schema => {
