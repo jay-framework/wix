@@ -77,8 +77,33 @@ export interface PriceAggregationData {
 }
 
 /**
- * Generate price buckets with "nice" round numbers.
- * Creates 4-6 buckets based on the price range.
+ * Generate "nice" round number boundaries for price buckets.
+ * Uses logarithmic scale: 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, etc.
+ */
+function getNiceBoundaries(minPrice: number, maxPrice: number): number[] {
+    const multipliers = [1, 2, 5];
+    const boundaries: number[] = [];
+    
+    // Generate all nice numbers from 1 up to maxPrice
+    let magnitude = 1;
+    while (magnitude <= maxPrice * 10) {
+        for (const mult of multipliers) {
+            const value = magnitude * mult;
+            if (value > minPrice && value < maxPrice) {
+                boundaries.push(value);
+            }
+        }
+        magnitude *= 10;
+    }
+    
+    return boundaries.sort((a, b) => a - b);
+}
+
+/**
+ * Generate price buckets with logarithmic-style "nice" boundaries.
+ * - First bucket starts at actual min price
+ * - Last bucket ends at actual max price
+ * - Middle boundaries use nice round numbers (100, 200, 500, 1000, 2000, 5000, etc.)
  * 
  * @param minPrice - Minimum price in catalog
  * @param maxPrice - Maximum price in catalog
@@ -90,41 +115,28 @@ function generatePriceBuckets(minPrice: number, maxPrice: number, currencySymbol
         return [{ rangeId: 'all', label: 'Show all', minValue: null, maxValue: null, isSelected: true }];
     }
 
-    const range = maxPrice - minPrice;
+    // Get nice boundaries between min and max
+    let niceBoundaries = getNiceBoundaries(minPrice, maxPrice);
     
-    // Determine step size to get ~4-6 buckets with nice round numbers
-    // Use powers of 10 multiplied by 1, 2, or 5
-    const rawStep = range / 5;
-    const magnitude = Math.pow(10, Math.floor(Math.log10(rawStep)));
-    const normalized = rawStep / magnitude;
-    
-    let niceStep: number;
-    if (normalized <= 1.5) {
-        niceStep = magnitude;
-    } else if (normalized <= 3.5) {
-        niceStep = 2 * magnitude;
-    } else if (normalized <= 7.5) {
-        niceStep = 5 * magnitude;
-    } else {
-        niceStep = 10 * magnitude;
+    // If too many boundaries, thin them out to get ~4-6 buckets
+    while (niceBoundaries.length > 5) {
+        // Remove every other boundary, keeping the more significant ones
+        niceBoundaries = niceBoundaries.filter((_, i) => i % 2 === 0);
     }
     
-    // Round min down and max up to nice boundaries
-    const niceMin = Math.floor(minPrice / niceStep) * niceStep;
-    const niceMax = Math.ceil(maxPrice / niceStep) * niceStep;
+    // Build bucket boundaries: [minPrice, ...niceBoundaries, maxPrice]
+    const allBoundaries = [minPrice, ...niceBoundaries, maxPrice];
     
     // Generate buckets
     const buckets: PriceRangeBucket[] = [
         { rangeId: 'all', label: 'Show all', minValue: null, maxValue: null, isSelected: true }
     ];
     
-    let current = niceMin;
-    while (current < niceMax) {
-        const from = current;
-        const to = Math.min(current + niceStep, niceMax);
+    for (let i = 0; i < allBoundaries.length - 1; i++) {
+        const from = Math.round(allBoundaries[i]);
+        const to = Math.round(allBoundaries[i + 1]);
         
-        // Skip buckets that are entirely below the actual min price
-        if (to > minPrice) {
+        if (from < to) {
             const label = `${currencySymbol}${from} - ${currencySymbol}${to}`;
             buckets.push({
                 rangeId: `${from}-${to}`,
@@ -134,8 +146,6 @@ function generatePriceBuckets(minPrice: number, maxPrice: number, currencySymbol
                 isSelected: false
             });
         }
-        
-        current = to;
     }
     
     return buckets;
