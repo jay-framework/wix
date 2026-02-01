@@ -29,8 +29,6 @@ export type ProductSortField = 'relevance' | 'price_asc' | 'price_desc' | 'name_
  * Product search filters
  */
 export interface ProductSearchFilters {
-    /** Only show products in stock */
-    inStockOnly?: boolean;
     /** Minimum price filter */
     minPrice?: number;
     /** Maximum price filter */
@@ -56,6 +54,94 @@ export interface SearchProductsInput {
 }
 
 /**
+ * Price range bucket for filter UI
+ */
+export interface PriceRangeBucket {
+    rangeId: string;
+    label: string;
+    minValue: number | null;
+    maxValue: number | null;
+    isSelected: boolean;
+}
+
+/**
+ * Price aggregation data for filter UI
+ */
+export interface PriceAggregationData {
+    /** Minimum price across all products */
+    minBound: number;
+    /** Maximum price across all products */
+    maxBound: number;
+    /** Computed price range buckets */
+    ranges: PriceRangeBucket[];
+}
+
+/**
+ * Generate price buckets with "nice" round numbers.
+ * Creates 4-6 buckets based on the price range.
+ * 
+ * @param minPrice - Minimum price in catalog
+ * @param maxPrice - Maximum price in catalog
+ * @param currencySymbol - Currency symbol for labels
+ * @returns Array of price range buckets
+ */
+function generatePriceBuckets(minPrice: number, maxPrice: number, currencySymbol: string = '$'): PriceRangeBucket[] {
+    if (maxPrice <= minPrice || maxPrice === 0) {
+        return [{ rangeId: 'all', label: 'Show all', minValue: null, maxValue: null, isSelected: true }];
+    }
+
+    const range = maxPrice - minPrice;
+    
+    // Determine step size to get ~4-6 buckets with nice round numbers
+    // Use powers of 10 multiplied by 1, 2, or 5
+    const rawStep = range / 5;
+    const magnitude = Math.pow(10, Math.floor(Math.log10(rawStep)));
+    const normalized = rawStep / magnitude;
+    
+    let niceStep: number;
+    if (normalized <= 1.5) {
+        niceStep = magnitude;
+    } else if (normalized <= 3.5) {
+        niceStep = 2 * magnitude;
+    } else if (normalized <= 7.5) {
+        niceStep = 5 * magnitude;
+    } else {
+        niceStep = 10 * magnitude;
+    }
+    
+    // Round min down and max up to nice boundaries
+    const niceMin = Math.floor(minPrice / niceStep) * niceStep;
+    const niceMax = Math.ceil(maxPrice / niceStep) * niceStep;
+    
+    // Generate buckets
+    const buckets: PriceRangeBucket[] = [
+        { rangeId: 'all', label: 'Show all', minValue: null, maxValue: null, isSelected: true }
+    ];
+    
+    let current = niceMin;
+    while (current < niceMax) {
+        const from = current;
+        const to = Math.min(current + niceStep, niceMax);
+        
+        // Skip buckets that are entirely below the actual min price
+        if (to > minPrice) {
+            const label = `${currencySymbol}${from} - ${currencySymbol}${to}`;
+            buckets.push({
+                rangeId: `${from}-${to}`,
+                label,
+                minValue: from,
+                maxValue: to,
+                isSelected: false
+            });
+        }
+        
+        current = to;
+    }
+    
+    return buckets;
+}
+
+/**
  * Output for searchProducts action
  */
 export interface SearchProductsOutput {
@@ -69,6 +155,8 @@ export interface SearchProductsOutput {
     totalPages: number;
     /** Whether there are more results */
     hasMore: boolean;
+    /** Price aggregation data (bounds and computed ranges) */
+    priceAggregation: PriceAggregationData;
 }
 
 /**
@@ -92,11 +180,10 @@ export interface GetProductBySlugInput {
  * Server-side filtering/sorting:
  * - name: startsWith() for text search
  * - collectionIds: hasSome() for collection filtering
- * - priceData.price: ge()/le() for price range
+ * - priceData.price: ge()/le() for price range filtering
  * - Sorting: ascending()/descending() on price, name, lastUpdated
  * 
- * Client-side filtering (not supported by API):
- * - inStockOnly: stock.inStock is not a filterable field
+ * Also fetches min/max prices in parallel for price range filter UI.
  *
  * @see https://dev.wix.com/docs/sdk/backend-modules/stores/products/query-products
  *
@@ -104,11 +191,21 @@ export interface GetProductBySlugInput {
  * ```typescript
  * const results = await searchProducts({
  *     query: 'whisky',
- *     filters: { inStockOnly: true, minPrice: 50, maxPrice: 200 },
+ *     filters: { minPrice: 50, maxPrice: 200 },
  *     sortBy: 'price_asc',
  *     pageSize: 12,
  *     page: 1
  * });
+ * // results.priceAggregation = {
+ * //   minBound: 25,
+ * //   maxBound: 500,
+ * //   ranges: [
+ * //     { rangeId: 'all', label: 'Show all', minValue: null, maxValue: null, isSelected: true },
+ * //     { rangeId: '0-100', label: '$0 - $100', minValue: 0, maxValue: 100, isSelected: false },
+ * //     { rangeId: '100-200', label: '$100 - $200', ... },
+ * //     ...
+ * //   ]
+ * // }
  * ```
  */
 export const searchProducts = makeJayQuery('wixStoresV1.searchProducts')
@@ -126,63 +223,99 @@ export const searchProducts = makeJayQuery('wixStoresV1.searchProducts')
         } = input;
 
         try {
-            // Build query using V1 queryProducts API
-            let productQuery = wixStores.products.queryProducts()
-                .limit(pageSize)
-                .skip((page - 1) * pageSize);
+            // Build base query with shared filters (name search, collection)
+            const buildBaseQuery = () => {
+                let q = wixStores.products.queryProducts();
+                
+                // Add name search if query provided
+                if (query && query.trim().length > 0) {
+                    q = q.startsWith('name', query.trim());
+                }
+                
+                // Filter by collection if specified
+                if (filters.collectionIds && filters.collectionIds.length > 0) {
+                    q = q.hasSome('collectionIds', filters.collectionIds);
+                }
+                
+                return q;
+            };
 
-            // Add name search if query provided
-            // V1 uses startsWith or contains for name search
-            if (query && query.trim().length > 0) {
-                productQuery = productQuery.startsWith('name', query.trim());
-            }
+            // Main products query with pagination, price filters, and sorting
+            const buildProductsQuery = () => {
+                let q = buildBaseQuery()
+                    .limit(pageSize)
+                    .skip((page - 1) * pageSize);
 
-            // Filter by collection if specified
-            if (filters.collectionIds && filters.collectionIds.length > 0) {
-                productQuery = productQuery.hasSome('collectionIds', filters.collectionIds);
-            }
+                // Server-side price filtering
+                if (filters.minPrice !== undefined && filters.minPrice > 0) {
+                    q = q.ge('priceData.price', filters.minPrice);
+                }
+                if (filters.maxPrice !== undefined && filters.maxPrice > 0) {
+                    q = q.le('priceData.price', filters.maxPrice);
+                }
 
-            // Server-side price filtering using priceData.price
-            if (filters.minPrice !== undefined && filters.minPrice > 0) {
-                productQuery = productQuery.ge('priceData.price', filters.minPrice);
-            }
-            if (filters.maxPrice !== undefined && filters.maxPrice > 0) {
-                productQuery = productQuery.le('priceData.price', filters.maxPrice);
-            }
+                // Apply sorting
+                // Note: Use 'price' field for sorting (priceData.price doesn't work for sorting)
+                switch (sortBy) {
+                    case 'price_asc':
+                        q = q.ascending('price');
+                        break;
+                    case 'price_desc':
+                        q = q.descending('price');
+                        break;
+                    case 'name_asc':
+                        q = q.ascending('name');
+                        break;
+                    case 'name_desc':
+                        q = q.descending('name');
+                        break;
+                    case 'newest':
+                        q = q.descending('lastUpdated');
+                        break;
+                    // 'relevance' - no sort, use default order
+                }
 
-            // Apply sorting
-            // V1 sort syntax is different from V3
-            switch (sortBy) {
-                case 'price_asc':
-                    productQuery = productQuery.ascending('priceData.price');
-                    break;
-                case 'price_desc':
-                    productQuery = productQuery.descending('priceData.price');
-                    break;
-                case 'name_asc':
-                    productQuery = productQuery.ascending('name');
-                    break;
-                case 'name_desc':
-                    productQuery = productQuery.descending('name');
-                    break;
-                case 'newest':
-                    productQuery = productQuery.descending('lastUpdated');
-                    break;
-                // 'relevance' - no sort, use default order
-            }
+                return q;
+            };
 
-            const result = await productQuery.find();
+            // Price range queries - get min and max prices for filter UI
+            // These use the base filters (name, collection) but NOT the price filters
+            // Note: Use 'price' field for sorting (priceData.price doesn't work for sorting)
+            const minPriceQuery = buildBaseQuery()
+                .ascending('price')
+                .limit(1)
+                .find();
 
-            // Get all products for filtering
-            let products: Product[] = (result.items || []);
+            const maxPriceQuery = buildBaseQuery()
+                .descending('price')
+                .limit(1)
+                .find();
 
-            // Client-side filtering for stock (V1 API doesn't support server-side stock filtering)
-            if (filters.inStockOnly) {
-                products = products.filter(p => p.stock?.inStock === true);
-            }
+            // Run all queries in parallel
+            const [result, minPriceResult, maxPriceResult] = await Promise.all([
+                buildProductsQuery().find(),
+                minPriceQuery,
+                maxPriceQuery
+            ]);
+
+            const products: Product[] = (result.items || []);
+
+            // Extract price bounds from min/max queries
+            // V1 API has price.price for the numeric value
+            const minBound = minPriceResult.items?.[0]?.price?.price ?? minPriceResult.items?.[0]?.priceData?.price ?? 0;
+            const maxBound = maxPriceResult.items?.[0]?.price?.price ?? maxPriceResult.items?.[0]?.priceData?.price ?? 0;
+
+            // Get currency symbol from first product
+            const currency = products[0]?.price?.currency || products[0]?.priceData?.currency || minPriceResult.items?.[0]?.price?.currency;
+            const currencySymbol = currency === 'ILS' ? '₪' : 
+                                   currency === 'USD' ? '$' :
+                                   currency === 'EUR' ? '€' :
+                                   currency === 'GBP' ? '£' : '$';
+
+            // Generate price buckets from bounds
+            const ranges = generatePriceBuckets(minBound, maxBound, currencySymbol);
 
             // Calculate pagination info
-            // V1 doesn't always return total count, estimate from results
             const totalCount = result.totalCount ?? result.items?.length ?? 0;
             const totalPages = Math.ceil(totalCount / pageSize);
 
@@ -194,7 +327,8 @@ export const searchProducts = makeJayQuery('wixStoresV1.searchProducts')
                 totalCount,
                 currentPage: page,
                 totalPages,
-                hasMore: page < totalPages
+                hasMore: page < totalPages,
+                priceAggregation: { minBound, maxBound, ranges }
             };
         } catch (error) {
             console.error('[wixStoresV1.searchProducts] Search failed:', error);

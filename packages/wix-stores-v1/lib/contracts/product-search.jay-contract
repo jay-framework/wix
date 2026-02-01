@@ -104,7 +104,7 @@ tags:
             type: sub-contract
             repeated: true
             trackBy: rangeId
-            description: Predefined price range options with product counts
+            description: Predefined price range options (computed from min/max bounds)
             tags:
               - tag: rangeId
                 type: data
@@ -125,11 +125,6 @@ tags:
                 type: data
                 dataType: number
                 description: Range maximum (null for open-ended like "$400+")
-                
-              - tag: productCount
-                type: data
-                dataType: number
-                description: Number of products in this price range
                 
               - tag: isSelected
                 type: [data, interactive]
@@ -169,13 +164,6 @@ tags:
                 elementType: HTMLInputElement
                 description: Category checkbox
       
-      # Availability filter (fast+interactive)
-      - tag: inStockOnly
-        type: [data, interactive]
-        dataType: boolean
-        elementType: HTMLInputElement
-        description: Show only in-stock products checkbox
-        
       - tag: clearFilters
         type: interactive
         elementType: HTMLButtonElement

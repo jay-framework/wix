@@ -44,11 +44,12 @@ import { searchProducts, getProductBySlug, getCollections } from '@jay-framework
 // Search products
 const results = await searchProducts({
     query: 'whisky',
-    filters: { inStockOnly: true },
+    filters: { minPrice: 50, maxPrice: 200 },
     sortBy: 'price_asc',
     pageSize: 12,
     page: 1
 });
+// results.priceAggregation contains { minBound, maxBound, ranges }
 
 // Get a product by slug
 const product = await getProductBySlug({ slug: 'peat-s-beast-px-finish-54-1' });

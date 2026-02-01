@@ -102,23 +102,6 @@
         <!-- Filters Sidebar -->
         <aside class="filters-sidebar">
           <!-- Hide out of stock -->
-          <div class="filter-section">
-            <div class="filter-title">Hide out of stock</div>
-            <div class="toggle-row" style="margin-top: 12px;">
-              <div class="switch-group">
-                <span class="toggle-label">No</span>
-                <label class="switch">
-                  <input 
-                    type="checkbox"
-                    ref="productSearch.filters.inStockOnly"
-                  />
-                  <span class="switch-slider"></span>
-                </label>
-                <span class="toggle-label">Yes</span>
-              </div>
-            </div>
-          </div>
-
           <!-- Price Range Radio Buttons -->
           <div class="filter-section">
             <div class="filter-header">
@@ -136,7 +119,6 @@
                   ref="productSearch.filters.priceRange.ranges.isSelected"
                 />
                 <span class="radio-label">{label}</span>
-                <span class="radio-count" if="productCount">({productCount})</span>
               </label>
             </div>
           </div>

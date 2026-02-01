@@ -144,13 +144,12 @@ async function renderFastChanging(
                     hasSuggestions: false,
                     suggestions: [],
                     filters: {
-                        inStockOnly: false,
                         priceRange: {
                             minPrice: 0,
                             maxPrice: 0,
-                            minBound: 0,
-                            maxBound: 10000,
-                            ranges: [{ rangeId: 'all', label: 'Show all', minValue: null, maxValue: null, productCount: result.totalCount, isSelected: true }]
+                            minBound: result.priceAggregation?.minBound ?? 0,
+                            maxBound: result.priceAggregation?.maxBound ?? 10000,
+                            ranges: result.priceAggregation?.ranges ?? [{ rangeId: 'all', label: 'Show all', minValue: null, maxValue: null, isSelected: true }]
                         },
                         categoryFilter: {
                             categories: slowCarryForward.collections.map(col => ({
@@ -240,8 +239,7 @@ function ProductSearchInteractive(
                     maxPrice: currentFilters.priceRange.maxPrice || undefined,
                     collectionIds: currentFilters.categoryFilter.categories
                         .filter(c => c.isSelected)
-                        .map(c => c.categoryId),
-                    inStockOnly: currentFilters.inStockOnly
+                        .map(c => c.categoryId)
                 },
                 sortBy: mapSortToAction(currentSort),
                 pageSize: PAGE_SIZE,
@@ -288,8 +286,7 @@ function ProductSearchInteractive(
                     maxPrice: currentFilters.priceRange.maxPrice || undefined,
                     collectionIds: currentFilters.categoryFilter.categories
                         .filter(c => c.isSelected)
-                        .map(c => c.categoryId),
-                    inStockOnly: currentFilters.inStockOnly
+                        .map(c => c.categoryId)
                 },
                 sortBy: mapSortToAction(currentSort),
                 page: nextPage,
@@ -426,13 +423,6 @@ function ProductSearchInteractive(
         }
     });
 
-    refs.filters.inStockOnly.oninput(({ event }) => {
-        const isChecked = (event.target as HTMLInputElement).checked;
-        setFilters(patch(filters(), [
-            { op: REPLACE, path: ['inStockOnly'], value: isChecked }
-        ]));
-    });
-
     refs.filters.clearFilters.onclick(() => {
         const currentFilters = filters();
         const clearedCategories = currentFilters.categoryFilter.categories.map(cat => ({
@@ -453,8 +443,7 @@ function ProductSearchInteractive(
                 maxBound: currentFilters.priceRange.maxBound,
                 ranges: clearedRanges
             },
-            categoryFilter: { categories: clearedCategories },
-            inStockOnly: false
+            categoryFilter: { categories: clearedCategories }
         });
     });
 

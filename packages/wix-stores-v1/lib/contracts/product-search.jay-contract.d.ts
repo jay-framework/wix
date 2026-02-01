@@ -6,7 +6,6 @@ export interface RangeOfPriceRangeOfFilterOfProductSearchViewState {
   label: string,
   minValue: number,
   maxValue: number,
-  productCount: number,
   isSelected: boolean
 }
 
@@ -31,8 +30,7 @@ export interface CategoryFilterOfFilterOfProductSearchViewState {
 
 export interface FilterOfProductSearchViewState {
   priceRange: PriceRangeOfFilterOfProductSearchViewState,
-  categoryFilter: CategoryFilterOfFilterOfProductSearchViewState,
-  inStockOnly: boolean
+  categoryFilter: CategoryFilterOfFilterOfProductSearchViewState
 }
 
 export enum CurrentSort {
@@ -82,7 +80,7 @@ export type ProductSearchSlowViewState = Pick<ProductSearchViewState, 'searchFie
 
 export type ProductSearchFastViewState = Pick<ProductSearchViewState, 'searchExpression' | 'isSearching' | 'hasSearched' | 'resultCount' | 'hasResults' | 'hasMore' | 'loadedCount' | 'totalCount' | 'hasSuggestions'> & {
     searchResults: Array<ProductSearchViewState['searchResults'][number]>;
-    filters: Pick<ProductSearchViewState['filters'], 'inStockOnly'> & {
+    filters: {
     priceRange: ProductSearchViewState['filters']['priceRange'];
     categoryFilter: {
     categories: Array<Pick<ProductSearchViewState['filters']['categoryFilter']['categories'][number], 'categoryId' | 'isSelected'>>;
@@ -94,7 +92,7 @@ export type ProductSearchFastViewState = Pick<ProductSearchViewState, 'searchExp
 
 export type ProductSearchInteractiveViewState = Pick<ProductSearchViewState, 'searchExpression' | 'isSearching' | 'hasSearched' | 'resultCount' | 'hasResults' | 'hasMore' | 'loadedCount' | 'totalCount' | 'hasSuggestions'> & {
     searchResults: Array<ProductSearchViewState['searchResults'][number]>;
-    filters: Pick<ProductSearchViewState['filters'], 'inStockOnly'> & {
+    filters: {
     priceRange: ProductSearchViewState['filters']['priceRange'];
     categoryFilter: {
     categories: Array<Pick<ProductSearchViewState['filters']['categoryFilter']['categories'][number], 'categoryId' | 'isSelected'>>;
@@ -112,7 +110,6 @@ export interface ProductSearchRefs {
   loadMoreButton: HTMLElementProxy<ProductSearchViewState, HTMLButtonElement>,
   searchResults: ProductCardRepeatedRefs,
   filters: {
-    inStockOnly: HTMLElementProxy<FilterOfProductSearchViewState, HTMLInputElement>,
     clearFilters: HTMLElementProxy<FilterOfProductSearchViewState, HTMLButtonElement>,
     priceRange: {
       minPrice: HTMLElementProxy<PriceRangeOfFilterOfProductSearchViewState, HTMLInputElement>,
@@ -143,7 +140,6 @@ export interface ProductSearchRepeatedRefs {
   loadMoreButton: HTMLElementCollectionProxy<ProductSearchViewState, HTMLButtonElement>,
   searchResults: ProductCardRepeatedRefs,
   filters: {
-    inStockOnly: HTMLElementCollectionProxy<FilterOfProductSearchViewState, HTMLInputElement>,
     clearFilters: HTMLElementCollectionProxy<FilterOfProductSearchViewState, HTMLButtonElement>,
     priceRange: {
       minPrice: HTMLElementCollectionProxy<PriceRangeOfFilterOfProductSearchViewState, HTMLInputElement>,
