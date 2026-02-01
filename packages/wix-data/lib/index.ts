@@ -71,3 +71,9 @@ export {
 
 // Export init
 export { init } from './init';
+
+// Export contract generators (for dynamic contract materialization)
+export { generator as itemContractGenerator } from './generators/item-contract-generator';
+export { generator as listContractGenerator } from './generators/list-contract-generator';
+export { generator as tableContractGenerator } from './generators/table-contract-generator';
+export { generator as cardContractGenerator } from './generators/card-contract-generator';

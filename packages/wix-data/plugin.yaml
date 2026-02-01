@@ -6,23 +6,23 @@ name: wix-data
 dynamic_contracts:
   # Item pages - one contract per collection with itemPage: true
   - prefix: 'item'
-    component: ./components/collection-item
-    generator: ./generators/item-contract-generator.ts
+    component: collectionItem
+    generator: itemContractGenerator
     
   # List pages (index & category) - one contract per collection with indexPage: true
   - prefix: 'list'
-    component: ./components/collection-list
-    generator: ./generators/list-contract-generator.ts
+    component: collectionList
+    generator: listContractGenerator
     
   # Table widgets - one contract per collection with tableWidget: true
   - prefix: 'table'
-    component: ./components/collection-table
-    generator: ./generators/table-contract-generator.ts
+    component: collectionTable
+    generator: tableContractGenerator
     
   # Card widgets - one contract per collection with cardWidget: true
   - prefix: 'card'
-    component: ./components/collection-card
-    generator: ./generators/card-contract-generator.ts
+    component: collectionCard
+    generator: cardContractGenerator
 
 # Server actions for querying data
 actions:
