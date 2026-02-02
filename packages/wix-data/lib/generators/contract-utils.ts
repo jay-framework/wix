@@ -16,6 +16,12 @@ export function dataTag(key: string, type: string, description?: string, indent 
     return `${prefix}- {tag: ${key}, type: data, dataType: ${type}${desc}}`;
 }
 
+export function dataTagWithPhase(key: string, type: string, phase: string, description?: string, indent = 2): string {
+    const prefix = ' '.repeat(indent);
+    const desc = description ? `, description: ${description}` : '';
+    return `${prefix}- {tag: ${key}, type: data, dataType: ${type}, phase: ${phase}${desc}}`;
+}
+
 export function interactiveTag(key: string, elementType: string, description?: string, indent = 2): string {
     const prefix = ' '.repeat(indent);
     const desc = description ? `, description: ${description}` : '';

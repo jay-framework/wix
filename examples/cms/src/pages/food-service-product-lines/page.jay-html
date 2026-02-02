@@ -254,6 +254,7 @@
 
     <!-- Product Lines Grid -->
     <div class="product-lines-grid" if="productLines.totalCount > 0">
+      <!-- Initial items (slow-rendered at build time) -->
       <article class="product-line-card" forEach="productLines.items" trackBy="_id">
         <a href="{url}" ref="productLines.items.itemLink">
           <img 
@@ -270,6 +271,28 @@
           </h2>
           <p class="product-line-header" if="headerTitle">{headerTitle}</p>
           <a href="{url}" class="product-line-cta" ref="productLines.items.itemLink">
+            View Products →
+          </a>
+        </div>
+      </article>
+      
+      <!-- Dynamically loaded items (via "Load More") -->
+      <article class="product-line-card" forEach="productLines.loadedItems" trackBy="_id">
+        <a href="{url}" ref="productLines.loadedItems.itemLink">
+          <img 
+            class="product-line-image" 
+            src="{coverImage.url}" 
+            alt="{coverImage.altText}"
+            loading="lazy"
+          />
+        </a>
+        <span class="product-line-label" if="labelText">{labelText}</span>
+        <div class="product-line-content">
+          <h2 class="product-line-title">
+            <a href="{url}" ref="productLines.loadedItems.itemLink">{title}</a>
+          </h2>
+          <p class="product-line-header" if="headerTitle">{headerTitle}</p>
+          <a href="{url}" class="product-line-cta" ref="productLines.loadedItems.itemLink">
             View Products →
           </a>
         </div>

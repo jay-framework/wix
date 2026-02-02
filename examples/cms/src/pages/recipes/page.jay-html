@@ -240,6 +240,7 @@
 
     <!-- Recipes Grid -->
     <div class="recipes-grid" if="recipes.totalCount > 0">
+      <!-- Initial items (slow-rendered at build time) -->
       <article class="recipe-card" forEach="recipes.items" trackBy="_id">
         <a href="{url}" ref="recipes.items.itemLink">
           <img 
@@ -252,6 +253,32 @@
         <div class="recipe-content">
           <h2 class="recipe-title">
             <a href="{url}" ref="recipes.items.itemLink">{title}</a>
+          </h2>
+          <div class="recipe-meta">
+            <span class="recipe-meta-item" if="preparationTime">
+              ⏱️ {preparationTime}
+            </span>
+            <span class="recipe-meta-item" if="servings">
+              👥 {servings} servings
+            </span>
+          </div>
+          <p class="recipe-description">{shortDescription}</p>
+        </div>
+      </article>
+      
+      <!-- Dynamically loaded items (via "Load More") -->
+      <article class="recipe-card" forEach="recipes.loadedItems" trackBy="_id">
+        <a href="{url}" ref="recipes.loadedItems.itemLink">
+          <img 
+            class="recipe-image" 
+            src="{image.url}" 
+            alt="{image.altText}"
+            loading="lazy"
+          />
+        </a>
+        <div class="recipe-content">
+          <h2 class="recipe-title">
+            <a href="{url}" ref="recipes.loadedItems.itemLink">{title}</a>
           </h2>
           <div class="recipe-meta">
             <span class="recipe-meta-item" if="preparationTime">

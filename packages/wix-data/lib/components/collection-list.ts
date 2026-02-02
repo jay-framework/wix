@@ -10,14 +10,12 @@ import {
     PageProps,
     RenderPipeline,
     Signals,
-    SlowlyRenderResult,
     UrlParams,
     DynamicContractProps,
 } from '@jay-framework/fullstack-component';
-import { Props, createSignal } from '@jay-framework/component';
+import { Props } from '@jay-framework/component';
 import { WIX_DATA_SERVICE_MARKER, WixDataService } from '../services/wix-data-service';
 import { WIX_DATA_CONTEXT, WixDataContext } from '../contexts/wix-data-context';
-import { CollectionConfig } from '../types';
 
 const PAGE_SIZE = 20;
 
@@ -53,11 +51,23 @@ interface ListSlowViewState {
 }
 
 /**
+ * Item type for dynamically loaded items
+ */
+interface ListItem {
+    _id: string;
+    url: string;
+    [key: string]: unknown;
+}
+
+/**
  * Fast view state for list pages
+ * Includes loadedItems for dynamically loaded content (fast+interactive phase)
  */
 interface ListFastViewState {
+    loadedItems: ListItem[];
     hasMore: boolean;
     isLoading: boolean;
+    loadedCount: number;
 }
 
 /**
@@ -68,6 +78,8 @@ interface ListSlowCarryForward {
     categoryId?: string;
     nextCursor: string | null;
     totalCount: number;
+    pathPrefix: string;
+    slugField: string;
 }
 
 /**
@@ -77,6 +89,8 @@ interface ListFastCarryForward {
     collectionId: string;
     categoryId?: string;
     nextCursor: string | null;
+    pathPrefix: string;
+    slugField: string;
 }
 
 /**
@@ -236,7 +250,9 @@ async function renderSlowlyChanging(
                 category: categoryData,
                 breadcrumbs,
                 nextCursor: result.cursors?.next || null,
-                categoryId
+                categoryId,
+                pathPrefix: config.pathPrefix,
+                slugField: config.slugField
             };
         })
         .recover(error => {
@@ -254,14 +270,16 @@ async function renderSlowlyChanging(
                 collectionId,
                 categoryId: data.categoryId,
                 nextCursor: data.nextCursor,
-                totalCount: data.totalCount
+                totalCount: data.totalCount,
+                pathPrefix: data.pathPrefix,
+                slugField: data.slugField
             }
         }));
 }
 
 /**
  * Fast rendering phase
- * Sets up pagination state
+ * Sets up load more state. Items already loaded in slow phase.
  */
 async function renderFastChanging(
     props: PageProps & ListPageParams & DynamicContractProps<WixDataMetadata>,
@@ -271,14 +289,18 @@ async function renderFastChanging(
     const Pipeline = RenderPipeline.for<ListFastViewState, ListFastCarryForward>();
     
     return Pipeline.ok({
+        loadedItems: [],  // Empty initially - items loaded via "load more"
         hasMore: slowCarryForward.nextCursor !== null,
-        isLoading: false
+        isLoading: false,
+        loadedCount: 0
     }).toPhaseOutput(viewState => ({
         viewState,
         carryForward: {
             collectionId: slowCarryForward.collectionId,
             categoryId: slowCarryForward.categoryId,
-            nextCursor: slowCarryForward.nextCursor
+            nextCursor: slowCarryForward.nextCursor,
+            pathPrefix: slowCarryForward.pathPrefix,
+            slugField: slowCarryForward.slugField
         }
     }));
 }
@@ -295,12 +317,14 @@ function ListInteractive(
     wixDataContext: WixDataContext
 ) {
     const {
+        loadedItems: [loadedItems, setLoadedItems],
         hasMore: [hasMore, setHasMore],
-        isLoading: [isLoading, setIsLoading]
+        isLoading: [isLoading, setIsLoading],
+        loadedCount: [loadedCount, setLoadedCount]
     } = viewStateSignals;
     
     let currentCursor = fastCarryForward.nextCursor;
-    const [loadedItems, setLoadedItems] = createSignal<any[]>([]);
+    const { pathPrefix, slugField } = fastCarryForward;
     
     // Load more button handler
     refs.loadMoreButton?.onclick(async () => {
@@ -317,7 +341,15 @@ function ListInteractive(
                 .skipTo(currentCursor)
                 .find();
             
-            setLoadedItems([...loadedItems(), ...result.items]);
+            // Map new items to include URL
+            const newItems: ListItem[] = result.items.map((item: any) => ({
+                _id: item._id!,
+                url: `${pathPrefix}/${item.data?.[slugField] || item._id}`,
+                ...item.data
+            }));
+            
+            setLoadedItems([...loadedItems(), ...newItems]);
+            setLoadedCount(loadedCount() + newItems.length);
             setHasMore(result.hasNext?.() ?? false);
             currentCursor = result.cursors?.next || null;
             
@@ -330,8 +362,10 @@ function ListInteractive(
     
     return {
         render: () => ({
+            loadedItems: loadedItems(),
             hasMore: hasMore(),
-            isLoading: isLoading()
+            isLoading: isLoading(),
+            loadedCount: loadedCount()
         })
     };
 }
