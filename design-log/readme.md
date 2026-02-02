@@ -12,6 +12,8 @@ Design documentation for the Jay Framework Wix integration packages.
 | 04 | [Price Filter Enhancements](./04%20-%20price%20filter%20enhancements.md) | - |
 | 05 | [Wix Data Plugin](./05%20-%20wix-data%20plugin.md) | - |
 | 06 | [Wix Stores V1 Package](./06%20-%20wix-stores-v1%20package.md) | Implemented |
+| 07 | [Wix Cart Shared Package](./07%20-%20wix-cart%20shared%20package.md) | - |
+| 08 | [Wix Data List Slow/Fast Rendering](./08%20-%20wix-data%20list%20slow-fast%20rendering.md) | Draft |
 
 ## Packages Covered
 
