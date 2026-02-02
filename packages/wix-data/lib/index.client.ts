@@ -5,6 +5,12 @@
  * Contains only client-safe code (no server secrets).
  */
 
+// Export headless components
+export * from './components/collection-item';
+export * from './components/collection-list';
+export * from './components/collection-card';
+export * from './components/collection-table';
+
 // Export client context
 export {
     WIX_DATA_CONTEXT,
@@ -12,6 +18,9 @@ export {
     type WixDataContext,
     type WixDataInitData,
 } from './contexts/wix-data-context';
+
+// Export init
+export { init } from './init';
 
 // Re-export action types for client-side use
 export type {
