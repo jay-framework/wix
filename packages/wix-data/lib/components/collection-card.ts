@@ -2,15 +2,14 @@
  * Collection Card Component
  * 
  * Shared component for card widgets showing a single collection item.
- * Receives contract via DYNAMIC_CONTRACT_SERVICE.
+ * Receives contract info via props (DynamicContractProps).
  */
 
 import {
     makeJayStackComponent,
     PageProps,
     RenderPipeline,
-    DYNAMIC_CONTRACT_SERVICE,
-    DynamicContractMetadata,
+    DynamicContractProps,
 } from '@jay-framework/fullstack-component';
 import { WIX_DATA_SERVICE_MARKER, WixDataService } from '../services/wix-data-service';
 import {WixDataItem} from "@wix/wix-data-items-sdk/build/cjs/src/data-v2-data-item-items.universal";
@@ -43,11 +42,10 @@ interface CardCarryForward {
 }
 
 /**
- * Derive collection ID from contract name
- * "BlogPostsCard" -> "BlogPosts"
+ * Metadata from dynamic contract generator
  */
-function deriveCollectionId(contractName: string): string {
-    return contractName.replace(/Card$/, '');
+interface WixDataMetadata {
+    collectionId: string;
 }
 
 /**
@@ -55,11 +53,10 @@ function deriveCollectionId(contractName: string): string {
  * Loads the item data for the card
  */
 async function renderSlowlyChanging(
-    props: CardWidgetProps,
-    wixData: WixDataService,
-    contractMeta: DynamicContractMetadata
+    props: CardWidgetProps & DynamicContractProps<WixDataMetadata>,
+    wixData: WixDataService
 ) {
-    const collectionId = deriveCollectionId(contractMeta.contractName);
+    const { collectionId } = props.metadata!;
     
     const Pipeline = RenderPipeline.for<CardViewState, CardCarryForward>();
     
@@ -140,6 +137,6 @@ function isImageValue(value: unknown): value is { src?: string; url?: string; al
  * ```
  */
 export const collectionCard = makeJayStackComponent<any>()
-    .withProps<CardWidgetProps>()
-    .withServices(WIX_DATA_SERVICE_MARKER, DYNAMIC_CONTRACT_SERVICE)
+    .withProps<CardWidgetProps & DynamicContractProps<WixDataMetadata>>()
+    .withServices(WIX_DATA_SERVICE_MARKER)
     .withSlowlyRender(renderSlowlyChanging);

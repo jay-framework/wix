@@ -91,7 +91,8 @@ export const generator = makeContractGenerator()
             return {
                 name,
                 yaml: buildContract(schema),
-                description: `Table widget for ${schema.displayName || schema.collectionId}`
+                description: `Table widget for ${schema.displayName || schema.collectionId}`,
+                metadata: { collectionId: schema.collectionId },
             };
         });
     });

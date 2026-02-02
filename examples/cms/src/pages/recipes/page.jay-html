@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipes</title>
+  <script type="application/jay-headless"
+          plugin="@jay-framework/wix-data"
+          contract="list/recipes-list"
+          key="recipes"
+  ></script>
+  <script type="application/jay-data">
+    data:
+  </script>
+  <link rel="stylesheet" href="../../styles/cms-theme.css" />
+  <style>
+    .recipes-page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .page-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .page-subtitle {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .results-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .results-count {
+      color: var(--text-secondary);
+    }
+
+    .results-count span {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .recipes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 32px;
+    }
+
+    .recipe-card {
+      background: var(--surface);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .recipe-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    }
+
+    .recipe-image {
+      width: 100%;
+      aspect-ratio: 16/10;
+      object-fit: cover;
+      background: var(--bg-secondary);
+    }
+
+    .recipe-content {
+      padding: 20px;
+    }
+
+    .recipe-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .recipe-title a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .recipe-title a:hover {
+      color: var(--accent);
+    }
+
+    .recipe-meta {
+      display: flex;
+      gap: 16px;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin-bottom: 12px;
+    }
+
+    .recipe-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .recipe-description {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .load-more-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      margin-top: 48px;
+      padding: 24px;
+    }
+
+    .load-more-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 12px 32px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .load-more-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .load-more-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .loading-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+    }
+
+    .loading-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .breadcrumbs {
+      display: flex;
+      gap: 8px;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+
+    .breadcrumbs a {
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+
+    .breadcrumbs a:hover {
+      color: var(--accent);
+    }
+
+    .breadcrumbs .separator {
+      color: var(--border);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-secondary);
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="recipes-page">
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs">
+      <span forEach="recipes.breadcrumbs" trackBy="slug">
+        <a href="{url}" ref="recipes.breadcrumbs.link">{title}</a>
+        <span class="separator">/</span>
+      </span>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+      <h1 class="page-title">Recipes</h1>
+      <p class="page-subtitle">Discover delicious recipes to try at home</p>
+    </header>
+
+    <!-- Results Info -->
+    <div class="results-info">
+      <p class="results-count">
+        Showing <span>{recipes.totalCount}</span> recipes
+      </p>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" if="recipes.totalCount == 0">
+      <div class="empty-state-icon">🍽️</div>
+      <h3>No recipes found</h3>
+      <p>Check back soon for new recipes!</p>
+    </div>
+
+    <!-- Recipes Grid -->
+    <div class="recipes-grid" if="recipes.totalCount > 0">
+      <article class="recipe-card" forEach="recipes.items" trackBy="_id">
+        <a href="{url}" ref="recipes.items.itemLink">
+          <img 
+            class="recipe-image" 
+            src="{image.url}" 
+            alt="{image.altText}"
+            loading="lazy"
+          />
+        </a>
+        <div class="recipe-content">
+          <h2 class="recipe-title">
+            <a href="{url}" ref="recipes.items.itemLink">{title}</a>
+          </h2>
+          <div class="recipe-meta">
+            <span class="recipe-meta-item" if="preparationTime">
+              ⏱️ {preparationTime}
+            </span>
+            <span class="recipe-meta-item" if="servings">
+              👥 {servings} servings
+            </span>
+          </div>
+          <p class="recipe-description">{shortDescription}</p>
+        </div>
+      </article>
+    </div>
+
+    <!-- Load More -->
+    <div class="load-more-section" if="recipes.hasMore || recipes.isLoading">
+      <div class="loading-indicator" if="recipes.isLoading">
+        <div class="loading-spinner"></div>
+        <span>Loading more recipes...</span>
+      </div>
+      <button 
+        class="load-more-btn" 
+        ref="recipes.loadMoreButton"
+        if="recipes.hasMore && !recipes.isLoading"
+      >
+        Load More Recipes
+      </button>
+    </div>
+  </div>
+</body>
+</html>

@@ -2,7 +2,7 @@
  * Collection Table Component
  * 
  * Shared component for table widgets showing collection data.
- * Receives contract via DYNAMIC_CONTRACT_SERVICE.
+ * Receives contract info via props (DynamicContractProps).
  */
 
 import {
@@ -11,8 +11,7 @@ import {
     RenderPipeline,
     Signals,
     SlowlyRenderResult,
-    DYNAMIC_CONTRACT_SERVICE,
-    DynamicContractMetadata,
+    DynamicContractProps,
 } from '@jay-framework/fullstack-component';
 import { Props, createSignal } from '@jay-framework/component';
 import { WIX_DATA_SERVICE_MARKER, WixDataService } from '../services/wix-data-service';
@@ -94,11 +93,10 @@ interface TableFastCarryForward {
 }
 
 /**
- * Derive collection ID from contract name
- * "BlogPostsTable" -> "BlogPosts"
+ * Metadata from dynamic contract generator
  */
-function deriveCollectionId(contractName: string): string {
-    return contractName.replace(/Table$/, '');
+interface WixDataMetadata {
+    collectionId: string;
 }
 
 /**
@@ -106,11 +104,10 @@ function deriveCollectionId(contractName: string): string {
  * Loads initial table data and column definitions
  */
 async function renderSlowlyChanging(
-    props: TableWidgetProps,
-    wixData: WixDataService,
-    contractMeta: DynamicContractMetadata
+    props: TableWidgetProps & DynamicContractProps<WixDataMetadata>,
+    wixData: WixDataService
 ) {
-    const collectionId = deriveCollectionId(contractMeta.contractName);
+    const { collectionId } = props.metadata!;
     const pageSize = props.pageSize || DEFAULT_PAGE_SIZE;
     
     const Pipeline = RenderPipeline.for<TableSlowViewState, TableSlowCarryForward>();
@@ -202,10 +199,9 @@ function formatCellValue(value: unknown): string {
  * Sets up pagination and sorting state
  */
 async function renderFastChanging(
-    props: TableWidgetProps,
+    props: TableWidgetProps & DynamicContractProps<WixDataMetadata>,
     slowCarryForward: TableSlowCarryForward,
-    _wixData: WixDataService,
-    _contractMeta: DynamicContractMetadata
+    _wixData: WixDataService
 ) {
     const Pipeline = RenderPipeline.for<TableFastViewState, TableFastCarryForward>();
     
@@ -336,8 +332,8 @@ function TableInteractive(
  * Provides sortable columns and pagination.
  */
 export const collectionTable = makeJayStackComponent<any>()
-    .withProps<TableWidgetProps>()
-    .withServices(WIX_DATA_SERVICE_MARKER, DYNAMIC_CONTRACT_SERVICE)
+    .withProps<TableWidgetProps & DynamicContractProps<WixDataMetadata>>()
+    .withServices(WIX_DATA_SERVICE_MARKER)
     .withContexts(WIX_DATA_CONTEXT)
     .withSlowlyRender(renderSlowlyChanging)
     .withFastRender(renderFastChanging)

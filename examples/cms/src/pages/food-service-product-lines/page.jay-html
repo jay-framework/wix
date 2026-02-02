@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Lines - Food Service</title>
+  <script type="application/jay-headless"
+          plugin="@jay-framework/wix-data"
+          contract="list/food-service-product-lines-list"
+          key="productLines"
+  ></script>
+  <script type="application/jay-data">
+    data:
+  </script>
+  <link rel="stylesheet" href="../../styles/cms-theme.css" />
+  <style>
+    .product-lines-page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .page-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .page-subtitle {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .results-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .results-count {
+      color: var(--text-secondary);
+    }
+
+    .results-count span {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .product-lines-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 32px;
+    }
+
+    .product-line-card {
+      background: var(--surface);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+
+    .product-line-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    }
+
+    .product-line-image {
+      width: 100%;
+      aspect-ratio: 16/10;
+      object-fit: cover;
+      background: var(--bg-secondary);
+    }
+
+    .product-line-label {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: var(--accent);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .product-line-content {
+      padding: 24px;
+    }
+
+    .product-line-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .product-line-title a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .product-line-title a:hover {
+      color: var(--accent);
+    }
+
+    .product-line-header {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+    }
+
+    .product-line-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+
+    .product-line-cta:hover {
+      background: var(--accent-hover);
+    }
+
+    .load-more-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      margin-top: 48px;
+      padding: 24px;
+    }
+
+    .load-more-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 12px 32px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .load-more-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .load-more-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .loading-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+    }
+
+    .loading-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .breadcrumbs {
+      display: flex;
+      gap: 8px;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+
+    .breadcrumbs a {
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+
+    .breadcrumbs a:hover {
+      color: var(--accent);
+    }
+
+    .breadcrumbs .separator {
+      color: var(--border);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-secondary);
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="product-lines-page">
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs">
+      <span forEach="productLines.breadcrumbs" trackBy="slug">
+        <a href="{url}" ref="productLines.breadcrumbs.link">{title}</a>
+        <span class="separator">/</span>
+      </span>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+      <h1 class="page-title">Product Lines</h1>
+      <p class="page-subtitle">Explore our food service product lines</p>
+    </header>
+
+    <!-- Results Info -->
+    <div class="results-info">
+      <p class="results-count">
+        Showing <span>{productLines.totalCount}</span> product lines
+      </p>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" if="productLines.totalCount == 0">
+      <div class="empty-state-icon">📦</div>
+      <h3>No product lines found</h3>
+      <p>Check back soon for new products!</p>
+    </div>
+
+    <!-- Product Lines Grid -->
+    <div class="product-lines-grid" if="productLines.totalCount > 0">
+      <article class="product-line-card" forEach="productLines.items" trackBy="_id">
+        <a href="{url}" ref="productLines.items.itemLink">
+          <img 
+            class="product-line-image" 
+            src="{coverImage.url}" 
+            alt="{coverImage.altText}"
+            loading="lazy"
+          />
+        </a>
+        <span class="product-line-label" if="labelText">{labelText}</span>
+        <div class="product-line-content">
+          <h2 class="product-line-title">
+            <a href="{url}" ref="productLines.items.itemLink">{title}</a>
+          </h2>
+          <p class="product-line-header" if="headerTitle">{headerTitle}</p>
+          <a href="{url}" class="product-line-cta" ref="productLines.items.itemLink">
+            View Products →
+          </a>
+        </div>
+      </article>
+    </div>
+
+    <!-- Load More -->
+    <div class="load-more-section" if="productLines.hasMore || productLines.isLoading">
+      <div class="loading-indicator" if="productLines.isLoading">
+        <div class="loading-spinner"></div>
+        <span>Loading more...</span>
+      </div>
+      <button 
+        class="load-more-btn" 
+        ref="productLines.loadMoreButton"
+        if="productLines.hasMore && !productLines.isLoading"
+      >
+        Load More
+      </button>
+    </div>
+  </div>
+</body>
+</html>

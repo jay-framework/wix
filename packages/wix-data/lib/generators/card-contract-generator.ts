@@ -55,7 +55,8 @@ export const generator = makeContractGenerator()
             return {
                 name,
                 yaml: buildContract(schema),
-                description: `Card widget for ${schema.displayName || schema.collectionId}`
+                description: `Card widget for ${schema.displayName || schema.collectionId}`,
+                metadata: { collectionId: schema.collectionId },
             };
         });
     });

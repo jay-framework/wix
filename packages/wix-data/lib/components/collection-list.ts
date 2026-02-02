@@ -2,7 +2,7 @@
  * Collection List Component
  * 
  * Shared component for collection list pages (index and category).
- * Receives contract via DYNAMIC_CONTRACT_SERVICE to determine which collection to query.
+ * Receives contract info via props (DynamicContractProps) to determine which collection to query.
  */
 
 import {
@@ -12,8 +12,7 @@ import {
     Signals,
     SlowlyRenderResult,
     UrlParams,
-    DYNAMIC_CONTRACT_SERVICE,
-    DynamicContractMetadata,
+    DynamicContractProps,
 } from '@jay-framework/fullstack-component';
 import { Props, createSignal } from '@jay-framework/component';
 import { WIX_DATA_SERVICE_MARKER, WixDataService } from '../services/wix-data-service';
@@ -81,21 +80,27 @@ interface ListFastCarryForward {
 }
 
 /**
- * Derive collection ID from contract name
- * "BlogPostsList" -> "BlogPosts"
+ * Metadata from dynamic contract generator
  */
-function deriveCollectionId(contractName: string): string {
-    return contractName.replace(/List$/, '');
+interface WixDataMetadata {
+    collectionId: string;
 }
 
 /**
  * Load all list page params for static generation
  * For category pages, also yields category slugs
+ * Contract info is passed as last argument by the runtime
  */
 async function* loadListParams(
-    [wixData, contractMeta]: [WixDataService, DynamicContractMetadata]
+    services: [WixDataService, ...any[]]
 ): AsyncIterable<ListPageParams[]> {
-    const collectionId = deriveCollectionId(contractMeta.contractName);
+    const [wixData, contractInfo] = services as [WixDataService, DynamicContractProps<WixDataMetadata>?];
+    if (!contractInfo?.metadata) {
+        console.warn('[wix-data] loadListParams called without contract metadata');
+        yield [];
+        return;
+    }
+    const { collectionId } = contractInfo.metadata;
     const config = wixData.getCollectionConfig(collectionId);
     
     if (!config) {
@@ -157,11 +162,10 @@ async function* loadListParams(
  * Loads initial items and category data
  */
 async function renderSlowlyChanging(
-    props: PageProps & ListPageParams,
-    wixData: WixDataService,
-    contractMeta: DynamicContractMetadata
+    props: PageProps & ListPageParams & DynamicContractProps<WixDataMetadata>,
+    wixData: WixDataService
 ) {
-    const collectionId = deriveCollectionId(contractMeta.contractName);
+    const { collectionId } = props.metadata!;
     
     const Pipeline = RenderPipeline.for<ListSlowViewState, ListSlowCarryForward>();
     
@@ -260,10 +264,9 @@ async function renderSlowlyChanging(
  * Sets up pagination state
  */
 async function renderFastChanging(
-    props: PageProps & ListPageParams,
+    props: PageProps & ListPageParams & DynamicContractProps<WixDataMetadata>,
     slowCarryForward: ListSlowCarryForward,
-    wixData: WixDataService,
-    _contractMeta: DynamicContractMetadata
+    wixData: WixDataService
 ) {
     const Pipeline = RenderPipeline.for<ListFastViewState, ListFastCarryForward>();
     
@@ -340,8 +343,8 @@ function ListInteractive(
  * Used by all collections that have indexPage or categoryPage: true in config.
  */
 export const collectionList = makeJayStackComponent<any>()
-    .withProps<PageProps>()
-    .withServices(WIX_DATA_SERVICE_MARKER, DYNAMIC_CONTRACT_SERVICE)
+    .withProps<PageProps & DynamicContractProps<WixDataMetadata>>()
+    .withServices(WIX_DATA_SERVICE_MARKER)
     .withContexts(WIX_DATA_CONTEXT)
     .withLoadParams(loadListParams)
     .withSlowlyRender(renderSlowlyChanging)

@@ -2,7 +2,7 @@
  * Collection Item Component
  * 
  * Shared component for all collection item pages.
- * Receives contract via DYNAMIC_CONTRACT_SERVICE to determine which collection to query.
+ * Receives contract info via props (DynamicContractProps) to determine which collection to query.
  */
 
 import {
@@ -11,8 +11,7 @@ import {
     RenderPipeline,
     SlowlyRenderResult,
     UrlParams,
-    DYNAMIC_CONTRACT_SERVICE,
-    DynamicContractMetadata,
+    DynamicContractProps,
 } from '@jay-framework/fullstack-component';
 import { WIX_DATA_SERVICE_MARKER, WixDataService } from '../services/wix-data-service';
 import { CollectionConfig } from '../types';
@@ -34,20 +33,26 @@ interface ItemSlowCarryForward {
 }
 
 /**
- * Derive collection ID from contract name
- * "BlogPostsItem" -> "BlogPosts"
+ * Metadata from dynamic contract generator
  */
-function deriveCollectionId(contractName: string): string {
-    return contractName.replace(/Item$/, '');
+interface WixDataMetadata {
+    collectionId: string;
 }
 
 /**
  * Load all item slugs for static site generation
+ * Contract info is passed as last argument by the runtime
  */
 async function* loadItemParams(
-    [wixData, contractMeta]: [WixDataService, DynamicContractMetadata]
+    services: [WixDataService, ...any[]]
 ): AsyncIterable<ItemPageParams[]> {
-    const collectionId = deriveCollectionId(contractMeta.contractName);
+    const [wixData, contractInfo] = services as [WixDataService, DynamicContractProps<WixDataMetadata>?];
+    if (!contractInfo?.metadata) {
+        console.warn('[wix-data] loadItemParams called without contract metadata');
+        yield [];
+        return;
+    }
+    const { collectionId } = contractInfo.metadata;
     const config = wixData.getCollectionConfig(collectionId);
     
     if (!config) {
@@ -75,11 +80,10 @@ async function* loadItemParams(
  * Loads the item data from Wix Data
  */
 async function renderSlowlyChanging(
-    props: PageProps & ItemPageParams,
-    wixData: WixDataService,
-    contractMeta: DynamicContractMetadata
+    props: PageProps & ItemPageParams & DynamicContractProps<WixDataMetadata>,
+    wixData: WixDataService
 ) {
-    const collectionId = deriveCollectionId(contractMeta.contractName);
+    const { collectionId } = props.metadata!;
     
     const Pipeline = RenderPipeline.for<any, ItemSlowCarryForward>();
     
@@ -224,11 +228,11 @@ async function fetchReference(
  * A shared headless component for item pages.
  * Used by all collections that have itemPage: true in config.
  * 
- * The component receives contract metadata via DYNAMIC_CONTRACT_SERVICE
+ * The component receives contract info via props (DynamicContractProps)
  * to determine which collection to query.
  */
 export const collectionItem = makeJayStackComponent<any>()
-    .withProps<PageProps>()
-    .withServices(WIX_DATA_SERVICE_MARKER, DYNAMIC_CONTRACT_SERVICE)
+    .withProps<PageProps & DynamicContractProps<WixDataMetadata>>()
+    .withServices(WIX_DATA_SERVICE_MARKER)
     .withLoadParams(loadItemParams)
     .withSlowlyRender(renderSlowlyChanging);

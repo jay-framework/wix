@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{productLine.title} - Product Lines</title>
+  <script type="application/jay-headless"
+          plugin="@jay-framework/wix-data"
+          contract="item/food-service-product-lines-item"
+          key="productLine"
+  ></script>
+  <script type="application/jay-data">
+    data:
+  </script>
+  <link rel="stylesheet" href="../../../styles/cms-theme.css" />
+  <style>
+    .product-line-page {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .breadcrumbs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+
+    .breadcrumbs a {
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+
+    .breadcrumbs a:hover {
+      color: var(--accent);
+    }
+
+    .breadcrumbs .separator {
+      color: var(--border);
+    }
+
+    .product-line-hero {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+
+    .hero-image {
+      width: 100%;
+      aspect-ratio: 21/9;
+      object-fit: cover;
+      background: var(--bg-secondary);
+    }
+
+    .hero-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 40px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.8));
+      color: white;
+    }
+
+    .hero-label {
+      display: inline-block;
+      background: var(--accent);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .hero-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 40px;
+    }
+
+    @media (max-width: 768px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .content-section {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 28px;
+      border: 1px solid var(--border);
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-content {
+      line-height: 1.8;
+      color: var(--text-primary);
+      white-space: pre-wrap;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .sidebar-card {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid var(--border);
+    }
+
+    .sidebar-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text-secondary);
+    }
+
+    .download-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      background: var(--accent);
+      color: white;
+      padding: 14px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+
+    .download-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .quick-facts {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .quick-fact {
+      display: flex;
+      justify-content: space-between;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .quick-fact:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .fact-label {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .fact-value {
+      font-weight: 500;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      margin-top: 40px;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="product-line-page">
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs">
+      <span forEach="productLine.breadcrumbs" trackBy="slug">
+        <a href="{url}" ref="productLine.breadcrumbs.link">{title}</a>
+        <span class="separator">/</span>
+      </span>
+      <span>{productLine.title}</span>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="product-line-hero">
+      <img 
+        class="hero-image" 
+        src="{productLine.coverImage.url}" 
+        alt="{productLine.coverImage.altText}"
+      />
+      <div class="hero-overlay">
+        <span class="hero-label" if="productLine.labelText">{productLine.labelText}</span>
+        <h1 class="hero-title">{productLine.title}</h1>
+        <p class="hero-subtitle" if="productLine.headerTitle">{productLine.headerTitle}</p>
+      </div>
+    </div>
+
+    <!-- Content Grid -->
+    <div class="content-grid">
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- Ingredients -->
+        <section class="content-section" if="productLine.ingredients">
+          <h2 class="section-title">🥗 Ingredients</h2>
+          <div class="section-content">{productLine.ingredients}</div>
+        </section>
+
+        <!-- Media -->
+        <section class="content-section" if="productLine.media">
+          <h2 class="section-title">🎬 Media</h2>
+          <div class="section-content">{productLine.media}</div>
+        </section>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <!-- Sales Sheet Download -->
+        <div class="sidebar-card" if="productLine.salesSheet">
+          <h3 class="sidebar-title">Resources</h3>
+          <a href="{productLine.salesSheet}" class="download-btn" target="_blank">
+            📄 Download Sales Sheet
+          </a>
+        </div>
+
+        <!-- Quick Facts -->
+        <div class="sidebar-card">
+          <h3 class="sidebar-title">Quick Facts</h3>
+          <div class="quick-facts">
+            <div class="quick-fact" if="productLine.order">
+              <span class="fact-label">Display Order</span>
+              <span class="fact-value">{productLine.order}</span>
+            </div>
+            <div class="quick-fact" if="productLine.slug">
+              <span class="fact-label">Slug</span>
+              <span class="fact-value">{productLine.slug}</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Back Link -->
+    <a href="/food-service-product-lines" class="back-link">
+      ← Back to all product lines
+    </a>
+  </div>
+</body>
+</html>

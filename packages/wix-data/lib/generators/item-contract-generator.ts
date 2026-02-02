@@ -64,7 +64,8 @@ export const generator = makeContractGenerator()
             return {
                 name,
                 yaml: buildContract(schema),
-                description: `Item page for ${schema.displayName || schema.collectionId}`
+                description: `Item page for ${schema.displayName || schema.collectionId}`,
+                metadata: { collectionId: schema.collectionId },
             };
         });
     });
