@@ -7,6 +7,7 @@
 
 import { makeJayQuery, ActionError } from '@jay-framework/fullstack-component';
 import { WIX_DATA_SERVICE_MARKER, WixDataService } from '../services/wix-data-service';
+import { WixDataQuery } from '@wix/wix-data-items-common';
 
 // ============================================================================
 // Types
@@ -19,11 +20,11 @@ export interface QueryItemsInput {
     /** Collection ID to query */
     collectionId: string;
     
-    /** Maximum number of items to return */
+    /** Maximum number of items to return (default: 20) */
     limit?: number;
     
-    /** Cursor for pagination */
-    cursor?: string;
+    /** Number of items to skip (for pagination) */
+    offset?: number;
     
     /** Field to sort by */
     sortField?: string;
@@ -33,6 +34,12 @@ export interface QueryItemsInput {
     
     /** Filter conditions (field -> value) */
     filter?: Record<string, unknown>;
+    
+    /** Filter by category ID (for hasSome query on category field) */
+    categoryId?: string;
+    
+    /** Category reference field name (required if categoryId is provided) */
+    categoryField?: string;
 }
 
 /**
@@ -48,8 +55,8 @@ export interface QueryItemsOutput {
     /** Total number of items matching query */
     totalCount: number;
     
-    /** Cursor for next page (null if no more results) */
-    nextCursor: string | null;
+    /** Current offset */
+    offset: number;
     
     /** Whether there are more results */
     hasMore: boolean;
@@ -129,24 +136,27 @@ export const queryItems = makeJayQuery('wixData.queryItems')
         input: QueryItemsInput,
         wixData: WixDataService
     ): Promise<QueryItemsOutput> => {
+        console.log("wixData.queryItems");
         const {
             collectionId,
             limit = 20,
-            cursor,
+            offset = 0,
             sortField,
             sortDirection = 'ASC',
-            filter = {}
+            filter = {},
+            categoryId,
+            categoryField
         } = input;
         
         try {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            let query: any = wixData.items.query(collectionId).limit(limit);
-            
-            // Apply cursor pagination
-            if (cursor) {
-                query = query.skipTo(cursor);
-            }
-            
+            console.log("wixData.queryItems", 1);
+            console.log("wixData.queryItems", wixData);
+            console.log("wixData.queryItems", wixData.items);
+            let query: WixDataQuery = wixData.items.query(collectionId)
+                .limit(limit)
+                .skip(offset);
+            console.log("wixData.queryItems", 2);
+
             // Apply sorting
             if (sortField) {
                 query = sortDirection === 'DESC' 
@@ -154,21 +164,31 @@ export const queryItems = makeJayQuery('wixData.queryItems')
                     : query.ascending(sortField);
             }
             
-            // Apply filters
+            // Apply category filter
+            if (categoryId && categoryField) {
+                query = query.hasSome(categoryField, [categoryId]);
+            }
+            
+            // Apply other filters
             query = Object.entries(filter)
                 .filter(([, value]) => value !== undefined && value !== null)
-                .reduce((q: any, [field, value]) => q.eq(field, value), query);
-            
+                .reduce((q: WixDataQuery, [field, value]) => q.eq(field, value), query);
+
+            console.log("wixData.queryItems");
             const result = await query.find();
-            
+            console.log("wixData.queryItems", result);
+            const totalCount = result.totalCount ?? result.items.length;
+
+            console.log("wixData.queryItems", result);
+
             return {
                 items: result.items.map((item: any) => ({
                     _id: item._id!,
                     data: item.data || {}
                 })),
-                totalCount: result.totalCount || result.items.length,
-                nextCursor: result.cursors?.next || null,
-                hasMore: result.hasNext()
+                totalCount,
+                offset,
+                hasMore: offset + result.items.length < totalCount
             };
             
         } catch (error) {

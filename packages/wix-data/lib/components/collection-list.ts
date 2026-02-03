@@ -16,10 +16,8 @@ import {
 import { Props } from '@jay-framework/component';
 import { formatWixMediaUrl, parseWixMediaUrl } from '@jay-framework/wix-utils';
 import { WIX_DATA_SERVICE_MARKER, WixDataService } from '../services/wix-data-service';
-import { WIX_DATA_CONTEXT, WixDataContext } from '../contexts/wix-data-context';
 import { getComponentFields, isComponentEnabled } from '../types';
-import { WixDataQuery } from '@wix/wix-data-items-common'
-import {WixDataItem} from "@wix/wix-data-items-sdk/build/cjs/src/data-v2-data-item-items.universal";
+import { queryItems } from '../actions/data-actions';
 
 const PAGE_SIZE = 20;
 
@@ -87,7 +85,9 @@ interface ListFastViewState {
 interface ListSlowCarryForward {
     collectionId: string;
     categoryId?: string;
-    nextCursor: string | null;
+    categoryField?: string;
+    /** Current offset (number of items already loaded) */
+    offset: number;
     totalCount: number;
     pathPrefix: string;
     slugField: string;
@@ -101,7 +101,10 @@ interface ListSlowCarryForward {
 interface ListFastCarryForward {
     collectionId: string;
     categoryId?: string;
-    nextCursor: string | null;
+    categoryField?: string;
+    /** Current offset (number of items already loaded) */
+    offset: number;
+    totalCount: number;
     pathPrefix: string;
     slugField: string;
     /** Field whitelist - undefined means all fields */
@@ -188,7 +191,7 @@ async function* loadListParams(
 
 /**
  * Slow rendering phase
- * Loads initial items and category data
+ * Loads initial items and category data using queryItems action
  */
 async function renderSlowlyChanging(
     props: PageProps & ListPageParams & DynamicContractProps<WixDataMetadata>,
@@ -210,16 +213,13 @@ async function renderSlowlyChanging(
             const componentConfig = config.components.indexPage || config.components.categoryPage;
             const fieldWhitelist = getComponentFields(componentConfig);
             
-            let query: WixDataQuery = wixData.items.query(collectionId).limit(PAGE_SIZE);
             let categoryData: ListSlowViewState['category'] | undefined;
             let categoryId: string | undefined;
+            const categoryField = config.category?.referenceField;
             
-            // If this is a category page, filter by category
+            // If this is a category page, look up category by slug
             if (props.category && config.category) {
-                // Find category by slug
-                // This assumes the category is in a separate collection
-                // We need to find the category ID first
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                // Find category by slug in the category collection
                 const catQuery = wixData.items.query(config.category.referenceField.split('.')[0] || collectionId)
                     .eq(config.category.categorySlugField, props.category);
                 
@@ -234,16 +234,20 @@ async function renderSlowlyChanging(
                         title: (cat.data?.title as string) || (cat.data?.name as string) || props.category,
                         description: (cat.data?.description as string) || ''
                     };
-                    
-                    // Filter items by category reference
-                    query = query.hasSome(config.category.referenceField, [categoryId]);
                 }
             }
             
-            const result = await query.find();
+            // Use queryItems action to fetch items (with optional category filter)
+            const result = await queryItems({
+                collectionId,
+                limit: PAGE_SIZE,
+                offset: 0,
+                categoryId,
+                categoryField
+            });
 
             // Map items to view state using field whitelist
-            const items = result.items.map((item: WixDataItem) =>
+            const items = result.items.map(item =>
                 mapItemToViewState(item, config.pathPrefix, config.slugField, fieldWhitelist)
             );
             
@@ -263,11 +267,12 @@ async function renderSlowlyChanging(
             
             return {
                 items,
-                totalCount: result.totalCount || items.length,
+                totalCount: result.totalCount,
                 category: categoryData,
                 breadcrumbs,
-                nextCursor: result.cursors?.next || null,
+                offset: items.length,  // Initial offset is the number of items loaded
                 categoryId,
+                categoryField,
                 pathPrefix: config.pathPrefix,
                 slugField: config.slugField,
                 fieldWhitelist
@@ -287,7 +292,8 @@ async function renderSlowlyChanging(
             carryForward: {
                 collectionId,
                 categoryId: data.categoryId,
-                nextCursor: data.nextCursor,
+                categoryField: data.categoryField,
+                offset: data.offset,
                 totalCount: data.totalCount,
                 pathPrefix: data.pathPrefix,
                 slugField: data.slugField,
@@ -307,9 +313,11 @@ async function renderFastChanging(
 ) {
     const Pipeline = RenderPipeline.for<ListFastViewState, ListFastCarryForward>();
     
+    const hasMore = slowCarryForward.offset < slowCarryForward.totalCount;
+    
     return Pipeline.ok({
         loadedItems: [],  // Empty initially - items loaded via "load more"
-        hasMore: slowCarryForward.nextCursor !== null,
+        hasMore,
         isLoading: false,
         loadedCount: 0
     }).toPhaseOutput(viewState => ({
@@ -317,7 +325,9 @@ async function renderFastChanging(
         carryForward: {
             collectionId: slowCarryForward.collectionId,
             categoryId: slowCarryForward.categoryId,
-            nextCursor: slowCarryForward.nextCursor,
+            categoryField: slowCarryForward.categoryField,
+            offset: slowCarryForward.offset,
+            totalCount: slowCarryForward.totalCount,
             pathPrefix: slowCarryForward.pathPrefix,
             slugField: slowCarryForward.slugField,
             fieldWhitelist: slowCarryForward.fieldWhitelist
@@ -327,14 +337,13 @@ async function renderFastChanging(
 
 /**
  * Interactive phase (client-side)
- * Handles load more functionality
+ * Handles load more functionality using the queryItems action
  */
 function ListInteractive(
     _props: Props<PageProps & ListPageParams>,
     refs: any,
     viewStateSignals: Signals<ListFastViewState>,
-    fastCarryForward: ListFastCarryForward,
-    wixDataContext: WixDataContext
+    fastCarryForward: ListFastCarryForward
 ) {
     const {
         loadedItems: [loadedItems, setLoadedItems],
@@ -343,33 +352,43 @@ function ListInteractive(
         loadedCount: [loadedCount, setLoadedCount]
     } = viewStateSignals;
     
-    let currentCursor = fastCarryForward.nextCursor;
-    const { pathPrefix, slugField, fieldWhitelist } = fastCarryForward;
+    let currentOffset = fastCarryForward.offset;
+    const { 
+        collectionId, 
+        categoryId, 
+        categoryField,
+        totalCount,
+        pathPrefix, 
+        slugField, 
+        fieldWhitelist 
+    } = fastCarryForward;
     
     // Load more button handler
     refs.loadMoreButton?.onclick(async () => {
-        if (!currentCursor || isLoading()) return;
+        if (currentOffset >= totalCount || isLoading()) return;
         
         setIsLoading(true);
         
         try {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const result = await (wixDataContext.items as any).queryDataItems({
-                dataCollectionId: fastCarryForward.collectionId
-            })
-                .limit(PAGE_SIZE)
-                .skipTo(currentCursor)
-                .find();
+            // Use the queryItems action for server-side data fetching
+            const result = await queryItems({
+                collectionId,
+                limit: PAGE_SIZE,
+                offset: currentOffset,
+                categoryId,
+                categoryField
+            });
             
             // Map new items using field whitelist
-            const newItems: ListItem[] = result.items.map((item: any) => 
+            const newItems: ListItem[] = result.items.map(item => 
                 mapItemToViewState(item, pathPrefix, slugField, fieldWhitelist)
             );
             
+            currentOffset += newItems.length;
+            
             setLoadedItems([...loadedItems(), ...newItems]);
             setLoadedCount(loadedCount() + newItems.length);
-            setHasMore(result.hasNext?.() ?? false);
-            currentCursor = result.cursors?.next || null;
+            setHasMore(result.hasMore);
             
         } catch (error) {
             console.error('[wix-data] Failed to load more items:', error);
@@ -483,11 +502,12 @@ function mapItemToViewState(
  * 
  * A shared headless component for list pages (index and category).
  * Used by all collections that have indexPage or categoryPage: true in config.
+ * 
+ * Uses queryItems action for client-side "load more" functionality.
  */
 export const collectionList = makeJayStackComponent<any>()
     .withProps<PageProps & DynamicContractProps<WixDataMetadata>>()
     .withServices(WIX_DATA_SERVICE_MARKER)
-    .withContexts(WIX_DATA_CONTEXT)
     .withLoadParams(loadListParams)
     .withSlowlyRender(renderSlowlyChanging)
     .withFastRender(renderFastChanging)

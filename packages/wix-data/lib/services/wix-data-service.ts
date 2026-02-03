@@ -128,7 +128,7 @@ export function provideWixDataService(
             return null;
         }
     }
-    
+    console.log('WixDataService', items, collections)
     const service: WixDataService = {
         items: itemsClient,
         collections: collectionsClient,

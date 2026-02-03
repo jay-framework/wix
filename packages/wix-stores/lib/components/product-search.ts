@@ -15,7 +15,6 @@ import {
 } from '../contracts/product-search.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
 import { patch, REPLACE, ADD } from '@jay-framework/json-patch';
-import { runAction } from '@jay-framework/stack-server-runtime';
 import { searchProducts, ProductSortField } from '../actions/stores-actions';
 import { mapProductToCard } from '../utils/product-mapper';
 import { WIX_STORES_CONTEXT, WixStoresContext } from '../contexts/wix-stores-context';
@@ -124,8 +123,7 @@ async function renderFastChanging(
     return Pipeline
         .try(async () => {
             // Use searchProducts action to get products with aggregations
-            // Note: Must use runAction for proper service injection in backend code
-            const result = await runAction(searchProducts, {
+            const result = await searchProducts({
                 query: '',
                 pageSize: PAGE_SIZE
             });

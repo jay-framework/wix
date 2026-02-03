@@ -26,7 +26,6 @@ import {
 } from '../contracts/product-search.jay-contract';
 import { WIX_STORES_V1_SERVICE_MARKER, WixStoresV1Service } from '../services/wix-stores-v1-service.js';
 import { patch, REPLACE } from '@jay-framework/json-patch';
-import { runAction } from '@jay-framework/stack-server-runtime';
 import { searchProducts, ProductSortField } from '../actions/stores-v1-actions';
 import { WIX_STORES_V1_CONTEXT, WixStoresV1Context } from '../contexts/wix-stores-v1-context';
 
@@ -115,7 +114,7 @@ async function renderFastChanging(
 
     return Pipeline
         .try(async () => {
-            const result = await runAction(searchProducts, {
+            const result = await searchProducts({
                 query: '',
                 pageSize: PAGE_SIZE,
                 page: 1
@@ -129,7 +128,12 @@ async function renderFastChanging(
                 totalCount: 0,
                 currentPage: 1,
                 totalPages: 0,
-                hasMore: false
+                hasMore: false,
+                priceAggregation: {
+                    minBound: 0,
+                    maxBound: 10000,
+                    ranges: [{ rangeId: 'all', label: 'Show all', minValue: null, maxValue: null, productCount: 0, isSelected: true }]
+                }
             });
         })
         .toPhaseOutput((result) => {
