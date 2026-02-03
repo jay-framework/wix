@@ -14,8 +14,12 @@ import {
     DynamicContractProps,
 } from '@jay-framework/fullstack-component';
 import { Props } from '@jay-framework/component';
+import { formatWixMediaUrl, parseWixMediaUrl } from '@jay-framework/wix-utils';
 import { WIX_DATA_SERVICE_MARKER, WixDataService } from '../services/wix-data-service';
 import { WIX_DATA_CONTEXT, WixDataContext } from '../contexts/wix-data-context';
+import { getComponentFields, isComponentEnabled } from '../types';
+import { WixDataQuery } from '@wix/wix-data-items-common'
+import {WixDataItem} from "@wix/wix-data-items-sdk/build/cjs/src/data-v2-data-item-items.universal";
 
 const PAGE_SIZE = 20;
 
@@ -28,14 +32,30 @@ export interface ListPageParams extends UrlParams {
 }
 
 /**
+ * Image structure for view state
+ */
+interface ViewStateImage {
+    url: string;
+    altText: string;
+    width?: number;
+    height?: number;
+}
+
+/**
+ * Item structure for list view state.
+ * Contains _id, url, and whitelisted fields with their original names.
+ */
+interface ListItem {
+    _id: string;
+    url: string;
+    [key: string]: unknown;
+}
+
+/**
  * Slow view state for list pages
  */
 interface ListSlowViewState {
-    items: Array<{
-        _id: string;
-        url: string;
-        [key: string]: unknown;
-    }>;
+    items: ListItem[];
     totalCount: number;
     category?: {
         _id: string;
@@ -48,15 +68,6 @@ interface ListSlowViewState {
         title: string;
         url: string;
     }>;
-}
-
-/**
- * Item type for dynamically loaded items
- */
-interface ListItem {
-    _id: string;
-    url: string;
-    [key: string]: unknown;
 }
 
 /**
@@ -80,6 +91,8 @@ interface ListSlowCarryForward {
     totalCount: number;
     pathPrefix: string;
     slugField: string;
+    /** Field whitelist - undefined means all fields */
+    fieldWhitelist?: string[];
 }
 
 /**
@@ -91,6 +104,8 @@ interface ListFastCarryForward {
     nextCursor: string | null;
     pathPrefix: string;
     slugField: string;
+    /** Field whitelist - undefined means all fields */
+    fieldWhitelist?: string[];
 }
 
 /**
@@ -126,12 +141,12 @@ async function* loadListParams(
     const params: ListPageParams[] = [];
     
     // Index page (no category)
-    if (config.components.indexPage) {
+    if (isComponentEnabled(config.components.indexPage)) {
         params.push({});
     }
     
     // Category pages
-    if (config.components.categoryPage && config.category) {
+    if (isComponentEnabled(config.components.categoryPage) && config.category) {
         try {
             // Query all items to extract unique category references
             const result = await wixData.items.query(collectionId)
@@ -191,7 +206,11 @@ async function renderSlowlyChanging(
                 throw new Error(`Collection not configured: ${collectionId}`);
             }
             
-            let query: any = wixData.items.query(collectionId).limit(PAGE_SIZE);
+            // Get field whitelist from component config (indexPage or categoryPage)
+            const componentConfig = config.components.indexPage || config.components.categoryPage;
+            const fieldWhitelist = getComponentFields(componentConfig);
+            
+            let query: WixDataQuery = wixData.items.query(collectionId).limit(PAGE_SIZE);
             let categoryData: ListSlowViewState['category'] | undefined;
             let categoryId: string | undefined;
             
@@ -222,13 +241,11 @@ async function renderSlowlyChanging(
             }
             
             const result = await query.find();
-            
-            // Map items to view state
-            const items = result.items.map(item => ({
-                _id: item._id!,
-                url: `${config.pathPrefix}/${item.data?.[config.slugField] || item._id}`,
-                ...item.data
-            }));
+
+            // Map items to view state using field whitelist
+            const items = result.items.map((item: WixDataItem) =>
+                mapItemToViewState(item, config.pathPrefix, config.slugField, fieldWhitelist)
+            );
             
             // Build breadcrumbs
             const breadcrumbs: ListSlowViewState['breadcrumbs'] = [
@@ -252,7 +269,8 @@ async function renderSlowlyChanging(
                 nextCursor: result.cursors?.next || null,
                 categoryId,
                 pathPrefix: config.pathPrefix,
-                slugField: config.slugField
+                slugField: config.slugField,
+                fieldWhitelist
             };
         })
         .recover(error => {
@@ -272,7 +290,8 @@ async function renderSlowlyChanging(
                 nextCursor: data.nextCursor,
                 totalCount: data.totalCount,
                 pathPrefix: data.pathPrefix,
-                slugField: data.slugField
+                slugField: data.slugField,
+                fieldWhitelist: data.fieldWhitelist
             }
         }));
 }
@@ -300,7 +319,8 @@ async function renderFastChanging(
             categoryId: slowCarryForward.categoryId,
             nextCursor: slowCarryForward.nextCursor,
             pathPrefix: slowCarryForward.pathPrefix,
-            slugField: slowCarryForward.slugField
+            slugField: slowCarryForward.slugField,
+            fieldWhitelist: slowCarryForward.fieldWhitelist
         }
     }));
 }
@@ -324,7 +344,7 @@ function ListInteractive(
     } = viewStateSignals;
     
     let currentCursor = fastCarryForward.nextCursor;
-    const { pathPrefix, slugField } = fastCarryForward;
+    const { pathPrefix, slugField, fieldWhitelist } = fastCarryForward;
     
     // Load more button handler
     refs.loadMoreButton?.onclick(async () => {
@@ -341,12 +361,10 @@ function ListInteractive(
                 .skipTo(currentCursor)
                 .find();
             
-            // Map new items to include URL
-            const newItems: ListItem[] = result.items.map((item: any) => ({
-                _id: item._id!,
-                url: `${pathPrefix}/${item.data?.[slugField] || item._id}`,
-                ...item.data
-            }));
+            // Map new items using field whitelist
+            const newItems: ListItem[] = result.items.map((item: any) => 
+                mapItemToViewState(item, pathPrefix, slugField, fieldWhitelist)
+            );
             
             setLoadedItems([...loadedItems(), ...newItems]);
             setLoadedCount(loadedCount() + newItems.length);
@@ -368,6 +386,96 @@ function ListInteractive(
             loadedCount: loadedCount()
         })
     };
+}
+
+// ============================================================================
+// Item Mapping Helpers
+// ============================================================================
+
+/**
+ * Check if a value looks like a Wix image
+ */
+function isImageValue(value: unknown): boolean {
+    if (typeof value === 'string' && value.startsWith('wix:image://')) return true;
+    if (typeof value === 'object' && value !== null && ('src' in value || 'url' in value)) return true;
+    return false;
+}
+
+/**
+ * Transform a Wix image field value to view state format.
+ * Handles wix:image:// protocol URLs and extracts dimensions.
+ */
+function mapImageField(imgValue: unknown, altText?: string): ViewStateImage | undefined {
+    if (!imgValue) return undefined;
+    
+    // Handle string URL (wix:image:// or http(s)://)
+    if (typeof imgValue === 'string') {
+        const parsed = parseWixMediaUrl(imgValue);
+        return {
+            url: formatWixMediaUrl('', imgValue),
+            altText: altText || '',
+            width: parsed?.originWidth,
+            height: parsed?.originHeight
+        };
+    }
+    
+    // Handle object with src/url property
+    if (typeof imgValue === 'object' && imgValue !== null) {
+        const img = imgValue as Record<string, unknown>;
+        const srcUrl = ((img.src || img.url) as string) || '';
+        const parsed = parseWixMediaUrl(srcUrl);
+        
+        return {
+            url: formatWixMediaUrl('', srcUrl),
+            altText: (img.alt as string) || altText || '',
+            width: parsed?.originWidth ?? (img.width as number),
+            height: parsed?.originHeight ?? (img.height as number)
+        };
+    }
+    
+    return undefined;
+}
+
+/**
+ * Map a Wix Data item to the view state structure.
+ * Uses field whitelist to include only specified fields, or all non-system fields if no whitelist.
+ * Image fields are transformed to public URLs.
+ */
+function mapItemToViewState(
+    item: { _id?: string; data?: Record<string, unknown> },
+    pathPrefix: string,
+    slugField: string,
+    whitelist?: string[]
+): ListItem {
+    const data = item.data || {};
+    
+    const mapped: ListItem = {
+        _id: item._id!,
+        url: `${pathPrefix}/${data[slugField] || item._id}`
+    };
+    
+    // Determine which keys to include
+    const keysToInclude = whitelist 
+        || Object.keys(data).filter(k => !k.startsWith('_'));
+    
+    // Get title for image alt text fallback (look for 'title' or 'name' field)
+    const titleValue = data.title || data.name;
+    const altText = typeof titleValue === 'string' ? titleValue : '';
+    
+    // Map each field
+    keysToInclude.forEach(key => {
+        const value = data[key];
+        if (value == null) return;
+        
+        // Transform image fields
+        if (isImageValue(value)) {
+            mapped[key] = mapImageField(value, altText);
+        } else {
+            mapped[key] = value;
+        }
+    });
+    
+    return mapped;
 }
 
 /**

@@ -376,3 +376,166 @@ To:
 5. ✅ Image URLs transformed from `wix:image://` to `https://static.wixstatic.com/media/`
 6. ✅ Image dimensions extracted from URL hash params (`originWidth`, `originHeight`)
 7. ✅ List page renders correctly with mapped data
+
+---
+
+## Design Revision: Generic Field Whitelist per Component
+
+After initial implementation, revised to use a more generic approach: **field whitelist per component type** instead of predefined semantic mapping (title, image, description).
+
+### Rationale
+
+1. **More generic** - applies to any component type (list, item, table, card)
+2. **No field renaming** - keeps original field names, no "title → title" mapping confusion
+3. **Cleaner config** - component configuration in one place
+4. **Extensible** - easy to add new component types
+
+### Revised Configuration Schema
+
+**Before:**
+```yaml
+components:
+  itemPage: true
+  indexPage: true
+  categoryPage: true
+listFields:
+  title: title
+  image: image
+  description: shortDescription
+```
+
+**After:**
+```yaml
+components:
+  itemPage: true  # all fields (default)
+  indexPage:
+    fields: [title, image, shortDescription]
+  categoryPage:
+    fields: [title, image, shortDescription]
+```
+
+### Type Changes
+
+```typescript
+// Before
+export interface ComponentsConfig {
+    itemPage?: boolean;
+    indexPage?: boolean;
+    categoryPage?: boolean;
+    tableWidget?: boolean;
+    cardWidget?: boolean;
+}
+
+// After
+export type ComponentConfig = boolean | {
+    /** Whitelist of field keys to include. If omitted, all fields included. */
+    fields?: string[];
+};
+
+export interface ComponentsConfig {
+    itemPage?: ComponentConfig;
+    indexPage?: ComponentConfig;
+    categoryPage?: ComponentConfig;
+    tableWidget?: ComponentConfig;
+    cardWidget?: ComponentConfig;
+}
+```
+
+### Helper Function
+
+```typescript
+/**
+ * Get field whitelist for a component type.
+ * Returns undefined if all fields should be included.
+ */
+export function getComponentFields(
+    config: ComponentConfig | undefined
+): string[] | undefined {
+    if (config === undefined || config === false) return undefined;
+    if (config === true) return undefined; // all fields
+    return config.fields;
+}
+```
+
+### Contract Generator Changes
+
+```typescript
+function buildCardTags(schema: ProcessedSchema, indent = 6): string[] {
+    const whitelist = getComponentFields(schema.config.components.indexPage);
+    
+    const cardTags: string[] = [
+        dataTag('_id', 'string', undefined, indent),
+        dataTag('url', 'string', 'Full URL to item page', indent),
+        interactiveTag('itemLink', 'HTMLAnchorElement', undefined, indent)
+    ];
+    
+    // Add whitelisted fields (or all if no whitelist)
+    const fieldsToInclude = whitelist 
+        ? schema.fields.filter(f => whitelist.includes(f.key))
+        : schema.fields.filter(isCardField);
+    
+    fieldsToInclude.forEach(field => {
+        const tag = fieldToTag(field, indent);
+        if (tag) cardTags.push(tag);
+    });
+    
+    return cardTags;
+}
+```
+
+### Component Changes
+
+```typescript
+function mapItemToViewState(
+    item: { _id?: string; data?: Record<string, unknown> },
+    pathPrefix: string,
+    slugField: string,
+    whitelist: string[] | undefined,
+    titleField?: string  // For image alt fallback
+): Record<string, unknown> {
+    const data = item.data || {};
+    
+    const mapped: Record<string, unknown> = {
+        _id: item._id!,
+        url: `${pathPrefix}/${data[slugField] || item._id}`
+    };
+    
+    // Get title for alt text fallback
+    const title = titleField ? String(data[titleField] || '') : '';
+    
+    // Include whitelisted fields (or all non-system fields if no whitelist)
+    const keysToInclude = whitelist || Object.keys(data).filter(k => !k.startsWith('_'));
+    
+    keysToInclude.forEach(key => {
+        const value = data[key];
+        if (value == null) return;
+        
+        // Transform image fields
+        if (isImageValue(value)) {
+            mapped[key] = mapImageField(value, title);
+        } else {
+            mapped[key] = value;
+        }
+    });
+    
+    return mapped;
+}
+```
+
+### Benefits
+
+| Aspect | Semantic Mapping | Field Whitelist |
+|--------|-----------------|-----------------|
+| Field names | Normalized (title, image) | Original (title, shortDescription) |
+| Config complexity | More options | Simpler (just list fields) |
+| Template authoring | Consistent names | Must know actual field names |
+| Flexibility | Fixed semantic slots | Any fields |
+| Defaults | Smart detection | All fields or explicit list |
+
+### Implementation Changes Required
+
+1. **types.ts** - Change `ComponentsConfig` to use `ComponentConfig` union type
+2. **processed-schema.ts** - Remove `ListFieldMapping`, add `getComponentFields()`
+3. **list-contract-generator.ts** - Use whitelist instead of mapping
+4. **collection-list.ts** - Use whitelist for item mapping
+5. **wix-data.yaml** - Update config format

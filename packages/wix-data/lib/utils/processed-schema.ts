@@ -189,3 +189,4 @@ export async function processSchema(
         category: config.category
     };
 }
+

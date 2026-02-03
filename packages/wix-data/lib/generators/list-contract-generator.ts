@@ -7,6 +7,7 @@
 import { makeContractGenerator } from '@jay-framework/fullstack-component';
 import { WIX_DATA_SERVICE_MARKER } from '../services/wix-data-service';
 import { ProcessedSchema } from '../utils/processed-schema';
+import { getComponentFields, isComponentEnabled, ComponentConfig } from '../types';
 import {
     dataTag,
     dataTagWithPhase,
@@ -20,17 +21,35 @@ import {
 } from './contract-utils';
 
 /**
+ * Get the combined component config for list pages (indexPage or categoryPage).
+ * Uses indexPage config if available, otherwise categoryPage.
+ */
+function getListComponentConfig(schema: ProcessedSchema): ComponentConfig | undefined {
+    return schema.config.components.indexPage || schema.config.components.categoryPage;
+}
+
+/**
  * Build card tags for items (shared between items and loadedItems)
+ * Uses field whitelist if configured, otherwise includes all card-appropriate fields.
  */
 function buildCardTags(schema: ProcessedSchema, indent = 6): string[] {
+    const componentConfig = getListComponentConfig(schema);
+    const whitelist = getComponentFields(componentConfig);
+    
     const cardTags: string[] = [
         dataTag('_id', 'string', undefined, indent),
         dataTag('url', 'string', 'Full URL to item page', indent),
         interactiveTag('itemLink', 'HTMLAnchorElement', undefined, indent)
     ];
     
-    schema.fields.filter(isCardField).forEach(f => {
-        const tag = fieldToTag(f, indent);
+    // Determine which fields to include
+    const fieldsToInclude = whitelist
+        ? schema.fields.filter(f => whitelist.includes(f.key))
+        : schema.fields.filter(isCardField);
+    
+    // Add each field with its original name
+    fieldsToInclude.forEach(field => {
+        const tag = fieldToTag(field, indent);
         if (tag) cardTags.push(tag);
     });
     
@@ -103,13 +122,16 @@ ${tags.join('\n')}`;
 
 /**
  * Generator for list page contracts.
- * Creates one contract per visible collection that has indexPage or categoryPage: true in config.
+ * Creates one contract per visible collection that has indexPage or categoryPage enabled.
  */
 export const generator = makeContractGenerator()
     .withServices(WIX_DATA_SERVICE_MARKER)
     .generateWith(async (wixDataService) => {
         const schemas = await wixDataService.getProcessedSchemas(
-            c => c.visible === true && (!!c.components.indexPage || !!c.components.categoryPage)
+            c => c.visible === true && (
+                isComponentEnabled(c.components.indexPage) || 
+                isComponentEnabled(c.components.categoryPage)
+            )
         );
         
         return schemas.map(schema => {
