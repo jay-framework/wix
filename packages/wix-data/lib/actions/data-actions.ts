@@ -48,10 +48,7 @@ export interface QueryItemsInput {
  */
 export interface QueryItemsOutput {
     /** List of items */
-    items: Array<{
-        _id: string;
-        data: Record<string, unknown>;
-    }>;
+    items: WixDataItem[];
     
     /** Total number of items matching query */
     totalCount: number;
@@ -174,10 +171,7 @@ export const queryItems = makeJayQuery('wixData.queryItems')
             const totalCount = result.totalCount ?? result.items.length;
 
             return {
-                items: result.items.map((item: WixDataItem) => ({
-                    _id: item._id!,
-                    data: item.data || {}
-                })),
+                items: result.items,
                 totalCount,
                 offset,
                 hasMore: offset + result.items.length < totalCount

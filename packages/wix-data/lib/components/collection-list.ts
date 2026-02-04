@@ -18,6 +18,7 @@ import { formatWixMediaUrl, parseWixMediaUrl } from '@jay-framework/wix-utils';
 import { WIX_DATA_SERVICE_MARKER, WixDataService } from '../services/wix-data-service';
 import { getComponentFields, isComponentEnabled } from '../types';
 import { queryItems } from '../actions/data-actions';
+import {WixDataItem} from "@wix/wix-data-items-sdk";
 
 const PAGE_SIZE = 20;
 
@@ -250,7 +251,7 @@ async function renderSlowlyChanging(
             const items = result.items.map(item =>
                 mapItemToViewState(item, config.pathPrefix, config.slugField, fieldWhitelist)
             );
-            
+
             // Build breadcrumbs
             const breadcrumbs: ListSlowViewState['breadcrumbs'] = [
                 { slug: '', title: 'Home', url: '/' },
@@ -461,36 +462,34 @@ function mapImageField(imgValue: unknown, altText?: string): ViewStateImage | un
  * Image fields are transformed to public URLs.
  */
 function mapItemToViewState(
-    item: { _id?: string; data?: Record<string, unknown> },
+    item: WixDataItem,
     pathPrefix: string,
     slugField: string,
     whitelist?: string[]
 ): ListItem {
-    const data = item.data || {};
-    
+
     const mapped: ListItem = {
         _id: item._id!,
-        url: `${pathPrefix}/${data[slugField] || item._id}`
+        url: `${pathPrefix}/${item[slugField] || item._id}`
     };
     
     // Determine which keys to include
     const keysToInclude = whitelist 
-        || Object.keys(data).filter(k => !k.startsWith('_'));
+        || Object.keys(item).filter(k => !k.startsWith('_'));
     
     // Get title for image alt text fallback (look for 'title' or 'name' field)
-    const titleValue = data.title || data.name;
+    const titleValue = item.title || item.name;
     const altText = typeof titleValue === 'string' ? titleValue : '';
     
     // Map each field
     keysToInclude.forEach(key => {
-        const value = data[key];
-        if (value == null) return;
-        
+        const value = item[key];
+
         // Transform image fields
         if (isImageValue(value)) {
             mapped[key] = mapImageField(value, altText);
         } else {
-            mapped[key] = value;
+            mapped[key] = value || '';
         }
     });
     
