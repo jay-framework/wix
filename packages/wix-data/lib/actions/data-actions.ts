@@ -8,6 +8,7 @@
 import { makeJayQuery, ActionError } from '@jay-framework/fullstack-component';
 import { WIX_DATA_SERVICE_MARKER, WixDataService } from '../services/wix-data-service';
 import { WixDataQuery } from '@wix/wix-data-items-common';
+import { WixDataItem } from "@wix/wix-data-items-sdk";
 
 // ============================================================================
 // Types
@@ -136,7 +137,6 @@ export const queryItems = makeJayQuery('wixData.queryItems')
         input: QueryItemsInput,
         wixData: WixDataService
     ): Promise<QueryItemsOutput> => {
-        console.log("wixData.queryItems");
         const {
             collectionId,
             limit = 20,
@@ -149,13 +149,9 @@ export const queryItems = makeJayQuery('wixData.queryItems')
         } = input;
         
         try {
-            console.log("wixData.queryItems", 1);
-            console.log("wixData.queryItems", wixData);
-            console.log("wixData.queryItems", wixData.items);
             let query: WixDataQuery = wixData.items.query(collectionId)
                 .limit(limit)
                 .skip(offset);
-            console.log("wixData.queryItems", 2);
 
             // Apply sorting
             if (sortField) {
@@ -174,15 +170,11 @@ export const queryItems = makeJayQuery('wixData.queryItems')
                 .filter(([, value]) => value !== undefined && value !== null)
                 .reduce((q: WixDataQuery, [field, value]) => q.eq(field, value), query);
 
-            console.log("wixData.queryItems");
             const result = await query.find();
-            console.log("wixData.queryItems", result);
             const totalCount = result.totalCount ?? result.items.length;
 
-            console.log("wixData.queryItems", result);
-
             return {
-                items: result.items.map((item: any) => ({
+                items: result.items.map((item: WixDataItem) => ({
                     _id: item._id!,
                     data: item.data || {}
                 })),
