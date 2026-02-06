@@ -127,16 +127,15 @@ async function renderSlowlyChanging(
 /**
  * Map Wix Data item to view state
  * Handles embedded references
+ * Note: WixDataItem is a flat object with _id and all fields directly on it
  */
 async function mapItemToViewState(
-    item: { _id?: string; data?: Record<string, unknown> },
+    item: Record<string, unknown>,
     config: CollectionConfig,
     wixData: WixDataService
 ): Promise<Record<string, unknown>> {
-    const data = item.data || {};
-    
     // Filter out internal fields (except _id)
-    const processableEntries = Object.entries(data)
+    const processableEntries = Object.entries(item)
         .filter(([key]) => !key.startsWith('_') || key === '_id');
     
     // Process fields in parallel for embedded references

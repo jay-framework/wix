@@ -158,9 +158,10 @@ async function* loadListParams(
                 .find();
             
             // Extract unique category references
+            // Note: WixDataItem is a flat object with fields directly on it
             const categoryIds = new Set<string>();
             result.items.forEach(item => {
-                const catValue = item.data?.[config.category!.referenceField];
+                const catValue = (item as Record<string, unknown>)[config.category!.referenceField];
                 const catIds = Array.isArray(catValue) ? catValue : 
                                typeof catValue === 'string' ? [catValue] : [];
                 catIds.forEach((id: string) => categoryIds.add(id));

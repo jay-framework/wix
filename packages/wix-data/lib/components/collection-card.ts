@@ -86,7 +86,8 @@ async function renderSlowlyChanging(
             }
             
             // Map data fields (filter out system fields, transform images)
-            const dataFields = Object.entries(item.data || {})
+            // Note: WixDataItem is a flat object with fields directly on it
+            const dataFields = Object.entries(item)
                 .filter(([key]) => !key.startsWith('_'))
                 .map(([key, value]): [string, unknown] => {
                     if (isImageValue(value)) {
@@ -97,7 +98,7 @@ async function renderSlowlyChanging(
             
             const viewState: CardViewState = {
                 _id: item._id!,
-                url: `${config.pathPrefix}/${item.data?.[config.slugField] || item._id}`,
+                url: `${config.pathPrefix}/${(item as Record<string, unknown>)[config.slugField] || item._id}`,
                 ...Object.fromEntries(dataFields)
             };
             

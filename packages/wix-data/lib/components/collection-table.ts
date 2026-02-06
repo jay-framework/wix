@@ -139,12 +139,13 @@ async function renderSlowlyChanging(
                 .find();
             
             // Map items to rows
+            // Note: WixDataItem is a flat object with fields directly on it
             const rows: TableRow[] = result.items.map((item: WixDataItem) => ({
                 _id: item._id!,
-                url: `${config.pathPrefix}/${item.data?.[config.slugField] || item._id}`,
+                url: `${config.pathPrefix}/${(item as Record<string, unknown>)[config.slugField] || item._id}`,
                 cells: columnNames.map(fieldName => ({
                     fieldName,
-                    value: formatCellValue(item.data?.[fieldName])
+                    value: formatCellValue((item as Record<string, unknown>)[fieldName])
                 }))
             }));
             
@@ -256,13 +257,14 @@ function TableInteractive(
                 .find();
             
             // Update rows
+            // Note: WixDataItem is a flat object with fields directly on it
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const newRows = result.items.map((item: any) => ({
                 _id: item._id,
                 url: `/${collectionId.toLowerCase()}/${item._id}`,
                 cells: fastCarryForward.columns.map(fieldName => ({
                     fieldName,
-                    value: formatCellValue(item.data?.[fieldName])
+                    value: formatCellValue(item[fieldName])
                 }))
             }));
             

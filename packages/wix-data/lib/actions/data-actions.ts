@@ -75,11 +75,8 @@ export interface GetItemBySlugInput {
  * Output for getItemBySlug action
  */
 export interface GetItemBySlugOutput {
-    /** Item data, or null if not found */
-    item: {
-        _id: string;
-        data: Record<string, unknown>;
-    } | null;
+    /** Item data (flat object with _id and all fields), or null if not found */
+    item: WixDataItem | null;
 }
 
 /**
@@ -223,13 +220,8 @@ export const getItemBySlug = makeJayQuery('wixData.getItemBySlug')
                 return { item: null };
             }
             
-            const item = result.items[0];
-            return {
-                item: {
-                    _id: item._id!,
-                    data: item.data || {}
-                }
-            };
+            // WixDataItem is a flat object with _id and all fields directly on it
+            return { item: result.items[0] };
             
         } catch (error) {
             console.error('[wixData.getItemBySlug] Failed to get item:', error);
@@ -279,8 +271,9 @@ export const getCategories = makeJayQuery('wixData.getCategories')
             const categoryCounts = new Map<string, number>();
             const categoryIds = new Set<string>();
             
+            // Note: WixDataItem is a flat object with fields directly on it
             result.items.forEach(item => {
-                const catValue = item.data?.[config.category.referenceField];
+                const catValue = (item as Record<string, unknown>)[config.category.referenceField];
                 const catIds = Array.isArray(catValue) ? catValue : 
                                typeof catValue === 'string' ? [catValue] : [];
                 
