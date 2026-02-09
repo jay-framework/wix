@@ -1,0 +1,27 @@
+materialized_at: 2026-02-09T20:53:25.001Z
+jay_stack_version: 0.0.0
+plugins:
+  - name: wix-cart
+    path: ./../../packages/wix-cart
+    contracts:
+      - name: cart-indicator
+        type: static
+        path: ./../../packages/wix-cart/dist/contracts/cart-indicator.jay-contract
+      - name: cart-page
+        type: static
+        path: ./../../packages/wix-cart/dist/contracts/cart-page.jay-contract
+  - name: wix-stores
+    path: ./../../packages/wix-stores
+    contracts:
+      - name: product-page
+        type: static
+        path: ./../../packages/wix-stores/dist/contracts/product-page.jay-contract
+      - name: product-search
+        type: static
+        path: ./../../packages/wix-stores/dist/contracts/product-search.jay-contract
+      - name: category-page
+        type: static
+        path: ./../../packages/wix-stores/dist/contracts/category-page.jay-contract
+      - name: category-list
+        type: static
+        path: ./../../packages/wix-stores/dist/contracts/category-list.jay-contract

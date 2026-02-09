@@ -5,6 +5,7 @@
   "private": true,
   "license": "Apache-2.0",
   "scripts": {
+    "agent-kit": "jay-stack-cli agent-kit",
     "dev": "jay-stack-cli dev",
     "validate": "jay-stack-cli validate",
     "clean": "rimraf dist && rimraf build && rimraf -g 'src/**/*.d.ts'",
