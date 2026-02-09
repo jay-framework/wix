@@ -48,3 +48,6 @@ export * from './actions/stores-actions';
 
 // Export init
 export { init } from './init.js';
+
+// Export setup handler (Design Log #87)
+export { setupWixStores } from './setup.js';

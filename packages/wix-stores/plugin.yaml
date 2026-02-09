@@ -28,3 +28,7 @@ actions:
 
 # Plugin initialization uses makeJayInit pattern in lib/init.ts
 # Export name defaults to 'init'
+
+setup:
+  handler: setupWixStores
+  description: Validate Wix Stores service connectivity

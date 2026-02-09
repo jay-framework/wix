@@ -72,6 +72,9 @@ export {
 // Export init
 export { init } from './init';
 
+// Export setup and references handlers (Design Log #87)
+export { setupWixData, generateWixDataReferences } from './setup';
+
 // Export contract generators (for dynamic contract materialization)
 export { generator as itemContractGenerator } from './generators/item-contract-generator';
 export { generator as listContractGenerator } from './generators/list-contract-generator';

@@ -24,6 +24,11 @@ dynamic_contracts:
     component: collectionCard
     generator: cardContractGenerator
 
+setup:
+  handler: setupWixData
+  references: generateWixDataReferences
+  description: Validate CMS service; generate collection schema references
+
 # Server actions for querying data
 actions:
   - queryItems

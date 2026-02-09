@@ -10,3 +10,6 @@ export { WIX_CLIENT_CONTEXT, type WixClientContext } from './wix-client-context.
 export { 
     init,
 } from './init.js';
+
+// Export setup handler (Design Log #87)
+export { setupWixServerClient } from './setup.js';

@@ -4,3 +4,7 @@ name: wix-server-client
 # Plugin initialization uses makeJayInit pattern in lib/init.ts
 # Export name defaults to 'init'
 
+setup:
+  handler: setupWixServerClient
+  description: Configure Wix API credentials (API key, site ID, OAuth client ID)
+
