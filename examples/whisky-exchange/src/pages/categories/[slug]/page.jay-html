@@ -1,0 +1,156 @@
+<html>
+<head>
+  <script type="application/jay-headless" plugin="@jay-framework/wix-stores-v1" contract="category-page" key="cat"></script>
+  <script type="application/jay-headless" plugin="@jay-framework/wix-cart" contract="cart-indicator" key="cart"></script>
+  <script type="application/jay-data">data:</script>
+  <link rel="stylesheet" href="../../../styles/theme.css" />
+</head>
+<body>
+<div>
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-top">
+      <a href="/" class="site-logo">The Whisky<span>Exchange</span></a>
+      <div class="header-actions">
+        <a ref="cart.cartLink" href="/cart" class="cart-indicator">
+          Cart
+          <span if="cart.hasItems" class="cart-badge">{cart.itemCount}</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <nav class="header-nav">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/products">All Whisky</a></li>
+      <li><a href="/cart">Basket</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <!-- Breadcrumbs -->
+    <div class="breadcrumbs">
+      <a href="/">Home</a>
+      <span class="separator">&rsaquo;</span>
+      <span forEach="cat.breadcrumbs" trackBy="categoryId">
+        <a ref="categoryLink">{categoryName}</a>
+        <span class="separator">&rsaquo;</span>
+      </span>
+      <span>{cat.name}</span>
+    </div>
+
+    <!-- Category Hero -->
+    <div class="category-hero">
+      <div class="category-hero-image">
+        <img src="{cat.media.mainMedia.url}" alt="{cat.media.mainMedia.altText}" />
+      </div>
+      <div class="category-hero-content">
+        <div class="page-subtitle">Scotch Whisky</div>
+        <h1 class="page-title">{cat.name}</h1>
+        <p class="category-hero-description">{cat.description}</p>
+      </div>
+    </div>
+
+    <!-- Results toolbar -->
+    <div class="results-toolbar">
+      <span class="results-count">Showing {cat.loadedCount} of {cat.numberOfProducts} products</span>
+    </div>
+
+    <!-- Product Grid — SSR products -->
+    <div class="product-grid">
+      <div forEach="cat.products" trackBy="_id" class="product-card">
+        <div if="hasRibbon" class="product-card-ribbon">
+          <span class="badge badge-sale">{ribbon.name}</span>
+        </div>
+        <a ref="productLink" class="product-card-image">
+          <img src="{thumbnail.url}" alt="{thumbnail.altText}" />
+        </a>
+        <div class="product-card-content">
+          <div class="product-card-brand">{brand.name}</div>
+          <div class="product-card-name"><a ref="productLink">{name}</a></div>
+          <div class="product-card-price">
+            {price}
+            <span if="hasDiscount" class="strikethrough">{strikethroughPrice}</span>
+          </div>
+        </div>
+        <div class="product-card-actions">
+          <button if="quickAddType===SIMPLE" ref="addToCartButton" class="product-card-quick-add">Add to Basket</button>
+          <a if="quickAddType===NEEDS_CONFIGURATION" ref="productLink" class="product-card-quick-add" style="display:block;text-align:center;">View Options</a>
+        </div>
+        <!-- Quick option for single-option products -->
+        <div if="quickAddType===SINGLE_OPTION" class="quick-option-choices">
+          <button forEach="quickOption.choices" trackBy="choiceId" ref="choiceButton" class="quick-option-choice">{name}</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loaded products (client-side) -->
+    <div class="product-grid" style="margin-top: var(--card-gap);">
+      <div forEach="cat.loadedProducts" trackBy="_id" class="product-card">
+        <div if="hasRibbon" class="product-card-ribbon">
+          <span class="badge badge-sale">{ribbon.name}</span>
+        </div>
+        <a ref="productLink" class="product-card-image">
+          <img src="{thumbnail.url}" alt="{thumbnail.altText}" />
+        </a>
+        <div class="product-card-content">
+          <div class="product-card-brand">{brand.name}</div>
+          <div class="product-card-name"><a ref="productLink">{name}</a></div>
+          <div class="product-card-price">
+            {price}
+            <span if="hasDiscount" class="strikethrough">{strikethroughPrice}</span>
+          </div>
+        </div>
+        <div class="product-card-actions">
+          <button if="quickAddType===SIMPLE" ref="addToCartButton" class="product-card-quick-add">Add to Basket</button>
+          <a if="quickAddType===NEEDS_CONFIGURATION" ref="productLink" class="product-card-quick-add" style="display:block;text-align:center;">View Options</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Load More -->
+    <div if="cat.hasMore" class="load-more">
+      <button ref="cat.loadMoreButton" class="btn btn-outline">Load More Whiskies</button>
+    </div>
+
+    <!-- Empty state -->
+    <div if="!cat.hasProducts" class="empty-cart">
+      <h2 class="empty-cart-title">No products found</h2>
+      <p class="empty-cart-message">This category doesn't have any products yet.</p>
+      <a href="/products" class="btn btn-primary">Browse All Whisky</a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div>
+        <div class="footer-brand">The Whisky Exchange</div>
+        <p class="footer-text">Your destination for exceptional whiskies from around the world.</p>
+      </div>
+      <div>
+        <div class="footer-heading">Shop</div>
+        <ul class="footer-links">
+          <li><a href="/products">All Whisky</a></li>
+          <li><a href="/cart">Basket</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Help</div>
+        <ul class="footer-links">
+          <li><a href="#">Delivery</a></li>
+          <li><a href="#">Returns</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">About</div>
+        <ul class="footer-links">
+          <li><a href="#">Our Story</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 The Whisky Exchange</div>
+  </footer>
+</div>
+</body>
+</html>

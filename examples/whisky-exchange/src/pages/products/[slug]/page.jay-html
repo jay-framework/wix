@@ -1,0 +1,189 @@
+<html>
+<head>
+  <script type="application/jay-headless" plugin="@jay-framework/wix-stores-v1" contract="product-page" key="p"></script>
+  <script type="application/jay-headless" plugin="@jay-framework/wix-cart" contract="cart-indicator" key="cart"></script>
+  <script type="application/jay-data">data:</script>
+  <link rel="stylesheet" href="../../../styles/theme.css" />
+</head>
+<body>
+<div>
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-top">
+      <a href="/" class="site-logo">The Whisky<span>Exchange</span></a>
+      <div class="header-actions">
+        <a ref="cart.cartLink" href="/cart" class="cart-indicator">
+          Cart
+          <span if="cart.hasItems" class="cart-badge">{cart.itemCount}</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <nav class="header-nav">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/products">All Whisky</a></li>
+      <li><a href="/cart">Basket</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <!-- Breadcrumbs -->
+    <div class="breadcrumbs">
+      <a href="/">Home</a>
+      <span class="separator">&rsaquo;</span>
+      <a href="/products">All Whisky</a>
+      <span class="separator">&rsaquo;</span>
+      <span>{p.productName}</span>
+    </div>
+
+    <!-- Product Layout -->
+    <div class="product-page-layout">
+      <!-- Gallery -->
+      <div class="product-gallery">
+        <div class="product-gallery-main">
+          <img src="{p.mediaGallery.selectedMedia.url}" alt="Product image" />
+        </div>
+        <div class="product-gallery-thumbs">
+          <img forEach="p.mediaGallery.availableMedia" trackBy="mediaId"
+               ref="selected"
+               src="{media.thumbnail_50x50}"
+               alt="Product thumbnail"
+               class="product-gallery-thumb" />
+        </div>
+      </div>
+
+      <!-- Product Info -->
+      <div class="product-info">
+        <div if="p.ribbon" class="badge badge-sale" style="margin-bottom:12px;">{p.ribbon}</div>
+        <div class="product-brand">{p.brand}</div>
+        <h1 class="product-name">{p.productName}</h1>
+
+        <!-- Price block -->
+        <div class="product-price-block">
+          <div class="product-price">
+            {p.price}
+            <span if="p.strikethroughPrice" class="strikethrough">{p.strikethroughPrice}</span>
+          </div>
+          <div if="p.pricePerUnit" class="product-price-per-unit">{p.pricePerUnit}</div>
+        </div>
+
+        <!-- Stock status -->
+        <div style="margin-bottom:20px;">
+          <span if="p.stockStatus===IN_STOCK" class="stock-in">&#10003; In Stock</span>
+          <span if="p.stockStatus===OUT_OF_STOCK" class="stock-out">Out of Stock</span>
+        </div>
+
+        <!-- SKU -->
+        <div if="p.sku" class="product-sku">SKU: {p.sku}</div>
+
+        <!-- Options (variant selectors) -->
+        <div class="product-options">
+          <div forEach="p.options" trackBy="_id" class="product-option-group">
+            <div class="product-option-label">{name}</div>
+
+            <!-- Text choices as dropdown -->
+            <select if="optionRenderType===TEXT_CHOICES" ref="textChoice" class="select">
+            </select>
+
+            <!-- Color swatch choices -->
+            <div if="optionRenderType===COLOR_SWATCH_CHOICES" class="product-option-choices">
+              <button forEach="choices" trackBy="choiceId"
+                      ref="choiceButton"
+                      class="color-swatch"
+                      style="background-color: {colorCode};"
+                      title="{name}">
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modifiers -->
+        <div forEach="p.modifiers" trackBy="_id" class="product-option-group">
+          <div class="product-option-label">{name}</div>
+
+          <select if="modifierType===TEXT_CHOICES" ref="textModifier" class="select">
+          </select>
+
+          <div if="modifierType===COLOR_SWATCH_CHOICES" class="product-option-choices">
+            <button forEach="choices" trackBy="choiceId"
+                    ref="choiceButton"
+                    class="color-swatch"
+                    style="background-color: {colorCode};"
+                    title="{name}">
+            </button>
+          </div>
+
+          <div if="modifierType===FREE_TEXT">
+            <input ref="textInput" class="input" placeholder="Enter {name}" />
+          </div>
+        </div>
+
+        <!-- Quantity -->
+        <div style="margin-bottom: 24px;">
+          <div class="product-option-label">Quantity</div>
+          <div class="quantity-control">
+            <button ref="p.quantity.decrementButton" class="quantity-btn">&minus;</button>
+            <input ref="p.quantity.quantity" value="{p.quantity.quantity}" class="quantity-input" type="number" min="1" />
+            <button ref="p.quantity.incrementButton" class="quantity-btn">+</button>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="product-actions">
+          <button ref="p.addToCartButton" class="btn btn-primary btn-lg">Add to Basket</button>
+          <button ref="p.buyNowButton" class="btn btn-outline btn-lg">Buy Now</button>
+        </div>
+
+        <!-- Description -->
+        <div if="p.description" class="info-sections">
+          <div class="info-section">
+            <div class="info-section-title">Description</div>
+            <div class="info-section-content">{p.description}</div>
+          </div>
+        </div>
+
+        <!-- Info Sections -->
+        <div class="info-sections">
+          <div forEach="p.infoSections" trackBy="_id" class="info-section">
+            <div class="info-section-title">{title}</div>
+            <div class="info-section-content">{plainDescription}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div>
+        <div class="footer-brand">The Whisky Exchange</div>
+        <p class="footer-text">Your destination for exceptional whiskies from around the world.</p>
+      </div>
+      <div>
+        <div class="footer-heading">Shop</div>
+        <ul class="footer-links">
+          <li><a href="/products">All Whisky</a></li>
+          <li><a href="/cart">Basket</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Help</div>
+        <ul class="footer-links">
+          <li><a href="#">Delivery</a></li>
+          <li><a href="#">Returns</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">About</div>
+        <ul class="footer-links">
+          <li><a href="#">Our Story</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 The Whisky Exchange</div>
+  </footer>
+</div>
+</body>
+</html>

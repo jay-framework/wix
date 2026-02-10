@@ -1,0 +1,8 @@
+devServer:
+  portRange:
+    - 3200
+    - 3300
+  pagesBase: ./src/pages
+  componentsBase: ./src/components
+  publicFolder: ./public
+  configBase: ./config

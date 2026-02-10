@@ -1,0 +1,179 @@
+<html>
+<head>
+  <script type="application/jay-headless" plugin="@jay-framework/wix-stores-v1" contract="product-search" key="search"></script>
+  <script type="application/jay-headless" plugin="@jay-framework/wix-cart" contract="cart-indicator" key="cart"></script>
+  <script type="application/jay-data">data:</script>
+  <link rel="stylesheet" href="../../styles/theme.css" />
+</head>
+<body>
+<div>
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-top">
+      <a href="/" class="site-logo">The Whisky<span>Exchange</span></a>
+      <div class="header-actions">
+        <a ref="cart.cartLink" href="/cart" class="cart-indicator">
+          Cart
+          <span if="cart.hasItems" class="cart-badge">{cart.itemCount}</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <nav class="header-nav">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/products" class="active">All Whisky</a></li>
+      <li><a href="/cart">Basket</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div class="breadcrumbs">
+      <a href="/">Home</a>
+      <span class="separator">&rsaquo;</span>
+      <span>All Whisky</span>
+    </div>
+
+    <h1 class="page-title" style="margin-bottom: 24px;">All Whisky</h1>
+
+    <!-- Search bar -->
+    <div class="search-bar">
+      <input ref="search.searchExpression" value="{search.searchExpression}" class="input" type="text" placeholder="Search for your perfect bottle..." />
+      <button ref="search.searchButton" class="btn btn-primary">Search</button>
+      <button ref="search.clearSearchButton" class="btn btn-ghost">Clear</button>
+    </div>
+
+    <!-- Suggestions -->
+    <div if="search.hasSuggestions" class="suggestions-list">
+      <span class="label" style="margin-right: 4px;">Suggestions:</span>
+      <button forEach="search.suggestions" trackBy="suggestionId" ref="suggestionButton" class="suggestion-btn">{suggestionText}</button>
+    </div>
+
+    <div class="page-with-sidebar">
+      <!-- Filters Sidebar -->
+      <aside class="filters-sidebar">
+        <div class="filters-title">Filter By</div>
+
+        <!-- Price Range -->
+        <div class="filter-section">
+          <div class="filter-section-title">Price Range</div>
+          <div class="checkbox-group">
+            <label forEach="search.filters.priceRange.ranges" trackBy="rangeId" class="checkbox-label">
+              <input ref="isSelected" type="radio" name="priceRange" />
+              {label}
+            </label>
+          </div>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="filter-section">
+          <div class="filter-section-title">Category</div>
+          <div class="checkbox-group">
+            <label forEach="search.filters.categoryFilter.categories" trackBy="categoryId" class="checkbox-label">
+              <input ref="isSelected" type="checkbox" />
+              {categoryName}
+            </label>
+          </div>
+        </div>
+
+        <div style="padding-top: 16px;">
+          <button ref="search.filters.clearFilters" class="btn btn-ghost btn-sm">Clear All Filters</button>
+        </div>
+      </aside>
+
+      <!-- Results -->
+      <main>
+        <!-- Toolbar -->
+        <div class="results-toolbar">
+          <span class="results-count">
+            <span if="search.hasResults">Showing {search.loadedCount} of {search.totalCount} results</span>
+            <span if="!search.hasResults">No results found</span>
+          </span>
+          <div class="results-sort">
+            <label>Sort by</label>
+            <select ref="search.sortBy.sortDropdown" class="select">
+            </select>
+          </div>
+        </div>
+
+        <!-- Loading state -->
+        <div if="search.isSearching" style="text-align:center; padding: 40px 0; color: var(--text-muted);">
+          Searching...
+        </div>
+
+        <!-- Results Grid -->
+        <div if="search.hasResults" class="product-grid">
+          <div forEach="search.searchResults" trackBy="_id" class="product-card">
+            <div if="hasRibbon" class="product-card-ribbon">
+              <span class="badge badge-sale">{ribbon.name}</span>
+            </div>
+            <a ref="productLink" class="product-card-image">
+              <img src="{thumbnail.url}" alt="{thumbnail.altText}" />
+            </a>
+            <div class="product-card-content">
+              <div class="product-card-brand">{brand.name}</div>
+              <div class="product-card-name"><a ref="productLink">{name}</a></div>
+              <div class="product-card-price">
+                {price}
+                <span if="hasDiscount" class="strikethrough">{strikethroughPrice}</span>
+              </div>
+            </div>
+            <div class="product-card-actions">
+              <button if="quickAddType===SIMPLE" ref="addToCartButton" class="product-card-quick-add">Add to Basket</button>
+              <a if="quickAddType===NEEDS_CONFIGURATION" ref="productLink" class="product-card-quick-add" style="display:block;text-align:center;">View Options</a>
+            </div>
+            <div if="quickAddType===SINGLE_OPTION" class="quick-option-choices">
+              <button forEach="quickOption.choices" trackBy="choiceId" ref="choiceButton" class="quick-option-choice">{name}</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div if="search.hasSearched">
+          <div if="!search.hasResults" style="text-align:center; padding: 60px 0;">
+            <h3 style="font-family: var(--font-serif); margin-bottom: 8px;">{search.emptyStateMessage}</h3>
+            <p style="color: var(--text-secondary);">Try a different search term or adjust your filters.</p>
+          </div>
+        </div>
+
+        <!-- Load More -->
+        <div if="search.hasMore" class="load-more">
+          <button ref="search.loadMoreButton" class="btn btn-outline">Load More Results</button>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div>
+        <div class="footer-brand">The Whisky Exchange</div>
+        <p class="footer-text">Your destination for exceptional whiskies from around the world.</p>
+      </div>
+      <div>
+        <div class="footer-heading">Shop</div>
+        <ul class="footer-links">
+          <li><a href="/products">All Whisky</a></li>
+          <li><a href="/cart">Basket</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Help</div>
+        <ul class="footer-links">
+          <li><a href="#">Delivery</a></li>
+          <li><a href="#">Returns</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">About</div>
+        <ul class="footer-links">
+          <li><a href="#">Our Story</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 The Whisky Exchange</div>
+  </footer>
+</div>
+</body>
+</html>

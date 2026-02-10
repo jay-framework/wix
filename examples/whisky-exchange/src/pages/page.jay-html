@@ -1,0 +1,119 @@
+<html>
+<head>
+  <script type="application/jay-headless" plugin="@jay-framework/wix-stores-v1" contract="category-list" key="catalog"></script>
+  <script type="application/jay-headless" plugin="@jay-framework/wix-cart" contract="cart-indicator" key="cart"></script>
+  <script type="application/jay-data">data:</script>
+  <link rel="stylesheet" href="../styles/theme.css" />
+  <style>
+    .home-categories { padding: 48px 0; }
+    .home-search-cta {
+      background: var(--bg-secondary);
+      padding: 48px;
+      text-align: center;
+      border-radius: var(--radius-md);
+      margin: 48px 0;
+    }
+    .home-search-cta h2 {
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+    }
+    .home-search-cta p {
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+  </style>
+</head>
+<body>
+<div>
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-top">
+      <a href="/" class="site-logo">The Whisky<span>Exchange</span></a>
+      <div class="header-actions">
+        <a ref="cart.cartLink" href="/cart" class="cart-indicator">
+          Cart
+          <span if="cart.hasItems" class="cart-badge">{cart.itemCount}</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <nav class="header-nav">
+    <ul>
+      <li><a href="/" class="active">Home</a></li>
+      <li><a href="/products">All Whisky</a></li>
+      <li><a href="/cart">Basket</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <h1 class="hero-title">The Whisky Exchange</h1>
+      <p class="hero-subtitle">Explore our curated collection of the world's finest whiskies, from single malts to rare vintages.</p>
+      <a href="/products" class="btn btn-primary btn-lg">Browse All Whisky</a>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section class="home-categories">
+    <div class="container">
+      <h2 class="section-title">Shop by Category</h2>
+      <div if="catalog.hasCategories" class="category-grid">
+        <a forEach="catalog.categories" trackBy="_id" ref="categoryLink" class="category-card">
+          <img src="{imageUrl}" alt="{name}" />
+          <div class="category-card-overlay">
+            <div class="category-card-name">{name}</div>
+            <div class="category-card-count">{productCount} products</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Search CTA -->
+  <div class="container">
+    <div class="home-search-cta">
+      <h2>Looking for something specific?</h2>
+      <p>Search our full catalog of over 4,000 whiskies</p>
+      <a href="/products" class="btn btn-outline">Search Whiskies</a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div>
+        <div class="footer-brand">The Whisky Exchange</div>
+        <p class="footer-text">Your destination for exceptional whiskies from around the world.</p>
+      </div>
+      <div>
+        <div class="footer-heading">Shop</div>
+        <ul class="footer-links">
+          <li><a href="/products">All Whisky</a></li>
+          <li><a href="/cart">Basket</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Help</div>
+        <ul class="footer-links">
+          <li><a href="#">Delivery</a></li>
+          <li><a href="#">Returns</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">About</div>
+        <ul class="footer-links">
+          <li><a href="#">Our Story</a></li>
+          <li><a href="#">Blog</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2026 The Whisky Exchange. All rights reserved.
+    </div>
+  </footer>
+</div>
+</body>
+</html>

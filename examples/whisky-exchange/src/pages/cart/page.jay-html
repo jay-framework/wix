@@ -1,0 +1,181 @@
+<html>
+<head>
+  <script type="application/jay-headless" plugin="@jay-framework/wix-cart" contract="cart-page" key="cartPage"></script>
+  <script type="application/jay-headless" plugin="@jay-framework/wix-cart" contract="cart-indicator" key="cart"></script>
+  <script type="application/jay-data">data:</script>
+  <link rel="stylesheet" href="../../styles/theme.css" />
+</head>
+<body>
+<div>
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-top">
+      <a href="/" class="site-logo">The Whisky<span>Exchange</span></a>
+      <div class="header-actions">
+        <a ref="cart.cartLink" href="/cart" class="cart-indicator">
+          Cart
+          <span if="cart.hasItems" class="cart-badge">{cart.itemCount}</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <nav class="header-nav">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/products">All Whisky</a></li>
+      <li><a href="/cart" class="active">Basket</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div class="breadcrumbs">
+      <a href="/">Home</a>
+      <span class="separator">&rsaquo;</span>
+      <span>Your Basket</span>
+    </div>
+
+    <h1 class="page-title" style="margin-bottom: 32px;">Your Basket</h1>
+
+    <!-- Loading -->
+    <div if="cartPage.isLoading" style="text-align:center; padding: 60px 0; color: var(--text-muted);">
+      Loading your basket...
+    </div>
+
+    <!-- Empty Cart -->
+    <div if="cartPage.isEmpty" class="empty-cart">
+      <h2 class="empty-cart-title">Your basket is empty</h2>
+      <p class="empty-cart-message">{cartPage.emptyCartMessage}</p>
+      <a ref="cartPage.emptyCartLink" href="/products" class="btn btn-primary btn-lg">Start Shopping</a>
+    </div>
+
+    <!-- Cart with items -->
+    <div if="!cartPage.isEmpty">
+      <div class="cart-layout">
+        <!-- Line Items -->
+        <div>
+          <div class="cart-header">
+            <span>Product</span>
+            <span style="text-align:center;">Quantity</span>
+            <span style="text-align:right;">Total</span>
+          </div>
+
+          <div forEach="cartPage.lineItems" trackBy="lineItemId" class="cart-item">
+            <!-- Product info -->
+            <div class="cart-item-product">
+              <div class="cart-item-image">
+                <a ref="productLink"><img src="{image.url}" alt="{image.altText}" /></a>
+              </div>
+              <div>
+                <div class="cart-item-name"><a ref="productLink">{productName}</a></div>
+                <div if="variantName" class="cart-item-variant">{variantName}</div>
+                <div if="sku" class="cart-item-sku">SKU: {sku}</div>
+                <button ref="removeButton" class="cart-item-remove">Remove Item</button>
+              </div>
+            </div>
+
+            <!-- Quantity controls -->
+            <div style="display:flex; justify-content:center;">
+              <div class="quantity-control">
+                <button ref="decrementButton" class="quantity-btn">&minus;</button>
+                <input ref="quantity" value="{quantity}" class="quantity-input" type="number" min="1" />
+                <button ref="incrementButton" class="quantity-btn">+</button>
+              </div>
+            </div>
+
+            <!-- Line total -->
+            <div class="cart-item-price">
+              {lineTotal.formattedAmount}
+              <div if="hasDiscount" style="font-size:0.8rem; color:var(--accent); font-weight:400;">
+                -{lineDiscount.formattedAmount}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary Sidebar -->
+        <div class="cart-summary">
+          <div class="cart-summary-title">Basket Total ({cartPage.summary.itemCount} items)</div>
+
+          <div class="cart-summary-row">
+            <span class="label">Subtotal</span>
+            <span class="value">{cartPage.summary.subtotal.formattedAmount}</span>
+          </div>
+
+          <div if="cartPage.summary.hasDiscount" class="cart-summary-row">
+            <span class="label">Discount</span>
+            <span class="value" style="color: var(--accent);">-{cartPage.summary.discount.formattedAmount}</span>
+          </div>
+
+          <div if="cartPage.summary.showTax" class="cart-summary-row">
+            <span class="label">Estimated Tax</span>
+            <span class="value">{cartPage.summary.estimatedTax.formattedAmount}</span>
+          </div>
+
+          <div class="cart-summary-total">
+            <span class="label">Order Total</span>
+            <span class="value">{cartPage.summary.estimatedTotal.formattedAmount}</span>
+          </div>
+
+          <!-- Coupon -->
+          <div class="coupon-section">
+            <div if="!cartPage.coupon.hasAppliedCoupon">
+              <div class="label" style="margin-bottom: 8px; font-size: 0.75rem;">Add promo code</div>
+              <div class="coupon-form">
+                <input ref="cartPage.coupon.code" value="{cartPage.coupon.code}" type="text" placeholder="Enter code" />
+                <button ref="cartPage.coupon.applyButton" class="btn btn-sm btn-outline">Apply</button>
+              </div>
+              <div if="cartPage.coupon.hasError" class="coupon-error">{cartPage.coupon.errorMessage}</div>
+            </div>
+
+            <div if="cartPage.coupon.hasAppliedCoupon" class="coupon-applied">
+              <span>Code: {cartPage.coupon.appliedCode}</span>
+              <button ref="cartPage.coupon.removeButton" class="btn btn-ghost btn-sm">Remove</button>
+            </div>
+          </div>
+
+          <!-- Checkout -->
+          <button ref="cartPage.checkoutButton" class="btn btn-accent btn-lg btn-block" style="margin-top: 24px;">
+            Checkout
+          </button>
+
+          <div style="text-align:center; margin-top: 12px;">
+            <a ref="cartPage.continueShoppingLink" href="/products" style="font-size:0.85rem; color:var(--text-secondary); text-decoration:underline;">Continue Shopping</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div>
+        <div class="footer-brand">The Whisky Exchange</div>
+        <p class="footer-text">Your destination for exceptional whiskies from around the world.</p>
+      </div>
+      <div>
+        <div class="footer-heading">Shop</div>
+        <ul class="footer-links">
+          <li><a href="/products">All Whisky</a></li>
+          <li><a href="/cart">Basket</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Help</div>
+        <ul class="footer-links">
+          <li><a href="#">Delivery</a></li>
+          <li><a href="#">Returns</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">About</div>
+        <ul class="footer-links">
+          <li><a href="#">Our Story</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 The Whisky Exchange</div>
+  </footer>
+</div>
+</body>
+</html>
