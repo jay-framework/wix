@@ -72,6 +72,8 @@
             {price}
             <span if="hasDiscount" class="strikethrough">{strikethroughPrice}</span>
           </div>
+          <span if="inventory.availabilityStatus===IN_STOCK" class="stock-in">✓ In Stock</span>
+          <span if="inventory.availabilityStatus===OUT_OF_STOCK" class="stock-out">Out of Stock</span>
         </div>
         <div class="product-card-actions">
           <button if="quickAddType===SIMPLE" ref="addToCartButton" class="product-card-quick-add">Add to Basket</button>
@@ -100,6 +102,8 @@
             {price}
             <span if="hasDiscount" class="strikethrough">{strikethroughPrice}</span>
           </div>
+          <span if="inventory.availabilityStatus===IN_STOCK" class="stock-in">✓ In Stock</span>
+          <span if="inventory.availabilityStatus===OUT_OF_STOCK" class="stock-out">Out of Stock</span>
         </div>
         <div class="product-card-actions">
           <button if="quickAddType===SIMPLE" ref="addToCartButton" class="product-card-quick-add">Add to Basket</button>

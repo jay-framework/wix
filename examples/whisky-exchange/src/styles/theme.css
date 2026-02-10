@@ -971,8 +971,29 @@ a:hover { color: var(--text-link-hover); }
 }
 
 /* Stock status */
-.stock-in { color: #2d7d2d; font-size: 0.85rem; font-weight: 600; }
-.stock-out { color: var(--accent); font-size: 0.85rem; font-weight: 600; }
+.stock-in {
+  display: inline-block;
+  background: #15803d;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 5px 14px 5px 10px;
+  border-radius: 0 20px 20px 0;
+  margin-top: 8px;
+}
+
+.stock-out {
+  display: inline-block;
+  background: var(--accent);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 5px 14px 5px 10px;
+  border-radius: 0 20px 20px 0;
+  margin-top: 8px;
+}
 
 /* Info sections */
 .info-sections { margin-top: 32px; }
