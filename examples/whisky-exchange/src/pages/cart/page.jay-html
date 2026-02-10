@@ -76,7 +76,7 @@
             <!-- Quantity controls -->
             <div style="display:flex; justify-content:center;">
               <div class="quantity-control">
-                <button ref="decrementButton" class="quantity-btn">&minus;</button>
+                <button ref="decrementButton" class="quantity-btn">−</button>
                 <input ref="quantity" value="{quantity}" class="quantity-input" type="number" min="1" />
                 <button ref="incrementButton" class="quantity-btn">+</button>
               </div>

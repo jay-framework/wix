@@ -62,12 +62,12 @@
         <div if="hasRibbon" class="product-card-ribbon">
           <span class="badge badge-sale">{ribbon.name}</span>
         </div>
-        <a ref="productLink" class="product-card-image">
-          <img src="{thumbnail.url}" alt="{thumbnail.altText}" />
+        <a href="{productUrl}" class="product-card-image">
+          <img src="{mainMedia.url}" alt="{mainMedia.altText}" />
         </a>
         <div class="product-card-content">
           <div class="product-card-brand">{brand.name}</div>
-          <div class="product-card-name"><a ref="productLink">{name}</a></div>
+          <div class="product-card-name"><a href="{productUrl}">{name}</a></div>
           <div class="product-card-price">
             {price}
             <span if="hasDiscount" class="strikethrough">{strikethroughPrice}</span>
@@ -75,7 +75,7 @@
         </div>
         <div class="product-card-actions">
           <button if="quickAddType===SIMPLE" ref="addToCartButton" class="product-card-quick-add">Add to Basket</button>
-          <a if="quickAddType===NEEDS_CONFIGURATION" ref="productLink" class="product-card-quick-add" style="display:block;text-align:center;">View Options</a>
+          <a if="quickAddType===NEEDS_CONFIGURATION" href="{productUrl}" class="product-card-quick-add" style="display:block;text-align:center;">View Options</a>
         </div>
         <!-- Quick option for single-option products -->
         <div if="quickAddType===SINGLE_OPTION" class="quick-option-choices">
@@ -90,12 +90,12 @@
         <div if="hasRibbon" class="product-card-ribbon">
           <span class="badge badge-sale">{ribbon.name}</span>
         </div>
-        <a ref="productLink" class="product-card-image">
-          <img src="{thumbnail.url}" alt="{thumbnail.altText}" />
+        <a href="{productUrl}" class="product-card-image">
+          <img src="{mainMedia.url}" alt="{mainMedia.altText}" />
         </a>
         <div class="product-card-content">
           <div class="product-card-brand">{brand.name}</div>
-          <div class="product-card-name"><a ref="productLink">{name}</a></div>
+          <div class="product-card-name"><a href="{productUrl}">{name}</a></div>
           <div class="product-card-price">
             {price}
             <span if="hasDiscount" class="strikethrough">{strikethroughPrice}</span>
@@ -103,7 +103,7 @@
         </div>
         <div class="product-card-actions">
           <button if="quickAddType===SIMPLE" ref="addToCartButton" class="product-card-quick-add">Add to Basket</button>
-          <a if="quickAddType===NEEDS_CONFIGURATION" ref="productLink" class="product-card-quick-add" style="display:block;text-align:center;">View Options</a>
+          <a if="quickAddType===NEEDS_CONFIGURATION" href="{productUrl}" class="product-card-quick-add" style="display:block;text-align:center;">View Options</a>
         </div>
       </div>
     </div>

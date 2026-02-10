@@ -70,7 +70,7 @@
 
         <!-- Stock status -->
         <div style="margin-bottom:20px;">
-          <span if="p.stockStatus===IN_STOCK" class="stock-in">&#10003; In Stock</span>
+          <span if="p.stockStatus===IN_STOCK" class="stock-in">✓ In Stock</span>
           <span if="p.stockStatus===OUT_OF_STOCK" class="stock-out">Out of Stock</span>
         </div>
 
@@ -123,7 +123,7 @@
         <div style="margin-bottom: 24px;">
           <div class="product-option-label">Quantity</div>
           <div class="quantity-control">
-            <button ref="p.quantity.decrementButton" class="quantity-btn">&minus;</button>
+            <button ref="p.quantity.decrementButton" class="quantity-btn">−</button>
             <input ref="p.quantity.quantity" value="{p.quantity.quantity}" class="quantity-input" type="number" min="1" />
             <button ref="p.quantity.incrementButton" class="quantity-btn">+</button>
           </div>
