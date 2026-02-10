@@ -666,8 +666,42 @@ a:hover { color: var(--text-link-hover); }
 }
 
 .filter-section {
-  padding: 16px 0;
+  padding: 0;
   border-bottom: 1px solid var(--border-light);
+}
+
+.filter-section summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 16px 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+
+.filter-section summary::-webkit-details-marker { display: none; }
+
+.filter-section summary::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid var(--text-secondary);
+  border-bottom: 2px solid var(--text-secondary);
+  transform: rotate(-135deg);
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.filter-section[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.filter-section > .checkbox-group {
+  padding: 0 0 16px;
 }
 
 .filter-section-title {

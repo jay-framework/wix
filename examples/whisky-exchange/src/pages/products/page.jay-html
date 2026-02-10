@@ -55,26 +55,26 @@
         <div class="filters-title">Filter By</div>
 
         <!-- Price Range -->
-        <div class="filter-section">
-          <div class="filter-section-title">Price Range</div>
+        <details class="filter-section">
+          <summary class="filter-section-title">Price Range</summary>
           <div class="checkbox-group">
             <label forEach="search.filters.priceRange.ranges" trackBy="rangeId" class="checkbox-label">
               <input ref="isSelected" type="radio" name="priceRange" />
               {label}
             </label>
           </div>
-        </div>
+        </details>
 
         <!-- Category Filter -->
-        <div class="filter-section">
-          <div class="filter-section-title">Category</div>
+        <details class="filter-section">
+          <summary class="filter-section-title">Category</summary>
           <div class="checkbox-group">
             <label forEach="search.filters.categoryFilter.categories" trackBy="categoryId" class="checkbox-label">
               <input ref="isSelected" type="checkbox" />
               {categoryName}
             </label>
           </div>
-        </div>
+        </details>
 
         <div style="padding-top: 16px;">
           <button ref="search.filters.clearFilters" class="btn btn-ghost btn-sm">Clear All Filters</button>
