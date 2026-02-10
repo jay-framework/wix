@@ -1,0 +1,1690 @@
+_generated: '2026-02-10T09:22:16.129Z'
+_description: CMS collection schemas for agent discovery. Shows field types, references, and visibility.
+totalCollections: 39
+visibleCollections: 2
+collections:
+  - collectionId: Blog/Categories
+    visible: false
+    pathPrefix: /blog-categories
+    slugField: slug
+    fields:
+      - key: postCount
+        displayName: Post Count
+        type: NUMBER
+      - key: fullCategoryPageUrl
+        displayName: Category Page URL
+        type: URL
+      - key: posts
+        displayName: Posts
+        type: MULTI_REFERENCE
+      - key: description
+        displayName: Description
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: label
+        displayName: Label
+        type: TEXT
+      - key: translationId
+        displayName: Translation ID
+        type: TEXT
+      - key: slug
+        displayName: Slug
+        type: TEXT
+      - key: categoryPageUrl
+        displayName: Category Page Slug
+        type: URL
+      - key: coverImage
+        displayName: Cover Image
+        type: IMAGE
+      - key: language
+        displayName: Language
+        type: LANGUAGE
+    references:
+      - fieldName: posts
+        targetCollection: Blog/Posts
+        isMulti: true
+    components: {}
+  - collectionId: Blog/Posts
+    visible: false
+    pathPrefix: /blog-posts
+    slugField: slug
+    fields:
+      - key: author
+        displayName: Author
+        type: REFERENCE
+      - key: mainCategory
+        displayName: Main Category
+        type: REFERENCE
+      - key: viewCount
+        displayName: View Count
+        type: NUMBER
+      - key: excerpt
+        displayName: Excerpt
+        type: TEXT
+      - key: timeToRead
+        displayName: Time To Read
+        type: NUMBER
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: tags
+        displayName: Tags
+        type: MULTI_REFERENCE
+      - key: uuid
+        displayName: UUID
+        type: TEXT
+      - key: featured
+        displayName: Featured
+        type: BOOLEAN
+      - key: translationId
+        displayName: Translation ID
+        type: TEXT
+      - key: slug
+        displayName: Slug
+        type: TEXT
+      - key: coverImage
+        displayName: Cover Image
+        type: IMAGE
+      - key: plainContent
+        displayName: Plain Content
+        type: TEXT
+      - key: commentCount
+        displayName: Comment Count
+        type: NUMBER
+      - key: language
+        displayName: Language
+        type: LANGUAGE
+      - key: publishedDate
+        displayName: Published Date
+        type: DATETIME
+      - key: pinned
+        displayName: Pinned
+        type: BOOLEAN
+      - key: categories
+        displayName: Categories
+        type: MULTI_REFERENCE
+      - key: richContent
+        displayName: Rich Content
+        type: RICH_CONTENT
+      - key: postPageUrl
+        displayName: Post Page URL
+        type: PAGE_LINK
+      - key: coverImageDisplayed
+        displayName: Cover Image Displayed
+        type: BOOLEAN
+      - key: title
+        displayName: Title
+        type: TEXT
+      - key: lastPublishedDate
+        displayName: Last Published Date
+        type: DATETIME
+      - key: internalId
+        displayName: Internal ID
+        type: TEXT
+      - key: relatedPosts
+        displayName: Related Posts
+        type: MULTI_REFERENCE
+      - key: hashtags
+        displayName: Hashtags
+        type: ARRAY_STRING
+      - key: likeCount
+        displayName: Like Count
+        type: NUMBER
+    references:
+      - fieldName: author
+        targetCollection: Members/PublicData
+        isMulti: false
+      - fieldName: mainCategory
+        targetCollection: Blog/Categories
+        isMulti: false
+      - fieldName: tags
+        targetCollection: Blog/Tags
+        isMulti: true
+      - fieldName: categories
+        targetCollection: Blog/Categories
+        isMulti: true
+      - fieldName: relatedPosts
+        targetCollection: Blog/Posts
+        isMulti: true
+    components: {}
+  - collectionId: Blog/Tags
+    visible: false
+    pathPrefix: /blog-tags
+    slugField: slug
+    fields:
+      - key: postCount
+        displayName: Post Count
+        type: NUMBER
+      - key: posts
+        displayName: Posts
+        type: MULTI_REFERENCE
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: label
+        displayName: Label
+        type: TEXT
+      - key: slug
+        displayName: Slug
+        type: TEXT
+      - key: tagPageUrl
+        displayName: Tag Page URL
+        type: URL
+      - key: language
+        displayName: Language
+        type: LANGUAGE
+    references:
+      - fieldName: posts
+        targetCollection: Blog/Posts
+        isMulti: true
+    components: {}
+  - collectionId: Department_Listing
+    visible: false
+    pathPrefix: /department-listing
+    slugField: _id
+    fields:
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+      - key: department
+        displayName: DEPARTMENT
+        type: TEXT
+      - key: description
+        displayName: DESCRIPTION
+        type: TEXT
+      - key: phone
+        displayName: PHONE
+        type: TEXT
+      - key: email
+        displayName: EMAIL
+        type: TEXT
+    references: []
+    components: {}
+  - collectionId: Food_Service--Product_lines
+    visible: true
+    pathPrefix: /food-service-product-lines
+    slugField: slug
+    fields:
+      - key: title
+        displayName: Title
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+      - key: coverImage
+        displayName: Cover Image
+        type: IMAGE
+      - key: media
+        displayName: Media
+        type: MEDIA_GALLERY
+      - key: headerTitle
+        displayName: Header Title
+        type: TEXT
+      - key: order
+        displayName: Order
+        type: NUMBER
+      - key: salesSheet
+        displayName: Sales Sheet
+        type: DOCUMENT
+      - key: ingredients
+        displayName: Ingredients
+        type: TEXT
+      - key: labelText
+        displayName: Label Text
+        type: TEXT
+      - key: labelTextOutline
+        displayName: Label Text Outline
+        type: TEXT
+      - key: link-food-service-product-lines-1-title
+        displayName: Food service (Slug)
+        type: PAGE_LINK
+      - key: slug
+        displayName: slug
+        type: TEXT
+      - key: link-food-service-product-lines-title
+        displayName: Retail service (Slug)
+        type: PAGE_LINK
+      - key: Food_Service--Product_types
+        displayName: Food_Service--Product_types
+        type: MULTI_REFERENCE
+    references:
+      - fieldName: Food_Service--Product_types
+        targetCollection: Food_Service--Product_types
+        isMulti: true
+    components:
+      itemPage: true
+      indexPage: true
+  - collectionId: Food_Service--Product_types
+    visible: false
+    pathPrefix: /food-service-product-types
+    slugField: _id
+    fields:
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+      - key: line
+        displayName: line
+        type: MULTI_REFERENCE
+      - key: type
+        displayName: type
+        type: TEXT
+      - key: industry
+        displayName: industry
+        type: ARRAY_STRING
+    references:
+      - fieldName: line
+        targetCollection: Food_Service--Product_lines
+        isMulti: true
+    components: {}
+  - collectionId: Food_Service--SKUs
+    visible: false
+    pathPrefix: /food-service-skus
+    slugField: _id
+    fields:
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+      - key: type
+        displayName: type
+        type: REFERENCE
+      - key: sku
+        displayName: Item Code
+        type: TEXT
+      - key: description
+        displayName: description
+        type: TEXT
+      - key: isHalal
+        displayName: Is Halal
+        type: BOOLEAN
+      - key: factSheet
+        displayName: Fact Sheet
+        type: DOCUMENT
+      - key: industry
+        displayName: Industry
+        type: ARRAY_STRING
+      - key: link-food-service-skus-2-sku
+        displayName: Products(SKUs) (Description)
+        type: PAGE_LINK
+      - key: lines
+        displayName: lines
+        type: ARRAY_STRING
+      - key: media
+        displayName: media
+        type: MEDIA_GALLERY
+      - key: mediaCover
+        displayName: mediaCover
+        type: IMAGE
+      - key: productDescriptions
+        displayName: ProductDescriptions
+        type: TEXT
+      - key: landingPageItem
+        displayName: LandingPageItem
+        type: ARRAY_STRING
+    references:
+      - fieldName: type
+        targetCollection: Food_Service--Product_types
+        isMulti: false
+    components: {}
+  - collectionId: Forms/clientInformation
+    visible: false
+    pathPrefix: /forms-clientinformation
+    slugField: _id
+    fields:
+      - key: submissionTime
+        displayName: Submission Time
+        type: DATETIME
+      - key: phone_1
+        displayName: Phone Number
+        type: TEXT
+      - key: paragraph_2
+        displayName: Any additional comments?
+        type: TEXT
+      - key: firstName_1
+        displayName: First name
+        type: TEXT
+      - key: paragraph_1
+        displayName: Why are you interested in our service?
+        type: TEXT
+      - key: email_1
+        displayName: Email
+        type: TEXT
+      - key: lastName_1
+        displayName: Last name
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+    references: []
+    components: {}
+  - collectionId: Forms/lightboxContact06
+    visible: false
+    pathPrefix: /forms-lightboxcontact06
+    slugField: _id
+    fields:
+      - key: submissionTime
+        displayName: Submission Time
+        type: DATETIME
+      - key: enterYourEmail
+        displayName: Enter your email
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+    references: []
+    components: {}
+  - collectionId: Forms/lightboxContact062
+    visible: false
+    pathPrefix: /forms-lightboxcontact062
+    slugField: _id
+    fields:
+      - key: submissionTime
+        displayName: Submission Time
+        type: DATETIME
+      - key: enterYourEmail
+        displayName: Enter your email
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+    references: []
+    components: {}
+  - collectionId: Forms/lightboxSubscribe08
+    visible: false
+    pathPrefix: /forms-lightboxsubscribe08
+    slugField: _id
+    fields:
+      - key: submissionTime
+        displayName: Submission Time
+        type: DATETIME
+      - key: enterYourEmail
+        displayName: Enter your email
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+    references: []
+    components: {}
+  - collectionId: Forms/lightboxSubscribe082
+    visible: false
+    pathPrefix: /forms-lightboxsubscribe082
+    slugField: _id
+    fields:
+      - key: submissionTime
+        displayName: Submission Time
+        type: DATETIME
+      - key: enterYourEmail
+        displayName: Enter your email
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+    references: []
+    components: {}
+  - collectionId: Forms/lightboxSubscribe083
+    visible: false
+    pathPrefix: /forms-lightboxsubscribe083
+    slugField: _id
+    fields:
+      - key: submissionTime
+        displayName: Submission Time
+        type: DATETIME
+      - key: enterYourEmail
+        displayName: Enter your email
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+    references: []
+    components: {}
+  - collectionId: Marketing/Coupons
+    visible: false
+    pathPrefix: /marketing-coupons
+    slugField: _id
+    fields:
+      - key: freeShipping
+        displayName: Free Shipping
+        type: BOOLEAN
+      - key: name
+        displayName: Name
+        type: TEXT
+      - key: startTime
+        displayName: Start Time
+        type: DATETIME
+      - key: expirationTime
+        displayName: Expiration Time
+        type: DATETIME
+      - key: numberOfUsages
+        displayName: Number Of Usages
+        type: NUMBER
+      - key: limitedToOneItem
+        displayName: Limited To One Item
+        type: BOOLEAN
+      - key: expired
+        displayName: Expired
+        type: BOOLEAN
+      - key: percentOffRate
+        displayName: Percent Off Rate
+        type: NUMBER
+      - key: limitPerCustomer
+        displayName: Limit Per Customer
+        type: NUMBER
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: scope
+        displayName: Scope
+        type: OBJECT
+      - key: buyXGetY
+        displayName: Buy X Get Y
+        type: OBJECT
+      - key: displayData
+        displayName: Display Data
+        type: OBJECT
+      - key: moneyOffAmount
+        displayName: Money Off Amount
+        type: NUMBER
+      - key: usageLimit
+        displayName: Usage Limit
+        type: NUMBER
+      - key: minimumSubtotal
+        displayName: Minimum Subtotal
+        type: NUMBER
+      - key: code
+        displayName: Code
+        type: TEXT
+      - key: _dateCreated
+        displayName: Date Created
+        type: DATETIME
+      - key: fixedPriceAmount
+        displayName: Fixed Price Amount
+        type: NUMBER
+      - key: appliesToSubscriptions
+        displayName: Applies To Subscriptions
+        type: BOOLEAN
+      - key: type
+        displayName: Type
+        type: TEXT
+      - key: appId
+        displayName: App Id
+        type: TEXT
+      - key: active
+        displayName: Active
+        type: BOOLEAN
+    references: []
+    components: {}
+  - collectionId: Members/Badges
+    visible: false
+    pathPrefix: /members-badges
+    slugField: slug
+    fields:
+      - key: backgroundColor
+        displayName: Background Color
+        type: TEXT
+      - key: description
+        displayName: Description
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: icon
+        displayName: Icon
+        type: IMAGE
+      - key: textColor
+        displayName: Text Color
+        type: TEXT
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: slug
+        displayName: Slug
+        type: TEXT
+      - key: roleId
+        displayName: Role ID
+        type: TEXT
+      - key: members
+        displayName: Members
+        type: MULTI_REFERENCE
+      - key: title
+        displayName: Title
+        type: TEXT
+    references:
+      - fieldName: members
+        targetCollection: Members/FullData
+        isMulti: true
+    components: {}
+  - collectionId: Members/FullData
+    visible: false
+    pathPrefix: /members-fulldata
+    slugField: slug
+    fields:
+      - key: loginEmail
+        displayName: Login Email
+        type: TEXT
+      - key: email
+        displayName: Email
+        type: TEXT
+      - key: privacyStatus
+        displayName: Privacy Status
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Creation Date
+        type: DATETIME
+      - key: aboutPlain
+        displayName: About (Plain Text)
+        type: TEXT
+      - key: profilePhoto
+        displayName: Profile Photo
+        type: IMAGE
+      - key: aboutRich
+        displayName: About (Rich Text)
+        type: RICH_CONTENT
+      - key: _updatedDate
+        displayName: Last Updated
+        type: DATETIME
+      - key: slug
+        displayName: Slug
+        type: TEXT
+      - key: lastName
+        displayName: Last Name
+        type: TEXT
+      - key: firstName
+        displayName: First Name
+        type: TEXT
+      - key: activityStatus
+        displayName: Activity Status
+        type: TEXT
+      - key: lastLoginDate
+        displayName: Last Login Date
+        type: DATETIME
+      - key: status
+        displayName: Status
+        type: TEXT
+      - key: contactId
+        displayName: Contact Id
+        type: TEXT
+      - key: coverPhoto
+        displayName: Cover Photo
+        type: IMAGE
+      - key: phone
+        displayName: Phone
+        type: TEXT
+      - key: nickname
+        displayName: Nickname
+        type: TEXT
+    references: []
+    components: {}
+  - collectionId: Members/PrivateMembersData
+    visible: false
+    pathPrefix: /members-privatemembersdata
+    slugField: slug
+    fields:
+      - key: name
+        displayName: Name
+        type: TEXT
+      - key: lastLogin
+        displayName: Last Login Date
+        type: DATETIME
+      - key: loginEmail
+        displayName: Login Email
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Creation Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Last Updated
+        type: DATETIME
+      - key: slug
+        displayName: Slug
+        type: TEXT
+      - key: phones
+        displayName: Phones
+        type: OBJECT
+      - key: lastName
+        displayName: Last Name
+        type: TEXT
+      - key: firstName
+        displayName: First Name
+        type: TEXT
+      - key: mainPhone
+        displayName: Main Phone
+        type: TEXT
+      - key: language
+        displayName: Language
+        type: TEXT
+      - key: status
+        displayName: Status
+        type: TEXT
+      - key: picture
+        displayName: Picture
+        type: IMAGE
+      - key: nickname
+        displayName: Nickname
+        type: TEXT
+    references: []
+    components: {}
+  - collectionId: Members/PublicData
+    visible: false
+    pathPrefix: /members-publicdata
+    slugField: slug
+    fields:
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: aboutPlain
+        displayName: About (Plain Text)
+        type: TEXT
+      - key: profilePhoto
+        displayName: Profile Photo
+        type: IMAGE
+      - key: aboutRich
+        displayName: About (Rich Text)
+        type: RICH_CONTENT
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: slug
+        displayName: Slug
+        type: TEXT
+      - key: coverPhoto
+        displayName: Cover Photo
+        type: IMAGE
+      - key: title
+        displayName: Title
+        type: TEXT
+      - key: nickname
+        displayName: Nickname
+        type: TEXT
+    references: []
+    components: {}
+  - collectionId: Recipes
+    visible: true
+    pathPrefix: /recipes
+    slugField: title
+    fields:
+      - key: title
+        displayName: Title
+        type: TEXT
+      - key: servings
+        displayName: servings
+        type: TEXT
+      - key: image
+        displayName: Image
+        type: IMAGE
+      - key: description
+        displayName: Long Description
+        type: TEXT
+      - key: shortDescription
+        displayName: Short Description
+        type: TEXT
+      - key: preparationTime
+        displayName: preparationTime
+        type: TEXT
+      - key: order
+        displayName: order
+        type: NUMBER
+      - key: ingredients
+        displayName: Ingredients
+        type: RICH_TEXT
+      - key: steps
+        displayName: steps
+        type: RICH_TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: link-recipes-title
+        displayName: Recipes (Title)
+        type: PAGE_LINK
+      - key: link-recipes-all
+        displayName: Recipes (All)
+        type: PAGE_LINK
+      - key: productLine
+        displayName: productLine
+        type: REFERENCE
+      - key: ImageBanner
+        displayName: image banner
+        type: IMAGE
+    references:
+      - fieldName: productLine
+        targetCollection: Food_Service--Product_lines
+        isMulti: false
+    components:
+      itemPage: true
+      indexPage: true
+      categoryPage: true
+  - collectionId: Retails
+    visible: false
+    pathPrefix: /retails
+    slugField: slug
+    fields:
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+      - key: name
+        displayName: Display name
+        type: TEXT
+      - key: address
+        displayName: address
+        type: ADDRESS
+      - key: geohash
+        displayName: Geohash
+        type: NUMBER
+      - key: slug
+        displayName: slug
+        type: TEXT
+      - key: storeId
+        displayName: StoreID
+        type: TEXT
+    references: []
+    components: {}
+  - collectionId: RetailsProductLocations
+    visible: false
+    pathPrefix: /retailsproductlocations
+    slugField: slug
+    fields:
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+      - key: retail
+        displayName: retail
+        type: REFERENCE
+      - key: product
+        displayName: product
+        type: REFERENCE
+      - key: slug
+        displayName: slug
+        type: TEXT
+      - key: geohash
+        displayName: Geohash
+        type: NUMBER
+    references:
+      - fieldName: retail
+        targetCollection: Retails
+        isMulti: false
+      - fieldName: product
+        targetCollection: Food_Service--SKUs
+        isMulti: false
+    components: {}
+  - collectionId: Stores/Collections
+    visible: false
+    pathPrefix: /stores-collections
+    slugField: slug
+    fields:
+      - key: name
+        displayName: Name
+        type: TEXT
+      - key: mainMedia
+        displayName: Main Media
+        type: IMAGE
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: slug
+        displayName: Slug
+        type: TEXT
+      - key: categoryPageUrl
+        displayName: Page Url
+        type: PAGE_LINK
+    references: []
+    components: {}
+  - collectionId: Stores/InventoryItems
+    visible: false
+    pathPrefix: /stores-inventoryitems
+    slugField: _id
+    fields:
+      - key: trackQuantity
+        displayName: Track Quantity
+        type: BOOLEAN
+      - key: externalId
+        displayName: External ID
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: productId
+        displayName: Product ID
+        type: TEXT
+      - key: variants
+        displayName: Variants
+        type: OBJECT
+    references: []
+    components: {}
+  - collectionId: Stores/Orders
+    visible: false
+    pathPrefix: /stores-orders
+    slugField: _id
+    fields:
+      - key: number
+        displayName: Number
+        type: NUMBER
+      - key: cartId
+        displayName: Cart Id
+        type: TEXT
+      - key: lineItems
+        displayName: Line Items
+        type: OBJECT
+      - key: paymentStatus
+        displayName: Payment Status
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: archived
+        displayName: Archived
+        type: BOOLEAN
+      - key: enteredBy
+        displayName: Entered By
+        type: OBJECT
+      - key: shippingInfo
+        displayName: Shipping Info
+        type: OBJECT
+      - key: activities
+        displayName: Activities
+        type: OBJECT
+      - key: customField
+        displayName: Custom Field
+        type: OBJECT
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: weightUnit
+        displayName: Weight Unit
+        type: TEXT
+      - key: buyerNote
+        displayName: Buyer Note
+        type: TEXT
+      - key: _dateCreated
+        displayName: Date Created
+        type: DATETIME
+      - key: subscriptionInfo
+        displayName: Subscription Information
+        type: OBJECT
+      - key: billingInfo
+        displayName: Billing Info
+        type: OBJECT
+      - key: buyerInfo
+        displayName: Buyer Info
+        type: OBJECT
+      - key: currency
+        displayName: Currency
+        type: TEXT
+      - key: buyerLanguage
+        displayName: Buyer Language
+        type: TEXT
+      - key: channelInfo
+        displayName: Channel Info
+        type: OBJECT
+      - key: totals
+        displayName: Totals
+        type: OBJECT
+      - key: fulfillmentStatus
+        displayName: Fulfillment Status
+        type: TEXT
+      - key: fulfillments
+        displayName: Fulfillments
+        type: OBJECT
+    references: []
+    components: {}
+  - collectionId: Stores/Products
+    visible: false
+    pathPrefix: /stores-products
+    slugField: slug
+    fields:
+      - key: seoData
+        displayName: SEO Data
+        type: OBJECT
+      - key: inStock
+        displayName: In Stock
+        type: BOOLEAN
+      - key: weight
+        displayName: Weight
+        type: NUMBER
+      - key: name
+        displayName: Name
+        type: TEXT
+      - key: sku
+        displayName: SKU
+        type: TEXT
+      - key: formattedDiscountedPrice
+        displayName: Formatted Discounted Price
+        type: TEXT
+      - key: productOptions
+        displayName: Product Options
+        type: OBJECT
+      - key: mainMedia
+        displayName: Main Media
+        type: IMAGE
+      - key: description
+        displayName: Description
+        type: RICH_TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: discountedPrice
+        displayName: Discounted Price
+        type: NUMBER
+      - key: formattedPrice
+        displayName: Formatted Price
+        type: TEXT
+      - key: price
+        displayName: Price
+        type: NUMBER
+      - key: quantityInStock
+        displayName: Quantity In Stock
+        type: NUMBER
+      - key: collections
+        displayName: Collections
+        type: MULTI_REFERENCE
+      - key: inventoryItem
+        displayName: Inventory Item
+        type: REFERENCE
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: formattedPricePerUnit
+        displayName: Formatted Price Per Unit
+        type: TEXT
+      - key: slug
+        displayName: Slug
+        type: TEXT
+      - key: productType
+        displayName: Product Type
+        type: TEXT
+      - key: brand
+        displayName: Brand
+        type: TEXT
+      - key: ribbons
+        displayName: Ribbons
+        type: ARRAY
+      - key: pricePerUnitData
+        displayName: Price Per Unit Data
+        type: OBJECT
+      - key: mediaItems
+        displayName: Media Items
+        type: MEDIA_GALLERY
+      - key: trackInventory
+        displayName: Track Inventory
+        type: BOOLEAN
+      - key: customTextFields
+        displayName: Custom Text Fields
+        type: OBJECT
+      - key: pricePerUnit
+        displayName: Price Per Unit
+        type: NUMBER
+      - key: ribbon
+        displayName: Ribbon
+        type: TEXT
+      - key: currency
+        displayName: Currency
+        type: TEXT
+      - key: productPageUrl
+        displayName: Product Page Url
+        type: PAGE_LINK
+      - key: numericId
+        displayName: Numeric Id
+        type: TEXT
+      - key: manageVariants
+        displayName: Manage Variants
+        type: BOOLEAN
+      - key: discount
+        displayName: Discount
+        type: OBJECT
+      - key: additionalInfoSections
+        displayName: Additional Info Sections
+        type: OBJECT
+      - key: createdDate
+        displayName: Date Created
+        type: DATETIME
+    references:
+      - fieldName: collections
+        targetCollection: Stores/Collections
+        isMulti: true
+      - fieldName: inventoryItem
+        targetCollection: Stores/InventoryItems
+        isMulti: false
+    components: {}
+  - collectionId: Stores/Variants
+    visible: false
+    pathPrefix: /stores-variants
+    slugField: _id
+    fields:
+      - key: variantId
+        displayName: Variant ID
+        type: TEXT
+      - key: stock
+        displayName: Stock
+        type: OBJECT
+      - key: sku
+        displayName: SKU
+        type: TEXT
+      - key: choices
+        displayName: Choices
+        type: OBJECT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: fullVariantName
+        displayName: Full Variant Name
+        type: TEXT
+      - key: variantName
+        displayName: Variant Name
+        type: TEXT
+      - key: collections
+        displayName: Collections
+        type: MULTI_REFERENCE
+      - key: managedVariant
+        displayName: Managed Variant
+        type: BOOLEAN
+      - key: media
+        displayName: Media
+        type: IMAGE
+      - key: productName
+        displayName: Product Name
+        type: TEXT
+      - key: productId
+        displayName: Product ID
+        type: TEXT
+    references:
+      - fieldName: collections
+        targetCollection: Stores/Collections
+        isMulti: true
+    components: {}
+  - collectionId: Team
+    visible: false
+    pathPrefix: /team
+    slugField: title
+    fields:
+      - key: title
+        displayName: Name
+        type: TEXT
+      - key: photo
+        displayName: Photo
+        type: IMAGE
+      - key: jobTitle
+        displayName: Job Title
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: territory
+        displayName: Territory
+        type: MULTI_REFERENCE
+      - key: role
+        displayName: Role
+        type: TEXT
+      - key: department
+        displayName: Department
+        type: REFERENCE
+      - key: background
+        displayName: background
+        type: IMAGE
+      - key: emailAddress
+        displayName: Email Address
+        type: TEXT
+      - key: order
+        displayName: Order
+        type: NUMBER
+      - key: contact
+        displayName: Contact
+        type: URL
+      - key: bio
+        displayName: Bio
+        type: TEXT
+      - key: region
+        displayName: Region
+        type: TEXT
+      - key: phoneNumber
+        displayName: Phone Number
+        type: TEXT
+    references:
+      - fieldName: territory
+        targetCollection: Territories
+        isMulti: true
+      - fieldName: department
+        targetCollection: Department_Listing
+        isMulti: false
+    components: {}
+  - collectionId: Territories
+    visible: false
+    pathPrefix: /territories
+    slugField: title
+    fields:
+      - key: title
+        displayName: Title
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: Team
+        displayName: Team
+        type: MULTI_REFERENCE
+      - key: background
+        displayName: Background
+        type: IMAGE
+      - key: tag
+        displayName: Tag
+        type: ARRAY_STRING
+      - key: repSales
+        displayName: RepSales
+        type: TEXT
+      - key: type
+        displayName: Type
+        type: TEXT
+    references:
+      - fieldName: Team
+        targetCollection: Team
+        isMulti: true
+    components: {}
+  - collectionId: jobApplication01
+    visible: false
+    pathPrefix: /jobapplication01
+    slugField: _id
+    fields:
+      - key: submissionTime
+        displayName: Submission Time
+        type: DATETIME
+      - key: firstName
+        displayName: First Name
+        type: TEXT
+      - key: email
+        displayName: Email
+        type: TEXT
+      - key: phone
+        displayName: Phone
+        type: TEXT
+      - key: position
+        displayName: Resume Upload
+        type: DOCUMENT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: lName
+        displayName: LName
+        type: TEXT
+      - key: position1
+        displayName: Position
+        type: TEXT
+      - key: code
+        displayName: code
+        type: TEXT
+      - key: job
+        displayName: job
+        type: REFERENCE
+    references:
+      - fieldName: job
+        targetCollection: Jobs
+        isMulti: false
+    components: {}
+  - collectionId: lightboxSubscribe032
+    visible: false
+    pathPrefix: /lightboxsubscribe032
+    slugField: _id
+    fields:
+      - key: submissionTime
+        displayName: Submission Time
+        type: DATETIME
+      - key: email
+        displayName: Email
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+    references: []
+    components: {}
+  - collectionId: salesLead02
+    visible: false
+    pathPrefix: /saleslead02
+    slugField: _id
+    fields:
+      - key: submissionTime
+        displayName: Submission Time
+        type: DATETIME
+      - key: firstName
+        displayName: First Name
+        type: TEXT
+      - key: email
+        displayName: Email
+        type: TEXT
+      - key: phone
+        displayName: Phone
+        type: TEXT
+      - key: address
+        displayName: Address
+        type: TEXT
+      - key: company
+        displayName: Company
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+    references: []
+    components: {}
+  - collectionId: subscribers02
+    visible: false
+    pathPrefix: /subscribers02
+    slugField: _id
+    fields:
+      - key: submissionTime
+        displayName: Submission Time
+        type: DATETIME
+      - key: email
+        displayName: Email
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+    references: []
+    components: {}
+  - collectionId: subscribers022
+    visible: false
+    pathPrefix: /subscribers022
+    slugField: _id
+    fields:
+      - key: submissionTime
+        displayName: Submission Time
+        type: DATETIME
+      - key: email
+        displayName: Email
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+    references: []
+    components: {}
+  - collectionId: subscribers023
+    visible: false
+    pathPrefix: /subscribers023
+    slugField: _id
+    fields:
+      - key: submissionTime
+        displayName: Submission Time
+        type: DATETIME
+      - key: email
+        displayName: Email
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+    references: []
+    components: {}
+  - collectionId: subscribers024
+    visible: false
+    pathPrefix: /subscribers024
+    slugField: _id
+    fields:
+      - key: submissionTime
+        displayName: Submission Time
+        type: DATETIME
+      - key: email
+        displayName: Email
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+      - key: firstName
+        displayName: First Name
+        type: TEXT
+    references: []
+    components: {}
+  - collectionId: subscribers03
+    visible: false
+    pathPrefix: /subscribers03
+    slugField: _id
+    fields:
+      - key: submissionTime
+        displayName: Submission Time
+        type: DATETIME
+      - key: email
+        displayName: Email
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+    references: []
+    components: {}
+  - collectionId: support01
+    visible: false
+    pathPrefix: /support01
+    slugField: _id
+    fields:
+      - key: submissionTime
+        displayName: Submission Time
+        type: DATETIME
+      - key: firstName
+        displayName: First Name
+        type: TEXT
+      - key: email
+        displayName: Email
+        type: TEXT
+      - key: phone
+        displayName: Phone
+        type: TEXT
+      - key: textBox
+        displayName: Text Box
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: shortTextField
+        displayName: Product
+        type: TEXT
+      - key: shortTextField2
+        displayName: Zip Code
+        type: TEXT
+      - key: numberField
+        displayName: Area
+        type: NUMBER
+    references: []
+    components: {}
+  - collectionId: support012
+    visible: false
+    pathPrefix: /support012
+    slugField: _id
+    fields:
+      - key: submissionTime
+        displayName: Submission Time
+        type: DATETIME
+      - key: firstName
+        displayName: First Name
+        type: TEXT
+      - key: email
+        displayName: Email
+        type: TEXT
+      - key: phone
+        displayName: Phone
+        type: TEXT
+      - key: dropDown
+        displayName: Select a product
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: copyOfFirstName
+        displayName: Last Name
+        type: TEXT
+      - key: paragraphField
+        displayName: Leave a message...
+        type: TEXT
+    references: []
+    components: {}
+  - collectionId: support013
+    visible: false
+    pathPrefix: /support013
+    slugField: _id
+    fields:
+      - key: submissionTime
+        displayName: Submission Time
+        type: DATETIME
+      - key: firstName
+        displayName: First Name
+        type: TEXT
+      - key: copyOfFirstName
+        displayName: Last Name
+        type: TEXT
+      - key: email
+        displayName: Email
+        type: TEXT
+      - key: phone
+        displayName: Phone
+        type: TEXT
+      - key: paragraphField
+        displayName: Leave a message...
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+      - key: shortTextField
+        displayName: selected Departement
+        type: TEXT
+    references: []
+    components: {}

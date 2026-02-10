@@ -1,0 +1,35 @@
+name: FoodServiceProductLinesItem
+description: Item page for Product_lines
+tags:
+  - {tag: _id, type: data, dataType: string, description: Item ID}
+  - {tag: itemLink, type: interactive, elementType: HTMLAnchorElement, description: Link to item}
+  - {tag: title, type: data, dataType: string, description: Title}
+  - tag: coverImage
+    type: sub-contract
+    description: Cover Image
+    tags:
+    - {tag: url, type: data, dataType: string}
+    - {tag: altText, type: data, dataType: string}
+    - {tag: width, type: data, dataType: number}
+    - {tag: height, type: data, dataType: number}
+  - {tag: media, type: data, dataType: string, description: Media}
+  - {tag: headerTitle, type: data, dataType: string, description: Header Title}
+  - {tag: order, type: data, dataType: number, description: Order}
+  - {tag: salesSheet, type: data, dataType: string, description: Sales Sheet}
+  - {tag: ingredients, type: data, dataType: string, description: Ingredients}
+  - {tag: labelText, type: data, dataType: string, description: Label Text}
+  - {tag: labelTextOutline, type: data, dataType: string, description: Label Text Outline}
+  - {tag: link-food-service-product-lines-1-title, type: data, dataType: string, description: Food service (Slug)}
+  - {tag: slug, type: data, dataType: string, description: slug}
+  - {tag: link-food-service-product-lines-title, type: data, dataType: string, description: Retail service (Slug)}
+  - {tag: Food_Service--Product_types, type: data, dataType: string, description: Reference IDs}
+  - tag: breadcrumbs
+    type: sub-contract
+    repeated: true
+    trackBy: slug
+    description: Navigation breadcrumbs
+    tags:
+    - {tag: slug, type: data, dataType: string}
+    - {tag: title, type: data, dataType: string}
+    - {tag: url, type: data, dataType: string}
+    - {tag: link, type: interactive, elementType: HTMLAnchorElement}

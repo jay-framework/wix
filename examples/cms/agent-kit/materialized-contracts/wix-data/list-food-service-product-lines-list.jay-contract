@@ -1,0 +1,39 @@
+name: FoodServiceProductLinesList
+description: List page for Product_lines
+tags:
+  - tag: items
+    type: sub-contract
+    repeated: true
+    trackBy: _id
+    description: Initial items (rendered server-side)
+    tags:
+      - {tag: _id, type: data, dataType: string}
+      - {tag: url, type: data, dataType: string, description: Full URL to item page}
+      - {tag: itemLink, type: interactive, elementType: HTMLAnchorElement}
+      - {tag: title, type: data, dataType: string, description: Title}
+  - tag: loadedItems
+    type: sub-contract
+    repeated: true
+    trackBy: _id
+    phase: fast+interactive
+    description: Additional items loaded on the client
+    tags:
+      - {tag: _id, type: data, dataType: string}
+      - {tag: url, type: data, dataType: string, description: Full URL to item page}
+      - {tag: itemLink, type: interactive, elementType: HTMLAnchorElement}
+      - {tag: title, type: data, dataType: string, description: Title}
+  - {tag: totalCount, type: data, dataType: number, description: Total items}
+  - {tag: hasMore, type: variant, dataType: boolean, phase: fast+interactive, description: More items available}
+  - {tag: isLoading, type: variant, dataType: boolean, phase: fast+interactive, description: Loading state}
+  - {tag: loadedCount, type: data, dataType: number, phase: fast+interactive, description: Items currently loaded}
+  - {tag: loadMoreButton, type: interactive, elementType: HTMLButtonElement, description: Load more trigger}
+  - tag: breadcrumbs
+    type: sub-contract
+    repeated: true
+    trackBy: slug
+    description: Navigation breadcrumbs
+    tags:
+    - {tag: slug, type: data, dataType: string}
+    - {tag: title, type: data, dataType: string}
+    - {tag: url, type: data, dataType: string}
+    - {tag: link, type: interactive, elementType: HTMLAnchorElement}

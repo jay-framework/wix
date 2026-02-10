@@ -1,0 +1,51 @@
+name: RecipesItem
+description: Item page for Recipes
+tags:
+  - {tag: _id, type: data, dataType: string, description: Item ID}
+  - {tag: itemLink, type: interactive, elementType: HTMLAnchorElement, description: Link to item}
+  - {tag: title, type: data, dataType: string, description: Title}
+  - {tag: servings, type: data, dataType: string, description: servings}
+  - tag: image
+    type: sub-contract
+    description: Image
+    tags:
+    - {tag: url, type: data, dataType: string}
+    - {tag: altText, type: data, dataType: string}
+    - {tag: width, type: data, dataType: number}
+    - {tag: height, type: data, dataType: number}
+  - {tag: description, type: data, dataType: string, description: Long Description}
+  - {tag: shortDescription, type: data, dataType: string, description: Short Description}
+  - {tag: preparationTime, type: data, dataType: string, description: preparationTime}
+  - {tag: order, type: data, dataType: number, description: order}
+  - {tag: ingredients, type: data, dataType: string, description: Ingredients}
+  - {tag: steps, type: data, dataType: string, description: steps}
+  - {tag: link-recipes-title, type: data, dataType: string, description: Recipes (Title)}
+  - {tag: link-recipes-all, type: data, dataType: string, description: Recipes (All)}
+  - {tag: productLine, type: data, dataType: string, description: Reference ID}
+  - tag: ImageBanner
+    type: sub-contract
+    description: image banner
+    tags:
+    - {tag: url, type: data, dataType: string}
+    - {tag: altText, type: data, dataType: string}
+    - {tag: width, type: data, dataType: number}
+    - {tag: height, type: data, dataType: number}
+  - tag: category
+    type: sub-contract
+    description: Current category
+    tags:
+    - {tag: _id, type: data, dataType: string}
+    - {tag: slug, type: data, dataType: string}
+    - {tag: title, type: data, dataType: string}
+    - {tag: description, type: data, dataType: string}
+    - {tag: categoryLink, type: interactive, elementType: HTMLAnchorElement}
+  - tag: breadcrumbs
+    type: sub-contract
+    repeated: true
+    trackBy: slug
+    description: Navigation breadcrumbs
+    tags:
+    - {tag: slug, type: data, dataType: string}
+    - {tag: title, type: data, dataType: string}
+    - {tag: url, type: data, dataType: string}
+    - {tag: link, type: interactive, elementType: HTMLAnchorElement}

@@ -1,0 +1,18 @@
+materialized_at: 2026-02-10T09:22:01.576Z
+jay_stack_version: 0.0.0
+plugins:
+  - name: wix-data
+    path: ./../../packages/wix-data
+    contracts:
+      - name: item/food-service-product-lines-item
+        type: dynamic
+        path: ./agent-kit/materialized-contracts/wix-data/item-food-service-product-lines-item.jay-contract
+      - name: item/recipes-item
+        type: dynamic
+        path: ./agent-kit/materialized-contracts/wix-data/item-recipes-item.jay-contract
+      - name: list/food-service-product-lines-list
+        type: dynamic
+        path: ./agent-kit/materialized-contracts/wix-data/list-food-service-product-lines-list.jay-contract
+      - name: list/recipes-list
+        type: dynamic
+        path: ./agent-kit/materialized-contracts/wix-data/list-recipes-list.jay-contract
