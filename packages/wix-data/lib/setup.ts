@@ -71,6 +71,11 @@ export async function setupWixData(ctx: PluginSetupContext): Promise<PluginSetup
 export async function generateWixDataReferences(
     ctx: PluginReferencesContext,
 ): Promise<PluginReferencesResult> {
+    // If plugin init failed, report the actual root cause
+    if (ctx.initError) {
+        throw new Error(`init failed: ${ctx.initError.message}`);
+    }
+
     let dataService: WixDataService;
     try {
         dataService = getService(WIX_DATA_SERVICE_MARKER) as WixDataService;
