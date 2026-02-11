@@ -7,7 +7,8 @@ export interface CategoryOfCategoryListViewState {
   slug: string,
   description: string,
   productCount: number,
-  imageUrl: string
+  imageUrl: string,
+  hasImage: boolean
 }
 
 export interface CategoryListViewState {

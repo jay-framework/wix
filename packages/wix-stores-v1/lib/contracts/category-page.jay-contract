@@ -32,6 +32,12 @@ tags:
     dataType: number
     description: Number of products in the collection
     
+  # Whether the collection has media
+  - tag: hasImage
+    type: variant
+    dataType: boolean
+    description: Whether the collection has a main image
+
   # Media (from Wix Stores Collection API)
   - tag: media
     type: sub-contract

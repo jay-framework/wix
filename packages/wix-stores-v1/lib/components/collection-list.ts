@@ -28,6 +28,7 @@ interface CollectionItem {
     description: string;
     productCount: number;
     imageUrl: string;
+    hasImage: boolean;
 }
 
 /**
@@ -52,15 +53,18 @@ async function renderSlowlyChanging(
             return Pipeline.ok([]);
         })
         .toPhaseOutput(collections => {
-            const collectionItems: CollectionItem[] = collections.map((col) => ({
-                _id: col._id || '',
-                name: col.name || '',
-                slug: col.slug || '',
-                description: col.description || '',
-                productCount: col.numberOfProducts || 0,
-                imageUrl: col.media?.mainMedia?.image?.url || ''
-            }));
-
+            const collectionItems: CollectionItem[] = collections.map((col) => {
+                const imageUrl = col.media?.mainMedia?.image?.url || '';
+                return {
+                    _id: col._id || '',
+                    name: col.name || '',
+                    slug: col.slug || '',
+                    description: col.description || '',
+                    productCount: col.numberOfProducts || 0,
+                    imageUrl,
+                    hasImage: !!imageUrl
+                };
+            });
             return {
                 viewState: {
                     // Reuse 'categories' field from contract for compatibility

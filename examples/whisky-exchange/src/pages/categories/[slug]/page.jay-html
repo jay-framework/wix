@@ -40,8 +40,8 @@
     </div>
 
     <!-- Category Hero -->
-    <div class="category-hero">
-      <div class="category-hero-image">
+    <div class="category-hero {cat.hasImage ? has-image : no-image}">
+      <div class="category-hero-image" if="cat.hasImage">
         <img src="{cat.media.mainMedia.url}" alt="{cat.media.mainMedia.altText}" />
       </div>
       <div class="category-hero-content">

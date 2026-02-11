@@ -37,6 +37,11 @@ tags:
         type: data
         dataType: string
         description: Category image URL
+
+      - tag: hasImage
+        type: variant
+        dataType: boolean
+        description: Whether the category has an image
         
       - tag: categoryLink
         type: interactive

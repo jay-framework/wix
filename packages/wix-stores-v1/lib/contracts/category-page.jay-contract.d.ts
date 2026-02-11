@@ -58,6 +58,7 @@ export interface CategoryPageViewState {
   slug: string,
   visible: boolean,
   numberOfProducts: number,
+  hasImage: boolean,
   media: MediaOfCategoryPageViewState,
   breadcrumbs: Array<BreadcrumbOfCategoryPageViewState>,
   products: Array<ProductCardViewState>,
@@ -68,7 +69,7 @@ export interface CategoryPageViewState {
   hasProducts: boolean
 }
 
-export type CategoryPageSlowViewState = Pick<CategoryPageViewState, '_id' | 'name' | 'description' | 'slug' | 'visible' | 'numberOfProducts'> & {
+export type CategoryPageSlowViewState = Pick<CategoryPageViewState, '_id' | 'name' | 'description' | 'slug' | 'visible' | 'numberOfProducts' | 'hasImage'> & {
     media: CategoryPageViewState['media'];
     breadcrumbs: Array<CategoryPageViewState['breadcrumbs'][number]>;
     products: Array<Pick<CategoryPageViewState['products'][number], '_id' | 'name' | 'slug' | 'productUrl' | 'hasDiscount' | 'hasRibbon' | 'productType' | 'quickAddType'> & {

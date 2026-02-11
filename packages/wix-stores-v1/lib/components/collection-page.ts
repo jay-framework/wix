@@ -164,6 +164,8 @@ async function renderSlowlyChanging(
                 categorySlug: collection.slug || ''
             }];
 
+            const media = mapCollectionMedia(collection);
+
             return {
                 viewState: {
                     _id: collection._id || '',
@@ -172,7 +174,8 @@ async function renderSlowlyChanging(
                     slug: collection.slug || '',
                     visible: true,
                     numberOfProducts: collection.numberOfProducts || productData.total,
-                    media: mapCollectionMedia(collection),
+                    hasImage: !!media.mainMedia?.url,
+                    media,
                     breadcrumbs,
                     products: productData.products
                 },

@@ -383,8 +383,8 @@
                  trackBy="_id">
           <a href="/categories/{slug}" class="category-card-link" ref="categoryList.categories.categoryLink">
             <div class="category-card-image">
-              <img src="{imageUrl}" alt="{name}" if="imageUrl" loading="lazy" />
-              <span class="placeholder-icon" if="!imageUrl">🥃</span>
+              <img src="{imageUrl}" alt="{name}" if="hasImage" loading="lazy" />
+              <span class="placeholder-icon" if="!hasImage">🥃</span>
             </div>
             <span class="category-card-label">{name}</span>
           </a>
