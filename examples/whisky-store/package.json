@@ -23,6 +23,7 @@
     "@jay-framework/wix-cart": "workspace:^",
     "@jay-framework/wix-server-client": "workspace:^",
     "@jay-framework/wix-stores-v1": "workspace:^",
+    "@jay-framework/webmcp-plugin": "^0.11.0",
     "compression": "^1.7.5",
     "express": "^5.0.1",
     "sirv": "^3.0.0"
