@@ -31,6 +31,9 @@ setup:
 
 # Server actions for querying data
 actions:
-  - queryItems
-  - getItemBySlug
-  - getCategories
+  - name: queryItems
+    action: query-items.jay-action
+  - name: getItemBySlug
+    action: get-item-by-slug.jay-action
+  - name: getCategories
+    action: get-categories.jay-action

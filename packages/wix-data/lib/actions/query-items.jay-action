@@ -1,0 +1,51 @@
+name: queryItems
+description: Query items from a Wix Data collection with pagination, sorting, and filtering. Returns matching items with total count.
+
+inputSchema:
+  type: object
+  properties:
+    collectionId:
+      type: string
+      description: Collection ID to query
+    limit:
+      type: number
+      description: Maximum number of items to return (default 20)
+    offset:
+      type: number
+      description: Number of items to skip for pagination
+    sortField:
+      type: string
+      description: Field name to sort by
+    sortDirection:
+      type: string
+      description: Sort direction
+      enum: [ASC, DESC]
+    filter:
+      type: object
+      description: Filter conditions as field-value pairs
+    categoryId:
+      type: string
+      description: Filter by category ID
+    categoryField:
+      type: string
+      description: Category reference field name (required when categoryId is used)
+  required:
+    - collectionId
+
+outputSchema:
+  type: object
+  properties:
+    items:
+      type: array
+      description: List of matching items
+      items:
+        type: object
+    totalCount:
+      type: number
+      description: Total number of items matching the query
+    offset:
+      type: number
+      description: Current offset
+    hasMore:
+      type: boolean
+      description: Whether there are more results available

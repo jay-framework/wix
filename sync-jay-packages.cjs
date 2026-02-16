@@ -153,11 +153,14 @@ function main() {
             actualPackageName = 'full-stack-component';
         } else if (packageName === 'stack-route-scanner') {
             actualPackageName = 'route-scanner';
+        } else if (packageName === 'webmcp-plugin') {
+            actualPackageName = 'webmcp';
         }
         
         // Try different possible source paths
         const possiblePaths = [
             path.join(SOURCE_REPO, 'packages', 'jay-stack', actualPackageName),
+            path.join(SOURCE_REPO, 'packages', 'jay-stack-plugins', actualPackageName),
             path.join(SOURCE_REPO, 'packages', 'compiler', actualPackageName),
             path.join(SOURCE_REPO, 'packages', 'runtime', actualPackageName),
             path.join(SOURCE_REPO, 'packages', actualPackageName)

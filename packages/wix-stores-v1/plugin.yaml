@@ -21,8 +21,11 @@ contracts:
 
 # Server actions (named exports from main module)
 actions:
-  - searchProducts
-  - getProductBySlug
-  - getCollections
+  - name: searchProducts
+    action: search-products.jay-action
+  - name: getProductBySlug
+    action: get-product-by-slug.jay-action
+  - name: getCollections
+    action: get-collections.jay-action
 
 # Plugin initialization uses makeJayInit pattern in lib/init.ts

@@ -17,14 +17,17 @@
     "./product-page.jay-contract": "./dist/contracts/product-page.jay-contract",
     "./product-search.jay-contract": "./dist/contracts/product-search.jay-contract",
     "./category-page.jay-contract": "./dist/contracts/category-page.jay-contract",
-    "./category-list.jay-contract": "./dist/contracts/category-list.jay-contract"
+    "./category-list.jay-contract": "./dist/contracts/category-list.jay-contract",
+    "./search-products.jay-action": "./dist/actions/search-products.jay-action",
+    "./get-product-by-slug.jay-action": "./dist/actions/get-product-by-slug.jay-action",
+    "./get-categories.jay-action": "./dist/actions/get-categories.jay-action"
   },
   "scripts": {
     "build": "npm run clean && npm run definitions && npm run build:client && npm run build:server && npm run build:copy-contract && npm run build:types",
     "definitions": "jay-cli definitions lib",
     "build:client": "vite build",
     "build:server": "vite build --ssr",
-    "build:copy-contract": "mkdir -p dist/contracts && cp lib/contracts/*.jay-contract* dist/contracts/",
+    "build:copy-contract": "mkdir -p dist/contracts && cp lib/contracts/*.jay-contract* dist/contracts/ && mkdir -p dist/actions && cp lib/actions/*.jay-action dist/actions/",
     "build:types": "tsup lib/index.ts --dts-only --format esm",
     "build:check-types": "tsc",
     "clean": "rimraf dist",

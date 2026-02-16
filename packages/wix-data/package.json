@@ -13,11 +13,15 @@
   "exports": {
     ".": "./dist/index.js",
     "./client": "./dist/index.client.js",
-    "./plugin.yaml": "./plugin.yaml"
+    "./plugin.yaml": "./plugin.yaml",
+    "./query-items.jay-action": "./dist/actions/query-items.jay-action",
+    "./get-item-by-slug.jay-action": "./dist/actions/get-item-by-slug.jay-action",
+    "./get-categories.jay-action": "./dist/actions/get-categories.jay-action"
   },
   "scripts": {
-    "build": "npm run clean && npm run build:client && npm run build:server && npm run build:types",
+    "build": "npm run clean && npm run build:client && npm run build:server && npm run build:copy-actions && npm run build:types",
     "definitions": "echo 'No static contracts - using dynamic contracts'",
+    "build:copy-actions": "mkdir -p dist/actions && cp lib/actions/*.jay-action dist/actions/",
     "build:client": "vite build",
     "build:server": "vite build --ssr",
     "build:types": "tsup lib/index.ts --dts-only --format esm",

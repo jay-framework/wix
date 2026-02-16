@@ -1,0 +1,34 @@
+name: getProductBySlug
+description: Get a single product by its URL slug. Returns full product details including name, price, images, and description, or null if not found.
+
+inputSchema:
+  type: object
+  properties:
+    slug:
+      type: string
+      description: Product URL slug
+  required:
+    - slug
+
+outputSchema:
+  type: object
+  description: Product details or null if not found
+  properties:
+    _id:
+      type: string
+    name:
+      type: string
+    slug:
+      type: string
+    productUrl:
+      type: string
+    mainMedia:
+      type: string
+    thumbnail:
+      type: string
+    price:
+      type: string
+    formattedPrice:
+      type: string
+    description:
+      type: string

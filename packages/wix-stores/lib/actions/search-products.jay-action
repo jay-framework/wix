@@ -1,0 +1,69 @@
+name: searchProducts
+description: Search products in the Wix Store catalog. Supports text search, price/stock/category filtering, sorting, and cursor-based pagination. Returns matching products with price aggregation data.
+
+inputSchema:
+  type: object
+  properties:
+    query:
+      type: string
+      description: Search query text
+    filters:
+      type: object
+      description: Filters to narrow results
+      properties:
+        inStockOnly:
+          type: boolean
+          description: Only show products that are in stock
+        minPrice:
+          type: number
+          description: Minimum price filter
+        maxPrice:
+          type: number
+          description: Maximum price filter
+        categoryIds:
+          type: array
+          description: Filter by category IDs
+          items:
+            type: string
+    sortBy:
+      type: string
+      description: Sort order for results
+      enum: [relevance, price_asc, price_desc, name_asc, name_desc, newest]
+    cursor:
+      type: string
+      description: Pagination cursor from a previous response's nextCursor
+    pageSize:
+      type: number
+      description: Number of items per page (default 12)
+  required:
+    - query
+
+outputSchema:
+  type: object
+  properties:
+    products:
+      type: array
+      description: List of matching products
+      items:
+        type: object
+    totalCount:
+      type: number
+      description: Total number of matching products
+    nextCursor:
+      type: string
+      description: Cursor for the next page, or null if no more results
+    hasMore:
+      type: boolean
+      description: Whether there are more results available
+    priceAggregation:
+      type: object
+      description: Price bounds and range buckets for filter UI
+      properties:
+        minBound:
+          type: number
+        maxBound:
+          type: number
+        ranges:
+          type: array
+          items:
+            type: object
