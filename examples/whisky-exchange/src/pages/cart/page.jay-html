@@ -2,6 +2,7 @@
 <head>
   <script type="application/jay-headless" plugin="@jay-framework/wix-cart" contract="cart-page" key="cartPage"></script>
   <script type="application/jay-headless" plugin="@jay-framework/wix-cart" contract="cart-indicator" key="cart"></script>
+  <script type="application/jay-headless" plugin="@jay-framework/gemini-agent-plugin" contract="gemini-chat" key="ai"></script>
   <script type="application/jay-data">data:</script>
   <link rel="stylesheet" href="../../styles/theme.css" />
 </head>
@@ -176,6 +177,34 @@
     </div>
     <div class="footer-bottom">&copy; 2026 The Whisky Exchange</div>
   </footer>
+
+  <!-- Chat Widget -->
+  <div class="chat-widget">
+    <div if="ai.isExpanded" class="chat-panel">
+      <div class="chat-panel-header">
+        <span class="chat-panel-title">Whisky Assistant</span>
+        <button ref="ai.toggleExpand" class="chat-panel-close">&times;</button>
+      </div>
+      <div class="chat-messages">
+        <div if="!ai.hasMessages" class="chat-messages-empty">
+          Ask me anything about our whisky collection, recommendations, or help navigating the store.
+        </div>
+        <div if="ai.hasMessages">
+          <div forEach="ai.messages" trackBy="index">
+            <div if="role===user" class="chat-message chat-message-user">{content}</div>
+            <div if="role===assistant" class="chat-message chat-message-assistant">{content}</div>
+          </div>
+        </div>
+        <div if="ai.isLoading" class="chat-loading">Thinking<span class="chat-loading-dots"></span></div>
+        <div if="ai.hasError" class="chat-error">{ai.errorMessage}</div>
+      </div>
+      <div class="chat-input-area">
+        <input ref="ai.messageInput" value="{ai.messageInput}" type="text" placeholder="Ask about whisky..." />
+        <button ref="ai.sendMessage" class="chat-send-btn">&rarr;</button>
+      </div>
+    </div>
+    <button if="!ai.isExpanded" ref="ai.toggleExpand" class="chat-toggle">&#128172;</button>
+  </div>
 </div>
 </body>
 </html>

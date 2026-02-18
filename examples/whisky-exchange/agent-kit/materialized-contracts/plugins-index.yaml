@@ -1,6 +1,23 @@
-materialized_at: 2026-02-10T07:45:30.173Z
+materialized_at: 2026-02-17T20:54:38.817Z
 jay_stack_version: 0.0.0
 plugins:
+  - name: gemini-agent
+    path: ./../../node_modules/@jay-framework/gemini-agent-plugin
+    contracts:
+      - name: gemini-chat
+        type: static
+        path: ./../../node_modules/@jay-framework/gemini-agent-plugin/dist/contracts/gemini-chat.jay-contract
+    actions:
+      - name: sendMessage
+        description: Send a user message to the Gemini agent. Includes conversation
+          history, page automation tool definitions, and current page state.
+          Returns either a text response or pending tool calls.
+        path: ./../../node_modules/@jay-framework/gemini-agent-plugin/dist/actions/send-message.jay-action
+      - name: submitToolResults
+        description: Submit tool execution results back to continue the Gemini
+          conversation. Called after the client executes page automation tools.
+          Returns either a text response or more pending tool calls.
+        path: ./../../node_modules/@jay-framework/gemini-agent-plugin/dist/actions/submit-tool-results.jay-action
   - name: wix-cart
     path: ./../../packages/wix-cart
     contracts:
@@ -25,3 +42,18 @@ plugins:
       - name: category-list
         type: static
         path: ./../../packages/wix-stores-v1/dist/contracts/category-list.jay-contract
+    actions:
+      - name: searchProducts
+        description: Search products using Wix Stores Catalog V1 with page-based
+          pagination. Supports text search, price and collection filtering,
+          sorting, and returns price aggregation data.
+        path: ./../../packages/wix-stores-v1/dist/actions/search-products.jay-action
+      - name: getProductBySlug
+        description: Get a single product by its URL slug using Catalog V1. Returns full
+          ProductCardViewState or null if not found.
+        path: ./../../packages/wix-stores-v1/dist/actions/get-product-by-slug.jay-action
+      - name: getCollections
+        description: Get available store collections for filtering products. V1 uses
+          collections instead of categories. Returns collection details
+          including name, slug, description, image, and product count.
+        path: ./../../packages/wix-stores-v1/dist/actions/get-collections.jay-action

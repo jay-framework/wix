@@ -1,6 +1,10 @@
-materialized_at: 2026-02-10T07:45:30.173Z
+materialized_at: 2026-02-17T20:54:38.817Z
 jay_stack_version: 0.0.0
 contracts:
+  - plugin: gemini-agent
+    name: gemini-chat
+    type: static
+    path: ./../../node_modules/@jay-framework/gemini-agent-plugin/dist/contracts/gemini-chat.jay-contract
   - plugin: wix-cart
     name: cart-indicator
     type: static
