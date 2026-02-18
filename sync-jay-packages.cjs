@@ -153,6 +153,8 @@ function main() {
             actualPackageName = 'full-stack-component';
         } else if (packageName === 'stack-route-scanner') {
             actualPackageName = 'route-scanner';
+        } else if (packageName === 'gemini-agent-plugin') {
+            actualPackageName = 'gemini-agent';
         } else if (packageName === 'webmcp-plugin') {
             actualPackageName = 'webmcp';
         }
