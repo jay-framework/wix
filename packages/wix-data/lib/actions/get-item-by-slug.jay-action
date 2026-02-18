@@ -2,21 +2,8 @@ name: getItemBySlug
 description: Get a single item from a Wix Data collection by its URL slug. Returns the item data or null if not found.
 
 inputSchema:
-  type: object
-  properties:
-    collectionId:
-      type: string
-      description: Collection ID to query
-    slug:
-      type: string
-      description: URL slug of the item
-  required:
-    - collectionId
-    - slug
+  collectionId: string
+  slug: string
 
 outputSchema:
-  type: object
-  properties:
-    item:
-      type: object
-      description: Item data with _id and all fields, or null if not found
+  item: {}

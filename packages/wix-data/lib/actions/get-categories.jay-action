@@ -2,28 +2,11 @@ name: getCategories
 description: Get categories for a Wix Data collection. Returns category names, slugs, and item counts.
 
 inputSchema:
-  type: object
-  properties:
-    collectionId:
-      type: string
-      description: Collection ID that has category references
-  required:
-    - collectionId
+  collectionId: string
 
 outputSchema:
-  type: object
-  properties:
-    categories:
-      type: array
-      description: List of categories
-      items:
-        type: object
-        properties:
-          _id:
-            type: string
-          slug:
-            type: string
-          title:
-            type: string
-          itemCount:
-            type: number
+  categories:
+    - _id: string
+      slug: string
+      title: string
+      itemCount: number

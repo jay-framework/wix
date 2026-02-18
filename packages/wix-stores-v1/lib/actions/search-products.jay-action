@@ -1,69 +1,32 @@
 name: searchProducts
 description: Search products using Wix Stores Catalog V1 with page-based pagination. Supports text search, price and collection filtering, sorting, and returns price aggregation data.
 
+import:
+  productCard: product-card.jay-contract
+
 inputSchema:
-  type: object
-  properties:
-    query:
-      type: string
-      description: Search query text
-    filters:
-      type: object
-      description: Filters to narrow results
-      properties:
-        minPrice:
-          type: number
-          description: Minimum price filter
-        maxPrice:
-          type: number
-          description: Maximum price filter
-        collectionIds:
-          type: array
-          description: Filter by collection IDs
-          items:
-            type: string
-    sortBy:
-      type: string
-      description: Sort order for results
-      enum: [relevance, price_asc, price_desc, name_asc, name_desc, newest]
-    page:
-      type: number
-      description: Page number (1-based) for pagination
-    pageSize:
-      type: number
-      description: Number of items per page (default 12)
-  required:
-    - query
+  query: string
+  filters?:
+    minPrice?: number
+    maxPrice?: number
+    collectionIds?: string[]
+  sortBy?: enum(relevance | price_asc | price_desc | name_asc | name_desc | newest)
+  page?: number
+  pageSize?: number
 
 outputSchema:
-  type: object
-  properties:
-    products:
-      type: array
-      description: List of matching products
-      items:
-        type: object
-    totalCount:
-      type: number
-      description: Total number of matching products
-    currentPage:
-      type: number
-      description: Current page number
-    totalPages:
-      type: number
-      description: Total number of pages
-    hasMore:
-      type: boolean
-      description: Whether there are more results available
-    priceAggregation:
-      type: object
-      description: Price bounds and range buckets for filter UI
-      properties:
-        minBound:
-          type: number
-        maxBound:
-          type: number
-        ranges:
-          type: array
-          items:
-            type: object
+  products:
+    - productCard
+  totalCount: number
+  currentPage: number
+  totalPages: number
+  hasMore: boolean
+  priceAggregation:
+    minBound: number
+    maxBound: number
+    ranges:
+      - rangeId: string
+        label: string
+        minValue?: number
+        maxValue?: number
+        isSelected: boolean

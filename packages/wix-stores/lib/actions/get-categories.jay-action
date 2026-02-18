@@ -1,16 +1,8 @@
 name: getCategories
 description: Get available store categories for filtering products. Returns category IDs and names.
 
-inputSchema:
-  type: object
-  properties: {}
+inputSchema: {}
 
 outputSchema:
-  type: array
-  items:
-    type: object
-    properties:
-      categoryId:
-        type: string
-      categoryName:
-        type: string
+  - categoryId: string
+    categoryName: string

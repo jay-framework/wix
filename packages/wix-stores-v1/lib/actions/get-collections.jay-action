@@ -1,24 +1,12 @@
 name: getCollections
 description: Get available store collections for filtering products. V1 uses collections instead of categories. Returns collection details including name, slug, description, image, and product count.
 
-inputSchema:
-  type: object
-  properties: {}
+inputSchema: {}
 
 outputSchema:
-  type: array
-  items:
-    type: object
-    properties:
-      _id:
-        type: string
-      name:
-        type: string
-      slug:
-        type: string
-      description:
-        type: string
-      imageUrl:
-        type: string
-      productCount:
-        type: number
+  - _id: string
+    name: string
+    slug: string
+    description: string
+    imageUrl: string
+    productCount: number
