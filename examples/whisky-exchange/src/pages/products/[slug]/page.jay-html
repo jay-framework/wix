@@ -188,30 +188,48 @@
 
   <!-- Chat Widget -->
   <div class="chat-widget">
-    <div if="ai.isExpanded" class="chat-panel">
-      <div class="chat-panel-header">
-        <span class="chat-panel-title">Whisky Assistant</span>
-        <button ref="ai.toggleExpand" class="chat-panel-close">&times;</button>
-      </div>
-      <div class="chat-messages">
-        <div if="!ai.hasMessages" class="chat-messages-empty">
-          Ask me anything about our whisky collection, recommendations, or help navigating the store.
+    <div class="chat-panel">
+      <!-- Expanded history -->
+      <div if="ai.isExpanded" class="chat-history">
+        <div class="chat-history-header">
+          <span class="chat-history-title">Chat History</span>
+          <button ref="ai.toggleExpand" class="chat-history-close">&times;</button>
         </div>
-        <div if="ai.hasMessages">
-          <div forEach="ai.messages" trackBy="index">
-            <div if="role===user" class="chat-message chat-message-user">{content}</div>
-            <div if="role===assistant" class="chat-message chat-message-assistant">{content}</div>
+        <div class="chat-messages-scroll">
+          <div if="!ai.hasMessages" class="chat-messages-empty">
+            Ask me anything about our whisky collection, recommendations, or help navigating the store.
+          </div>
+          <div if="ai.hasMessages">
+            <div forEach="ai.messages" trackBy="index">
+              <div if="role===user" class="chat-message chat-message-user">{content}</div>
+              <div if="role===assistant" class="chat-message chat-message-assistant">{content}</div>
+            </div>
           </div>
         </div>
-        <div if="ai.isLoading" class="chat-loading">Thinking<span class="chat-loading-dots"></span></div>
+      </div>
+
+      <!-- Last message preview (compact mode) -->
+      <div if="!ai.isExpanded&&ai.hasMessages" class="chat-preview">
+        <button ref="ai.toggleExpand" class="chat-expand-btn">View full history ↑</button>
+        <div if="!ai.isLoading" class="chat-preview-messages">
+          <div class="chat-message chat-message-user">{ai.lastUserMessage}</div>
+          <div class="chat-message chat-message-assistant">{ai.lastAssistantMessage}</div>
+        </div>
+          <div if="ai.isLoading" class="chat-preview-messages">
+              <div class="chat-message chat-message-user">{ai.lastUserMessage}</div>
+              <div class="chat-loading">Thinking<span class="chat-loading-dots"></span></div>
+          </div>
+      </div>
+
+      <!-- Input area (always visible) -->
+      <div class="chat-input-container">
+        <div class="chat-input-area">
+          <input ref="ai.messageInput" value="{ai.messageInput}" type="text" placeholder="Ask me about whisky..." />
+          <button ref="ai.sendMessage" class="chat-send-btn">→</button>
+        </div>
         <div if="ai.hasError" class="chat-error">{ai.errorMessage}</div>
       </div>
-      <div class="chat-input-area">
-        <input ref="ai.messageInput" value="{ai.messageInput}" type="text" placeholder="Ask about whisky..." />
-        <button ref="ai.sendMessage" class="chat-send-btn">&rarr;</button>
-      </div>
     </div>
-    <button if="!ai.isExpanded" ref="ai.toggleExpand" class="chat-toggle">&#128172;</button>
   </div>
 </div>
 </body>
