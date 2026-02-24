@@ -157,7 +157,7 @@
           <div class="results-header">
             <div class="results-info">
               <span class="results-count">
-                Showing <strong>{productSearch.loadedCount}</strong> of <strong>{productSearch.totalCount}</strong> products
+                Showing <strong>{productSearch.loadedCount}</strong> of <strong>{productSearch.totalCount}</strong> bottles
               </span>
             </div>
             <div class="results-controls">

@@ -1,23 +1,6 @@
-materialized_at: 2026-02-23T11:00:16.893Z
+materialized_at: 2026-02-24T12:26:27.605Z
 jay_stack_version: 0.0.0
 plugins:
-  - name: gemini-agent
-    path: ./../../node_modules/@jay-framework/gemini-agent-plugin
-    contracts:
-      - name: gemini-chat
-        type: static
-        path: ./../../node_modules/@jay-framework/gemini-agent-plugin/dist/contracts/gemini-chat.jay-contract
-    actions:
-      - name: sendMessage
-        description: Send a user message to the Gemini agent. Includes conversation
-          history, page automation tool definitions, and current page state.
-          Returns either a text response or pending tool calls.
-        path: ./../../node_modules/@jay-framework/gemini-agent-plugin/dist/actions/send-message.jay-action
-      - name: submitToolResults
-        description: Submit tool execution results back to continue the Gemini
-          conversation. Called after the client executes page automation tools.
-          Returns either a text response or more pending tool calls.
-        path: ./../../node_modules/@jay-framework/gemini-agent-plugin/dist/actions/submit-tool-results.jay-action
   - name: wix-cart
     path: ./../../packages/wix-cart
     contracts:

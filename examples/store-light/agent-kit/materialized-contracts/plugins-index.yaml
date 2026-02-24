@@ -1,0 +1,41 @@
+materialized_at: 2026-02-24T12:27:21.953Z
+jay_stack_version: 0.0.0
+plugins:
+  - name: wix-cart
+    path: ./../../packages/wix-cart
+    contracts:
+      - name: cart-indicator
+        type: static
+        path: ./../../packages/wix-cart/dist/contracts/cart-indicator.jay-contract
+      - name: cart-page
+        type: static
+        path: ./../../packages/wix-cart/dist/contracts/cart-page.jay-contract
+  - name: wix-stores
+    path: ./../../packages/wix-stores
+    contracts:
+      - name: product-page
+        type: static
+        path: ./../../packages/wix-stores/dist/contracts/product-page.jay-contract
+      - name: product-search
+        type: static
+        path: ./../../packages/wix-stores/dist/contracts/product-search.jay-contract
+      - name: category-page
+        type: static
+        path: ./../../packages/wix-stores/dist/contracts/category-page.jay-contract
+      - name: category-list
+        type: static
+        path: ./../../packages/wix-stores/dist/contracts/category-list.jay-contract
+    actions:
+      - name: searchProducts
+        description: Search products in the Wix Store catalog using Catalog V3. Supports
+          text search, price/stock/category filtering, sorting, and cursor-based
+          pagination. Returns matching products with price aggregation data.
+        path: ./../../packages/wix-stores/dist/actions/search-products.jay-action
+      - name: getProductBySlug
+        description: Get a single product by its URL slug. Returns full
+          ProductCardViewState or null if not found.
+        path: ./../../packages/wix-stores/dist/actions/get-product-by-slug.jay-action
+      - name: getCategories
+        description: Get available store categories for filtering products. Returns
+          category IDs and names.
+        path: ./../../packages/wix-stores/dist/actions/get-categories.jay-action

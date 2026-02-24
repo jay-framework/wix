@@ -1,0 +1,136 @@
+{
+  "_description": "Wix Data collection schemas matching the DataCollection API format. Used to test contract generation, field mapping, and schema processing.",
+
+  "ArticleCategories": {
+    "_id": "ArticleCategories",
+    "displayName": "Article Categories",
+    "fields": [
+      { "key": "_id", "displayName": "ID", "type": "TEXT" },
+      { "key": "_owner", "displayName": "Owner", "type": "TEXT" },
+      { "key": "_createdDate", "displayName": "Created", "type": "DATETIME" },
+      { "key": "_updatedDate", "displayName": "Updated", "type": "DATETIME" },
+      { "key": "title", "displayName": "Title", "type": "TEXT" },
+      { "key": "slug", "displayName": "Slug", "type": "TEXT" },
+      { "key": "description", "displayName": "Description", "type": "TEXT" },
+      { "key": "order", "displayName": "Sort Order", "type": "NUMBER" }
+    ]
+  },
+
+  "Authors": {
+    "_id": "Authors",
+    "displayName": "Authors",
+    "fields": [
+      { "key": "_id", "displayName": "ID", "type": "TEXT" },
+      { "key": "_owner", "displayName": "Owner", "type": "TEXT" },
+      { "key": "_createdDate", "displayName": "Created", "type": "DATETIME" },
+      { "key": "_updatedDate", "displayName": "Updated", "type": "DATETIME" },
+      { "key": "name", "displayName": "Name", "type": "TEXT" },
+      { "key": "slug", "displayName": "Slug", "type": "TEXT" },
+      { "key": "bio", "displayName": "Bio", "type": "TEXT" },
+      { "key": "avatar", "displayName": "Avatar", "type": "IMAGE" },
+      { "key": "website", "displayName": "Website", "type": "URL" },
+      { "key": "twitter", "displayName": "Twitter Handle", "type": "TEXT" }
+    ]
+  },
+
+  "Articles": {
+    "_id": "Articles",
+    "displayName": "Articles",
+    "fields": [
+      { "key": "_id", "displayName": "ID", "type": "TEXT" },
+      { "key": "_owner", "displayName": "Owner", "type": "TEXT" },
+      { "key": "_createdDate", "displayName": "Created", "type": "DATETIME" },
+      { "key": "_updatedDate", "displayName": "Updated", "type": "DATETIME" },
+      { "key": "title", "displayName": "Title", "type": "TEXT" },
+      { "key": "slug", "displayName": "Slug", "type": "TEXT" },
+      { "key": "excerpt", "displayName": "Excerpt", "type": "TEXT" },
+      { "key": "body", "displayName": "Body", "type": "RICH_CONTENT" },
+      { "key": "coverImage", "displayName": "Cover Image", "type": "IMAGE" },
+      { "key": "publishDate", "displayName": "Publish Date", "type": "DATE" },
+      { "key": "published", "displayName": "Published", "type": "BOOLEAN" },
+      { "key": "readTime", "displayName": "Read Time (min)", "type": "NUMBER" },
+      { "key": "author", "displayName": "Author", "type": "REFERENCE" },
+      { "key": "categories", "displayName": "Categories", "type": "MULTI_REFERENCE" }
+    ]
+  },
+
+  "Departments": {
+    "_id": "Departments",
+    "displayName": "Departments",
+    "fields": [
+      { "key": "_id", "displayName": "ID", "type": "TEXT" },
+      { "key": "_owner", "displayName": "Owner", "type": "TEXT" },
+      { "key": "_createdDate", "displayName": "Created", "type": "DATETIME" },
+      { "key": "_updatedDate", "displayName": "Updated", "type": "DATETIME" },
+      { "key": "name", "displayName": "Name", "type": "TEXT" },
+      { "key": "slug", "displayName": "Slug", "type": "TEXT" },
+      { "key": "description", "displayName": "Description", "type": "TEXT" }
+    ]
+  },
+
+  "TeamMembers": {
+    "_id": "TeamMembers",
+    "displayName": "Team Members",
+    "fields": [
+      { "key": "_id", "displayName": "ID", "type": "TEXT" },
+      { "key": "_owner", "displayName": "Owner", "type": "TEXT" },
+      { "key": "_createdDate", "displayName": "Created", "type": "DATETIME" },
+      { "key": "_updatedDate", "displayName": "Updated", "type": "DATETIME" },
+      { "key": "name", "displayName": "Name", "type": "TEXT" },
+      { "key": "slug", "displayName": "Slug", "type": "TEXT" },
+      { "key": "title", "displayName": "Job Title", "type": "TEXT" },
+      { "key": "bio", "displayName": "Bio", "type": "RICH_TEXT" },
+      { "key": "photo", "displayName": "Photo", "type": "IMAGE" },
+      { "key": "email", "displayName": "Email", "type": "TEXT" },
+      { "key": "linkedin", "displayName": "LinkedIn", "type": "URL" },
+      { "key": "skills", "displayName": "Skills", "type": "TAGS" },
+      { "key": "yearsExperience", "displayName": "Years of Experience", "type": "NUMBER" },
+      { "key": "office", "displayName": "Office Location", "type": "ADDRESS" },
+      { "key": "department", "displayName": "Department", "type": "REFERENCE" },
+      { "key": "startDate", "displayName": "Start Date", "type": "DATE" }
+    ]
+  },
+
+  "Venues": {
+    "_id": "Venues",
+    "displayName": "Venues",
+    "fields": [
+      { "key": "_id", "displayName": "ID", "type": "TEXT" },
+      { "key": "_owner", "displayName": "Owner", "type": "TEXT" },
+      { "key": "_createdDate", "displayName": "Created", "type": "DATETIME" },
+      { "key": "_updatedDate", "displayName": "Updated", "type": "DATETIME" },
+      { "key": "name", "displayName": "Name", "type": "TEXT" },
+      { "key": "slug", "displayName": "Slug", "type": "TEXT" },
+      { "key": "description", "displayName": "Description", "type": "TEXT" },
+      { "key": "photo", "displayName": "Photo", "type": "IMAGE" },
+      { "key": "address", "displayName": "Address", "type": "ADDRESS" },
+      { "key": "capacity", "displayName": "Capacity", "type": "NUMBER" },
+      { "key": "website", "displayName": "Website", "type": "URL" },
+      { "key": "contactEmail", "displayName": "Contact Email", "type": "TEXT" }
+    ]
+  },
+
+  "Events": {
+    "_id": "Events",
+    "displayName": "Events",
+    "fields": [
+      { "key": "_id", "displayName": "ID", "type": "TEXT" },
+      { "key": "_owner", "displayName": "Owner", "type": "TEXT" },
+      { "key": "_createdDate", "displayName": "Created", "type": "DATETIME" },
+      { "key": "_updatedDate", "displayName": "Updated", "type": "DATETIME" },
+      { "key": "title", "displayName": "Title", "type": "TEXT" },
+      { "key": "slug", "displayName": "Slug", "type": "TEXT" },
+      { "key": "description", "displayName": "Description", "type": "TEXT" },
+      { "key": "startDate", "displayName": "Start Date", "type": "DATETIME" },
+      { "key": "endDate", "displayName": "End Date", "type": "DATETIME" },
+      { "key": "coverImage", "displayName": "Cover Image", "type": "IMAGE" },
+      { "key": "promoVideo", "displayName": "Promo Video", "type": "VIDEO" },
+      { "key": "price", "displayName": "Price", "type": "NUMBER" },
+      { "key": "capacity", "displayName": "Capacity", "type": "NUMBER" },
+      { "key": "isFeatured", "displayName": "Featured", "type": "BOOLEAN" },
+      { "key": "isVirtual", "displayName": "Virtual Event", "type": "BOOLEAN" },
+      { "key": "venue", "displayName": "Venue", "type": "REFERENCE" },
+      { "key": "registrationUrl", "displayName": "Registration URL", "type": "URL" }
+    ]
+  }
+}

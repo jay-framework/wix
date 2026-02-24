@@ -1,0 +1,93 @@
+# Test configuration for wix-data plugin
+# Exercises: field whitelists, categories, embedded refs, multiple component types
+
+collections:
+  # --- Articles: Full-featured collection ---
+  # Tests: MULTI_REFERENCE categories, embedded REFERENCE (author),
+  #        RICH_CONTENT (item only), IMAGE, DATE, BOOLEAN, NUMBER,
+  #        field whitelist on list/category, category pages
+  - collectionId: Articles
+    visible: true
+    pathPrefix: /articles
+    slugField: slug
+    references:
+      - fieldName: author
+        mode: embed    # Author data embedded in article view
+    category:
+      referenceField: categories
+      categorySlugField: slug
+    components:
+      itemPage: true
+      indexPage:
+        fields: [title, coverImage, excerpt, publishDate, readTime]
+      categoryPage:
+        fields: [title, coverImage, excerpt, publishDate]
+      cardWidget:
+        fields: [title, coverImage, excerpt]
+
+  # --- TeamMembers: People directory ---
+  # Tests: ADDRESS, TAGS, URL, RICH_TEXT, embedded REFERENCE (department),
+  #        no categories, field whitelist on list
+  - collectionId: TeamMembers
+    visible: true
+    pathPrefix: /team
+    slugField: slug
+    references:
+      - fieldName: department
+        mode: embed
+    components:
+      itemPage: true
+      indexPage:
+        fields: [name, photo, title, department]
+      cardWidget:
+        fields: [name, photo, title]
+
+  # --- Events: Date-heavy collection ---
+  # Tests: DATETIME, NUMBER (price/capacity), BOOLEAN, VIDEO,
+  #        embedded REFERENCE (venue), URL, no categories,
+  #        all fields on list (no whitelist)
+  - collectionId: Events
+    visible: true
+    pathPrefix: /events
+    slugField: slug
+    references:
+      - fieldName: venue
+        mode: embed
+    components:
+      itemPage: true
+      indexPage: true   # No field whitelist - all card fields included
+      tableWidget: true
+
+  # --- Supporting collections (not directly visible) ---
+
+  - collectionId: ArticleCategories
+    visible: false
+    pathPrefix: /article-categories
+    slugField: slug
+    components:
+      itemPage: false
+      indexPage: false
+
+  - collectionId: Authors
+    visible: false
+    pathPrefix: /authors
+    slugField: slug
+    components:
+      itemPage: false
+      indexPage: false
+
+  - collectionId: Departments
+    visible: false
+    pathPrefix: /departments
+    slugField: slug
+    components:
+      itemPage: false
+      indexPage: false
+
+  - collectionId: Venues
+    visible: false
+    pathPrefix: /venues
+    slugField: slug
+    components:
+      itemPage: false
+      indexPage: false

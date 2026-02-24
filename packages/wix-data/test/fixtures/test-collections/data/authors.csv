@@ -1,0 +1,4 @@
+_id,name,slug,bio,avatar,website,twitter
+author-1,Jane Chen,jane-chen,Senior engineer and tech writer with 10 years of experience.,wix:image://v1/a1b2c3_avatar1~mv2.jpg/jane-chen.jpg#originWidth=400&originHeight=400,https://janechen.dev,@janechen
+author-2,Marcus Rivera,marcus-rivera,"Design lead, speaker, and author of ""Pixels & Purpose"".",wix:image://v1/d4e5f6_avatar2~mv2.jpg/marcus-rivera.jpg#originWidth=400&originHeight=400,https://marcusrivera.design,@marcusux
+author-3,Aisha Patel,aisha-patel,VP of Product. Writes about strategy and growth.,wix:image://v1/g7h8i9_avatar3~mv2.jpg/aisha-patel.jpg#originWidth=400&originHeight=400,,@aishapatel

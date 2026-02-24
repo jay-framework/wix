@@ -1,0 +1,5 @@
+_id,title,slug,description,order
+cat-tech,Technology,technology,Articles about software and tech trends,1
+cat-design,Design,design,UI/UX and visual design topics,2
+cat-business,Business,business,Strategy and entrepreneurship,3
+cat-culture,Culture,culture,Team culture and workplace topics,4
