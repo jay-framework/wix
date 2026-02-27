@@ -76,6 +76,8 @@ export interface AddToCartOptions {
     customTextFields?: Record<string, string>;
     /** Modifiers as (key, value) pairs */
     modifiers?: Record<string, string>;
+    /** Product slug for building the correct product page URL in cart */
+    productSlug?: string;
 }
 
 /**
@@ -237,6 +239,7 @@ export function provideWixCartContext(): WixCartContext {
                     }
                 },
                 quantity,
+                url: options?.productSlug ? `/products/${options.productSlug}` : undefined,
             };
             
             const result = await cartClient.addToCurrentCart({

@@ -6,7 +6,9 @@
   "private": true,
   "scripts": {
     "start": "node --loader ts-node/esm query-products.ts",
-    "build": "tsc"
+    "clean": "rimraf dist",
+    "build": "tsc",
+    "build:check-types": "tsc"
   },
   "dependencies": {
     "@wix/sdk": "^1.17.4",

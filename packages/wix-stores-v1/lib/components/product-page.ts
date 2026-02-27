@@ -176,8 +176,12 @@ async function* loadProductParams(
     [wixStores]: [WixStoresV1Service]
 ): AsyncIterable<ProductPageParams[]> {
     try {
-        const { items } = await wixStores.products.queryProducts().find();
-        yield items.map((product) => ({ slug: product.slug || '' }));
+        let result = await wixStores.products.queryProducts().find();
+        yield result.items.map((product) => ({ slug: product.slug || '' }));
+        while (result.hasNext()) {
+            result = await result.next();
+            yield result.items.map((product) => ({ slug: product.slug || '' }));
+        }
     } catch (error) {
         console.error('[ProductPage V1] Failed to load product slugs:', error);
         yield [];
@@ -196,10 +200,19 @@ async function renderSlowlyChanging(
     const Pipeline = RenderPipeline.for<ProductPageSlowViewState, ProductSlowCarryForward>();
 
     return Pipeline
-        .try(() => wixStores.products.queryProducts()
-            .eq('slug', props.slug)
-            .limit(1)
-            .find())
+        .try(async () => {
+            // Try slug lookup first, then fall back to ID lookup
+            // (cart URLs use product IDs since item.url slugs may not match catalog slugs)
+            const bySlug = await wixStores.products.queryProducts()
+                .eq('slug', props.slug)
+                .limit(1)
+                .find();
+            if (bySlug.items?.length) return bySlug;
+            return wixStores.products.queryProducts()
+                .eq('_id', props.slug)
+                .limit(1)
+                .find();
+        })
         .recover(error => {
             console.error('[ProductPage V1] Error loading product:', error);
             return Pipeline.clientError(404, 'Product not found');

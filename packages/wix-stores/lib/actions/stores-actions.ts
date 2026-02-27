@@ -373,16 +373,15 @@ export const getProductBySlug = makeJayQuery('wixStores.getProductBySlug')
         }
 
         try {
-            // Include VARIANT_OPTION_CHOICE_NAMES for quick-add option display
-            const result = await wixStores.products.getProductBySlug(slug, {
-                fields: ['MEDIA_ITEMS_INFO', 'VARIANT_OPTION_CHOICE_NAMES']
-            });
+            const fields = ['MEDIA_ITEMS_INFO', 'VARIANT_OPTION_CHOICE_NAMES'] as const;
+            const result = await wixStores.products.getProductBySlug(slug, { fields: [...fields] });
+            const product = result.product;
 
-            if (!result.product) {
+            if (!product) {
                 return null;
             }
 
-            return mapProductToCard(result.product);
+            return mapProductToCard(product);
         } catch (error) {
             console.error('[wixStores.getProductBySlug] Failed to get product:', error);
             // Return null for not found instead of throwing

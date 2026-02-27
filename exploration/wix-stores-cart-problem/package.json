@@ -6,9 +6,10 @@
   "private": true,
   "scripts": {
     "dev": "vite",
+    "clean": "rimraf dist",
     "build": "vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "build:check-types": "tsc"
   },
   "dependencies": {
     "@wix/ecom": "^1.0.753",

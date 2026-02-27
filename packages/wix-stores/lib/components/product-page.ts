@@ -87,8 +87,12 @@ async function* loadProductParams(
     [wixStores]: [WixStoresService]
 ): AsyncIterable<ProductPageParams[]> {
     try {
-        const { items } = await wixStores.products.queryProducts().find();
-        yield items.map((product) => ({ slug: product.slug }));
+        let result = await wixStores.products.queryProducts().find();
+        yield result.items.map((product) => ({ slug: product.slug }));
+        while (result.hasNext()) {
+            result = await result.next();
+            yield result.items.map((product) => ({ slug: product.slug }));
+        }
     } catch (error) {
         console.error('Failed to load product slugs:', error);
         yield [];
@@ -299,9 +303,10 @@ async function renderSlowlyChanging(
     const Pipeline = RenderPipeline.for<ProductPageSlowViewState, ProductSlowCarryForward>()
 
     return Pipeline
-        .try(() => wixStores.products.getProductBySlug(props.slug, {
-            fields: ['INFO_SECTION', 'INFO_SECTION_PLAIN_DESCRIPTION', 'MEDIA_ITEMS_INFO', 'PLAIN_DESCRIPTION', 'CURRENCY']
-        }))
+        .try(async () => {
+            const fields = ['INFO_SECTION', 'INFO_SECTION_PLAIN_DESCRIPTION', 'MEDIA_ITEMS_INFO', 'PLAIN_DESCRIPTION', 'CURRENCY'] as const;
+            return wixStores.products.getProductBySlug(props.slug, { fields: [...fields] });
+        })
         .recover(error => {
             console.log('product page error', error)
             return Pipeline.clientError(404, 'not found')

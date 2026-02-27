@@ -1,6 +1,8 @@
-materialized_at: 2026-02-24T12:26:27.605Z
 jay_stack_version: 0.0.0
 plugins:
+  - name: webmcp
+    path: ./../../node_modules/@jay-framework/webmcp-plugin
+    contracts: []
   - name: wix-cart
     path: ./../../packages/wix-cart
     contracts:
@@ -10,6 +12,9 @@ plugins:
       - name: cart-page
         type: static
         path: ./../../packages/wix-cart/dist/contracts/cart-page.jay-contract
+  - name: wix-server-client
+    path: ./../../packages/wix-server-client
+    contracts: []
   - name: wix-stores-v1
     path: ./../../packages/wix-stores-v1
     contracts:

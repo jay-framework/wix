@@ -6,9 +6,11 @@
   "private": true,
   "scripts": {
     "start": "node --loader ts-node/esm query-products.ts",
+    "clean": "rimraf dist",
     "get-product": "node --loader ts-node/esm get-product.ts",
     "get-product-by-slug": "node --loader ts-node/esm get-product-by-slug.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "build:check-types": "tsc"
   },
   "dependencies": {
     "@wix/categories": "^1.0.165",

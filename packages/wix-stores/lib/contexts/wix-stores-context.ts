@@ -214,11 +214,12 @@ export function provideWixStoresContext(): WixStoresContext {
                 }
             }
 
-            // Delegate to cart context with resolved variant
+            // Delegate to cart context with resolved variant and slug
             return cartContext.addToCart(productId, quantity, {
                 variantId: variant._id,
                 modifiers: translatedModifiers,
                 customTextFields: translatedCustomTextFields,
+                productSlug: product.slug,
             });
         }
 

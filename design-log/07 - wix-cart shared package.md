@@ -245,3 +245,25 @@ export const cartIndicator = makeJayStackComponent()
 **Code Reduction:**
 - Removed ~1,350 lines of duplicated cart code from wix-stores and wix-stores-v1
 - Single source of truth for cart functionality in wix-cart package
+
+---
+
+### Bug Fix: Cart Product URLs Using Wrong Slug (2026-02-27)
+
+**Problem:** Clicking a product link on the cart page returned 404. For example, product "Aberlour 11y- 55.1%" linked to `/products/aberlour-11y-55-1` which was not found.
+
+**Root Cause:** `mapLineItem()` in `cart-helpers.ts` extracted the slug from `item.url` using `item.url.split('/').pop()`. The `item.url` comes from the Wix eCommerce Cart API and defaults to the Wix site's product page URL, whose slug may not match `product.slug` in the Wix Catalog API. Products with special characters are particularly affected since the two APIs may slugify differently.
+
+**Initial fix (reverted):** Used `catalogReference.catalogItemId` (product ID) for cart URLs, with slug-then-ID fallback in product page/action lookups. This worked but produced ugly URLs.
+
+**Final fix — set `url` on LineItem at add-to-cart time:**
+- `AddToCartOptions` now includes `productSlug?: string`
+- `addToCart()` in `wix-cart-context.ts` sets `url: /products/${slug}` on the LineItem
+- The Wix eCommerce API stores this custom URL, so `item.url` contains our correct slug when reading the cart
+- `cart-helpers.ts` keeps the original `item.url.split('/').pop()` extraction — it works correctly because `item.url` now has our URL
+
+**Changes in consumer packages:**
+- `wix-stores-v1-context.ts`: always fetches the product to get `product.slug`, passes it as `productSlug`
+- `wix-stores-context.ts`: extracts `product.slug` from the already-fetched product, passes it as `productSlug`
+- V3 product page and action: reverted slug-then-ID fallback (no longer needed)
+- V1 product page and action: kept slug-then-ID fallback (harmless robustness)

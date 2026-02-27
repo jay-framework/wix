@@ -121,29 +121,30 @@ export function provideWixStoresV1Context(): WixStoresV1Context {
         // ====================================================================
         
         async function addToCart(
-            productId: string, 
-            quantity: number = 1, 
+            productId: string,
+            quantity: number = 1,
             variantId?: string
         ): Promise<CartOperationResult> {
             console.log(`[WixStoresV1] Adding to cart: ${productId} x ${quantity}`);
-            
-            // For V1, get the product to find variant if not specified
+
+            // Always fetch product to get slug and resolve variant if needed
             let finalVariantId = variantId;
-            if (!finalVariantId) {
-                try {
-                    const productResult = await productsClient.getProduct(productId);
-                    const product = productResult.product;
-                    if (product?.variants?.[0]) {
-                        finalVariantId = product.variants[0]._id;
-                    }
-                } catch (err) {
-                    console.warn('[WixStoresV1] Could not fetch product for variant ID:', err);
+            let productSlug: string | undefined;
+            try {
+                const productResult = await productsClient.getProduct(productId);
+                const product = productResult.product;
+                productSlug = product?.slug;
+                if (!finalVariantId && product?.variants?.[0]) {
+                    finalVariantId = product.variants[0]._id;
                 }
+            } catch (err) {
+                console.warn('[WixStoresV1] Could not fetch product:', err);
             }
 
-            // Delegate to cart context with resolved variant
+            // Delegate to cart context with resolved variant and slug
             return cartContext.addToCart(productId, quantity, {
                 variantId: finalVariantId,
+                productSlug,
             });
         }
 

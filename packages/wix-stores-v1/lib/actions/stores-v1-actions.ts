@@ -369,11 +369,19 @@ export const getProductBySlug = makeJayQuery('wixStoresV1.getProductBySlug')
         }
 
         try {
-            // V1 doesn't have getProductBySlug - query by slug instead
-            const result = await wixStores.products.queryProducts()
+            // V1 doesn't have getProductBySlug - query by slug, then fall back to ID
+            // (cart URLs use product IDs since item.url slugs may not match catalog slugs)
+            let result = await wixStores.products.queryProducts()
                 .eq('slug', slug)
                 .limit(1)
                 .find();
+
+            if (!result.items?.length) {
+                result = await wixStores.products.queryProducts()
+                    .eq('_id', slug)
+                    .limit(1)
+                    .find();
+            }
 
             const product: Product = result.items?.[0];
             if (!product) {

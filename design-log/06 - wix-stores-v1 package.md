@@ -395,3 +395,15 @@ export const init = makeJayInit()
 - Adding a third stores package (e.g., V2 or different region)
 - Significant cart feature additions
 - Bug fixes repeatedly needed in both packages
+
+---
+
+### Bug Fix: Cart Product URLs — Slug/ID Lookup Fallback (2026-02-27)
+
+**Problem:** Cart links returned 404 for products with special characters (e.g., "Aberlour 11y- 55.1%") because `item.url` from the Wix eCommerce API had a different slug than `product.slug` in the Catalog API.
+
+**Initial fix:** Added slug-then-ID fallback in `product-page.ts` and `stores-v1-actions.ts`, combined with using product IDs in cart URLs (see Design Log 07).
+
+**Final fix (see Design Log 07 for details):** The root cause was fixed upstream — `addToCart()` now sets `url` on the LineItem with the correct catalog slug. Cart URLs are now human-readable and correct.
+
+**V1 product page and action:** Kept the slug-then-ID fallback as harmless robustness. The V3 equivalents were reverted to slug-only lookup since the fix at the cart level makes it unnecessary.
