@@ -7,9 +7,10 @@
 
 import { WixClient } from '@wix/sdk';
 import { currentCart } from '@wix/ecom';
+import {BuildDescriptors} from "@wix/sdk-types";
 
 // Singleton instance
-let currentCartInstance: typeof currentCart | undefined;
+let currentCartInstance: BuildDescriptors<typeof currentCart, {}> | undefined;
 
 /**
  * Get a configured Wix eCommerce Current Cart client (singleton)
@@ -19,9 +20,9 @@ let currentCartInstance: typeof currentCart | undefined;
  * @returns Current Cart client instance from @wix/ecom
  * @see https://dev.wix.com/docs/sdk/backend-modules/ecom/current-cart/introduction
  */
-export function getCurrentCartClient(wixClient: WixClient): typeof currentCart {
+export function getCurrentCartClient(wixClient: WixClient): BuildDescriptors<typeof currentCart, {}> {
     if (!currentCartInstance) {
-        currentCartInstance = wixClient.use(currentCart) as unknown as typeof currentCart;
+        currentCartInstance = wixClient.use(currentCart);
     }
     return currentCartInstance;
 }

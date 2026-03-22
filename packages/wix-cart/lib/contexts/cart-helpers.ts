@@ -12,17 +12,18 @@ import type {
     CartDiscount
 } from '@wix/auto_sdk_ecom_current-cart';
 import { formatWixMediaUrl } from '@jay-framework/wix-utils';
+import {BuildDescriptors} from "@wix/sdk-types";
 
 // ============================================================================
 // Types
 // ============================================================================
 
-type CurrentCartClient = typeof currentCart;
+type CurrentCartClient = BuildDescriptors<typeof currentCart, {}>;
 
 // Get the return type of estimateCurrentCartTotals
 // The client method returns a Promise, so we need to unwrap it
 type EstimateMethod = CurrentCartClient['estimateCurrentCartTotals'];
-type EstimateTotalsResult = Awaited<ReturnType<ReturnType<EstimateMethod>>>;
+type EstimateTotalsResult = Awaited<ReturnType<EstimateMethod>>;
 
 /**
  * Cart line item for display
