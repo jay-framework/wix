@@ -10,6 +10,7 @@ examples/**/lib/**/*.jay-html.ts
 .yarn/install-state.gz
 /.idea
 exploration/tmp
+exploration/**/output
 config
 
 
