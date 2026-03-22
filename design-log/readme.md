@@ -15,6 +15,7 @@ Design documentation for the Jay Framework Wix integration packages.
 | 07 | [Wix Cart Shared Package](./07%20-%20wix-cart%20shared%20package.md) | - |
 | 08 | [Wix Data List Slow/Fast Rendering](./08%20-%20wix-data%20list%20slow-fast%20rendering.md) | Draft |
 | 09 | [Wix Data List Field Mapping](./09%20-%20wix-data%20list%20field%20mapping.md) | Draft |
+| 10 | [Category-Prefixed Product Routes](./10%20-%20category-prefixed-product-routes.md) | Draft |
 
 ## Packages Covered
 
