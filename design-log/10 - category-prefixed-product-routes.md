@@ -108,7 +108,7 @@ When category prefixes are configured, we need `ALL_CATEGORIES_INFO` in:
 - `searchProducts` — to determine the prefix for each result's URL
 - `getProductBySlug` — potentially, for validation
 
-**Important**: `queryProducts()` (used in `loadProductParams`) supports a `fields` parameter. We need to check if `ALL_CATEGORIES_INFO` is available there or only via `getProduct()`.
+`queryProducts()` supports the `ALL_CATEGORIES_INFO` field flag, so `loadProductParams` can use it directly.
 
 ### Q7: What if a product belongs to multiple configured root categories?
 
@@ -154,8 +154,8 @@ The configuration is stored in `WixStoresService` and accessible to all componen
 
 The `product-search` component gains an optional `category` parameter (the prefix slug). When present:
 - The root category ID is resolved from the prefix config
-- All child categories under that root are pre-selected as the default filter
-- The search is scoped to products within that category hierarchy
+- Search is scoped to products within that category hierarchy (using the root category ID as filter)
+- The **category filter UI** shows the **child categories** of the root — the root category itself is hidden (it's implicit from the route)
 - The template controls the visual design (each prefix has its own jay-html file)
 
 The `category-page` component is **removed** — its functionality is absorbed into `product-search`.
@@ -169,12 +169,55 @@ interface ProductSearchParams extends UrlParams {
 
 When `category` is provided:
 1. Resolve `categoryId` from `categoryPrefixes` config using the prefix
-2. Use it as a default filter in `searchProducts` calls
-3. Search results only show products from that category hierarchy
-4. Product URLs in results use the category prefix
+2. Use the root `categoryId` as a **base filter** in all `searchProducts` calls (always applied, not visible to user)
+3. Query child categories of the root via `queryCategories().eq('parentCategory._id', rootCategoryId)`
+4. Expose only child categories as filter options in the UI
+5. Product URLs in results use the category prefix
 
 When `category` is absent:
-- Behaves exactly like today's search page (all products, no pre-filter)
+- Behaves exactly like today's search page (all products, all categories as filters)
+
+### Category Filter: Child Categories
+
+The slow render phase loads the filter categories:
+
+```typescript
+async function renderSlowlyChanging(
+    props: PageProps & ProductSearchParams,
+    wixStores: WixStoresService
+) {
+    const categoryPrefix = props.category;
+    const categoryConfig = categoryPrefix
+        ? wixStores.categoryPrefixes?.find(c => c.prefix === categoryPrefix)
+        : null;
+
+    let filterCategories;
+    if (categoryConfig) {
+        // Scoped: load only child categories of the root (root itself is hidden)
+        const result = await wixStores.categories.queryCategories({
+            treeReference: { appNamespace: "@wix/stores" }
+        })
+            .eq('visible', true)
+            .eq('parentCategory._id', categoryConfig.categoryId)
+            .find();
+        filterCategories = result.items || [];
+    } else {
+        // Unscoped: load all visible categories (current behavior)
+        const result = await wixStores.categories.queryCategories({
+            treeReference: { appNamespace: "@wix/stores" }
+        })
+            .eq('visible', true)
+            .find();
+        filterCategories = result.items || [];
+    }
+    // ... map to CategoryInfos for the contract
+}
+```
+
+This means:
+- `/products/polgat` shows filters like: חולצות, מכנסיים, מעילים... (children of פולגת)
+- `/products/kitan` shows filters like: חדר שינה, חדר רחצה, חדר ילדים... (children of כיתן)
+- `/products` (default) shows all categories
 
 ### URL Resolution
 
@@ -246,29 +289,42 @@ Each `page.jay-html` binds the same `product-search` or `product-page` headless 
 
 ### Modified `loadProductParams`
 
-The product page component's `loadProductParams` yields params for **each route** that uses it. Since each prefix route is a separate page file binding the same component:
+`loadProductParams` is called **once** and yields params for **all routes**. It maps each product to its correct route based on category membership. The framework then distributes params to the matching routes.
 
-- `polgat/[slug]/page.jay-html` calls `loadProductParams` → yields only products belonging to polgat
-- `kitan/[slug]/page.jay-html` calls `loadProductParams` → yields only products belonging to kitan
-- `[slug]/page.jay-html` (if exists) calls `loadProductParams` → yields uncategorized products
-
-The component knows which prefix it's serving via its route params or props. The `loadProductParams` function filters products accordingly using `allCategoriesInfo`.
+When category prefixes are configured:
+1. Fetch all products with `ALL_CATEGORIES_INFO`
+2. For each product, resolve its prefix via `resolveProductPrefix()`
+3. Yield `{ slug }` routed to the correct prefix path (e.g., `polgat/[slug]` or `kitan/[slug]`)
+4. Products without a matching prefix yield `{ slug }` for the default `[slug]` route (if it exists)
 
 ```typescript
 async function* loadProductParams(
     [wixStores]: [WixStoresService]
 ): AsyncIterable<ProductPageParams[]> {
     const prefixConfig = wixStores.categoryPrefixes;
-    // ... fetch products with ALL_CATEGORIES_INFO when prefixConfig exists
-    // ... yield { slug } for each product matching the current route's category
+    const fields = prefixConfig?.length ? ['ALL_CATEGORIES_INFO'] : [];
+
+    let result = await wixStores.products.queryProducts({ fields }).find();
+
+    yield result.items.map(product => {
+        const prefix = resolveProductPrefix(product, prefixConfig);
+        // The framework routes each param set to the matching route:
+        // - { slug: 'x' } with prefix 'polgat' → polgat/[slug]
+        // - { slug: 'x' } without prefix → [slug]
+        return { slug: product.slug, ...(prefix ? { category: prefix } : {}) };
+    });
+
+    while (result.hasNext()) {
+        result = await result.next();
+        yield result.items.map(product => {
+            const prefix = resolveProductPrefix(product, prefixConfig);
+            return { slug: product.slug, ...(prefix ? { category: prefix } : {}) };
+        });
+    }
 }
 ```
 
-**Open question**: How does `loadProductParams` know which prefix route is calling it? Options:
-- It receives the route's static params (e.g., knows it's being called from `polgat/[slug]`)
-- It yields params for ALL products with their prefixes, and the framework routes them
-
-This needs investigation into how Jay handles `loadParams` with static prefix routes.
+Jay's `loadParams` loads all yielded params from a single call, then matches them to routes based on fs routing. The framework handles distribution to the correct static prefix routes and dynamic fallback.
 
 ### Modified `searchProducts` Action
 
@@ -282,9 +338,9 @@ const fields = prefixConfig?.length
 
 Then pass `prefixConfig` to `mapProductToCard` so each product card URL includes the correct prefix.
 
-### Search Component: Category Pre-Selection
+### Search Component: Base Category Filter
 
-When the search component receives a `category` param:
+The fast render phase applies the root category as a **base filter** — always active, not user-toggleable:
 
 ```typescript
 async function renderFastChanging(
@@ -292,25 +348,27 @@ async function renderFastChanging(
     slowCarryForward: SearchSlowCarryForward,
     wixStores: WixStoresService
 ) {
-    // Resolve category ID from prefix config
-    const categoryPrefix = props.category;
-    const categoryConfig = categoryPrefix
-        ? wixStores.categoryPrefixes?.find(c => c.prefix === categoryPrefix)
+    // Resolve root category from prefix config
+    const categoryConfig = props.category
+        ? wixStores.categoryPrefixes?.find(c => c.prefix === props.category)
         : null;
 
-    // Default search filter: scope to this category
-    const defaultCategoryIds = categoryConfig ? [categoryConfig.categoryId] : [];
+    // Base filter: root category scopes all searches (always applied)
+    const baseCategoryId = categoryConfig?.categoryId;
 
     const result = await searchProducts({
         query: '',
         filters: {
-            categoryIds: defaultCategoryIds
+            // Root category is the base — user-selected child categories are added on top
+            categoryIds: baseCategoryId ? [baseCategoryId] : []
         },
         pageSize: PAGE_SIZE
     });
     // ...
 }
 ```
+
+In the interactive phase, user-selected child category filters are **combined** with the base category filter. The base category is always in the filter — user selections narrow further within it.
 
 ### Product Page Component Changes
 
@@ -349,14 +407,15 @@ async function renderSlowlyChanging(
 ### Phase 3: Unified Search + Category Component
 1. Add optional `category` param to `product-search` component
 2. Resolve category ID from prefix config when param is present
-3. Pre-filter search results to the category hierarchy
-4. Remove `category-page` component (or deprecate)
-5. Update `category-list` component to link to `/products/{prefix}` instead of `/categories/{slug}`
+3. Apply root category as base filter in all searches (always active, hidden from UI)
+4. Load child categories of root as filter options (root itself hidden)
+5. Remove `category-page` component and update examples that use it
+6. Update `category-list` component to link to `/products/{prefix}` instead of `/categories/{slug}`
 
 ### Phase 4: SSG Param Loading
 1. Modify `loadProductParams` to request `ALL_CATEGORIES_INFO` when config exists
-2. Investigate how `loadParams` interacts with static prefix routes in Jay
-3. Yield `{ slug }` for products matching the current route's prefix
+2. Call once — yield all products with resolved prefixes for all routes
+3. Framework distributes params to matching routes (static prefix routes + default fallback)
 
 ### Phase 5: Search Action Integration
 1. Modify `searchProducts` action to request `ALL_CATEGORIES_INFO` when configured
@@ -380,15 +439,16 @@ async function renderSlowlyChanging(
 - **Graceful fallback**: Default route handles uncategorized products; omit it for strict 404
 
 ### Cons
-- **Extra API field**: `ALL_CATEGORIES_INFO` adds data to every product fetch when configured — potential performance impact
+- **Extra API field**: `ALL_CATEGORIES_INFO` adds data to product fetches — acceptable since slow phase is cached and near build-time
 - **Complexity in mapper**: `mapProductToCard` gains category awareness
 - **Multiple template files**: Each category prefix needs its own directory with jay-html files (but this is intentional — enables different designs)
 - **Config ordering matters**: First-match semantics may be non-obvious
-- **Breaking change**: Removing `category-page` component affects existing sites using it
+- **Breaking change**: Removing `category-page` component — only affects examples in this repo, updated as part of implementation
 
-### Open Questions
-1. Does `queryProducts()` support the `ALL_CATEGORIES_INFO` field flag? If not, `loadProductParams` needs to use `getProduct()` per product or `searchProducts()` instead
-2. Should the category prefix be exposed in the `ProductCardViewState` contract (e.g., as a `categoryPrefix` field)? This would let templates show the category context
-3. How does Jay's `loadParams` work with static prefix routes? Does the component know which static prefix it's being called from?
-4. Performance: How much overhead does `ALL_CATEGORIES_INFO` add to search queries with 1000+ products?
-5. Migration path: Should `category-page` be deprecated gradually or removed immediately?
+### Resolved Questions
+1. **`queryProducts()` + `ALL_CATEGORIES_INFO`**: Yes, it supports the field flag. `loadProductParams` can use `queryProducts({ fields: ['ALL_CATEGORIES_INFO'] })` directly.
+2. **Expose prefix in contract**: Yes — add `categoryPrefix` (the category name, not the slug) to `ProductCardViewState` so templates can display the category context.
+3. **`loadParams` distribution**: Jay loads all params from a single call, then matches them to routes based on fs routing. No special handling needed — yield all products with their prefixes, the framework routes them.
+4. **`ALL_CATEGORIES_INFO` performance**: Minimal concern. `loadParams` runs in the slow phase (near build time) and results are cached in the dev server. For `searchProducts` at runtime, the overhead is acceptable.
+5. **`category-page` removal**: Remove immediately. Only used in a few examples in this repo — update those examples as part of implementation.
+6. **Child category filter depth**: Flat list of direct children only. Can be extended later if needed.
