@@ -40,8 +40,8 @@
     "@jay-framework/stack-server-runtime": "^0.14.0",
     "@jay-framework/wix-server-client": "^1.0.0",
     "@jay-framework/wix-utils": "^1.0.0",
-    "@wix/data": "^1.0.341",
-    "@wix/sdk": "^1.17.4",
+    "@wix/data": "^1.0.427",
+    "@wix/sdk": "^1.21.5",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {

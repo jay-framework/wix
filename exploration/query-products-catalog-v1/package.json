@@ -11,8 +11,8 @@
     "build:check-types": "tsc"
   },
   "dependencies": {
-    "@wix/sdk": "^1.17.4",
-    "@wix/stores": "^1.0.563",
+    "@wix/sdk": "^1.21.5",
+    "@wix/stores": "^1.0.723",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
