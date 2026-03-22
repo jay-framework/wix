@@ -52,7 +52,9 @@ async function getProductsIndividually() {
             console.log(`[${i + 1}/${productIds.length}] Fetching product: ${productId}`);
             
             try {
-                const product = await productsClient.getProduct(productId);
+                const product = await productsClient.getProduct(productId, {
+                    fields: ['ALL_CATEGORIES_INFO', 'DIRECT_CATEGORIES_INFO']
+                });
                 
                 if (product) {
                     fetchedProducts.push(product);

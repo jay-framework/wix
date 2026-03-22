@@ -27,35 +27,37 @@ async function queryAllProducts() {
         // Query products with pagination
         let allProducts: any[] = [];
         let currentPage = 0;
-        let hasMore = true;
         const pageSize = 100; // Wix API default/max page size
         
         console.log('📦 Fetching products...');
         
-        while (hasMore) {
-            const query = productsClient
-                .queryProducts({fields: ['CURRENCY', 'INFO_SECTION', 'PLAIN_DESCRIPTION', 'INFO_SECTION_PLAIN_DESCRIPTION',
-                        'VARIANT_OPTION_CHOICE_NAMES', 'MEDIA_ITEMS_INFO', 'DIRECT_CATEGORIES_INFO', 'THUMBNAIL',
-                        'INFO_SECTION_DESCRIPTION']})
-                .limit(pageSize)
+        let response = await productsClient
+            .queryProducts({fields: ['CURRENCY', 'INFO_SECTION', 'PLAIN_DESCRIPTION', 'INFO_SECTION_PLAIN_DESCRIPTION',
+                    'VARIANT_OPTION_CHOICE_NAMES', 'MEDIA_ITEMS_INFO', 'ALL_CATEGORIES_INFO', 'THUMBNAIL',
+                    'INFO_SECTION_DESCRIPTION']})
+            .limit(pageSize)
+            .find();
 
-            const response = await query.find();
-            
+        while (true) {
             if (response.items && response.items.length > 0) {
                 allProducts = allProducts.concat(response.items);
                 console.log(`   ✓ Fetched ${response.items.length} products (page ${currentPage + 1})`);
                 console.log(`   Total so far: ${allProducts.length}`);
             }
-            
-            // Check if there are more pages
-            hasMore = response.hasNext?.() || false;
+
             currentPage++;
-            
+
+            if (!response.hasNext()) {
+                break;
+            }
+
             // Safety check to avoid infinite loops
             if (currentPage > 1000) {
                 console.warn('⚠️  Stopped after 1000 pages for safety');
                 break;
             }
+
+            response = await response.next();
         }
         
         console.log(`\n✅ Successfully fetched ${allProducts.length} products\n`);

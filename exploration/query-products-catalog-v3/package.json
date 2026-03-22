@@ -9,6 +9,7 @@
     "clean": "rimraf dist",
     "get-product": "node --loader ts-node/esm get-product.ts",
     "get-product-by-slug": "node --loader ts-node/esm get-product-by-slug.ts",
+    "categories": "node --loader ts-node/esm query-categories.ts",
     "build": "tsc",
     "build:check-types": "tsc"
   },
