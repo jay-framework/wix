@@ -13,11 +13,12 @@
 
 import { WixClient } from "@wix/sdk";
 import { products, collections, inventory } from "@wix/stores";
+import {BuildDescriptors} from "@wix/sdk-types";
 
 const instances: {
-    productsClientInstance: typeof products | undefined;
-    collectionsClientInstance: typeof collections | undefined;
-    inventoryClientInstance: typeof inventory | undefined;
+    productsClientInstance: BuildDescriptors<typeof products, {}> | undefined;
+    collectionsClientInstance: BuildDescriptors<typeof collections, {}> | undefined;
+    inventoryClientInstance: BuildDescriptors<typeof inventory, {}> | undefined;
 } = {
     productsClientInstance: undefined,
     collectionsClientInstance: undefined,
@@ -32,9 +33,9 @@ const instances: {
  * @returns Products client instance from @wix/stores
  * @see https://dev.wix.com/docs/sdk/backend-modules/stores/products/introduction
  */
-export function getProductsClient(wixClient: WixClient): typeof products {
+export function getProductsClient(wixClient: WixClient): BuildDescriptors<typeof products, {}> {
     if (!instances.productsClientInstance) {
-        instances.productsClientInstance = wixClient.use(products) as unknown as typeof products;
+        instances.productsClientInstance = wixClient.use(products);
     }
     return instances.productsClientInstance;
 }
@@ -48,9 +49,9 @@ export function getProductsClient(wixClient: WixClient): typeof products {
  * @returns Collections client instance from @wix/stores
  * @see https://dev.wix.com/docs/sdk/backend-modules/stores/collections/introduction
  */
-export function getCollectionsClient(wixClient: WixClient): typeof collections {
+export function getCollectionsClient(wixClient: WixClient): BuildDescriptors<typeof collections, {}> {
     if (!instances.collectionsClientInstance) {
-        instances.collectionsClientInstance = wixClient.use(collections) as unknown as typeof collections;
+        instances.collectionsClientInstance = wixClient.use(collections);
     }
     return instances.collectionsClientInstance;
 }
@@ -63,12 +64,9 @@ export function getCollectionsClient(wixClient: WixClient): typeof collections {
  * @returns Inventory client instance from @wix/stores
  * @see https://dev.wix.com/docs/sdk/backend-modules/stores/inventory/introduction
  */
-export function getInventoryClient(wixClient: WixClient): typeof inventory {
+export function getInventoryClient(wixClient: WixClient): BuildDescriptors<typeof inventory, {}> {
     if (!instances.inventoryClientInstance) {
-        instances.inventoryClientInstance = wixClient.use(inventory) as unknown as typeof inventory;
+        instances.inventoryClientInstance = wixClient.use(inventory);
     }
     return instances.inventoryClientInstance;
 }
-
-// Note: Cart client is now provided by @jay-framework/wix-cart package
-// Use: import { getCurrentCartClient } from '@jay-framework/wix-cart'

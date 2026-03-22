@@ -12,9 +12,10 @@ import { createJayService } from '@jay-framework/fullstack-component';
 import { registerService } from '@jay-framework/stack-server-runtime';
 import { WixDataConfig, CollectionConfig } from '../types';
 import { ProcessedSchema, processSchema } from '../utils/processed-schema';
+import {BuildDescriptors} from "@wix/sdk-types";
 
-type ItemsClient = typeof items;
-type CollectionsClient = typeof collections;
+type ItemsClient = BuildDescriptors<typeof items, {}>;
+type CollectionsClient = BuildDescriptors<typeof collections, {}>;
 
 /**
  * Wix Data Service interface
@@ -68,7 +69,7 @@ let collectionsClientInstance: CollectionsClient | undefined;
  */
 function getItemsClient(wixClient: WixClient): ItemsClient {
     if (!itemsClientInstance) {
-        itemsClientInstance = wixClient.use(items) as unknown as ItemsClient;
+        itemsClientInstance = wixClient.use(items);
     }
     return itemsClientInstance;
 }
@@ -78,7 +79,7 @@ function getItemsClient(wixClient: WixClient): ItemsClient {
  */
 function getCollectionsClient(wixClient: WixClient): CollectionsClient {
     if (!collectionsClientInstance) {
-        collectionsClientInstance = wixClient.use(collections) as unknown as CollectionsClient;
+        collectionsClientInstance = wixClient.use(collections);
     }
     return collectionsClientInstance;
 }

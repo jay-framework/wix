@@ -20,12 +20,12 @@ import { createJayContext, useGlobalContext } from '@jay-framework/runtime';
 import { createSignal, registerReactiveGlobalContext, useReactive } from '@jay-framework/component';
 import { Getter } from '@jay-framework/reactive';
 import { WIX_CLIENT_CONTEXT } from '@jay-framework/wix-server-client';
-import { LineItem } from '@wix/auto_sdk_ecom_current-cart';
+import type { LineItem } from '@wix/ecom/node_modules/@wix/auto_sdk_ecom_current-cart';
 import { getCurrentCartClient } from '../utils/cart-client';
 import {
     CartState,
-    getCurrentCartOrNull,
     estimateCurrentCartTotalsOrNull,
+    getCurrentCartOrNull,
     mapCartToIndicator,
     mapCartToState,
     mapEstimateTotalsToState
@@ -239,7 +239,6 @@ export function provideWixCartContext(): WixCartContext {
                     }
                 },
                 quantity,
-                url: options?.productSlug ? `/products/${options.productSlug}` : undefined,
             };
             
             const result = await cartClient.addToCurrentCart({
