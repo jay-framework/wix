@@ -66,10 +66,12 @@ categoryPrefixes:
 
 Each entry maps a root Wix category to a URL prefix. Products belonging to any child of the root category get URLs like `/products/{prefix}/{product-slug}`.
 
-To find category IDs:
+To find category IDs, run setup to generate the category tree reference:
 ```bash
-jay-stack action wix-stores/getCategories
+jay-stack setup wix-stores
 ```
+
+This creates `agent-kit/references/wix-stores/categories.yaml` with all category IDs, names, product counts, and parent-child relationships as a tree.
 
 ### Route Structure with Category Prefixes
 
@@ -104,12 +106,23 @@ const results = await searchProducts({
 });
 ```
 
+CLI:
+```bash
+jay-stack action wix-stores/searchProducts
+jay-stack action wix-stores/searchProducts --input '{"query": "shoes", "pageSize": 5}'
+```
+
 ### `getProductBySlug`
 
 Fetch a single product by its URL slug.
 
 ```typescript
 const product = await getProductBySlug({ slug: 'blue-sneakers' });
+```
+
+CLI:
+```bash
+jay-stack action wix-stores/getProductBySlug --input '{"slug": "blue-sneakers"}'
 ```
 
 ### `getCategories`
@@ -120,9 +133,18 @@ Get all visible categories for filtering.
 const categories = await getCategories();
 ```
 
+CLI:
+```bash
+jay-stack action wix-stores/getCategories
+```
+
 ## Agent Kit References
 
-Running `jay-stack agent-kit` generates a category tree reference at `agent-kit/references/wix-stores/categories.yaml` with all category IDs, names, product counts, and parent-child relationships.
+Running `jay-stack setup wix-stores` or `jay-stack agent-kit` generates a category tree reference at `agent-kit/references/wix-stores/categories.yaml`. This file contains:
+
+- All visible categories with IDs, names, slugs, and product counts
+- Full parent-child hierarchy as a nested tree
+- Configured category prefixes (if any) with their mapped category names
 
 ## Architecture
 
