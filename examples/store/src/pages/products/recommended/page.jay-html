@@ -1,0 +1,311 @@
+<html>
+  <head>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="product-search"
+            key="productSearch"
+    ></script>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-cart"
+            contract="cart-indicator"
+            key="cartIndicator"
+    ></script>
+    <script type="application/jay-data">
+      data:
+    </script>
+    <link rel="stylesheet" href="../../../styles/store-theme.css" />
+    <style>
+      .recommended-page {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        padding: 40px var(--page-padding);
+      }
+
+      .hero-banner {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        color: white;
+        border-radius: 16px;
+        padding: 60px 48px;
+        margin-bottom: var(--section-gap);
+        text-align: center;
+      }
+
+      .hero-banner h1 {
+        font-size: 42px;
+        font-weight: 800;
+        margin: 0 0 12px;
+        letter-spacing: -0.5px;
+      }
+
+      .hero-banner p {
+        font-size: 18px;
+        opacity: 0.85;
+        max-width: 500px;
+        margin: 0 auto;
+        line-height: 1.6;
+      }
+
+      .featured-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 32px;
+      }
+
+      .featured-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .featured-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+      }
+
+      .featured-card-image {
+        aspect-ratio: 4/3;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .featured-card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+      }
+
+      .featured-card:hover .featured-card-image img {
+        transform: scale(1.05);
+      }
+
+      .featured-card-image .badge {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+      }
+
+      .featured-card-body {
+        padding: 24px;
+      }
+
+      .featured-card-body h3 {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 0 0 8px;
+      }
+
+      .featured-card-body h3 a {
+        color: var(--text-primary);
+        text-decoration: none;
+      }
+
+      .featured-card-body h3 a:hover {
+        color: var(--accent);
+      }
+
+      .featured-card-brand {
+        font-size: 13px;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+      }
+
+      .featured-card-price {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 12px 0 20px;
+      }
+
+      .featured-card-price .current-price {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      .featured-card-price .original-price {
+        font-size: 16px;
+        color: var(--text-secondary);
+        text-decoration: line-through;
+      }
+
+      .results-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+
+      .results-meta p {
+        font-size: 16px;
+        color: var(--text-secondary);
+        margin: 0;
+      }
+
+      .load-more-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        margin-top: 40px;
+        padding: 24px;
+      }
+
+      .loading-indicator {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-secondary);
+      }
+
+      .loading-spinner-inline {
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--border);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="recommended-page">
+      <!-- Site Header -->
+      <header class="site-header">
+        <a href="/" class="site-logo">Store<span>.</span></a>
+        <nav class="site-nav">
+          <a href="/">Home</a>
+          <a href="/products">Products</a>
+          <a href="/products/recommended" class="active">Recommended</a>
+          <a href="/cart"
+             class="cart-indicator {cartIndicator.hasItems ? has-items}"
+             ref="cartIndicator.cartLink">
+            <span class="cart-indicator-icon">🛒</span>
+            <span class="cart-indicator-count" if="cartIndicator.hasItems">{cartIndicator.itemCount}</span>
+          </a>
+        </nav>
+      </header>
+
+      <!-- Hero Banner -->
+      <div class="hero-banner">
+        <h1>Our Picks for You</h1>
+        <p>Hand-selected products we think you'll love. Quality, style, and value — all in one place.</p>
+      </div>
+
+      <!-- Results Meta -->
+      <div class="results-meta" if="productSearch.hasResults">
+        <p>{productSearch.totalCount} recommended products</p>
+        <select class="select" ref="productSearch.sortBy.sortDropdown">
+          <option value="relevance">Featured</option>
+          <option value="newest">Newest First</option>
+          <option value="priceAsc">Price: Low to High</option>
+          <option value="priceDesc">Price: High to Low</option>
+          <option value="nameAsc">Name: A to Z</option>
+          <option value="nameDesc">Name: Z to A</option>
+        </select>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" if="!productSearch.hasResults">
+        <div class="empty-state-icon">✨</div>
+        <h3 class="empty-state-title">Coming Soon</h3>
+        <p class="empty-state-message">We're curating our recommended collection. Check back soon!</p>
+      </div>
+
+      <!-- Featured Products Grid -->
+      <div class="featured-grid" if="productSearch.hasResults">
+        <article class="featured-card {isAddingToCart ? is-adding}" forEach="productSearch.searchResults" trackBy="_id">
+          <a href="{productUrl}" class="featured-card-image">
+            <img
+              src="{thumbnail.url}"
+              alt="{thumbnail.altText}"
+              loading="lazy"
+            />
+            <span class="badge badge-accent" if="hasRibbon">{ribbon.name}</span>
+          </a>
+          <div class="featured-card-body">
+            <p class="featured-card-brand" if="brand.name">{brand.name}</p>
+            <h3>
+              <a href="{productUrl}" ref="productSearch.searchResults.productLink">{name}</a>
+            </h3>
+            <div class="featured-card-price">
+              <span class="current-price">{price}</span>
+              <span class="original-price" if="hasDiscount">{strikethroughPrice}</span>
+              <span class="badge badge-error" if="hasDiscount">Sale</span>
+            </div>
+
+            <!-- Add to Cart (SIMPLE) -->
+            <button
+              class="btn btn-primary btn-block"
+              ref="productSearch.searchResults.addToCartButton"
+              if="quickAddType == SIMPLE && inventory.availabilityStatus == IN_STOCK"
+            >
+              Add to Cart
+            </button>
+
+            <!-- Quick Options (SINGLE_OPTION) -->
+            <div class="quick-options-area" if="quickAddType == SINGLE_OPTION && inventory.availabilityStatus != OUT_OF_STOCK">
+              <span class="select-option-hint">Select {quickOption.name}</span>
+              <div class="quick-options-buttons">
+                <button
+                  class="quick-option-btn {!inStock ? out-of-stock}"
+                  forEach="quickOption.choices"
+                  trackBy="choiceId"
+                  ref="productSearch.searchResults.quickOption.choices.choiceButton"
+                  disabled="!inStock"
+                >
+                  {name}
+                </button>
+              </div>
+            </div>
+
+            <!-- View Options (NEEDS_CONFIGURATION) -->
+            <a
+              href="{productUrl}"
+              class="btn btn-secondary btn-block"
+              ref="productSearch.searchResults.viewOptionsButton"
+              if="quickAddType == NEEDS_CONFIGURATION && inventory.availabilityStatus != OUT_OF_STOCK"
+            >
+              View Options
+            </a>
+
+            <!-- Out of Stock -->
+            <button
+              class="btn btn-ghost btn-block"
+              disabled
+              if="inventory.availabilityStatus == OUT_OF_STOCK"
+            >
+              Out of Stock
+            </button>
+          </div>
+        </article>
+      </div>
+
+      <!-- Load More -->
+      <div class="load-more-section" if="productSearch.hasResults">
+        <div class="loading-indicator" if="productSearch.isSearching">
+          <div class="loading-spinner-inline"></div>
+          <span>Loading more...</span>
+        </div>
+        <button
+          class="btn btn-secondary"
+          ref="productSearch.loadMoreButton"
+          if="productSearch.hasMore && !productSearch.isSearching"
+        >
+          Show More
+        </button>
+        <span class="loaded-info" if="!productSearch.hasMore">
+          You've seen all our picks
+        </span>
+      </div>
+    </div>
+  </body>
+</html>
