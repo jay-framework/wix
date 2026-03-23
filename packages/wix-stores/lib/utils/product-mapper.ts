@@ -18,6 +18,57 @@ import {
     ProductOptionsViewState
 } from '../contracts/product-options.jay-contract';
 import { formatWixMediaUrl } from '@jay-framework/wix-utils';
+import { type CategoryPrefixConfig } from '../services/wix-stores-service';
+
+// ============================================================================
+// Category Prefix Resolution
+// ============================================================================
+
+/**
+ * Resolve which category prefix a product belongs to, based on its allCategoriesInfo.
+ * Returns the prefix string if the product belongs to a configured root category, or null.
+ * First matching prefix in config order wins.
+ */
+export function resolveProductPrefix(
+    product: { allCategoriesInfo?: { categories?: Array<{ _id?: string }> } },
+    prefixConfig: CategoryPrefixConfig[]
+): string | null {
+    if (!prefixConfig?.length || !product.allCategoriesInfo?.categories) {
+        return null;
+    }
+    const productCategoryIds = new Set(
+        product.allCategoriesInfo.categories.map(c => c._id).filter(Boolean)
+    );
+    for (const { categoryId, prefix } of prefixConfig) {
+        if (productCategoryIds.has(categoryId)) {
+            return prefix;
+        }
+    }
+    return null;
+}
+
+/**
+ * Resolve the CategoryPrefixConfig entry a product belongs to.
+ * Returns null if no match. Used when both prefix and name are needed.
+ */
+export function resolveProductPrefixConfig(
+    product: { allCategoriesInfo?: { categories?: Array<{ _id?: string }> } },
+    prefixConfig: CategoryPrefixConfig[]
+): CategoryPrefixConfig | null {
+    if (!prefixConfig?.length || !product.allCategoriesInfo?.categories) {
+        return null;
+    }
+    const productCategoryIds = new Set(
+        product.allCategoriesInfo.categories.map(c => c._id).filter(Boolean)
+    );
+    for (const config of prefixConfig) {
+        if (productCategoryIds.has(config.categoryId)) {
+            return config;
+        }
+    }
+    return null;
+}
+
 // ============================================================================
 // Helper Functions
 // ============================================================================
@@ -151,29 +202,40 @@ const DEFAULT_PRODUCT_PAGE_PATH = '/products';
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mapProductToCard(
-    product: any, 
-    productPagePath: string = DEFAULT_PRODUCT_PAGE_PATH
+    product: any,
+    productPagePath: string = DEFAULT_PRODUCT_PAGE_PATH,
+    prefixConfig?: CategoryPrefixConfig[]
 ): ProductCardViewState {
     const mainMedia = product.media?.main;
     const slug = product.slug || '';
-    
+
+    // Resolve category prefix for URL and display
+    const matchedPrefix = prefixConfig?.length
+        ? resolveProductPrefixConfig(product, prefixConfig)
+        : null;
+    const productUrl = slug
+        ? (matchedPrefix
+            ? `${productPagePath}/${matchedPrefix.prefix}/${slug}`
+            : `${productPagePath}/${slug}`)
+        : '';
+
     // In Catalog V3, prices come from variantsInfo.variants[0].price
     // Fall back to actualPriceRange/compareAtPriceRange for backwards compatibility
     const firstVariant = product.variantsInfo?.variants?.[0];
     const variantPrice = firstVariant?.price;
-    
+
     // Get actual price - prefer variant price, fall back to price range
-    const actualAmount = variantPrice?.actualPrice?.amount || 
+    const actualAmount = variantPrice?.actualPrice?.amount ||
                          product.actualPriceRange?.minValue?.amount || '0';
-    const actualFormattedAmount = variantPrice?.actualPrice?.formattedAmount || 
+    const actualFormattedAmount = variantPrice?.actualPrice?.formattedAmount ||
                                    product.actualPriceRange?.minValue?.formattedAmount || '';
-    
+
     // Get compare-at price (for discounts)
-    const compareAtAmount = variantPrice?.compareAtPrice?.amount || 
+    const compareAtAmount = variantPrice?.compareAtPrice?.amount ||
                             product.compareAtPriceRange?.minValue?.amount;
-    const compareAtFormattedAmount = variantPrice?.compareAtPrice?.formattedAmount || 
+    const compareAtFormattedAmount = variantPrice?.compareAtPrice?.formattedAmount ||
                                       product.compareAtPriceRange?.minValue?.formattedAmount || '';
-    
+
     // Has discount if compare-at price is valid and different from actual price
     const hasDiscount = isValidPrice(compareAtAmount) && compareAtAmount !== actualAmount;
 
@@ -181,7 +243,8 @@ export function mapProductToCard(
         _id: product._id || '',
         name: product.name || '',
         slug,
-        productUrl: slug ? `${productPagePath}/${slug}` : '',
+        productUrl,
+        categoryPrefix: matchedPrefix?.name ?? '',
         mainMedia: {
             url: mainMedia ? formatWixMediaUrl(mainMedia._id, mainMedia.url) : '',
             altText: mainMedia?.altText || product.name || '',

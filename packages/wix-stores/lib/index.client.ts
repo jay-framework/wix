@@ -19,7 +19,7 @@ export type {
 // Export stores-specific headless components
 export * from './components/product-page';
 export * from './components/product-search';
-export * from './components/category-page';
+// category-page removed — use product-search with category param instead
 export * from './components/category-list';
 
 // Export stores client context and types

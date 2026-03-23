@@ -279,7 +279,10 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
                     // @ts-expect-error - Wix SDK types don't include aggregations
                     aggregations
                 },
-                { fields: ['CURRENCY', 'VARIANT_OPTION_CHOICE_NAMES'] }
+                { fields: [
+                    'CURRENCY', 'VARIANT_OPTION_CHOICE_NAMES',
+                    ...(wixStores.categoryPrefixes.length > 0 ? ['ALL_CATEGORIES_INFO'] as const : [])
+                ] }
             );
 
             const products = searchResult.products || [];
@@ -330,8 +333,9 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
             
             priceRanges.push(...bucketRanges);
 
-            // Map products to card view state
-            const mappedProducts = products.map(p => mapProductToCard(p));
+            // Map products to card view state (with category prefix resolution)
+            const prefixConfig = wixStores.categoryPrefixes;
+            const mappedProducts = products.map(p => mapProductToCard(p, '/products', prefixConfig));
 
             return {
                 products: mappedProducts,
@@ -373,7 +377,11 @@ export const getProductBySlug = makeJayQuery('wixStores.getProductBySlug')
         }
 
         try {
-            const fields = ['MEDIA_ITEMS_INFO', 'VARIANT_OPTION_CHOICE_NAMES'] as const;
+            const prefixConfig = wixStores.categoryPrefixes;
+            const fields = [
+                'MEDIA_ITEMS_INFO', 'VARIANT_OPTION_CHOICE_NAMES',
+                ...(prefixConfig.length > 0 ? ['ALL_CATEGORIES_INFO'] as const : [])
+            ] as const;
             const result = await wixStores.products.getProductBySlug(slug, { fields: [...fields] });
             const product = result.product;
 
@@ -381,7 +389,7 @@ export const getProductBySlug = makeJayQuery('wixStores.getProductBySlug')
                 return null;
             }
 
-            return mapProductToCard(product);
+            return mapProductToCard(product, '/products', prefixConfig);
         } catch (error) {
             console.error('[wixStores.getProductBySlug] Failed to get product:', error);
             // Return null for not found instead of throwing

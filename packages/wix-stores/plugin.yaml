@@ -10,10 +10,7 @@ contracts:
     contract: product-search.jay-contract
     component: productSearch
     description: Headless product search page
-  - name: category-page
-    contract: category-page.jay-contract
-    component: categoryPage
-    description: Category page listing the details of the category and the products within
+  # category-page removed — use product-search with category param instead
   - name: category-list
     contract: category-list.jay-contract
     component: categoryList
@@ -33,4 +30,5 @@ actions:
 
 setup:
   handler: setupWixStores
-  description: Validate Wix Stores service connectivity
+  references: generateWixStoresReferences
+  description: Validate Wix Stores service; generate category tree reference

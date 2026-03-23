@@ -1,420 +1,155 @@
 # @jay-framework/wix-stores
 
-Wix Stores API client and headless full-stack components for the Jay Framework with server-side rendering support.
-
-## Installation
-
-```bash
-npm install @jay-framework/wix-stores
-```
+Wix Stores integration for Jay Framework using the Catalog V3 API. Provides headless full-stack components for product pages, search/listing, and category navigation with server-side rendering.
 
 ## Features
 
-- **Type-safe Wix Stores API client** - Pre-configured singleton clients for Products V3, Collections, and Inventory
-- **Full-stack headless components** - Jay Stack components with SSR, SSG, and client-side interactivity built on Products V3 API
-- **Three-phase rendering** - Slow (semi-static), Fast (dynamic), and Interactive (client-side) rendering phases
-- **Server context** - Dependency injection for Wix API clients in server-side rendering
-- **TypeScript support** - Full type definitions for all APIs and components
-
-## Quick Start
-
-### 1. Configure Wix
-
-Set up your Wix configuration in a `.wix-config.json` file:
-
-```json
-{
-  "apiKey": "your-api-key",
-  "siteId": "your-site-id"
-}
-```
-
-### 2. Set Up Server Context
-
-In your application setup, provide the Wix Stores context:
-
-```typescript
-import { provideContext } from '@jay-framework/runtime';
-import { 
-  WixStoresContextMarker, 
-  createWixStoresContext 
-} from '@jay-framework/wix-stores';
-
-// Provide the context at application startup
-provideContext(WixStoresContextMarker, createWixStoresContext());
-```
-
-### 3. Use Headless Components
-
-```typescript
-import { productPage, categoryPage, productCard, productSearch } from '@jay-framework/wix-stores';
-
-// Components are ready to use with automatic server-side rendering
-```
+- **Catalog V3 API** - Uses `productsV3` and `@wix/categories` for product and category data
+- **Three-phase rendering** - Slow (build/SSG), Fast (request/SSR), Interactive (client)
+- **Category-prefixed routes** - Optional URL prefixes per product line (e.g., `/products/polgat/shirt-name`)
+- **Unified search + category** - Single `product-search` component handles both search pages and category listings
+- **Shared cart** - Delegates cart operations to `@jay-framework/wix-cart`
 
 ## Headless Components
 
-### Product Page
+### Product Page (`product-page`)
 
-A complete product detail page with server-side rendering and URL parameters.
+Complete product detail page with variant selection and add-to-cart.
 
-**Features:**
-- Product details (name, description, media gallery)
-- Dynamic pricing with discount indicators
-- Real-time inventory status (fast rendering phase)
-- Variant/option selection (size, color, etc.)
-- Quantity controls
-- Add to cart with loading states
+- **Slow phase**: Product details, media gallery, options, SEO data
+- **Fast phase**: Inventory status, pricing, variant availability
+- **Interactive**: Option/modifier selection, quantity, add to cart
 
-**Rendering Phases:**
-- **Slow:** Product details, media, options, categories (SSG/ISR)
-- **Fast:** Inventory status, real-time availability (SSR)
-- **Interactive:** Variant selection, quantity, add to cart (Client)
+Route: `/products/[slug]` or `/products/[category]/[slug]` (when category prefixes are configured)
 
-**Usage:**
+### Product Search (`product-search`)
 
-```typescript
-import { productPage } from '@jay-framework/wix-stores';
+Unified search and category listing component. Replaces the previous separate `category-page` component.
 
-// Automatically creates pages for all products at /products/[slug]
-export const page = productPage;
+- **Slow phase**: Available categories for filtering
+- **Fast phase**: Initial product results with price aggregations
+- **Interactive**: Search input, category/price/stock filters, sorting, load more
+
+When a `category` URL parameter is provided (e.g., from a route like `/products/polgat/`):
+- Scopes all searches to products within that category hierarchy
+- Shows only child categories of the root as filter options (root category is hidden)
+- Enables per-category template designs via separate jay-html files
+
+### Category List (`category-list`)
+
+Lists all store categories for navigation.
+
+## Configuration
+
+### Basic Setup
+
+The plugin requires `@jay-framework/wix-server-client` to be configured with Wix API credentials.
+
+Run setup to create the config template:
+```bash
+jay-stack setup wix-stores
 ```
 
-**URL Parameters:**
-- `slug` - Product slug (e.g., `/products/gaming-laptop`)
+### Category Prefixes (Optional)
 
----
-
-### Product Card
-
-A product card component for listings and grids with server-side rendering.
-
-**Features:**
-- Product thumbnail and main image
-- Price with compare-at price
-- Real-time inventory status (fast rendering phase)
-- Product ribbon/badge
-- Quick add to cart
-
-**Rendering Phases:**
-- **Slow:** Product info, media, pricing (SSG/ISR)
-- **Fast:** Inventory status (SSR)
-- **Interactive:** Add to cart action (Client)
-
-**Usage:**
-
-```typescript
-import { productCard, ProductCardProps } from '@jay-framework/wix-stores';
-
-// Use in a listing page
-const props: ProductCardProps = {
-  productId: 'product-123'
-};
-```
-
----
-
-### Category Page
-
-A category/collection page with product listings, filtering, and pagination.
-
-**Features:**
-- Category details (name, description, media)
-- Breadcrumb navigation
-- Product grid (async loading)
-- Filtering (price range, in-stock only)
-- Sorting (price, name, newest)
-- Pagination
-
-**Rendering Phases:**
-- **Slow:** Category details, media, breadcrumbs (SSG/ISR)
-- **Fast:** Product count, pagination metadata (SSR)
-- **Interactive:** Filtering, sorting, navigation (Client)
-
-**Usage:**
-
-```typescript
-import { categoryPage } from '@jay-framework/wix-stores';
-
-// Automatically creates pages for all categories at /categories/[slug]
-export const page = categoryPage;
-```
-
-**URL Parameters:**
-- `slug` - Category slug (e.g., `/categories/electronics`)
-
----
-
-### Product Search
-
-A product search component with filtering, sorting, and pagination.
-
-**Features:**
-- Search input with fuzzy search support
-- Category filtering
-- Price range filtering
-- In-stock filtering
-- Multiple sort options
-- Pagination with load more option
-- Search suggestions
-
-**Rendering Phases:**
-- **Slow:** Available categories for filtering (SSG/ISR)
-- **Fast:** Initial empty state (SSR)
-- **Interactive:** Search execution, filtering, sorting (Client)
-
-**Usage:**
-
-```typescript
-import { productSearch } from '@jay-framework/wix-stores';
-
-// Use as a search page
-export const page = productSearch;
-```
-
-## API Clients
-
-You can also use the Wix Stores API clients directly:
-
-### Products V3 Client
-
-The headless components use the **Products V3 API** (Catalog V3) for enhanced features and better type safety.
-
-```typescript
-import { getProductsV3Client } from '@jay-framework/wix-stores';
-
-const products = getProductsV3Client();
-
-// Get a single product
-const { product } = await products.getProduct('product-id');
-
-// Query products
-const { items } = await products.queryProducts()
-  .eq('visible', true)
-  .find();
-```
-
-### Collections Client
-
-```typescript
-import { getCollectionsClient } from '@jay-framework/wix-stores';
-
-const collections = getCollectionsClient();
-
-// Get a single collection
-const collection = await collections.getCollection('collection-id');
-
-// Query collections
-const { collection } = await collections.queryCollections().find();
-```
-
-### Inventory Client
-
-```typescript
-import { getInventoryClient } from '@jay-framework/wix-stores';
-
-const inventory = getInventoryClient();
-
-// Query inventory
-const { items } = await inventory.queryInventoryItems()
-  .eq('productId', 'product-123')
-  .find();
-```
-
-## Client-Side Cart and Search
-
-When OAuth is configured in `@jay-framework/wix-server-client`, this package provides client-side cart and search operations that bypass server round-trips.
-
-### Enabling Client-Side Operations
-
-1. Configure OAuth in `./config/.wix.yaml`:
+To enable category-prefixed product routes, create `config/.wix-stores.yaml`:
 
 ```yaml
-oauthStrategy:
-  clientId: "your-oauth-client-id"
+categoryPrefixes:
+  - categoryId: "024a9fff-77de-4508-b82c-5fce24f74757"
+    prefix: "polgat"
+    name: "פולגת"
+  - categoryId: "eac4db24-04cc-4f36-86cf-c9da6e873421"
+    prefix: "kitan"
+    name: "כיתן"
 ```
 
-2. The plugin automatically enables client-side operations during initialization.
+Each entry maps a root Wix category to a URL prefix. Products belonging to any child of the root category get URLs like `/products/{prefix}/{product-slug}`.
 
-### Using Client-Side Cart
+To find category IDs:
+```bash
+jay-stack action wix-stores/getCategories
+```
+
+### Route Structure with Category Prefixes
+
+```
+src/pages/products/
+├── page.jay-html                         # /products (default search, optional)
+├── [slug]/page.jay-html                  # /products/:slug (default product page, optional)
+├── polgat/
+│   ├── page.jay-html                     # /products/polgat (polgat-design search)
+│   └── [slug]/page.jay-html              # /products/polgat/:slug (polgat product page)
+└── kitan/
+    ├── page.jay-html                     # /products/kitan (kitan-design search)
+    └── [slug]/page.jay-html              # /products/kitan/:slug (kitan product page)
+```
+
+Each prefix directory gets its own jay-html templates, enabling different visual designs per product line. Jay's routing precedence ensures static segments (`polgat`, `kitan`) take priority over the dynamic `[slug]` parameter.
+
+Products without a matching category prefix fall back to `/products/[slug]` if that route exists, or return 404 if it doesn't.
+
+## Server Actions
+
+### `searchProducts`
+
+Search products with filtering, sorting, and price aggregations.
 
 ```typescript
-import { useContext } from '@jay-framework/runtime';
-import { WIX_STORES_CLIENT_CONTEXT } from '@jay-framework/wix-stores';
-
-function CartComponent(props, refs) {
-    const stores = useContext(WIX_STORES_CLIENT_CONTEXT);
-    
-    if (!stores.isEnabled) {
-        console.log('Client cart not available');
-        return;
-    }
-
-    // Get current cart
-    refs.loadCart.onclick(async () => {
-        const cart = await stores.cart.getCart();
-        console.log(`Cart has ${cart.itemCount} items`);
-    });
-
-    // Add to cart (direct API call - no server round-trip)
-    refs.addToCart.onclick(async () => {
-        const cart = await stores.cart.addToCart('product-id', 1);
-        console.log(`Added! Cart now has ${cart.itemCount} items`);
-    });
-
-    // Update quantity
-    refs.updateQty.onclick(async () => {
-        const cart = await stores.cart.updateQuantity('line-item-id', 3);
-    });
-
-    // Remove item
-    refs.remove.onclick(async () => {
-        const cart = await stores.cart.removeItem('line-item-id');
-    });
-}
+const results = await searchProducts({
+    query: 'shoes',
+    filters: { inStockOnly: true, categoryIds: ['cat-123'] },
+    sortBy: 'price_asc',
+    pageSize: 12
+});
 ```
 
-### Using Client-Side Search
+### `getProductBySlug`
+
+Fetch a single product by its URL slug.
 
 ```typescript
-import { useContext } from '@jay-framework/runtime';
-import { WIX_STORES_CLIENT_CONTEXT } from '@jay-framework/wix-stores';
-
-function SearchComponent(props, refs) {
-    const stores = useContext(WIX_STORES_CLIENT_CONTEXT);
-
-    refs.searchInput.oninput(async (e) => {
-        const query = e.target.value;
-        
-        // Search products (direct API call)
-        const results = await stores.search.searchProducts(query, 10);
-        
-        // results: [{ id, name, slug, price, formattedPrice, imageUrl }]
-        console.log(`Found ${results.length} products`);
-    });
-}
+const product = await getProductBySlug({ slug: 'blue-sneakers' });
 ```
 
-### Client vs Server Operations
+### `getCategories`
 
-| Operation | Server Action | Client API |
-|-----------|--------------|------------|
-| Add to cart | `addToCart({...})` | `stores.cart.addToCart(productId)` |
-| Search products | `searchProducts({...})` | `stores.search.searchProducts(query)` |
-| Get cart | `getCart()` | `stores.cart.getCart()` |
-| Latency | ~100-300ms | ~50-100ms |
-| Auth | API Key | OAuth Visitor Token |
+Get all visible categories for filtering.
 
-**When to use client-side operations:**
-- Real-time search autocomplete
-- Quick add-to-cart buttons
-- Cart indicator updates
-- Any operation where latency matters
-
-**When to use server actions:**
-- Initial page load data
-- SEO-critical content
-- Operations requiring admin permissions
-
-### Plugin Initialization Flow
-
-Both plugins use the `makeJayInit` pattern for consolidated server/client initialization:
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│              wix-server-client (lib/init.ts - init first)           │
-├─────────────────────────────────────────────────────────────────────┤
-│  withServer: return { oauthClientId }                               │
-│  withClient: Creates OAuth client, stores tokens in localStorage    │
-│              Registers WIX_CLIENT_CONTEXT                           │
-└─────────────────────────────────────────────────────────────────────┘
-                                    │
-                                    ▼ (depends on via package.json)
-┌─────────────────────────────────────────────────────────────────────┐
-│                  wix-stores (lib/init.ts - init second)             │
-├─────────────────────────────────────────────────────────────────────┤
-│  withServer: Registers WIX_STORES_SERVICE_MARKER                    │
-│              return { enableClientCart, enableClientSearch }        │
-│  withClient: Uses WIX_CLIENT_CONTEXT to create cart/search APIs     │
-│              Registers WIX_STORES_CLIENT_CONTEXT                    │
-└─────────────────────────────────────────────────────────────────────┘
+```typescript
+const categories = await getCategories();
 ```
 
-**Key benefits of `makeJayInit` pattern:**
-- Single file for both server and client init
-- Automatic type flow from `withServer` return to `withClient` parameter
-- Compiler strips `withServer` from client bundle and `withClient` from server bundle
+## Agent Kit References
+
+Running `jay-stack agent-kit` generates a category tree reference at `agent-kit/references/wix-stores/categories.yaml` with all category IDs, names, product counts, and parent-child relationships.
 
 ## Architecture
 
-### Three-Phase Rendering
+### Plugin Initialization
 
-Jay Stack components use a three-phase rendering model:
+```
+wix-server-client (init first)
+  └── Registers WIX_CLIENT_SERVICE (API key auth)
 
-1. **Slow Rendering (Build Time / ISR)**
-   - Renders semi-static data that doesn't change often
-   - Product details, descriptions, media
-   - Executed during build or on-demand revalidation
-
-2. **Fast Rendering (Request Time / SSR)**
-   - Renders dynamic data that changes frequently
-   - Inventory status, real-time pricing
-   - Executed on every request with caching
-
-3. **Interactive Rendering (Client Side)**
-   - Handles user interactions
-   - Form submissions, cart actions
-   - Executed in the browser
-
-### Server Context
-
-Server contexts provide dependency injection for server-side rendering:
-
-```typescript
-import { WixStoresContext } from '@jay-framework/wix-stores';
-
-// In slow render function
-async function renderSlowlyChanging(
-  props: PageProps & ProductPageParams,
-  wixStores: WixStoresContext  // Injected context
-) {
-  // Access Wix API clients (Products V3)
-  const { product } = await wixStores.products.getProduct(props.productId);
-  
-  // Use V3 API structure
-  const price = product.priceData?.price;
-  const comparePrice = product.priceData?.comparePrice;
-  // ...
-}
+wix-stores (init second)
+  ├── Loads config/.wix-stores.yaml (category prefixes)
+  ├── Registers WIX_STORES_SERVICE_MARKER (products, categories, inventory)
+  └── Client: Registers WIX_STORES_CONTEXT (delegates cart to wix-cart)
 ```
 
-## Type Safety
+### Category Prefix Resolution
 
-All components and APIs are fully typed:
+When category prefixes are configured:
 
-```typescript
-import type {
-  ProductPageContract,
-  ProductCardContract,
-  CategoryPageContract,
-  ProductSearchContract,
-  WixStoresContext
-} from '@jay-framework/wix-stores';
-```
+1. **`loadProductParams`** fetches all products with `ALL_CATEGORIES_INFO` and resolves each product's prefix
+2. **`searchProducts`** includes `ALL_CATEGORIES_INFO` to generate correct prefixed URLs in results
+3. **`mapProductToCard`** generates URLs like `/products/polgat/shirt-name` based on the product's category ancestry
+4. **Product page** validates that the URL's category prefix matches the product's actual category
 
-## Documentation
+## Design Log
 
-For more information, see:
-
-- [Jay Stack Documentation](../../jay/docs/core/jay-stack.md)
-- [Wix Stores Products V3 (Catalog V3) API](https://dev.wix.com/docs/sdk/backend-modules/stores/catalog-v3/introduction)
-- [Wix Stores Collections API](https://dev.wix.com/docs/sdk/backend-modules/stores/collections/introduction)
-- [Wix Stores Inventory API](https://dev.wix.com/docs/sdk/backend-modules/stores/inventory/introduction)
-
-## Examples
-
-See the Jay Stack examples for usage patterns:
-- `/jay/examples/jay-stack/fake-shop` - E-commerce example with product pages
+See [Design Log 10 - Category-Prefixed Product Routes](../../design-log/10%20-%20category-prefixed-product-routes.md) for the full design rationale.
 
 ## License
 

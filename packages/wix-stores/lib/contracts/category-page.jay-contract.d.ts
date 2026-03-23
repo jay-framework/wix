@@ -71,7 +71,7 @@ export interface CategoryPageViewState {
 export type CategoryPageSlowViewState = Pick<CategoryPageViewState, '_id' | 'name' | 'description' | 'slug' | 'visible' | 'numberOfProducts'> & {
     media: CategoryPageViewState['media'];
     breadcrumbs: Array<CategoryPageViewState['breadcrumbs'][number]>;
-    products: Array<Pick<CategoryPageViewState['products'][number], '_id' | 'name' | 'slug' | 'productUrl' | 'hasDiscount' | 'hasRibbon' | 'productType' | 'quickAddType'> & {
+    products: Array<Pick<CategoryPageViewState['products'][number], '_id' | 'name' | 'slug' | 'productUrl' | 'categoryPrefix' | 'hasDiscount' | 'hasRibbon' | 'productType' | 'quickAddType'> & {
     mainMedia: CategoryPageViewState['products'][number]['mainMedia'];
     thumbnail: CategoryPageViewState['products'][number]['thumbnail'];
     inventory: CategoryPageViewState['products'][number]['inventory'];

@@ -2,7 +2,8 @@ import {
     makeJayStackComponent,
     PageProps,
     RenderPipeline,
-    Signals
+    Signals,
+    UrlParams
 } from '@jay-framework/fullstack-component';
 import { createSignal, createEffect, Props } from '@jay-framework/component';
 import {
@@ -18,6 +19,15 @@ import { patch, REPLACE, ADD } from '@jay-framework/json-patch';
 import { searchProducts, ProductSortField } from '../actions/stores-actions';
 import { mapProductToCard } from '../utils/product-mapper';
 import { WIX_STORES_CONTEXT, WixStoresContext } from '../contexts/wix-stores-context';
+
+/**
+ * URL parameters for product search routes.
+ * When used as a category listing, `category` is the prefix slug (e.g., 'polgat').
+ */
+export interface ProductSearchParams extends UrlParams {
+    /** Category prefix slug. When present, scopes search to this category hierarchy. */
+    category?: string;
+}
 
 /**
  * Search sort options
@@ -36,6 +46,8 @@ interface SearchSlowCarryForward {
     searchFields: string;
     fuzzySearch: boolean;
     categories: CategoryInfos;
+    /** Root category ID when scoped to a category prefix (always applied, hidden from UI) */
+    baseCategoryId: string | null;
 }
 
 /**
@@ -45,6 +57,8 @@ interface SearchFastCarryForward {
     searchFields: string;
     fuzzySearch: boolean;
     categories: CategoryInfos;
+    /** Root category ID when scoped to a category prefix (always applied, hidden from UI) */
+    baseCategoryId: string | null;
 }
 
 const PAGE_SIZE = 12;
@@ -57,22 +71,30 @@ const PAGE_SIZE = 12;
  * - Available categories for filtering (relatively static)
  */
 async function renderSlowlyChanging(
-    props: PageProps,
+    props: PageProps & ProductSearchParams,
     wixStores: WixStoresService
 ) {
     const Pipeline = RenderPipeline.for<ProductSearchSlowViewState, SearchSlowCarryForward>();
 
+    // Resolve category prefix to root category ID
+    const categoryPrefix = props.category;
+    const categoryConfig = categoryPrefix
+        ? wixStores.categoryPrefixes.find(c => c.prefix === categoryPrefix)
+        : null;
+    const baseCategoryId = categoryConfig?.categoryId ?? null;
+
     return Pipeline
         .try(async () => {
-            // Load categories for filtering (Catalog V3 API)
-            const categoriesResult = await wixStores.categories.queryCategories({
-                treeReference: {
-                    appNamespace: "@wix/stores"
-                }
-            })
-                .eq('visible', true)
-                .find();
-            
+            let query = wixStores.categories.queryCategories({
+                treeReference: { appNamespace: "@wix/stores" }
+            }).eq('visible', true);
+
+            // When scoped to a category prefix, show only direct children of the root
+            if (baseCategoryId) {
+                query = query.eq('parentCategory.id', baseCategoryId);
+            }
+
+            const categoriesResult = await query.find();
             return categoriesResult.items || [];
         })
         .recover(error => {
@@ -100,7 +122,8 @@ async function renderSlowlyChanging(
                 carryForward: {
                     searchFields: 'name,description,sku',
                     fuzzySearch: true,
-                    categories: categoryInfos
+                    categories: categoryInfos,
+                    baseCategoryId
                 }
             };
         });
@@ -114,7 +137,7 @@ async function renderSlowlyChanging(
  * - Load more state
  */
 async function renderFastChanging(
-    props: PageProps,
+    props: PageProps & ProductSearchParams,
     slowCarryForward: SearchSlowCarryForward,
     _wixStores: WixStoresService
 ) {
@@ -123,11 +146,18 @@ async function renderFastChanging(
     return Pipeline
         .try(async () => {
             // Use searchProducts action to get products with aggregations
+            // When scoped to a category, apply the root category as base filter
+            const baseCategoryIds = slowCarryForward.baseCategoryId
+                ? [slowCarryForward.baseCategoryId]
+                : [];
             const result = await searchProducts({
                 query: '',
+                filters: baseCategoryIds.length > 0
+                    ? { categoryIds: baseCategoryIds }
+                    : undefined,
                 pageSize: PAGE_SIZE
             });
-            
+
             return result;
         })
         .recover(error => {
@@ -188,7 +218,8 @@ async function renderFastChanging(
                 carryForward: {
                     searchFields: slowCarryForward.searchFields,
                     fuzzySearch: slowCarryForward.fuzzySearch,
-                    categories: slowCarryForward.categories
+                    categories: slowCarryForward.categories,
+                    baseCategoryId: slowCarryForward.baseCategoryId
                 }
             };
         });
@@ -206,12 +237,14 @@ async function renderFastChanging(
  * All state updates use immutable patterns with the patch utility.
  */
 function ProductSearchInteractive(
-    props: Props<PageProps>,
+    props: Props<PageProps & ProductSearchParams>,
     refs: ProductSearchRefs,
     viewStateSignals: Signals<ProductSearchFastViewState>,
     fastCarryForward: SearchFastCarryForward,
     storesContext: WixStoresContext
 ) {
+    // Base category filter — always applied when scoped to a category prefix
+    const baseCategoryId = fastCarryForward.baseCategoryId;
 
     const {
         searchExpression: [searchExpression, setSearchExpression],
@@ -263,14 +296,20 @@ function ProductSearchInteractive(
         setHasSearched(true);
 
         try {
+            // Combine base category (always active) with user-selected child categories
+            const userSelectedCategoryIds = currentFilters.categoryFilter.categories
+                .filter(c => c.isSelected)
+                .map(c => c.categoryId);
+            const categoryIds = baseCategoryId
+                ? [baseCategoryId, ...userSelectedCategoryIds]
+                : userSelectedCategoryIds;
+
             const result = await searchProducts({
                 query: searchTerm || '',
                 filters: {
                     minPrice: currentFilters.priceRange.minPrice || undefined,
                     maxPrice: currentFilters.priceRange.maxPrice || undefined,
-                    categoryIds: currentFilters.categoryFilter.categories
-                        .filter(c => c.isSelected)
-                        .map(c => c.categoryId),
+                    categoryIds,
                     inStockOnly: currentFilters.inStockOnly
                 },
                 sortBy: mapSortToAction(currentSort),
@@ -315,14 +354,20 @@ function ProductSearchInteractive(
             const currentSort = sortBy().currentSort;
             const searchTerm = submittedSearchTerm();
 
+            // Combine base category with user-selected child categories
+            const userSelectedCategoryIds = currentFilters.categoryFilter.categories
+                .filter(c => c.isSelected)
+                .map(c => c.categoryId);
+            const categoryIds = baseCategoryId
+                ? [baseCategoryId, ...userSelectedCategoryIds]
+                : userSelectedCategoryIds;
+
             const result = await searchProducts({
                 query: searchTerm || '',
                 filters: {
                     minPrice: currentFilters.priceRange.minPrice || undefined,
                     maxPrice: currentFilters.priceRange.maxPrice || undefined,
-                    categoryIds: currentFilters.categoryFilter.categories
-                        .filter(c => c.isSelected)
-                        .map(c => c.categoryId),
+                    categoryIds,
                     inStockOnly: currentFilters.inStockOnly
                 },
                 sortBy: mapSortToAction(currentSort),
@@ -625,7 +670,7 @@ function ProductSearchInteractive(
  * ```
  */
 export const productSearch = makeJayStackComponent<ProductSearchContract>()
-    .withProps<PageProps>()
+    .withProps<PageProps & ProductSearchParams>()
     .withServices(WIX_STORES_SERVICE_MARKER)
     .withContexts(WIX_STORES_CONTEXT)
     .withSlowlyRender(renderSlowlyChanging)

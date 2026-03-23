@@ -20,7 +20,12 @@ tags:
   - tag: productUrl
     type: data
     dataType: string
-    description: Full URL path to product page (e.g., /products/my-product)
+    description: Full URL path to product page (e.g., /products/my-product or /products/polgat/my-product)
+
+  - tag: categoryPrefix
+    type: data
+    dataType: string
+    description: Category prefix name for the product (e.g., the display name of the root category). Empty when no prefix is configured.
     
   - tag: productLink
     type: interactive

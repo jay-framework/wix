@@ -62,6 +62,7 @@ export interface ProductCardViewState {
   name: string,
   slug: string,
   productUrl: string,
+  categoryPrefix: string,
   mainMedia: MainMediaOfProductCardViewState,
   thumbnail: ThumbnailOfProductCardViewState,
   price: string,
@@ -77,7 +78,7 @@ export interface ProductCardViewState {
   quickOption: ProductOptionsViewState
 }
 
-export type ProductCardSlowViewState = Pick<ProductCardViewState, '_id' | 'name' | 'slug' | 'productUrl' | 'hasDiscount' | 'hasRibbon' | 'productType' | 'quickAddType'> & {
+export type ProductCardSlowViewState = Pick<ProductCardViewState, '_id' | 'name' | 'slug' | 'productUrl' | 'categoryPrefix' | 'hasDiscount' | 'hasRibbon' | 'productType' | 'quickAddType'> & {
     mainMedia: ProductCardViewState['mainMedia'];
     thumbnail: ProductCardViewState['thumbnail'];
     inventory: ProductCardViewState['inventory'];

@@ -26,7 +26,7 @@ export type {
 // Export stores-specific headless components
 export * from './components/product-search';
 export * from './components/product-page';
-export * from './components/category-page';
+// category-page removed — use product-search with category param instead
 export * from './components/category-list';
 
 // Export server service
@@ -34,6 +34,8 @@ export {
     provideWixStoresService,
     WIX_STORES_SERVICE_MARKER,
     type WixStoresService,
+    type CategoryPrefixConfig,
+    type WixStoresServiceOptions,
 } from './services/wix-stores-service';
 
 // Export stores client context 
@@ -49,5 +51,5 @@ export * from './actions/stores-actions';
 // Export init
 export { init } from './init.js';
 
-// Export setup handler (Design Log #87)
-export { setupWixStores } from './setup.js';
+// Export setup handler (Design Log #87, #10)
+export { setupWixStores, generateWixStoresReferences } from './setup.js';

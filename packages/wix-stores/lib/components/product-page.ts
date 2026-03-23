@@ -22,6 +22,7 @@ import {
     StockStatus
 } from '../contracts/product-page.jay-contract';
 import {WIX_STORES_SERVICE_MARKER, WixStoresService} from '../services/wix-stores-service';
+import {resolveProductPrefix} from '../utils/product-mapper';
 import {
     ChoiceTypeWithLiterals,
     ConnectedModifier,
@@ -41,11 +42,13 @@ import { useGlobalContext } from '@jay-framework/runtime';
 import {SelectedOptionsAndModifiers, WIX_STORES_CONTEXT, WixStoresContext} from '../contexts/wix-stores-context';
 
 /**
- * URL parameters for product page routes
- * Supports dynamic routing like /products/[slug]
+ * URL parameters for product page routes.
+ * Supports /products/[slug] and /products/polgat/[slug] (category-prefixed).
  */
 export interface ProductPageParams extends UrlParams {
     slug: string;
+    /** Category prefix from static route (e.g., 'polgat'). Undefined for unprefixed routes. */
+    category?: string;
 }
 
 interface InteractiveVariant {
@@ -80,23 +83,40 @@ interface ProductFastCarryForward {
 }
 
 /**
- * Load product slugs for static site generation
- * This function yields all product slugs to generate pages for.
+ * Load product slugs for static site generation.
+ * When category prefixes are configured, fetches ALL_CATEGORIES_INFO
+ * and yields params with the resolved category prefix for each product.
+ * Called once — the framework distributes params to matching routes.
  */
 async function* loadProductParams(
     [wixStores]: [WixStoresService]
 ): AsyncIterable<ProductPageParams[]> {
+    const prefixConfig = wixStores.categoryPrefixes;
+    const hasPrefixes = prefixConfig.length > 0;
+    const fields = hasPrefixes ? ['ALL_CATEGORIES_INFO'] as const : [] as const;
+
     try {
-        let result = await wixStores.products.queryProducts().find();
-        yield result.items.map((product) => ({ slug: product.slug }));
+        let result = await wixStores.products.queryProducts({ fields: [...fields] }).find();
+        yield result.items.map((product) => mapProductToParams(product, prefixConfig));
         while (result.hasNext()) {
             result = await result.next();
-            yield result.items.map((product) => ({ slug: product.slug }));
+            yield result.items.map((product) => mapProductToParams(product, prefixConfig));
         }
     } catch (error) {
         console.error('Failed to load product slugs:', error);
         yield [];
     }
+}
+
+function mapProductToParams(
+    product: { slug?: string; allCategoriesInfo?: { categories?: Array<{ _id?: string }> } },
+    prefixConfig: WixStoresService['categoryPrefixes']
+): ProductPageParams {
+    const prefix = resolveProductPrefix(product, prefixConfig);
+    return {
+        slug: product.slug ?? '',
+        ...(prefix ? { category: prefix } : {}),
+    };
 }
 
 function mapProductType(productType: string): ProductType {
@@ -301,11 +321,26 @@ async function renderSlowlyChanging(
 ): Promise<SlowlyRenderResult<ProductPageSlowViewState, ProductSlowCarryForward>> {
 
     const Pipeline = RenderPipeline.for<ProductPageSlowViewState, ProductSlowCarryForward>()
+    const prefixConfig = wixStores.categoryPrefixes;
+    const hasPrefixes = prefixConfig.length > 0;
 
     return Pipeline
         .try(async () => {
-            const fields = ['INFO_SECTION', 'INFO_SECTION_PLAIN_DESCRIPTION', 'MEDIA_ITEMS_INFO', 'PLAIN_DESCRIPTION', 'CURRENCY'] as const;
-            return wixStores.products.getProductBySlug(props.slug, { fields: [...fields] });
+            const fields = [
+                'INFO_SECTION', 'INFO_SECTION_PLAIN_DESCRIPTION', 'MEDIA_ITEMS_INFO', 'PLAIN_DESCRIPTION', 'CURRENCY',
+                ...(hasPrefixes ? ['ALL_CATEGORIES_INFO'] as const : [])
+            ] as const;
+            const response = await wixStores.products.getProductBySlug(props.slug, { fields: [...fields] });
+
+            // Validate that product belongs to the claimed category prefix
+            if (props.category && hasPrefixes) {
+                const actualPrefix = resolveProductPrefix(response.product, prefixConfig);
+                if (actualPrefix !== props.category) {
+                    throw new Error('Category prefix mismatch');
+                }
+            }
+
+            return response;
         })
         .recover(error => {
             console.log('product page error', error)

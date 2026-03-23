@@ -16,7 +16,6 @@
     "./plugin.yaml": "./plugin.yaml",
     "./product-page.jay-contract": "./dist/contracts/product-page.jay-contract",
     "./product-search.jay-contract": "./dist/contracts/product-search.jay-contract",
-    "./category-page.jay-contract": "./dist/contracts/category-page.jay-contract",
     "./category-list.jay-contract": "./dist/contracts/category-list.jay-contract",
     "./search-products.jay-action": "./dist/actions/search-products.jay-action",
     "./get-product-by-slug.jay-action": "./dist/actions/get-product-by-slug.jay-action",
@@ -45,6 +44,7 @@
     "@jay-framework/wix-cart": "^1.0.0",
     "@jay-framework/wix-server-client": "^1.0.0",
     "@jay-framework/wix-utils": "^1.0.0",
+    "js-yaml": "^4.1.0",
     "@wix/categories": "^1.0.185",
     "@wix/sdk": "^1.21.5",
     "@wix/stores": "^1.0.723"

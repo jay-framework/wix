@@ -17,9 +17,11 @@ import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
 
 import { provideWixStoresService } from './services/wix-stores-service';
 import { provideWixStoresContext, type WixStoresInitData } from './contexts/wix-stores-context';
+import { loadWixStoresConfig } from './config-loader';
 
 // Re-export types for consumers
 export type { WixStoresInitData } from './contexts/wix-stores-context.js';
+export type { CategoryPrefixConfig, WixStoresServiceOptions } from './services/wix-stores-service.js';
 
 // ============================================================================
 // Plugin Initialization
@@ -32,9 +34,18 @@ export const init = makeJayInit()
         // Get the server-side Wix client (authenticated with API key)
         const wixClient = getService(WIX_CLIENT_SERVICE);
 
+        // Load optional config (config/.wix-stores.yaml)
+        const storesConfig = loadWixStoresConfig();
+
         // Create and register the stores service (products, categories, inventory)
         // Note: Cart service is registered by wix-cart plugin
-        provideWixStoresService(wixClient);
+        provideWixStoresService(wixClient, {
+            categoryPrefixes: storesConfig.categoryPrefixes,
+        });
+
+        if (storesConfig.categoryPrefixes.length > 0) {
+            console.log(`[wix-stores] Category prefixes configured: ${storesConfig.categoryPrefixes.map(p => p.prefix).join(', ')}`);
+        }
 
         console.log('[wix-stores] Server initialization complete');
 

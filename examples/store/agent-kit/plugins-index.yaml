@@ -21,9 +21,6 @@ plugins:
       - name: product-search
         type: static
         path: ./../../packages/wix-stores/dist/contracts/product-search.jay-contract
-      - name: category-page
-        type: static
-        path: ./../../packages/wix-stores/dist/contracts/category-page.jay-contract
       - name: category-list
         type: static
         path: ./../../packages/wix-stores/dist/contracts/category-list.jay-contract

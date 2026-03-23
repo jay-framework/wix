@@ -27,9 +27,7 @@ import {
     type CartState,
     type CartOperationResult as CartResult
 } from '@jay-framework/wix-cart';
-import { getCategoriesClient, getProductsV3Client } from '../utils/wix-store-api';
-import { mapProductToCard } from '../utils/product-mapper';
-import { ProductCardViewState } from '../contracts/product-card.jay-contract';
+import { getProductsV3Client } from '../utils/wix-store-api';
 
 // ============================================================================
 // Type Definitions
@@ -101,28 +99,6 @@ export interface WixStoresContext {
     applyCoupon(couponCode: string): Promise<CartOperationResult>;
     removeCoupon(): Promise<CartOperationResult>;
     
-    // ========================================================================
-    // Stores-Specific Operations
-    // ========================================================================
-    
-    /**
-     * Load more products for a category using cursor pagination.
-     * Used by category page interactive phase for "load more" functionality.
-     * 
-     * @param categoryId - The category ID to load products for
-     * @param cursor - Cursor from previous pagingMetadata.cursors.next
-     * @param pageSize - Number of products to load
-     * @returns Products, next cursor (null if no more), and total count
-     */
-    loadMoreCategoryProducts(
-        categoryId: string,
-        cursor: string,
-        pageSize: number
-    ): Promise<{
-        products: ProductCardViewState[];
-        nextCursor: string | null;
-        totalProducts: number;
-    }>;
 }
 
 /**
@@ -152,7 +128,6 @@ export function provideWixStoresContext(): WixStoresContext {
 
     // Get stores-specific API clients
     const catalogClient = getProductsV3Client(wixClient);
-    const categoriesClient = getCategoriesClient(wixClient);
 
     // Create and register the reactive stores context
     const storesContext = registerReactiveGlobalContext(WIX_STORES_CONTEXT, () => {
@@ -223,55 +198,6 @@ export function provideWixStoresContext(): WixStoresContext {
             });
         }
 
-        // ====================================================================
-        // Stores-Specific Operations
-        // ====================================================================
-        
-        async function loadMoreCategoryProducts(
-            categoryId: string,
-            cursor: string,
-            pageSize: number
-        ): Promise<{ products: ProductCardViewState[]; nextCursor: string | null; totalProducts: number }> {
-            try {
-                const itemsResult = await categoriesClient.listItemsInCategory(
-                    categoryId,
-                    { appNamespace: "@wix/stores" },
-                    {
-                        useCategoryArrangement: true,
-                        cursorPaging: { limit: pageSize, cursor }
-                    }
-                );
-
-                const items = itemsResult.items || [];
-                const nextCursor = itemsResult.pagingMetadata?.cursors?.next || null;
-                const totalProducts = itemsResult.pagingMetadata?.total || items.length;
-
-                const productPromises = items
-                    .filter(item => item.catalogItemId)
-                    .map(async (item) => {
-                        try {
-                            const product = await catalogClient.getProduct(
-                                item.catalogItemId!,
-                                { fields: ['CURRENCY', 'VARIANT_OPTION_CHOICE_NAMES'] }
-                            );
-                            if (product) {
-                                return mapProductToCard(product, '/products');
-                            }
-                        } catch (err) {
-                            console.error('[WixStores] Failed to load product:', item.catalogItemId, err);
-                        }
-                        return null;
-                    });
-
-                const products = (await Promise.all(productPromises)).filter(Boolean) as ProductCardViewState[];
-
-                return { products, nextCursor, totalProducts };
-            } catch (error) {
-                console.error('[WixStores] Failed to load more category products:', error);
-                return { products: [], nextCursor: null, totalProducts: 0 };
-            }
-        }
-        
         return {
             // Delegate cart indicator and operations to WIX_CART_CONTEXT
             cartIndicator: cartContext.cartIndicator,
@@ -283,8 +209,6 @@ export function provideWixStoresContext(): WixStoresContext {
             clearCart: () => cartContext.clearCart(),
             applyCoupon: (code) => cartContext.applyCoupon(code),
             removeCoupon: () => cartContext.removeCoupon(),
-            // Stores-specific operations
-            loadMoreCategoryProducts,
         };
     });
     
