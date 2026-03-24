@@ -44,10 +44,10 @@
     "@jay-framework/wix-cart": "^1.0.0",
     "@jay-framework/wix-server-client": "^1.0.0",
     "@jay-framework/wix-utils": "^1.0.0",
-    "js-yaml": "^4.1.0",
     "@wix/categories": "^1.0.185",
     "@wix/sdk": "^1.21.5",
-    "@wix/stores": "^1.0.723"
+    "@wix/stores": "^1.0.723",
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",

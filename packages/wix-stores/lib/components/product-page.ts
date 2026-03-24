@@ -136,8 +136,8 @@ function mapSeoData(seoData: SeoSchema): SeoDatumOfProductPageViewState {
         tags: seoData?.tags?.map((tag, index) => ({
             position: index.toString().padStart(2, '0'),
             type: tag.type,
-            props: Object.entries(tag.props).map(([key, value]) => ({key, value})),
-            meta: Object.entries(tag.meta).map(([key, value]) => ({key, value})),
+            props: Object.entries(tag.props || {}).map(([key, value]) => ({key, value})),
+            meta: Object.entries(tag.meta || {}).map(([key, value]) => ({key, value})),
             children: tag.children
         })),
         settings: {
