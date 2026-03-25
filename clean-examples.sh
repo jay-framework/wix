@@ -1,9 +1,10 @@
 #!/bin/bash
 # Clean build folders and Vite cache for all examples
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
+EXAMPLES_DIR="$REPO_ROOT/examples"
 
-for dir in "$SCRIPT_DIR"/*/; do
+for dir in "$EXAMPLES_DIR"/*/; do
   name="$(basename "$dir")"
   [ -f "$dir/package.json" ] || continue
 

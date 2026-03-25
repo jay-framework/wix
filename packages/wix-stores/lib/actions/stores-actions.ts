@@ -190,8 +190,8 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
             // Category filter
             if (filters.categoryIds && filters.categoryIds.length > 0) {
                 filterConditions.push({
-                    "allCategoriesInfo.categories": {
-                        "$matchItems": filters.categoryIds.map(id => ({ id: { "$eq": id } }))
+                     "allCategoriesInfo.categories.id": {
+                        "$hasAll": filters.categoryIds
                     }
                 });
             }
