@@ -1,17 +1,17 @@
 /**
  * Wix Utils - Shared Utilities for Wix Integrations
- * 
+ *
  * Common utilities used across Wix plugins in Jay Framework.
  */
 
-export { 
-    formatWixMediaUrl, 
+export {
+    formatWixMediaUrl,
     parseWixMediaUrl,
-    parseWixImageUrl, 
+    parseWixImageUrl,
     parseWixVideoUrl,
     getVideoPosterUrl,
     getDocumentUrl,
     getAudioUrl,
     type WixMediaType,
-    type ParsedWixMediaUrl
+    type ParsedWixMediaUrl,
 } from './media';

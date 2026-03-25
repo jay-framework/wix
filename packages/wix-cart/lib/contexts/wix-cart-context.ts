@@ -1,9 +1,9 @@
 /**
  * Client-side Wix Cart Context
- * 
+ *
  * Provides access to Wix Cart APIs on the client using OAuth authentication.
  * Gets WIX_CLIENT_CONTEXT injected during initialization.
- * 
+ *
  * Usage in interactive components:
  * ```typescript
  * const cartContext = useContext(WIX_CART_CONTEXT);
@@ -20,7 +20,6 @@ import { createJayContext, useGlobalContext } from '@jay-framework/runtime';
 import { createSignal, registerReactiveGlobalContext, useReactive } from '@jay-framework/component';
 import { Getter } from '@jay-framework/reactive';
 import { WIX_CLIENT_CONTEXT } from '@jay-framework/wix-server-client';
-import type { LineItem } from '@wix/ecom/node_modules/@wix/auto_sdk_ecom_current-cart';
 import { getCurrentCartClient } from '../utils/cart-client';
 import {
     CartState,
@@ -28,7 +27,7 @@ import {
     getCurrentCartOrNull,
     mapCartToIndicator,
     mapCartToState,
-    mapEstimateTotalsToState
+    mapEstimateTotalsToState,
 } from './cart-helpers';
 
 // ============================================================================
@@ -88,80 +87,84 @@ export interface WixCartContext {
     // ========================================================================
     // Reactive Cart Indicator
     // ========================================================================
-    
+
     /**
      * Reactive cart indicator signals.
      * Use these in render functions for automatic updates.
      */
     cartIndicator: ReactiveCartIndicator;
-    
+
     // ========================================================================
     // Cart Operations
     // ========================================================================
-    
+
     /**
      * Refresh cart indicator from server.
      * Call this after external cart changes or on page load.
      */
     refreshCartIndicator(): Promise<void>;
-    
+
     /**
      * Get full cart state with estimated totals (subtotal, tax, total).
      * Handles 404 (no cart) as empty cart.
      * Use this for cart pages where accurate totals are needed.
      */
     getEstimatedCart(): Promise<CartState>;
-    
+
     /**
      * Add a product to the cart.
      * Automatically updates the cart indicator signals.
-     * 
+     *
      * @param productId - The product ID to add
      * @param quantity - Number of items to add (default: 1)
      * @param options - Variant and modifier options
      * @returns Updated cart state
      */
-    addToCart(productId: string, quantity?: number, options?: AddToCartOptions): Promise<CartOperationResult>;
-    
+    addToCart(
+        productId: string,
+        quantity?: number,
+        options?: AddToCartOptions,
+    ): Promise<CartOperationResult>;
+
     /**
      * Remove line items from the cart.
      * Automatically updates the cart indicator signals.
-     * 
+     *
      * @param lineItemIds - Array of line item IDs to remove
      * @returns Updated cart state
      */
     removeLineItems(lineItemIds: string[]): Promise<CartOperationResult>;
-    
+
     /**
      * Update a line item's quantity.
      * If quantity is 0, the item is removed.
      * Automatically updates the cart indicator signals.
-     * 
+     *
      * @param lineItemId - The line item ID to update
      * @param quantity - New quantity (0 removes the item)
      * @returns Updated cart state
      */
     updateLineItemQuantity(lineItemId: string, quantity: number): Promise<CartOperationResult>;
-    
+
     /**
      * Clear all items from the cart.
      * Automatically updates the cart indicator signals.
      */
     clearCart(): Promise<void>;
-    
+
     /**
      * Apply a coupon code to the cart.
      * Automatically updates the cart indicator signals.
-     * 
+     *
      * @param couponCode - The coupon code to apply
      * @returns Updated cart state
      */
     applyCoupon(couponCode: string): Promise<CartOperationResult>;
-    
+
     /**
      * Remove applied coupon from the cart.
      * Automatically updates the cart indicator signals.
-     * 
+     *
      * @returns Updated cart state
      */
     removeCoupon(): Promise<CartOperationResult>;
@@ -179,9 +182,9 @@ export const WIX_CART_CONTEXT = createJayContext<WixCartContext>();
 /**
  * Initialize and register the Wix Cart client context.
  * Called during client-side initialization.
- * 
+ *
  * Assumes WIX_CLIENT_CONTEXT is already initialized with a valid client.
- * 
+ *
  * @returns The created context for immediate use (e.g., to call refreshCartIndicator)
  */
 export function provideWixCartContext(): WixCartContext {
@@ -222,13 +225,13 @@ export function provideWixCartContext(): WixCartContext {
 
         // Add product to cart
         async function addToCart(
-            productId: string, 
-            quantity: number = 1, 
-            options?: AddToCartOptions
+            productId: string,
+            quantity: number = 1,
+            options?: AddToCartOptions,
         ): Promise<CartOperationResult> {
             console.log(`[WixCart] Adding to cart: ${productId} x ${quantity}`, options);
-            
-            const lineItem: LineItem = {
+
+            const lineItem = {
                 catalogReference: {
                     catalogItemId: productId,
                     appId: WIX_STORES_APP_ID,
@@ -236,15 +239,15 @@ export function provideWixCartContext(): WixCartContext {
                         variantId: options?.variantId,
                         options: options?.modifiers,
                         customTextFields: options?.customTextFields,
-                    }
+                    },
                 },
                 quantity,
             };
-            
+
             const result = await cartClient.addToCurrentCart({
                 lineItems: [lineItem],
             });
-            
+
             updateIndicatorFromCart(result.cart ?? null);
             return { cartState: mapCartToState(result.cart ?? null) };
         }
@@ -257,13 +260,16 @@ export function provideWixCartContext(): WixCartContext {
         }
 
         // Update line item quantity
-        async function updateLineItemQuantity(lineItemId: string, quantity: number): Promise<CartOperationResult> {
+        async function updateLineItemQuantity(
+            lineItemId: string,
+            quantity: number,
+        ): Promise<CartOperationResult> {
             let result;
             if (quantity === 0) {
                 result = await cartClient.removeLineItemsFromCurrentCart([lineItemId]);
             } else {
                 result = await cartClient.updateCurrentCartLineItemQuantity([
-                    { _id: lineItemId, quantity }
+                    { _id: lineItemId, quantity },
                 ]);
             }
             updateIndicatorFromCart(result.cart ?? null);
@@ -298,7 +304,7 @@ export function provideWixCartContext(): WixCartContext {
             updateIndicatorFromCart(result.cart ?? null);
             return { cartState: mapCartToState(result.cart ?? null) };
         }
-        
+
         return {
             cartIndicator: {
                 itemCount,
@@ -314,7 +320,7 @@ export function provideWixCartContext(): WixCartContext {
             removeCoupon,
         };
     });
-    
+
     console.log('[wix-cart] Client cart context initialized (reactive)');
     return cartContext;
 }

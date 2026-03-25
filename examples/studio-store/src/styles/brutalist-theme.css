@@ -12,43 +12,43 @@
 
 :root {
   /* Core colors - High contrast black/white */
-  --bg-primary: #FFFFFF;
-  --bg-secondary: #F0F0F0;
-  --bg-card: #FFFFFF;
-  --bg-hover: #E8E8E8;
-  --bg-inverse: #0A0A0A;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f0f0f0;
+  --bg-card: #ffffff;
+  --bg-hover: #e8e8e8;
+  --bg-inverse: #0a0a0a;
   --bg-accent-subtle: rgba(0, 255, 255, 0.08);
-  
+
   /* Text colors */
-  --text-primary: #0A0A0A;
-  --text-secondary: #4A4A4A;
-  --text-muted: #8A8A8A;
-  --text-inverse: #FFFFFF;
-  
+  --text-primary: #0a0a0a;
+  --text-secondary: #4a4a4a;
+  --text-muted: #8a8a8a;
+  --text-inverse: #ffffff;
+
   /* Accent - Electric Cyan */
-  --accent: #00E5FF;
-  --accent-hover: #00B8CC;
-  --accent-dark: #00A3B3;
+  --accent: #00e5ff;
+  --accent-hover: #00b8cc;
+  --accent-dark: #00a3b3;
   --accent-glow: rgba(0, 229, 255, 0.25);
-  
+
   /* Secondary accent - Electric Pink */
-  --accent-alt: #FF00E5;
+  --accent-alt: #ff00e5;
   --accent-alt-glow: rgba(255, 0, 229, 0.2);
-  
+
   /* Semantic colors */
-  --success: #00FF88;
+  --success: #00ff88;
   --success-bg: rgba(0, 255, 136, 0.15);
-  --warning: #FFE500;
+  --warning: #ffe500;
   --warning-bg: rgba(255, 229, 0, 0.15);
-  --error: #FF3D3D;
+  --error: #ff3d3d;
   --error-bg: rgba(255, 61, 61, 0.15);
-  
+
   /* Borders - THICK and bold */
-  --border: #0A0A0A;
+  --border: #0a0a0a;
   --border-width: 3px;
-  --border-hover: #4A4A4A;
-  --border-light: #CCCCCC;
-  
+  --border-hover: #4a4a4a;
+  --border-light: #cccccc;
+
   /* Border radius - NONE (brutalist = sharp) */
   --radius-none: 0;
   --radius-sm: 0;
@@ -56,25 +56,25 @@
   --radius-lg: 0;
   --radius-xl: 0;
   --radius-full: 0;
-  
+
   /* Shadows - Hard, offset shadows (no blur) */
   --shadow-sm: 4px 4px 0 var(--border);
   --shadow-md: 6px 6px 0 var(--border);
   --shadow-lg: 8px 8px 0 var(--border);
   --shadow-accent: 6px 6px 0 var(--accent);
   --shadow-hover: 8px 8px 0 var(--accent);
-  
+
   /* Transitions - Snappy */
   --transition-fast: 0.1s ease;
   --transition-base: 0.15s ease;
   --transition-slow: 0.25s ease;
-  
+
   /* Layout */
   --container-max: 1400px;
   --container-narrow: 720px;
   --page-padding: 32px;
   --section-gap: 48px;
-  
+
   /* Typography */
   --font-primary: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'Space Mono', 'Courier New', monospace;
@@ -133,7 +133,9 @@ button {
   background: none;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   font-family: inherit;
 }
 
@@ -308,8 +310,14 @@ input, select, textarea {
 }
 
 @keyframes cart-flash {
-  0%, 100% { background: transparent; }
-  50% { background: var(--accent); color: var(--text-primary); }
+  0%,
+  100% {
+    background: transparent;
+  }
+  50% {
+    background: var(--accent);
+    color: var(--text-primary);
+  }
 }
 
 .cart-indicator.is-loading .cart-indicator-count {
@@ -482,8 +490,8 @@ input, select, textarea {
 
 .badge-success {
   background: var(--success-bg);
-  color: #00CC6A;
-  border-color: #00CC6A;
+  color: #00cc6a;
+  border-color: #00cc6a;
 }
 
 .badge-error {
@@ -494,8 +502,8 @@ input, select, textarea {
 
 .badge-warning {
   background: var(--warning-bg);
-  color: #CCA300;
-  border-color: #CCA300;
+  color: #cca300;
+  border-color: #cca300;
 }
 
 .ribbon {
@@ -566,7 +574,12 @@ input, select, textarea {
   left: 0;
   right: 0;
   padding: 20px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 60%, transparent 100%);
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.9) 0%,
+    rgba(0, 0, 0, 0.6) 60%,
+    transparent 100%
+  );
   opacity: 0;
   transform: translateY(10px);
   transition: all var(--transition-base);
@@ -734,7 +747,7 @@ input, select, textarea {
   .products-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .products-grid-featured .product-card:first-child {
     grid-column: span 2;
     grid-row: span 1;
@@ -745,7 +758,7 @@ input, select, textarea {
   .products-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .products-grid-featured .product-card:first-child {
     grid-column: span 1;
   }
@@ -919,7 +932,9 @@ input, select, textarea {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-indicator {
@@ -1380,7 +1395,7 @@ input, select, textarea {
 .cart-item-discount {
   font-family: var(--font-mono);
   font-size: 12px;
-  color: #00CC6A;
+  color: #00cc6a;
 }
 
 .remove-btn {
@@ -1582,12 +1597,12 @@ input, select, textarea {
   :root {
     --page-padding: 24px;
   }
-  
+
   .product-page-layout {
     grid-template-columns: 1fr;
     gap: 40px;
   }
-  
+
   .product-gallery {
     position: static;
   }
@@ -1597,16 +1612,16 @@ input, select, textarea {
   .site-nav {
     gap: 16px;
   }
-  
+
   .site-nav a:not(.cart-indicator) {
     display: none;
   }
-  
+
   .cart-item {
     grid-template-columns: 80px 1fr;
     gap: 16px;
   }
-  
+
   .cart-item-actions {
     grid-column: span 2;
     flex-direction: row;
@@ -1619,15 +1634,15 @@ input, select, textarea {
   :root {
     --page-padding: 16px;
   }
-  
+
   .page-title {
     font-size: 36px;
   }
-  
+
   .product-actions {
     flex-direction: column;
   }
-  
+
   .header-inner {
     flex-wrap: wrap;
     gap: 12px;

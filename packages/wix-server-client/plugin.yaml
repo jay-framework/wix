@@ -7,4 +7,3 @@ name: wix-server-client
 setup:
   handler: setupWixServerClient
   description: Configure Wix API credentials (API key, site ID, OAuth client ID)
-

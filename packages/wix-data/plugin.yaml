@@ -8,17 +8,17 @@ dynamic_contracts:
   - prefix: 'item'
     component: collectionItem
     generator: itemContractGenerator
-    
+
   # List pages (index & category) - one contract per collection with indexPage: true
   - prefix: 'list'
     component: collectionList
     generator: listContractGenerator
-    
+
   # Table widgets - one contract per collection with tableWidget: true
   - prefix: 'table'
     component: collectionTable
     generator: tableContractGenerator
-    
+
   # Card widgets - one contract per collection with cardWidget: true
   - prefix: 'card'
     component: collectionCard

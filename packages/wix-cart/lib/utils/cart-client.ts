@@ -1,13 +1,13 @@
 /**
  * Wix Cart Client Factory
- * 
+ *
  * Creates a singleton instance of the Wix Cart client.
  * Used by both server service and client context.
  */
 
 import { WixClient } from '@wix/sdk';
 import { currentCart } from '@wix/ecom';
-import {BuildDescriptors} from "@wix/sdk-types";
+import { BuildDescriptors } from '@wix/sdk-types';
 
 // Singleton instance
 let currentCartInstance: BuildDescriptors<typeof currentCart, {}> | undefined;
@@ -20,7 +20,9 @@ let currentCartInstance: BuildDescriptors<typeof currentCart, {}> | undefined;
  * @returns Current Cart client instance from @wix/ecom
  * @see https://dev.wix.com/docs/sdk/backend-modules/ecom/current-cart/introduction
  */
-export function getCurrentCartClient(wixClient: WixClient): BuildDescriptors<typeof currentCart, {}> {
+export function getCurrentCartClient(
+    wixClient: WixClient,
+): BuildDescriptors<typeof currentCart, {}> {
     if (!currentCartInstance) {
         currentCartInstance = wixClient.use(currentCart);
     }

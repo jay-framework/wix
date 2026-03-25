@@ -48,5 +48,3 @@ export default defineConfig(({ isSsrBuild }) => ({
         environment: 'jsdom',
     },
 }));
-
-

@@ -1,15 +1,15 @@
 /**
  * Wix Stores Catalog V1 Product Mapping Utilities
- * 
+ *
  * Maps Wix Stores Catalog V1 product responses to view state contracts.
- * 
+ *
  * Key V1 vs V3 differences handled here:
  * - V1 prices are numbers (289), V3 are strings ("120")
  * - V1 has price.formatted.price, V3 doesn't include formatted in response
  * - V1 uses stock.inStock/inventoryStatus, V3 uses inventory.availabilityStatus
  * - V1 media URLs are complete, V3 uses wix:image:// URIs
  * - V1 uses productOptions[], V3 uses options[]
- * 
+ *
  * Reference: wix/exploration/query-products-catalog-v1/output/individual/*.json
  */
 
@@ -19,15 +19,16 @@ import {
     PreorderStatus,
     ProductCardViewState,
     ProductType,
-    QuickAddType
+    QuickAddType,
 } from '../contracts/product-card.jay-contract';
 import {
     ChoiceType,
     OptionRenderType,
-    ProductOptionsViewState
+    ProductOptionsViewState,
 } from '../contracts/product-options.jay-contract';
-import {Product} from "@wix/auto_sdk_stores_products";
-import {Collection} from "@wix/auto_sdk_stores_collections/build/cjs/index.typings";
+import { Product } from '@wix/auto_sdk_stores_products';
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Collection = any;
 
 // ============================================================================
 // Helper Functions
@@ -38,9 +39,12 @@ import {Collection} from "@wix/auto_sdk_stores_collections/build/cjs/index.typin
  */
 export function mapAvailabilityStatus(status: string | undefined): AvailabilityStatus {
     switch (status) {
-        case 'OUT_OF_STOCK': return AvailabilityStatus.OUT_OF_STOCK;
-        case 'PARTIALLY_OUT_OF_STOCK': return AvailabilityStatus.PARTIALLY_OUT_OF_STOCK;
-        default: return AvailabilityStatus.IN_STOCK;
+        case 'OUT_OF_STOCK':
+            return AvailabilityStatus.OUT_OF_STOCK;
+        case 'PARTIALLY_OUT_OF_STOCK':
+            return AvailabilityStatus.PARTIALLY_OUT_OF_STOCK;
+        default:
+            return AvailabilityStatus.IN_STOCK;
     }
 }
 
@@ -83,7 +87,7 @@ function hasProductDiscount(product: Product): boolean {
  */
 export function getQuickAddType(product: Product): QuickAddType {
     const optionCount = product.productOptions?.length ?? 0;
-    
+
     // V1 doesn't have modifiers in the same way as V3
     if (optionCount > 1) {
         return QuickAddType.NEEDS_CONFIGURATION;
@@ -98,8 +102,8 @@ export function getQuickAddType(product: Product): QuickAddType {
  * Map option render type from V1 optionType
  */
 function mapOptionRenderType(optionType: string | undefined): OptionRenderType {
-    return optionType === 'color' 
-        ? OptionRenderType.COLOR_SWATCH_CHOICES 
+    return optionType === 'color'
+        ? OptionRenderType.COLOR_SWATCH_CHOICES
         : OptionRenderType.TEXT_CHOICES;
 }
 
@@ -108,10 +112,10 @@ function mapOptionRenderType(optionType: string | undefined): OptionRenderType {
  */
 export function mapQuickOption(
     option: Product['productOptions'][0] | undefined,
-    variants: Product['variants'] | undefined
+    variants: Product['variants'] | undefined,
 ): ProductOptionsViewState | null {
     if (!option) return null;
-    
+
     const choices = option.choices || [];
 
     return {
@@ -120,22 +124,19 @@ export function mapQuickOption(
         optionRenderType: mapOptionRenderType(option.optionType),
         choices: choices.map((choice) => {
             // Find variant for this choice to get stock info
-            const variant = variants?.find(v => 
-                Object.values(v.choices).includes(choice.value)
-            );
-            
+            const variant = variants?.find((v) => Object.values(v.choices).includes(choice.value));
+
             return {
                 choiceId: choice.description,
                 name: choice.value || '',
-                choiceType: option.optionType === 'color' 
-                    ? ChoiceType.ONE_COLOR 
-                    : ChoiceType.CHOICE_TEXT,
+                choiceType:
+                    option.optionType === 'color' ? ChoiceType.ONE_COLOR : ChoiceType.CHOICE_TEXT,
                 colorCode: '', // V1 doesn't store color code in choices
                 inStock: variant?.stock?.inStock ?? choice.inStock ?? true,
                 variantId: variant?._id || '',
-                isSelected: false
+                isSelected: false,
             };
-        })
+        }),
     };
 }
 
@@ -148,7 +149,7 @@ const DEFAULT_PRODUCT_PAGE_PATH = '/products';
 
 /**
  * Map a Wix Stores Catalog V1 product to ProductCardViewState
- * 
+ *
  * Key mapping differences from V3:
  * - V1 prices are numbers, convert to strings for ViewState
  * - V1 provides formatted prices directly
@@ -157,19 +158,19 @@ const DEFAULT_PRODUCT_PAGE_PATH = '/products';
  */
 export function mapProductToCard(
     product: Product,
-    productPagePath: string = DEFAULT_PRODUCT_PAGE_PATH
+    productPagePath: string = DEFAULT_PRODUCT_PAGE_PATH,
 ): ProductCardViewState {
     const mainMedia = product.media?.mainMedia;
     const slug = product.slug || '';
-    
+
     // V1 prices are numbers - convert to strings for ViewState
     const actualPrice = product.price?.discountedPrice ?? product.price?.price ?? 0;
     const compareAtPrice = product.price?.price ?? 0;
     const formattedActualPrice = product.price?.formatted?.discountedPrice || '';
     const formattedCompareAtPrice = product.price?.formatted?.price || '';
-    
+
     const hasDiscount = hasProductDiscount(product);
-    console.log("product", product.name, product.slug);
+    console.log('product', product.name, product.slug);
     return {
         _id: product._id || '',
         name: product.name || '',
@@ -179,14 +180,14 @@ export function mapProductToCard(
             // V1 provides complete URLs
             url: mainMedia?.image?.url || '',
             altText: mainMedia?.title || product.name || '',
-            mediaType: mapMediaType(mainMedia?.mediaType)
+            mediaType: mapMediaType(mainMedia?.mediaType),
         },
         thumbnail: {
             // V1 provides complete thumbnail URLs
             url: mainMedia?.thumbnail?.url || '',
             altText: mainMedia?.title || product.name || '',
             width: mainMedia?.thumbnail?.width || 300,
-            height: mainMedia?.thumbnail?.height || 300
+            height: mainMedia?.thumbnail?.height || 300,
         },
         // Simplified price fields
         price: formattedActualPrice,
@@ -195,24 +196,25 @@ export function mapProductToCard(
         inventory: {
             // V1 uses stock.inventoryStatus
             availabilityStatus: mapAvailabilityStatus(product.stock?.inventoryStatus),
-            preorderStatus: mapPreorderStatus()
+            preorderStatus: mapPreorderStatus(),
         },
         ribbon: {
             _id: product.ribbon || '',
-            name: product.ribbon || ''
+            name: product.ribbon || '',
         },
         hasRibbon: !!product.ribbon,
         brand: {
             _id: product.brand || '',
-            name: product.brand || ''
+            name: product.brand || '',
         },
         productType: mapProductType(product.productType),
         isAddingToCart: false,
         // Quick add behavior
         quickAddType: getQuickAddType(product),
-        quickOption: getQuickAddType(product) === QuickAddType.SINGLE_OPTION
-            ? mapQuickOption(product.productOptions?.[0], product.variants)
-            : null
+        quickOption:
+            getQuickAddType(product) === QuickAddType.SINGLE_OPTION
+                ? mapQuickOption(product.productOptions?.[0], product.variants)
+                : null,
     };
 }
 
@@ -254,6 +256,6 @@ export function mapCollectionToViewState(collection: Collection): CollectionView
         slug: collection.slug || '',
         description: collection.description || '',
         imageUrl: collection.media?.mainMedia?.image?.url || '',
-        productCount: collection.numberOfProducts || 0
+        productCount: collection.numberOfProducts || 0,
     };
 }

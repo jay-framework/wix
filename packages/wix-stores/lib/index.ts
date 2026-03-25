@@ -1,26 +1,26 @@
 /**
  * Wix Stores Package - Server Entry Point
- * 
+ *
  * This is the main entry point for server-side imports.
  * Provides services, actions, and component definitions.
  */
 
 // Re-export cart components from wix-cart (shared package)
 export { cartIndicator, cartPage } from '@jay-framework/wix-cart';
-export { 
-    WIX_CART_SERVICE, 
+export {
+    WIX_CART_SERVICE,
     WIX_CART_CONTEXT,
     provideWixCartService,
-    provideWixCartContext
+    provideWixCartContext,
 } from '@jay-framework/wix-cart';
-export type { 
-    WixCartService, 
+export type {
+    WixCartService,
     WixCartContext,
     CartLineItem,
     CartSummary,
     CartState,
     CartIndicatorState,
-    AddToCartOptions
+    AddToCartOptions,
 } from '@jay-framework/wix-cart';
 
 // Export stores-specific headless components
@@ -38,7 +38,7 @@ export {
     type WixStoresServiceOptions,
 } from './services/wix-stores-service';
 
-// Export stores client context 
+// Export stores client context
 export {
     WIX_STORES_CONTEXT,
     type WixStoresContext,

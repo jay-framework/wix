@@ -12,43 +12,43 @@
 
 :root {
   /* Backgrounds - Warm Neutrals */
-  --bg-primary: #FAF8F5;
-  --bg-secondary: #F5F2ED;
-  --bg-card: #FFFFFF;
-  --bg-hover: #F0EDE6;
-  --bg-elevated: #FFFFFF;
+  --bg-primary: #faf8f5;
+  --bg-secondary: #f5f2ed;
+  --bg-card: #ffffff;
+  --bg-hover: #f0ede6;
+  --bg-elevated: #ffffff;
   --bg-overlay: rgba(45, 42, 38, 0.4);
-  
+
   /* Text colors - Warm Charcoals */
-  --text-primary: #2D2A26;
-  --text-secondary: #6B665E;
-  --text-muted: #9C968D;
-  --text-inverse: #FFFFFF;
-  
+  --text-primary: #2d2a26;
+  --text-secondary: #6b665e;
+  --text-muted: #9c968d;
+  --text-inverse: #ffffff;
+
   /* Primary accent - Terracotta/Burnt Sienna */
-  --accent: #C45C3E;
-  --accent-hover: #D4704F;
-  --accent-muted: #A44D33;
+  --accent: #c45c3e;
+  --accent-hover: #d4704f;
+  --accent-muted: #a44d33;
   --accent-light: rgba(196, 92, 62, 0.12);
   --accent-lighter: rgba(196, 92, 62, 0.06);
-  
+
   /* Secondary accent - Sage Green */
-  --sage: #6B7F62;
+  --sage: #6b7f62;
   --sage-light: rgba(107, 127, 98, 0.12);
-  
+
   /* Semantic colors */
-  --success: #6B7F62;
+  --success: #6b7f62;
   --success-bg: rgba(107, 127, 98, 0.12);
-  --warning: #D4924F;
+  --warning: #d4924f;
   --warning-bg: rgba(212, 146, 79, 0.12);
-  --error: #C45C3E;
+  --error: #c45c3e;
   --error-bg: rgba(196, 92, 62, 0.12);
-  
+
   /* Borders */
-  --border: #E8E4DD;
-  --border-hover: #D4CFC5;
+  --border: #e8e4dd;
+  --border-hover: #d4cfc5;
   --border-focus: var(--accent);
-  
+
   /* Border radius - Organic and Refined */
   --radius-xs: 4px;
   --radius-sm: 6px;
@@ -57,7 +57,7 @@
   --radius-xl: 20px;
   --radius-2xl: 28px;
   --radius-full: 9999px;
-  
+
   /* Shadows - Soft and Warm */
   --shadow-sm: 0 1px 3px rgba(45, 42, 38, 0.04), 0 1px 2px rgba(45, 42, 38, 0.06);
   --shadow-md: 0 4px 12px rgba(45, 42, 38, 0.06), 0 2px 6px rgba(45, 42, 38, 0.04);
@@ -65,19 +65,19 @@
   --shadow-xl: 0 20px 48px rgba(45, 42, 38, 0.1), 0 8px 20px rgba(45, 42, 38, 0.06);
   --shadow-card-hover: 0 16px 40px rgba(45, 42, 38, 0.12), 0 6px 16px rgba(45, 42, 38, 0.06);
   --shadow-accent: 0 8px 24px rgba(196, 92, 62, 0.2);
-  
+
   /* Transitions - Refined */
   --transition-fast: 0.12s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-spring: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  
+
   /* Layout */
   --container-max: 1400px;
   --container-narrow: 720px;
   --page-padding: 48px;
   --section-gap: 64px;
-  
+
   /* Typography */
   --font-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
   --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -133,7 +133,9 @@ button {
   background: none;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   font-family: inherit;
 }
 
@@ -1090,7 +1092,9 @@ input, select, textarea {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ============================================================================
@@ -1187,8 +1191,14 @@ input, select, textarea {
 }
 
 @keyframes cart-bounce {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); border-color: var(--accent); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+    border-color: var(--accent);
+  }
 }
 
 .cart-indicator.is-loading .cart-indicator-count {
@@ -1208,20 +1218,20 @@ input, select, textarea {
   :root {
     --page-padding: 32px;
   }
-  
+
   .product-page-layout {
     grid-template-columns: 1fr;
     gap: 48px;
   }
-  
+
   .product-gallery {
     position: static;
   }
-  
+
   .product-name {
     font-size: 32px;
   }
-  
+
   .product-price .price {
     font-size: 28px;
   }
@@ -1231,11 +1241,11 @@ input, select, textarea {
   .main-content-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .filters-sidebar {
     position: static;
   }
-  
+
   .products-grid {
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 20px;
@@ -1246,31 +1256,31 @@ input, select, textarea {
   :root {
     --page-padding: 20px;
   }
-  
+
   .page-title {
     font-size: 28px;
   }
-  
+
   .search-box {
     flex-direction: column;
   }
-  
+
   .products-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .product-actions {
     flex-direction: column;
   }
-  
+
   .product-thumbnails {
     justify-content: flex-start;
   }
-  
+
   .site-header {
     padding: 16px var(--page-padding);
   }
-  
+
   .site-nav {
     gap: 16px;
   }

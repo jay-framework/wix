@@ -10,6 +10,9 @@
             contract="cart-indicator"
             key="cartIndicator"
     ></script>
+      <script type="application/jay-params">
+          slug: ceramic-flower-vase
+      </script>
     <script type="application/jay-data">
       data:
     </script>

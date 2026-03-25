@@ -6,7 +6,7 @@
  *
  * Server: Registers the WixStoresV1Service for server-side rendering.
  * Client: Provides WixStoresV1Context for client-side API access.
- * 
+ *
  * Note: Cart functionality is provided by the wix-cart plugin (dependency).
  * WIX_CART_SERVICE and WIX_CART_CONTEXT are initialized by wix-cart.
  */
@@ -16,7 +16,10 @@ import { getService } from '@jay-framework/stack-server-runtime';
 import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
 
 import { provideWixStoresV1Service } from './services/wix-stores-v1-service';
-import { provideWixStoresV1Context, type WixStoresV1InitData } from './contexts/wix-stores-v1-context';
+import {
+    provideWixStoresV1Context,
+    type WixStoresV1InitData,
+} from './contexts/wix-stores-v1-context';
 
 // Re-export types for consumers
 export type { WixStoresV1InitData } from './contexts/wix-stores-v1-context.js';

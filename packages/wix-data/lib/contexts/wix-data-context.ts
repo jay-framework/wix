@@ -1,6 +1,6 @@
 /**
  * Client-side Wix Data Context
- * 
+ *
  * Provides client-side access to Wix Data APIs.
  */
 
@@ -37,13 +37,13 @@ export const WIX_DATA_CONTEXT = createJayContext<WixDataContext>();
 export function provideWixDataContext(): WixDataContext {
     const wixClientContext = useGlobalContext(WIX_CLIENT_CONTEXT);
     const wixClient = wixClientContext.client;
-    
+
     const itemsClient: typeof items = wixClient.use(items) as unknown as typeof items;
-    
+
     const context = registerReactiveGlobalContext(WIX_DATA_CONTEXT, () => ({
-        items: itemsClient
+        items: itemsClient,
     }));
-    
+
     console.log('[wix-data] Client data context initialized');
     return context;
 }

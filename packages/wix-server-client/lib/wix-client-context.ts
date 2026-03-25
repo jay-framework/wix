@@ -1,5 +1,5 @@
-import {createJayContext, registerGlobalContext} from "@jay-framework/runtime";
-import {createClient, OAuthStrategy, Tokens, WixClient} from "@wix/sdk";
+import { createJayContext, registerGlobalContext } from '@jay-framework/runtime';
+import { createClient, OAuthStrategy, Tokens, WixClient } from '@wix/sdk';
 
 export interface WixClientContext {
     /** The Wix SDK client (null if OAuth not configured) */
@@ -23,8 +23,8 @@ export const WIX_CLIENT_CONTEXT = createJayContext<WixClientContext>();
 const TOKENS_STORAGE_KEY = 'wix_visitor_tokens';
 
 interface StoredTokens {
-    tokens: Tokens,
-    oauthClientId: string
+    tokens: Tokens;
+    oauthClientId: string;
 }
 
 /**
@@ -32,7 +32,10 @@ interface StoredTokens {
  */
 function storeTokens(tokens: Tokens, oauthClientId: string): void {
     try {
-        localStorage.setItem(TOKENS_STORAGE_KEY+oauthClientId, JSON.stringify({tokens, oauthClientId}));
+        localStorage.setItem(
+            TOKENS_STORAGE_KEY + oauthClientId,
+            JSON.stringify({ tokens, oauthClientId }),
+        );
     } catch (error) {
         console.warn('[WixClient] Failed to store tokens:', error);
     }
@@ -43,7 +46,7 @@ function storeTokens(tokens: Tokens, oauthClientId: string): void {
  */
 function getStoredTokens(oauthClientId: string): StoredTokens | null {
     try {
-        const stored = localStorage.getItem(TOKENS_STORAGE_KEY+oauthClientId);
+        const stored = localStorage.getItem(TOKENS_STORAGE_KEY + oauthClientId);
         if (stored) {
             return JSON.parse(stored);
         }
@@ -71,7 +74,7 @@ export async function provideWixClientContext(oauthClientId: string) {
     const wixClient = createClient({
         auth: OAuthStrategy({
             clientId: oauthClientId,
-            tokens: (storedTokens?.oauthClientId === oauthClientId)?storedTokens.tokens: undefined,
+            tokens: storedTokens?.oauthClientId === oauthClientId ? storedTokens.tokens : undefined,
         }),
     });
 

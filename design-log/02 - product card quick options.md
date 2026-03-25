@@ -5,6 +5,7 @@
 The store product page has "Add to Cart" buttons on product cards. However, for products with options (Size, Color) and modifiers, those must be selected before adding to cart.
 
 The goal is to extend the product card with:
+
 1. Options/variants data (from Wix Stores API)
 2. A hover UI showing option buttons overlaying the product image
 3. Replace simple "Add to Cart" with option selection when needed
@@ -37,11 +38,11 @@ A: On hover. The "Select {option}" hint is replaced by option buttons when hover
 
 ## UX Summary
 
-| Product Type | Behavior |
-|--------------|----------|
-| No options | Regular "Add to Cart" button |
-| Single option | Option choices on hover, click = add to cart |
-| Multiple options or modifiers | "View Options" button → product page |
+| Product Type                  | Behavior                                     |
+| ----------------------------- | -------------------------------------------- |
+| No options                    | Regular "Add to Cart" button                 |
+| Single option                 | Option choices on hover, click = add to cart |
+| Multiple options or modifiers | "View Options" button → product page         |
 
 ## Proposed Design
 
@@ -55,30 +56,30 @@ tags:
     type: data
     dataType: string
     description: Option GUID
-    
+
   - tag: name
     type: data
     dataType: string
-    description: "Option name (e.g., \"Size\", \"Color\")"
-    
+    description: 'Option name (e.g., "Size", "Color")'
+
   - tag: optionRenderType
     type: variant
     dataType: enum (TEXT_CHOICES | COLOR_SWATCH_CHOICES)
     description: How the option should be rendered
-    
+
   - tag: choices
     type: sub-contract
     repeated: true
     trackBy: choiceId
     description: Available choices for this option
     tags:
-      - {tag: choiceId, type: data, dataType: string}
-      - {tag: name, type: data, dataType: string, description: "Choice display name (e.g., \"XL\")"}
-      - {tag: choiceType, type: variant, dataType: "enum (CHOICE_TEXT | ONE_COLOR)"}
-      - {tag: colorCode, type: data, dataType: string, description: "HEX color (for swatches)"}
-      - {tag: inStock, type: variant, dataType: boolean, phase: fast+interactive}
-      - {tag: isSelected, type: variant, dataType: boolean, phase: fast+interactive}
-      - {tag: choiceButton, type: interactive, elementType: HTMLButtonElement}
+      - { tag: choiceId, type: data, dataType: string }
+      - { tag: name, type: data, dataType: string, description: 'Choice display name (e.g., "XL")' }
+      - { tag: choiceType, type: variant, dataType: 'enum (CHOICE_TEXT | ONE_COLOR)' }
+      - { tag: colorCode, type: data, dataType: string, description: 'HEX color (for swatches)' }
+      - { tag: inStock, type: variant, dataType: boolean, phase: fast+interactive }
+      - { tag: isSelected, type: variant, dataType: boolean, phase: fast+interactive }
+      - { tag: choiceButton, type: interactive, elementType: HTMLButtonElement }
 ```
 
 ### 2. Extend `product-card.jay-contract`
@@ -86,24 +87,24 @@ tags:
 Add these tags:
 
 ```yaml
-  # Quick-add behavior variants
-  - tag: quickAddType
-    type: variant
-    dataType: enum (SIMPLE | SINGLE_OPTION | NEEDS_CONFIGURATION)
-    description: |
-      SIMPLE = no options, show Add to Cart
-      SINGLE_OPTION = one option, show choices on hover (click = add)
-      NEEDS_CONFIGURATION = multiple options or modifiers, link to product page
-    
-  - tag: quickOption
-    type: sub-contract
-    description: Primary option for quick selection (only when quickAddType = SINGLE_OPTION)
-    link: ./product-options
+# Quick-add behavior variants
+- tag: quickAddType
+  type: variant
+  dataType: enum (SIMPLE | SINGLE_OPTION | NEEDS_CONFIGURATION)
+  description: |
+    SIMPLE = no options, show Add to Cart
+    SINGLE_OPTION = one option, show choices on hover (click = add)
+    NEEDS_CONFIGURATION = multiple options or modifiers, link to product page
 
-  - tag: viewOptionsButton
-    type: interactive
-    elementType: HTMLButtonElement
-    description: Button to navigate to product page (when quickAddType = NEEDS_CONFIGURATION)
+- tag: quickOption
+  type: sub-contract
+  description: Primary option for quick selection (only when quickAddType = SINGLE_OPTION)
+  link: ./product-options
+
+- tag: viewOptionsButton
+  type: interactive
+  elementType: HTMLButtonElement
+  description: Button to navigate to product page (when quickAddType = NEEDS_CONFIGURATION)
 ```
 
 ### 3. Update `stores-actions.ts` and `product-mapper.ts`
@@ -123,15 +124,15 @@ enum QuickAddType {
 function getQuickAddType(product): QuickAddType {
   const optionCount = product.options?.length ?? 0;
   const hasModifiers = (product.modifiers?.length ?? 0) > 0;
-  
+
   if (hasModifiers || optionCount > 1) return QuickAddType.NEEDS_CONFIGURATION;
   if (optionCount === 1) return QuickAddType.SINGLE_OPTION;
   return QuickAddType.SIMPLE;
 }
 
 quickAddType: getQuickAddType(product),
-quickOption: product.options?.length === 1 
-  ? mapQuickOption(product.options[0], product.variantsInfo) 
+quickOption: product.options?.length === 1
+  ? mapQuickOption(product.options[0], product.variantsInfo)
   : null,
 ```
 
@@ -145,37 +146,45 @@ quickOption: product.options?.length === 1
       <!-- Badges only - no overlay -->
       <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
     </a>
-    
+
     <!-- Product content -->
     <div class="product-card-content">
       <!-- ... name, price content ... -->
-      
+
       <!-- SIMPLE: Regular add to cart -->
-      <button class="btn btn-secondary btn-block" 
+      <button
+        class="btn btn-secondary btn-block"
         ref="productSearch.searchResults.addToCartButton"
-        if="quickAddType === SIMPLE && inventory.availabilityStatus === IN_STOCK">
+        if="quickAddType === SIMPLE && inventory.availabilityStatus === IN_STOCK"
+      >
         Add to Cart
       </button>
-      
+
       <!-- SINGLE_OPTION: Quick options in button area -->
       <div class="quick-options-area" if="quickAddType === SINGLE_OPTION">
         <!-- Default: "Select {option}" hint -->
         <span class="select-option-hint">Select {quickOption.name}</span>
         <!-- On hover: Show option buttons (replaces hint) -->
         <div class="quick-options-buttons">
-          <button class="quick-option-btn {!inStock ? out-of-stock}"
-            forEach="quickOption.choices" trackBy="choiceId"
+          <button
+            class="quick-option-btn {!inStock ? out-of-stock}"
+            forEach="quickOption.choices"
+            trackBy="choiceId"
             ref="productSearch.searchResults.quickOption.choices.choiceButton"
-            disabled="{!inStock}">
+            disabled="{!inStock}"
+          >
             {name}
           </button>
         </div>
       </div>
-      
+
       <!-- NEEDS_CONFIGURATION: Link to product page -->
-      <a href="{productUrl}" class="btn btn-secondary btn-block"
+      <a
+        href="{productUrl}"
+        class="btn btn-secondary btn-block"
         ref="productSearch.searchResults.viewOptionsButton"
-        if="quickAddType === NEEDS_CONFIGURATION">
+        if="quickAddType === NEEDS_CONFIGURATION"
+      >
         View Options
       </a>
     </div>
@@ -256,12 +265,14 @@ quickOption: product.options?.length === 1
 ## Implementation Plan
 
 ### Phase 1: Shared Contract
+
 1. Create `product-options.jay-contract` with shared option/choice structure
 2. Update `product-page.jay-contract` to use `link: ./product-options`
 3. Extend `product-card.jay-contract` with `quickAddType`, `quickOption`, `viewOptionsButton`
 4. Run contract type generation
 
 ### Phase 2: Action/Mapper Updates
+
 1. Update `product-mapper.ts`:
    - Add `QuickAddType` enum
    - Add `getQuickAddType()` function
@@ -269,11 +280,13 @@ quickOption: product.options?.length === 1
 2. Update `searchProducts` and `getAllProducts` to include variant data fields
 
 ### Phase 3: Component Updates
+
 1. Update `product-search.ts` interactive phase:
    - Handle `quickOption.choices.choiceButton.onclick` → find variant → add to cart
    - Handle `viewOptionsButton` (navigation to product page)
 
 ### Phase 4: HTML/CSS
+
 1. Update `page.jay-html` with:
    - Quick options overlay for `SINGLE_OPTION`
    - "View Options" button for `NEEDS_CONFIGURATION`
@@ -283,13 +296,13 @@ quickOption: product.options?.length === 1
 
 ## Trade-offs
 
-| Decision | Pros | Cons |
-|----------|------|------|
-| Single option only | Simple UI, one-click add | Multi-option products redirect to page |
-| Click = Add (not select) | Faster UX, fewer clicks | No "preview" before add |
-| Shared contract | DRY, consistency | Additional indirection |
-| Buttons replace hint on hover | Cleaner than overlay, no image obstruction | Mobile shows only hint |
-| "View Options" for complex | Clear expectation | Extra navigation step |
+| Decision                      | Pros                                       | Cons                                   |
+| ----------------------------- | ------------------------------------------ | -------------------------------------- |
+| Single option only            | Simple UI, one-click add                   | Multi-option products redirect to page |
+| Click = Add (not select)      | Faster UX, fewer clicks                    | No "preview" before add                |
+| Shared contract               | DRY, consistency                           | Additional indirection                 |
+| Buttons replace hint on hover | Cleaner than overlay, no image obstruction | Mobile shows only hint                 |
+| "View Options" for complex    | Clear expectation                          | Extra navigation step                  |
 
 ## Verification Criteria
 
@@ -305,9 +318,11 @@ quickOption: product.options?.length === 1
 ## Implementation Results
 
 ### Files Created
+
 - `wix/packages/wix-stores/lib/contracts/product-options.jay-contract` - Shared option/choice contract
 
 ### Files Modified
+
 - `wix/packages/wix-stores/lib/contracts/product-card.jay-contract` - Added `quickAddType`, `quickOption`, `viewOptionsButton`
 - `wix/packages/wix-stores/lib/utils/product-mapper.ts` - Added `getQuickAddType()`, `mapQuickOption()` functions
 - `wix/packages/wix-stores/lib/actions/stores-actions.ts` - Added `VARIANT_OPTION_CHOICE_NAMES` to query fields
@@ -316,10 +331,12 @@ quickOption: product.options?.length === 1
 - `wix/examples/store/src/styles/store-theme.css` - Added hover overlay styles
 
 ### Deviations from Design
+
 - Did not update `product-page.jay-contract` to use shared contract (kept existing structure to minimize changes)
 - Mobile fallback shows "Select {option name}" hint text instead of tap-to-reveal
 
 ### Next Steps
+
 1. Run contract type generation to resolve linter errors
 2. Test with real product data
 3. Consider adding loading spinner to quick option buttons during add-to-cart

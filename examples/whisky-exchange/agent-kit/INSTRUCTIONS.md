@@ -5,6 +5,7 @@ This folder contains everything you need to create jay-html pages for a jay-stac
 ## What is Jay Stack?
 
 Jay Stack is a full-stack framework where:
+
 - **Plugins** provide headless components (data + interactions, no UI)
 - **Contracts** define the data shape and interaction points of each component
 - **jay-html** templates provide the UI that binds to contract data
@@ -14,11 +15,11 @@ Your job is to create `.jay-html` pages that bind to the data and interactions d
 
 ## Rendering Phases
 
-| Phase | When | Use For |
-|-------|------|---------|
-| **slow** | Build time (SSG) | Static content, SEO data, pre-rendered lists |
-| **fast** | Request time (SSR) | Per-request data (prices, stock, personalization) |
-| **fast+interactive** | Request + client | Data that also updates on the client |
+| Phase                | When               | Use For                                           |
+| -------------------- | ------------------ | ------------------------------------------------- |
+| **slow**             | Build time (SSG)   | Static content, SEO data, pre-rendered lists      |
+| **fast**             | Request time (SSR) | Per-request data (prices, stock, personalization) |
+| **fast+interactive** | Request + client   | Data that also updates on the client              |
 
 There is no standalone "interactive" phase. Any tag with `type: interactive` (refs/interactions) is automatically `fast+interactive`. Tags without an explicit phase are available in all phases.
 
@@ -35,13 +36,13 @@ There is no standalone "interactive" phase. Any tag with `type: interactive` (re
 
 ## Reference Docs
 
-| File | Topic |
-|------|-------|
-| [project-structure.md](project-structure.md) | Project layout, styling patterns (CSS themes, design tokens), configuration files |
-| [jay-html-syntax.md](jay-html-syntax.md) | Jay-HTML template syntax: data binding, conditions, loops, headless components |
-| [routing.md](routing.md) | Directory-based routing: page structure, dynamic routes, route priority |
-| [contracts-and-plugins.md](contracts-and-plugins.md) | Reading contracts, plugin.yaml, and the materialized indexes |
-| [cli-commands.md](cli-commands.md) | CLI commands: validate, params, action, dev server |
+| File                                                 | Topic                                                                             |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------- |
+| [project-structure.md](project-structure.md)         | Project layout, styling patterns (CSS themes, design tokens), configuration files |
+| [jay-html-syntax.md](jay-html-syntax.md)             | Jay-HTML template syntax: data binding, conditions, loops, headless components    |
+| [routing.md](routing.md)                             | Directory-based routing: page structure, dynamic routes, route priority           |
+| [contracts-and-plugins.md](contracts-and-plugins.md) | Reading contracts, plugin.yaml, and the materialized indexes                      |
+| [cli-commands.md](cli-commands.md)                   | CLI commands: validate, params, action, dev server                                |
 
 ## Quick Start
 
@@ -89,14 +90,19 @@ Create `src/pages/page.jay-html`:
 
 ```html
 <html>
-<head>
-  <script type="application/jay-headless" plugin="wix-stores" contract="product-page" key="product"></script>
-</head>
-<body>
-  <h1>{product.name}</h1>
-  <span if="product.inStock">In Stock</span>
-  <button ref="product.addToCart">Add to Cart</button>
-</body>
+  <head>
+    <script
+      type="application/jay-headless"
+      plugin="wix-stores"
+      contract="product-page"
+      key="product"
+    ></script>
+  </head>
+  <body>
+    <h1>{product.name}</h1>
+    <span if="product.inStock">In Stock</span>
+    <button ref="product.addToCart">Add to Cart</button>
+  </body>
 </html>
 ```
 

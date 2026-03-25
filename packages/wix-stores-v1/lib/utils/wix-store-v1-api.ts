@@ -1,19 +1,19 @@
 /**
  * Wix Store V1 API Client Factories
- * 
+ *
  * These functions create singleton instances of Wix Catalog V1 API clients.
  * Used by both the server service and client context.
- * 
+ *
  * Key difference from V3:
  * - Uses `products` module instead of `productsV3`
  * - Uses `collections` module instead of `@wix/categories`
- * 
+ *
  * Note: Cart client is provided by @jay-framework/wix-cart package.
  */
 
-import { WixClient } from "@wix/sdk";
-import { products, collections, inventory } from "@wix/stores";
-import {BuildDescriptors} from "@wix/sdk-types";
+import { WixClient } from '@wix/sdk';
+import { products, collections, inventory } from '@wix/stores';
+import { BuildDescriptors } from '@wix/sdk-types';
 
 const instances: {
     productsClientInstance: BuildDescriptors<typeof products, {}> | undefined;
@@ -49,7 +49,9 @@ export function getProductsClient(wixClient: WixClient): BuildDescriptors<typeof
  * @returns Collections client instance from @wix/stores
  * @see https://dev.wix.com/docs/sdk/backend-modules/stores/collections/introduction
  */
-export function getCollectionsClient(wixClient: WixClient): BuildDescriptors<typeof collections, {}> {
+export function getCollectionsClient(
+    wixClient: WixClient,
+): BuildDescriptors<typeof collections, {}> {
     if (!instances.collectionsClientInstance) {
         instances.collectionsClientInstance = wixClient.use(collections);
     }

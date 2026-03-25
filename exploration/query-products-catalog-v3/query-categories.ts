@@ -1,5 +1,5 @@
-import { getClient } from "./wix-client.js";
-import { categories } from "@wix/categories";
+import { getClient } from './wix-client.js';
+import { categories } from '@wix/categories';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -19,9 +19,10 @@ async function queryCategories() {
 
         // Fetch all categories (paginated)
         let allCategories: any[] = [];
-        let response = await categoriesClient.queryCategories({
-            treeReference: { appNamespace: '@wix/stores' }
-        })
+        let response = await categoriesClient
+            .queryCategories({
+                treeReference: { appNamespace: '@wix/stores' },
+            })
             .eq('visible', true)
             .limit(100)
             .find();
@@ -151,7 +152,6 @@ ${buildHtmlTree(roots)}
         const htmlPath = path.join(outputDir, 'categories-tree.html');
         fs.writeFileSync(htmlPath, htmlContent);
         console.log(`Saved to: ${htmlPath}`);
-
     } catch (error) {
         console.error('Error querying categories:', error);
         if (error instanceof Error) {

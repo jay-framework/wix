@@ -1,15 +1,15 @@
 /**
  * Wix Client setup using OAuth Strategy
- * 
+ *
  * This creates a Wix client for browser use with OAuth visitor authentication.
  * Modules are initialized with the client for type-safe access.
- * 
+ *
  * @see https://dev.wix.com/docs/go-headless/develop-your-project/self-managed-headless/authentication/visitors/handle-visitors-using-the-js-sdk
  */
 
-import { createClient, OAuthStrategy, Tokens } from "@wix/sdk";
-import { productsV3 } from "@wix/stores";
-import { currentCart } from "@wix/ecom";
+import { createClient, OAuthStrategy, Tokens } from '@wix/sdk';
+import { productsV3 } from '@wix/stores';
+import { currentCart } from '@wix/ecom';
 
 // ============================================================================
 // Configuration
@@ -17,7 +17,7 @@ import { currentCart } from "@wix/ecom";
 
 // OAuth Client ID - get this from your Wix Headless project settings
 // See: https://dev.wix.com/docs/go-headless/develop-your-project/self-managed-headless/authentication/visitors/handle-visitors-using-the-js-sdk
-const OAUTH_CLIENT_ID: string = "b0bc7aef-d666-4188-8f3c-e98b79da4191";
+const OAUTH_CLIENT_ID: string = 'b0bc7aef-d666-4188-8f3c-e98b79da4191';
 
 // ============================================================================
 // Token Storage (localStorage)
@@ -89,7 +89,7 @@ let authClient: ReturnType<typeof OAuthStrategy> | null = null;
 /**
  * Initialize the Wix client with OAuth visitor authentication.
  * This should be called once when the page loads.
- * 
+ *
  * The client is created with modules pre-configured, so you can access:
  * - client.productsV3.queryProducts()
  * - client.currentCart.getCurrentCart()
@@ -99,24 +99,24 @@ export async function initializeWixClient(): Promise<WixStoresClient> {
         return wixClientInstance;
     }
 
-    if (OAUTH_CLIENT_ID === "YOUR_OAUTH_CLIENT_ID_HERE") {
+    if (OAUTH_CLIENT_ID === 'YOUR_OAUTH_CLIENT_ID_HERE') {
         throw new Error(
-            "Please set your OAuth Client ID in src/wix-client.ts\n" +
-            "Get it from your Wix Headless project settings."
+            'Please set your OAuth Client ID in src/wix-client.ts\n' +
+                'Get it from your Wix Headless project settings.',
         );
     }
 
     console.log('[WixClient] Initializing with OAuth...');
-    
+
     // Check for existing tokens
     const existingTokens = getStoredTokens();
-    
+
     // Create OAuth strategy
     authClient = OAuthStrategy({
         clientId: OAUTH_CLIENT_ID,
         tokens: existingTokens || undefined,
     });
-    
+
     // Create the Wix client with modules
     wixClientInstance = createWixClient(authClient);
 
@@ -167,13 +167,13 @@ export async function refreshAccessToken(): Promise<Tokens> {
     if (!authClient) {
         throw new Error('Wix client not initialized');
     }
-    
+
     const currentTokens = authClient.getTokens();
-    
+
     if (!currentTokens?.refreshToken) {
         throw new Error('No refresh token available');
     }
-    
+
     const newTokens = await authClient.renewToken(currentTokens.refreshToken);
     storeTokens(newTokens);
     return newTokens;

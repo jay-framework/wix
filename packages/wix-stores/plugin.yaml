@@ -3,8 +3,8 @@ name: wix-stores
 
 contracts:
   - name: product-page
-    contract: product-page.jay-contract  # Export subpath (matches package.json exports)
-    component: productPage  # Exported member name from index.ts
+    contract: product-page.jay-contract # Export subpath (matches package.json exports)
+    component: productPage # Exported member name from index.ts
     description: Complete headless product page with server-side rendering and client interactivity
   - name: product-search
     contract: product-search.jay-contract

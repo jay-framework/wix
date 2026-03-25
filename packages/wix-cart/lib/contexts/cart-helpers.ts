@@ -1,18 +1,14 @@
 /**
  * Cart Helper Types and Functions
- * 
+ *
  * Shared types and mappers for cart operations.
  * Used by both context and components.
  */
 
 import type { currentCart } from '@wix/ecom';
-import type {
-    Cart,
-    LineItem,
-    CartDiscount
-} from '@wix/auto_sdk_ecom_current-cart';
+import type { Cart, LineItem, CartDiscount } from '@wix/auto_sdk_ecom_current-cart';
 import { formatWixMediaUrl } from '@jay-framework/wix-utils';
-import {BuildDescriptors} from "@wix/sdk-types";
+import { BuildDescriptors } from '@wix/sdk-types';
 
 // ============================================================================
 // Types
@@ -113,12 +109,13 @@ export function mapLineItem(item: LineItem): CartLineItem {
     const physicalProperties = item.physicalProperties;
     const priceData = item.price;
     const descriptionLines = item.descriptionLines || [];
-    
+
     // Build variant description from options
     const variantParts = descriptionLines
-        .filter(line => line.name?.translated)
-        .map(line => 
-            `${line.name?.translated}: ${line.colorInfo?.translated || line.plainText?.translated || ''}`
+        .filter((line) => line.name?.translated)
+        .map(
+            (line) =>
+                `${line.name?.translated}: ${line.colorInfo?.translated || line.plainText?.translated || ''}`,
         );
     // Extract slug from item.url (set by our addToCart with the correct catalog slug)
     const slug = item.url?.split('/').pop() || '';
@@ -132,22 +129,22 @@ export function mapLineItem(item: LineItem): CartLineItem {
         sku: physicalProperties?.sku || '',
         image: {
             url: formatWixMediaUrl('', item.image || ''),
-            altText: item.productName?.translated || ''
+            altText: item.productName?.translated || '',
         },
         quantity: item.quantity || 1,
         unitPrice: {
             amount: priceData?.amount || '0',
-            formattedAmount: priceData?.formattedAmount || ''
+            formattedAmount: priceData?.formattedAmount || '',
         },
         lineTotal: {
             amount: item.lineItemPrice?.amount || '0',
-            formattedAmount: item.lineItemPrice?.formattedAmount || ''
+            formattedAmount: item.lineItemPrice?.formattedAmount || '',
         },
         lineDiscount: {
             amount: '0',
-            formattedAmount: ''
+            formattedAmount: '',
         },
-        hasDiscount: false
+        hasDiscount: false,
     };
 }
 
@@ -158,7 +155,7 @@ function calculateTotalDiscount(appliedDiscounts: CartDiscount[] | undefined): n
     if (!appliedDiscounts) return 0;
     return appliedDiscounts.reduce(
         (sum, d) => sum + parseFloat(d.merchantDiscount?.amount?.amount || '0'),
-        0
+        0,
     );
 }
 
@@ -167,10 +164,7 @@ function calculateTotalDiscount(appliedDiscounts: CartDiscount[] | undefined): n
  */
 function calculateItemCount(lineItems: LineItem[] | undefined): number {
     if (!lineItems) return 0;
-    return lineItems.reduce(
-        (sum, item) => sum + (item.quantity || 0),
-        0
-    );
+    return lineItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
 }
 
 /**
@@ -185,7 +179,7 @@ function getEmptySummary(): CartSummary {
         estimatedTax: { amount: '0', formattedAmount: '' },
         showTax: false,
         estimatedTotal: { amount: '0', formattedAmount: '$0.00' },
-        currency: 'USD'
+        currency: 'USD',
     };
 }
 
@@ -196,7 +190,7 @@ export function mapCartSummary(cart: Cart | null): CartSummary {
     if (!cart) {
         return getEmptySummary();
     }
-    
+
     const totalDiscount = calculateTotalDiscount(cart.appliedDiscounts);
     const itemCount = calculateItemCount(cart.lineItems);
 
@@ -204,23 +198,23 @@ export function mapCartSummary(cart: Cart | null): CartSummary {
         itemCount,
         subtotal: {
             amount: '0',
-            formattedAmount: '$0.00'
+            formattedAmount: '$0.00',
         },
         discount: {
             amount: totalDiscount.toString(),
-            formattedAmount: totalDiscount > 0 ? `-$${totalDiscount.toFixed(2)}` : ''
+            formattedAmount: totalDiscount > 0 ? `-$${totalDiscount.toFixed(2)}` : '',
         },
         hasDiscount: totalDiscount > 0,
         estimatedTax: {
             amount: '0',
-            formattedAmount: ''
+            formattedAmount: '',
         },
         showTax: false,
         estimatedTotal: {
             amount: '0',
-            formattedAmount: '$0.00'
+            formattedAmount: '$0.00',
         },
-        currency: cart.currency || 'USD'
+        currency: cart.currency || 'USD',
     };
 }
 
@@ -231,11 +225,9 @@ export function mapCartToState(cart: Cart | null): CartState {
     if (!cart) {
         return getEmptyCartState();
     }
-    
+
     const lineItems = (cart.lineItems || []).map(mapLineItem);
-    const appliedCoupon = cart.appliedDiscounts?.find(
-        d => d.coupon?.code
-    )?.coupon?.code || '';
+    const appliedCoupon = cart.appliedDiscounts?.find((d) => d.coupon?.code)?.coupon?.code || '';
 
     return {
         cartId: cart._id || '',
@@ -243,7 +235,7 @@ export function mapCartToState(cart: Cart | null): CartState {
         lineItems,
         summary: mapCartSummary(cart),
         appliedCoupon,
-        hasAppliedCoupon: !!appliedCoupon
+        hasAppliedCoupon: !!appliedCoupon,
     };
 }
 
@@ -257,7 +249,7 @@ export function getEmptyCartState(): CartState {
         lineItems: [],
         summary: getEmptySummary(),
         appliedCoupon: '',
-        hasAppliedCoupon: false
+        hasAppliedCoupon: false,
     };
 }
 
@@ -268,7 +260,7 @@ export function mapCartToIndicator(cart: Cart | null): CartIndicatorState {
     if (!cart || !cart.lineItems?.length) {
         return {
             itemCount: 0,
-            hasItems: false
+            hasItems: false,
         };
     }
 
@@ -276,7 +268,7 @@ export function mapCartToIndicator(cart: Cart | null): CartIndicatorState {
 
     return {
         itemCount,
-        hasItems: itemCount > 0
+        hasItems: itemCount > 0,
     };
 }
 
@@ -309,13 +301,11 @@ function isCartNotFoundError(error: unknown): boolean {
 
 /**
  * Get the current cart, treating 404 as an empty cart.
- * 
+ *
  * The Wix Cart API returns 404 when no cart exists (before first item is added).
  * This helper normalizes that case to return null, which the mappers handle as empty.
  */
-export async function getCurrentCartOrNull(
-    cartClient: CurrentCartClient
-): Promise<Cart | null> {
+export async function getCurrentCartOrNull(cartClient: CurrentCartClient): Promise<Cart | null> {
     try {
         const response = await cartClient.getCurrentCart();
         return response ?? null;
@@ -329,14 +319,14 @@ export async function getCurrentCartOrNull(
 
 /**
  * Estimate the current cart totals, treating 404 as an empty cart.
- * 
+ *
  * This API provides complete price totals including tax calculations.
  * Use this for cart pages where accurate totals are needed.
- * 
+ *
  * @see https://dev.wix.com/docs/sdk/backend-modules/ecom/current-cart/estimate-current-cart-totals
  */
 export async function estimateCurrentCartTotalsOrNull(
-    cartClient: CurrentCartClient
+    cartClient: CurrentCartClient,
 ): Promise<EstimateTotalsResult | null> {
     try {
         const response = await cartClient.estimateCurrentCartTotals({});
@@ -360,16 +350,14 @@ export function mapEstimateTotalsToState(estimate: EstimateTotalsResult | null):
 
     const cart = estimate.cart;
     const lineItems = (cart.lineItems || []).map(mapLineItem);
-    const appliedCoupon = cart.appliedDiscounts?.find(
-        d => d.coupon?.code
-    )?.coupon?.code || '';
+    const appliedCoupon = cart.appliedDiscounts?.find((d) => d.coupon?.code)?.coupon?.code || '';
 
     const itemCount = lineItems.reduce((sum, item) => sum + item.quantity, 0);
 
     // Extract totals from priceSummary (more accurate)
     const priceSummary = estimate.priceSummary;
     const taxSummary = estimate.taxSummary;
-    
+
     // Use priceSummary.discount which gives us the total discount amount
     const discountAmount = parseFloat(priceSummary?.discount?.amount || '0');
     const hasTax = parseFloat(taxSummary?.totalTax?.amount || '0') > 0;
@@ -382,25 +370,28 @@ export function mapEstimateTotalsToState(estimate: EstimateTotalsResult | null):
             itemCount,
             subtotal: {
                 amount: priceSummary?.subtotal?.amount || '0',
-                formattedAmount: priceSummary?.subtotal?.formattedAmount || '$0.00'
+                formattedAmount: priceSummary?.subtotal?.formattedAmount || '$0.00',
             },
             discount: {
                 amount: discountAmount.toString(),
-                formattedAmount: priceSummary?.discount?.formattedAmount || ''
+                formattedAmount: priceSummary?.discount?.formattedAmount || '',
             },
             hasDiscount: discountAmount > 0,
             estimatedTax: {
                 amount: taxSummary?.totalTax?.amount || '0',
-                formattedAmount: taxSummary?.totalTax?.formattedAmount || ''
+                formattedAmount: taxSummary?.totalTax?.formattedAmount || '',
             },
             showTax: hasTax,
             estimatedTotal: {
                 amount: priceSummary?.total?.amount || priceSummary?.subtotal?.amount || '0',
-                formattedAmount: priceSummary?.total?.formattedAmount || priceSummary?.subtotal?.formattedAmount || '$0.00'
+                formattedAmount:
+                    priceSummary?.total?.formattedAmount ||
+                    priceSummary?.subtotal?.formattedAmount ||
+                    '$0.00',
             },
-            currency: cart.currency || 'USD'
+            currency: cart.currency || 'USD',
         },
         appliedCoupon,
-        hasAppliedCoupon: !!appliedCoupon
+        hasAppliedCoupon: !!appliedCoupon,
     };
 }

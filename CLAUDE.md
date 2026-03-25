@@ -18,6 +18,7 @@ This is a monorepo containing Jay Framework packages for Wix integrations. Jay F
 ## Common Commands
 
 ### Building
+
 ```bash
 # Build all packages (uses wsrun to run build in all workspaces)
 yarn build
@@ -33,6 +34,7 @@ yarn build:check-types
 ```
 
 ### Testing & Validation
+
 ```bash
 # Run all tests
 yarn test
@@ -42,6 +44,7 @@ yarn confirm
 ```
 
 ### Formatting
+
 ```bash
 # Format all code (runs extensions fix + prettier)
 yarn format
@@ -54,6 +57,7 @@ yarn format:prettier
 ```
 
 ### Cleaning
+
 ```bash
 # Clean all dist folders
 yarn clean
@@ -69,6 +73,7 @@ yarn rebuild
 ```
 
 ### Package Management
+
 ```bash
 # Upgrade dependencies interactively
 yarn deps:upgrade
@@ -148,21 +153,25 @@ npm run build:check-types
 ### Jay Framework Concepts
 
 **Plugins** provide headless components (data + interactions, no UI):
+
 - Defined by `plugin.yaml` in each package
 - Export contracts, actions, and component implementations
 - Examples: `@jay-framework/wix-stores`, `@jay-framework/wix-cart`, `@jay-framework/wix-data`
 
 **Contracts** (`.jay-contract` files) define component data shapes:
+
 - Define tags with types: `data`, `variant`, `interactive`, `sub-contract`
 - Specify rendering phases: `slow` (build-time/SSG), `fast` (request-time/SSR), `fast+interactive` (SSR + client)
 - Used by jay-html templates to bind to component state
 
 **Actions** (`.jay-action` files) define server-side data operations:
+
 - Declarative schema for input/output
 - Can import contracts for type reuse
 - Examples: `searchProducts`, `getProductBySlug`, `getCategories`
 
 **Jay-HTML** templates (`.jay-html` files):
+
 - HTML-like syntax with data binding: `{variable}`, `{nested.path}`
 - Conditionals: `<div if="condition">`, `<div if="!condition">`
 - Loops: `<div forEach="items" trackBy="id">`
@@ -172,6 +181,7 @@ npm run build:check-types
 ### Packages Structure
 
 All packages follow similar structure:
+
 ```
 packages/wix-*/
 ├── lib/                      # Source files
@@ -195,36 +205,43 @@ packages/wix-*/
 ### Key Packages
 
 **`@jay-framework/wix-server-client`**: Core Wix SDK client and authentication
+
 - Manages Wix API token and SDK initialization
 - Provides `WixClientService` and `WixClientContext`
 - Used by all other Wix packages
 
 **`@jay-framework/wix-stores`**: Wix Stores integration (legacy products API)
+
 - Contracts: `product-page`, `product-search`, `category-page`, `category-list`
 - Actions: `searchProducts`, `getProductBySlug`, `getCategories`
 - Uses legacy `@wix/stores` and `@wix/categories` SDK modules
 
 **`@jay-framework/wix-stores-v1`**: Wix Stores integration (v1 catalog API)
+
 - Similar contracts to `wix-stores` but uses newer `@wix/stores` v1 API
 - Better support for collections vs categories
 
 **`@jay-framework/wix-cart`**: Shopping cart functionality
+
 - Contracts: `cart-page`, `cart-indicator`
 - Shared by both `wix-stores` and `wix-stores-v1`
 - Client-side cart state management
 
 **`@jay-framework/wix-data`**: Dynamic Wix Data collections
+
 - Generates contracts at build time based on collection schemas
 - Actions: `queryItems`, `getItemBySlug`, `getCategories`
 - Used for CMS-like content (recipes, articles, etc.)
 
 **`@jay-framework/wix-utils`**: Shared utilities
+
 - Media URL helpers
 - Common Wix types and utilities
 
 ### Example Applications
 
 Examples demonstrate real-world usage:
+
 - `whisky-exchange`: Full e-commerce site with AI chat (uses wix-stores-v1 + gemini-agent-plugin)
 - `whisky-store`: Similar to whisky-exchange
 - `store`: E-commerce demo (uses wix-stores)
@@ -233,6 +250,7 @@ Examples demonstrate real-world usage:
 - `cms`: Content site using wix-data for recipes and product lines
 
 Each example has an `agent-kit/` directory created by `jay-stack-cli setup`:
+
 - Contains materialized contracts from all plugins
 - Documentation files: INSTRUCTIONS.md, jay-html-syntax.md, routing.md, etc.
 - Used for AI-assisted development and validation
@@ -245,6 +263,7 @@ Each example has an `agent-kit/` directory created by `jay-stack-cli setup`:
 - **jay-cli** for generating `.jay-action` and `.jay-contract` TypeScript definitions
 
 Each package builds:
+
 1. TypeScript definitions for contracts/actions (`definitions` script)
 2. Client bundle (browser code) via `vite build`
 3. Server bundle (SSR code) via `vite build --ssr`
@@ -254,12 +273,14 @@ Each package builds:
 ### Development Workflow
 
 When making changes to packages:
+
 1. Make changes in `packages/*/lib/`
 2. Run `npm run build` in the package (or `yarn build` at root)
 3. Type definitions (`.d.ts`) are generated for `.jay-action` and `.jay-contract` files
 4. Changes propagate to examples via workspace dependencies
 
 When working on examples:
+
 1. Run `npm run setup` to regenerate agent-kit with latest contracts
 2. Edit `.jay-html` files in `src/pages/`
 3. Run `npm run validate` to check against contracts
@@ -268,6 +289,7 @@ When working on examples:
 ### Sync Script
 
 `sync-jay-packages.cjs` is a utility to copy built packages from a local Jay Framework repo:
+
 - Usage: `node sync-jay-packages.cjs [path-to-jay-repo]`
 - Copies only `dist/` contents, preserves `package.json`
 - Useful for development against unreleased Jay Framework changes
@@ -285,6 +307,7 @@ When working on examples:
 
 All packages use TypeScript 5.3+ with strict mode. Examples may use TypeScript 5.7.
 Key tsconfig settings:
+
 - `type: "module"` in package.json (ESM only)
 - `moduleResolution: "bundler"`
 - Strict type checking enabled
@@ -340,6 +363,7 @@ This project follows a rigorous design log methodology for all significant featu
 ### Existing Design Logs
 
 The `./design-log/` directory contains documentation for:
+
 - 01: Wix Packages Structure
 - 02: Product Card Quick Options
 - 03: Category Pages
@@ -357,17 +381,20 @@ This project follows fixture-based testing with external files.
 ### Fixture-Based Testing
 
 **Use External Fixture Files**:
+
 - Store inputs and expected outputs in separate files, not inline in tests
 - Makes comparison and debugging easier (can diff files directly)
 - Enables IDE syntax highlighting for fixture content
 - Structure: `test/fixtures/<feature-name>/` with files like `input.jay-html`, `expected-output.jay-html`, `contract.yaml`, `slow-view-state.json`
 
 **Contracts in YAML Format**:
+
 - Use `.yaml` extension for contract fixtures
 - Parse contracts using `parseContract()` to validate they're correct
 - Use `checkValidationErrors()` to surface parsing errors in tests
 
 Example:
+
 ```typescript
 // ✅ Good
 const contractYaml = await readFile(path.join(dir, 'contract.yaml'), 'utf-8');
@@ -380,6 +407,7 @@ const contract = { name: 'Test', tags: [...] };
 ### Assertions
 
 **Use `toEqual` for Full File Comparisons**:
+
 - When generating complete files, use `toEqual` with formatting
 - Do NOT use `toContain` for full file outputs
 
@@ -392,29 +420,35 @@ expect(result).toContain('<div class="foo">');
 ```
 
 **Use Existing Formatting Utilities**:
+
 - Use `prettifyHtml` from `@jay-framework/compiler-shared` for HTML
 - Don't create custom normalization functions when utilities exist
 
 ### Test Structure
 
 **Extract Element Creations as Functions**:
+
 - Avoid `beforeEach` + `container.appendChild` pattern
 - Create helper functions that return elements for direct assertions
 
 **Consolidate Similar Tests**:
+
 - Merge tests that only differ by input data
 - Use test.each or parameterized helpers for variations
 
 **Test Missing/Edge Cases Explicitly**:
+
 - Add dedicated tests for missing data, undefined values
 - Follow the runtime's "silent failure" pattern (render undefined, don't throw)
 
 ### File Organization
 
 **Mirror Source Structure**:
+
 - Test files in `test/` directory mirroring `lib/` structure
 - Fixtures in `test/fixtures/<feature>/`
 
 **One Test File Per Module**:
+
 - Each source module has a corresponding test file
 - Name: `<module-name>.test.ts`

@@ -12,49 +12,49 @@
 
 :root {
   /* Background colors */
-  --bg-primary: #FAFAFA;
-  --bg-secondary: #FFFFFF;
-  --bg-card: #FFFFFF;
-  --bg-hover: #F5F5F5;
-  --bg-elevated: #FFFFFF;
-  --bg-header: #1B2838;
-  --bg-header-dark: #141E2B;
-  
+  --bg-primary: #fafafa;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-hover: #f5f5f5;
+  --bg-elevated: #ffffff;
+  --bg-header: #1b2838;
+  --bg-header-dark: #141e2b;
+
   /* Text colors */
-  --text-primary: #1A1A1A;
+  --text-primary: #1a1a1a;
   --text-secondary: #666666;
   --text-muted: #999999;
-  --text-inverse: #FFFFFF;
-  --text-header: #FFFFFF;
-  
+  --text-inverse: #ffffff;
+  --text-header: #ffffff;
+
   /* Accent colors - Gold/Amber */
-  --accent: #E5A833;
-  --accent-hover: #D49A2A;
-  --accent-muted: #C28E24;
+  --accent: #e5a833;
+  --accent-hover: #d49a2a;
+  --accent-muted: #c28e24;
   --accent-light: rgba(229, 168, 51, 0.1);
   --accent-lighter: rgba(229, 168, 51, 0.05);
-  
+
   /* Secondary accent - Navy */
-  --navy: #1B2838;
-  --navy-light: #2A3F55;
-  
+  --navy: #1b2838;
+  --navy-light: #2a3f55;
+
   /* Semantic colors */
-  --success: #28A745;
+  --success: #28a745;
   --success-bg: rgba(40, 167, 69, 0.1);
-  --warning: #FFC107;
+  --warning: #ffc107;
   --warning-bg: rgba(255, 193, 7, 0.1);
-  --error: #DC3545;
+  --error: #dc3545;
   --error-bg: rgba(220, 53, 69, 0.1);
-  
+
   /* Stars */
-  --star-filled: #E5A833;
-  --star-empty: #DDD;
-  
+  --star-filled: #e5a833;
+  --star-empty: #ddd;
+
   /* Borders */
-  --border: #E5E5E5;
-  --border-hover: #CCCCCC;
-  --border-light: #F0F0F0;
-  
+  --border: #e5e5e5;
+  --border-hover: #cccccc;
+  --border-light: #f0f0f0;
+
   /* Border radius */
   --radius-xs: 2px;
   --radius-sm: 4px;
@@ -62,26 +62,26 @@
   --radius-lg: 8px;
   --radius-xl: 12px;
   --radius-full: 9999px;
-  
+
   /* Shadows */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
   --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06);
   --shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.1);
-  
+
   /* Transitions */
   --transition-fast: 0.15s ease;
   --transition-base: 0.2s ease;
   --transition-slow: 0.3s ease;
-  
+
   /* Layout */
   --container-max: 1400px;
   --container-narrow: 800px;
   --page-padding: 24px;
   --section-gap: 32px;
   --sidebar-width: 260px;
-  
+
   /* Typography */
   --font-serif: 'Playfair Display', Georgia, serif;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -136,7 +136,9 @@ button {
   background: none;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   font-family: inherit;
 }
 
@@ -317,8 +319,14 @@ input, select, textarea {
 }
 
 @keyframes cart-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); border-color: var(--accent); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+    border-color: var(--accent);
+  }
 }
 
 .cart-indicator.is-loading .cart-indicator-count {
@@ -397,7 +405,7 @@ input, select, textarea {
   .main-content {
     grid-template-columns: 1fr;
   }
-  
+
   .filters-sidebar {
     position: static;
   }
@@ -490,7 +498,7 @@ input, select, textarea {
 
 .switch-slider::before {
   position: absolute;
-  content: "";
+  content: '';
   height: 18px;
   width: 18px;
   left: 3px;
@@ -552,8 +560,8 @@ input, select, textarea {
   color: var(--text-primary);
 }
 
-.filter-option input[type="radio"],
-.filter-option input[type="checkbox"] {
+.filter-option input[type='radio'],
+.filter-option input[type='checkbox'] {
   width: 16px;
   height: 16px;
   accent-color: var(--navy);
@@ -605,7 +613,7 @@ input, select, textarea {
   color: var(--text-primary);
 }
 
-.radio-item input[type="radio"] {
+.radio-item input[type='radio'] {
   width: 16px;
   height: 16px;
   accent-color: var(--navy);
@@ -1462,7 +1470,9 @@ input, select, textarea {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Load more section */
@@ -1770,20 +1780,20 @@ input, select, textarea {
     --page-padding: 20px;
     --sidebar-width: 220px;
   }
-  
+
   .product-page-layout {
     grid-template-columns: 1fr;
     gap: 32px;
   }
-  
+
   .product-gallery {
     position: static;
   }
-  
+
   .header-search {
     display: none;
   }
-  
+
   .nav-links {
     overflow-x: auto;
     justify-content: flex-start;
@@ -1795,23 +1805,23 @@ input, select, textarea {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 16px;
   }
-  
+
   .results-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
   }
-  
+
   .results-controls {
     width: 100%;
     justify-content: space-between;
   }
-  
+
   .cart-item {
     grid-template-columns: 60px 1fr;
     gap: 12px;
   }
-  
+
   .cart-item-actions {
     grid-column: span 2;
     flex-direction: row;
@@ -1824,21 +1834,21 @@ input, select, textarea {
   :root {
     --page-padding: 16px;
   }
-  
+
   .header-top {
     flex-wrap: wrap;
     gap: 12px;
   }
-  
+
   .products-grid {
     grid-template-columns: 1fr 1fr;
     gap: 12px;
   }
-  
+
   .product-actions {
     flex-direction: column;
   }
-  
+
   .product-thumbnails {
     justify-content: flex-start;
   }

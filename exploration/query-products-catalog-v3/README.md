@@ -22,8 +22,8 @@ Edit `config/.wix.yaml` and replace `YOUR_API_KEY_HERE` with your actual Wix API
 
 ```yaml
 apiKeyStrategy:
-  apiKey: "your-actual-api-key"
-  siteId: "3c482edc-8dfc-4681-aa87-3d6b36c231a2"
+  apiKey: 'your-actual-api-key'
+  siteId: '3c482edc-8dfc-4681-aa87-3d6b36c231a2'
 ```
 
 ### 3. Get Your Wix API Key
@@ -98,41 +98,48 @@ output/
 ### Files Created:
 
 **From queryProducts (npm start):**
+
 1. **all-products.json** - Array of all products with complete data
 2. **summary.json** - Overview with product count, IDs, and names
-3. **individual/{product-id}_{name}.json** - One file per product
+3. **individual/{product-id}\_{name}.json** - One file per product
 
 **From getProduct (npm run get-product):**
-1. **get-product/{product-id}_{name}.json** - Each product fetched by ID
+
+1. **get-product/{product-id}\_{name}.json** - Each product fetched by ID
 2. **get-product/all-fetched-products.json** - All products in one file
 3. **get-product/fetch-summary.json** - Success/failure statistics
 
 **From getProductBySlug (npm run get-product-by-slug):**
-1. **get-product-by-slug/{slug}_{name}.json** - Each product fetched by slug
+
+1. **get-product-by-slug/{slug}\_{name}.json** - Each product fetched by slug
 2. **get-product-by-slug/all-fetched-products.json** - All products in one file
 3. **get-product-by-slug/fetch-summary.json** - Success/failure and comparison stats
 
 ## Features
 
 ### queryProducts API (query-products.ts)
+
 - ✅ Fetches all products using pagination
 - ✅ Saves to multiple formats (all-in-one, individual files, summary)
 - ✅ Progress tracking during fetch
 - ✅ Supports all product fields including currency, descriptions, media, etc.
 
 ### getProduct API (get-product.ts)
+
 - ✅ Fetches products individually by ID
 - ✅ Error handling for missing products
 - ✅ Success/failure tracking for each product
 - ✅ Generates detailed fetch summary
 
 ### getProductBySlug API (get-product-by-slug.ts)
+
 - ✅ Fetches products individually by URL slug
 - ✅ Error handling for missing products
 - ✅ Compares fetched data with original queryProducts data
 - ✅ Detailed analysis of data consistency
 
 ### Common Features
+
 - ✅ Type-safe TypeScript code
 - ✅ Safe filename generation
 - ✅ Comprehensive error handling
@@ -141,6 +148,7 @@ output/
 ## Configuration
 
 The script uses:
+
 - **Site ID**: `3c482edc-8dfc-4681-aa87-3d6b36c231a2`
 - **Page Size**: 100 products per API call (max supported)
 - **Safety Limit**: 1000 pages (100,000 products max)
@@ -148,12 +156,15 @@ The script uses:
 ## Troubleshooting
 
 ### Error: "Config file not found"
+
 Make sure you're running the script from the project directory where `config/.wix.yaml` exists.
 
 ### Error: "Please replace YOUR_API_KEY_HERE"
+
 You need to add your actual Wix API key in `config/.wix.yaml`.
 
 ### API Permission Errors
+
 Ensure your API key has the necessary permissions to read products from the Wix Stores catalog.
 
 ## API Reference
@@ -161,28 +172,34 @@ Ensure your API key has the necessary permissions to read products from the Wix 
 This project demonstrates these Wix Catalog V3 APIs:
 
 ### queryProducts
+
 Queries all products with pagination and filtering options.
+
 - Module: `@wix/stores` - `productsV3.queryProducts()`
 - Use case: Bulk product fetching, catalog browsing
 - Returns: Paginated list of products with hasNext() for pagination
 
 ### getProduct
+
 Fetches a single product by its ID.
+
 - Module: `@wix/stores` - `productsV3.getProduct(productId)`
 - Use case: Fetch specific product when you have the ID
 - Returns: Single product object
 
 ### getProductBySlug
+
 Fetches a single product by its URL slug.
+
 - Module: `@wix/stores` - `productsV3.getProductBySlug(slug)`
 - Use case: Fetch product from URL-friendly slug
 - Returns: Single product object
 
 **SDK Documentation:**
+
 - [@wix/sdk](https://www.npmjs.com/package/@wix/sdk) - Wix JavaScript SDK
 - [@wix/stores](https://www.npmjs.com/package/@wix/stores) - Wix Stores API module
 
 ## License
 
 Apache-2.0
-

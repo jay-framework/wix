@@ -1,6 +1,6 @@
 /**
  * Table Contract Generator
- * 
+ *
  * Generates contracts for table widgets from Wix Data collection schemas.
  */
 
@@ -12,7 +12,7 @@ import {
     interactiveTag,
     variantTag,
     categorySubContract,
-    toPascalCase
+    toPascalCase,
 } from './contract-utils';
 
 /**
@@ -20,7 +20,7 @@ import {
  */
 function buildContract(schema: ProcessedSchema): string {
     const tags: string[] = [];
-    
+
     // Column definitions
     tags.push(`  - tag: columns
     type: sub-contract
@@ -33,7 +33,7 @@ function buildContract(schema: ProcessedSchema): string {
       - {tag: sortable, type: variant, dataType: boolean}
       - {tag: sortDirection, type: variant, dataType: "enum (NONE | ASC | DESC)", phase: fast+interactive}
       - {tag: headerButton, type: interactive, elementType: HTMLButtonElement}`);
-    
+
     // Rows with cells
     tags.push(`  - tag: rows
     type: sub-contract
@@ -51,7 +51,7 @@ function buildContract(schema: ProcessedSchema): string {
         tags:
           - {tag: fieldName, type: data, dataType: string}
           - {tag: value, type: data, dataType: string}`);
-    
+
     // Pagination
     tags.push(dataTag('totalCount', 'number'));
     tags.push(dataTag('pageSize', 'number'));
@@ -61,12 +61,12 @@ function buildContract(schema: ProcessedSchema): string {
     tags.push(variantTag('hasNext', 'boolean', 'fast+interactive'));
     tags.push(interactiveTag('prevButton', 'HTMLButtonElement'));
     tags.push(interactiveTag('nextButton', 'HTMLButtonElement'));
-    
+
     // Category if configured
     if (schema.hasCategory) {
         tags.push(categorySubContract());
     }
-    
+
     return `name: ${toPascalCase(schema.collectionId)}Table
 description: Table widget for ${schema.displayName || schema.collectionId}
 tags:
@@ -81,13 +81,13 @@ export const generator = makeContractGenerator()
     .withServices(WIX_DATA_SERVICE_MARKER)
     .generateWith(async (wixDataService) => {
         const schemas = await wixDataService.getProcessedSchemas(
-            c => c.visible === true && !!c.components.tableWidget
+            (c) => c.visible === true && !!c.components.tableWidget,
         );
-        
-        return schemas.map(schema => {
+
+        return schemas.map((schema) => {
             const name = toPascalCase(schema.collectionId) + 'Table';
             console.log(`[wix-data] Generated table contract: ${name}`);
-            
+
             return {
                 name,
                 yaml: buildContract(schema),

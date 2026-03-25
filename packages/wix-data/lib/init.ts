@@ -35,12 +35,14 @@ export const init = makeJayInit()
         // Create and register the data service
         provideWixDataService(wixClient, config);
 
-        const visibleCount = config.collections.filter(c => c.visible).length;
-        console.log(`[wix-data] Server initialization complete. ${visibleCount}/${config.collections.length} collections visible.`);
+        const visibleCount = config.collections.filter((c) => c.visible).length;
+        console.log(
+            `[wix-data] Server initialization complete. ${visibleCount}/${config.collections.length} collections visible.`,
+        );
 
         // Pass visible collection info to the client
         return {
-            collections: config.collections.filter(c => c.visible).map(c => c.collectionId)
+            collections: config.collections.filter((c) => c.visible).map((c) => c.collectionId),
         };
     })
     .withClient(async (data: WixDataInitData) => {
@@ -49,5 +51,7 @@ export const init = makeJayInit()
         // Register the client-side context
         provideWixDataContext();
 
-        console.log(`[wix-data] Client initialization complete. Collections: ${data.collections.join(', ')}`);
+        console.log(
+            `[wix-data] Client initialization complete. Collections: ${data.collections.join(', ')}`,
+        );
     });

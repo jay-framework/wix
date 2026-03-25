@@ -1,7 +1,7 @@
 /**
  * Debug page - bare bone API test
  * Shows raw JSON results from Wix APIs
- * 
+ *
  * Tests the cart flow:
  * 1. Get current cart (expecting 404 for new visitors)
  * 2. Add a product to cart
@@ -9,7 +9,13 @@
  * 4. Tokens are persisted in localStorage for session continuity
  */
 
-import { initializeWixClient, getWixClient, getStoredTokens, clearStoredTokens, type WixStoresClient } from "./wix-client.js";
+import {
+    initializeWixClient,
+    getWixClient,
+    getStoredTokens,
+    clearStoredTokens,
+    type WixStoresClient,
+} from './wix-client.js';
 
 // Wix Stores app ID (required for catalog reference)
 const WIX_STORES_APP_ID = '1380b703-ce81-ff05-f115-39571d94dfcd';
@@ -30,9 +36,10 @@ function showJson(elementId: string, data: unknown): void {
 
 function showError(elementId: string, error: unknown): void {
     const el = $(elementId);
-    el.textContent = error instanceof Error 
-        ? `ERROR: ${error.message}\n\n${error.stack}`
-        : `ERROR: ${JSON.stringify(error, null, 2)}`;
+    el.textContent =
+        error instanceof Error
+            ? `ERROR: ${error.message}\n\n${error.stack}`
+            : `ERROR: ${JSON.stringify(error, null, 2)}`;
     el.style.color = 'red';
 }
 
@@ -56,16 +63,15 @@ function log(message: string): void {
 async function step1a_getCurrentCart(): Promise<boolean> {
     log('Step 1a: Getting current cart (expecting 404 for new visitors)...');
     showStatus('step1a-status', 'Calling currentCart.getCurrentCart()...');
-    
+
     try {
         const client = getWixClient();
         const cart = await client.currentCart.getCurrentCart();
-        
+
         showStatus('step1a-status', '✅ Cart exists!', 'green');
         showJson('step1a-result', cart);
         log('Step 1a: Cart found (visitor has existing cart)');
         return true;
-        
     } catch (error: any) {
         if (error?.details?.applicationError?.code === 'CART_NOT_FOUND') {
             showStatus('step1a-status', '✅ Got expected 404 - No cart exists yet', 'orange');
@@ -73,7 +79,7 @@ async function step1a_getCurrentCart(): Promise<boolean> {
                 status: 404,
                 message: 'Cart not found - this is expected for new visitors',
                 errorCode: error?.details?.applicationError?.code,
-                details: error?.details
+                details: error?.details,
             });
             log('Step 1a: Got expected 404 (no cart for new visitor)');
             return false;
@@ -93,15 +99,14 @@ async function step1a_getCurrentCart(): Promise<boolean> {
 async function step1b_estimateTotalsNoCart(): Promise<void> {
     log('Step 1b: Calling estimateCurrentCartTotals (without cart)...');
     showStatus('step1b-status', 'Calling currentCart.estimateCurrentCartTotals()...');
-    
+
     try {
         const client = getWixClient();
         const estimate = await client.currentCart.estimateCurrentCartTotals({});
-        
+
         showStatus('step1b-status', '✅ Estimate returned!', 'green');
         showJson('step1b-result', estimate);
         log('Step 1b: Estimate succeeded (unexpected if no cart)');
-        
     } catch (error: any) {
         const errorCode = error?.details?.applicationError?.code;
         if (errorCode === 'CART_NOT_FOUND') {
@@ -110,7 +115,7 @@ async function step1b_estimateTotalsNoCart(): Promise<void> {
                 status: 404,
                 message: 'Cannot estimate totals without a cart',
                 errorCode: errorCode,
-                details: error?.details
+                details: error?.details,
             });
             log('Step 1b: Got expected 404 (no cart to estimate)');
         } else {
@@ -128,26 +133,26 @@ async function step1b_estimateTotalsNoCart(): Promise<void> {
 async function step2_getProducts(): Promise<string | null> {
     log('Step 2: Fetching products to find one to add to cart...');
     showStatus('step2-status', 'Calling productsV3.queryProducts()...');
-    
+
     try {
         const client = getWixClient();
         const response = await client.productsV3
             .queryProducts({ fields: ['CURRENCY'] })
             .limit(3)
             .find();
-        
+
         const products = response.items || [];
-        
+
         if (products.length === 0) {
             showStatus('step2-status', '⚠️ No products found', 'orange');
             showJson('step2-result', { message: 'No products in store' });
             log('Step 2: No products found');
             return null;
         }
-        
+
         const firstProduct = products[0];
         const productId = firstProduct._id!;
-        
+
         showStatus('step2-status', `✅ Found ${products.length} products`, 'green');
         showJson('step2-result', {
             totalProducts: products.length,
@@ -156,12 +161,11 @@ async function step2_getProducts(): Promise<string | null> {
                 name: firstProduct.name,
                 price: (firstProduct as any).priceData?.price,
             },
-            allProducts: products.map(p => ({ id: p._id, name: p.name }))
+            allProducts: products.map((p) => ({ id: p._id, name: p.name })),
         });
         log(`Step 2: Found product "${firstProduct.name}" (${productId})`);
-        
+
         return productId;
-        
     } catch (error) {
         showStatus('step2-status', '❌ Failed to fetch products', 'red');
         showError('step2-result', error);
@@ -177,26 +181,27 @@ async function step2_getProducts(): Promise<string | null> {
 async function step3_addToCart(productId: string): Promise<boolean> {
     log(`Step 3: Adding product ${productId} to cart...`);
     showStatus('step3-status', 'Calling currentCart.addToCurrentCart()...');
-    
+
     try {
         const client = getWixClient();
-        
+
         const result = await client.currentCart.addToCurrentCart({
-            lineItems: [{
-                catalogReference: {
-                    catalogItemId: productId,
-                    appId: WIX_STORES_APP_ID,
+            lineItems: [
+                {
+                    catalogReference: {
+                        catalogItemId: productId,
+                        appId: WIX_STORES_APP_ID,
+                    },
+                    quantity: 1,
                 },
-                quantity: 1
-            }]
+            ],
         });
-        
+
         showStatus('step3-status', '✅ Product added to cart!', 'green');
         showJson('step3-result', result);
         log('Step 3: Product added to cart successfully');
-        
+
         return true;
-        
     } catch (error) {
         showStatus('step3-status', '❌ Failed to add to cart', 'red');
         showError('step3-result', error);
@@ -212,18 +217,17 @@ async function step3_addToCart(productId: string): Promise<boolean> {
 async function step4_getCurrentCartAfterAdd(): Promise<void> {
     log('Step 4: Getting current cart (should work now)...');
     showStatus('step4-status', 'Calling currentCart.getCurrentCart()...');
-    
+
     try {
         const client = getWixClient();
         const cart = await client.currentCart.getCurrentCart();
-        
+
         const lineItems = cart.lineItems || [];
         const itemCount = lineItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
-        
+
         showStatus('step4-status', `✅ Cart retrieved! (${itemCount} items)`, 'green');
         showJson('step4-result', cart);
         log(`Step 4: Cart retrieved with ${itemCount} item(s)`);
-        
     } catch (error: any) {
         if (error?.details?.applicationError?.code === 'CART_NOT_FOUND') {
             showStatus('step4-status', '❌ Still no cart (unexpected!)', 'red');
@@ -244,15 +248,14 @@ async function step4_getCurrentCartAfterAdd(): Promise<void> {
 async function step5_estimateTotalsWithCart(): Promise<void> {
     log('Step 5: Calling estimateCurrentCartTotals (with cart)...');
     showStatus('step5-status', 'Calling currentCart.estimateCurrentCartTotals()...');
-    
+
     try {
         const client = getWixClient();
         const estimate = await client.currentCart.estimateCurrentCartTotals({});
-        
+
         showStatus('step5-status', '✅ Estimate returned!', 'green');
         showJson('step5-result', estimate);
         log('Step 5: Estimate succeeded - totals calculated');
-        
     } catch (error: any) {
         const errorCode = error?.details?.applicationError?.code;
         showStatus('step5-status', '❌ Error', 'red');
@@ -267,14 +270,14 @@ async function step5_estimateTotalsWithCart(): Promise<void> {
 
 function updateTokenDisplay(): void {
     const tokens = getStoredTokens();
-    
+
     if (tokens) {
         showStatus('tokens-status', '✅ Tokens found in localStorage', 'green');
         showJson('tokens-result', {
             hasAccessToken: !!tokens.accessToken,
             hasRefreshToken: !!tokens.refreshToken,
-            accessTokenPreview: tokens.accessToken 
-                ? `${tokens.accessToken.value?.substring(0, 30)}...` 
+            accessTokenPreview: tokens.accessToken
+                ? `${tokens.accessToken.value?.substring(0, 30)}...`
                 : null,
         });
     } else {
@@ -289,32 +292,32 @@ function updateTokenDisplay(): void {
 
 async function runFullFlow(): Promise<void> {
     log('=== Starting Full Cart Flow ===');
-    
+
     // Step 1a: Try to get cart (expecting 404)
     const cartExists = await step1a_getCurrentCart();
-    
+
     // Step 1b: Try to estimate totals without cart
     await step1b_estimateTotalsNoCart();
-    
+
     // Step 2: Get products
     const productId = await step2_getProducts();
-    
+
     if (productId) {
         // Step 3: Add to cart
         const added = await step3_addToCart(productId);
-        
+
         if (added) {
             // Step 4: Get cart again
             await step4_getCurrentCartAfterAdd();
-            
+
             // Step 5: Estimate totals with cart
             await step5_estimateTotalsWithCart();
         }
     }
-    
+
     // Update token display
     updateTokenDisplay();
-    
+
     log('=== Flow Complete ===');
     log('Reload the page to test token persistence!');
 }
@@ -322,7 +325,7 @@ async function runFullFlow(): Promise<void> {
 async function main(): Promise<void> {
     // Show initial token state
     updateTokenDisplay();
-    
+
     // Setup clear tokens button
     $('clear-tokens-btn').onclick = () => {
         clearStoredTokens();
@@ -330,28 +333,27 @@ async function main(): Promise<void> {
         updateTokenDisplay();
         alert('Tokens cleared! Reload the page to start fresh.');
     };
-    
+
     // Setup run flow button
     $('run-flow-btn').onclick = async () => {
         log('--- Manual flow trigger ---');
         await runFullFlow();
     };
-    
+
     try {
         showStatus('init-status', 'Initializing Wix client...');
         log('Initializing Wix client...');
-        
+
         await initializeWixClient();
-        
+
         showStatus('init-status', '✅ Client initialized', 'green');
         log('Client initialized successfully');
-        
+
         // Update token display after init
         updateTokenDisplay();
-        
+
         // Auto-run the flow
         await runFullFlow();
-        
     } catch (error) {
         showStatus('init-status', '❌ Initialization failed', 'red');
         showError('init-result', error);

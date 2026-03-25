@@ -3,7 +3,7 @@
     "target": "ES2022",
     "module": "ES2022",
     "lib": ["ES2022"],
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "jsx": "preserve",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -12,7 +12,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "types": ["vitest/globals"],
+    "types": ["vitest/globals"]
   },
   "references": [
     { "path": "../../packages/runtime/serialization" },
@@ -43,6 +43,6 @@
     { "path": "../../examples/jay-context/todo-with-context" },
     { "path": "../../examples/jay-low-level-apis/counter-raw" },
     { "path": "../../examples/jay-low-level-apis/todo-raw" },
-    { "path": "../../examples/react/mini-benchmark-react" },
-  ],
+    { "path": "../../examples/react/mini-benchmark-react" }
+  ]
 }

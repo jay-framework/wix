@@ -1298,16 +1298,8 @@
                               "scaleMode": "FILL",
                               "imageHash": "707976e16112ccb304ea7a42d4fdacb094ed41b4",
                               "imageTransform": [
-                                [
-                                  1,
-                                  0,
-                                  0
-                                ],
-                                [
-                                  0,
-                                  1,
-                                  0
-                                ]
+                                [1, 0, 0],
+                                [0, 1, 0]
                               ],
                               "imageUrl": "/images/424:387_FILL.png"
                             }
@@ -1689,10 +1681,7 @@
                           "componentPropertyDefinitions": {
                             "Media Type": {
                               "type": "VARIANT",
-                              "variantOptions": [
-                                "IMAGE",
-                                "VIDEO"
-                              ],
+                              "variantOptions": ["IMAGE", "VIDEO"],
                               "defaultValue": "VIDEO"
                             }
                           },
@@ -1768,16 +1757,8 @@
                                       "scaleMode": "FILL",
                                       "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                       "imageTransform": [
-                                        [
-                                          1,
-                                          0,
-                                          0
-                                        ],
-                                        [
-                                          0,
-                                          1,
-                                          0
-                                        ]
+                                        [1, 0, 0],
+                                        [0, 1, 0]
                                       ],
                                       "imageUrl": "/images/424:549_FILL.png"
                                     }
@@ -1866,16 +1847,8 @@
                                       "scaleMode": "FILL",
                                       "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                       "imageTransform": [
-                                        [
-                                          1,
-                                          0,
-                                          0
-                                        ],
-                                        [
-                                          0,
-                                          1,
-                                          0
-                                        ]
+                                        [1, 0, 0],
+                                        [0, 1, 0]
                                       ],
                                       "imageUrl": "/images/424:551_FILL.png"
                                     }
@@ -2110,16 +2083,8 @@
                                   "scaleMode": "FILL",
                                   "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                   "imageTransform": [
-                                    [
-                                      1,
-                                      0,
-                                      0
-                                    ],
-                                    [
-                                      0,
-                                      1,
-                                      0
-                                    ]
+                                    [1, 0, 0],
+                                    [0, 1, 0]
                                   ],
                                   "imageUrl": "/images/I424:408;424:551_FILL.png"
                                 }
@@ -2546,10 +2511,7 @@
                                 },
                                 "selected": {
                                   "type": "VARIANT",
-                                  "variantOptions": [
-                                    "selected",
-                                    "notSelected"
-                                  ],
+                                  "variantOptions": ["selected", "notSelected"],
                                   "defaultValue": "selected"
                                 }
                               },
@@ -2625,16 +2587,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:520_FILL.png"
                                         }
@@ -2888,16 +2842,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:525_FILL.png"
                                         },
@@ -3161,16 +3107,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:530_FILL.png"
                                         }
@@ -3429,16 +3367,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:535_FILL.png"
                                         },
@@ -3707,16 +3637,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:540_FILL.png"
                                         }
@@ -3806,16 +3728,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:542_FILL.png"
                                         },
@@ -3915,16 +3829,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:544_FILL.png"
                                         }
@@ -4019,16 +3925,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:546_FILL.png"
                                         },
@@ -4121,16 +4019,8 @@
                                       "scaleMode": "FILL",
                                       "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                       "imageTransform": [
-                                        [
-                                          1,
-                                          0,
-                                          0
-                                        ],
-                                        [
-                                          0,
-                                          1,
-                                          0
-                                        ]
+                                        [1, 0, 0],
+                                        [0, 1, 0]
                                       ],
                                       "imageUrl": "/images/I424:444;424:540_FILL.png"
                                     }
@@ -4191,10 +4081,7 @@
                                 },
                                 "selected": {
                                   "type": "VARIANT",
-                                  "variantOptions": [
-                                    "selected",
-                                    "notSelected"
-                                  ],
+                                  "variantOptions": ["selected", "notSelected"],
                                   "defaultValue": "selected"
                                 }
                               },
@@ -4270,16 +4157,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:520_FILL.png"
                                         }
@@ -4533,16 +4412,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:525_FILL.png"
                                         },
@@ -4806,16 +4677,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:530_FILL.png"
                                         }
@@ -5074,16 +4937,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:535_FILL.png"
                                         },
@@ -5352,16 +5207,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:540_FILL.png"
                                         }
@@ -5451,16 +5298,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:542_FILL.png"
                                         },
@@ -5560,16 +5399,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:544_FILL.png"
                                         }
@@ -5664,16 +5495,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:546_FILL.png"
                                         },
@@ -5766,16 +5589,8 @@
                                       "scaleMode": "FILL",
                                       "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                       "imageTransform": [
-                                        [
-                                          1,
-                                          0,
-                                          0
-                                        ],
-                                        [
-                                          0,
-                                          1,
-                                          0
-                                        ]
+                                        [1, 0, 0],
+                                        [0, 1, 0]
                                       ],
                                       "imageUrl": "/images/I424:445;424:544_FILL.png"
                                     }
@@ -5841,10 +5656,7 @@
                                 },
                                 "selected": {
                                   "type": "VARIANT",
-                                  "variantOptions": [
-                                    "selected",
-                                    "notSelected"
-                                  ],
+                                  "variantOptions": ["selected", "notSelected"],
                                   "defaultValue": "selected"
                                 }
                               },
@@ -5920,16 +5732,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:520_FILL.png"
                                         }
@@ -6183,16 +5987,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:525_FILL.png"
                                         },
@@ -6456,16 +6252,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:530_FILL.png"
                                         }
@@ -6724,16 +6512,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:535_FILL.png"
                                         },
@@ -7002,16 +6782,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:540_FILL.png"
                                         }
@@ -7101,16 +6873,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:542_FILL.png"
                                         },
@@ -7210,16 +6974,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:544_FILL.png"
                                         }
@@ -7314,16 +7070,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:546_FILL.png"
                                         },
@@ -7416,16 +7164,8 @@
                                       "scaleMode": "FILL",
                                       "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                       "imageTransform": [
-                                        [
-                                          1,
-                                          0,
-                                          0
-                                        ],
-                                        [
-                                          0,
-                                          1,
-                                          0
-                                        ]
+                                        [1, 0, 0],
+                                        [0, 1, 0]
                                       ],
                                       "imageUrl": "/images/I424:446;424:520_FILL.png"
                                     }
@@ -7650,10 +7390,7 @@
                                 },
                                 "selected": {
                                   "type": "VARIANT",
-                                  "variantOptions": [
-                                    "selected",
-                                    "notSelected"
-                                  ],
+                                  "variantOptions": ["selected", "notSelected"],
                                   "defaultValue": "selected"
                                 }
                               },
@@ -7729,16 +7466,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:520_FILL.png"
                                         }
@@ -7992,16 +7721,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:525_FILL.png"
                                         },
@@ -8265,16 +7986,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:530_FILL.png"
                                         }
@@ -8533,16 +8246,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:535_FILL.png"
                                         },
@@ -8811,16 +8516,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:540_FILL.png"
                                         }
@@ -8910,16 +8607,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:542_FILL.png"
                                         },
@@ -9019,16 +8708,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:544_FILL.png"
                                         }
@@ -9123,16 +8804,8 @@
                                           "scaleMode": "FILL",
                                           "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                           "imageTransform": [
-                                            [
-                                              1,
-                                              0,
-                                              0
-                                            ],
-                                            [
-                                              0,
-                                              1,
-                                              0
-                                            ]
+                                            [1, 0, 0],
+                                            [0, 1, 0]
                                           ],
                                           "imageUrl": "/images/424:546_FILL.png"
                                         },
@@ -9225,16 +8898,8 @@
                                       "scaleMode": "FILL",
                                       "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                                       "imageTransform": [
-                                        [
-                                          1,
-                                          0,
-                                          0
-                                        ],
-                                        [
-                                          0,
-                                          1,
-                                          0
-                                        ]
+                                        [1, 0, 0],
+                                        [0, 1, 0]
                                       ],
                                       "imageUrl": "/images/I424:447;424:540_FILL.png"
                                     }
@@ -11927,10 +11592,7 @@
                           "componentPropertyDefinitions": {
                             "Render Type": {
                               "type": "VARIANT",
-                              "variantOptions": [
-                                "COLOR_SWATCH_CHOICES",
-                                "TEXT_CHOICES"
-                              ],
+                              "variantOptions": ["COLOR_SWATCH_CHOICES", "TEXT_CHOICES"],
                               "defaultValue": "COLOR_SWATCH_CHOICES"
                             }
                           },
@@ -12224,10 +11886,7 @@
                                               "componentPropertyDefinitions": {
                                                 "selected": {
                                                   "type": "VARIANT",
-                                                  "variantOptions": [
-                                                    "false",
-                                                    "true"
-                                                  ],
+                                                  "variantOptions": ["false", "true"],
                                                   "defaultValue": "true"
                                                 }
                                               },
@@ -12962,10 +12621,7 @@
                                               "componentPropertyDefinitions": {
                                                 "selected": {
                                                   "type": "VARIANT",
-                                                  "variantOptions": [
-                                                    "false",
-                                                    "true"
-                                                  ],
+                                                  "variantOptions": ["false", "true"],
                                                   "defaultValue": "true"
                                                 }
                                               },
@@ -13670,10 +13326,7 @@
                                               "componentPropertyDefinitions": {
                                                 "selected": {
                                                   "type": "VARIANT",
-                                                  "variantOptions": [
-                                                    "false",
-                                                    "true"
-                                                  ],
+                                                  "variantOptions": ["false", "true"],
                                                   "defaultValue": "true"
                                                 }
                                               },
@@ -14408,10 +14061,7 @@
                                               "componentPropertyDefinitions": {
                                                 "selected": {
                                                   "type": "VARIANT",
-                                                  "variantOptions": [
-                                                    "false",
-                                                    "true"
-                                                  ],
+                                                  "variantOptions": ["false", "true"],
                                                   "defaultValue": "true"
                                                 }
                                               },
@@ -15146,10 +14796,7 @@
                                               "componentPropertyDefinitions": {
                                                 "selected": {
                                                   "type": "VARIANT",
-                                                  "variantOptions": [
-                                                    "false",
-                                                    "true"
-                                                  ],
+                                                  "variantOptions": ["false", "true"],
                                                   "defaultValue": "true"
                                                 }
                                               },
@@ -16096,10 +15743,7 @@
                                               "componentPropertyDefinitions": {
                                                 "selected": {
                                                   "type": "VARIANT",
-                                                  "variantOptions": [
-                                                    "false",
-                                                    "true"
-                                                  ],
+                                                  "variantOptions": ["false", "true"],
                                                   "defaultValue": "true"
                                                 }
                                               },
@@ -16678,10 +16322,7 @@
                                               "componentPropertyDefinitions": {
                                                 "selected": {
                                                   "type": "VARIANT",
-                                                  "variantOptions": [
-                                                    "false",
-                                                    "true"
-                                                  ],
+                                                  "variantOptions": ["false", "true"],
                                                   "defaultValue": "true"
                                                 }
                                               },
@@ -17218,10 +16859,7 @@
                                               "componentPropertyDefinitions": {
                                                 "selected": {
                                                   "type": "VARIANT",
-                                                  "variantOptions": [
-                                                    "false",
-                                                    "true"
-                                                  ],
+                                                  "variantOptions": ["false", "true"],
                                                   "defaultValue": "true"
                                                 }
                                               },
@@ -17758,10 +17396,7 @@
                                               "componentPropertyDefinitions": {
                                                 "selected": {
                                                   "type": "VARIANT",
-                                                  "variantOptions": [
-                                                    "false",
-                                                    "true"
-                                                  ],
+                                                  "variantOptions": ["false", "true"],
                                                   "defaultValue": "true"
                                                 }
                                               },
@@ -18298,10 +17933,7 @@
                                               "componentPropertyDefinitions": {
                                                 "selected": {
                                                   "type": "VARIANT",
-                                                  "variantOptions": [
-                                                    "false",
-                                                    "true"
-                                                  ],
+                                                  "variantOptions": ["false", "true"],
                                                   "defaultValue": "true"
                                                 }
                                               },
@@ -19032,10 +18664,7 @@
                                           "componentPropertyDefinitions": {
                                             "selected": {
                                               "type": "VARIANT",
-                                              "variantOptions": [
-                                                "false",
-                                                "true"
-                                              ],
+                                              "variantOptions": ["false", "true"],
                                               "defaultValue": "true"
                                             }
                                           },
@@ -19614,10 +19243,7 @@
                                           "componentPropertyDefinitions": {
                                             "selected": {
                                               "type": "VARIANT",
-                                              "variantOptions": [
-                                                "false",
-                                                "true"
-                                              ],
+                                              "variantOptions": ["false", "true"],
                                               "defaultValue": "true"
                                             }
                                           },
@@ -20154,10 +19780,7 @@
                                           "componentPropertyDefinitions": {
                                             "selected": {
                                               "type": "VARIANT",
-                                              "variantOptions": [
-                                                "false",
-                                                "true"
-                                              ],
+                                              "variantOptions": ["false", "true"],
                                               "defaultValue": "true"
                                             }
                                           },
@@ -20694,10 +20317,7 @@
                                           "componentPropertyDefinitions": {
                                             "selected": {
                                               "type": "VARIANT",
-                                              "variantOptions": [
-                                                "false",
-                                                "true"
-                                              ],
+                                              "variantOptions": ["false", "true"],
                                               "defaultValue": "true"
                                             }
                                           },
@@ -21234,10 +20854,7 @@
                                           "componentPropertyDefinitions": {
                                             "selected": {
                                               "type": "VARIANT",
-                                              "variantOptions": [
-                                                "false",
-                                                "true"
-                                              ],
+                                              "variantOptions": ["false", "true"],
                                               "defaultValue": "true"
                                             }
                                           },
@@ -21760,10 +21377,7 @@
                           "componentPropertyDefinitions": {
                             "Render Type": {
                               "type": "VARIANT",
-                              "variantOptions": [
-                                "COLOR_SWATCH_CHOICES",
-                                "TEXT_CHOICES"
-                              ],
+                              "variantOptions": ["COLOR_SWATCH_CHOICES", "TEXT_CHOICES"],
                               "defaultValue": "COLOR_SWATCH_CHOICES"
                             }
                           },
@@ -22057,10 +21671,7 @@
                                               "componentPropertyDefinitions": {
                                                 "selected": {
                                                   "type": "VARIANT",
-                                                  "variantOptions": [
-                                                    "false",
-                                                    "true"
-                                                  ],
+                                                  "variantOptions": ["false", "true"],
                                                   "defaultValue": "true"
                                                 }
                                               },
@@ -22795,10 +22406,7 @@
                                               "componentPropertyDefinitions": {
                                                 "selected": {
                                                   "type": "VARIANT",
-                                                  "variantOptions": [
-                                                    "false",
-                                                    "true"
-                                                  ],
+                                                  "variantOptions": ["false", "true"],
                                                   "defaultValue": "true"
                                                 }
                                               },
@@ -23503,10 +23111,7 @@
                                               "componentPropertyDefinitions": {
                                                 "selected": {
                                                   "type": "VARIANT",
-                                                  "variantOptions": [
-                                                    "false",
-                                                    "true"
-                                                  ],
+                                                  "variantOptions": ["false", "true"],
                                                   "defaultValue": "true"
                                                 }
                                               },
@@ -24241,10 +23846,7 @@
                                               "componentPropertyDefinitions": {
                                                 "selected": {
                                                   "type": "VARIANT",
-                                                  "variantOptions": [
-                                                    "false",
-                                                    "true"
-                                                  ],
+                                                  "variantOptions": ["false", "true"],
                                                   "defaultValue": "true"
                                                 }
                                               },
@@ -24979,10 +24581,7 @@
                                               "componentPropertyDefinitions": {
                                                 "selected": {
                                                   "type": "VARIANT",
-                                                  "variantOptions": [
-                                                    "false",
-                                                    "true"
-                                                  ],
+                                                  "variantOptions": ["false", "true"],
                                                   "defaultValue": "true"
                                                 }
                                               },
@@ -25929,10 +25528,7 @@
                                               "componentPropertyDefinitions": {
                                                 "selected": {
                                                   "type": "VARIANT",
-                                                  "variantOptions": [
-                                                    "false",
-                                                    "true"
-                                                  ],
+                                                  "variantOptions": ["false", "true"],
                                                   "defaultValue": "true"
                                                 }
                                               },
@@ -26511,10 +26107,7 @@
                                               "componentPropertyDefinitions": {
                                                 "selected": {
                                                   "type": "VARIANT",
-                                                  "variantOptions": [
-                                                    "false",
-                                                    "true"
-                                                  ],
+                                                  "variantOptions": ["false", "true"],
                                                   "defaultValue": "true"
                                                 }
                                               },
@@ -27051,10 +26644,7 @@
                                               "componentPropertyDefinitions": {
                                                 "selected": {
                                                   "type": "VARIANT",
-                                                  "variantOptions": [
-                                                    "false",
-                                                    "true"
-                                                  ],
+                                                  "variantOptions": ["false", "true"],
                                                   "defaultValue": "true"
                                                 }
                                               },
@@ -27591,10 +27181,7 @@
                                               "componentPropertyDefinitions": {
                                                 "selected": {
                                                   "type": "VARIANT",
-                                                  "variantOptions": [
-                                                    "false",
-                                                    "true"
-                                                  ],
+                                                  "variantOptions": ["false", "true"],
                                                   "defaultValue": "true"
                                                 }
                                               },
@@ -28131,10 +27718,7 @@
                                               "componentPropertyDefinitions": {
                                                 "selected": {
                                                   "type": "VARIANT",
-                                                  "variantOptions": [
-                                                    "false",
-                                                    "true"
-                                                  ],
+                                                  "variantOptions": ["false", "true"],
                                                   "defaultValue": "true"
                                                 }
                                               },
@@ -28865,10 +28449,7 @@
                                           "componentPropertyDefinitions": {
                                             "selected": {
                                               "type": "VARIANT",
-                                              "variantOptions": [
-                                                "false",
-                                                "true"
-                                              ],
+                                              "variantOptions": ["false", "true"],
                                               "defaultValue": "true"
                                             }
                                           },
@@ -29603,10 +29184,7 @@
                                           "componentPropertyDefinitions": {
                                             "selected": {
                                               "type": "VARIANT",
-                                              "variantOptions": [
-                                                "false",
-                                                "true"
-                                              ],
+                                              "variantOptions": ["false", "true"],
                                               "defaultValue": "true"
                                             }
                                           },
@@ -30311,10 +29889,7 @@
                                           "componentPropertyDefinitions": {
                                             "selected": {
                                               "type": "VARIANT",
-                                              "variantOptions": [
-                                                "false",
-                                                "true"
-                                              ],
+                                              "variantOptions": ["false", "true"],
                                               "defaultValue": "true"
                                             }
                                           },
@@ -31049,10 +30624,7 @@
                                           "componentPropertyDefinitions": {
                                             "selected": {
                                               "type": "VARIANT",
-                                              "variantOptions": [
-                                                "false",
-                                                "true"
-                                              ],
+                                              "variantOptions": ["false", "true"],
                                               "defaultValue": "true"
                                             }
                                           },
@@ -31787,10 +31359,7 @@
                                           "componentPropertyDefinitions": {
                                             "selected": {
                                               "type": "VARIANT",
-                                              "variantOptions": [
-                                                "false",
-                                                "true"
-                                              ],
+                                              "variantOptions": ["false", "true"],
                                               "defaultValue": "true"
                                             }
                                           },
@@ -35097,10 +34666,7 @@
                           "componentPropertyDefinitions": {
                             "selected": {
                               "type": "VARIANT",
-                              "variantOptions": [
-                                "false",
-                                "true"
-                              ],
+                              "variantOptions": ["false", "true"],
                               "defaultValue": "true"
                             }
                           },
@@ -35835,10 +35401,7 @@
                           "componentPropertyDefinitions": {
                             "selected": {
                               "type": "VARIANT",
-                              "variantOptions": [
-                                "false",
-                                "true"
-                              ],
+                              "variantOptions": ["false", "true"],
                               "defaultValue": "true"
                             }
                           },
@@ -36543,10 +36106,7 @@
                           "componentPropertyDefinitions": {
                             "selected": {
                               "type": "VARIANT",
-                              "variantOptions": [
-                                "false",
-                                "true"
-                              ],
+                              "variantOptions": ["false", "true"],
                               "defaultValue": "true"
                             }
                           },
@@ -37281,10 +36841,7 @@
                           "componentPropertyDefinitions": {
                             "selected": {
                               "type": "VARIANT",
-                              "variantOptions": [
-                                "false",
-                                "true"
-                              ],
+                              "variantOptions": ["false", "true"],
                               "defaultValue": "true"
                             }
                           },
@@ -38019,10 +37576,7 @@
                           "componentPropertyDefinitions": {
                             "selected": {
                               "type": "VARIANT",
-                              "variantOptions": [
-                                "false",
-                                "true"
-                              ],
+                              "variantOptions": ["false", "true"],
                               "defaultValue": "true"
                             }
                           },
@@ -38966,10 +38520,7 @@
                           "componentPropertyDefinitions": {
                             "selected": {
                               "type": "VARIANT",
-                              "variantOptions": [
-                                "false",
-                                "true"
-                              ],
+                              "variantOptions": ["false", "true"],
                               "defaultValue": "true"
                             }
                           },
@@ -39548,10 +39099,7 @@
                           "componentPropertyDefinitions": {
                             "selected": {
                               "type": "VARIANT",
-                              "variantOptions": [
-                                "false",
-                                "true"
-                              ],
+                              "variantOptions": ["false", "true"],
                               "defaultValue": "true"
                             }
                           },
@@ -40088,10 +39636,7 @@
                           "componentPropertyDefinitions": {
                             "selected": {
                               "type": "VARIANT",
-                              "variantOptions": [
-                                "false",
-                                "true"
-                              ],
+                              "variantOptions": ["false", "true"],
                               "defaultValue": "true"
                             }
                           },
@@ -40628,10 +40173,7 @@
                           "componentPropertyDefinitions": {
                             "selected": {
                               "type": "VARIANT",
-                              "variantOptions": [
-                                "false",
-                                "true"
-                              ],
+                              "variantOptions": ["false", "true"],
                               "defaultValue": "true"
                             }
                           },
@@ -41168,10 +40710,7 @@
                           "componentPropertyDefinitions": {
                             "selected": {
                               "type": "VARIANT",
-                              "variantOptions": [
-                                "false",
-                                "true"
-                              ],
+                              "variantOptions": ["false", "true"],
                               "defaultValue": "true"
                             }
                           },
@@ -41729,16 +41268,8 @@
                   "scaleMode": "FILL",
                   "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                   "imageTransform": [
-                    [
-                      1,
-                      0,
-                      0
-                    ],
-                    [
-                      0,
-                      1,
-                      0
-                    ]
+                    [1, 0, 0],
+                    [0, 1, 0]
                   ],
                   "imageUrl": "/images/424:520_FILL.png"
                 }
@@ -41988,16 +41519,8 @@
                   "scaleMode": "FILL",
                   "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                   "imageTransform": [
-                    [
-                      1,
-                      0,
-                      0
-                    ],
-                    [
-                      0,
-                      1,
-                      0
-                    ]
+                    [1, 0, 0],
+                    [0, 1, 0]
                   ],
                   "imageUrl": "/images/424:525_FILL.png"
                 },
@@ -42257,16 +41780,8 @@
                   "scaleMode": "FILL",
                   "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                   "imageTransform": [
-                    [
-                      1,
-                      0,
-                      0
-                    ],
-                    [
-                      0,
-                      1,
-                      0
-                    ]
+                    [1, 0, 0],
+                    [0, 1, 0]
                   ],
                   "imageUrl": "/images/424:530_FILL.png"
                 }
@@ -42521,16 +42036,8 @@
                   "scaleMode": "FILL",
                   "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                   "imageTransform": [
-                    [
-                      1,
-                      0,
-                      0
-                    ],
-                    [
-                      0,
-                      1,
-                      0
-                    ]
+                    [1, 0, 0],
+                    [0, 1, 0]
                   ],
                   "imageUrl": "/images/424:535_FILL.png"
                 },
@@ -42795,16 +42302,8 @@
                   "scaleMode": "FILL",
                   "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                   "imageTransform": [
-                    [
-                      1,
-                      0,
-                      0
-                    ],
-                    [
-                      0,
-                      1,
-                      0
-                    ]
+                    [1, 0, 0],
+                    [0, 1, 0]
                   ],
                   "imageUrl": "/images/424:540_FILL.png"
                 }
@@ -42890,16 +42389,8 @@
                   "scaleMode": "FILL",
                   "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                   "imageTransform": [
-                    [
-                      1,
-                      0,
-                      0
-                    ],
-                    [
-                      0,
-                      1,
-                      0
-                    ]
+                    [1, 0, 0],
+                    [0, 1, 0]
                   ],
                   "imageUrl": "/images/424:542_FILL.png"
                 },
@@ -42995,16 +42486,8 @@
                   "scaleMode": "FILL",
                   "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                   "imageTransform": [
-                    [
-                      1,
-                      0,
-                      0
-                    ],
-                    [
-                      0,
-                      1,
-                      0
-                    ]
+                    [1, 0, 0],
+                    [0, 1, 0]
                   ],
                   "imageUrl": "/images/424:544_FILL.png"
                 }
@@ -43095,16 +42578,8 @@
                   "scaleMode": "FILL",
                   "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                   "imageTransform": [
-                    [
-                      1,
-                      0,
-                      0
-                    ],
-                    [
-                      0,
-                      1,
-                      0
-                    ]
+                    [1, 0, 0],
+                    [0, 1, 0]
                   ],
                   "imageUrl": "/images/424:546_FILL.png"
                 },
@@ -43235,16 +42710,8 @@
                   "scaleMode": "FILL",
                   "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                   "imageTransform": [
-                    [
-                      1,
-                      0,
-                      0
-                    ],
-                    [
-                      0,
-                      1,
-                      0
-                    ]
+                    [1, 0, 0],
+                    [0, 1, 0]
                   ],
                   "imageUrl": "/images/424:549_FILL.png"
                 }
@@ -43330,16 +42797,8 @@
                   "scaleMode": "FILL",
                   "imageHash": "064e2331cc25a9c017f41ace4894fff950659702",
                   "imageTransform": [
-                    [
-                      1,
-                      0,
-                      0
-                    ],
-                    [
-                      0,
-                      1,
-                      0
-                    ]
+                    [1, 0, 0],
+                    [0, 1, 0]
                   ],
                   "imageUrl": "/images/424:551_FILL.png"
                 }
@@ -43531,10 +42990,7 @@
             "componentName": "product-page"
           },
           "jayPageSectionId": "424:364",
-          "tagPath": [
-            "/products/:slug|@jay-framework/wix-stores.product-page",
-            "productName"
-          ]
+          "tagPath": ["/products/:slug|@jay-framework/wix-stores.product-page", "productName"]
         }
       ],
       "424:408": [
@@ -43788,10 +43244,7 @@
             "componentName": "product-page"
           },
           "jayPageSectionId": "424:364",
-          "tagPath": [
-            "/products/:slug|@jay-framework/wix-stores.product-page",
-            "price"
-          ]
+          "tagPath": ["/products/:slug|@jay-framework/wix-stores.product-page", "price"]
         }
       ],
       "424:427": [
@@ -43816,10 +43269,7 @@
             "componentName": "product-page"
           },
           "jayPageSectionId": "424:364",
-          "tagPath": [
-            "/products/:slug|@jay-framework/wix-stores.product-page",
-            "buyNowButton"
-          ]
+          "tagPath": ["/products/:slug|@jay-framework/wix-stores.product-page", "buyNowButton"]
         }
       ],
       "424:464": [
@@ -43830,10 +43280,7 @@
             "componentName": "product-page"
           },
           "jayPageSectionId": "424:364",
-          "tagPath": [
-            "/products/:slug|@jay-framework/wix-stores.product-page",
-            "addToCartButton"
-          ]
+          "tagPath": ["/products/:slug|@jay-framework/wix-stores.product-page", "addToCartButton"]
         }
       ],
       "424:452": [
@@ -43844,10 +43291,7 @@
             "componentName": "product-page"
           },
           "jayPageSectionId": "424:364",
-          "tagPath": [
-            "/products/:slug|@jay-framework/wix-stores.product-page",
-            "options"
-          ]
+          "tagPath": ["/products/:slug|@jay-framework/wix-stores.product-page", "options"]
         }
       ],
       "424:453": [
@@ -43874,11 +43318,7 @@
             "componentName": "product-page"
           },
           "jayPageSectionId": "424:364",
-          "tagPath": [
-            "/products/:slug|@jay-framework/wix-stores.product-page",
-            "options",
-            "name"
-          ]
+          "tagPath": ["/products/:slug|@jay-framework/wix-stores.product-page", "options", "name"]
         }
       ],
       "424:511": [
@@ -43889,11 +43329,7 @@
             "componentName": "product-page"
           },
           "jayPageSectionId": "424:364",
-          "tagPath": [
-            "/products/:slug|@jay-framework/wix-stores.product-page",
-            "options",
-            "name"
-          ]
+          "tagPath": ["/products/:slug|@jay-framework/wix-stores.product-page", "options", "name"]
         }
       ],
       "424:504": [

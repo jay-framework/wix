@@ -9,7 +9,8 @@
     "clean": "rimraf dist",
     "build": "vite build",
     "preview": "vite preview",
-    "build:check-types": "tsc"
+    "build:check-types": "tsc",
+    "test": ":"
   },
   "dependencies": {
     "@wix/ecom": "^1.0.1978",

@@ -1,9 +1,8 @@
 {
   "name": "@jay-framework/wix-stores-v1",
-  "version": "1.0.0",
+  "version": "0.15.0",
   "type": "module",
   "description": "Wix Stores Catalog V1 API client for Jay Framework",
-  "private": true,
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "files": [
@@ -42,9 +41,9 @@
     "@jay-framework/secure": "^0.14.0",
     "@jay-framework/stack-client-runtime": "^0.14.0",
     "@jay-framework/stack-server-runtime": "^0.14.0",
-    "@jay-framework/wix-cart": "^1.0.0",
-    "@jay-framework/wix-server-client": "^1.0.0",
-    "@jay-framework/wix-utils": "^1.0.0",
+    "@jay-framework/wix-cart": "^0.15.0",
+    "@jay-framework/wix-server-client": "^0.15.0",
+    "@jay-framework/wix-utils": "^0.15.0",
     "@wix/sdk": "^1.21.5",
     "@wix/stores": "^1.0.723"
   },

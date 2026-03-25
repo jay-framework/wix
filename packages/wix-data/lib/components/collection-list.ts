@@ -1,6 +1,6 @@
 /**
  * Collection List Component
- * 
+ *
  * Shared component for collection list pages (index and category).
  * Receives contract info via props (DynamicContractProps) to determine which collection to query.
  */
@@ -18,7 +18,7 @@ import { formatWixMediaUrl, parseWixMediaUrl } from '@jay-framework/wix-utils';
 import { WIX_DATA_SERVICE_MARKER, WixDataService } from '../services/wix-data-service';
 import { getComponentFields, isComponentEnabled } from '../types';
 import { queryItems } from '../actions/data-actions';
-import {WixDataItem} from "@wix/wix-data-items-sdk";
+import { WixDataItem } from '@wix/wix-data-items-sdk';
 
 const PAGE_SIZE = 20;
 
@@ -125,9 +125,12 @@ interface WixDataMetadata {
  * Contract info is passed as last argument by the runtime
  */
 async function* loadListParams(
-    services: [WixDataService, ...any[]]
+    services: [WixDataService, ...any[]],
 ): AsyncIterable<ListPageParams[]> {
-    const [wixData, contractInfo] = services as [WixDataService, DynamicContractProps<WixDataMetadata>?];
+    const [wixData, contractInfo] = services as [
+        WixDataService,
+        DynamicContractProps<WixDataMetadata>?,
+    ];
     if (!contractInfo?.metadata) {
         console.warn('[wix-data] loadListParams called without contract metadata');
         yield [];
@@ -135,59 +138,61 @@ async function* loadListParams(
     }
     const { collectionId } = contractInfo.metadata;
     const config = wixData.getCollectionConfig(collectionId);
-    
+
     if (!config) {
         console.error(`[wix-data] No config found for collection: ${collectionId}`);
         yield [];
         return;
     }
-    
+
     const params: ListPageParams[] = [];
-    
+
     // Index page (no category)
     if (isComponentEnabled(config.components.indexPage)) {
         params.push({});
     }
-    
+
     // Category pages
     if (isComponentEnabled(config.components.categoryPage) && config.category) {
         try {
             // Query all items to extract unique category references
-            const result = await wixData.items.query(collectionId)
-                .limit(1000)
-                .find();
-            
+            const result = await wixData.items.query(collectionId).limit(1000).find();
+
             // Extract unique category references
             // Note: WixDataItem is a flat object with fields directly on it
             const categoryIds = new Set<string>();
-            result.items.forEach(item => {
+            result.items.forEach((item) => {
                 const catValue = (item as Record<string, unknown>)[config.category!.referenceField];
-                const catIds = Array.isArray(catValue) ? catValue : 
-                               typeof catValue === 'string' ? [catValue] : [];
+                const catIds = Array.isArray(catValue)
+                    ? catValue
+                    : typeof catValue === 'string'
+                      ? [catValue]
+                      : [];
                 catIds.forEach((id: string) => categoryIds.add(id));
             });
-            
+
             // Fetch category details in parallel and filter valid slugs
             const categoryResults = await Promise.all(
                 Array.from(categoryIds).map(async (catId) => {
                     try {
                         const catResult = await wixData.items.get('', catId);
-                        return catResult.dataItem?.data?.[config.category!.categorySlugField] as string | undefined;
+                        return catResult.dataItem?.data?.[config.category!.categorySlugField] as
+                            | string
+                            | undefined;
                     } catch {
                         return undefined;
                     }
-                })
+                }),
             );
-            
+
             categoryResults
                 .filter((slug): slug is string => !!slug)
-                .forEach(slug => params.push({ category: slug }));
-                
+                .forEach((slug) => params.push({ category: slug }));
         } catch (error) {
             console.error(`[wix-data] Failed to load category params:`, error);
         }
     }
-    
+
     yield params;
 }
 
@@ -197,99 +202,104 @@ async function* loadListParams(
  */
 async function renderSlowlyChanging(
     props: PageProps & ListPageParams & DynamicContractProps<WixDataMetadata>,
-    wixData: WixDataService
+    wixData: WixDataService,
 ) {
     const { collectionId } = props.metadata!;
-    
+
     const Pipeline = RenderPipeline.for<ListSlowViewState, ListSlowCarryForward>();
-    
-    return Pipeline
-        .try(async () => {
-            const config = wixData.getCollectionConfig(collectionId);
-            
-            if (!config) {
-                throw new Error(`Collection not configured: ${collectionId}`);
+
+    return Pipeline.try(async () => {
+        const config = wixData.getCollectionConfig(collectionId);
+
+        if (!config) {
+            throw new Error(`Collection not configured: ${collectionId}`);
+        }
+
+        // Get field whitelist from component config (indexPage or categoryPage)
+        const componentConfig = config.components.indexPage || config.components.categoryPage;
+        const fieldWhitelist = getComponentFields(componentConfig);
+
+        let categoryData: ListSlowViewState['category'] | undefined;
+        let categoryId: string | undefined;
+        const categoryField = config.category?.referenceField;
+
+        // If this is a category page, look up category by slug
+        if (props.category && config.category) {
+            // Find category by slug in the category collection
+            const catQuery = wixData.items
+                .query(config.category.referenceField.split('.')[0] || collectionId)
+                .eq(config.category.categorySlugField, props.category);
+
+            const catResult = await catQuery.find();
+
+            if (catResult.items.length > 0) {
+                const cat = catResult.items[0];
+                categoryId = cat._id;
+                categoryData = {
+                    _id: cat._id!,
+                    slug: props.category,
+                    title:
+                        (cat.data?.title as string) || (cat.data?.name as string) || props.category,
+                    description: (cat.data?.description as string) || '',
+                };
             }
-            
-            // Get field whitelist from component config (indexPage or categoryPage)
-            const componentConfig = config.components.indexPage || config.components.categoryPage;
-            const fieldWhitelist = getComponentFields(componentConfig);
-            
-            let categoryData: ListSlowViewState['category'] | undefined;
-            let categoryId: string | undefined;
-            const categoryField = config.category?.referenceField;
-            
-            // If this is a category page, look up category by slug
-            if (props.category && config.category) {
-                // Find category by slug in the category collection
-                const catQuery = wixData.items.query(config.category.referenceField.split('.')[0] || collectionId)
-                    .eq(config.category.categorySlugField, props.category);
-                
-                const catResult = await catQuery.find();
-                
-                if (catResult.items.length > 0) {
-                    const cat = catResult.items[0];
-                    categoryId = cat._id;
-                    categoryData = {
-                        _id: cat._id!,
-                        slug: props.category,
-                        title: (cat.data?.title as string) || (cat.data?.name as string) || props.category,
-                        description: (cat.data?.description as string) || ''
-                    };
-                }
-            }
-            
-            // Use queryItems action to fetch items (with optional category filter)
-            const result = await queryItems({
-                collectionId,
-                limit: PAGE_SIZE,
-                offset: 0,
-                categoryId,
-                categoryField
+        }
+
+        // Use queryItems action to fetch items (with optional category filter)
+        const result = await queryItems({
+            collectionId,
+            limit: PAGE_SIZE,
+            offset: 0,
+            categoryId,
+            categoryField,
+        });
+
+        // Map items to view state using field whitelist
+        const items = result.items.map((item) =>
+            mapItemToViewState(item, config.pathPrefix, config.slugField, fieldWhitelist),
+        );
+
+        // Build breadcrumbs
+        const breadcrumbs: ListSlowViewState['breadcrumbs'] = [
+            { slug: '', title: 'Home', url: '/' },
+            {
+                slug: collectionId.toLowerCase(),
+                title: config.collectionId,
+                url: config.pathPrefix,
+            },
+        ];
+
+        if (categoryData) {
+            breadcrumbs.push({
+                slug: categoryData.slug,
+                title: categoryData.title,
+                url: `${config.pathPrefix}/category/${categoryData.slug}`,
             });
+        }
 
-            // Map items to view state using field whitelist
-            const items = result.items.map(item =>
-                mapItemToViewState(item, config.pathPrefix, config.slugField, fieldWhitelist)
-            );
-
-            // Build breadcrumbs
-            const breadcrumbs: ListSlowViewState['breadcrumbs'] = [
-                { slug: '', title: 'Home', url: '/' },
-                { slug: collectionId.toLowerCase(), title: config.collectionId, url: config.pathPrefix }
-            ];
-            
-            if (categoryData) {
-                breadcrumbs.push({
-                    slug: categoryData.slug,
-                    title: categoryData.title,
-                    url: `${config.pathPrefix}/category/${categoryData.slug}`
-                });
-            }
-            
-            return {
-                items,
-                totalCount: result.totalCount,
-                category: categoryData,
-                breadcrumbs,
-                offset: items.length,  // Initial offset is the number of items loaded
-                categoryId,
-                categoryField,
-                pathPrefix: config.pathPrefix,
-                slugField: config.slugField,
-                fieldWhitelist
-            };
-        })
-        .recover(error => {
+        return {
+            items,
+            totalCount: result.totalCount,
+            category: categoryData,
+            breadcrumbs,
+            offset: items.length, // Initial offset is the number of items loaded
+            categoryId,
+            categoryField,
+            pathPrefix: config.pathPrefix,
+            slugField: config.slugField,
+            fieldWhitelist,
+        };
+    })
+        .recover((error) => {
             console.error(`[wix-data] Failed to load list:`, error);
             return Pipeline.clientError(500, 'Failed to load items');
         })
-        .toPhaseOutput(data => ({
+        .toPhaseOutput((data) => ({
             viewState: {
                 items: data.items,
                 totalCount: data.totalCount,
                 category: data.category,
-                breadcrumbs: data.breadcrumbs
+                breadcrumbs: data.breadcrumbs,
             },
             carryForward: {
                 collectionId,
@@ -299,8 +309,8 @@ async function renderSlowlyChanging(
                 totalCount: data.totalCount,
                 pathPrefix: data.pathPrefix,
                 slugField: data.slugField,
-                fieldWhitelist: data.fieldWhitelist
-            }
+                fieldWhitelist: data.fieldWhitelist,
+            },
         }));
 }
 
@@ -311,18 +321,18 @@ async function renderSlowlyChanging(
 async function renderFastChanging(
     props: PageProps & ListPageParams & DynamicContractProps<WixDataMetadata>,
     slowCarryForward: ListSlowCarryForward,
-    wixData: WixDataService
+    wixData: WixDataService,
 ) {
     const Pipeline = RenderPipeline.for<ListFastViewState, ListFastCarryForward>();
-    
+
     const hasMore = slowCarryForward.offset < slowCarryForward.totalCount;
-    
+
     return Pipeline.ok({
-        loadedItems: [],  // Empty initially - items loaded via "load more"
+        loadedItems: [], // Empty initially - items loaded via "load more"
         hasMore,
         isLoading: false,
-        loadedCount: 0
-    }).toPhaseOutput(viewState => ({
+        loadedCount: 0,
+    }).toPhaseOutput((viewState) => ({
         viewState,
         carryForward: {
             collectionId: slowCarryForward.collectionId,
@@ -332,8 +342,8 @@ async function renderFastChanging(
             totalCount: slowCarryForward.totalCount,
             pathPrefix: slowCarryForward.pathPrefix,
             slugField: slowCarryForward.slugField,
-            fieldWhitelist: slowCarryForward.fieldWhitelist
-        }
+            fieldWhitelist: slowCarryForward.fieldWhitelist,
+        },
     }));
 }
 
@@ -345,32 +355,32 @@ function ListInteractive(
     _props: Props<PageProps & ListPageParams>,
     refs: any,
     viewStateSignals: Signals<ListFastViewState>,
-    fastCarryForward: ListFastCarryForward
+    fastCarryForward: ListFastCarryForward,
 ) {
     const {
         loadedItems: [loadedItems, setLoadedItems],
         hasMore: [hasMore, setHasMore],
         isLoading: [isLoading, setIsLoading],
-        loadedCount: [loadedCount, setLoadedCount]
+        loadedCount: [loadedCount, setLoadedCount],
     } = viewStateSignals;
-    
+
     let currentOffset = fastCarryForward.offset;
-    const { 
-        collectionId, 
-        categoryId, 
+    const {
+        collectionId,
+        categoryId,
         categoryField,
         totalCount,
-        pathPrefix, 
-        slugField, 
-        fieldWhitelist 
+        pathPrefix,
+        slugField,
+        fieldWhitelist,
     } = fastCarryForward;
-    
+
     // Load more button handler
     refs.loadMoreButton?.onclick(async () => {
         if (currentOffset >= totalCount || isLoading()) return;
-        
+
         setIsLoading(true);
-        
+
         try {
             // Use the queryItems action for server-side data fetching
             const result = await queryItems({
@@ -378,34 +388,33 @@ function ListInteractive(
                 limit: PAGE_SIZE,
                 offset: currentOffset,
                 categoryId,
-                categoryField
+                categoryField,
             });
-            
+
             // Map new items using field whitelist
-            const newItems: ListItem[] = result.items.map(item => 
-                mapItemToViewState(item, pathPrefix, slugField, fieldWhitelist)
+            const newItems: ListItem[] = result.items.map((item) =>
+                mapItemToViewState(item, pathPrefix, slugField, fieldWhitelist),
             );
-            
+
             currentOffset += newItems.length;
-            
+
             setLoadedItems([...loadedItems(), ...newItems]);
             setLoadedCount(loadedCount() + newItems.length);
             setHasMore(result.hasMore);
-            
         } catch (error) {
             console.error('[wix-data] Failed to load more items:', error);
         } finally {
             setIsLoading(false);
         }
     });
-    
+
     return {
         render: () => ({
             loadedItems: loadedItems(),
             hasMore: hasMore(),
             isLoading: isLoading(),
-            loadedCount: loadedCount()
-        })
+            loadedCount: loadedCount(),
+        }),
     };
 }
 
@@ -418,7 +427,8 @@ function ListInteractive(
  */
 function isImageValue(value: unknown): boolean {
     if (typeof value === 'string' && value.startsWith('wix:image://')) return true;
-    if (typeof value === 'object' && value !== null && ('src' in value || 'url' in value)) return true;
+    if (typeof value === 'object' && value !== null && ('src' in value || 'url' in value))
+        return true;
     return false;
 }
 
@@ -428,7 +438,7 @@ function isImageValue(value: unknown): boolean {
  */
 function mapImageField(imgValue: unknown, altText?: string): ViewStateImage | undefined {
     if (!imgValue) return undefined;
-    
+
     // Handle string URL (wix:image:// or http(s)://)
     if (typeof imgValue === 'string') {
         const parsed = parseWixMediaUrl(imgValue);
@@ -436,24 +446,24 @@ function mapImageField(imgValue: unknown, altText?: string): ViewStateImage | un
             url: formatWixMediaUrl('', imgValue),
             altText: altText || '',
             width: parsed?.originWidth,
-            height: parsed?.originHeight
+            height: parsed?.originHeight,
         };
     }
-    
+
     // Handle object with src/url property
     if (typeof imgValue === 'object' && imgValue !== null) {
         const img = imgValue as Record<string, unknown>;
         const srcUrl = ((img.src || img.url) as string) || '';
         const parsed = parseWixMediaUrl(srcUrl);
-        
+
         return {
             url: formatWixMediaUrl('', srcUrl),
             altText: (img.alt as string) || altText || '',
             width: parsed?.originWidth ?? (img.width as number),
-            height: parsed?.originHeight ?? (img.height as number)
+            height: parsed?.originHeight ?? (img.height as number),
         };
     }
-    
+
     return undefined;
 }
 
@@ -466,24 +476,22 @@ function mapItemToViewState(
     item: WixDataItem,
     pathPrefix: string,
     slugField: string,
-    whitelist?: string[]
+    whitelist?: string[],
 ): ListItem {
-
     const mapped: ListItem = {
         _id: item._id!,
-        url: `${pathPrefix}/${item[slugField] || item._id}`
+        url: `${pathPrefix}/${item[slugField] || item._id}`,
     };
-    
+
     // Determine which keys to include
-    const keysToInclude = whitelist 
-        || Object.keys(item).filter(k => !k.startsWith('_'));
-    
+    const keysToInclude = whitelist || Object.keys(item).filter((k) => !k.startsWith('_'));
+
     // Get title for image alt text fallback (look for 'title' or 'name' field)
     const titleValue = item.title || item.name;
     const altText = typeof titleValue === 'string' ? titleValue : '';
-    
+
     // Map each field
-    keysToInclude.forEach(key => {
+    keysToInclude.forEach((key) => {
         const value = item[key];
 
         // Transform image fields
@@ -493,16 +501,16 @@ function mapItemToViewState(
             mapped[key] = value || '';
         }
     });
-    
+
     return mapped;
 }
 
 /**
  * Collection List Full-Stack Component
- * 
+ *
  * A shared headless component for list pages (index and category).
  * Used by all collections that have indexPage or categoryPage: true in config.
- * 
+ *
  * Uses queryItems action for client-side "load more" functionality.
  */
 export const collectionList = makeJayStackComponent<any>()

@@ -39,6 +39,7 @@ jay-stack agent-kit --force
 ```
 
 Outputs:
+
 - `materialized-contracts/contracts-index.yaml`
 - `materialized-contracts/plugins-index.yaml`
 - `materialized-contracts/<plugin>/*.jay-contract` (dynamic contracts)
@@ -173,10 +174,10 @@ jay-stack dev --timeout 60
 
 ### Test mode endpoints
 
-| Endpoint | Method | Response |
-|----------|--------|----------|
-| `/_jay/health` | GET | `{"status":"ready","port":3300,"editorPort":3301,"uptime":5.2}` |
-| `/_jay/shutdown` | POST | `{"status":"shutting_down"}` |
+| Endpoint         | Method | Response                                                        |
+| ---------------- | ------ | --------------------------------------------------------------- |
+| `/_jay/health`   | GET    | `{"status":"ready","port":3300,"editorPort":3301,"uptime":5.2}` |
+| `/_jay/shutdown` | POST   | `{"status":"shutting_down"}`                                    |
 
 ### Wait for server ready
 
@@ -193,18 +194,20 @@ done
 ```typescript
 // TypeScript
 async function waitForServer(timeout = 30000): Promise<string> {
-    const start = Date.now();
-    while (Date.now() - start < timeout) {
-        try {
-            const res = await fetch('http://localhost:3300/_jay/health');
-            if (res.ok) {
-                const { port } = await res.json();
-                return `http://localhost:${port}`;
-            }
-        } catch { /* not ready */ }
-        await new Promise(r => setTimeout(r, 500));
+  const start = Date.now();
+  while (Date.now() - start < timeout) {
+    try {
+      const res = await fetch('http://localhost:3300/_jay/health');
+      if (res.ok) {
+        const { port } = await res.json();
+        return `http://localhost:${port}`;
+      }
+    } catch {
+      /* not ready */
     }
-    throw new Error('Server not ready');
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  throw new Error('Server not ready');
 }
 ```
 

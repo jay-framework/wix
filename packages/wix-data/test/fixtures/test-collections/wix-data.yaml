@@ -12,7 +12,7 @@ collections:
     slugField: slug
     references:
       - fieldName: author
-        mode: embed    # Author data embedded in article view
+        mode: embed # Author data embedded in article view
     category:
       referenceField: categories
       categorySlugField: slug
@@ -55,7 +55,7 @@ collections:
         mode: embed
     components:
       itemPage: true
-      indexPage: true   # No field whitelist - all card fields included
+      indexPage: true # No field whitelist - all card fields included
       tableWidget: true
 
   # --- Supporting collections (not directly visible) ---

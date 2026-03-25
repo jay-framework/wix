@@ -45,7 +45,7 @@ export const init = makeJayInit()
 
         // Register the reactive Wix Cart context
         const cartContext = provideWixCartContext();
-        
+
         // Load initial cart indicator state
         if (enableClientCart) {
             await cartContext.refreshCartIndicator();

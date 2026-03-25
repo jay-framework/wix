@@ -15,22 +15,24 @@ Create a configuration file at `./config/.wix.yaml` relative to your process exe
 ```yaml
 # Server-side API Key authentication (required)
 apiKeyStrategy:
-  apiKey: "your-api-key-here"
-  siteId: "your-site-id-here"
+  apiKey: 'your-api-key-here'
+  siteId: 'your-site-id-here'
 
 # Client-side OAuth authentication (optional)
 # Enables direct API calls from the browser
 oauthStrategy:
-  clientId: "your-oauth-client-id-here"
+  clientId: 'your-oauth-client-id-here'
 ```
 
 ### Configuration Fields
 
 **apiKeyStrategy** (required):
+
 - `apiKey`: Your Wix API key (string, required)
 - `siteId`: Your Wix site ID (string, required)
 
 **oauthStrategy** (optional):
+
 - `clientId`: OAuth client ID for visitor authentication
 
 ## Server-Side Usage
@@ -93,13 +95,13 @@ import { WIX_CLIENT_CONTEXT } from '@jay-framework/wix-server-client';
 
 // In your interactive component
 function MyComponent(props, refs) {
-    const wixClient = useContext(WIX_CLIENT_CONTEXT);
-    
-    if (wixClient.isReady) {
-        // Make client-side API calls
-        const tokens = wixClient.getTokens();
-        console.log('Visitor session active');
-    }
+  const wixClient = useContext(WIX_CLIENT_CONTEXT);
+
+  if (wixClient.isReady) {
+    // Make client-side API calls
+    const tokens = wixClient.getTokens();
+    console.log('Visitor session active');
+  }
 }
 ```
 
@@ -126,19 +128,19 @@ import { loadConfig } from './config-loader.js';
 import { registerGlobalContext } from '@jay-framework/runtime';
 
 export const init = makeJayInit()
-    .withServer(async () => {
-        const config = loadConfig();
-        
-        // Pass OAuth client ID to client for visitor authentication
-        return {
-            oauthClientId: config.oauth?.clientId || null,
-        };
-    })
-    .withClient(async (data) => {
-        // Set up OAuth-authenticated Wix client
-        // Token management with localStorage
-        registerGlobalContext(WIX_CLIENT_CONTEXT, clientContext);
-    });
+  .withServer(async () => {
+    const config = loadConfig();
+
+    // Pass OAuth client ID to client for visitor authentication
+    return {
+      oauthClientId: config.oauth?.clientId || null,
+    };
+  })
+  .withClient(async (data) => {
+    // Set up OAuth-authenticated Wix client
+    // Token management with localStorage
+    registerGlobalContext(WIX_CLIENT_CONTEXT, clientContext);
+  });
 ```
 
 ### Initialization Order
@@ -171,11 +173,11 @@ Context marker for accessing the Wix client in components.
 
 ```typescript
 interface WixClientContext {
-    client: WixClient | null;
-    isReady: boolean;
-    getTokens(): Tokens | null;
-    generateVisitorTokens(): Promise<Tokens>;
-    refreshToken(): Promise<Tokens>;
+  client: WixClient | null;
+  isReady: boolean;
+  getTokens(): Tokens | null;
+  generateVisitorTokens(): Promise<Tokens>;
+  refreshToken(): Promise<Tokens>;
 }
 ```
 
@@ -190,6 +192,7 @@ Clear stored visitor tokens from localStorage.
 ## Error Handling
 
 The `loadConfig()` function will throw descriptive errors if:
+
 - The config file is not found at `./config/.wix.yaml`
 - The YAML syntax is invalid
 - Required fields (`apiKey`, `siteId`) are missing

@@ -1,6 +1,6 @@
 /**
  * Collection Item Component
- * 
+ *
  * Shared component for all collection item pages.
  * Receives contract info via props (DynamicContractProps) to determine which collection to query.
  */
@@ -44,9 +44,12 @@ interface WixDataMetadata {
  * Contract info is passed as last argument by the runtime
  */
 async function* loadItemParams(
-    services: [WixDataService, ...any[]]
+    services: [WixDataService, ...any[]],
 ): AsyncIterable<ItemPageParams[]> {
-    const [wixData, contractInfo] = services as [WixDataService, DynamicContractProps<WixDataMetadata>?];
+    const [wixData, contractInfo] = services as [
+        WixDataService,
+        DynamicContractProps<WixDataMetadata>?,
+    ];
     if (!contractInfo?.metadata) {
         console.warn('[wix-data] loadItemParams called without contract metadata');
         yield [];
@@ -54,21 +57,19 @@ async function* loadItemParams(
     }
     const { collectionId } = contractInfo.metadata;
     const config = wixData.getCollectionConfig(collectionId);
-    
+
     if (!config) {
         console.error(`[wix-data] No config found for collection: ${collectionId}`);
         yield [];
         return;
     }
-    
+
     try {
-        const result = await wixData.items.query(collectionId)
-            .find();
-        
-        yield result.items.map(item => ({
-            slug: (item[config.slugField] as string) || item._id
+        const result = await wixData.items.query(collectionId).find();
+
+        yield result.items.map((item) => ({
+            slug: (item[config.slugField] as string) || item._id,
         }));
-        
     } catch (error) {
         console.error(`[wix-data] Failed to load slugs for ${collectionId}:`, error);
         yield [];
@@ -81,37 +82,37 @@ async function* loadItemParams(
  */
 async function renderSlowlyChanging(
     props: PageProps & ItemPageParams & DynamicContractProps<WixDataMetadata>,
-    wixData: WixDataService
+    wixData: WixDataService,
 ) {
     const { collectionId } = props.metadata!;
-    
+
     const Pipeline = RenderPipeline.for<any, ItemSlowCarryForward>();
-    
-    return Pipeline
-        .try(async () => {
-            const config = wixData.getCollectionConfig(collectionId);
-            
-            if (!config) {
-                throw new Error(`Collection not configured: ${collectionId}`);
-            }
-            
-            // Query item by slug
-            const result = await wixData.items.query(collectionId)
-                .eq(config.slugField, props.slug)
-                .find();
-            
-            if (!result.items.length) {
-                throw new Error('Item not found');
-            }
-            
-            const item = result.items[0];
-            
-            // Build view state from item data
-            const viewState = await mapItemToViewState(item, config, wixData);
-            
-            return { item, viewState, collectionId };
-        })
-        .recover(error => {
+
+    return Pipeline.try(async () => {
+        const config = wixData.getCollectionConfig(collectionId);
+
+        if (!config) {
+            throw new Error(`Collection not configured: ${collectionId}`);
+        }
+
+        // Query item by slug
+        const result = await wixData.items
+            .query(collectionId)
+            .eq(config.slugField, props.slug)
+            .find();
+
+        if (!result.items.length) {
+            throw new Error('Item not found');
+        }
+
+        const item = result.items[0];
+
+        // Build view state from item data
+        const viewState = await mapItemToViewState(item, config, wixData);
+
+        return { item, viewState, collectionId };
+    })
+        .recover((error) => {
             console.error(`[wix-data] Item not found: ${props.slug}`, error);
             return Pipeline.clientError(404, 'Item not found');
         })
@@ -119,8 +120,8 @@ async function renderSlowlyChanging(
             viewState,
             carryForward: {
                 itemId: item._id!,
-                collectionId: colId
-            }
+                collectionId: colId,
+            },
         }));
 }
 
@@ -132,17 +133,18 @@ async function renderSlowlyChanging(
 async function mapItemToViewState(
     item: Record<string, unknown>,
     config: CollectionConfig,
-    wixData: WixDataService
+    wixData: WixDataService,
 ): Promise<Record<string, unknown>> {
     // Filter out internal fields (except _id)
-    const processableEntries = Object.entries(item)
-        .filter(([key]) => !key.startsWith('_') || key === '_id');
-    
+    const processableEntries = Object.entries(item).filter(
+        ([key]) => !key.startsWith('_') || key === '_id',
+    );
+
     // Process fields in parallel for embedded references
     const mappedEntries = await Promise.all(
         processableEntries.map(async ([key, value]): Promise<[string, unknown]> => {
-            const refConfig = config.references?.find(r => r.fieldName === key);
-            
+            const refConfig = config.references?.find((r) => r.fieldName === key);
+
             if (refConfig?.mode === 'embed' && value) {
                 return [key, await fetchReference(value, wixData)];
             } else if (isImageValue(value)) {
@@ -150,12 +152,12 @@ async function mapItemToViewState(
             } else {
                 return [key, value];
             }
-        })
+        }),
     );
-    
+
     return {
         _id: item._id,
-        ...Object.fromEntries(mappedEntries)
+        ...Object.fromEntries(mappedEntries),
     };
 }
 
@@ -169,7 +171,13 @@ function isImageValue(value: unknown): value is { src?: string; url?: string } {
 /**
  * Map Wix image value to view state format
  */
-function mapImageValue(value: { src?: string; url?: string; alt?: string; width?: number; height?: number }): {
+function mapImageValue(value: {
+    src?: string;
+    url?: string;
+    alt?: string;
+    width?: number;
+    height?: number;
+}): {
     url: string;
     altText: string;
     width?: number;
@@ -179,17 +187,14 @@ function mapImageValue(value: { src?: string; url?: string; alt?: string; width?
         url: value.src || value.url || '',
         altText: value.alt || '',
         width: value.width,
-        height: value.height
+        height: value.height,
     };
 }
 
 /**
  * Fetch referenced item(s)
  */
-async function fetchReference(
-    refValue: unknown,
-    wixData: WixDataService
-): Promise<unknown> {
+async function fetchReference(refValue: unknown, wixData: WixDataService): Promise<unknown> {
     try {
         if (Array.isArray(refValue)) {
             // Multi-reference: fetch all items
@@ -197,23 +202,27 @@ async function fetchReference(
                 refValue.map(async (id: string) => {
                     try {
                         const result = await wixData.items.get('', id);
-                        return result.dataItem ? {
-                            _id: result.dataItem._id,
-                            ...result.dataItem.data
-                        } : null;
+                        return result.dataItem
+                            ? {
+                                  _id: result.dataItem._id,
+                                  ...result.dataItem.data,
+                              }
+                            : null;
                     } catch {
                         return null;
                     }
-                })
+                }),
             );
             return items.filter(Boolean);
         } else if (typeof refValue === 'string') {
             // Single reference: fetch one item
             const result = await wixData.items.get('', refValue);
-            return result.dataItem ? {
-                _id: result.dataItem._id,
-                ...result.dataItem.data
-            } : null;
+            return result.dataItem
+                ? {
+                      _id: result.dataItem._id,
+                      ...result.dataItem.data,
+                  }
+                : null;
         }
     } catch (error) {
         console.error('[wix-data] Failed to fetch reference:', error);
@@ -223,10 +232,10 @@ async function fetchReference(
 
 /**
  * Collection Item Full-Stack Component
- * 
+ *
  * A shared headless component for item pages.
  * Used by all collections that have itemPage: true in config.
- * 
+ *
  * The component receives contract info via props (DynamicContractProps)
  * to determine which collection to query.
  */

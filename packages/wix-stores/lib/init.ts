@@ -6,7 +6,7 @@
  *
  * Server: Registers the WixStoresService for server-side rendering.
  * Client: Provides WixStoresContext for client-side API access.
- * 
+ *
  * Note: Cart functionality is provided by the wix-cart plugin (dependency).
  * WIX_CART_SERVICE and WIX_CART_CONTEXT are initialized by wix-cart.
  */
@@ -21,7 +21,10 @@ import { loadWixStoresConfig } from './config-loader';
 
 // Re-export types for consumers
 export type { WixStoresInitData } from './contexts/wix-stores-context.js';
-export type { CategoryPrefixConfig, WixStoresServiceOptions } from './services/wix-stores-service.js';
+export type {
+    CategoryPrefixConfig,
+    WixStoresServiceOptions,
+} from './services/wix-stores-service.js';
 
 // ============================================================================
 // Plugin Initialization
@@ -44,7 +47,9 @@ export const init = makeJayInit()
         });
 
         if (storesConfig.categoryPrefixes.length > 0) {
-            console.log(`[wix-stores] Category prefixes configured: ${storesConfig.categoryPrefixes.map(p => p.prefix).join(', ')}`);
+            console.log(
+                `[wix-stores] Category prefixes configured: ${storesConfig.categoryPrefixes.map((p) => p.prefix).join(', ')}`,
+            );
         }
 
         console.log('[wix-stores] Server initialization complete');

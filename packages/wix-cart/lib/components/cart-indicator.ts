@@ -9,7 +9,7 @@ import {
     makeJayStackComponent,
     RenderPipeline,
     Signals,
-    PageProps
+    PageProps,
 } from '@jay-framework/fullstack-component';
 import { createEffect, createSignal, Props } from '@jay-framework/component';
 import {
@@ -39,20 +39,20 @@ interface CartIndicatorFastCarryForward {
 /**
  * Fast render phase - show loading state
  */
-async function renderFastChanging(
-    _props: PageProps,
-    _wixCart: WixCartService
-) {
-    const Pipeline = RenderPipeline.for<CartIndicatorFastViewState, CartIndicatorFastCarryForward>();
+async function renderFastChanging(_props: PageProps, _wixCart: WixCartService) {
+    const Pipeline = RenderPipeline.for<
+        CartIndicatorFastViewState,
+        CartIndicatorFastCarryForward
+    >();
 
     return Pipeline.ok(null).toPhaseOutput(() => ({
         viewState: {
             itemCount: 0,
             hasItems: false,
             isLoading: true,
-            justAdded: false
+            justAdded: false,
         },
-        carryForward: {}
+        carryForward: {},
     }));
 }
 
@@ -64,15 +64,14 @@ function CartIndicatorInteractive(
     refs: CartIndicatorRefs,
     viewStateSignals: Signals<CartIndicatorFastViewState>,
     _carryForward: CartIndicatorFastCarryForward,
-    cartContext: WixCartContext
+    cartContext: WixCartContext,
 ) {
-
     // Get signal setters for loading and animation states
     const {
         isLoading: [isLoading, setIsLoading],
-        justAdded: [justAdded, setJustAdded]
+        justAdded: [justAdded, setJustAdded],
     } = viewStateSignals;
-    
+
     // Track previous item count for "just added" animation
     const [prevItemCount, setPrevItemCount] = createSignal(cartContext.cartIndicator.itemCount());
 
@@ -97,8 +96,8 @@ function CartIndicatorInteractive(
             itemCount: cartContext.cartIndicator.itemCount(),
             hasItems: cartContext.cartIndicator.hasItems(),
             isLoading: isLoading(),
-            justAdded: justAdded()
-        })
+            justAdded: justAdded(),
+        }),
     };
 }
 

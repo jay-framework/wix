@@ -47,7 +47,8 @@ export async function setupWixServerClient(ctx: PluginSetupContext): Promise<Plu
         return {
             status: 'needs-config',
             configCreated: [`config/${CONFIG_FILE_NAME}`],
-            message: 'Fill in your Wix API credentials and re-run: jay-stack setup wix-server-client',
+            message:
+                'Fill in your Wix API credentials and re-run: jay-stack setup wix-server-client',
         };
     }
 

@@ -5,6 +5,7 @@
 The wix-data plugin provides dynamic contract generation for Wix Data collections. The list component (`collection-list.ts`) and generator (`list-contract-generator.ts`) handle index and category pages.
 
 Currently, the list component loads all items in the slow phase but the contract and component need refinement to match the pattern established in wix-stores `category-page`:
+
 - First page rendered as **slow** (build-time/SSG)
 - Additional pages loaded interactively via "load more"
 
@@ -57,6 +58,7 @@ tags:
 
 **Q1: Should we follow the exact pattern from category-page?**  
 A: Yes. The pattern is proven and provides:
+
 - Fast initial render (slow-phase items baked into HTML)
 - Efficient client-side loading (only new items sent over the wire)
 - Clear separation of concerns
@@ -88,7 +90,7 @@ tags:
       - {tag: url, type: data, dataType: string, description: Full URL to item page}
       - {tag: itemLink, type: interactive, elementType: HTMLAnchorElement}
       # ... field-specific tags from schema
-      
+
   # Additional items (loaded on client via "load more")
   - tag: loadedItems
     type: sub-contract
@@ -102,19 +104,19 @@ tags:
       - {tag: url, type: data, dataType: string}
       - {tag: itemLink, type: interactive, elementType: HTMLAnchorElement}
       # ... field-specific tags
-      
+
   # Metadata
   - {tag: totalCount, type: data, dataType: number, description: Total items}
-  
+
   # Load more state
   - {tag: hasMore, type: variant, dataType: boolean, phase: fast+interactive, description: More items available}
   - {tag: isLoading, type: variant, dataType: boolean, phase: fast+interactive, description: Loading state}
   - {tag: loadedCount, type: data, dataType: number, phase: fast+interactive, description: Items currently loaded}
   - {tag: loadMoreButton, type: interactive, elementType: HTMLButtonElement, description: Load more trigger}
-  
+
   # Category (if configured)
   # ... existing category sub-contract
-  
+
   # Breadcrumbs
   # ... existing breadcrumbs sub-contract
 ```
@@ -122,121 +124,124 @@ tags:
 ### Component Changes
 
 #### Slow Render Phase
+
 ```typescript
 async function renderSlowlyChanging(
-    props: PageProps & ListPageParams & DynamicContractProps<WixDataMetadata>,
-    wixData: WixDataService
+  props: PageProps & ListPageParams & DynamicContractProps<WixDataMetadata>,
+  wixData: WixDataService,
 ) {
-    // ... existing category logic ...
-    
-    // Query first page of items
-    const result = await query.limit(PAGE_SIZE).find();
-    
-    // Map items to view state
-    const items = result.items.map(item => ({
-        _id: item._id!,
-        url: `${config.pathPrefix}/${item.data?.[config.slugField] || item._id}`,
-        ...item.data
-    }));
-    
-    return Pipeline.ok({
-        items,                              // Slow phase items
-        totalCount: result.totalCount || items.length,
-        category: categoryData,
-        breadcrumbs,
-    }).toPhaseOutput(data => ({
-        viewState: data,
-        carryForward: {
-            collectionId,
-            categoryId: data.categoryId,
-            nextCursor: result.cursors?.next || null,
-            totalCount: data.totalCount
-        }
-    }));
+  // ... existing category logic ...
+
+  // Query first page of items
+  const result = await query.limit(PAGE_SIZE).find();
+
+  // Map items to view state
+  const items = result.items.map((item) => ({
+    _id: item._id!,
+    url: `${config.pathPrefix}/${item.data?.[config.slugField] || item._id}`,
+    ...item.data,
+  }));
+
+  return Pipeline.ok({
+    items, // Slow phase items
+    totalCount: result.totalCount || items.length,
+    category: categoryData,
+    breadcrumbs,
+  }).toPhaseOutput((data) => ({
+    viewState: data,
+    carryForward: {
+      collectionId,
+      categoryId: data.categoryId,
+      nextCursor: result.cursors?.next || null,
+      totalCount: data.totalCount,
+    },
+  }));
 }
 ```
 
 #### Fast Render Phase
+
 ```typescript
 async function renderFastChanging(
-    props: PageProps & ListPageParams & DynamicContractProps<WixDataMetadata>,
-    slowCarryForward: ListSlowCarryForward,
-    wixData: WixDataService
+  props: PageProps & ListPageParams & DynamicContractProps<WixDataMetadata>,
+  slowCarryForward: ListSlowCarryForward,
+  wixData: WixDataService,
 ) {
-    return Pipeline.ok({
-        loadedItems: [],                    // Empty initially
-        hasMore: slowCarryForward.nextCursor !== null,
-        isLoading: false,
-        loadedCount: 0                      // NEW: track loaded count
-    }).toPhaseOutput(viewState => ({
-        viewState,
-        carryForward: {
-            collectionId: slowCarryForward.collectionId,
-            categoryId: slowCarryForward.categoryId,
-            nextCursor: slowCarryForward.nextCursor
-        }
-    }));
+  return Pipeline.ok({
+    loadedItems: [], // Empty initially
+    hasMore: slowCarryForward.nextCursor !== null,
+    isLoading: false,
+    loadedCount: 0, // NEW: track loaded count
+  }).toPhaseOutput((viewState) => ({
+    viewState,
+    carryForward: {
+      collectionId: slowCarryForward.collectionId,
+      categoryId: slowCarryForward.categoryId,
+      nextCursor: slowCarryForward.nextCursor,
+    },
+  }));
 }
 ```
 
 #### Interactive Phase
+
 ```typescript
 function ListInteractive(
-    _props: Props<PageProps & ListPageParams>,
-    refs: any,
-    viewStateSignals: Signals<ListFastViewState>,
-    fastCarryForward: ListFastCarryForward,
-    wixDataContext: WixDataContext
+  _props: Props<PageProps & ListPageParams>,
+  refs: any,
+  viewStateSignals: Signals<ListFastViewState>,
+  fastCarryForward: ListFastCarryForward,
+  wixDataContext: WixDataContext,
 ) {
-    const {
-        hasMore: [hasMore, setHasMore],
-        isLoading: [isLoading, setIsLoading],
-        loadedItems: [loadedItems, setLoadedItems],   // NEW
-        loadedCount: [loadedCount, setLoadedCount]    // NEW
-    } = viewStateSignals;
-    
-    let currentCursor = fastCarryForward.nextCursor;
-    
-    refs.loadMoreButton?.onclick(async () => {
-        if (!currentCursor || isLoading()) return;
-        
-        setIsLoading(true);
-        
-        try {
-            const result = await wixDataContext.items.queryDataItems({
-                dataCollectionId: fastCarryForward.collectionId
-            })
-                .limit(PAGE_SIZE)
-                .skipTo(currentCursor)
-                .find();
-            
-            // Map new items and append to loadedItems
-            const newItems = result.items.map(item => ({
-                _id: item._id!,
-                url: `${config.pathPrefix}/${item.data?.[config.slugField] || item._id}`,
-                ...item.data
-            }));
-            
-            setLoadedItems([...loadedItems(), ...newItems]);
-            setLoadedCount(loadedCount() + newItems.length);
-            setHasMore(result.hasNext?.() ?? false);
-            currentCursor = result.cursors?.next || null;
-            
-        } catch (error) {
-            console.error('[wix-data] Failed to load more items:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    });
-    
-    return {
-        render: () => ({
-            loadedItems: loadedItems(),
-            hasMore: hasMore(),
-            isLoading: isLoading(),
-            loadedCount: loadedCount()
+  const {
+    hasMore: [hasMore, setHasMore],
+    isLoading: [isLoading, setIsLoading],
+    loadedItems: [loadedItems, setLoadedItems], // NEW
+    loadedCount: [loadedCount, setLoadedCount], // NEW
+  } = viewStateSignals;
+
+  let currentCursor = fastCarryForward.nextCursor;
+
+  refs.loadMoreButton?.onclick(async () => {
+    if (!currentCursor || isLoading()) return;
+
+    setIsLoading(true);
+
+    try {
+      const result = await wixDataContext.items
+        .queryDataItems({
+          dataCollectionId: fastCarryForward.collectionId,
         })
-    };
+        .limit(PAGE_SIZE)
+        .skipTo(currentCursor)
+        .find();
+
+      // Map new items and append to loadedItems
+      const newItems = result.items.map((item) => ({
+        _id: item._id!,
+        url: `${config.pathPrefix}/${item.data?.[config.slugField] || item._id}`,
+        ...item.data,
+      }));
+
+      setLoadedItems([...loadedItems(), ...newItems]);
+      setLoadedCount(loadedCount() + newItems.length);
+      setHasMore(result.hasNext?.() ?? false);
+      currentCursor = result.cursors?.next || null;
+    } catch (error) {
+      console.error('[wix-data] Failed to load more items:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  });
+
+  return {
+    render: () => ({
+      loadedItems: loadedItems(),
+      hasMore: hasMore(),
+      isLoading: isLoading(),
+      loadedCount: loadedCount(),
+    }),
+  };
 }
 ```
 
@@ -246,53 +251,49 @@ Update `list-contract-generator.ts`:
 
 ```typescript
 function buildContract(schema: ProcessedSchema): string {
-    const tags: string[] = [];
-    
-    // Initial items (slow phase - build time)
-    tags.push(buildItemsSubContract(schema, 'items', undefined)); // no phase = slow
-    
-    // Additional items (fast+interactive - loaded on client)
-    tags.push(buildItemsSubContract(schema, 'loadedItems', 'fast+interactive'));
-    
-    // Metadata (slow phase)
-    tags.push(dataTag('totalCount', 'number', 'Total items'));
-    
-    // Load more state (fast+interactive)
-    tags.push(variantTag('hasMore', 'boolean', 'fast+interactive', 'More items available'));
-    tags.push(variantTag('isLoading', 'boolean', 'fast+interactive', 'Loading state'));
-    tags.push(dataTag('loadedCount', 'number', 'fast+interactive', 'Items currently loaded'));
-    tags.push(interactiveTag('loadMoreButton', 'HTMLButtonElement', 'Load more trigger'));
-    
-    // ... rest of existing logic (category, breadcrumbs)
-    
-    return `name: ${toPascalCase(schema.collectionId)}List
+  const tags: string[] = [];
+
+  // Initial items (slow phase - build time)
+  tags.push(buildItemsSubContract(schema, 'items', undefined)); // no phase = slow
+
+  // Additional items (fast+interactive - loaded on client)
+  tags.push(buildItemsSubContract(schema, 'loadedItems', 'fast+interactive'));
+
+  // Metadata (slow phase)
+  tags.push(dataTag('totalCount', 'number', 'Total items'));
+
+  // Load more state (fast+interactive)
+  tags.push(variantTag('hasMore', 'boolean', 'fast+interactive', 'More items available'));
+  tags.push(variantTag('isLoading', 'boolean', 'fast+interactive', 'Loading state'));
+  tags.push(dataTag('loadedCount', 'number', 'fast+interactive', 'Items currently loaded'));
+  tags.push(interactiveTag('loadMoreButton', 'HTMLButtonElement', 'Load more trigger'));
+
+  // ... rest of existing logic (category, breadcrumbs)
+
+  return `name: ${toPascalCase(schema.collectionId)}List
 description: List page for ${schema.displayName || schema.collectionId}
 tags:
 ${tags.join('\n')}`;
 }
 
-function buildItemsSubContract(
-    schema: ProcessedSchema, 
-    tagName: string, 
-    phase?: string
-): string {
-    const cardTags: string[] = [
-        dataTag('_id', 'string', undefined, 6),
-        dataTag('url', 'string', 'Full URL to item page', 6),
-        interactiveTag('itemLink', 'HTMLAnchorElement', undefined, 6)
-    ];
-    
-    schema.fields.filter(isCardField).forEach(f => {
-        const tag = fieldToTag(f, 6);
-        if (tag) cardTags.push(tag);
-    });
-    
-    const phaseAttr = phase ? `\n    phase: ${phase}` : '';
-    const description = phase 
-        ? 'Additional items loaded on the client' 
-        : 'Initial items (rendered server-side)';
-    
-    return `  - tag: ${tagName}
+function buildItemsSubContract(schema: ProcessedSchema, tagName: string, phase?: string): string {
+  const cardTags: string[] = [
+    dataTag('_id', 'string', undefined, 6),
+    dataTag('url', 'string', 'Full URL to item page', 6),
+    interactiveTag('itemLink', 'HTMLAnchorElement', undefined, 6),
+  ];
+
+  schema.fields.filter(isCardField).forEach((f) => {
+    const tag = fieldToTag(f, 6);
+    if (tag) cardTags.push(tag);
+  });
+
+  const phaseAttr = phase ? `\n    phase: ${phase}` : '';
+  const description = phase
+    ? 'Additional items loaded on the client'
+    : 'Initial items (rendered server-side)';
+
+  return `  - tag: ${tagName}
     type: sub-contract
     repeated: true
     trackBy: _id${phaseAttr}
@@ -307,44 +308,45 @@ ${cardTags.join('\n')}`;
 ```html
 <!-- list page template -->
 <section class="list-page">
-    <!-- Initial items (slow-rendered) -->
-    <article class="item-card" 
-        forEach="list.items" 
-        trackBy="_id">
-        <a href="{url}" ref="list.items.itemLink">
-            <h2>{title}</h2>
-            <p>{excerpt}</p>
-        </a>
-    </article>
-    
-    <!-- Dynamically loaded items -->
-    <article class="item-card" 
-        forEach="list.loadedItems" 
-        trackBy="_id">
-        <a href="{url}" ref="list.loadedItems.itemLink">
-            <h2>{title}</h2>
-            <p>{excerpt}</p>
-        </a>
-    </article>
-    
-    <!-- Load more button -->
-    <button ref="list.loadMoreButton" 
-        when="list.hasMore" is="true"
-        class="{list.isLoading ? loading}">
-        {list.isLoading ? Loading... : Load More}
-    </button>
+  <!-- Initial items (slow-rendered) -->
+  <article class="item-card" forEach="list.items" trackBy="_id">
+    <a href="{url}" ref="list.items.itemLink">
+      <h2>{title}</h2>
+      <p>{excerpt}</p>
+    </a>
+  </article>
+
+  <!-- Dynamically loaded items -->
+  <article class="item-card" forEach="list.loadedItems" trackBy="_id">
+    <a href="{url}" ref="list.loadedItems.itemLink">
+      <h2>{title}</h2>
+      <p>{excerpt}</p>
+    </a>
+  </article>
+
+  <!-- Load more button -->
+  <button
+    ref="list.loadMoreButton"
+    when="list.hasMore"
+    is="true"
+    class="{list.isLoading ? loading}"
+  >
+    {list.isLoading ? Loading... : Load More}
+  </button>
 </section>
 ```
 
 ## Implementation Plan
 
 ### Phase 1: Update Contract Generator
+
 1. Modify `list-contract-generator.ts`:
    - Add `loadedItems` sub-contract with `phase: fast+interactive`
    - Add `loadedCount` data tag with `phase: fast+interactive`
    - Refactor `buildItemsSubContract` to accept tag name and optional phase
 
 ### Phase 2: Update Component
+
 1. Modify `collection-list.ts`:
    - Update `ListSlowViewState` - keep only `items`
    - Update `ListFastViewState` - add `loadedItems`, `loadedCount`
@@ -353,10 +355,12 @@ ${cardTags.join('\n')}`;
    - Update `ListInteractive` - append to `loadedItems`, update `loadedCount`
 
 ### Phase 3: Update contract-utils (if needed)
+
 1. Add helper for phase-aware data tags:
    - `dataTagWithPhase(key, type, phase?, description?, indent?)`
 
 ### Phase 4: Update CMS Example Templates
+
 1. Update `recipes/page.jay-html`:
    - Add `forEach="recipes.loadedItems"` section after `items`
    - Both sections use same card markup
@@ -365,6 +369,7 @@ ${cardTags.join('\n')}`;
    - Both sections use same card markup
 
 ### Phase 5: Testing & Verification
+
 1. Run `yarn dev` in `wix/examples/cms`
 2. Navigate to `/recipes` and `/food-service-product-lines`
 3. Verify first page renders (view source shows baked-in content)
@@ -374,15 +379,16 @@ ${cardTags.join('\n')}`;
 
 ## Trade-offs
 
-| Decision | Pros | Cons |
-|----------|------|------|
-| Separate `items` and `loadedItems` | Clear phase separation, matches wix-stores pattern | Two arrays to render in template |
-| Tags inline in both arrays | No linked contract complexity | Some duplication in generated YAML |
-| No sorting/filtering | Simpler implementation | Limited functionality initially |
+| Decision                           | Pros                                               | Cons                               |
+| ---------------------------------- | -------------------------------------------------- | ---------------------------------- |
+| Separate `items` and `loadedItems` | Clear phase separation, matches wix-stores pattern | Two arrays to render in template   |
+| Tags inline in both arrays         | No linked contract complexity                      | Some duplication in generated YAML |
+| No sorting/filtering               | Simpler implementation                             | Limited functionality initially    |
 
 ## Verification Criteria
 
 ### Technical Verification
+
 1. **Contract generation**: `items` has no phase (slow), `loadedItems` has `phase: fast+interactive`
 2. **Slow render**: First page items rendered at build time
 3. **Fast render**: `loadedItems` starts empty, `hasMore` set correctly
@@ -394,6 +400,7 @@ ${cardTags.join('\n')}`;
 Use the `wix/examples/cms` project to verify the implementation works end-to-end.
 
 #### Setup
+
 ```bash
 cd wix/examples/cms
 yarn dev
@@ -402,12 +409,14 @@ yarn dev
 #### Test Cases
 
 **Test 1: Recipes List Page - Initial Render**
+
 1. Navigate to `http://localhost:3000/recipes`
 2. Verify first page of recipes is rendered (check page source - items should be in HTML)
 3. Count displayed recipe cards - should match `PAGE_SIZE` (e.g., 20)
 4. "Load More Recipes" button visible if more items exist
 
 **Test 2: Recipes List Page - Load More**
+
 1. Click "Load More Recipes" button
 2. Loading spinner appears
 3. Additional recipe cards append below the first page
@@ -415,16 +424,19 @@ yarn dev
 5. Verify new items are NOT in initial HTML (dynamic render)
 
 **Test 3: Product Lines List Page - Same Tests**
+
 1. Navigate to `http://localhost:3000/food-service-product-lines`
 2. Repeat Test 1 and Test 2 for product lines
 
 **Test 4: View Page Source (Slow Render Verification)**
+
 1. View page source for `/recipes`
 2. First page recipe cards should have actual content (titles, images) baked in
 3. `loadedItems` section should be empty in the HTML
 4. `hasMore` should be set based on whether more items exist
 
 **Test 5: Browser Dev Tools (Phase Verification)**
+
 1. Open Network tab
 2. Click "Load More"
 3. Verify action request is made
@@ -436,14 +448,10 @@ Update `recipes/page.jay-html` to include both arrays:
 
 ```html
 <!-- Initial items (slow-rendered) -->
-<article class="recipe-card" forEach="recipes.items" trackBy="_id">
-    ...
-</article>
+<article class="recipe-card" forEach="recipes.items" trackBy="_id">...</article>
 
 <!-- Dynamically loaded items -->
-<article class="recipe-card" forEach="recipes.loadedItems" trackBy="_id">
-    ...
-</article>
+<article class="recipe-card" forEach="recipes.loadedItems" trackBy="_id">...</article>
 ```
 
 Same update needed for `food-service-product-lines/page.jay-html`.

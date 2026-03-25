@@ -8,7 +8,8 @@
     "start": "node --loader ts-node/esm query-products.ts",
     "clean": "rimraf dist",
     "build": "tsc",
-    "build:check-types": "tsc"
+    "build:check-types": "tsc",
+    "test": ":"
   },
   "dependencies": {
     "@wix/sdk": "^1.21.5",

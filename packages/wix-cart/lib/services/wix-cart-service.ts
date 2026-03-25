@@ -1,6 +1,6 @@
 /**
  * Server-side Wix Cart Service
- * 
+ *
  * Provides access to Wix Cart APIs on the server using API Key authentication.
  * This file contains server-only code (registerService).
  */

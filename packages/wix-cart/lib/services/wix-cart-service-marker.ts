@@ -1,13 +1,13 @@
 /**
  * Wix Cart Service Marker
- * 
+ *
  * Service marker for cart operations. This file has no server-only imports
  * so it can be safely imported by client code.
  */
 
 import { currentCart } from '@wix/ecom';
 import { createJayService } from '@jay-framework/fullstack-component';
-import {BuildDescriptors} from "@wix/sdk-types";
+import { BuildDescriptors } from '@wix/sdk-types';
 
 export interface WixCartService {
     cart: BuildDescriptors<typeof currentCart, {}>;

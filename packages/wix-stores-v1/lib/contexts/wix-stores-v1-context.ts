@@ -1,9 +1,9 @@
 /**
  * Client-side Wix Stores V1 Context
- * 
+ *
  * Provides access to Wix Stores Catalog V1 APIs on the client.
  * Delegates cart operations to WIX_CART_CONTEXT from the shared wix-cart package.
- * 
+ *
  * Usage in interactive components:
  * ```typescript
  * const storesContext = useContext(WIX_STORES_V1_CONTEXT);
@@ -20,13 +20,17 @@ import { createJayContext, useGlobalContext } from '@jay-framework/runtime';
 import { registerReactiveGlobalContext } from '@jay-framework/component';
 import { Getter } from '@jay-framework/reactive';
 import { WIX_CLIENT_CONTEXT } from '@jay-framework/wix-server-client';
-import { 
+import {
     WIX_CART_CONTEXT,
     type CartState,
-    type CartOperationResult as CartResult
+    type CartOperationResult as CartResult,
 } from '@jay-framework/wix-cart';
 import { getCollectionsClient, getProductsClient } from '../utils/wix-store-v1-api';
-import { mapProductToCard, CollectionViewState, mapCollectionToViewState } from '../utils/product-mapper-v1';
+import {
+    mapProductToCard,
+    CollectionViewState,
+    mapCollectionToViewState,
+} from '../utils/product-mapper-v1';
 import { ProductCardViewState } from '../contracts/product-card.jay-contract';
 
 // ============================================================================
@@ -64,28 +68,32 @@ export interface CartOperationResult {
 export interface WixStoresV1Context {
     // Reactive Cart Indicator (delegated to WIX_CART_CONTEXT)
     cartIndicator: ReactiveCartIndicator;
-    
+
     // Cart Operations (delegated to WIX_CART_CONTEXT)
     refreshCartIndicator(): Promise<void>;
     getEstimatedCart(): Promise<CartState>;
-    addToCart(productId: string, quantity?: number, variantId?: string): Promise<CartOperationResult>;
+    addToCart(
+        productId: string,
+        quantity?: number,
+        variantId?: string,
+    ): Promise<CartOperationResult>;
     removeLineItems(lineItemIds: string[]): Promise<CartOperationResult>;
     updateLineItemQuantity(lineItemId: string, quantity: number): Promise<CartOperationResult>;
     clearCart(): Promise<void>;
     applyCoupon(couponCode: string): Promise<CartOperationResult>;
     removeCoupon(): Promise<CartOperationResult>;
-    
+
     // V1-Specific Operations - Collection Operations
     loadMoreCollectionProducts(
         collectionId: string,
         page: number,
-        pageSize: number
+        pageSize: number,
     ): Promise<{
         products: ProductCardViewState[];
         hasMore: boolean;
         totalProducts: number;
     }>;
-    
+
     getCollections(): Promise<CollectionViewState[]>;
 }
 
@@ -100,7 +108,7 @@ export const WIX_STORES_V1_CONTEXT = createJayContext<WixStoresV1Context>();
 
 /**
  * Initialize and register the Wix Stores V1 client context.
- * 
+ *
  * Assumes WIX_CLIENT_CONTEXT and WIX_CART_CONTEXT are already initialized.
  */
 export function provideWixStoresV1Context(): WixStoresV1Context {
@@ -115,15 +123,14 @@ export function provideWixStoresV1Context(): WixStoresV1Context {
     const collectionsClient = getCollectionsClient(wixClient);
 
     const storesContext = registerReactiveGlobalContext(WIX_STORES_V1_CONTEXT, () => {
-        
         // ====================================================================
         // Cart Operations - Delegate to WIX_CART_CONTEXT
         // ====================================================================
-        
+
         async function addToCart(
             productId: string,
             quantity: number = 1,
-            variantId?: string
+            variantId?: string,
         ): Promise<CartOperationResult> {
             console.log(`[WixStoresV1] Adding to cart: ${productId} x ${quantity}`);
 
@@ -151,21 +158,22 @@ export function provideWixStoresV1Context(): WixStoresV1Context {
         // ====================================================================
         // V1-Specific Operations
         // ====================================================================
-        
+
         // V1 uses skip-based pagination for collections
         async function loadMoreCollectionProducts(
             collectionId: string,
             page: number,
-            pageSize: number
+            pageSize: number,
         ): Promise<{ products: ProductCardViewState[]; hasMore: boolean; totalProducts: number }> {
             try {
-                const result = await productsClient.queryProducts()
+                const result = await productsClient
+                    .queryProducts()
                     .hasSome('collectionIds', [collectionId])
                     .skip((page - 1) * pageSize)
                     .limit(pageSize)
                     .find();
 
-                const products = ((result.items || [])).map(p => mapProductToCard(p));
+                const products = (result.items || []).map((p) => mapProductToCard(p));
                 const totalProducts = result.totalCount ?? products.length;
                 const hasMore = page * pageSize < totalProducts;
 
@@ -179,7 +187,7 @@ export function provideWixStoresV1Context(): WixStoresV1Context {
         async function getCollections(): Promise<CollectionViewState[]> {
             try {
                 const result = await collectionsClient.queryCollections().find();
-                return (result.items || []).map(col => mapCollectionToViewState(col));
+                return (result.items || []).map((col) => mapCollectionToViewState(col));
             } catch (error) {
                 console.error('[WixStoresV1] Failed to load collections:', error);
                 return [];
@@ -191,7 +199,7 @@ export function provideWixStoresV1Context(): WixStoresV1Context {
             cartIndicator: cartContext.cartIndicator,
             refreshCartIndicator: () => cartContext.refreshCartIndicator(),
             getEstimatedCart: () => cartContext.getEstimatedCart(),
-            addToCart,  // Custom implementation that resolves V1 variants first
+            addToCart, // Custom implementation that resolves V1 variants first
             removeLineItems: (ids) => cartContext.removeLineItems(ids),
             updateLineItemQuantity: (id, qty) => cartContext.updateLineItemQuantity(id, qty),
             clearCart: () => cartContext.clearCart(),

@@ -1,6 +1,6 @@
 /**
  * Shared Product Mapping Utilities
- * 
+ *
  * Maps Wix Stores Catalog V3 product responses to view state contracts.
  */
 
@@ -10,12 +10,12 @@ import {
     PreorderStatus,
     ProductCardViewState,
     ProductType,
-    QuickAddType
+    QuickAddType,
 } from '../contracts/product-card.jay-contract';
 import {
     ChoiceType,
     OptionRenderType,
-    ProductOptionsViewState
+    ProductOptionsViewState,
 } from '../contracts/product-options.jay-contract';
 import { formatWixMediaUrl } from '@jay-framework/wix-utils';
 import { type CategoryPrefixConfig } from '../services/wix-stores-service';
@@ -31,13 +31,13 @@ import { type CategoryPrefixConfig } from '../services/wix-stores-service';
  */
 export function resolveProductPrefix(
     product: { allCategoriesInfo?: { categories?: Array<{ _id?: string }> } },
-    prefixConfig: CategoryPrefixConfig[]
+    prefixConfig: CategoryPrefixConfig[],
 ): string | null {
     if (!prefixConfig?.length || !product.allCategoriesInfo?.categories) {
         return null;
     }
     const productCategoryIds = new Set(
-        product.allCategoriesInfo.categories.map(c => c._id).filter(Boolean)
+        product.allCategoriesInfo.categories.map((c) => c._id).filter(Boolean),
     );
     for (const { categoryId, prefix } of prefixConfig) {
         if (productCategoryIds.has(categoryId)) {
@@ -53,13 +53,13 @@ export function resolveProductPrefix(
  */
 export function resolveProductPrefixConfig(
     product: { allCategoriesInfo?: { categories?: Array<{ _id?: string }> } },
-    prefixConfig: CategoryPrefixConfig[]
+    prefixConfig: CategoryPrefixConfig[],
 ): CategoryPrefixConfig | null {
     if (!prefixConfig?.length || !product.allCategoriesInfo?.categories) {
         return null;
     }
     const productCategoryIds = new Set(
-        product.allCategoriesInfo.categories.map(c => c._id).filter(Boolean)
+        product.allCategoriesInfo.categories.map((c) => c._id).filter(Boolean),
     );
     for (const config of prefixConfig) {
         if (productCategoryIds.has(config.categoryId)) {
@@ -78,9 +78,12 @@ export function resolveProductPrefixConfig(
  */
 export function mapAvailabilityStatus(status: string | undefined): AvailabilityStatus {
     switch (status) {
-        case 'OUT_OF_STOCK': return AvailabilityStatus.OUT_OF_STOCK;
-        case 'PARTIALLY_OUT_OF_STOCK': return AvailabilityStatus.PARTIALLY_OUT_OF_STOCK;
-        default: return AvailabilityStatus.IN_STOCK;
+        case 'OUT_OF_STOCK':
+            return AvailabilityStatus.OUT_OF_STOCK;
+        case 'PARTIALLY_OUT_OF_STOCK':
+            return AvailabilityStatus.PARTIALLY_OUT_OF_STOCK;
+        default:
+            return AvailabilityStatus.IN_STOCK;
     }
 }
 
@@ -89,9 +92,12 @@ export function mapAvailabilityStatus(status: string | undefined): AvailabilityS
  */
 export function mapPreorderStatus(status: string | undefined): PreorderStatus {
     switch (status) {
-        case 'ENABLED': return PreorderStatus.ENABLED;
-        case 'PARTIALLY_ENABLED': return PreorderStatus.PARTIALLY_ENABLED;
-        default: return PreorderStatus.DISABLED;
+        case 'ENABLED':
+            return PreorderStatus.ENABLED;
+        case 'PARTIALLY_ENABLED':
+            return PreorderStatus.PARTIALLY_ENABLED;
+        default:
+            return PreorderStatus.DISABLED;
     }
 }
 
@@ -132,7 +138,7 @@ function isValidPrice(amount: string | undefined): boolean {
 export function getQuickAddType(product: any): QuickAddType {
     const optionCount = product.options?.length ?? 0;
     const hasModifiers = (product.modifiers?.length ?? 0) > 0;
-    
+
     if (hasModifiers || optionCount > 1) {
         return QuickAddType.NEEDS_CONFIGURATION;
     }
@@ -146,8 +152,8 @@ export function getQuickAddType(product: any): QuickAddType {
  * Map option render type string to enum
  */
 function mapOptionRenderType(renderType: string | undefined): OptionRenderType {
-    return renderType === 'COLOR_SWATCH_CHOICES' 
-        ? OptionRenderType.COLOR_SWATCH_CHOICES 
+    return renderType === 'COLOR_SWATCH_CHOICES'
+        ? OptionRenderType.COLOR_SWATCH_CHOICES
         : OptionRenderType.TEXT_CHOICES;
 }
 
@@ -165,7 +171,7 @@ function mapChoiceType(choiceType: string | undefined): ChoiceType {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mapQuickOption(option: any, variantsInfo: any): ProductOptionsViewState | null {
     if (!option) return null;
-    
+
     const optionId = option._id;
     const choices = option.choicesSettings?.choices || [];
 
@@ -181,9 +187,9 @@ export function mapQuickOption(option: any, variantsInfo: any): ProductOptionsVi
                 choiceType: mapChoiceType(choice.choiceType),
                 colorCode: choice.colorCode || '',
                 inStock: choice.inStock,
-                isSelected: false
+                isSelected: false,
             };
-        })
+        }),
     };
 }
 
@@ -196,7 +202,7 @@ const DEFAULT_PRODUCT_PAGE_PATH = '/products';
 
 /**
  * Map a Wix Stores Catalog V3 product to ProductCardViewState
- * 
+ *
  * In Catalog V3, prices come from variantsInfo.variants[0].price
  * Falls back to actualPriceRange/compareAtPriceRange for compatibility
  */
@@ -204,7 +210,7 @@ const DEFAULT_PRODUCT_PAGE_PATH = '/products';
 export function mapProductToCard(
     product: any,
     productPagePath: string = DEFAULT_PRODUCT_PAGE_PATH,
-    prefixConfig?: CategoryPrefixConfig[]
+    prefixConfig?: CategoryPrefixConfig[],
 ): ProductCardViewState {
     const mainMedia = product.media?.main;
     const slug = product.slug || '';
@@ -214,9 +220,9 @@ export function mapProductToCard(
         ? resolveProductPrefixConfig(product, prefixConfig)
         : null;
     const productUrl = slug
-        ? (matchedPrefix
+        ? matchedPrefix
             ? `${productPagePath}/${matchedPrefix.prefix}/${slug}`
-            : `${productPagePath}/${slug}`)
+            : `${productPagePath}/${slug}`
         : '';
 
     // In Catalog V3, prices come from variantsInfo.variants[0].price
@@ -225,16 +231,20 @@ export function mapProductToCard(
     const variantPrice = firstVariant?.price;
 
     // Get actual price - prefer variant price, fall back to price range
-    const actualAmount = variantPrice?.actualPrice?.amount ||
-                         product.actualPriceRange?.minValue?.amount || '0';
-    const actualFormattedAmount = variantPrice?.actualPrice?.formattedAmount ||
-                                   product.actualPriceRange?.minValue?.formattedAmount || '';
+    const actualAmount =
+        variantPrice?.actualPrice?.amount || product.actualPriceRange?.minValue?.amount || '0';
+    const actualFormattedAmount =
+        variantPrice?.actualPrice?.formattedAmount ||
+        product.actualPriceRange?.minValue?.formattedAmount ||
+        '';
 
     // Get compare-at price (for discounts)
-    const compareAtAmount = variantPrice?.compareAtPrice?.amount ||
-                            product.compareAtPriceRange?.minValue?.amount;
-    const compareAtFormattedAmount = variantPrice?.compareAtPrice?.formattedAmount ||
-                                      product.compareAtPriceRange?.minValue?.formattedAmount || '';
+    const compareAtAmount =
+        variantPrice?.compareAtPrice?.amount || product.compareAtPriceRange?.minValue?.amount;
+    const compareAtFormattedAmount =
+        variantPrice?.compareAtPrice?.formattedAmount ||
+        product.compareAtPriceRange?.minValue?.formattedAmount ||
+        '';
 
     // Has discount if compare-at price is valid and different from actual price
     const hasDiscount = isValidPrice(compareAtAmount) && compareAtAmount !== actualAmount;
@@ -248,13 +258,15 @@ export function mapProductToCard(
         mainMedia: {
             url: mainMedia ? formatWixMediaUrl(mainMedia._id, mainMedia.url) : '',
             altText: mainMedia?.altText || product.name || '',
-            mediaType: mapMediaType(mainMedia?.mediaType)
+            mediaType: mapMediaType(mainMedia?.mediaType),
         },
         thumbnail: {
-            url: mainMedia ? formatWixMediaUrl(mainMedia._id, mainMedia.url, { w: 300, h: 300 }) : '',
+            url: mainMedia
+                ? formatWixMediaUrl(mainMedia._id, mainMedia.url, { w: 300, h: 300 })
+                : '',
             altText: mainMedia?.altText || product.name || '',
             width: 300,
-            height: 300
+            height: 300,
         },
         // Simplified price fields
         price: actualFormattedAmount,
@@ -262,24 +274,24 @@ export function mapProductToCard(
         hasDiscount,
         inventory: {
             availabilityStatus: mapAvailabilityStatus(product.inventory?.availabilityStatus),
-            preorderStatus: mapPreorderStatus(product.inventory?.preorderStatus)
+            preorderStatus: mapPreorderStatus(product.inventory?.preorderStatus),
         },
         ribbon: {
             _id: product.ribbon?._id || '',
-            name: product.ribbon?.name || ''
+            name: product.ribbon?.name || '',
         },
         hasRibbon: !!product.ribbon?.name,
         brand: {
             _id: product.brand?._id || '',
-            name: product.brand?.name || ''
+            name: product.brand?.name || '',
         },
         productType: mapProductType(product.productType),
         isAddingToCart: false,
         // Quick add behavior
         quickAddType: getQuickAddType(product),
-        quickOption: getQuickAddType(product) === QuickAddType.SINGLE_OPTION
-            ? mapQuickOption(product.options?.[0], product.variantsInfo)
-            : null
+        quickOption:
+            getQuickAddType(product) === QuickAddType.SINGLE_OPTION
+                ? mapQuickOption(product.options?.[0], product.variantsInfo)
+                : null,
     };
 }
-

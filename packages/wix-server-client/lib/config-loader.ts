@@ -30,50 +30,56 @@ export interface WixConfig {
 export function loadConfig(): WixConfig {
     // Resolve the config path relative to the process execution path
     const configPath = path.join(process.cwd(), 'config', '.wix.yaml');
-    
+
     // Check if the config file exists
     if (!fs.existsSync(configPath)) {
         throw new Error(`Config file not found at: ${configPath}`);
     }
-    
+
     // Read and parse the YAML file
     const fileContents = fs.readFileSync(configPath, 'utf8');
     const config = yaml.load(fileContents) as any;
-    
+
     // Validate the config structure
     if (!config) {
         throw new Error('Config file is empty or invalid');
     }
-    
+
     if (!config.apiKeyStrategy) {
         throw new Error('Config validation failed: "apiKeyStrategy" section is required');
     }
 
     const strategy = config.apiKeyStrategy;
-    
+
     if (!strategy.apiKey) {
         throw new Error('Config validation failed: "apiKeyStrategy.apiKey" is required');
     }
-    
+
     if (typeof strategy.apiKey !== 'string' || strategy.apiKey.trim() === '') {
-        throw new Error('Config validation failed: "apiKeyStrategy.apiKey" must be a non-empty string');
+        throw new Error(
+            'Config validation failed: "apiKeyStrategy.apiKey" must be a non-empty string',
+        );
     }
-    
+
     if (!strategy.siteId) {
         throw new Error('Config validation failed: "apiKeyStrategy.siteId" is required');
     }
-    
+
     if (typeof strategy.siteId !== 'string' || strategy.siteId.trim() === '') {
-        throw new Error('Config validation failed: "apiKeyStrategy.siteId" must be a non-empty string');
+        throw new Error(
+            'Config validation failed: "apiKeyStrategy.siteId" must be a non-empty string',
+        );
     }
 
     if (!config.oauthStrategy) {
         throw new Error('Config validation failed: "oauthStrategy" section is required');
     }
     const oauth = config.oauthStrategy;
-        
+
     if (!oauth.clientId || typeof oauth.clientId !== 'string' || oauth.clientId.trim() === '') {
-        throw new Error('Config validation failed: "oauthStrategy.clientId" must be a non-empty string');
+        throw new Error(
+            'Config validation failed: "oauthStrategy.clientId" must be a non-empty string',
+        );
     }
 
     return {
@@ -83,7 +89,6 @@ export function loadConfig(): WixConfig {
         },
         oauth: {
             clientId: oauth.clientId,
-        }
+        },
     };
 }
-

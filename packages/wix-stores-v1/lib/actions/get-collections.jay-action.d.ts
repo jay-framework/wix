@@ -7,4 +7,4 @@ export type GetCollectionsOutput = Array<{
     description: string;
     imageUrl: string;
     productCount: number;
-  }>;
+}>;

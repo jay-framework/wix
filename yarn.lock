@@ -2537,6 +2537,7 @@ __metadata:
     "@wix/categories": "npm:^1.0.185"
     "@wix/sdk": "npm:^1.21.5"
     "@wix/stores": "npm:^1.0.723"
+    js-yaml: "npm:^4.1.0"
     nodemon: "npm:^3.0.3"
     rimraf: "npm:^5.0.5"
     tslib: "npm:^2.6.2"
@@ -6476,6 +6477,23 @@ __metadata:
   checksum: 10/a3d47e285e28d324d7180f1e493961a2bbb4cad6412090e4dec114f4db1f5b560c7696ee8e758f55e23913ede856e3689cd3aa9ae13c56b5d8314cd3b3ddd1be
   languageName: node
   linkType: hard
+
+"example-golf@workspace:examples/golf":
+  version: 0.0.0-use.local
+  resolution: "example-golf@workspace:examples/golf"
+  dependencies:
+    "@jay-framework/fullstack-component": "npm:^0.14.0"
+    "@jay-framework/jay-cli": "npm:^0.14.0"
+    "@jay-framework/jay-stack-cli": "npm:^0.14.0"
+    "@jay-framework/wix-cart": "workspace:^"
+    "@jay-framework/wix-dev-environment": "workspace:^"
+    "@jay-framework/wix-server-client": "workspace:^"
+    "@jay-framework/wix-stores": "workspace:^"
+    "@types/node": "npm:^22.10.0"
+    typescript: "npm:~5.7.2"
+    vite: "npm:^6.0.1"
+  languageName: unknown
+  linkType: soft
 
 "example-whisky-exchange@workspace:examples/whisky-exchange":
   version: 0.0.0-use.local

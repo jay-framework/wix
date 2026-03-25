@@ -1,9 +1,8 @@
 {
   "name": "@jay-framework/wix-utils",
-  "version": "1.0.0",
+  "version": "0.15.0",
   "type": "module",
   "description": "Shared utilities for Wix integrations in Jay Framework",
-  "private": true,
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "files": [

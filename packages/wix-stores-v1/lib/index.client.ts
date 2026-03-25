@@ -1,16 +1,16 @@
 /**
  * Wix Stores V1 Package - Client Entry Point
- * 
+ *
  * This is the entry point for client-side imports.
  * Provides the context for direct API access and component definitions.
- * 
+ *
  * Uses Wix Catalog V1 API (products module) instead of V3 (productsV3).
  */
 
 // Re-export cart components from wix-cart (shared package)
 export { cartIndicator, cartPage } from '@jay-framework/wix-cart/client';
 export { WIX_CART_CONTEXT } from '@jay-framework/wix-cart/client';
-export type { 
+export type {
     WixCartContext,
     CartLineItem,
     CartSummary,

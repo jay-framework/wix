@@ -11,7 +11,8 @@
     "get-product-by-slug": "node --loader ts-node/esm get-product-by-slug.ts",
     "categories": "node --loader ts-node/esm query-categories.ts",
     "build": "tsc",
-    "build:check-types": "tsc"
+    "build:check-types": "tsc",
+    "test": ":"
   },
   "dependencies": {
     "@wix/categories": "^1.0.185",

@@ -1,6 +1,6 @@
 /**
  * Wix Data Package - Server Entry Point
- * 
+ *
  * This is the main entry point for server-side imports.
  * Provides services, actions, and component definitions.
  */
@@ -19,7 +19,12 @@ export type {
 } from './types';
 
 // Export config loader
-export { loadConfig, validateConfig, validateCollectionConfig, getVisibleCollections } from './config-loader';
+export {
+    loadConfig,
+    validateConfig,
+    validateCollectionConfig,
+    getVisibleCollections,
+} from './config-loader';
 
 // Export server service
 export {
@@ -56,17 +61,17 @@ export {
 } from './actions/data-actions';
 
 // Export utilities
-export { 
-    processSchema, 
-    type ProcessedSchema, 
-    type ProcessedField, 
-    type CollectionFetcher
+export {
+    processSchema,
+    type ProcessedSchema,
+    type ProcessedField,
+    type CollectionFetcher,
 } from './utils/processed-schema';
-export { 
+export {
     toPascalCase,
     isCardField,
     isTableField,
-    isContentField
+    isContentField,
 } from './generators/contract-utils';
 
 // Export init

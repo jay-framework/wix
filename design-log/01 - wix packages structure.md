@@ -22,7 +22,8 @@ graph TD
     A --> D1
 ```
 
-**Note**: 
+**Note**:
+
 - `wix-stores` uses Catalog V3 API (`productsV3`, `@wix/categories`)
 - `wix-stores-v1` uses Catalog V1 API (`products`, `collections`)
 - Both depend on `wix-cart` for shared cart/checkout functionality (`@wix/ecom`)
@@ -52,6 +53,7 @@ wix-server-client/
    - **Client**: Uses OAuth auth via `WIX_CLIENT_CONTEXT` for browser API calls
 
 2. **Init Pattern**:
+
    ```typescript
    export const init = makeJayInit()
      .withServer(async () => {
@@ -65,22 +67,23 @@ wix-server-client/
    ```
 
 3. **Configuration** (in the project `config/.wix.yaml`):
+
    ```yaml
-    apiKeyStrategy:
-        apiKey: "..."
-        siteId: "..."
-    
-    oauthStrategy:
-        clientId: "..."
-    ```
+   apiKeyStrategy:
+     apiKey: '...'
+     siteId: '...'
+
+   oauthStrategy:
+     clientId: '...'
+   ```
 
 ### Exports
 
-| Export | Type | Description |
-|--------|------|-------------|
-| `WIX_CLIENT_SERVICE` | Service Marker | Server-side authenticated WixClient |
-| `WIX_CLIENT_CONTEXT` | Context | Client-side OAuth-authenticated WixClient |
-| `loadConfig()` | Function | Load Wix config from jay-config.yaml |
+| Export               | Type           | Description                               |
+| -------------------- | -------------- | ----------------------------------------- |
+| `WIX_CLIENT_SERVICE` | Service Marker | Server-side authenticated WixClient       |
+| `WIX_CLIENT_CONTEXT` | Context        | Client-side OAuth-authenticated WixClient |
+| `loadConfig()`       | Function       | Load Wix config from jay-config.yaml      |
 
 ---
 
@@ -184,7 +187,7 @@ sequenceDiagram
     API-->>Service: Product data
     Service-->>Component: Mapped ViewState
     Component-->>HTML: Rendered HTML
-    
+
     Note over HTML: User clicks "Add to Cart"
     HTML->>Component: addToCartButton.onclick
     Component->>WixStoresContext: addToCart(productId, qty)
@@ -201,12 +204,12 @@ Contracts define the data shape and interactive elements for headless components
 
 ### Tag Types
 
-| Type | Description |
-|------|-------------|
-| `data` | Read-only data binding |
-| `interactive` | Element with event handlers (ref binding) |
-| `variant` | Conditional/state-based data |
-| `sub-contract` | Nested structure |
+| Type           | Description                               |
+| -------------- | ----------------------------------------- |
+| `data`         | Read-only data binding                    |
+| `interactive`  | Element with event handlers (ref binding) |
+| `variant`      | Conditional/state-based data              |
+| `sub-contract` | Nested structure                          |
 
 ### Phase Annotations
 
@@ -222,19 +225,19 @@ tags:
   - tag: _id
     type: data
     dataType: string
-    
+
   - tag: name
     type: data
     dataType: string
     required: true
-    
+
   - tag: inventory
     type: sub-contract
     tags:
       - tag: availabilityStatus
         type: variant
         dataType: enum (IN_STOCK | OUT_OF_STOCK)
-        
+
   - tag: addToCartButton
     type: interactive
     elementType: HTMLButtonElement
@@ -249,12 +252,12 @@ tags:
 `wix-client-server` requires configuration in `config/.wix.yaml`:
 
 ```yaml
- apiKeyStrategy:
-     apiKey: "..."
-     siteId: "..."
- 
- oauthStrategy:
-     clientId: "..."
+apiKeyStrategy:
+  apiKey: '...'
+  siteId: '...'
+
+oauthStrategy:
+  clientId: '...'
 ```
 
 `wix-store` is using the configuration from `wix-client-server`.
@@ -264,18 +267,17 @@ tags:
 ```html
 <html>
   <head>
-    <script type="application/jay-headless"
-            plugin="@jay-framework/wix-stores"
-            contract="product-search"
-            key="productSearch"
+    <script
+      type="application/jay-headless"
+      plugin="@jay-framework/wix-stores"
+      contract="product-search"
+      key="productSearch"
     ></script>
   </head>
   <body>
     <div forEach="productSearch.searchResults" trackBy="_id">
       <h3>{name}</h3>
-      <button ref="productSearch.searchResults.addToCartButton">
-        Add to Cart
-      </button>
+      <button ref="productSearch.searchResults.addToCartButton">Add to Cart</button>
     </div>
   </body>
 </html>

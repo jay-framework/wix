@@ -9,7 +9,7 @@ import {
     makeJayStackComponent,
     RenderPipeline,
     Signals,
-    PageProps
+    PageProps,
 } from '@jay-framework/fullstack-component';
 import { Props } from '@jay-framework/component';
 import {
@@ -17,14 +17,11 @@ import {
     CartPageFastViewState,
     CartPageRefs,
     CartPageSlowViewState,
-    LineItemOfCartPageViewState
+    LineItemOfCartPageViewState,
 } from '../contracts/cart-page.jay-contract';
 import { WIX_CART_SERVICE, WixCartService } from '../services/wix-cart-service-marker';
 import { WIX_CART_CONTEXT, WixCartContext } from '../contexts/wix-cart-context';
-import {
-    CartState,
-    CartLineItem,
-} from '../contexts/cart-helpers';
+import { CartState, CartLineItem } from '../contexts/cart-helpers';
 import { patch, REPLACE } from '@jay-framework/json-patch';
 
 // ============================================================================
@@ -61,7 +58,7 @@ function mapLineItemToViewState(item: CartLineItem): LineItemOfCartPageViewState
         lineTotal: item.lineTotal,
         lineDiscount: item.lineDiscount,
         hasDiscount: item.hasDiscount,
-        isRemoving: false
+        isRemoving: false,
     };
 }
 
@@ -82,7 +79,7 @@ function mapCartStateToViewState(cart: CartState): CartPageFastViewState {
             estimatedTax: cart.summary.estimatedTax,
             showTax: cart.summary.showTax,
             estimatedTotal: cart.summary.estimatedTotal,
-            currency: cart.summary.currency
+            currency: cart.summary.currency,
         },
         coupon: {
             code: '',
@@ -90,8 +87,8 @@ function mapCartStateToViewState(cart: CartState): CartPageFastViewState {
             appliedCode: cart.appliedCoupon,
             hasAppliedCoupon: cart.hasAppliedCoupon,
             errorMessage: '',
-            hasError: false
-        }
+            hasError: false,
+        },
     };
 }
 
@@ -112,7 +109,7 @@ function createEmptyCartViewState(): CartPageFastViewState {
             estimatedTax: { amount: '0', formattedAmount: '' },
             showTax: false,
             estimatedTotal: { amount: '0', formattedAmount: '$0.00' },
-            currency: 'USD'
+            currency: 'USD',
         },
         coupon: {
             code: '',
@@ -120,8 +117,8 @@ function createEmptyCartViewState(): CartPageFastViewState {
             appliedCode: '',
             hasAppliedCoupon: false,
             errorMessage: '',
-            hasError: false
-        }
+            hasError: false,
+        },
     };
 }
 
@@ -132,18 +129,15 @@ function createEmptyCartViewState(): CartPageFastViewState {
 /**
  * Slow render phase - minimal static content
  */
-async function renderSlowlyChanging(
-    _props: PageProps,
-    _wixCart: WixCartService
-) {
+async function renderSlowlyChanging(_props: PageProps, _wixCart: WixCartService) {
     const Pipeline = RenderPipeline.for<CartPageSlowViewState, CartPageSlowCarryForward>();
 
     return Pipeline.ok(null).toPhaseOutput(() => ({
         viewState: {
             cartId: '',
-            emptyCartMessage: 'Your cart is empty'
+            emptyCartMessage: 'Your cart is empty',
         },
-        carryForward: {}
+        carryForward: {},
     }));
 }
 
@@ -153,13 +147,13 @@ async function renderSlowlyChanging(
 async function renderFastChanging(
     _props: PageProps,
     _slowCarryForward: CartPageSlowCarryForward,
-    _wixCart: WixCartService
+    _wixCart: WixCartService,
 ) {
     const Pipeline = RenderPipeline.for<CartPageFastViewState, CartPageFastCarryForward>();
 
     return Pipeline.ok(null).toPhaseOutput(() => ({
         viewState: createEmptyCartViewState(),
-        carryForward: {}
+        carryForward: {},
     }));
 }
 
@@ -171,9 +165,8 @@ function CartPageInteractive(
     refs: CartPageRefs,
     viewStateSignals: Signals<CartPageFastViewState>,
     _carryForward: CartPageFastCarryForward,
-    cartContext: WixCartContext
+    cartContext: WixCartContext,
 ) {
-
     // Get signal setters from viewStateSignals
     const {
         isEmpty: [isEmpty, setIsEmpty],
@@ -181,7 +174,7 @@ function CartPageInteractive(
         isCheckingOut: [isCheckingOut, setIsCheckingOut],
         lineItems: [lineItems, setLineItems],
         summary: [summary, setSummary],
-        coupon: [coupon, setCoupon]
+        coupon: [coupon, setCoupon],
     } = viewStateSignals;
 
     // Load cart data using context helper API (includes accurate totals)
@@ -191,7 +184,7 @@ function CartPageInteractive(
             setIsLoading(true);
             const cartState = await cartContext.getEstimatedCart();
             const viewState = mapCartStateToViewState(cartState);
-            
+
             setIsEmpty(viewState.isEmpty);
             setLineItems(viewState.lineItems);
             setSummary(viewState.summary);
@@ -205,13 +198,15 @@ function CartPageInteractive(
 
     // Handle quantity update
     async function handleQuantityChange(lineItemId: string, newQuantity: number) {
-        const itemIndex = lineItems().findIndex(item => item.lineItemId === lineItemId);
+        const itemIndex = lineItems().findIndex((item) => item.lineItemId === lineItemId);
         if (itemIndex === -1) return;
 
         // Update local state immediately for responsiveness
-        setLineItems(patch(lineItems(), [
-            { op: REPLACE, path: [itemIndex, 'isUpdatingQuantity'], value: true }
-        ]));
+        setLineItems(
+            patch(lineItems(), [
+                { op: REPLACE, path: [itemIndex, 'isUpdatingQuantity'], value: true },
+            ]),
+        );
 
         try {
             await cartContext.updateLineItemQuantity(lineItemId, newQuantity);
@@ -220,20 +215,22 @@ function CartPageInteractive(
         } catch (error) {
             console.error('[CartPage] Failed to update quantity:', error);
             // Clear updating state on error
-            setLineItems(patch(lineItems(), [
-                { op: REPLACE, path: [itemIndex, 'isUpdatingQuantity'], value: false }
-            ]));
+            setLineItems(
+                patch(lineItems(), [
+                    { op: REPLACE, path: [itemIndex, 'isUpdatingQuantity'], value: false },
+                ]),
+            );
         }
     }
 
     // Handle item removal
     async function handleRemoveItem(lineItemId: string) {
-        const itemIndex = lineItems().findIndex(item => item.lineItemId === lineItemId);
+        const itemIndex = lineItems().findIndex((item) => item.lineItemId === lineItemId);
         if (itemIndex === -1) return;
 
-        setLineItems(patch(lineItems(), [
-            { op: REPLACE, path: [itemIndex, 'isRemoving'], value: true }
-        ]));
+        setLineItems(
+            patch(lineItems(), [{ op: REPLACE, path: [itemIndex, 'isRemoving'], value: true }]),
+        );
 
         try {
             await cartContext.removeLineItems([lineItemId]);
@@ -241,9 +238,11 @@ function CartPageInteractive(
             await loadCart();
         } catch (error) {
             console.error('[CartPage] Failed to remove item:', error);
-            setLineItems(patch(lineItems(), [
-                { op: REPLACE, path: [itemIndex, 'isRemoving'], value: false }
-            ]));
+            setLineItems(
+                patch(lineItems(), [
+                    { op: REPLACE, path: [itemIndex, 'isRemoving'], value: false },
+                ]),
+            );
         }
     }
 
@@ -264,11 +263,13 @@ function CartPageInteractive(
         const code = coupon().code.trim();
         if (!code) return;
 
-        setCoupon(patch(coupon(), [
-            { op: REPLACE, path: ['isApplying'], value: true },
-            { op: REPLACE, path: ['hasError'], value: false },
-            { op: REPLACE, path: ['errorMessage'], value: '' }
-        ]));
+        setCoupon(
+            patch(coupon(), [
+                { op: REPLACE, path: ['isApplying'], value: true },
+                { op: REPLACE, path: ['hasError'], value: false },
+                { op: REPLACE, path: ['errorMessage'], value: '' },
+            ]),
+        );
 
         try {
             await cartContext.applyCoupon(code);
@@ -276,11 +277,13 @@ function CartPageInteractive(
             await loadCart();
         } catch (error) {
             console.error('[CartPage] Failed to apply coupon:', error);
-            setCoupon(patch(coupon(), [
-                { op: REPLACE, path: ['isApplying'], value: false },
-                { op: REPLACE, path: ['hasError'], value: true },
-                { op: REPLACE, path: ['errorMessage'], value: 'Invalid coupon code' }
-            ]));
+            setCoupon(
+                patch(coupon(), [
+                    { op: REPLACE, path: ['isApplying'], value: false },
+                    { op: REPLACE, path: ['hasError'], value: true },
+                    { op: REPLACE, path: ['errorMessage'], value: 'Invalid coupon code' },
+                ]),
+            );
         }
     }
 
@@ -303,7 +306,7 @@ function CartPageInteractive(
     }
 
     // Set up interactive refs - the effects system handles coordinates for repeaters
-    
+
     // Clear cart button
     refs.clearCartButton?.onclick(handleClearCart);
 
@@ -313,9 +316,7 @@ function CartPageInteractive(
     // Coupon input - update local state only
     refs.coupon?.code?.oninput(({ event }) => {
         const code = (event.target as HTMLInputElement).value;
-        setCoupon(patch(coupon(), [
-            { op: REPLACE, path: ['code'], value: code }
-        ]));
+        setCoupon(patch(coupon(), [{ op: REPLACE, path: ['code'], value: code }]));
     });
 
     // Apply coupon button
@@ -359,8 +360,8 @@ function CartPageInteractive(
             isCheckingOut: isCheckingOut(),
             lineItems: lineItems(),
             summary: summary(),
-            coupon: coupon()
-        })
+            coupon: coupon(),
+        }),
     };
 }
 

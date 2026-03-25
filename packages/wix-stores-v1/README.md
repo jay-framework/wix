@@ -8,12 +8,12 @@ This package provides integration with the Wix Stores Catalog V1 API. If your Wi
 
 ### V1 vs V3
 
-| Feature | V1 (this package) | V3 (@jay-framework/wix-stores) |
-|---------|------------------|-------------------------------|
-| Products API | `products` | `productsV3` |
-| Collections | `collections` | `@wix/categories` |
-| Pagination | Skip-based | Cursor-based |
-| Price format | Numbers (289) | Strings ("289") |
+| Feature      | V1 (this package) | V3 (@jay-framework/wix-stores) |
+| ------------ | ----------------- | ------------------------------ |
+| Products API | `products`        | `productsV3`                   |
+| Collections  | `collections`     | `@wix/categories`              |
+| Pagination   | Skip-based        | Cursor-based                   |
+| Price format | Numbers (289)     | Strings ("289")                |
 
 ## Installation
 
@@ -29,11 +29,11 @@ Set up your Wix configuration in `config/.wix.yaml`:
 
 ```yaml
 apiKeyStrategy:
-  apiKey: "your-api-key"
-  siteId: "your-site-id"
+  apiKey: 'your-api-key'
+  siteId: 'your-site-id'
 
 oauthStrategy:
-  clientId: "your-oauth-client-id"
+  clientId: 'your-oauth-client-id'
 ```
 
 ### 2. Use Server Actions
@@ -43,11 +43,11 @@ import { searchProducts, getProductBySlug, getCollections } from '@jay-framework
 
 // Search products
 const results = await searchProducts({
-    query: 'whisky',
-    filters: { minPrice: 50, maxPrice: 200 },
-    sortBy: 'price_asc',
-    pageSize: 12,
-    page: 1
+  query: 'whisky',
+  filters: { minPrice: 50, maxPrice: 200 },
+  sortBy: 'price_asc',
+  pageSize: 12,
+  page: 1,
 });
 // results.priceAggregation contains { minBound, maxBound, ranges }
 
@@ -65,15 +65,15 @@ import { useContext } from '@jay-framework/runtime';
 import { WIX_STORES_V1_CONTEXT } from '@jay-framework/wix-stores-v1';
 
 function MyComponent(props, refs) {
-    const stores = useContext(WIX_STORES_V1_CONTEXT);
-    
-    // Reactive cart indicator
-    const itemCount = stores.cartIndicator.itemCount();
-    
-    // Add to cart
-    refs.addToCart.onclick(async () => {
-        await stores.addToCart('product-id', 1);
-    });
+  const stores = useContext(WIX_STORES_V1_CONTEXT);
+
+  // Reactive cart indicator
+  const itemCount = stores.cartIndicator.itemCount();
+
+  // Add to cart
+  refs.addToCart.onclick(async () => {
+    await stores.addToCart('product-id', 1);
+  });
 }
 ```
 
@@ -81,25 +81,25 @@ function MyComponent(props, refs) {
 
 ### Server Actions
 
-| Action | Description |
-|--------|-------------|
-| `searchProducts(input)` | Search/filter products with pagination |
-| `getProductBySlug(input)` | Get a single product by URL slug |
-| `getCollections()` | Get available collections for filtering |
+| Action                    | Description                             |
+| ------------------------- | --------------------------------------- |
+| `searchProducts(input)`   | Search/filter products with pagination  |
+| `getProductBySlug(input)` | Get a single product by URL slug        |
+| `getCollections()`        | Get available collections for filtering |
 
 ### Client Context Methods
 
-| Method | Description |
-|--------|-------------|
-| `cartIndicator.itemCount()` | Reactive cart item count |
-| `cartIndicator.hasItems()` | Reactive boolean for cart state |
-| `addToCart(productId, qty, variantId?)` | Add product to cart |
-| `removeLineItems(ids)` | Remove items from cart |
-| `updateLineItemQuantity(id, qty)` | Update item quantity |
-| `clearCart()` | Remove all items |
-| `applyCoupon(code)` | Apply coupon code |
-| `removeCoupon()` | Remove applied coupon |
-| `getCollections()` | Get all collections |
+| Method                                  | Description                     |
+| --------------------------------------- | ------------------------------- |
+| `cartIndicator.itemCount()`             | Reactive cart item count        |
+| `cartIndicator.hasItems()`              | Reactive boolean for cart state |
+| `addToCart(productId, qty, variantId?)` | Add product to cart             |
+| `removeLineItems(ids)`                  | Remove items from cart          |
+| `updateLineItemQuantity(id, qty)`       | Update item quantity            |
+| `clearCart()`                           | Remove all items                |
+| `applyCoupon(code)`                     | Apply coupon code               |
+| `removeCoupon()`                        | Remove applied coupon           |
+| `getCollections()`                      | Get all collections             |
 
 ## Differences from V3
 

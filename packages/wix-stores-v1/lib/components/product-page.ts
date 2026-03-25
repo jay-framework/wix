@@ -1,9 +1,9 @@
 /**
  * Product Page Component (V1)
- * 
+ *
  * A complete headless product page component using Wix Catalog V1 API.
  * Handles product details, options, variants, and add to cart.
- * 
+ *
  * Key V1 differences:
  * - Uses `products` module instead of `productsV3`
  * - V1 prices are numbers, not strings
@@ -18,7 +18,7 @@ import {
     RenderPipeline,
     Signals,
     SlowlyRenderResult,
-    UrlParams
+    UrlParams,
 } from '@jay-framework/fullstack-component';
 import { createMemo, createSignal, Props } from '@jay-framework/component';
 import {
@@ -31,11 +31,14 @@ import {
     ProductPageRefs,
     ProductPageSlowViewState,
     ProductType,
-    StockStatus
+    StockStatus,
 } from '../contracts/product-page.jay-contract';
-import { WIX_STORES_V1_SERVICE_MARKER, WixStoresV1Service } from '../services/wix-stores-v1-service';
-import { MediaGalleryViewState, Selected } from "../contracts/media-gallery.jay-contract";
-import { MediaType } from "../contracts/media.jay-contract";
+import {
+    WIX_STORES_V1_SERVICE_MARKER,
+    WixStoresV1Service,
+} from '../services/wix-stores-v1-service';
+import { MediaGalleryViewState, Selected } from '../contracts/media-gallery.jay-contract';
+import { MediaType } from '../contracts/media.jay-contract';
 import { JSONPatchOperation, patch, REPLACE } from '@jay-framework/json-patch';
 import { WIX_STORES_V1_CONTEXT, WixStoresV1Context } from '../contexts/wix-stores-v1-context';
 import { Product } from '@wix/auto_sdk_stores_products';
@@ -78,12 +81,14 @@ function mapProductType(productType: string | undefined): ProductType {
     return productType === 'digital' ? ProductType.DIGITAL : ProductType.PHYSICAL;
 }
 
-function mapInfoSections(sections: Product['additionalInfoSections']): InfoSectionOfProductPageViewState[] {
+function mapInfoSections(
+    sections: Product['additionalInfoSections'],
+): InfoSectionOfProductPageViewState[] {
     return (sections || []).map((section, index) => ({
         _id: String(index),
         title: section.title || '',
         plainDescription: section.description || '',
-        uniqueName: section.title || ''
+        uniqueName: section.title || '',
     }));
 }
 
@@ -103,17 +108,17 @@ function mapMedia(product: Product): MediaGalleryViewState {
         selectedMedia: {
             url: mainUrl,
             mediaType: mainMediaType,
-            thumbnail_50x50: mainThumbnail
+            thumbnail_50x50: mainThumbnail,
         },
         availableMedia: mediaItems.map((item, index) => ({
             mediaId: item._id || String(index),
             media: {
                 url: item.image?.url || '',
                 mediaType: item.mediaType === 'video' ? MediaType.VIDEO : MediaType.IMAGE,
-                thumbnail_50x50: item.thumbnail?.url || ''
+                thumbnail_50x50: item.thumbnail?.url || '',
             },
-            selected: (item._id === mainMedia?._id) ? Selected.selected : Selected.notSelected
-        }))
+            selected: item._id === mainMedia?._id ? Selected.selected : Selected.notSelected,
+        })),
     };
 }
 
@@ -121,19 +126,21 @@ function mapMedia(product: Product): MediaGalleryViewState {
  * Map V1 productOptions to SlowViewState options
  */
 function mapOptionsToSlowVS(product: Product): ProductPageSlowViewState['options'] {
-    return (product.productOptions || []).map(option => ({
+    return (product.productOptions || []).map((option) => ({
         _id: option.name || '',
         name: option.name || '',
-        optionRenderType: option.optionType === 'color' 
-            ? OptionRenderType.COLOR_SWATCH_CHOICES 
-            : OptionRenderType.TEXT_CHOICES,
-        choices: (option.choices || []).map(choice => ({
+        optionRenderType:
+            option.optionType === 'color'
+                ? OptionRenderType.COLOR_SWATCH_CHOICES
+                : OptionRenderType.TEXT_CHOICES,
+        choices: (option.choices || []).map((choice) => ({
             choiceId: choice.value || '',
             name: choice.value || '',
-            choiceType: option.optionType === 'color' ? ChoiceType.ONE_COLOR : ChoiceType.CHOICE_TEXT,
+            choiceType:
+                option.optionType === 'color' ? ChoiceType.ONE_COLOR : ChoiceType.CHOICE_TEXT,
             inStock: choice.inStock ?? true,
-            colorCode: ''
-        }))
+            colorCode: '',
+        })),
     }));
 }
 
@@ -141,13 +148,13 @@ function mapOptionsToSlowVS(product: Product): ProductPageSlowViewState['options
  * Map V1 productOptions to FastViewState options
  */
 function mapOptionsToFastVS(product: Product): ProductPageFastViewState['options'] {
-    return (product.productOptions || []).map(option => ({
+    return (product.productOptions || []).map((option) => ({
         _id: option.name || '',
         textChoiceSelection: undefined,
-        choices: (option.choices || []).map(choice => ({
+        choices: (option.choices || []).map((choice) => ({
             choiceId: choice.value || '',
-            isSelected: false
-        }))
+            isSelected: false,
+        })),
     }));
 }
 
@@ -155,16 +162,19 @@ function mapOptionsToFastVS(product: Product): ProductPageFastViewState['options
  * Map V1 variants to InteractiveVariant format
  */
 function mapVariants(product: Product): InteractiveVariant[] {
-    return (product.variants || []).map(variant => ({
+    return (product.variants || []).map((variant) => ({
         _id: variant._id || '',
         sku: variant.variant?.sku || '',
-        price: variant.variant?.priceData?.formatted?.discountedPrice || 
-               variant.variant?.priceData?.formatted?.price || '',
-        strikethroughPrice: (variant.variant?.priceData?.discountedPrice < variant.variant?.priceData?.price)
-            ? variant.variant?.priceData?.formatted?.price || ''
-            : '',
+        price:
+            variant.variant?.priceData?.formatted?.discountedPrice ||
+            variant.variant?.priceData?.formatted?.price ||
+            '',
+        strikethroughPrice:
+            variant.variant?.priceData?.discountedPrice < variant.variant?.priceData?.price
+                ? variant.variant?.priceData?.formatted?.price || ''
+                : '',
         choices: variant.choices || {},
-        inventoryStatus: variant.stock?.inStock ? StockStatus.IN_STOCK : StockStatus.OUT_OF_STOCK
+        inventoryStatus: variant.stock?.inStock ? StockStatus.IN_STOCK : StockStatus.OUT_OF_STOCK,
     }));
 }
 
@@ -172,9 +182,9 @@ function mapVariants(product: Product): InteractiveVariant[] {
 // Load Product Params for SSG
 // ============================================================================
 
-async function* loadProductParams(
-    [wixStores]: [WixStoresV1Service]
-): AsyncIterable<ProductPageParams[]> {
+async function* loadProductParams([wixStores]: [WixStoresV1Service]): AsyncIterable<
+    ProductPageParams[]
+> {
     try {
         let result = await wixStores.products.queryProducts().find();
         yield result.items.map((product) => ({ slug: product.slug || '' }));
@@ -194,37 +204,35 @@ async function* loadProductParams(
 
 async function renderSlowlyChanging(
     props: PageProps & ProductPageParams,
-    wixStores: WixStoresV1Service
+    wixStores: WixStoresV1Service,
 ): Promise<SlowlyRenderResult<ProductPageSlowViewState, ProductSlowCarryForward>> {
-
     const Pipeline = RenderPipeline.for<ProductPageSlowViewState, ProductSlowCarryForward>();
 
-    return Pipeline
-        .try(async () => {
-            // Try slug lookup first, then fall back to ID lookup
-            // (cart URLs use product IDs since item.url slugs may not match catalog slugs)
-            const bySlug = await wixStores.products.queryProducts()
-                .eq('slug', props.slug)
-                .limit(1)
-                .find();
-            if (bySlug.items?.length) return bySlug;
-            return wixStores.products.queryProducts()
-                .eq('_id', props.slug)
-                .limit(1)
-                .find();
-        })
-        .recover(error => {
+    return Pipeline.try(async () => {
+        // Try slug lookup first, then fall back to ID lookup
+        // (cart URLs use product IDs since item.url slugs may not match catalog slugs)
+        const bySlug = await wixStores.products
+            .queryProducts()
+            .eq('slug', props.slug)
+            .limit(1)
+            .find();
+        if (bySlug.items?.length) return bySlug;
+        return wixStores.products.queryProducts().eq('_id', props.slug).limit(1).find();
+    })
+        .recover((error) => {
             console.error('[ProductPage V1] Error loading product:', error);
             return Pipeline.clientError(404, 'Product not found');
         })
-        .toPhaseOutput(result => {
+        .toPhaseOutput((result) => {
             const product = result.items?.[0];
             if (!product) {
                 throw new Error('Product not found');
             }
 
             const variants = mapVariants(product);
-            const stockStatus = product.stock?.inStock ? StockStatus.IN_STOCK : StockStatus.OUT_OF_STOCK;
+            const stockStatus = product.stock?.inStock
+                ? StockStatus.IN_STOCK
+                : StockStatus.OUT_OF_STOCK;
 
             return {
                 viewState: {
@@ -237,7 +245,7 @@ async function renderSlowlyChanging(
                     options: mapOptionsToSlowVS(product),
                     infoSections: mapInfoSections(product.additionalInfoSections),
                     modifiers: [], // V1 doesn't have modifiers in same format
-                    seoData: { tags: [], settings: { preventAutoRedirect: false, keywords: [] } }
+                    seoData: { tags: [], settings: { preventAutoRedirect: false, keywords: [] } },
                 },
                 carryForward: {
                     productId: product._id || '',
@@ -245,8 +253,8 @@ async function renderSlowlyChanging(
                     options: mapOptionsToFastVS(product),
                     pricePerUnit: '',
                     stockStatus,
-                    variants
-                }
+                    variants,
+                },
             };
         });
 }
@@ -254,7 +262,7 @@ async function renderSlowlyChanging(
 async function renderFastChanging(
     props: PageProps & ProductPageParams,
     slowCarryForward: ProductSlowCarryForward,
-    wixStores: WixStoresV1Service
+    wixStores: WixStoresV1Service,
 ) {
     const Pipeline = RenderPipeline.for<ProductPageFastViewState, ProductFastCarryForward>();
 
@@ -271,13 +279,13 @@ async function renderFastChanging(
         pricePerUnit: slowCarryForward.pricePerUnit,
         stockStatus: slowCarryForward.stockStatus,
         strikethroughPrice: firstVariant?.strikethroughPrice || '',
-        quantity: { quantity: 1 }
-    }).toPhaseOutput(viewState => ({
+        quantity: { quantity: 1 },
+    }).toPhaseOutput((viewState) => ({
         viewState,
         carryForward: {
             productId: slowCarryForward.productId,
-            variants: slowCarryForward.variants
-        }
+            variants: slowCarryForward.variants,
+        },
     }));
 }
 
@@ -290,7 +298,7 @@ function ProductPageInteractive(
     refs: ProductPageRefs,
     viewStateSignals: Signals<ProductPageFastViewState>,
     fastCarryForward: ProductFastCarryForward,
-    storesContext: WixStoresV1Context
+    storesContext: WixStoresV1Context,
 ) {
     const [quantity, setQuantity] = createSignal(viewStateSignals.quantity[0]().quantity);
 
@@ -299,7 +307,7 @@ function ProductPageInteractive(
         actionsEnabled: [actionsEnabled, setActionsEnabled],
         options: [options, setOptions],
         mediaGallery: [mediaGallery, setMediaGallery],
-        pricePerUnit: [pricePerUnit, setPricePerUnit]
+        pricePerUnit: [pricePerUnit, setPricePerUnit],
     } = viewStateSignals;
 
     const [isAddingToCart, setIsAddingToCart] = createSignal(false);
@@ -312,7 +320,7 @@ function ProductPageInteractive(
             if (option.textChoiceSelection) {
                 result[option._id] = option.textChoiceSelection;
             } else {
-                const selectedChoice = option.choices.find(c => c.isSelected);
+                const selectedChoice = option.choices.find((c) => c.isSelected);
                 if (selectedChoice) {
                     result[option._id] = selectedChoice.choiceId;
                 }
@@ -322,10 +330,10 @@ function ProductPageInteractive(
     });
 
     function findVariant(variants: InteractiveVariant[], selectedOptions: Record<string, string>) {
-        const found = variants.find(variant =>
-            Object.entries(selectedOptions).every(([optionName, choiceValue]) =>
-                variant.choices[optionName] === choiceValue
-            )
+        const found = variants.find((variant) =>
+            Object.entries(selectedOptions).every(
+                ([optionName, choiceValue]) => variant.choices[optionName] === choiceValue,
+            ),
         );
         return found || variants[0];
     }
@@ -334,29 +342,44 @@ function ProductPageInteractive(
     const sku = createMemo(() => selectedVariant()?.sku || '');
     const price = createMemo(() => selectedVariant()?.price || '');
     const strikethroughPrice = createMemo(() => selectedVariant()?.strikethroughPrice || '');
-    const stockStatus = createMemo(() => selectedVariant()?.inventoryStatus || StockStatus.OUT_OF_STOCK);
+    const stockStatus = createMemo(
+        () => selectedVariant()?.inventoryStatus || StockStatus.OUT_OF_STOCK,
+    );
     const computedActionsEnabled = createMemo(() => stockStatus() === StockStatus.IN_STOCK);
 
     const interactiveMedia = createMemo((prev: MediaGalleryViewState) => {
         prev = prev || mediaGallery();
-        const oldSelectedIndex = prev.availableMedia.findIndex(_ => _.selected === Selected.selected);
-        const newSelectedIndex = Math.max(0, prev.availableMedia.findIndex(_ => _.mediaId === selectedMediaId()));
+        const oldSelectedIndex = prev.availableMedia.findIndex(
+            (_) => _.selected === Selected.selected,
+        );
+        const newSelectedIndex = Math.max(
+            0,
+            prev.availableMedia.findIndex((_) => _.mediaId === selectedMediaId()),
+        );
         if (oldSelectedIndex === newSelectedIndex) return prev;
         const newSelectedMedia = prev.availableMedia[newSelectedIndex];
         return patch(prev, [
             { op: REPLACE, path: ['selectedMedia'], value: newSelectedMedia.media },
-            { op: REPLACE, path: ['availableMedia', oldSelectedIndex, 'selected'], value: Selected.notSelected },
-            { op: REPLACE, path: ['availableMedia', newSelectedIndex, 'selected'], value: Selected.selected }
+            {
+                op: REPLACE,
+                path: ['availableMedia', oldSelectedIndex, 'selected'],
+                value: Selected.notSelected,
+            },
+            {
+                op: REPLACE,
+                path: ['availableMedia', newSelectedIndex, 'selected'],
+                value: Selected.selected,
+            },
         ]);
     });
 
     // Quantity controls
     refs.quantity.decrementButton.onclick(() => {
-        setQuantity(prev => Math.max(1, prev - 1));
+        setQuantity((prev) => Math.max(1, prev - 1));
     });
 
     refs.quantity.incrementButton.onclick(() => {
-        setQuantity(prev => prev + 1);
+        setQuantity((prev) => prev + 1);
     });
 
     refs.quantity.quantity.oninput(({ event }) => {
@@ -373,27 +396,45 @@ function ProductPageInteractive(
 
     refs.options?.choices?.choiceButton?.onclick(({ coordinate }) => {
         const [optionId, choiceId] = coordinate;
-        const optionIndex = options().findIndex(_ => _._id === optionId);
+        const optionIndex = options().findIndex((_) => _._id === optionId);
         const option = options()[optionIndex];
-        const newChoiceIndex = option.choices.findIndex(_ => _.choiceId === choiceId);
-        const oldChoiceIndex = option.choices.findIndex(_ => _.isSelected);
-        const removeSelectedPatch: JSONPatchOperation<ReturnType<typeof options>>[] = 
-            (oldChoiceIndex > -1 && oldChoiceIndex !== newChoiceIndex)
-                ? [{ op: REPLACE, path: [optionIndex, 'choices', oldChoiceIndex, 'isSelected'], value: false }]
+        const newChoiceIndex = option.choices.findIndex((_) => _.choiceId === choiceId);
+        const oldChoiceIndex = option.choices.findIndex((_) => _.isSelected);
+        const removeSelectedPatch: JSONPatchOperation<ReturnType<typeof options>>[] =
+            oldChoiceIndex > -1 && oldChoiceIndex !== newChoiceIndex
+                ? [
+                      {
+                          op: REPLACE,
+                          path: [optionIndex, 'choices', oldChoiceIndex, 'isSelected'],
+                          value: false,
+                      },
+                  ]
                 : [];
-        setOptions(patch(options(), [
-            { op: REPLACE, path: [optionIndex, 'choices', newChoiceIndex, 'isSelected'], value: true },
-            ...removeSelectedPatch
-        ]));
+        setOptions(
+            patch(options(), [
+                {
+                    op: REPLACE,
+                    path: [optionIndex, 'choices', newChoiceIndex, 'isSelected'],
+                    value: true,
+                },
+                ...removeSelectedPatch,
+            ]),
+        );
     });
 
     refs.options?.textChoice?.oninput(({ event, coordinate }) => {
         const [optionId] = coordinate;
-        const optionIndex = options().findIndex(_ => _._id === optionId);
+        const optionIndex = options().findIndex((_) => _._id === optionId);
         const selectedChoiceId = (event.target as HTMLSelectElement).value;
-        setOptions(patch(options(), [
-            { op: REPLACE, path: [optionIndex, 'textChoiceSelection'], value: selectedChoiceId }
-        ]));
+        setOptions(
+            patch(options(), [
+                {
+                    op: REPLACE,
+                    path: [optionIndex, 'textChoiceSelection'],
+                    value: selectedChoiceId,
+                },
+            ]),
+        );
     });
 
     refs.addToCartButton.onclick(async () => {
@@ -425,8 +466,8 @@ function ProductPageInteractive(
             price,
             pricePerUnit,
             stockStatus,
-            strikethroughPrice
-        })
+            strikethroughPrice,
+        }),
     };
 }
 

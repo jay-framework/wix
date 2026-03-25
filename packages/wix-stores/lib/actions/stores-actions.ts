@@ -9,7 +9,11 @@ import { makeJayQuery, ActionError } from '@jay-framework/fullstack-component';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
 import { ProductCardViewState } from '../contracts/product-card.jay-contract';
 import { mapProductToCard } from '../utils/product-mapper.js';
-import { AggregationDataAggregationResults, AggregationDataAggregationResultsScalarResult, AggregationResultsRangeResults } from '@wix/auto_sdk_stores_products-v-3';
+import {
+    AggregationDataAggregationResults,
+    AggregationDataAggregationResultsScalarResult,
+    AggregationResultsRangeResults,
+} from '@wix/auto_sdk_stores_products-v-3';
 
 // ============================================================================
 // Types
@@ -18,7 +22,13 @@ import { AggregationDataAggregationResults, AggregationDataAggregationResultsSca
 /**
  * Sort options for product search
  */
-export type ProductSortField = 'relevance' | 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'newest';
+export type ProductSortField =
+    | 'relevance'
+    | 'price_asc'
+    | 'price_desc'
+    | 'name_asc'
+    | 'name_desc'
+    | 'newest';
 
 /**
  * Product search filters
@@ -61,20 +71,25 @@ export interface PriceAggregationData {
 /**
  * Pre-computed wide-range price buckets using logarithmic scale.
  * Each power of 10 is divided into 3 buckets using multipliers 2, 4, 10.
- * 
+ *
  * Boundaries: 0, 20, 40, 100, 200, 400, 1000, 2000, 4000, 10000...
  * Buckets: 0-20, 20-40, 40-100, 100-200, 200-400, 400-1000, etc.
- * 
+ *
  * We request all buckets and filter out empty ones from the response.
  */
-const PRICE_BUCKET_BOUNDARIES = [0, 20, 40, 100, 200, 400, 1000, 2000, 4000, 10000, 20000, 40000, 100000];
+const PRICE_BUCKET_BOUNDARIES = [
+    0, 20, 40, 100, 200, 400, 1000, 2000, 4000, 10000, 20000, 40000, 100000,
+];
 
 const PRICE_BUCKETS = PRICE_BUCKET_BOUNDARIES.slice(0, -1).map((from, i) => ({
     from,
-    to: PRICE_BUCKET_BOUNDARIES[i + 1]
+    to: PRICE_BUCKET_BOUNDARIES[i + 1],
 }));
 // Add open-ended last bucket
-PRICE_BUCKETS.push({ from: PRICE_BUCKET_BOUNDARIES[PRICE_BUCKET_BOUNDARIES.length - 1] } as { from: number; to: number });
+PRICE_BUCKETS.push({ from: PRICE_BUCKET_BOUNDARIES[PRICE_BUCKET_BOUNDARIES.length - 1] } as {
+    from: number;
+    to: number;
+});
 
 /**
  * Input for searchProducts action
@@ -116,7 +131,6 @@ export interface GetProductBySlugInput {
     slug: string;
 }
 
-
 // ============================================================================
 // Actions
 // ============================================================================
@@ -145,215 +159,235 @@ export interface GetProductBySlugInput {
  */
 export const searchProducts = makeJayQuery('wixStores.searchProducts')
     .withServices(WIX_STORES_SERVICE_MARKER)
-    .withHandler(async (
-        input: SearchProductsInput,
-        wixStores: WixStoresService
-    ): Promise<SearchProductsOutput> => {
-        const {
-            query,
-            filters = {},
-            sortBy = 'relevance',
-            cursor,
-            pageSize = 12
-        } = input;
+    .withHandler(
+        async (
+            input: SearchProductsInput,
+            wixStores: WixStoresService,
+        ): Promise<SearchProductsOutput> => {
+            const { query, filters = {}, sortBy = 'relevance', cursor, pageSize = 12 } = input;
 
-        try {
-            // Build server-side filter object using $and to combine all conditions
-            // See: https://dev.wix.com/docs/sdk/backend-modules/stores/catalog-v3/products-v3/search-products
-            const filterConditions: Record<string, unknown>[] = [
-                // Only visible products
-                { "visible": { "$eq": true } }
-            ];
+            try {
+                // Build server-side filter object using $and to combine all conditions
+                // See: https://dev.wix.com/docs/sdk/backend-modules/stores/catalog-v3/products-v3/search-products
+                const filterConditions: Record<string, unknown>[] = [
+                    // Only visible products
+                    { visible: { $eq: true } },
+                ];
 
-            // Price range filters
-            const hasMinPrice = filters.minPrice !== undefined && filters.minPrice > 0;
-            const hasMaxPrice = filters.maxPrice !== undefined && filters.maxPrice > 0;
-            
-            if (hasMinPrice) {
-                filterConditions.push({
-                    "actualPriceRange.minValue.amount": { "$gte": String(filters.minPrice) }
-                });
-            }
-            if (hasMaxPrice) {
-                filterConditions.push({
-                    "actualPriceRange.minValue.amount": { "$lte": String(filters.maxPrice) }
-                });
-            }
+                // Price range filters
+                const hasMinPrice = filters.minPrice !== undefined && filters.minPrice > 0;
+                const hasMaxPrice = filters.maxPrice !== undefined && filters.maxPrice > 0;
 
-            // Stock status filter
-            if (filters.inStockOnly) {
-                filterConditions.push({
-                    "inventory.availabilityStatus": { "$eq": "IN_STOCK" }
-                });
-            }
-
-            // Category filter
-            if (filters.categoryIds && filters.categoryIds.length > 0) {
-                filterConditions.push({
-                     "allCategoriesInfo.categories.id": {
-                        "$hasAll": filters.categoryIds
-                    }
-                });
-            }
-
-            // Combine all conditions with $and
-            const filter: Record<string, unknown> = filterConditions.length === 1 
-                ? filterConditions[0] 
-                : { "$and": filterConditions };
-
-            // Build sort array
-            const sort: Array<{ fieldName: string; order: "ASC" | "DESC" }> = [];
-            switch (sortBy) {
-                case 'price_asc':
-                    sort.push({ fieldName: "actualPriceRange.minValue.amount", order: "ASC" });
-                    break;
-                case 'price_desc':
-                    sort.push({ fieldName: "actualPriceRange.minValue.amount", order: "DESC" });
-                    break;
-                case 'name_asc':
-                    sort.push({ fieldName: "name", order: "ASC" });
-                    break;
-                case 'name_desc':
-                    sort.push({ fieldName: "name", order: "DESC" });
-                    break;
-                case 'newest':
-                    sort.push({ fieldName: "_createdDate", order: "DESC" });
-                    break;
-                // 'relevance' - no sort, use search relevance
-            }
-
-            // Build cursor paging
-            const cursorPaging = cursor
-                ? { cursor, limit: pageSize }
-                : { limit: pageSize };
-
-            // Build search expression (for text search)
-            const hasSearchQuery = query && query.trim().length > 0;
-
-            const search = hasSearchQuery ? {
-                expression: query.trim(),
-                fields: ["name", "description"] as ("name" | "description")[]
-            } : undefined
-
-
-            // Build aggregations for price bounds, buckets, and total count
-            const aggregations = [
-                // Total count via COUNT_DISTINCT on slug
-                {
-                    fieldPath: 'slug',
-                    name: 'total-count',
-                    type: "SCALAR" as const,
-                    scalar: { type: "COUNT_DISTINCT" as const }
-                },
-                // Price buckets with product counts
-                {
-                    fieldPath: 'actualPriceRange.minValue.amount',
-                    name: 'price-buckets',
-                    type: "RANGE" as const,
-                    range: { buckets: PRICE_BUCKETS }
-                },
-                // Min price for slider bound
-                {
-                    fieldPath: 'actualPriceRange.minValue.amount',
-                    name: 'min-price',
-                    type: "SCALAR" as const,
-                    scalar: { type: "MIN" as const }
-                },
-                // Max price for slider bound
-                {
-                    fieldPath: 'actualPriceRange.minValue.amount',
-                    name: 'max-price',
-                    type: "SCALAR" as const,
-                    scalar: { type: "MAX" as const }
+                if (hasMinPrice) {
+                    filterConditions.push({
+                        'actualPriceRange.minValue.amount': { $gte: String(filters.minPrice) },
+                    });
                 }
-            ];
-
-            // Call searchProducts (includes aggregations for count, price bounds, and buckets)
-            const searchResult = await wixStores.products.searchProducts(
-                {
-                    filter,
-                    // @ts-expect-error - Wix SDK types don't match actual API
-                    sort: sort.length > 0 ? sort : undefined,
-                    cursorPaging,
-                    search,
-                    // @ts-expect-error - Wix SDK types don't include aggregations
-                    aggregations
-                },
-                { fields: [
-                    'CURRENCY', 'VARIANT_OPTION_CHOICE_NAMES',
-                    ...(wixStores.categoryPrefixes.length > 0 ? ['ALL_CATEGORIES_INFO'] as const : [])
-                ] }
-            );
-
-            const products = searchResult.products || [];
-            const nextCursor = searchResult.pagingMetadata?.cursors?.next || null;
-
-            // Extract aggregation results
-            const aggResults: AggregationDataAggregationResults[] = searchResult.aggregationData?.results || [];
-            const totalCountAgg = aggResults.find((a) => a.name === 'total-count')?.scalar as AggregationDataAggregationResultsScalarResult;
-            const minPriceAgg = aggResults.find((a) => a.name === 'min-price')?.scalar as AggregationDataAggregationResultsScalarResult;
-            const maxPriceAgg = aggResults.find((a) => a.name === 'max-price')?.scalar as AggregationDataAggregationResultsScalarResult;
-            
-            const totalCount = totalCountAgg?.value ?? products.length;
-            const bucketsAgg = aggResults.find((a) => a.name === 'price-buckets').ranges as AggregationResultsRangeResults;
-
-            const minBound = minPriceAgg?.value;
-            const maxBound = maxPriceAgg?.value;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const buckets = bucketsAgg.results || [];
-
-            // Get currency symbol from first product
-            const currencySymbol = products[0]?.currency === 'ILS' ? '₪' : 
-                                   products[0]?.currency === 'USD' ? '$' :
-                                   products[0]?.currency === 'EUR' ? '€' :
-                                   products[0]?.currency === 'GBP' ? '£' : '$';
-
-            // Map price ranges from aggregation
-            const priceRanges: PriceRangeBucket[] = [
-                { rangeId: 'all', label: 'Show all', minValue: null, maxValue: null, productCount: totalCount, isSelected: true }
-            ];
-            
-            const bucketRanges = buckets
-                .filter(bucket => (bucket.count ?? 0) > 0)
-                .map(bucket => {
-                    const from = bucket.from ?? 0;
-                    const to = bucket.to;
-                    const label = to 
-                        ? `${currencySymbol}${from} - ${currencySymbol}${to}`
-                        : `${currencySymbol}${from}+`;
-                    return {
-                        rangeId: `${from}-${to ?? 'plus'}`,
-                        label,
-                        minValue: from,
-                        maxValue: to ?? null,
-                        productCount: bucket.count ?? 0,
-                        isSelected: false
-                    };
-                });
-            
-            priceRanges.push(...bucketRanges);
-
-            // Map products to card view state (with category prefix resolution)
-            const prefixConfig = wixStores.categoryPrefixes;
-            const mappedProducts = products.map(p => mapProductToCard(p, '/products', prefixConfig));
-
-            return {
-                products: mappedProducts,
-                totalCount,
-                nextCursor,
-                hasMore: nextCursor !== null,
-                priceAggregation: {
-                    minBound,
-                    maxBound,
-                    ranges: priceRanges
+                if (hasMaxPrice) {
+                    filterConditions.push({
+                        'actualPriceRange.minValue.amount': { $lte: String(filters.maxPrice) },
+                    });
                 }
-            };
-        } catch (error) {
-            console.error('[wixStores.searchProducts] Search failed:', error);
-            throw new ActionError('SEARCH_FAILED', 'Failed to search products');
-        }
-    });
 
+                // Stock status filter
+                if (filters.inStockOnly) {
+                    filterConditions.push({
+                        'inventory.availabilityStatus': { $eq: 'IN_STOCK' },
+                    });
+                }
+
+                // Category filter
+                if (filters.categoryIds && filters.categoryIds.length > 0) {
+                    filterConditions.push({
+                        'allCategoriesInfo.categories.id': {
+                            $hasAll: filters.categoryIds,
+                        },
+                    });
+                }
+
+                // Combine all conditions with $and
+                const filter: Record<string, unknown> =
+                    filterConditions.length === 1
+                        ? filterConditions[0]
+                        : { $and: filterConditions };
+
+                // Build sort array
+                const sort: Array<{ fieldName: string; order: 'ASC' | 'DESC' }> = [];
+                switch (sortBy) {
+                    case 'price_asc':
+                        sort.push({ fieldName: 'actualPriceRange.minValue.amount', order: 'ASC' });
+                        break;
+                    case 'price_desc':
+                        sort.push({ fieldName: 'actualPriceRange.minValue.amount', order: 'DESC' });
+                        break;
+                    case 'name_asc':
+                        sort.push({ fieldName: 'name', order: 'ASC' });
+                        break;
+                    case 'name_desc':
+                        sort.push({ fieldName: 'name', order: 'DESC' });
+                        break;
+                    case 'newest':
+                        sort.push({ fieldName: '_createdDate', order: 'DESC' });
+                        break;
+                    // 'relevance' - no sort, use search relevance
+                }
+
+                // Build cursor paging
+                const cursorPaging = cursor ? { cursor, limit: pageSize } : { limit: pageSize };
+
+                // Build search expression (for text search)
+                const hasSearchQuery = query && query.trim().length > 0;
+
+                const search = hasSearchQuery
+                    ? {
+                          expression: query.trim(),
+                          fields: ['name', 'description'] as ('name' | 'description')[],
+                      }
+                    : undefined;
+
+                // Build aggregations for price bounds, buckets, and total count
+                const aggregations = [
+                    // Total count via COUNT_DISTINCT on slug
+                    {
+                        fieldPath: 'slug',
+                        name: 'total-count',
+                        type: 'SCALAR' as const,
+                        scalar: { type: 'COUNT_DISTINCT' as const },
+                    },
+                    // Price buckets with product counts
+                    {
+                        fieldPath: 'actualPriceRange.minValue.amount',
+                        name: 'price-buckets',
+                        type: 'RANGE' as const,
+                        range: { buckets: PRICE_BUCKETS },
+                    },
+                    // Min price for slider bound
+                    {
+                        fieldPath: 'actualPriceRange.minValue.amount',
+                        name: 'min-price',
+                        type: 'SCALAR' as const,
+                        scalar: { type: 'MIN' as const },
+                    },
+                    // Max price for slider bound
+                    {
+                        fieldPath: 'actualPriceRange.minValue.amount',
+                        name: 'max-price',
+                        type: 'SCALAR' as const,
+                        scalar: { type: 'MAX' as const },
+                    },
+                ];
+
+                // Call searchProducts (includes aggregations for count, price bounds, and buckets)
+                const searchResult = await wixStores.products.searchProducts(
+                    {
+                        filter,
+                        // @ts-expect-error - Wix SDK types don't match actual API
+                        sort: sort.length > 0 ? sort : undefined,
+                        cursorPaging,
+                        search,
+                        // @ts-expect-error - Wix SDK types don't include aggregations
+                        aggregations,
+                    },
+                    {
+                        fields: [
+                            'CURRENCY',
+                            'VARIANT_OPTION_CHOICE_NAMES',
+                            ...(wixStores.categoryPrefixes.length > 0
+                                ? (['ALL_CATEGORIES_INFO'] as const)
+                                : []),
+                        ],
+                    },
+                );
+
+                const products = searchResult.products || [];
+                const nextCursor = searchResult.pagingMetadata?.cursors?.next || null;
+
+                // Extract aggregation results
+                const aggResults: AggregationDataAggregationResults[] =
+                    searchResult.aggregationData?.results || [];
+                const totalCountAgg = aggResults.find((a) => a.name === 'total-count')
+                    ?.scalar as AggregationDataAggregationResultsScalarResult;
+                const minPriceAgg = aggResults.find((a) => a.name === 'min-price')
+                    ?.scalar as AggregationDataAggregationResultsScalarResult;
+                const maxPriceAgg = aggResults.find((a) => a.name === 'max-price')
+                    ?.scalar as AggregationDataAggregationResultsScalarResult;
+
+                const totalCount = totalCountAgg?.value ?? products.length;
+                const bucketsAgg = aggResults.find((a) => a.name === 'price-buckets')
+                    .ranges as AggregationResultsRangeResults;
+
+                const minBound = minPriceAgg?.value;
+                const maxBound = maxPriceAgg?.value;
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const buckets = bucketsAgg.results || [];
+
+                // Get currency symbol from first product
+                const currencySymbol =
+                    products[0]?.currency === 'ILS'
+                        ? '₪'
+                        : products[0]?.currency === 'USD'
+                          ? '$'
+                          : products[0]?.currency === 'EUR'
+                            ? '€'
+                            : products[0]?.currency === 'GBP'
+                              ? '£'
+                              : '$';
+
+                // Map price ranges from aggregation
+                const priceRanges: PriceRangeBucket[] = [
+                    {
+                        rangeId: 'all',
+                        label: 'Show all',
+                        minValue: null,
+                        maxValue: null,
+                        productCount: totalCount,
+                        isSelected: true,
+                    },
+                ];
+
+                const bucketRanges = buckets
+                    .filter((bucket) => (bucket.count ?? 0) > 0)
+                    .map((bucket) => {
+                        const from = bucket.from ?? 0;
+                        const to = bucket.to;
+                        const label = to
+                            ? `${currencySymbol}${from} - ${currencySymbol}${to}`
+                            : `${currencySymbol}${from}+`;
+                        return {
+                            rangeId: `${from}-${to ?? 'plus'}`,
+                            label,
+                            minValue: from,
+                            maxValue: to ?? null,
+                            productCount: bucket.count ?? 0,
+                            isSelected: false,
+                        };
+                    });
+
+                priceRanges.push(...bucketRanges);
+
+                // Map products to card view state (with category prefix resolution)
+                const prefixConfig = wixStores.categoryPrefixes;
+                const mappedProducts = products.map((p) =>
+                    mapProductToCard(p, '/products', prefixConfig),
+                );
+
+                return {
+                    products: mappedProducts,
+                    totalCount,
+                    nextCursor,
+                    hasMore: nextCursor !== null,
+                    priceAggregation: {
+                        minBound,
+                        maxBound,
+                        ranges: priceRanges,
+                    },
+                };
+            } catch (error) {
+                console.error('[wixStores.searchProducts] Search failed:', error);
+                throw new ActionError('SEARCH_FAILED', 'Failed to search products');
+            }
+        },
+    );
 
 /**
  * Get a single product by its URL slug.
@@ -366,36 +400,41 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
 export const getProductBySlug = makeJayQuery('wixStores.getProductBySlug')
     .withServices(WIX_STORES_SERVICE_MARKER)
     .withCaching({ maxAge: 300, staleWhileRevalidate: 600 }) // Cache for 5 min, stale for 10 min
-    .withHandler(async (
-        input: GetProductBySlugInput,
-        wixStores: WixStoresService
-    ): Promise<ProductCardViewState | null> => {
-        const { slug } = input;
+    .withHandler(
+        async (
+            input: GetProductBySlugInput,
+            wixStores: WixStoresService,
+        ): Promise<ProductCardViewState | null> => {
+            const { slug } = input;
 
-        if (!slug) {
-            throw new ActionError('INVALID_INPUT', 'Product slug is required');
-        }
-
-        try {
-            const prefixConfig = wixStores.categoryPrefixes;
-            const fields = [
-                'MEDIA_ITEMS_INFO', 'VARIANT_OPTION_CHOICE_NAMES',
-                ...(prefixConfig.length > 0 ? ['ALL_CATEGORIES_INFO'] as const : [])
-            ] as const;
-            const result = await wixStores.products.getProductBySlug(slug, { fields: [...fields] });
-            const product = result.product;
-
-            if (!product) {
-                return null;
+            if (!slug) {
+                throw new ActionError('INVALID_INPUT', 'Product slug is required');
             }
 
-            return mapProductToCard(product, '/products', prefixConfig);
-        } catch (error) {
-            console.error('[wixStores.getProductBySlug] Failed to get product:', error);
-            // Return null for not found instead of throwing
-            return null;
-        }
-    });
+            try {
+                const prefixConfig = wixStores.categoryPrefixes;
+                const fields = [
+                    'MEDIA_ITEMS_INFO',
+                    'VARIANT_OPTION_CHOICE_NAMES',
+                    ...(prefixConfig.length > 0 ? (['ALL_CATEGORIES_INFO'] as const) : []),
+                ] as const;
+                const result = await wixStores.products.getProductBySlug(slug, {
+                    fields: [...fields],
+                });
+                const product = result.product;
+
+                if (!product) {
+                    return null;
+                }
+
+                return mapProductToCard(product, '/products', prefixConfig);
+            } catch (error) {
+                console.error('[wixStores.getProductBySlug] Failed to get product:', error);
+                // Return null for not found instead of throwing
+                return null;
+            }
+        },
+    );
 
 /**
  * Get available categories for filtering.
@@ -408,26 +447,28 @@ export const getProductBySlug = makeJayQuery('wixStores.getProductBySlug')
 export const getCategories = makeJayQuery('wixStores.getCategories')
     .withServices(WIX_STORES_SERVICE_MARKER)
     .withCaching({ maxAge: 3600 }) // Cache categories for 1 hour
-    .withHandler(async (
-        _input: Record<string, never>,
-        wixStores: WixStoresService
-    ): Promise<Array<{ categoryId: string; categoryName: string }>> => {
-        try {
-            const result = await wixStores.categories.queryCategories({
-                treeReference: {
-                    appNamespace: '@wix/stores'
-                }
-            })
-                .eq('visible', true)
-                .find();
+    .withHandler(
+        async (
+            _input: Record<string, never>,
+            wixStores: WixStoresService,
+        ): Promise<Array<{ categoryId: string; categoryName: string }>> => {
+            try {
+                const result = await wixStores.categories
+                    .queryCategories({
+                        treeReference: {
+                            appNamespace: '@wix/stores',
+                        },
+                    })
+                    .eq('visible', true)
+                    .find();
 
-            return (result.items || []).map(cat => ({
-                categoryId: cat._id || '',
-                categoryName: cat.name || ''
-            }));
-        } catch (error) {
-            console.error('[wixStores.getCategories] Failed to load categories:', error);
-            throw new ActionError('LOAD_FAILED', 'Failed to load categories');
-        }
-    });
-
+                return (result.items || []).map((cat) => ({
+                    categoryId: cat._id || '',
+                    categoryName: cat.name || '',
+                }));
+            } catch (error) {
+                console.error('[wixStores.getCategories] Failed to load categories:', error);
+                throw new ActionError('LOAD_FAILED', 'Failed to load categories');
+            }
+        },
+    );

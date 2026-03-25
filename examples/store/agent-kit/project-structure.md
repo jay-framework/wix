@@ -34,8 +34,8 @@ my-project/
 
 As an agent building pages, you typically create:
 
-1. **`src/pages/**/*.jay-html`** — Page templates (the main output)
-2. **`src/pages/**/*.jay-contract`** — Page-level contracts (when the page has its own data)
+1. **`src/pages/**/\*.jay-html`\*\* — Page templates (the main output)
+2. **`src/pages/**/\*.jay-contract`\*\* — Page-level contracts (when the page has its own data)
 3. **`src/styles/*.css`** — Theme stylesheet (one per project, reused across pages)
 
 You do **not** need to create: `package.json`, `tsconfig.json`, `.jay`, `page.conf.yaml`, `src/init.ts`, server actions, or services — these are set up by the project scaffolding, the Figma plugin, or provided by plugins.
@@ -49,13 +49,13 @@ Each project has a theme CSS file in `src/styles/` with CSS custom properties (d
 ```css
 :root {
   /* Colors */
-  --bg-primary: #FAF8F5;
-  --bg-card: #FFFFFF;
-  --text-primary: #2D2A26;
-  --text-secondary: #6B665E;
-  --accent: #C45C3E;
-  --accent-hover: #D4704F;
-  --border: #E8E4DD;
+  --bg-primary: #faf8f5;
+  --bg-card: #ffffff;
+  --text-primary: #2d2a26;
+  --text-secondary: #6b665e;
+  --accent: #c45c3e;
+  --accent-hover: #d4704f;
+  --border: #e8e4dd;
 
   /* Typography */
   --font-serif: 'Cormorant Garamond', Georgia, serif;
@@ -66,8 +66,8 @@ Each project has a theme CSS file in `src/styles/` with CSS custom properties (d
   --radius-lg: 14px;
   --container-max: 1400px;
   --page-padding: 48px;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 ```
 
@@ -104,8 +104,15 @@ Add page-specific styles in `<style>` tags within the jay-html `<head>`:
 <head>
   <link rel="stylesheet" href="../../styles/theme.css" />
   <style>
-    .hero { padding: 80px 0; text-align: center; }
-    .featured-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .hero {
+      padding: 80px 0;
+      text-align: center;
+    }
+    .featured-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
   </style>
 </head>
 ```
@@ -125,10 +132,14 @@ Use media queries in the theme CSS or page-specific styles:
 
 ```css
 @media (max-width: 1024px) {
-  .product-page-layout { grid-template-columns: 1fr; }
+  .product-page-layout {
+    grid-template-columns: 1fr;
+  }
 }
 @media (max-width: 768px) {
-  .products-grid { grid-template-columns: 1fr; }
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
 }
 ```
 

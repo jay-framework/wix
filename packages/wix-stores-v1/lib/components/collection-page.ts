@@ -1,9 +1,9 @@
 /**
  * Collection Page Component (V1)
- * 
+ *
  * A headless collection page using Wix Catalog V1 API.
  * V1 uses "collections" instead of V3's "categories".
- * 
+ *
  * Key V1 differences:
  * - Uses collections.queryCollections() instead of categories
  * - Uses skip-based pagination instead of cursor-based
@@ -16,16 +16,19 @@ import {
     RenderPipeline,
     Signals,
     SlowlyRenderResult,
-    UrlParams
+    UrlParams,
 } from '@jay-framework/fullstack-component';
 import { Props } from '@jay-framework/component';
 import {
     CategoryPageContract,
     CategoryPageFastViewState,
     CategoryPageRefs,
-    CategoryPageSlowViewState
+    CategoryPageSlowViewState,
 } from '../contracts/category-page.jay-contract';
-import { WIX_STORES_V1_SERVICE_MARKER, WixStoresV1Service } from '../services/wix-stores-v1-service';
+import {
+    WIX_STORES_V1_SERVICE_MARKER,
+    WixStoresV1Service,
+} from '../services/wix-stores-v1-service';
 import { WIX_STORES_V1_CONTEXT, WixStoresV1Context } from '../contexts/wix-stores-v1-context';
 import { mapProductToCard } from '../utils/product-mapper-v1';
 import { ProductCardViewState } from '../contracts/product-card.jay-contract';
@@ -67,14 +70,12 @@ interface BreadcrumbItem {
 /**
  * Load collection slugs for static site generation
  */
-async function* loadCollectionParams(
-    [wixStores]: [WixStoresV1Service]
-): AsyncIterable<CollectionPageParams[]> {
+async function* loadCollectionParams([wixStores]: [WixStoresV1Service]): AsyncIterable<
+    CollectionPageParams[]
+> {
     try {
         const result = await wixStores.collections.queryCollections().find();
-        yield (result.items || [])
-            .filter(col => col.slug)
-            .map((col) => ({ slug: col.slug! }));
+        yield (result.items || []).filter((col) => col.slug).map((col) => ({ slug: col.slug! }));
     } catch (error) {
         console.error('[CollectionPage V1] Failed to load collection slugs:', error);
         yield [];
@@ -87,39 +88,43 @@ async function* loadCollectionParams(
 async function loadCollectionProducts(
     collectionId: string,
     wixStores: WixStoresV1Service,
-    offset: number = 0
+    offset: number = 0,
 ): Promise<{ products: ProductCardViewState[]; total: number }> {
     // Query products with collection filter
-    const result = await wixStores.products.queryProducts()
+    const result = await wixStores.products
+        .queryProducts()
         .hasSome('collectionIds', [collectionId])
         .skip(offset)
         .limit(PAGE_SIZE)
         .find();
 
-    const products = (result.items || []).map(product => 
-        mapProductToCard(product, '/products')
-    );
+    const products = (result.items || []).map((product) => mapProductToCard(product, '/products'));
 
-    return { 
-        products, 
-        total: result.totalCount || products.length 
+    return {
+        products,
+        total: result.totalCount || products.length,
     };
 }
 
 /**
  * Map collection media to view state format
  */
-function mapCollectionMedia(collection: { media?: { mainMedia?: { image?: { url?: string } } }; name?: string }): CategoryPageSlowViewState['media'] {
+function mapCollectionMedia(collection: {
+    media?: { mainMedia?: { image?: { url?: string } } };
+    name?: string;
+}): CategoryPageSlowViewState['media'] {
     const mainMedia = collection.media?.mainMedia;
-    
+
     return {
-        mainMedia: mainMedia?.image?.url ? {
-            _id: '',
-            url: mainMedia.image.url,
-            altText: collection.name || '',
-            mediaType: MediaType.IMAGE
-        } : undefined,
-        items: []
+        mainMedia: mainMedia?.image?.url
+            ? {
+                  _id: '',
+                  url: mainMedia.image.url,
+                  altText: collection.name || '',
+                  mediaType: MediaType.IMAGE,
+              }
+            : undefined,
+        items: [],
     };
 }
 
@@ -129,40 +134,41 @@ function mapCollectionMedia(collection: { media?: { mainMedia?: { image?: { url?
 
 async function renderSlowlyChanging(
     props: PageProps & CollectionPageParams,
-    wixStores: WixStoresV1Service
+    wixStores: WixStoresV1Service,
 ): Promise<SlowlyRenderResult<CategoryPageSlowViewState, CollectionSlowCarryForward>> {
     const Pipeline = RenderPipeline.for<CategoryPageSlowViewState, CollectionSlowCarryForward>();
 
-    return Pipeline
-        .try(async () => {
-            // Query all collections and filter by slug
-            // V1 collections API doesn't support .eq('slug', ...) directly
-            const result = await wixStores.collections.queryCollections().find();
-            
-            const collection = (result.items || []).find(col => col.slug === props.slug);
+    return Pipeline.try(async () => {
+        // Query all collections and filter by slug
+        // V1 collections API doesn't support .eq('slug', ...) directly
+        const result = await wixStores.collections.queryCollections().find();
 
-            if (!collection) {
-                throw new Error('Collection not found');
-            }
-            
-            // Load initial products
-            const productData = await loadCollectionProducts(collection._id!, wixStores, 0);
+        const collection = (result.items || []).find((col) => col.slug === props.slug);
 
-            return { collection, productData };
-        })
-        .recover(error => {
+        if (!collection) {
+            throw new Error('Collection not found');
+        }
+
+        // Load initial products
+        const productData = await loadCollectionProducts(collection._id!, wixStores, 0);
+
+        return { collection, productData };
+    })
+        .recover((error) => {
             console.error('[CollectionPage V1] Failed to load collection:', error);
             return Pipeline.clientError(404, 'Collection not found');
         })
         .toPhaseOutput((data) => {
             const { collection, productData } = data;
-            
+
             // V1 doesn't have hierarchical collections, so breadcrumb is just current
-            const breadcrumbs: BreadcrumbItem[] = [{
-                categoryId: collection._id || '',
-                categoryName: collection.name || '',
-                categorySlug: collection.slug || ''
-            }];
+            const breadcrumbs: BreadcrumbItem[] = [
+                {
+                    categoryId: collection._id || '',
+                    categoryName: collection.name || '',
+                    categorySlug: collection.slug || '',
+                },
+            ];
 
             const media = mapCollectionMedia(collection);
 
@@ -177,15 +183,15 @@ async function renderSlowlyChanging(
                     hasImage: !!media.mainMedia?.url,
                     media,
                     breadcrumbs,
-                    products: productData.products
+                    products: productData.products,
                 },
                 carryForward: {
                     collectionId: collection._id || '',
                     collectionSlug: collection.slug || '',
                     totalProducts: productData.total,
                     products: productData.products,
-                    currentOffset: productData.products.length
-                }
+                    currentOffset: productData.products.length,
+                },
             };
         });
 }
@@ -193,44 +199,44 @@ async function renderSlowlyChanging(
 async function renderFastChanging(
     props: PageProps & CollectionPageParams,
     slowCarryForward: CollectionSlowCarryForward,
-    _wixStores: WixStoresV1Service
+    _wixStores: WixStoresV1Service,
 ) {
     const Pipeline = RenderPipeline.for<CategoryPageFastViewState, CollectionFastCarryForward>();
 
     const hasMore = slowCarryForward.currentOffset < slowCarryForward.totalProducts;
 
-    return Pipeline
-        .ok(slowCarryForward)
-        .toPhaseOutput((data) => {
-            return {
-                viewState: {
-                    // Products array with fast+interactive properties for SSR items
-                    products: data.products.map(p => ({
-                        _id: p._id,
-                        price: p.price,
-                        strikethroughPrice: p.strikethroughPrice,
-                        isAddingToCart: false,
-                        quickOption: p.quickOption ? {
-                            choices: p.quickOption.choices.map(c => ({
-                                choiceId: c.choiceId,
-                                inStock: c.inStock,
-                                isSelected: c.isSelected
-                            }))
-                        } : { choices: [] }
-                    })),
-                    loadedProducts: [],
-                    hasMore,
-                    loadedCount: data.products.length,
-                    isLoading: false,
-                    hasProducts: data.products.length > 0
-                },
-                carryForward: {
-                    collectionId: data.collectionId,
-                    totalProducts: data.totalProducts,
-                    currentOffset: data.currentOffset
-                }
-            };
-        });
+    return Pipeline.ok(slowCarryForward).toPhaseOutput((data) => {
+        return {
+            viewState: {
+                // Products array with fast+interactive properties for SSR items
+                products: data.products.map((p) => ({
+                    _id: p._id,
+                    price: p.price,
+                    strikethroughPrice: p.strikethroughPrice,
+                    isAddingToCart: false,
+                    quickOption: p.quickOption
+                        ? {
+                              choices: p.quickOption.choices.map((c) => ({
+                                  choiceId: c.choiceId,
+                                  inStock: c.inStock,
+                                  isSelected: c.isSelected,
+                              })),
+                          }
+                        : { choices: [] },
+                })),
+                loadedProducts: [],
+                hasMore,
+                loadedCount: data.products.length,
+                isLoading: false,
+                hasProducts: data.products.length > 0,
+            },
+            carryForward: {
+                collectionId: data.collectionId,
+                totalProducts: data.totalProducts,
+                currentOffset: data.currentOffset,
+            },
+        };
+    });
 }
 
 // ============================================================================
@@ -242,7 +248,7 @@ function CollectionPageInteractive(
     refs: CategoryPageRefs,
     viewStateSignals: Signals<CategoryPageFastViewState>,
     fastCarryForward: CollectionFastCarryForward,
-    storesContext: WixStoresV1Context
+    storesContext: WixStoresV1Context,
 ) {
     const {
         products: [products],
@@ -250,11 +256,11 @@ function CollectionPageInteractive(
         hasMore: [hasMore, setHasMore],
         loadedCount: [loadedCount, setLoadedCount],
         isLoading: [isLoading, setIsLoading],
-        hasProducts: [hasProducts, setHasProducts]
+        hasProducts: [hasProducts, setHasProducts],
     } = viewStateSignals;
 
     const { collectionId, totalProducts } = fastCarryForward;
-    
+
     // Track offset for page-based pagination
     let currentOffset = fastCarryForward.currentOffset;
 
@@ -268,12 +274,12 @@ function CollectionPageInteractive(
             const response = await storesContext.loadMoreCollectionProducts(
                 collectionId,
                 currentOffset,
-                PAGE_SIZE
+                PAGE_SIZE,
             );
 
             const currentLoaded = loadedProducts();
             setLoadedProducts([...currentLoaded, ...response.products]);
-            
+
             currentOffset += response.products.length;
             setLoadedCount(loadedCount() + response.products.length);
             setHasMore(currentOffset < totalProducts);
@@ -319,10 +325,10 @@ function CollectionPageInteractive(
     // Product card - Quick option choice - for loaded products
     refs.loadedProducts?.quickOption?.choices?.choiceButton?.onclick(async ({ coordinate }) => {
         const [productId, choiceId] = coordinate;
-        const product = loadedProducts().find(p => p._id === productId);
+        const product = loadedProducts().find((p) => p._id === productId);
         if (!product) return;
 
-        const choice = product.quickOption?.choices?.find(c => c.choiceId === choiceId);
+        const choice = product.quickOption?.choices?.find((c) => c.choiceId === choiceId);
         if (!choice || !choice.inStock) {
             console.warn('[CollectionPage V1] Choice not available or out of stock');
             return;
@@ -338,7 +344,7 @@ function CollectionPageInteractive(
     // View options button - for loaded products
     refs.loadedProducts?.viewOptionsButton?.onclick(({ coordinate }) => {
         const [productId] = coordinate;
-        const product = loadedProducts().find(p => p._id === productId);
+        const product = loadedProducts().find((p) => p._id === productId);
         if (product?.productUrl) {
             window.location.href = product.productUrl;
         }
@@ -351,8 +357,8 @@ function CollectionPageInteractive(
             hasMore: hasMore(),
             loadedCount: loadedCount(),
             isLoading: isLoading(),
-            hasProducts: hasProducts()
-        })
+            hasProducts: hasProducts(),
+        }),
     };
 }
 

@@ -13,7 +13,7 @@ import type {
     PluginSetupContext,
     PluginSetupResult,
     PluginReferencesContext,
-    PluginReferencesResult
+    PluginReferencesResult,
 } from '@jay-framework/stack-server-runtime';
 import { getService } from '@jay-framework/stack-server-runtime';
 import { WIX_STORES_SERVICE_MARKER, type WixStoresService } from './services/wix-stores-service';
@@ -70,9 +70,10 @@ export async function setupWixStores(ctx: PluginSetupContext): Promise<PluginSet
 
     const service = getService(WIX_STORES_SERVICE_MARKER);
     const prefixCount = service.categoryPrefixes.length;
-    const message = prefixCount > 0
-        ? `Wix Stores configured with ${prefixCount} category prefix(es): ${service.categoryPrefixes.map(p => p.prefix).join(', ')}`
-        : 'Wix Stores service verified';
+    const message =
+        prefixCount > 0
+            ? `Wix Stores configured with ${prefixCount} category prefix(es): ${service.categoryPrefixes.map((p) => p.prefix).join(', ')}`
+            : 'Wix Stores service verified';
 
     return {
         status: 'configured',
@@ -117,9 +118,10 @@ export async function generateWixStoresReferences(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const allCategories: any[] = [];
 
-    let result = await storesService.categories.queryCategories({
-        treeReference: { appNamespace: '@wix/stores' }
-    })
+    let result = await storesService.categories
+        .queryCategories({
+            treeReference: { appNamespace: '@wix/stores' },
+        })
         .eq('visible', true)
         .limit(100)
         .find();
@@ -158,7 +160,7 @@ export async function generateWixStoresReferences(
 
     // Build prefix info
     const prefixConfig = storesService.categoryPrefixes;
-    const configuredPrefixes = prefixConfig.map(p => ({
+    const configuredPrefixes = prefixConfig.map((p) => ({
         categoryId: p.categoryId,
         prefix: p.prefix,
         name: p.name,
@@ -172,7 +174,8 @@ export async function generateWixStoresReferences(
         yaml.dump(
             {
                 _generated: new Date().toISOString(),
-                _description: 'Wix Stores category tree for agent discovery. Shows category hierarchy, IDs, product counts, and configured URL prefixes.',
+                _description:
+                    'Wix Stores category tree for agent discovery. Shows category hierarchy, IDs, product counts, and configured URL prefixes.',
                 totalCategories: allCategories.length,
                 configuredPrefixes: configuredPrefixes.length > 0 ? configuredPrefixes : undefined,
                 categoryTree: roots,

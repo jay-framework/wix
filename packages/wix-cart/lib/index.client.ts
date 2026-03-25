@@ -1,16 +1,16 @@
 /**
  * Wix Cart Package - Client Entry Point
- * 
+ *
  * Client-side exports for cart functionality.
  */
 
 // Export context for client-side usage
 export { WIX_CART_CONTEXT } from './contexts/wix-cart-context';
-export type { 
-    WixCartContext, 
+export type {
+    WixCartContext,
     ReactiveCartIndicator,
     CartOperationResult,
-    AddToCartOptions
+    AddToCartOptions,
 } from './contexts/wix-cart-context';
 
 // Export cart helpers for client-side usage

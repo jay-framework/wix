@@ -1,6 +1,6 @@
 /**
  * Collection List Component (V1)
- * 
+ *
  * A headless component that displays a grid of store collections.
  * V1 uses collections instead of categories (V3).
  * Collections are loaded during slow rendering as they rarely change.
@@ -9,13 +9,16 @@
 import {
     makeJayStackComponent,
     PageProps,
-    RenderPipeline
+    RenderPipeline,
 } from '@jay-framework/fullstack-component';
 import {
     CategoryListContract,
-    CategoryListSlowViewState
+    CategoryListSlowViewState,
 } from '../contracts/category-list.jay-contract';
-import { WIX_STORES_V1_SERVICE_MARKER, WixStoresV1Service } from '../services/wix-stores-v1-service';
+import {
+    WIX_STORES_V1_SERVICE_MARKER,
+    WixStoresV1Service,
+} from '../services/wix-stores-v1-service';
 
 /**
  * Collection item for the list view
@@ -36,23 +39,19 @@ interface CollectionItem {
  * Loads all collections with their metadata.
  * Collections are relatively static so this is done in slow phase.
  */
-async function renderSlowlyChanging(
-    props: PageProps,
-    wixStores: WixStoresV1Service
-) {
+async function renderSlowlyChanging(props: PageProps, wixStores: WixStoresV1Service) {
     const Pipeline = RenderPipeline.for<CategoryListSlowViewState, Record<string, never>>();
 
-    return Pipeline
-        .try(async () => {
-            // Query all collections (V1 API)
-            const result = await wixStores.collections.queryCollections().find();
-            return result.items || [];
-        })
-        .recover(error => {
+    return Pipeline.try(async () => {
+        // Query all collections (V1 API)
+        const result = await wixStores.collections.queryCollections().find();
+        return result.items || [];
+    })
+        .recover((error) => {
             console.error('[CollectionList V1] Failed to load collections:', error);
             return Pipeline.ok([]);
         })
-        .toPhaseOutput(collections => {
+        .toPhaseOutput((collections) => {
             const collectionItems: CollectionItem[] = collections.map((col) => {
                 const imageUrl = col.media?.mainMedia?.image?.url || '';
                 return {
@@ -62,26 +61,26 @@ async function renderSlowlyChanging(
                     description: col.description || '',
                     productCount: col.numberOfProducts || 0,
                     imageUrl,
-                    hasImage: !!imageUrl
+                    hasImage: !!imageUrl,
                 };
             });
             return {
                 viewState: {
                     // Reuse 'categories' field from contract for compatibility
                     categories: collectionItems,
-                    hasCategories: collectionItems.length > 0
+                    hasCategories: collectionItems.length > 0,
                 },
-                carryForward: {}
+                carryForward: {},
             };
         });
 }
 
 /**
  * Collection List Component (V1)
- * 
+ *
  * A headless component that displays a grid of store collections.
  * Uses the same contract as category-list for template compatibility.
- * 
+ *
  * Usage:
  * ```html
  * <script type="application/jay-headless"
@@ -89,7 +88,7 @@ async function renderSlowlyChanging(
  *         contract="category-list"
  *         key="collectionList"
  * ></script>
- * 
+ *
  * <div class="collections-grid">
  *   <article forEach="collectionList.categories" trackBy="_id">
  *     <a href="/collections/{slug}" ref="collectionList.categories.categoryLink">

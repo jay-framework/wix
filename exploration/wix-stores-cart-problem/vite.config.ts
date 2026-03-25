@@ -15,6 +15,6 @@ export default defineConfig({
     },
     server: {
         port: 3000,
-        open: '/debug.html',  // Open debug page by default
+        open: '/debug.html', // Open debug page by default
     },
 });

@@ -1,6 +1,6 @@
 /**
  * Wix Data Package - Client Entry Point
- * 
+ *
  * This is the entry point for client-side imports.
  * Contains only client-safe code (no server secrets).
  */

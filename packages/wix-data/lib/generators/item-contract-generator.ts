@@ -1,6 +1,6 @@
 /**
  * Item Contract Generator
- * 
+ *
  * Generates contracts for item pages from Wix Data collection schemas.
  */
 
@@ -14,7 +14,7 @@ import {
     categorySubContract,
     breadcrumbsSubContract,
     toPascalCase,
-    isContentField
+    isContentField,
 } from './contract-utils';
 
 /**
@@ -23,23 +23,23 @@ import {
 function buildContract(schema: ProcessedSchema): string {
     const tags: string[] = [
         dataTag('_id', 'string', 'Item ID'),
-        interactiveTag('itemLink', 'HTMLAnchorElement', 'Link to item')
+        interactiveTag('itemLink', 'HTMLAnchorElement', 'Link to item'),
     ];
-    
+
     // Add all non-system fields
-    schema.fields.filter(isContentField).forEach(f => {
+    schema.fields.filter(isContentField).forEach((f) => {
         const tag = fieldToTag(f);
         if (tag) tags.push(tag);
     });
-    
+
     // Add category if configured
     if (schema.hasCategory) {
         tags.push(categorySubContract());
     }
-    
+
     // Add breadcrumbs
     tags.push(breadcrumbsSubContract());
-    
+
     return `name: ${toPascalCase(schema.collectionId)}Item
 description: Item page for ${schema.displayName || schema.collectionId}
 tags:
@@ -54,13 +54,13 @@ export const generator = makeContractGenerator()
     .withServices(WIX_DATA_SERVICE_MARKER)
     .generateWith(async (wixDataService) => {
         const schemas = await wixDataService.getProcessedSchemas(
-            c => c.visible === true && !!c.components.itemPage
+            (c) => c.visible === true && !!c.components.itemPage,
         );
-        
-        return schemas.map(schema => {
+
+        return schemas.map((schema) => {
             const name = toPascalCase(schema.collectionId) + 'Item';
             console.log(`[wix-data] Generated item contract: ${name}`);
-            
+
             return {
                 name,
                 yaml: buildContract(schema),

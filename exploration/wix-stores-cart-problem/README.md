@@ -33,10 +33,11 @@ cp -r ../../node_modules/@wix/ecom node_modules/@wix/
 Edit `src/wix-client.ts` and replace the placeholder with your OAuth Client ID:
 
 ```typescript
-const OAUTH_CLIENT_ID = "your-actual-client-id";
+const OAUTH_CLIENT_ID = 'your-actual-client-id';
 ```
 
 Get your OAuth Client ID from:
+
 1. Go to [Wix Dashboard](https://manage.wix.com/)
 2. Navigate to Settings → Headless Settings
 3. Create or select a project
@@ -77,23 +78,23 @@ static-wix-page/
 ### Products (productsV3)
 
 ```typescript
-import { productsV3 } from "@wix/stores";
+import { productsV3 } from '@wix/stores';
 
 const client = getWixClient();
 const productsClient = client.use(productsV3);
 
 const response = await productsClient
-    .queryProducts({
-        fields: ['CURRENCY', 'MEDIA_ITEMS_INFO', 'THUMBNAIL']
-    })
-    .limit(12)
-    .find();
+  .queryProducts({
+    fields: ['CURRENCY', 'MEDIA_ITEMS_INFO', 'THUMBNAIL'],
+  })
+  .limit(12)
+  .find();
 ```
 
 ### Current Cart
 
 ```typescript
-import { currentCart } from "@wix/ecom";
+import { currentCart } from '@wix/ecom';
 
 const client = getWixClient();
 const cartClient = client.use(currentCart);
@@ -106,6 +107,7 @@ const cart = await cartClient.getCurrentCart();
 ### OAuth vs API Key
 
 This demo uses **OAuth visitor authentication** which:
+
 - Works in the browser (client-side)
 - Creates anonymous visitor sessions
 - Suitable for cart operations without login
@@ -129,6 +131,7 @@ Edit `src/wix-client.ts` and set your actual OAuth Client ID from Wix Dashboard.
 ### CORS Errors
 
 Wix APIs should work from any origin when using OAuth. If you see CORS errors:
+
 1. Make sure you're using a proper HTTP server (not `file://`)
 2. Check that your OAuth client is configured correctly in Wix
 

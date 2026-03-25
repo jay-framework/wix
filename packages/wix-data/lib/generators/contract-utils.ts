@@ -1,6 +1,6 @@
 /**
  * Contract Generation Utilities
- * 
+ *
  * Shared building blocks for contract YAML generation.
  */
 
@@ -16,19 +16,36 @@ export function dataTag(key: string, type: string, description?: string, indent 
     return `${prefix}- {tag: ${key}, type: data, dataType: ${type}${desc}}`;
 }
 
-export function dataTagWithPhase(key: string, type: string, phase: string, description?: string, indent = 2): string {
+export function dataTagWithPhase(
+    key: string,
+    type: string,
+    phase: string,
+    description?: string,
+    indent = 2,
+): string {
     const prefix = ' '.repeat(indent);
     const desc = description ? `, description: ${description}` : '';
     return `${prefix}- {tag: ${key}, type: data, dataType: ${type}, phase: ${phase}${desc}}`;
 }
 
-export function interactiveTag(key: string, elementType: string, description?: string, indent = 2): string {
+export function interactiveTag(
+    key: string,
+    elementType: string,
+    description?: string,
+    indent = 2,
+): string {
     const prefix = ' '.repeat(indent);
     const desc = description ? `, description: ${description}` : '';
     return `${prefix}- {tag: ${key}, type: interactive, elementType: ${elementType}${desc}}`;
 }
 
-export function variantTag(key: string, type: string, phase: string, description?: string, indent = 2): string {
+export function variantTag(
+    key: string,
+    type: string,
+    phase: string,
+    description?: string,
+    indent = 2,
+): string {
     const prefix = ' '.repeat(indent);
     const desc = description ? `, description: ${description}` : '';
     return `${prefix}- {tag: ${key}, type: variant, dataType: ${type}, phase: ${phase}${desc}}`;
@@ -83,9 +100,9 @@ export function embeddedReferenceSubContract(field: ProcessedField, indent = 2):
     const prefix = ' '.repeat(indent);
     const isMulti = field.category === 'multiReference';
     const repeated = isMulti ? `\n${prefix}  repeated: true\n${prefix}  trackBy: _id` : '';
-    
+
     let innerTags: string[];
-    
+
     if (field.embeddedSchema) {
         // Generate full sub-contract from the embedded schema
         innerTags = schemaToTags(field.embeddedSchema, indent + 2);
@@ -95,10 +112,10 @@ export function embeddedReferenceSubContract(field: ProcessedField, indent = 2):
         innerTags = [
             `${innerPrefix}- {tag: _id, type: data, dataType: string}`,
             `${innerPrefix}- {tag: title, type: data, dataType: string}`,
-            `${innerPrefix}- {tag: slug, type: data, dataType: string}`
+            `${innerPrefix}- {tag: slug, type: data, dataType: string}`,
         ];
     }
-    
+
     return `${prefix}- tag: ${field.key}
 ${prefix}  type: sub-contract${repeated}
 ${prefix}  description: ${field.displayName || field.key}
@@ -155,9 +172,14 @@ export function fieldToTag(field: ProcessedField, indent = 2): string {
             return addressSubContract(field.key, field.displayName, indent);
         case 'reference':
         case 'multiReference':
-            return field.embedded 
+            return field.embedded
                 ? embeddedReferenceSubContract(field, indent)
-                : dataTag(field.key, 'string', `Reference ID${field.category === 'multiReference' ? 's' : ''}`, indent);
+                : dataTag(
+                      field.key,
+                      'string',
+                      `Reference ID${field.category === 'multiReference' ? 's' : ''}`,
+                      indent,
+                  );
         case 'richContent':
             return dataTag(field.key, 'string', field.displayName, indent);
         default:
@@ -171,18 +193,18 @@ export function fieldToTag(field: ProcessedField, indent = 2): string {
  */
 export function schemaToTags(schema: ProcessedSchema, indent = 2): string[] {
     const tags: string[] = [];
-    
+
     // Always include _id for embedded items
     tags.push(dataTag('_id', 'string', 'Item ID', indent));
-    
+
     // Add all non-system fields
     schema.fields
-        .filter(f => f.category !== 'system')
-        .forEach(f => {
+        .filter((f) => f.category !== 'system')
+        .forEach((f) => {
             const tag = fieldToTag(f, indent);
             if (tag) tags.push(tag);
         });
-    
+
     return tags;
 }
 
@@ -192,10 +214,12 @@ export function schemaToTags(schema: ProcessedSchema, indent = 2): string[] {
 
 /** Filter for fields suitable for card/list display (excludes system, references, rich content) */
 export function isCardField(f: ProcessedField): boolean {
-    return f.category !== 'system' 
-        && f.category !== 'reference' 
-        && f.category !== 'multiReference' 
-        && f.category !== 'richContent';
+    return (
+        f.category !== 'system' &&
+        f.category !== 'reference' &&
+        f.category !== 'multiReference' &&
+        f.category !== 'richContent'
+    );
 }
 
 /** Filter for simple fields suitable for table display */
@@ -215,6 +239,6 @@ export function isContentField(f: ProcessedField): boolean {
 export function toPascalCase(str: string): string {
     return str
         .split(/[-_\s]+/)
-        .map(s => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase())
+        .map((s) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase())
         .join('');
 }

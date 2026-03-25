@@ -16,19 +16,19 @@
   --bg-card: #1a1a24;
   --bg-hover: #22222e;
   --bg-elevated: #25252f;
-  
+
   /* Text colors */
   --text-primary: #f5f5f7;
   --text-secondary: #a1a1aa;
   --text-muted: #71717a;
-  
+
   /* Accent colors */
   --accent: #8b5cf6;
   --accent-hover: #a78bfa;
   --accent-muted: #6d28d9;
   --accent-glow: rgba(139, 92, 246, 0.15);
   --accent-glow-strong: rgba(139, 92, 246, 0.4);
-  
+
   /* Semantic colors */
   --success: #22c55e;
   --success-bg: rgba(34, 197, 94, 0.15);
@@ -36,11 +36,11 @@
   --warning-bg: rgba(245, 158, 11, 0.15);
   --error: #ef4444;
   --error-bg: rgba(239, 68, 68, 0.15);
-  
+
   /* Borders */
   --border: #27272a;
   --border-hover: #3f3f46;
-  
+
   /* Border radius */
   --radius-xs: 4px;
   --radius-sm: 8px;
@@ -48,19 +48,19 @@
   --radius-lg: 16px;
   --radius-xl: 24px;
   --radius-full: 9999px;
-  
+
   /* Shadows */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.2);
   --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.3);
   --shadow-accent: 0 8px 24px rgba(139, 92, 246, 0.3);
   --shadow-accent-lg: 0 12px 32px rgba(139, 92, 246, 0.4);
-  
+
   /* Transitions */
   --transition-fast: 0.15s ease;
   --transition-base: 0.2s ease;
   --transition-slow: 0.3s ease;
-  
+
   /* Layout */
   --container-max: 1600px;
   --container-narrow: 800px;
@@ -79,7 +79,11 @@
 }
 
 body {
-  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+  font-family:
+    'Outfit',
+    system-ui,
+    -apple-system,
+    sans-serif;
   background: var(--bg-primary);
   color: var(--text-primary);
   min-height: 100vh;
@@ -108,7 +112,9 @@ button {
   cursor: pointer;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   font-family: inherit;
 }
 
@@ -393,8 +399,13 @@ input, select, textarea {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 /* ============================================================================
@@ -1143,7 +1154,9 @@ input, select, textarea {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ============================================================================
@@ -1154,24 +1167,24 @@ input, select, textarea {
   :root {
     --page-padding: 24px;
   }
-  
+
   .product-page-layout {
     grid-template-columns: 1fr;
     gap: 40px;
   }
-  
+
   .product-gallery {
     position: static;
   }
-  
+
   .product-name {
     font-size: 32px;
   }
-  
+
   .product-price .price {
     font-size: 28px;
   }
-  
+
   .page-title {
     font-size: 36px;
   }
@@ -1181,7 +1194,7 @@ input, select, textarea {
   .main-content-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .filters-sidebar {
     position: static;
   }
@@ -1191,24 +1204,24 @@ input, select, textarea {
   :root {
     --page-padding: 16px;
   }
-  
+
   .page-title {
     font-size: 28px;
   }
-  
+
   .search-box {
     flex-direction: column;
   }
-  
+
   .products-grid {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 16px;
   }
-  
+
   .product-actions {
     flex-direction: column;
   }
-  
+
   .product-thumbnails {
     justify-content: flex-start;
   }
@@ -1308,8 +1321,14 @@ input, select, textarea {
 }
 
 @keyframes cart-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); border-color: var(--accent); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+    border-color: var(--accent);
+  }
 }
 
 .cart-indicator.is-loading .cart-indicator-count,
@@ -1322,4 +1341,3 @@ input, select, textarea {
   border-color: var(--accent);
   background: var(--accent-glow);
 }
-

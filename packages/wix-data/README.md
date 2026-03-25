@@ -24,9 +24,11 @@ const itemsClient = getItemsClient();
 const collectionsClient = getCollectionsClient();
 
 // Query data items
-const results = await itemsClient.queryDataItems({
-  dataCollectionId: 'myCollection'
-}).find();
+const results = await itemsClient
+  .queryDataItems({
+    dataCollectionId: 'myCollection',
+  })
+  .find();
 
 // Get collections
 const allCollections = await collectionsClient.listDataCollections();
@@ -55,17 +57,15 @@ import { getItemsClient } from '@jay-framework/wix-data';
 const itemsClient = getItemsClient();
 
 // Query items
-const items = await itemsClient.queryDataItems({
-  dataCollectionId: 'products'
-})
-.eq('status', 'active')
-.find();
+const items = await itemsClient
+  .queryDataItems({
+    dataCollectionId: 'products',
+  })
+  .eq('status', 'active')
+  .find();
 
 // Get a single item
-const item = await itemsClient.getDataItem(
-  'item-id',
-  { dataCollectionId: 'products' }
-);
+const item = await itemsClient.getDataItem('item-id', { dataCollectionId: 'products' });
 
 // Insert an item
 const newItem = await itemsClient.insertDataItem({
@@ -73,29 +73,23 @@ const newItem = await itemsClient.insertDataItem({
   dataItem: {
     data: {
       name: 'New Product',
-      price: 29.99
-    }
-  }
+      price: 29.99,
+    },
+  },
 });
 
 // Update an item
-const updatedItem = await itemsClient.updateDataItem(
-  'item-id',
-  {
-    dataCollectionId: 'products',
-    dataItem: {
-      data: {
-        price: 24.99
-      }
-    }
-  }
-);
+const updatedItem = await itemsClient.updateDataItem('item-id', {
+  dataCollectionId: 'products',
+  dataItem: {
+    data: {
+      price: 24.99,
+    },
+  },
+});
 
 // Remove an item
-await itemsClient.removeDataItem(
-  'item-id',
-  { dataCollectionId: 'products' }
-);
+await itemsClient.removeDataItem('item-id', { dataCollectionId: 'products' });
 ```
 
 ### Working with Collections
@@ -139,8 +133,8 @@ The Collections API allows you to manage a site's data collections.
 This package re-exports all types and functions from `@wix/data`, so you can import them directly:
 
 ```typescript
-import { 
-  items, 
+import {
+  items,
   collections,
   type DataItem,
   type DataCollection,
@@ -155,4 +149,3 @@ This package uses the configuration from `@jay-framework/wix-server-client`. Mak
 ## License
 
 Apache-2.0
-

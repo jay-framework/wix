@@ -1,8 +1,8 @@
 /**
  * Product Search Component (V1)
- * 
+ *
  * A complete headless product search component using Wix Catalog V1 API.
- * 
+ *
  * Key V1 differences:
  * - Uses collections instead of categories
  * - Uses skip-based pagination instead of cursor-based
@@ -13,7 +13,7 @@ import {
     makeJayStackComponent,
     PageProps,
     RenderPipeline,
-    Signals
+    Signals,
 } from '@jay-framework/fullstack-component';
 import { createSignal, createEffect, Props } from '@jay-framework/component';
 import {
@@ -22,9 +22,12 @@ import {
     ProductSearchFastViewState,
     ProductSearchInteractiveViewState,
     ProductSearchRefs,
-    ProductSearchSlowViewState
+    ProductSearchSlowViewState,
 } from '../contracts/product-search.jay-contract';
-import { WIX_STORES_V1_SERVICE_MARKER, WixStoresV1Service } from '../services/wix-stores-v1-service.js';
+import {
+    WIX_STORES_V1_SERVICE_MARKER,
+    WixStoresV1Service,
+} from '../services/wix-stores-v1-service.js';
 import { patch, REPLACE } from '@jay-framework/json-patch';
 import { searchProducts, ProductSortField } from '../actions/stores-v1-actions';
 import { WIX_STORES_V1_CONTEXT, WixStoresV1Context } from '../contexts/wix-stores-v1-context';
@@ -57,28 +60,24 @@ const PAGE_SIZE = 12;
  * Loads semi-static configuration:
  * - Available collections for filtering (V1 uses collections, not categories)
  */
-async function renderSlowlyChanging(
-    props: PageProps,
-    wixStores: WixStoresV1Service
-) {
+async function renderSlowlyChanging(props: PageProps, wixStores: WixStoresV1Service) {
     const Pipeline = RenderPipeline.for<ProductSearchSlowViewState, SearchSlowCarryForward>();
 
-    return Pipeline
-        .try(async () => {
-            // Load collections for filtering (V1 API)
-            const collectionsResult = await wixStores.collections.queryCollections().find();
-            return collectionsResult.items || [];
-        })
-        .recover(error => {
+    return Pipeline.try(async () => {
+        // Load collections for filtering (V1 API)
+        const collectionsResult = await wixStores.collections.queryCollections().find();
+        return collectionsResult.items || [];
+    })
+        .recover((error) => {
             console.error('[ProductSearch V1] Failed to load collections:', error);
             return Pipeline.ok([]);
         })
-        .toPhaseOutput(collections => {
+        .toPhaseOutput((collections) => {
             // Map collections to category filter structure (reuse same contract)
             const collectionInfos: CollectionInfos = collections.map((col) => ({
                 categoryId: col._id || '',
                 categoryName: col.name || '',
-                categorySlug: col.slug || ''
+                categorySlug: col.slug || '',
             }));
 
             return {
@@ -88,15 +87,15 @@ async function renderSlowlyChanging(
                     emptyStateMessage: 'Enter a search term to find products',
                     filters: {
                         categoryFilter: {
-                            categories: collectionInfos
-                        }
-                    }
+                            categories: collectionInfos,
+                        },
+                    },
                 },
                 carryForward: {
                     searchFields: 'name,description,sku',
                     fuzzySearch: false,
-                    collections: collectionInfos
-                }
+                    collections: collectionInfos,
+                },
             };
         });
 }
@@ -108,20 +107,19 @@ async function renderSlowlyChanging(
 async function renderFastChanging(
     props: PageProps,
     slowCarryForward: SearchSlowCarryForward,
-    _wixStores: WixStoresV1Service
+    _wixStores: WixStoresV1Service,
 ) {
     const Pipeline = RenderPipeline.for<ProductSearchFastViewState, SearchFastCarryForward>();
 
-    return Pipeline
-        .try(async () => {
-            const result = await searchProducts({
-                query: '',
-                pageSize: PAGE_SIZE,
-                page: 1
-            });
-            return result;
-        })
-        .recover(error => {
+    return Pipeline.try(async () => {
+        const result = await searchProducts({
+            query: '',
+            pageSize: PAGE_SIZE,
+            page: 1,
+        });
+        return result;
+    })
+        .recover((error) => {
             console.error('[ProductSearch V1] Failed to load products:', error);
             return Pipeline.ok({
                 products: [],
@@ -132,8 +130,17 @@ async function renderFastChanging(
                 priceAggregation: {
                     minBound: 0,
                     maxBound: 10000,
-                    ranges: [{ rangeId: 'all', label: 'Show all', minValue: null, maxValue: null, productCount: 0, isSelected: true }]
-                }
+                    ranges: [
+                        {
+                            rangeId: 'all',
+                            label: 'Show all',
+                            minValue: null,
+                            maxValue: null,
+                            productCount: 0,
+                            isSelected: true,
+                        },
+                    ],
+                },
             });
         })
         .toPhaseOutput((result) => {
@@ -153,27 +160,35 @@ async function renderFastChanging(
                             maxPrice: 0,
                             minBound: result.priceAggregation?.minBound ?? 0,
                             maxBound: result.priceAggregation?.maxBound ?? 10000,
-                            ranges: result.priceAggregation?.ranges ?? [{ rangeId: 'all', label: 'Show all', minValue: null, maxValue: null, isSelected: true }]
+                            ranges: result.priceAggregation?.ranges ?? [
+                                {
+                                    rangeId: 'all',
+                                    label: 'Show all',
+                                    minValue: null,
+                                    maxValue: null,
+                                    isSelected: true,
+                                },
+                            ],
                         },
                         categoryFilter: {
-                            categories: slowCarryForward.collections.map(col => ({
+                            categories: slowCarryForward.collections.map((col) => ({
                                 categoryId: col.categoryId,
-                                isSelected: false
-                            }))
-                        }
+                                isSelected: false,
+                            })),
+                        },
                     },
                     sortBy: {
-                        currentSort: CurrentSort.relevance
+                        currentSort: CurrentSort.relevance,
                     },
                     hasMore: result.hasMore,
                     loadedCount: result.products.length,
-                    totalCount: result.totalCount
+                    totalCount: result.totalCount,
                 },
                 carryForward: {
                     searchFields: slowCarryForward.searchFields,
                     fuzzySearch: slowCarryForward.fuzzySearch,
-                    collections: slowCarryForward.collections
-                }
+                    collections: slowCarryForward.collections,
+                },
             };
         });
 }
@@ -187,9 +202,8 @@ function ProductSearchInteractive(
     refs: ProductSearchRefs,
     viewStateSignals: Signals<ProductSearchFastViewState>,
     fastCarryForward: SearchFastCarryForward,
-    storesContext: WixStoresV1Context
+    storesContext: WixStoresV1Context,
 ) {
-
     const {
         searchExpression: [searchExpression, setSearchExpression],
         isSearching: [isSearching, setIsSearching],
@@ -203,7 +217,7 @@ function ProductSearchInteractive(
         sortBy: [sortBy, setSortBy],
         hasMore: [hasMore, setHasMore],
         loadedCount: [loadedCount, setLoadedCount],
-        totalCount: [totalCount, setTotalCount]
+        totalCount: [totalCount, setTotalCount],
     } = viewStateSignals;
 
     const [submittedSearchTerm, setSubmittedSearchTerm] = createSignal<string | null>(null);
@@ -216,12 +230,18 @@ function ProductSearchInteractive(
 
     const mapSortToAction = (sort: CurrentSort): ProductSortField => {
         switch (sort) {
-            case CurrentSort.priceAsc: return 'price_asc';
-            case CurrentSort.priceDesc: return 'price_desc';
-            case CurrentSort.newest: return 'newest';
-            case CurrentSort.nameAsc: return 'name_asc';
-            case CurrentSort.nameDesc: return 'name_desc';
-            default: return 'relevance';
+            case CurrentSort.priceAsc:
+                return 'price_asc';
+            case CurrentSort.priceDesc:
+                return 'price_desc';
+            case CurrentSort.newest:
+                return 'newest';
+            case CurrentSort.nameAsc:
+                return 'name_asc';
+            case CurrentSort.nameDesc:
+                return 'name_desc';
+            default:
+                return 'relevance';
         }
     };
 
@@ -230,7 +250,7 @@ function ProductSearchInteractive(
         version: number,
         searchTerm: string | null,
         currentFilters: ProductSearchFastViewState['filters'],
-        currentSort: CurrentSort
+        currentSort: CurrentSort,
     ) => {
         setIsSearching(true);
         setHasSearched(true);
@@ -242,12 +262,12 @@ function ProductSearchInteractive(
                     minPrice: currentFilters.priceRange.minPrice || undefined,
                     maxPrice: currentFilters.priceRange.maxPrice || undefined,
                     collectionIds: currentFilters.categoryFilter.categories
-                        .filter(c => c.isSelected)
-                        .map(c => c.categoryId)
+                        .filter((c) => c.isSelected)
+                        .map((c) => c.categoryId),
                 },
                 sortBy: mapSortToAction(currentSort),
                 pageSize: PAGE_SIZE,
-                page: 1
+                page: 1,
             });
 
             if (version !== searchVersion) return;
@@ -259,7 +279,6 @@ function ProductSearchInteractive(
             setHasMore(result.hasMore);
             setHasResults(result.products.length > 0);
             setCurrentPage(1);
-
         } catch (error) {
             if (version === searchVersion) {
                 console.error('[ProductSearch V1] Search failed:', error);
@@ -289,12 +308,12 @@ function ProductSearchInteractive(
                     minPrice: currentFilters.priceRange.minPrice || undefined,
                     maxPrice: currentFilters.priceRange.maxPrice || undefined,
                     collectionIds: currentFilters.categoryFilter.categories
-                        .filter(c => c.isSelected)
-                        .map(c => c.categoryId)
+                        .filter((c) => c.isSelected)
+                        .map((c) => c.categoryId),
                 },
                 sortBy: mapSortToAction(currentSort),
                 page: nextPage,
-                pageSize: PAGE_SIZE
+                pageSize: PAGE_SIZE,
             });
 
             const currentResults = searchResults();
@@ -305,7 +324,6 @@ function ProductSearchInteractive(
             setLoadedCount(newResults.length);
             setHasMore(result.hasMore);
             setCurrentPage(nextPage);
-
         } catch (error) {
             console.error('[ProductSearch V1] Load more failed:', error);
         } finally {
@@ -361,12 +379,12 @@ function ProductSearchInteractive(
     refs.sortBy.sortDropdown.oninput(({ event }) => {
         const value = (event.target as HTMLSelectElement).value;
         const sortMap: Record<string, CurrentSort> = {
-            'relevance': CurrentSort.relevance,
-            'priceAsc': CurrentSort.priceAsc,
-            'priceDesc': CurrentSort.priceDesc,
-            'newest': CurrentSort.newest,
-            'nameAsc': CurrentSort.nameAsc,
-            'nameDesc': CurrentSort.nameDesc
+            relevance: CurrentSort.relevance,
+            priceAsc: CurrentSort.priceAsc,
+            priceDesc: CurrentSort.priceDesc,
+            newest: CurrentSort.newest,
+            nameAsc: CurrentSort.nameAsc,
+            nameDesc: CurrentSort.nameDesc,
         };
         const newSort = sortMap[value] ?? CurrentSort.relevance;
         setSortBy({ currentSort: newSort });
@@ -375,40 +393,42 @@ function ProductSearchInteractive(
     refs.filters.priceRange.minPrice.oninput(({ event }) => {
         const value = parseFloat((event.target as HTMLInputElement).value);
         const newValue = isNaN(value) ? 0 : value;
-        setFilters(patch(filters(), [
-            { op: REPLACE, path: ['priceRange', 'minPrice'], value: newValue }
-        ]));
+        setFilters(
+            patch(filters(), [{ op: REPLACE, path: ['priceRange', 'minPrice'], value: newValue }]),
+        );
     });
 
     refs.filters.priceRange.maxPrice.oninput(({ event }) => {
         const value = parseFloat((event.target as HTMLInputElement).value);
         const newValue = isNaN(value) ? 0 : value;
-        setFilters(patch(filters(), [
-            { op: REPLACE, path: ['priceRange', 'maxPrice'], value: newValue }
-        ]));
+        setFilters(
+            patch(filters(), [{ op: REPLACE, path: ['priceRange', 'maxPrice'], value: newValue }]),
+        );
     });
 
     refs.filters.priceRange.ranges.isSelected.oninput(({ event, coordinate }) => {
         const [rangeId] = coordinate;
         const currentFilters = filters();
         const ranges = currentFilters.priceRange.ranges || [];
-        const selectedRange = ranges.find(r => r.rangeId === rangeId);
+        const selectedRange = ranges.find((r) => r.rangeId === rangeId);
 
         if (!selectedRange) return;
 
-        const updatedRanges = ranges.map(r => ({
+        const updatedRanges = ranges.map((r) => ({
             ...r,
-            isSelected: r.rangeId === rangeId
+            isSelected: r.rangeId === rangeId,
         }));
 
         const newMinPrice = selectedRange.minValue ?? 0;
         const newMaxPrice = selectedRange.maxValue ?? 0;
 
-        setFilters(patch(currentFilters, [
-            { op: REPLACE, path: ['priceRange', 'ranges'], value: updatedRanges },
-            { op: REPLACE, path: ['priceRange', 'minPrice'], value: newMinPrice },
-            { op: REPLACE, path: ['priceRange', 'maxPrice'], value: newMaxPrice }
-        ]));
+        setFilters(
+            patch(currentFilters, [
+                { op: REPLACE, path: ['priceRange', 'ranges'], value: updatedRanges },
+                { op: REPLACE, path: ['priceRange', 'minPrice'], value: newMinPrice },
+                { op: REPLACE, path: ['priceRange', 'maxPrice'], value: newMaxPrice },
+            ]),
+        );
     });
 
     // Collection filter (using categoryFilter structure)
@@ -416,27 +436,33 @@ function ProductSearchInteractive(
         const [categoryId] = coordinate;
         const currentFilters = filters();
         const categoryIndex = currentFilters.categoryFilter.categories.findIndex(
-            c => c.categoryId === categoryId
+            (c) => c.categoryId === categoryId,
         );
 
         if (categoryIndex !== -1) {
             const isChecked = (event.target as HTMLInputElement).checked;
-            setFilters(patch(currentFilters, [
-                { op: REPLACE, path: ['categoryFilter', 'categories', categoryIndex, 'isSelected'], value: isChecked }
-            ]));
+            setFilters(
+                patch(currentFilters, [
+                    {
+                        op: REPLACE,
+                        path: ['categoryFilter', 'categories', categoryIndex, 'isSelected'],
+                        value: isChecked,
+                    },
+                ]),
+            );
         }
     });
 
     refs.filters.clearFilters.onclick(() => {
         const currentFilters = filters();
-        const clearedCategories = currentFilters.categoryFilter.categories.map(cat => ({
+        const clearedCategories = currentFilters.categoryFilter.categories.map((cat) => ({
             ...cat,
-            isSelected: false
+            isSelected: false,
         }));
 
         const clearedRanges = (currentFilters.priceRange.ranges || []).map((r, i) => ({
             ...r,
-            isSelected: i === 0
+            isSelected: i === 0,
         }));
 
         setFilters({
@@ -445,9 +471,9 @@ function ProductSearchInteractive(
                 maxPrice: 0,
                 minBound: currentFilters.priceRange.minBound,
                 maxBound: currentFilters.priceRange.maxBound,
-                ranges: clearedRanges
+                ranges: clearedRanges,
             },
-            categoryFilter: { categories: clearedCategories }
+            categoryFilter: { categories: clearedCategories },
         });
     });
 
@@ -457,7 +483,7 @@ function ProductSearchInteractive(
 
     refs.suggestions?.suggestionButton?.onclick(({ coordinate }) => {
         const [suggestionId] = coordinate;
-        const suggestion = suggestions().find(s => s.suggestionId === suggestionId);
+        const suggestion = suggestions().find((s) => s.suggestionId === suggestionId);
         if (suggestion) {
             setSearchExpression(suggestion.suggestionText);
             setSubmittedSearchTerm(suggestion.suggestionText);
@@ -469,21 +495,25 @@ function ProductSearchInteractive(
         const [productId] = coordinate;
 
         const currentResults = searchResults();
-        const productIndex = currentResults.findIndex(p => p._id === productId);
+        const productIndex = currentResults.findIndex((p) => p._id === productId);
         if (productIndex === -1) return;
 
-        setSearchResults(patch(currentResults, [
-            { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: true }
-        ]));
+        setSearchResults(
+            patch(currentResults, [
+                { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: true },
+            ]),
+        );
 
         try {
             await storesContext.addToCart(productId, 1);
         } catch (error) {
             console.error('[ProductSearch V1] Failed to add to cart:', error);
         } finally {
-            setSearchResults(patch(searchResults(), [
-                { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: false }
-            ]));
+            setSearchResults(
+                patch(searchResults(), [
+                    { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: false },
+                ]),
+            );
         }
     });
 
@@ -492,20 +522,22 @@ function ProductSearchInteractive(
         const [productId, choiceId] = coordinate;
 
         const currentResults = searchResults();
-        const productIndex = currentResults.findIndex(p => p._id === productId);
+        const productIndex = currentResults.findIndex((p) => p._id === productId);
         if (productIndex === -1) return;
 
         const product = currentResults[productIndex];
-        const choice = product.quickOption?.choices?.find(c => c.choiceId === choiceId);
+        const choice = product.quickOption?.choices?.find((c) => c.choiceId === choiceId);
 
         if (!choice || !choice.inStock) {
             console.warn('[ProductSearch V1] Choice not available or out of stock');
             return;
         }
 
-        setSearchResults(patch(currentResults, [
-            { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: true }
-        ]));
+        setSearchResults(
+            patch(currentResults, [
+                { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: true },
+            ]),
+        );
 
         try {
             // For V1, use variantId from choice
@@ -513,15 +545,17 @@ function ProductSearchInteractive(
         } catch (error) {
             console.error('[ProductSearch V1] Failed to add to cart:', error);
         } finally {
-            setSearchResults(patch(searchResults(), [
-                { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: false }
-            ]));
+            setSearchResults(
+                patch(searchResults(), [
+                    { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: false },
+                ]),
+            );
         }
     });
 
     refs.searchResults?.viewOptionsButton?.onclick(({ coordinate }) => {
         const [productId] = coordinate;
-        const product = searchResults().find(p => p._id === productId);
+        const product = searchResults().find((p) => p._id === productId);
         if (product?.productUrl) {
             window.location.href = product.productUrl;
         }
@@ -541,8 +575,8 @@ function ProductSearchInteractive(
             sortBy: sortBy(),
             hasMore: hasMore(),
             loadedCount: loadedCount(),
-            totalCount: totalCount()
-        })
+            totalCount: totalCount(),
+        }),
     };
 }
 

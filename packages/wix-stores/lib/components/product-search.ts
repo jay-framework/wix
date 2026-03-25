@@ -3,7 +3,7 @@ import {
     PageProps,
     RenderPipeline,
     Signals,
-    UrlParams
+    UrlParams,
 } from '@jay-framework/fullstack-component';
 import { createSignal, createEffect, Props } from '@jay-framework/component';
 import {
@@ -12,7 +12,7 @@ import {
     ProductSearchFastViewState,
     ProductSearchInteractiveViewState,
     ProductSearchRefs,
-    ProductSearchSlowViewState
+    ProductSearchSlowViewState,
 } from '../contracts/product-search.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
 import { patch, REPLACE, ADD } from '@jay-framework/json-patch';
@@ -32,7 +32,13 @@ export interface ProductSearchParams extends UrlParams {
 /**
  * Search sort options
  */
-export type SearchSortOption = 'relevance' | 'priceAsc' | 'priceDesc' | 'newest' | 'nameAsc' | 'nameDesc';
+export type SearchSortOption =
+    | 'relevance'
+    | 'priceAsc'
+    | 'priceDesc'
+    | 'newest'
+    | 'nameAsc'
+    | 'nameDesc';
 
 /**
  * Category info carried forward from slow to fast phase
@@ -72,40 +78,41 @@ const PAGE_SIZE = 12;
  */
 async function renderSlowlyChanging(
     props: PageProps & ProductSearchParams,
-    wixStores: WixStoresService
+    wixStores: WixStoresService,
 ) {
     const Pipeline = RenderPipeline.for<ProductSearchSlowViewState, SearchSlowCarryForward>();
 
     // Resolve category prefix to root category ID
     const categoryPrefix = props.category;
     const categoryConfig = categoryPrefix
-        ? wixStores.categoryPrefixes.find(c => c.prefix === categoryPrefix)
+        ? wixStores.categoryPrefixes.find((c) => c.prefix === categoryPrefix)
         : null;
     const baseCategoryId = categoryConfig?.categoryId ?? null;
 
-    return Pipeline
-        .try(async () => {
-            let query = wixStores.categories.queryCategories({
-                treeReference: { appNamespace: "@wix/stores" }
-            }).eq('visible', true);
+    return Pipeline.try(async () => {
+        let query = wixStores.categories
+            .queryCategories({
+                treeReference: { appNamespace: '@wix/stores' },
+            })
+            .eq('visible', true);
 
-            // When scoped to a category prefix, show only direct children of the root
-            if (baseCategoryId) {
-                query = query.eq('parentCategory.id', baseCategoryId);
-            }
+        // When scoped to a category prefix, show only direct children of the root
+        if (baseCategoryId) {
+            query = query.eq('parentCategory.id', baseCategoryId);
+        }
 
-            const categoriesResult = await query.find();
-            return categoriesResult.items || [];
-        })
-        .recover(error => {
+        const categoriesResult = await query.find();
+        return categoriesResult.items || [];
+    })
+        .recover((error) => {
             console.error('Failed to load categories:', error);
             return Pipeline.ok([]);
         })
-        .toPhaseOutput(categories => {
+        .toPhaseOutput((categories) => {
             const categoryInfos: CategoryInfos = categories.map((cat) => ({
                 categoryId: cat._id || '',
                 categoryName: cat.name || '',
-                categorySlug: cat.slug || ''
+                categorySlug: cat.slug || '',
             }));
 
             return {
@@ -115,16 +122,16 @@ async function renderSlowlyChanging(
                     emptyStateMessage: 'Enter a search term to find products',
                     filters: {
                         categoryFilter: {
-                            categories: categoryInfos
-                        }
-                    }
+                            categories: categoryInfos,
+                        },
+                    },
                 },
                 carryForward: {
                     searchFields: 'name,description,sku',
                     fuzzySearch: true,
                     categories: categoryInfos,
-                    baseCategoryId
-                }
+                    baseCategoryId,
+                },
             };
         });
 }
@@ -139,28 +146,25 @@ async function renderSlowlyChanging(
 async function renderFastChanging(
     props: PageProps & ProductSearchParams,
     slowCarryForward: SearchSlowCarryForward,
-    _wixStores: WixStoresService
+    _wixStores: WixStoresService,
 ) {
     const Pipeline = RenderPipeline.for<ProductSearchFastViewState, SearchFastCarryForward>();
 
-    return Pipeline
-        .try(async () => {
-            // Use searchProducts action to get products with aggregations
-            // When scoped to a category, apply the root category as base filter
-            const baseCategoryIds = slowCarryForward.baseCategoryId
-                ? [slowCarryForward.baseCategoryId]
-                : [];
-            const result = await searchProducts({
-                query: '',
-                filters: baseCategoryIds.length > 0
-                    ? { categoryIds: baseCategoryIds }
-                    : undefined,
-                pageSize: PAGE_SIZE
-            });
+    return Pipeline.try(async () => {
+        // Use searchProducts action to get products with aggregations
+        // When scoped to a category, apply the root category as base filter
+        const baseCategoryIds = slowCarryForward.baseCategoryId
+            ? [slowCarryForward.baseCategoryId]
+            : [];
+        const result = await searchProducts({
+            query: '',
+            filters: baseCategoryIds.length > 0 ? { categoryIds: baseCategoryIds } : undefined,
+            pageSize: PAGE_SIZE,
+        });
 
-            return result;
-        })
-        .recover(error => {
+        return result;
+    })
+        .recover((error) => {
             console.error('Failed to load products:', error);
             return Pipeline.ok({
                 products: [],
@@ -170,15 +174,33 @@ async function renderFastChanging(
                 priceAggregation: {
                     minBound: 0,
                     maxBound: 1000,
-                    ranges: [{ rangeId: 'all', label: 'Show all', minValue: null, maxValue: null, productCount: 0, isSelected: true }]
-                }
+                    ranges: [
+                        {
+                            rangeId: 'all',
+                            label: 'Show all',
+                            minValue: null,
+                            maxValue: null,
+                            productCount: 0,
+                            isSelected: true,
+                        },
+                    ],
+                },
             });
         })
         .toPhaseOutput((result) => {
             const priceAgg = result.priceAggregation || {
                 minBound: 0,
                 maxBound: 1000,
-                ranges: [{ rangeId: 'all', label: 'Show all', minValue: null, maxValue: null, productCount: result.totalCount, isSelected: true }]
+                ranges: [
+                    {
+                        rangeId: 'all',
+                        label: 'Show all',
+                        minValue: null,
+                        maxValue: null,
+                        productCount: result.totalCount,
+                        isSelected: true,
+                    },
+                ],
             };
 
             return {
@@ -199,28 +221,28 @@ async function renderFastChanging(
                             maxPrice: priceAgg.maxBound,
                             minBound: priceAgg.minBound,
                             maxBound: priceAgg.maxBound,
-                            ranges: priceAgg.ranges
+                            ranges: priceAgg.ranges,
                         },
                         categoryFilter: {
-                            categories: slowCarryForward.categories.map(cat => ({
+                            categories: slowCarryForward.categories.map((cat) => ({
                                 categoryId: cat.categoryId,
-                                isSelected: false
-                            }))
-                        }
+                                isSelected: false,
+                            })),
+                        },
                     },
                     sortBy: {
-                        currentSort: CurrentSort.relevance
+                        currentSort: CurrentSort.relevance,
                     },
                     hasMore: result.hasMore,
                     loadedCount: result.products.length,
-                    totalCount: result.totalCount
+                    totalCount: result.totalCount,
                 },
                 carryForward: {
                     searchFields: slowCarryForward.searchFields,
                     fuzzySearch: slowCarryForward.fuzzySearch,
                     categories: slowCarryForward.categories,
-                    baseCategoryId: slowCarryForward.baseCategoryId
-                }
+                    baseCategoryId: slowCarryForward.baseCategoryId,
+                },
             };
         });
 }
@@ -233,7 +255,7 @@ async function renderFastChanging(
  * - Sorting
  * - Load more button
  * - Search suggestions
- * 
+ *
  * All state updates use immutable patterns with the patch utility.
  */
 function ProductSearchInteractive(
@@ -241,7 +263,7 @@ function ProductSearchInteractive(
     refs: ProductSearchRefs,
     viewStateSignals: Signals<ProductSearchFastViewState>,
     fastCarryForward: SearchFastCarryForward,
-    storesContext: WixStoresContext
+    storesContext: WixStoresContext,
 ) {
     // Base category filter — always applied when scoped to a category prefix
     const baseCategoryId = fastCarryForward.baseCategoryId;
@@ -259,12 +281,12 @@ function ProductSearchInteractive(
         sortBy: [sortBy, setSortBy],
         hasMore: [hasMore, setHasMore],
         loadedCount: [loadedCount, setLoadedCount],
-        totalCount: [totalCount, setTotalCount]
+        totalCount: [totalCount, setTotalCount],
     } = viewStateSignals;
 
     // Submitted search term - only updated when search button is clicked
     const [submittedSearchTerm, setSubmittedSearchTerm] = createSignal<string | null>(null);
-    
+
     // Current cursor for load more (internal state, not in view state)
     let currentCursor: string | null = null;
 
@@ -276,12 +298,18 @@ function ProductSearchInteractive(
     // Map CurrentSort enum to action sort field
     const mapSortToAction = (sort: CurrentSort): ProductSortField => {
         switch (sort) {
-            case CurrentSort.priceAsc: return 'price_asc';
-            case CurrentSort.priceDesc: return 'price_desc';
-            case CurrentSort.newest: return 'newest';
-            case CurrentSort.nameAsc: return 'name_asc';
-            case CurrentSort.nameDesc: return 'name_desc';
-            default: return 'relevance';
+            case CurrentSort.priceAsc:
+                return 'price_asc';
+            case CurrentSort.priceDesc:
+                return 'price_desc';
+            case CurrentSort.newest:
+                return 'newest';
+            case CurrentSort.nameAsc:
+                return 'name_asc';
+            case CurrentSort.nameDesc:
+                return 'name_desc';
+            default:
+                return 'relevance';
         }
     };
 
@@ -290,7 +318,7 @@ function ProductSearchInteractive(
         version: number,
         searchTerm: string | null,
         currentFilters: ProductSearchFastViewState['filters'],
-        currentSort: CurrentSort
+        currentSort: CurrentSort,
     ) => {
         setIsSearching(true);
         setHasSearched(true);
@@ -298,8 +326,8 @@ function ProductSearchInteractive(
         try {
             // Combine base category (always active) with user-selected child categories
             const userSelectedCategoryIds = currentFilters.categoryFilter.categories
-                .filter(c => c.isSelected)
-                .map(c => c.categoryId);
+                .filter((c) => c.isSelected)
+                .map((c) => c.categoryId);
             const categoryIds = baseCategoryId
                 ? [baseCategoryId, ...userSelectedCategoryIds]
                 : userSelectedCategoryIds;
@@ -310,11 +338,11 @@ function ProductSearchInteractive(
                     minPrice: currentFilters.priceRange.minPrice || undefined,
                     maxPrice: currentFilters.priceRange.maxPrice || undefined,
                     categoryIds,
-                    inStockOnly: currentFilters.inStockOnly
+                    inStockOnly: currentFilters.inStockOnly,
                 },
                 sortBy: mapSortToAction(currentSort),
                 // No cursor = start from beginning
-                pageSize: PAGE_SIZE
+                pageSize: PAGE_SIZE,
             });
 
             // Check if a newer search was started
@@ -328,10 +356,9 @@ function ProductSearchInteractive(
             setLoadedCount(result.products.length);
             setHasMore(result.hasMore);
             setHasResults(result.products.length > 0);
-            
+
             // Store cursor for load more
             currentCursor = result.nextCursor;
-
         } catch (error) {
             if (version === searchVersion) {
                 console.error('Search failed:', error);
@@ -356,8 +383,8 @@ function ProductSearchInteractive(
 
             // Combine base category with user-selected child categories
             const userSelectedCategoryIds = currentFilters.categoryFilter.categories
-                .filter(c => c.isSelected)
-                .map(c => c.categoryId);
+                .filter((c) => c.isSelected)
+                .map((c) => c.categoryId);
             const categoryIds = baseCategoryId
                 ? [baseCategoryId, ...userSelectedCategoryIds]
                 : userSelectedCategoryIds;
@@ -368,25 +395,24 @@ function ProductSearchInteractive(
                     minPrice: currentFilters.priceRange.minPrice || undefined,
                     maxPrice: currentFilters.priceRange.maxPrice || undefined,
                     categoryIds,
-                    inStockOnly: currentFilters.inStockOnly
+                    inStockOnly: currentFilters.inStockOnly,
                 },
                 sortBy: mapSortToAction(currentSort),
                 cursor: currentCursor,
-                pageSize: PAGE_SIZE
+                pageSize: PAGE_SIZE,
             });
 
             // Append new products to existing results
             const currentResults = searchResults();
             const newResults = [...currentResults, ...result.products];
-            
+
             setSearchResults(newResults);
             setResultCount(newResults.length);
             setLoadedCount(newResults.length);
             setHasMore(result.hasMore);
-            
+
             // Update cursor for next load
             currentCursor = result.nextCursor;
-
         } catch (error) {
             console.error('Load more failed:', error);
         } finally {
@@ -446,12 +472,12 @@ function ProductSearchInteractive(
     refs.sortBy.sortDropdown.oninput(({ event }) => {
         const value = (event.target as HTMLSelectElement).value;
         const sortMap: Record<string, CurrentSort> = {
-            'relevance': CurrentSort.relevance,
-            'priceAsc': CurrentSort.priceAsc,
-            'priceDesc': CurrentSort.priceDesc,
-            'newest': CurrentSort.newest,
-            'nameAsc': CurrentSort.nameAsc,
-            'nameDesc': CurrentSort.nameDesc
+            relevance: CurrentSort.relevance,
+            priceAsc: CurrentSort.priceAsc,
+            priceDesc: CurrentSort.priceDesc,
+            newest: CurrentSort.newest,
+            nameAsc: CurrentSort.nameAsc,
+            nameDesc: CurrentSort.nameDesc,
         };
         const newSort = sortMap[value] ?? CurrentSort.relevance;
         setSortBy({ currentSort: newSort });
@@ -461,17 +487,17 @@ function ProductSearchInteractive(
     refs.filters.priceRange.minPrice.oninput(({ event }) => {
         const value = parseFloat((event.target as HTMLInputElement).value);
         const newValue = isNaN(value) ? 0 : value;
-        setFilters(patch(filters(), [
-            { op: REPLACE, path: ['priceRange', 'minPrice'], value: newValue }
-        ]));
+        setFilters(
+            patch(filters(), [{ op: REPLACE, path: ['priceRange', 'minPrice'], value: newValue }]),
+        );
     });
 
     refs.filters.priceRange.maxPrice.oninput(({ event }) => {
         const value = parseFloat((event.target as HTMLInputElement).value);
         const newValue = isNaN(value) ? 0 : value;
-        setFilters(patch(filters(), [
-            { op: REPLACE, path: ['priceRange', 'maxPrice'], value: newValue }
-        ]));
+        setFilters(
+            patch(filters(), [{ op: REPLACE, path: ['priceRange', 'maxPrice'], value: newValue }]),
+        );
     });
 
     // Price range radio buttons
@@ -479,25 +505,27 @@ function ProductSearchInteractive(
         const [rangeId] = coordinate;
         const currentFilters = filters();
         const ranges = currentFilters.priceRange.ranges || [];
-        const selectedRange = ranges.find(r => r.rangeId === rangeId);
-        
+        const selectedRange = ranges.find((r) => r.rangeId === rangeId);
+
         if (!selectedRange) return;
 
         // Update all ranges: deselect all, select the clicked one
-        const updatedRanges = ranges.map(r => ({
+        const updatedRanges = ranges.map((r) => ({
             ...r,
-            isSelected: r.rangeId === rangeId
+            isSelected: r.rangeId === rangeId,
         }));
 
         // Set min/max based on selected range
         const newMinPrice = selectedRange.minValue ?? 0;
         const newMaxPrice = selectedRange.maxValue ?? 0;
 
-        setFilters(patch(currentFilters, [
-            { op: REPLACE, path: ['priceRange', 'ranges'], value: updatedRanges },
-            { op: REPLACE, path: ['priceRange', 'minPrice'], value: newMinPrice },
-            { op: REPLACE, path: ['priceRange', 'maxPrice'], value: newMaxPrice }
-        ]));
+        setFilters(
+            patch(currentFilters, [
+                { op: REPLACE, path: ['priceRange', 'ranges'], value: updatedRanges },
+                { op: REPLACE, path: ['priceRange', 'minPrice'], value: newMinPrice },
+                { op: REPLACE, path: ['priceRange', 'maxPrice'], value: newMaxPrice },
+            ]),
+        );
     });
 
     // Category filter checkboxes
@@ -505,49 +533,53 @@ function ProductSearchInteractive(
         const [categoryId] = coordinate;
         const currentFilters = filters();
         const categoryIndex = currentFilters.categoryFilter.categories.findIndex(
-            c => c.categoryId === categoryId
+            (c) => c.categoryId === categoryId,
         );
-        
+
         if (categoryIndex !== -1) {
             const isChecked = (event.target as HTMLInputElement).checked;
-            setFilters(patch(currentFilters, [
-                { op: REPLACE, path: ['categoryFilter', 'categories', categoryIndex, 'isSelected'], value: isChecked }
-            ]));
+            setFilters(
+                patch(currentFilters, [
+                    {
+                        op: REPLACE,
+                        path: ['categoryFilter', 'categories', categoryIndex, 'isSelected'],
+                        value: isChecked,
+                    },
+                ]),
+            );
         }
     });
 
     // In stock only filter
     refs.filters.inStockOnly.oninput(({ event }) => {
         const isChecked = (event.target as HTMLInputElement).checked;
-        setFilters(patch(filters(), [
-            { op: REPLACE, path: ['inStockOnly'], value: isChecked }
-        ]));
+        setFilters(patch(filters(), [{ op: REPLACE, path: ['inStockOnly'], value: isChecked }]));
     });
 
     // Clear filters button
     refs.filters.clearFilters.onclick(() => {
         const currentFilters = filters();
-        const clearedCategories = currentFilters.categoryFilter.categories.map(cat => ({
+        const clearedCategories = currentFilters.categoryFilter.categories.map((cat) => ({
             ...cat,
-            isSelected: false
+            isSelected: false,
         }));
-        
+
         // Reset price ranges - select "Show all"
         const clearedRanges = (currentFilters.priceRange.ranges || []).map((r, i) => ({
             ...r,
-            isSelected: i === 0 // First one is "Show all"
+            isSelected: i === 0, // First one is "Show all"
         }));
-        
+
         setFilters({
-            priceRange: { 
-                minPrice: 0, 
+            priceRange: {
+                minPrice: 0,
                 maxPrice: 0,
                 minBound: currentFilters.priceRange.minBound,
                 maxBound: currentFilters.priceRange.maxBound,
-                ranges: clearedRanges
+                ranges: clearedRanges,
             },
             categoryFilter: { categories: clearedCategories },
-            inStockOnly: false
+            inStockOnly: false,
         });
     });
 
@@ -559,7 +591,7 @@ function ProductSearchInteractive(
     // Suggestion clicks
     refs.suggestions.suggestionButton.onclick(({ coordinate }) => {
         const [suggestionId] = coordinate;
-        const suggestion = suggestions().find(s => s.suggestionId === suggestionId);
+        const suggestion = suggestions().find((s) => s.suggestionId === suggestionId);
         if (suggestion) {
             setSearchExpression(suggestion.suggestionText);
             setSubmittedSearchTerm(suggestion.suggestionText);
@@ -569,66 +601,74 @@ function ProductSearchInteractive(
     // Product card add to cart (SIMPLE products)
     refs.searchResults.addToCartButton.onclick(async ({ coordinate }) => {
         const [productId] = coordinate;
-        
+
         const currentResults = searchResults();
-        const productIndex = currentResults.findIndex(p => p._id === productId);
+        const productIndex = currentResults.findIndex((p) => p._id === productId);
         if (productIndex === -1) return;
 
-        setSearchResults(patch(currentResults, [
-            { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: true }
-        ]));
+        setSearchResults(
+            patch(currentResults, [
+                { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: true },
+            ]),
+        );
 
         try {
             await storesContext.addToCart(productId, 1);
         } catch (error) {
             console.error('Failed to add to cart:', error);
         } finally {
-            setSearchResults(patch(searchResults(), [
-                { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: false }
-            ]));
+            setSearchResults(
+                patch(searchResults(), [
+                    { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: false },
+                ]),
+            );
         }
     });
 
     // Quick option choice click (SINGLE_OPTION products)
     refs.searchResults.quickOption.choices.choiceButton.onclick(async ({ coordinate }) => {
         const [productId, choiceId] = coordinate;
-        
+
         const currentResults = searchResults();
-        const productIndex = currentResults.findIndex(p => p._id === productId);
+        const productIndex = currentResults.findIndex((p) => p._id === productId);
         if (productIndex === -1) return;
-        
+
         const product = currentResults[productIndex];
-        const choice = product.quickOption?.choices?.find(c => c.choiceId === choiceId);
-        
+        const choice = product.quickOption?.choices?.find((c) => c.choiceId === choiceId);
+
         if (!choice || !choice.inStock) {
             console.warn('Choice not available or out of stock');
             return;
         }
 
-        setSearchResults(patch(currentResults, [
-            { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: true }
-        ]));
+        setSearchResults(
+            patch(currentResults, [
+                { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: true },
+            ]),
+        );
 
         try {
             const optionId = product.quickOption._id;
             await storesContext.addToCart(productId, 1, {
                 options: { [optionId]: choice.choiceId },
                 modifiers: {},
-                customTextFields: {}
+                customTextFields: {},
             });
         } catch (error) {
             console.error('Failed to add to cart:', error);
         } finally {
-            setSearchResults(patch(searchResults(), [
-                { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: false }
-            ]));
+            setSearchResults(
+                patch(searchResults(), [
+                    { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: false },
+                ]),
+            );
         }
     });
 
     // View options button (NEEDS_CONFIGURATION products)
     refs.searchResults.viewOptionsButton.onclick(({ coordinate }) => {
         const [productId] = coordinate;
-        const product = searchResults().find(p => p._id === productId);
+        const product = searchResults().find((p) => p._id === productId);
         if (product?.productUrl) {
             window.location.href = product.productUrl;
         }
@@ -648,22 +688,22 @@ function ProductSearchInteractive(
             sortBy: sortBy(),
             hasMore: hasMore(),
             loadedCount: loadedCount(),
-            totalCount: totalCount()
-        })
+            totalCount: totalCount(),
+        }),
     };
 }
 
 /**
  * Product Search Full-Stack Component
- * 
+ *
  * A complete headless product search component with server-side rendering,
  * filtering, sorting, and "load more" functionality.
- * 
+ *
  * Rendering phases:
  * - Slow: Categories for filtering (relatively static)
  * - Fast: Products, search results, load more state (dynamic per request)
  * - Interactive: Search input, filter selections, sorting, load more (client-side)
- * 
+ *
  * Usage:
  * ```typescript
  * import { productSearch } from '@jay-framework/wix-stores';

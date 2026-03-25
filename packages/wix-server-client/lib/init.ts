@@ -1,7 +1,7 @@
 import { makeJayInit } from '@jay-framework/fullstack-component';
 import { loadConfig } from './config-loader.js';
-import {provideWixClientService} from "./wix-client-service";
-import {provideWixClientContext} from "./wix-client-context";
+import { provideWixClientService } from './wix-client-service';
+import { provideWixClientContext } from './wix-client-context';
 
 // ============================================================================
 // Plugin Initialization
@@ -28,4 +28,3 @@ export const init = makeJayInit()
 
         console.log('[wix-server-client] Client initialization complete');
     });
-

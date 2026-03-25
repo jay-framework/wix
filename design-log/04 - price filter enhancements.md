@@ -21,34 +21,35 @@ await productsClient.searchProducts({
     {
       fieldPath: 'actualPriceRange.minValue.amount',
       name: 'price-buckets',
-      type: "RANGE",
+      type: 'RANGE',
       range: {
         buckets: [
-          {from: 0, to: 50}, 
-          {from: 50, to: 100}, 
-          {from: 100, to: 200}
-        ]
-      }
+          { from: 0, to: 50 },
+          { from: 50, to: 100 },
+          { from: 100, to: 200 },
+        ],
+      },
     },
     // Get minimum price across all products
     {
       fieldPath: 'actualPriceRange.minValue.amount',
       name: 'min-price',
-      type: "SCALAR",
-      scalar: { type: "MIN" }
+      type: 'SCALAR',
+      scalar: { type: 'MIN' },
     },
     // Get maximum price across all products
     {
       fieldPath: 'actualPriceRange.minValue.amount',
       name: 'max-price',
-      type: "SCALAR",
-      scalar: { type: "MAX" }
-    }
-  ]
-})
+      type: 'SCALAR',
+      scalar: { type: 'MAX' },
+    },
+  ],
+});
 ```
 
 This allows us to:
+
 - **Compute slider bounds** automatically from actual product data
 - **Compute price buckets** with product counts per range
 - **Single API call** for search + aggregations
@@ -80,7 +81,8 @@ A: It sets the `minPrice` and `maxPrice` values internally and triggers a search
 A: Yes, it clears both min and max price filters.
 
 **Q6: Which store gets which UI?**
-A: 
+A:
+
 - `whisky-store` → Radio price ranges (Master of Malt style)
 - `store` → Dual price slider
 
@@ -101,26 +103,26 @@ A:
       dataType: number
       elementType: HTMLInputElement
       description: Current minimum price filter value
-      
+
     - tag: maxPrice
       type: [data, interactive]
       dataType: number
       elementType: HTMLInputElement
       description: Current maximum price filter value
-      
+
     # Bounds for slider UI (from API aggregation)
     - tag: minBound
       type: data
       dataType: number
       phase: fast+interactive
       description: Absolute minimum from API (SCALAR MIN aggregation)
-      
+
     - tag: maxBound
       type: data
       dataType: number
       phase: fast+interactive
       description: Absolute maximum from API (SCALAR MAX aggregation)
-    
+
     # NEW: Predefined ranges (from API RANGE aggregation)
     - tag: ranges
       type: sub-contract
@@ -133,27 +135,27 @@ A:
           type: data
           dataType: string
           description: Unique range identifier
-          
+
         - tag: label
           type: data
           dataType: string
           description: Display label (e.g., "₪0 - ₪100")
-          
+
         - tag: minValue
           type: data
           dataType: number
           description: Range minimum (null for "Show all")
-          
+
         - tag: maxValue
           type: data
           dataType: number
           description: Range maximum (null for open-ended like "₪400+")
-          
+
         - tag: productCount
           type: data
           dataType: number
           description: Number of products in this price range (from aggregation)
-          
+
         - tag: isSelected
           type: [data, interactive]
           dataType: boolean
@@ -164,6 +166,7 @@ A:
 ### 2. HTML Usage Examples
 
 #### Radio Button Ranges (whisky-store)
+
 ```html
 <div class="filter-section">
   <div class="filter-header">
@@ -171,12 +174,16 @@ A:
     <span class="filter-toggle">▲</span>
   </div>
   <div class="filter-options">
-    <label class="filter-option"
-           forEach="productSearch.filters.priceRange.ranges"
-           trackBy="rangeId">
-      <input type="radio" 
-             name="priceRange"
-             ref="productSearch.filters.priceRange.ranges.isSelected" />
+    <label
+      class="filter-option"
+      forEach="productSearch.filters.priceRange.ranges"
+      trackBy="rangeId"
+    >
+      <input
+        type="radio"
+        name="priceRange"
+        ref="productSearch.filters.priceRange.ranges.isSelected"
+      />
       <span>{label}</span>
       <span class="count" if="productCount">({productCount})</span>
     </label>
@@ -185,6 +192,7 @@ A:
 ```
 
 #### Dual Slider (store example)
+
 ```html
 <div class="filter-section">
   <div class="filter-title">Price Range</div>
@@ -194,18 +202,22 @@ A:
       <span class="slider-value-max">{productSearch.filters.priceRange.maxPrice}</span>
     </div>
     <div class="slider-track">
-      <input type="range" 
-             class="slider-handle slider-min"
-             min="{productSearch.filters.priceRange.minBound}"
-             max="{productSearch.filters.priceRange.maxBound}"
-             value="{productSearch.filters.priceRange.minPrice}"
-             ref="productSearch.filters.priceRange.minPrice" />
-      <input type="range" 
-             class="slider-handle slider-max"
-             min="{productSearch.filters.priceRange.minBound}"
-             max="{productSearch.filters.priceRange.maxBound}"
-             value="{productSearch.filters.priceRange.maxPrice}"
-             ref="productSearch.filters.priceRange.maxPrice" />
+      <input
+        type="range"
+        class="slider-handle slider-min"
+        min="{productSearch.filters.priceRange.minBound}"
+        max="{productSearch.filters.priceRange.maxBound}"
+        value="{productSearch.filters.priceRange.minPrice}"
+        ref="productSearch.filters.priceRange.minPrice"
+      />
+      <input
+        type="range"
+        class="slider-handle slider-max"
+        min="{productSearch.filters.priceRange.minBound}"
+        max="{productSearch.filters.priceRange.maxBound}"
+        value="{productSearch.filters.priceRange.maxPrice}"
+        ref="productSearch.filters.priceRange.maxPrice"
+      />
     </div>
   </div>
 </div>
@@ -226,7 +238,7 @@ A:
   border-radius: 3px;
 }
 
-.slider-track input[type="range"] {
+.slider-track input[type='range'] {
   position: absolute;
   width: 100%;
   height: 6px;
@@ -236,7 +248,7 @@ A:
   appearance: none;
 }
 
-.slider-track input[type="range"]::-webkit-slider-thumb {
+.slider-track input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 20px;
   height: 20px;
@@ -244,10 +256,10 @@ A:
   border-radius: 50%;
   cursor: pointer;
   pointer-events: auto;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
-.slider-track input[type="range"]::-moz-range-thumb {
+.slider-track input[type='range']::-moz-range-thumb {
   width: 20px;
   height: 20px;
   background: var(--navy);
@@ -322,31 +334,36 @@ const buckets = aggregations?.find(a => a.name === 'price-buckets')?.range?.buck
 ```typescript
 function mapPriceRanges(buckets: any[], currency: string): PriceRange[] {
   const ranges: PriceRange[] = [
-    { rangeId: 'all', label: 'Show all', minValue: null, maxValue: null, productCount: null, isSelected: true }
+    {
+      rangeId: 'all',
+      label: 'Show all',
+      minValue: null,
+      maxValue: null,
+      productCount: null,
+      isSelected: true,
+    },
   ];
-  
+
   for (const bucket of buckets) {
     const from = bucket.from ?? 0;
     const to = bucket.to;
     const count = bucket.count ?? 0;
-    
+
     // Skip empty buckets
     if (count === 0) continue;
-    
-    const label = to 
-      ? `${currency}${from} - ${currency}${to}`
-      : `${currency}${from}+`;
-    
+
+    const label = to ? `${currency}${from} - ${currency}${to}` : `${currency}${from}+`;
+
     ranges.push({
       rangeId: `${from}-${to ?? 'plus'}`,
       label,
       minValue: from,
       maxValue: to ?? null,
       productCount: count,
-      isSelected: false
+      isSelected: false,
     });
   }
-  
+
   return ranges;
 }
 ```
@@ -359,7 +376,7 @@ for (const range of viewState.priceRange.ranges) {
   range.isSelected.onChange = () => {
     if (range.isSelected.value) {
       // Deselect other ranges
-      viewState.priceRange.ranges.forEach(r => {
+      viewState.priceRange.ranges.forEach((r) => {
         if (r.rangeId !== range.rangeId) r.isSelected.value = false;
       });
       // Set price filter values
@@ -388,6 +405,7 @@ viewState.priceRange.maxPrice.onChange = handleSliderChange;
 ## Implementation Plan
 
 ### Phase 1: Contract Extension
+
 1. Update `product-search.jay-contract` with new `priceRange` tags:
    - Add `minBound`, `maxBound` for dynamic slider bounds
    - Add `ranges` repeated sub-contract with `productCount`
@@ -395,6 +413,7 @@ viewState.priceRange.maxPrice.onChange = handleSliderChange;
 2. Run contract type generation
 
 ### Phase 2: API Integration
+
 1. **Change fast phase from `queryProducts` to `searchProducts`**:
    - Currently `product-search.ts` line 126 uses `wixStores.products.queryProducts()`
    - Must change to `searchProducts` to get aggregations
@@ -407,6 +426,7 @@ viewState.priceRange.maxPrice.onChange = handleSliderChange;
    - Map buckets to `PriceRangeBucket[]` with currency-formatted labels
 
 ### Phase 3: Component Implementation
+
 1. Update `product-search.ts`:
    - Populate `sliderMinBound`/`sliderMaxBound` from API
    - Populate `ranges` from aggregation results
@@ -414,6 +434,7 @@ viewState.priceRange.maxPrice.onChange = handleSliderChange;
    - Handle slider change (with debounce) → set min/max → search
 
 ### Phase 4: HTML/CSS Updates
+
 1. **whisky-store**: Update products page with radio price ranges
    - Show product count in parentheses: "₪0 - ₪100 (12)"
 2. **store**: Update products page with dual slider
@@ -422,12 +443,12 @@ viewState.priceRange.maxPrice.onChange = handleSliderChange;
 
 ## Trade-offs
 
-| Decision | Pros | Cons |
-|----------|------|------|
-| Keep all three modes | Flexibility for different stores | More complex contract |
-| Radio sets min/max internally | Clean separation | Hidden state sync |
-| Configurable ranges | Store-specific buckets | Requires initialization logic |
-| CSS-only dual slider | No JS library needed | Limited styling options |
+| Decision                      | Pros                             | Cons                          |
+| ----------------------------- | -------------------------------- | ----------------------------- |
+| Keep all three modes          | Flexibility for different stores | More complex contract         |
+| Radio sets min/max internally | Clean separation                 | Hidden state sync             |
+| Configurable ranges           | Store-specific buckets           | Requires initialization logic |
+| CSS-only dual slider          | No JS library needed             | Limited styling options       |
 
 ## Verification Criteria
 

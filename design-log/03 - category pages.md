@@ -5,6 +5,7 @@
 The Wix Stores integration needs category pages that display products organized by collection/category. Each category should have its own URL (e.g., `/categories/[slug]`) and load products using slow rendering for optimal performance.
 
 The Wix Catalog V3 API provides:
+
 - **Query Categories** - List categories with filtering
 - **List Items In Category** - Get product IDs in a category
 - **Get Product** - Fetch individual product details
@@ -52,21 +53,21 @@ sequenceDiagram
     participant Page
     participant Categories as categories API
     participant Products as productsV3 API
-    
+
     Page->>Categories: queryCategories() (loadParams)
     Categories-->>Page: [all category slugs]
-    
+
     Page->>Categories: getCategory(slug) (slow render)
     Categories-->>Page: Category info
-    
+
     Page->>Categories: listItemsInCategory(categoryId, treeRef, {limit: 20})
     Categories-->>Page: Product IDs
-    
+
     loop For each product ID
         Page->>Products: getProduct(productId, fields)
         Products-->>Page: Product data
     end
-    
+
     Page->>Page: Map to ProductCardViewState
 ```
 
@@ -82,7 +83,7 @@ interface CategoryPageParams extends UrlParams {
 interface CategorySlowCarryForward {
   categoryId: string;
   categorySlug: string;
-  parentCategories: Array<{id: string, name: string, slug: string}>;
+  parentCategories: Array<{ id: string; name: string; slug: string }>;
 }
 
 interface CategoryFastCarryForward {
@@ -92,52 +93,54 @@ interface CategoryFastCarryForward {
 }
 
 // loadParams - Generate URLs for all categories
-async function* loadCategoryParams(
-  [wixStores]: [WixStoresService]
-): AsyncIterable<CategoryPageParams[]> {
-  const { items } = await wixStores.categories.queryCategories({
-    treeReference: { appNamespace: "@wix/stores" }
-  }).find();
-  
-  yield items
-    .filter(cat => cat.visible !== false)
-    .map(cat => ({ slug: cat.slug }));
+async function* loadCategoryParams([wixStores]: [WixStoresService]): AsyncIterable<
+  CategoryPageParams[]
+> {
+  const { items } = await wixStores.categories
+    .queryCategories({
+      treeReference: { appNamespace: '@wix/stores' },
+    })
+    .find();
+
+  yield items.filter((cat) => cat.visible !== false).map((cat) => ({ slug: cat.slug }));
 }
 
 // slowlyRender - Load category metadata + products
 async function renderSlowlyChanging(
   props: PageProps & CategoryPageParams,
-  wixStores: WixStoresService
+  wixStores: WixStoresService,
 ) {
   // 1. Find category by slug
-  const { items } = await wixStores.categories.queryCategories({
-    treeReference: { appNamespace: "@wix/stores" }
-  }).eq('slug', props.slug).find();
-  
+  const { items } = await wixStores.categories
+    .queryCategories({
+      treeReference: { appNamespace: '@wix/stores' },
+    })
+    .eq('slug', props.slug)
+    .find();
+
   if (!items?.length) return notFound();
   const category = items[0];
-  
+
   // 2. Load products in category
   const productsResponse = await wixStores.categories.listItemsInCategory(
     category._id,
-    { appNamespace: "@wix/stores" },
-    { useCategoryArrangement: true, cursorPaging: { limit: 20 } }
+    { appNamespace: '@wix/stores' },
+    { useCategoryArrangement: true, cursorPaging: { limit: 20 } },
   );
-  
+
   // 3. Fetch full product details
   const productCards = await Promise.all(
     productsResponse.items.map(async (item) => {
-      const { product } = await wixStores.products.getProduct(
-        item.itemId, 
-        { fields: ['CURRENCY', 'VARIANT_OPTION_CHOICE_NAMES'] }
-      );
+      const { product } = await wixStores.products.getProduct(item.itemId, {
+        fields: ['CURRENCY', 'VARIANT_OPTION_CHOICE_NAMES'],
+      });
       return mapProductToCard(product, '/products');
-    })
+    }),
   );
-  
+
   // 4. Build breadcrumbs from parent chain
   const breadcrumbs = await buildBreadcrumbs(category, wixStores);
-  
+
   return RenderPipeline.ok({
     _id: category._id,
     name: category.name,
@@ -148,15 +151,17 @@ async function renderSlowlyChanging(
     media: mapCategoryMedia(category),
     breadcrumbs,
     products: productCards,
-  }).toPhaseOutput(viewState => ({
+  }).toPhaseOutput((viewState) => ({
     viewState,
     carryForward: {
       categoryId: category._id,
       categorySlug: category.slug,
-      parentCategories: breadcrumbs.map(b => ({
-        id: b.categoryId, name: b.categoryName, slug: b.categorySlug
-      }))
-    }
+      parentCategories: breadcrumbs.map((b) => ({
+        id: b.categoryId,
+        name: b.categoryName,
+        slug: b.categorySlug,
+      })),
+    },
   }));
 }
 ```
@@ -185,7 +190,7 @@ function CategoryPageInteractive(
   refs: CategoryPageRefs,
   viewStateSignals: Signals<CategoryPageFastViewState>,
   fastCarryForward: CategoryFastCarryForward,
-  storesContext: WixStoresContext
+  storesContext: WixStoresContext,
 ) {
   const {
     pagination: [pagination, setPagination],
@@ -205,9 +210,9 @@ function CategoryPageInteractive(
   // Pagination
   refs.pagination.nextButton.onclick(async () => {
     const current = pagination().currentPage;
-    setPagination(patch(pagination(), [
-      { op: REPLACE, path: ['currentPage'], value: current + 1 }
-    ]));
+    setPagination(
+      patch(pagination(), [{ op: REPLACE, path: ['currentPage'], value: current + 1 }]),
+    );
     await reloadProducts();
   });
 
@@ -216,7 +221,7 @@ function CategoryPageInteractive(
     const [productId] = coordinate;
     await storesContext.addToCart(productId, 1);
   });
-  
+
   return {
     render: () => ({
       isLoading: isLoading(),
@@ -224,8 +229,8 @@ function CategoryPageInteractive(
       pagination: pagination(),
       sortBy: sortBy(),
       filters: filters(),
-      hasProducts: products().length > 0
-    })
+      hasProducts: products().length > 0,
+    }),
   };
 }
 ```
@@ -234,97 +239,97 @@ function CategoryPageInteractive(
 
 ```html
 <html>
-<head>
-  <script type="application/jay-headless"
-    plugin="@jay-framework/wix-stores"
-    contract="category-page"
-    key="categoryPage"
-  ></script>
-</head>
-<body>
-  <div class="category-page">
-    <!-- Breadcrumbs -->
-    <nav class="breadcrumbs">
-      <a href="/categories">All Categories</a>
-      <span forEach="categoryPage.breadcrumbs" trackBy="categoryId">
-        <span class="separator">/</span>
-        <a href="/categories/{categorySlug}" ref="categoryPage.breadcrumbs.categoryLink">
-          {categoryName}
-        </a>
-      </span>
-    </nav>
+  <head>
+    <script
+      type="application/jay-headless"
+      plugin="@jay-framework/wix-stores"
+      contract="category-page"
+      key="categoryPage"
+    ></script>
+  </head>
+  <body>
+    <div class="category-page">
+      <!-- Breadcrumbs -->
+      <nav class="breadcrumbs">
+        <a href="/categories">All Categories</a>
+        <span forEach="categoryPage.breadcrumbs" trackBy="categoryId">
+          <span class="separator">/</span>
+          <a href="/categories/{categorySlug}" ref="categoryPage.breadcrumbs.categoryLink">
+            {categoryName}
+          </a>
+        </span>
+      </nav>
 
-    <!-- Category Header -->
-    <header class="category-header">
-      <h1>{categoryPage.name}</h1>
-      <p if="categoryPage.description">{categoryPage.description}</p>
-      <span class="product-count">{categoryPage.numberOfProducts} products</span>
-    </header>
+      <!-- Category Header -->
+      <header class="category-header">
+        <h1>{categoryPage.name}</h1>
+        <p if="categoryPage.description">{categoryPage.description}</p>
+        <span class="product-count">{categoryPage.numberOfProducts} products</span>
+      </header>
 
-    <!-- Toolbar -->
-    <div class="category-toolbar">
-      <select ref="categoryPage.sortBy.sortDropdown">
-        <option value="newest">Newest</option>
-        <option value="priceAsc">Price: Low to High</option>
-        <option value="priceDesc">Price: High to Low</option>
-        <option value="nameAsc">Name: A-Z</option>
-      </select>
+      <!-- Toolbar -->
+      <div class="category-toolbar">
+        <select ref="categoryPage.sortBy.sortDropdown">
+          <option value="newest">Newest</option>
+          <option value="priceAsc">Price: Low to High</option>
+          <option value="priceDesc">Price: High to Low</option>
+          <option value="nameAsc">Name: A-Z</option>
+        </select>
+      </div>
+
+      <!-- Loading State -->
+      <div class="loading-overlay" if="categoryPage.isLoading">Loading...</div>
+
+      <!-- Empty State -->
+      <div class="empty-state" if="!categoryPage.hasProducts">No products in this category.</div>
+
+      <!-- Product Grid -->
+      <div class="product-grid" if="categoryPage.hasProducts">
+        <article class="product-card" forEach="categoryPage.products" trackBy="_id">
+          <a href="{productUrl}" class="product-card-image">
+            <img src="{thumbnail.url}" alt="{name}" loading="lazy" />
+          </a>
+          <div class="product-card-content">
+            <h3>{name}</h3>
+            <span class="price">{actualPriceRange.minValue.formattedAmount}</span>
+            <button ref="categoryPage.products.addToCartButton" if="quickAddType == SIMPLE">
+              Add to Cart
+            </button>
+          </div>
+        </article>
+      </div>
+
+      <!-- Pagination -->
+      <nav class="pagination" if="categoryPage.pagination.totalPages > 1">
+        <button
+          ref="categoryPage.pagination.prevButton"
+          disabled="{categoryPage.pagination.currentPage <= 1}"
+        >
+          Previous
+        </button>
+        <span>{categoryPage.pagination.currentPage} / {categoryPage.pagination.totalPages}</span>
+        <button
+          ref="categoryPage.pagination.nextButton"
+          disabled="{categoryPage.pagination.currentPage >= categoryPage.pagination.totalPages}"
+        >
+          Next
+        </button>
+      </nav>
     </div>
-
-    <!-- Loading State -->
-    <div class="loading-overlay" if="categoryPage.isLoading">
-      Loading...
-    </div>
-
-    <!-- Empty State -->
-    <div class="empty-state" if="!categoryPage.hasProducts">
-      No products in this category.
-    </div>
-
-    <!-- Product Grid -->
-    <div class="product-grid" if="categoryPage.hasProducts">
-      <article class="product-card" 
-        forEach="categoryPage.products" 
-        trackBy="_id">
-        <a href="{productUrl}" class="product-card-image">
-          <img src="{thumbnail.url}" alt="{name}" loading="lazy" />
-        </a>
-        <div class="product-card-content">
-          <h3>{name}</h3>
-          <span class="price">{actualPriceRange.minValue.formattedAmount}</span>
-          <button ref="categoryPage.products.addToCartButton"
-            if="quickAddType == SIMPLE">
-            Add to Cart
-          </button>
-        </div>
-      </article>
-    </div>
-
-    <!-- Pagination -->
-    <nav class="pagination" if="categoryPage.pagination.totalPages > 1">
-      <button ref="categoryPage.pagination.prevButton"
-        disabled="{categoryPage.pagination.currentPage <= 1}">
-        Previous
-      </button>
-      <span>{categoryPage.pagination.currentPage} / {categoryPage.pagination.totalPages}</span>
-      <button ref="categoryPage.pagination.nextButton"
-        disabled="{categoryPage.pagination.currentPage >= categoryPage.pagination.totalPages}">
-        Next
-      </button>
-    </nav>
-  </div>
-</body>
+  </body>
 </html>
 ```
 
 ## Implementation Plan
 
 ### Phase 1: Contract Updates
+
 1. Review and update `category-page.jay-contract` (remove async from products)
 2. Ensure proper `link: ./product-card` on products tag
 3. Regenerate contract types
 
 ### Phase 2: Component Implementation
+
 1. Implement `category-page.ts` component:
    - `loadCategoryParams` - yield category slugs
    - `renderSlowlyChanging` - load category + products
@@ -333,24 +338,26 @@ function CategoryPageInteractive(
 2. Export from `index.ts`
 
 ### Phase 3: API Integration
+
 1. Use `categories.queryCategories()` for category lookup
 2. Use `categories.listItemsInCategory()` for product IDs
 3. Use `products.getProduct()` for full product data
 4. Map products with existing `mapProductToCard()`
 
 ### Phase 4: Example Implementation
+
 1. Create `/categories/[slug]/page.jay-html` in example project
 2. Add category listing page at `/categories/page.jay-html`
 3. Add styles to `store-theme.css`
 
 ## Trade-offs
 
-| Decision | Pros | Cons |
-|----------|------|------|
-| Sync products in slow render | Simple, SSG-friendly | Slower initial build for large categories |
-| listItemsInCategory API | Respects category arrangement | Extra API call vs queryProducts filter |
-| Server-side pagination | Fresh data per page | More API calls on page change |
-| Reuse product-card contract | Consistency, DRY | Full product card data (maybe overkill) |
+| Decision                     | Pros                          | Cons                                      |
+| ---------------------------- | ----------------------------- | ----------------------------------------- |
+| Sync products in slow render | Simple, SSG-friendly          | Slower initial build for large categories |
+| listItemsInCategory API      | Respects category arrangement | Extra API call vs queryProducts filter    |
+| Server-side pagination       | Fresh data per page           | More API calls on page change             |
+| Reuse product-card contract  | Consistency, DRY              | Full product card data (maybe overkill)   |
 
 ## Verification Criteria
 
@@ -412,7 +419,7 @@ tags:
       - tag: categoryLink
         type: interactive
         elementType: HTMLAnchorElement
-        
+
   - tag: hasCategories
     type: variant
     dataType: boolean
@@ -427,7 +434,7 @@ tags:
   - _id, name, description, slug, visible, numberOfProducts
   - media (mainMedia, items)
   - breadcrumbs
-  
+
   # Initial products (SSR - slow phase)
   - tag: products
     type: sub-contract
@@ -435,7 +442,7 @@ tags:
     trackBy: _id
     link: ./product-card
     # No phase = slow (default)
-  
+
   # Additional products (loaded on client via "load more")
   - tag: loadedProducts
     type: sub-contract
@@ -443,22 +450,22 @@ tags:
     trackBy: _id
     link: ./product-card
     phase: interactive
-  
+
   # Load more state (fast+interactive)
   - tag: hasMore
     type: variant
     dataType: boolean
     phase: fast+interactive
-    
+
   - tag: loadMoreButton
     type: interactive
     elementType: HTMLButtonElement
-    
+
   - tag: isLoading
     type: variant
     dataType: boolean
     phase: fast+interactive
-    
+
   - tag: hasProducts
     type: variant
     dataType: boolean
@@ -466,6 +473,7 @@ tags:
 ```
 
 **Key insight**: Two separate product lists:
+
 1. `products` - SSR products rendered in slow phase (build time)
 2. `loadedProducts` - Products loaded on client via "load more" button
 
@@ -478,11 +486,11 @@ sequenceDiagram
     participant Page
     participant Categories as categories API
     participant Products as productsV3 API
-    
+
     Note over Page: Slow Rendering Phase
     Page->>Categories: queryCategories(slug)
     Categories-->>Page: Category info
-    
+
     par Parallel Product Loading
         Page->>Categories: listItemsInCategory(limit: 20)
         Categories-->>Page: Product IDs + cursor
@@ -493,11 +501,11 @@ sequenceDiagram
     end
     Page->>Page: products[] = loaded products
     Page->>Page: Store cursor in carryForward
-    
+
     Note over Page: Fast Rendering Phase
     Page->>Page: loadedProducts[] = empty
     Page->>Page: hasMore = (cursor !== null)
-    
+
     Note over Page: Interactive Phase (on Load More click)
     Page->>Categories: listItemsInCategory(cursor)
     Categories-->>Page: Next batch + new cursor
@@ -512,11 +520,13 @@ sequenceDiagram
 ### Implementation Plan (Revision 2)
 
 #### Phase 1: category-list Component
+
 1. Create `category-list.jay-contract` with categories array
 2. Create `category-list.ts` component (slow render only - categories are static)
 3. Export from index.ts
 
 #### Phase 2: Simplify category-page
+
 1. Update `category-page.jay-contract`:
    - Remove `pagination`, `sortBy`, `filters` sub-contracts
    - Add `hasMore`, `loadMoreButton`
@@ -527,6 +537,7 @@ sequenceDiagram
    - Add loadMore handler that appends products
 
 #### Phase 3: Update product-search
+
 1. Update `product-search.jay-contract`:
    - Remove `prevButton`, `nextButton`, `pageNumbers` from pagination
    - Keep only `loadMoreButton`, `hasNextPage`
@@ -535,6 +546,7 @@ sequenceDiagram
    - Update loadMore to append results
 
 #### Phase 4: Update Examples
+
 1. Add category-list to home page (`store/src/pages/page.jay-html` or similar)
 2. Simplify `/categories/[slug]/page.jay-html` (remove filters/sort/pagination UI)
 3. Update `/products/page.jay-html` for load more
@@ -546,17 +558,21 @@ sequenceDiagram
 ### Files Created
 
 **New Contracts:**
+
 - `wix/packages/wix-stores/lib/contracts/category-list.jay-contract` - Category grid component contract
 
 **New Components:**
+
 - `wix/packages/wix-stores/lib/components/category-list.ts` - Slow-render-only component that loads all visible categories
 
 **New Example Pages:**
+
 - `wix/examples/store/src/pages/page.jay-html` - Home page with hero section and category grid
 
 ### Files Modified
 
 **Contracts:**
+
 - `wix/packages/wix-stores/lib/contracts/category-page.jay-contract` - Simplified:
   - Removed `pagination`, `sortBy`, `filters` sub-contracts
   - Added `hasMore`, `loadMoreButton`, `loadedCount`
@@ -567,6 +583,7 @@ sequenceDiagram
   - Added `hasMore`, `loadMoreButton`, `loadedCount`, `totalCount`
 
 **Components:**
+
 - `wix/packages/wix-stores/lib/components/category-page.ts` - Rewritten:
   - Products now loaded in parallel during slow phase
   - Fast phase just sets up load more metadata
@@ -579,13 +596,14 @@ sequenceDiagram
   - Changed reactive effect to reset page on parameter changes
 
 **Exports:**
+
 - `wix/packages/wix-stores/lib/index.ts` - Added export for `category-list` component
 
 **Example Pages:**
+
 - `wix/examples/store/src/pages/categories/[slug]/page.jay-html` - Simplified:
   - Removed filters sidebar, sorting dropdown, pagination controls
   - Added "Load More Products" button and loading indicator
-  
 - `wix/examples/store/src/pages/products/page.jay-html` - Updated:
   - Replaced pagination controls with "Load More Products" button
   - Shows "X of Y products" instead of "Page X of Y"
@@ -598,17 +616,17 @@ sequenceDiagram
 
 ### Key Changes Summary
 
-| Feature | Before | After |
-|---------|--------|-------|
-| Category listing | Separate `/categories` page | Home page with category grid |
-| Category component | Uses product-search | New `category-list` component |
-| Product loading | Fast phase (request-time) | Slow phase (parallel, build-time) |
-| Category page filters | Price range, in-stock | Removed |
-| Category page sorting | Dropdown with 5 options | Removed |
-| Category page pagination | Prev/Next/Page numbers | Load More button (cursor-based) |
-| Product search pagination | Page-based (`page`, `pageSize`) | Cursor-based (`cursor`, `pageSize`) |
-| Context method | `loadCategoryProducts(page, size, sort)` | `loadMoreCategoryProducts(cursor, size)` |
-| Search action | `searchProducts({page, pageSize})` | `searchProducts({cursor, pageSize})` returns `{nextCursor, hasMore}` |
+| Feature                   | Before                                   | After                                                                |
+| ------------------------- | ---------------------------------------- | -------------------------------------------------------------------- |
+| Category listing          | Separate `/categories` page              | Home page with category grid                                         |
+| Category component        | Uses product-search                      | New `category-list` component                                        |
+| Product loading           | Fast phase (request-time)                | Slow phase (parallel, build-time)                                    |
+| Category page filters     | Price range, in-stock                    | Removed                                                              |
+| Category page sorting     | Dropdown with 5 options                  | Removed                                                              |
+| Category page pagination  | Prev/Next/Page numbers                   | Load More button (cursor-based)                                      |
+| Product search pagination | Page-based (`page`, `pageSize`)          | Cursor-based (`cursor`, `pageSize`)                                  |
+| Context method            | `loadCategoryProducts(page, size, sort)` | `loadMoreCategoryProducts(cursor, size)`                             |
+| Search action             | `searchProducts({page, pageSize})`       | `searchProducts({cursor, pageSize})` returns `{nextCursor, hasMore}` |
 
 ---
 
@@ -617,10 +635,12 @@ sequenceDiagram
 ### Files Modified
 
 **Contract:**
+
 - `wix/packages/wix-stores/lib/contracts/category-page.jay-contract` - Removed `async: true` from products, added `phase: fast+interactive` to products, pagination, sortBy, filters, isLoading, hasProducts
 - `wix/packages/wix-stores/lib/contracts/product-search.jay-contract` - Added `categorySlug` to category filter for URL generation
 
 **Component:**
+
 - `wix/packages/wix-stores/lib/components/category-page.ts` - New full implementation with:
   - `loadCategoryParams` - yields all visible category slugs
   - `renderSlowlyChanging` - loads category metadata, media, breadcrumbs
@@ -628,16 +648,20 @@ sequenceDiagram
   - `CategoryPageInteractive` - handles sort, filter, pagination, add-to-cart
 
 **Context:**
+
 - `wix/packages/wix-stores/lib/contexts/wix-stores-context.ts` - Added `loadCategoryProducts()` method for interactive phase reloading
 
 **Exports:**
+
 - `wix/packages/wix-stores/lib/index.ts` - Added export for category-page component
 
 **Examples:**
+
 - `wix/examples/store/src/pages/categories/[slug]/page.jay-html` - Category detail page with products grid
 - `wix/examples/store/src/pages/categories/page.jay-html` - Category listing page using product-search categories
 
 ### Files Deleted
+
 - `wix/packages/wix-stores/lib/components/category-page.ts.back` - Removed outdated backup
 
 ### Deviations from Design
@@ -649,6 +673,7 @@ sequenceDiagram
 5. **Cursor-based pagination**: The API uses cursor paging, not offset paging. Initial implementation fetches first page only; cursor tracking for subsequent pages is a future enhancement
 
 ### Next Steps
+
 1. Run contract type generation (`yarn build` in wix-stores package)
 2. Test with real Wix Stores data
 3. Add category images to listing page when available from API
@@ -660,6 +685,7 @@ sequenceDiagram
 ### Background
 
 The `queryProducts` API has limited filter and sort support:
+
 - **Sorting**: Only `_createdDate` and `slug` supported
 - **Filters**: Only basic fields (`visible`, `_id`, `slug`, etc.)
 - **No price filtering/sorting**
@@ -667,6 +693,7 @@ The `queryProducts` API has limited filter and sort support:
 - **No text search**
 
 The `searchProducts` API provides full search capabilities:
+
 - **Sorting**: Price, date, name, weight
 - **Filters**: Price range, stock status, categories
 - **Text search**: On `name`, `description`, `sku` fields
@@ -675,34 +702,32 @@ Reference: https://dev.wix.com/docs/sdk/backend-modules/stores/catalog-v3/produc
 
 ### searchProducts API Capabilities
 
-| Field | Search | Filter | Sort |
-|-------|--------|--------|------|
-| `name` | ✓ | ✓ ($eq, $begins, etc.) | ASC, DESC |
-| `description` | ✓ | ✗ | ✗ |
-| `actualPriceRange.minValue.amount` | ✗ | ✓ ($gt, $lt, $gte, $lte) | ASC, DESC |
-| `inventory.availabilityStatus` | ✗ | ✓ ($eq, $in) | ✗ |
-| `allCategoriesInfo.categories` | ✗ | ✓ ($matchItems) | ✗ |
-| `_createdDate` | ✗ | ✓ | ASC, DESC |
+| Field                              | Search | Filter                   | Sort      |
+| ---------------------------------- | ------ | ------------------------ | --------- |
+| `name`                             | ✓      | ✓ ($eq, $begins, etc.)   | ASC, DESC |
+| `description`                      | ✓      | ✗                        | ✗         |
+| `actualPriceRange.minValue.amount` | ✗      | ✓ ($gt, $lt, $gte, $lte) | ASC, DESC |
+| `inventory.availabilityStatus`     | ✗      | ✓ ($eq, $in)             | ✗         |
+| `allCategoriesInfo.categories`     | ✗      | ✓ ($matchItems)          | ✗         |
+| `_createdDate`                     | ✗      | ✓                        | ASC, DESC |
 
 ### API Usage
 
 ```typescript
 const filter = {
   // Price filter
-  "actualPriceRange.minValue.amount": { "$gt": "50", "$lt": "200" },
+  'actualPriceRange.minValue.amount': { $gt: '50', $lt: '200' },
   // Stock filter
-  "inventory.availabilityStatus": { "$eq": "IN_STOCK" },
+  'inventory.availabilityStatus': { $eq: 'IN_STOCK' },
   // Category filter
-  "allCategoriesInfo.categories": { 
-    "$matchItems": [{ id: { $eq: "category-id" } }] 
+  'allCategoriesInfo.categories': {
+    $matchItems: [{ id: { $eq: 'category-id' } }],
   },
   // Visibility
-  "visible": { "$eq": true }
+  visible: { $eq: true },
 };
 
-const sort = [
-  { fieldName: "actualPriceRange.minValue.amount", order: "ASC" }
-];
+const sort = [{ fieldName: 'actualPriceRange.minValue.amount', order: 'ASC' }];
 
 const response = await productsClient.searchProducts(
   {
@@ -710,11 +735,11 @@ const response = await productsClient.searchProducts(
     sort,
     cursorPaging: { limit: 12 },
     search: {
-      expression: "search term",
-      fields: ["name", "description"]
-    }
+      expression: 'search term',
+      fields: ['name', 'description'],
+    },
   },
-  { fields: ['CURRENCY', 'VARIANT_OPTION_CHOICE_NAMES'] }
+  { fields: ['CURRENCY', 'VARIANT_OPTION_CHOICE_NAMES'] },
 );
 ```
 
@@ -739,17 +764,18 @@ const response = await productsClient.searchProducts(
 ### Implementation Results (Revision 3)
 
 **Files Modified:**
+
 - `wix/packages/wix-stores/lib/actions/stores-actions.ts` - Rewrote `searchProducts` action
 
 **Key Changes:**
 
-| Before (queryProducts) | After (searchProducts) |
-|------------------------|------------------------|
-| Client-side text search | Server-side: `search: { expression, fields: ["name", "description"] }` |
-| Client-side price filter | Server-side: `actualPriceRange.minValue.amount` with `$gte`/`$lte` |
-| Client-side stock filter | Server-side: `inventory.availabilityStatus: { $eq: "IN_STOCK" }` |
-| Client-side price sorting | Server-side: `sort: [{ fieldName, order: "ASC"/"DESC" }]` |
-| Only `_createdDate`/`slug` sorting | Full sorting on price, name, date |
+| Before (queryProducts)             | After (searchProducts)                                                 |
+| ---------------------------------- | ---------------------------------------------------------------------- |
+| Client-side text search            | Server-side: `search: { expression, fields: ["name", "description"] }` |
+| Client-side price filter           | Server-side: `actualPriceRange.minValue.amount` with `$gte`/`$lte`     |
+| Client-side stock filter           | Server-side: `inventory.availabilityStatus: { $eq: "IN_STOCK" }`       |
+| Client-side price sorting          | Server-side: `sort: [{ fieldName, order: "ASC"/"DESC" }]`              |
+| Only `_createdDate`/`slug` sorting | Full sorting on price, name, date                                      |
 
 **API Call Structure:**
 
@@ -757,18 +783,18 @@ const response = await productsClient.searchProducts(
 await wixStores.products.searchProducts(
   {
     filter: {
-      "visible": { "$eq": true },
-      "actualPriceRange.minValue.amount": { "$gte": "10", "$lte": "100" },
-      "inventory.availabilityStatus": { "$eq": "IN_STOCK" },
-      "allCategoriesInfo.categories": { 
-        "$matchItems": [{ id: { "$eq": "category-id" } }] 
-      }
+      visible: { $eq: true },
+      'actualPriceRange.minValue.amount': { $gte: '10', $lte: '100' },
+      'inventory.availabilityStatus': { $eq: 'IN_STOCK' },
+      'allCategoriesInfo.categories': {
+        $matchItems: [{ id: { $eq: 'category-id' } }],
+      },
     },
-    sort: [{ fieldName: "actualPriceRange.minValue.amount", order: "ASC" }],
+    sort: [{ fieldName: 'actualPriceRange.minValue.amount', order: 'ASC' }],
     cursorPaging: { limit: 12 },
-    search: { expression: "search term", fields: ["name", "description"] }
+    search: { expression: 'search term', fields: ['name', 'description'] },
   },
-  { fields: ['CURRENCY', 'VARIANT_OPTION_CHOICE_NAMES'] }
+  { fields: ['CURRENCY', 'VARIANT_OPTION_CHOICE_NAMES'] },
 );
 ```
 

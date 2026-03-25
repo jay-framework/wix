@@ -1,14 +1,18 @@
 /**
  * Server-side Wix Stores Service
- * 
+ *
  * Provides access to Wix Stores APIs on the server using API Key authentication.
  * Used with .withServices(WIX_STORES_SERVICE_MARKER) in component definitions.
- * 
+ *
  * Note: Cart service is provided separately by WIX_CART_SERVICE from wix-cart package.
  */
 
 import { WixClient } from '@wix/sdk';
-import { getCategoriesClient, getInventoryClient, getProductsV3Client } from '../utils/wix-store-api';
+import {
+    getCategoriesClient,
+    getInventoryClient,
+    getProductsV3Client,
+} from '../utils/wix-store-api';
 import { getCurrentCartClient } from '@jay-framework/wix-cart';
 import { createJayService } from '@jay-framework/fullstack-component';
 import { registerService } from '@jay-framework/stack-server-runtime';
@@ -56,7 +60,7 @@ export interface WixStoresServiceOptions {
  */
 export function provideWixStoresService(
     wixClient: WixClient,
-    options?: WixStoresServiceOptions
+    options?: WixStoresServiceOptions,
 ): WixStoresService {
     const service: WixStoresService = {
         products: getProductsV3Client(wixClient),
@@ -70,4 +74,3 @@ export function provideWixStoresService(
     registerService(WIX_STORES_SERVICE_MARKER, service);
     return service;
 }
-
