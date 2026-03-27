@@ -22,6 +22,7 @@ async function queryCategories() {
         let response = await categoriesClient
             .queryCategories({
                 treeReference: { appNamespace: '@wix/stores' },
+                fields: ['BREADCRUMBS_INFO']
             })
             .eq('visible', true)
             .limit(100)
@@ -34,7 +35,7 @@ async function queryCategories() {
             if (!response.hasNext()) break;
             response = await response.next();
         }
-
+        allCategories.forEach(cat => console.log(JSON.stringify(cat, null, 2)));
         console.log(`Fetched ${allCategories.length} categories\n`);
 
         // Build tree
