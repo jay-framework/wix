@@ -167,15 +167,9 @@ export async function generateWixStoresReferences(
         categoriesPath,
         yaml.dump(
             {
-                _generated: new Date().toISOString(),
                 _description:
                     'Wix Stores category tree for agent discovery. Shows category hierarchy, IDs, slugs, product counts, and parent-child relationships.',
                 totalCategories: allCategories.length,
-                urlTemplates: {
-                    product: storesService.urls.product,
-                    category: storesService.urls.category,
-                },
-                defaultCategory: storesService.defaultCategory,
                 categoryTree: roots,
             },
             { indent: 2, lineWidth: 120, noRefs: true },
