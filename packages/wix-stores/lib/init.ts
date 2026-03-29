@@ -21,10 +21,8 @@ import { loadWixStoresConfig } from './config-loader';
 
 // Re-export types for consumers
 export type { WixStoresInitData } from './contexts/wix-stores-context.js';
-export type {
-    CategoryPrefixConfig,
-    WixStoresServiceOptions,
-} from './services/wix-stores-service.js';
+export type { WixStoresServiceOptions } from './services/wix-stores-service.js';
+export type { UrlTemplates, WixStoresConfig } from './config-loader.js';
 
 // ============================================================================
 // Plugin Initialization
@@ -34,22 +32,19 @@ export const init = makeJayInit()
     .withServer(async (): Promise<WixStoresInitData> => {
         console.log('[wix-stores] Initializing Wix Stores service...');
 
-        // Get the server-side Wix client (authenticated with API key)
         const wixClient = getService(WIX_CLIENT_SERVICE);
-
-        // Load optional config (config/.wix-stores.yaml)
         const storesConfig = loadWixStoresConfig();
 
-        // Create and register the stores service (products, categories, inventory)
-        // Note: Cart service is registered by wix-cart plugin
         provideWixStoresService(wixClient, {
-            categoryPrefixes: storesConfig.categoryPrefixes,
+            urls: storesConfig.urls,
+            defaultCategory: storesConfig.defaultCategory,
         });
 
-        if (storesConfig.categoryPrefixes.length > 0) {
-            console.log(
-                `[wix-stores] Category prefixes configured: ${storesConfig.categoryPrefixes.map((p) => p.prefix).join(', ')}`,
-            );
+        console.log(
+            `[wix-stores] URL templates: product="${storesConfig.urls.product}", category="${storesConfig.urls.category ?? 'none'}"`,
+        );
+        if (storesConfig.defaultCategory) {
+            console.log(`[wix-stores] Default category: ${storesConfig.defaultCategory}`);
         }
 
         console.log('[wix-stores] Server initialization complete');
@@ -61,11 +56,6 @@ export const init = makeJayInit()
     })
     .withClient(async (data: WixStoresInitData) => {
         console.log('[wix-stores] Initializing client-side stores context...');
-
-        // Register the stores context (delegates cart operations to WIX_CART_CONTEXT)
-        // Note: WIX_CART_CONTEXT is already initialized by wix-cart plugin
         provideWixStoresContext();
-
         console.log('[wix-stores] Client initialization complete');
-        console.log(`[wix-stores] Search enabled: ${data.enableClientSearch}`);
     });

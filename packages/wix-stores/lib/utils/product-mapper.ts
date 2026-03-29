@@ -18,64 +18,124 @@ import {
     ProductOptionsViewState,
 } from '../contracts/product-options.jay-contract';
 import { formatWixMediaUrl } from '@jay-framework/wix-utils';
-import { type CategoryPrefixConfig } from '../services/wix-stores-service';
+import { type UrlTemplates } from '../config-loader';
 
 // ============================================================================
-// Category Prefix Resolution
+// Category Tree — cached category hierarchy for URL resolution
 // ============================================================================
 
 /**
- * Resolve which category prefix a product belongs to, based on its allCategoriesInfo.
- * Returns the prefix string if the product belongs to a configured root category, or null.
- * First matching prefix in config order wins.
+ * Cached category hierarchy data, used for resolving category slugs and parent chains.
+ * Built lazily from the Wix Categories API and cached on the service.
  */
-export function resolveProductPrefix(
-    product: { allCategoriesInfo?: { categories?: Array<{ _id?: string }> } },
-    prefixConfig: CategoryPrefixConfig[],
-): string | null {
-    if (!prefixConfig?.length || !product.allCategoriesInfo?.categories) {
-        return null;
-    }
-    const productCategoryIds = new Set(
-        product.allCategoriesInfo.categories.map((c) => c._id).filter(Boolean),
-    );
-    for (const { categoryId, prefix } of prefixConfig) {
-        if (productCategoryIds.has(categoryId)) {
-            return prefix;
-        }
-    }
-    return null;
+export interface CategoryTree {
+    /** Map of categoryId → slug */
+    slugMap: Map<string, string>;
+    /** Map of categoryId → parent categoryId */
+    parentMap: Map<string, string>;
+    /** Set of root category IDs (categories with no parent) */
+    rootIds: Set<string>;
+    /** Map of categoryId → image URL (only for categories that have an image) */
+    imageMap: Map<string, string>;
 }
 
 /**
- * Resolve the CategoryPrefixConfig entry a product belongs to.
- * Returns null if no match. Used when both prefix and name are needed.
+ * Find the root category ID for a given category by walking up the parent chain.
  */
-export function resolveProductPrefixConfig(
-    product: { allCategoriesInfo?: { categories?: Array<{ _id?: string }> } },
-    prefixConfig: CategoryPrefixConfig[],
-): CategoryPrefixConfig | null {
-    if (!prefixConfig?.length || !product.allCategoriesInfo?.categories) {
-        return null;
-    }
-    const productCategoryIds = new Set(
-        product.allCategoriesInfo.categories.map((c) => c._id).filter(Boolean),
-    );
-    for (const config of prefixConfig) {
-        if (productCategoryIds.has(config.categoryId)) {
-            return config;
+export function findRootCategoryId(categoryId: string, tree: CategoryTree): string {
+    let current = categoryId;
+    for (let depth = 0; depth < 20; depth++) {
+        if (tree.rootIds.has(current)) {
+            return current;
         }
+        const parentId = tree.parentMap.get(current);
+        if (!parentId)
+            return current;
+        current = parentId;
     }
-    return null;
+    return current;
+}
+
+/**
+ * Get the slug of the root category for a given category.
+ */
+export function findRootCategorySlug(categoryId: string, tree: CategoryTree): string {
+    const rootId = findRootCategoryId(categoryId, tree);
+    return tree.slugMap.get(rootId) ?? '';
+}
+
+/**
+ * Find the image URL for a category, walking up the parent chain if the category has no image.
+ * Returns the first image found in the ancestry, or empty string.
+ */
+export function findCategoryImage(categoryId: string, tree: CategoryTree): string {
+    let current: string | undefined = categoryId;
+    for (let depth = 0; depth < 20 && current; depth++) {
+        const image = tree.imageMap.get(current);
+        if (image) return image;
+        current = tree.parentMap.get(current);
+    }
+    return '';
+}
+
+// ============================================================================
+// URL Building
+// ============================================================================
+
+/**
+ * Build a product URL from the template, resolving {slug}, {category}, {prefix}.
+ * Defaults to placeholders if values are not provided
+ */
+export function buildProductUrl(
+    urls: UrlTemplates,
+    tree: CategoryTree,
+    slug: string,
+    mainCategoryId: string,
+): string | null {
+    let url = urls.product;
+    url = url.replace('{slug}', slug);
+
+    if (url.includes('{category}')) {
+        const categorySlug = tree.slugMap.get(mainCategoryId);
+        url = url.replace('{category}', categorySlug);
+    }
+
+    if (url.includes('{prefix}')) {
+        const prefixSlug = findRootCategorySlug(mainCategoryId, tree);
+        url = url.replace('{prefix}', prefixSlug);
+    }
+
+    return url;
+}
+
+/**
+ * Build a category URL from the template, resolving {category} and {prefix}.
+ * Returns null if template is null or a required placeholder can't be resolved.
+ */
+export function buildCategoryUrl(
+    urls: UrlTemplates,
+    tree: CategoryTree,
+    categorySlug: string,
+    categoryId: string,
+): string | null {
+    if (!urls.category) return null;
+
+    let url = urls.category;
+    url = url.replace('{category}', categorySlug);
+
+    if (url.includes('{prefix}')) {
+        const prefixSlug = findRootCategorySlug(categoryId, tree);
+        if (!prefixSlug) return null;
+        url = url.replace('{prefix}', prefixSlug);
+    }
+
+    return url.includes('{') ? null : url;
 }
 
 // ============================================================================
 // Helper Functions
 // ============================================================================
 
-/**
- * Map availability status string to enum
- */
 export function mapAvailabilityStatus(status: string | undefined): AvailabilityStatus {
     switch (status) {
         case 'OUT_OF_STOCK':
@@ -87,9 +147,6 @@ export function mapAvailabilityStatus(status: string | undefined): AvailabilityS
     }
 }
 
-/**
- * Map preorder status string to enum
- */
 export function mapPreorderStatus(status: string | undefined): PreorderStatus {
     switch (status) {
         case 'ENABLED':
@@ -101,23 +158,14 @@ export function mapPreorderStatus(status: string | undefined): PreorderStatus {
     }
 }
 
-/**
- * Map media type string to enum
- */
 export function mapMediaType(mediaType: string | undefined): MediaType {
     return mediaType === 'VIDEO' ? MediaType.VIDEO : MediaType.IMAGE;
 }
 
-/**
- * Map product type string to enum
- */
 export function mapProductType(productType: string | undefined): ProductType {
     return productType === 'DIGITAL' ? ProductType.DIGITAL : ProductType.PHYSICAL;
 }
 
-/**
- * Check if a price amount represents a valid price (not zero or empty)
- */
 function isValidPrice(amount: string | undefined): boolean {
     if (!amount) return false;
     const numAmount = parseFloat(amount);
@@ -128,14 +176,7 @@ function isValidPrice(amount: string | undefined): boolean {
 // Quick Add Option Mapping
 // ============================================================================
 
-/**
- * Determine the quick add behavior type for a product.
- * - SIMPLE: No options, show regular Add to Cart button
- * - SINGLE_OPTION: One option, show choices on hover (click = add to cart)
- * - NEEDS_CONFIGURATION: Multiple options or modifiers, link to product page
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getQuickAddType(product: any): QuickAddType {
+export function getQuickAddType(product: { options?: unknown[]; modifiers?: unknown[] }): QuickAddType {
     const optionCount = product.options?.length ?? 0;
     const hasModifiers = (product.modifiers?.length ?? 0) > 0;
 
@@ -148,48 +189,48 @@ export function getQuickAddType(product: any): QuickAddType {
     return QuickAddType.SIMPLE;
 }
 
-/**
- * Map option render type string to enum
- */
 function mapOptionRenderType(renderType: string | undefined): OptionRenderType {
     return renderType === 'COLOR_SWATCH_CHOICES'
         ? OptionRenderType.COLOR_SWATCH_CHOICES
         : OptionRenderType.TEXT_CHOICES;
 }
 
-/**
- * Map choice type string to enum
- */
 function mapChoiceType(choiceType: string | undefined): ChoiceType {
     return choiceType === 'ONE_COLOR' ? ChoiceType.ONE_COLOR : ChoiceType.CHOICE_TEXT;
 }
 
-/**
- * Map the primary option for quick-add functionality.
- * For single-option products, maps the option with variant info to determine stock.
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function mapQuickOption(option: any, variantsInfo: any): ProductOptionsViewState | null {
+interface WixOption {
+    _id?: string;
+    name?: string;
+    optionRenderType?: string;
+    choicesSettings?: { choices?: WixChoice[] };
+}
+
+interface WixChoice {
+    choiceId?: string;
+    name?: string;
+    choiceType?: string;
+    colorCode?: string;
+    inStock?: boolean;
+}
+
+export function mapQuickOption(option: WixOption | undefined, variantsInfo: unknown): ProductOptionsViewState | null {
     if (!option) return null;
 
-    const optionId = option._id;
     const choices = option.choicesSettings?.choices || [];
 
     return {
-        _id: optionId,
+        _id: option._id || '',
         name: option.name || '',
         optionRenderType: mapOptionRenderType(option.optionRenderType),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        choices: choices.map((choice: any) => {
-            return {
-                choiceId: choice.choiceId,
-                name: choice.name || '',
-                choiceType: mapChoiceType(choice.choiceType),
-                colorCode: choice.colorCode || '',
-                inStock: choice.inStock,
-                isSelected: false,
-            };
-        }),
+        choices: choices.map((choice) => ({
+            choiceId: choice.choiceId || '',
+            name: choice.name || '',
+            choiceType: mapChoiceType(choice.choiceType),
+            colorCode: choice.colorCode || '',
+            inStock: choice.inStock ?? true,
+            isSelected: false,
+        })),
     };
 }
 
@@ -197,40 +238,42 @@ export function mapQuickOption(option: any, variantsInfo: any): ProductOptionsVi
 // Product Card Mapper
 // ============================================================================
 
-/** Default path for product pages */
-const DEFAULT_PRODUCT_PAGE_PATH = '/products';
+/** Minimal product shape expected by the mapper (Wix Catalog V3) */
+export interface V3ProductForCard {
+    _id?: string;
+    name?: string;
+    slug?: string;
+    mainCategoryId?: string;
+    media?: { main?: { _id?: string; url?: string; altText?: string; mediaType?: string } };
+    variantsInfo?: { variants?: Array<{ price?: { actualPrice?: { amount?: string; formattedAmount?: string }; compareAtPrice?: { amount?: string; formattedAmount?: string } } }> };
+    actualPriceRange?: { minValue?: { amount?: string; formattedAmount?: string } };
+    compareAtPriceRange?: { minValue?: { amount?: string; formattedAmount?: string } };
+    inventory?: { availabilityStatus?: string; preorderStatus?: string };
+    ribbon?: { _id?: string; name?: string };
+    brand?: { _id?: string; name?: string };
+    productType?: string;
+    options?: WixOption[];
+    modifiers?: unknown[];
+}
 
 /**
- * Map a Wix Stores Catalog V3 product to ProductCardViewState
- *
- * In Catalog V3, prices come from variantsInfo.variants[0].price
- * Falls back to actualPriceRange/compareAtPriceRange for compatibility
+ * Map a Wix Stores Catalog V3 product to ProductCardViewState.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mapProductToCard(
-    product: any,
-    productPagePath: string = DEFAULT_PRODUCT_PAGE_PATH,
-    prefixConfig?: CategoryPrefixConfig[],
+    product: V3ProductForCard,
+    urls: UrlTemplates,
+    tree: CategoryTree,
 ): ProductCardViewState {
     const mainMedia = product.media?.main;
     const slug = product.slug || '';
+    const mainCategoryId = product.mainCategoryId || '';
 
-    // Resolve category prefix for URL and display
-    const matchedPrefix = prefixConfig?.length
-        ? resolveProductPrefixConfig(product, prefixConfig)
-        : null;
-    const productUrl = slug
-        ? matchedPrefix
-            ? `${productPagePath}/${matchedPrefix.prefix}/${slug}`
-            : `${productPagePath}/${slug}`
-        : '';
+    const productUrl = buildProductUrl(urls, tree, slug, mainCategoryId);
+    const categoryName = tree.slugMap.get(mainCategoryId);
 
-    // In Catalog V3, prices come from variantsInfo.variants[0].price
-    // Fall back to actualPriceRange/compareAtPriceRange for backwards compatibility
     const firstVariant = product.variantsInfo?.variants?.[0];
     const variantPrice = firstVariant?.price;
 
-    // Get actual price - prefer variant price, fall back to price range
     const actualAmount =
         variantPrice?.actualPrice?.amount || product.actualPriceRange?.minValue?.amount || '0';
     const actualFormattedAmount =
@@ -238,7 +281,6 @@ export function mapProductToCard(
         product.actualPriceRange?.minValue?.formattedAmount ||
         '';
 
-    // Get compare-at price (for discounts)
     const compareAtAmount =
         variantPrice?.compareAtPrice?.amount || product.compareAtPriceRange?.minValue?.amount;
     const compareAtFormattedAmount =
@@ -246,7 +288,6 @@ export function mapProductToCard(
         product.compareAtPriceRange?.minValue?.formattedAmount ||
         '';
 
-    // Has discount if compare-at price is valid and different from actual price
     const hasDiscount = isValidPrice(compareAtAmount) && compareAtAmount !== actualAmount;
 
     return {
@@ -254,7 +295,7 @@ export function mapProductToCard(
         name: product.name || '',
         slug,
         productUrl,
-        categoryPrefix: matchedPrefix?.name ?? '',
+        categoryPrefix: categoryName,
         mainMedia: {
             url: mainMedia ? formatWixMediaUrl(mainMedia._id, mainMedia.url) : '',
             altText: mainMedia?.altText || product.name || '',
@@ -268,7 +309,6 @@ export function mapProductToCard(
             width: 300,
             height: 300,
         },
-        // Simplified price fields
         price: actualFormattedAmount,
         strikethroughPrice: hasDiscount ? compareAtFormattedAmount : '',
         hasDiscount,
@@ -287,7 +327,6 @@ export function mapProductToCard(
         },
         productType: mapProductType(product.productType),
         isAddingToCart: false,
-        // Quick add behavior
         quickAddType: getQuickAddType(product),
         quickOption:
             getQuickAddType(product) === QuickAddType.SINGLE_OPTION

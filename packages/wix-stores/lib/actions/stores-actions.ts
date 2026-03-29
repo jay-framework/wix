@@ -9,6 +9,13 @@ import { makeJayQuery, ActionError } from '@jay-framework/fullstack-component';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
 import { ProductCardViewState } from '../contracts/product-card.jay-contract';
 import { mapProductToCard } from '../utils/product-mapper.js';
+import { type V3ProductSearch } from '@wix/auto_sdk_stores_products-v-3';
+
+/** Check if URL templates use category/prefix placeholders */
+function needsCategoryInfo(wixStores: WixStoresService): boolean {
+    const template = wixStores.urls.product;
+    return template.includes('{category}') || template.includes('{prefix}');
+}
 import {
     AggregationDataAggregationResults,
     AggregationDataAggregationResultsScalarResult,
@@ -212,7 +219,7 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
                         : { $and: filterConditions };
 
                 // Build sort array
-                const sort: Array<{ fieldName: string; order: 'ASC' | 'DESC' }> = [];
+                const sort = [];
                 switch (sortBy) {
                     case 'price_asc':
                         sort.push({ fieldName: 'actualPriceRange.minValue.amount', order: 'ASC' });
@@ -246,7 +253,7 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
                     : undefined;
 
                 // Build aggregations for price bounds, buckets, and total count
-                const aggregations = [
+                const aggregations: V3ProductSearch['aggregations'] = [
                     // Total count via COUNT_DISTINCT on slug
                     {
                         fieldPath: 'slug',
@@ -281,18 +288,16 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
                 const searchResult = await wixStores.products.searchProducts(
                     {
                         filter,
-                        // @ts-expect-error - Wix SDK types don't match actual API
                         sort: sort.length > 0 ? sort : undefined,
                         cursorPaging,
                         search,
-                        // @ts-expect-error - Wix SDK types don't include aggregations
                         aggregations,
                     },
                     {
                         fields: [
                             'CURRENCY',
                             'VARIANT_OPTION_CHOICE_NAMES',
-                            ...(wixStores.categoryPrefixes.length > 0
+                            ...(needsCategoryInfo(wixStores)
                                 ? (['ALL_CATEGORIES_INFO'] as const)
                                 : []),
                         ],
@@ -318,7 +323,6 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
 
                 const minBound = minPriceAgg?.value;
                 const maxBound = maxPriceAgg?.value;
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const buckets = bucketsAgg.results || [];
 
                 // Get currency symbol from first product
@@ -365,11 +369,9 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
 
                 priceRanges.push(...bucketRanges);
 
-                // Map products to card view state (with category prefix resolution)
-                const prefixConfig = wixStores.categoryPrefixes;
-                const mappedProducts = products.map((p) =>
-                    mapProductToCard(p, '/products', prefixConfig),
-                );
+                // Map products to card view state with URL resolution
+                const tree = await wixStores.getCategoryTree();
+                const mappedProducts = products.map((p) => mapProductToCard(p, wixStores.urls, tree));
 
                 return {
                     products: mappedProducts,
@@ -412,11 +414,10 @@ export const getProductBySlug = makeJayQuery('wixStores.getProductBySlug')
             }
 
             try {
-                const prefixConfig = wixStores.categoryPrefixes;
                 const fields = [
                     'MEDIA_ITEMS_INFO',
                     'VARIANT_OPTION_CHOICE_NAMES',
-                    ...(prefixConfig.length > 0 ? (['ALL_CATEGORIES_INFO'] as const) : []),
+                    ...(needsCategoryInfo(wixStores) ? (['ALL_CATEGORIES_INFO'] as const) : []),
                 ] as const;
                 const result = await wixStores.products.getProductBySlug(slug, {
                     fields: [...fields],
@@ -427,7 +428,8 @@ export const getProductBySlug = makeJayQuery('wixStores.getProductBySlug')
                     return null;
                 }
 
-                return mapProductToCard(product, '/products', prefixConfig);
+                const tree = await wixStores.getCategoryTree();
+                return mapProductToCard(product, wixStores.urls, tree);
             } catch (error) {
                 console.error('[wixStores.getProductBySlug] Failed to get product:', error);
                 // Return null for not found instead of throwing

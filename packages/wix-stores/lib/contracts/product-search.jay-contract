@@ -168,6 +168,11 @@ tags:
                 dataType: boolean
                 elementType: HTMLInputElement
                 description: Category checkbox
+
+              - tag: categoryUrl
+                type: data
+                dataType: string
+                description: Deep-link URL to this category's dedicated page
       
       # Availability filter (fast+interactive)
       - tag: inStockOnly
@@ -249,4 +254,70 @@ tags:
         type: interactive
         elementType: HTMLButtonElement
         description: Button to use this suggestion
+
+  # Category header — always populated via fallback chain (subcategory → category → defaultCategory)
+  - tag: categoryHeader
+    type: sub-contract
+    description: Active category information for the page header
+    tags:
+      - {tag: name, type: data, dataType: string, description: Category display name}
+      - {tag: description, type: data, dataType: string, description: Category plain text description}
+      - {tag: imageUrl, type: data, dataType: string, description: Category main image URL}
+      - {tag: hasImage, type: variant, dataType: boolean, description: Whether category has an image}
+      - {tag: productCount, type: data, dataType: number, description: Number of products in category}
+
+      - tag: breadcrumbs
+        type: sub-contract
+        repeated: true
+        trackBy: categoryId
+        description: Breadcrumb trail from root to current category
+        tags:
+          - {tag: categoryId, type: data, dataType: string, description: Category GUID}
+          - {tag: name, type: data, dataType: string, description: Category name}
+          - {tag: slug, type: data, dataType: string, description: Category slug}
+          - {tag: url, type: data, dataType: string, description: Full URL path for breadcrumb navigation}
+
+      - tag: seoData
+        type: sub-contract
+        description: Category SEO metadata
+        tags:
+          - tag: tags
+            type: sub-contract
+            repeated: true
+            trackBy: position
+            description: SEO tag information
+            tags:
+              - {tag: position, type: data, dataType: string, description: Tag position as two digit string}
+              - {tag: type, type: data, dataType: string, description: SEO tag type}
+              - tag: props
+                type: sub-contract
+                repeated: true
+                trackBy: key
+                description: Key-value pair of SEO properties
+                tags:
+                  - {tag: key, type: data, dataType: string}
+                  - {tag: value, type: data, dataType: string}
+              - tag: meta
+                type: sub-contract
+                repeated: true
+                trackBy: key
+                description: SEO tag metadata
+                tags:
+                  - {tag: key, type: data, dataType: string}
+                  - {tag: value, type: data, dataType: string}
+              - {tag: children, type: data, dataType: string, description: SEO tag inner content}
+          - tag: settings
+            type: sub-contract
+            description: SEO general settings
+            tags:
+              - {tag: preventAutoRedirect, type: data, dataType: boolean, description: Whether auto-redirect from old URL is enabled}
+              - tag: keywords
+                type: sub-contract
+                repeated: true
+                trackBy: term
+                description: User-selected keyword terms
+                tags:
+                  - {tag: term, type: data, dataType: string, description: Keyword value}
+                  - {tag: isMain, type: data, dataType: boolean, description: Whether this is the main focus keyword}
+                  - {tag: origin, type: data, dataType: string, description: Source that added the keyword}
 

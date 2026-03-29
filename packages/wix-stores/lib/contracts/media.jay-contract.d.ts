@@ -1,14 +1,15 @@
-import { JayContract } from '@jay-framework/runtime';
+import {JayContract} from "@jay-framework/runtime";
+
 
 export enum MediaType {
-    IMAGE,
-    VIDEO,
+  IMAGE,
+  VIDEO
 }
 
 export interface MediaViewState {
-    url: string;
-    mediaType: MediaType;
-    thumbnail_50x50: string;
+  url: string,
+  mediaType: MediaType,
+  thumbnail_50x50: string
 }
 
 export type MediaSlowViewState = Pick<MediaViewState, 'url' | 'mediaType' | 'thumbnail_50x50'>;
@@ -21,10 +22,4 @@ export interface MediaRefs {}
 
 export interface MediaRepeatedRefs {}
 
-export type MediaContract = JayContract<
-    MediaViewState,
-    MediaRefs,
-    MediaSlowViewState,
-    MediaFastViewState,
-    MediaInteractiveViewState
->;
+export type MediaContract = JayContract<MediaViewState, MediaRefs, MediaSlowViewState, MediaFastViewState, MediaInteractiveViewState>

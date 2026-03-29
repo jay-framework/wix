@@ -2,49 +2,60 @@
  * Configuration loader for wix-stores plugin.
  *
  * Reads optional config from config/.wix-stores.yaml.
- * When the file doesn't exist, returns empty defaults (no category prefixes).
+ * When the file doesn't exist, returns defaults.
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
-import { type CategoryPrefixConfig } from './services/wix-stores-service';
+
+/**
+ * URL templates for building canonical product and category links.
+ * Placeholders: {slug}, {category}, {prefix}
+ */
+export interface UrlTemplates {
+    /** URL template for product pages. Default: "/products/{slug}" */
+    product: string;
+    /** URL template for category pages. Not set = no category deep-linking */
+    category: string | null;
+}
 
 export interface WixStoresConfig {
-    categoryPrefixes: CategoryPrefixConfig[];
+    urls: UrlTemplates;
+    /** Slug of the fallback category for pages without category context */
+    defaultCategory: string | null;
 }
 
 /**
  * Load wix-stores config from config/.wix-stores.yaml.
- * Returns empty defaults when the config file doesn't exist.
+ * Returns defaults when the config file doesn't exist.
  */
 export function loadWixStoresConfig(): WixStoresConfig {
     const configPath = path.join(process.cwd(), 'config', '.wix-stores.yaml');
 
+    const defaults: WixStoresConfig = {
+        urls: { product: '/products/{slug}', category: null },
+        defaultCategory: null,
+    };
+
     if (!fs.existsSync(configPath)) {
-        return { categoryPrefixes: [] };
+        return defaults;
     }
 
     const fileContents = fs.readFileSync(configPath, 'utf8');
-    const raw = yaml.load(fileContents) as any;
+    const raw = yaml.load(fileContents) as Record<string, unknown> | null;
 
     if (!raw) {
-        return { categoryPrefixes: [] };
+        return defaults;
     }
 
-    const prefixes: CategoryPrefixConfig[] = [];
+    const urls = raw.urls as Record<string, unknown> | undefined;
 
-    if (Array.isArray(raw.categoryPrefixes)) {
-        for (const entry of raw.categoryPrefixes) {
-            if (typeof entry.categoryId === 'string' && typeof entry.prefix === 'string') {
-                prefixes.push({
-                    categoryId: entry.categoryId.trim(),
-                    prefix: entry.prefix.trim(),
-                    name: typeof entry.name === 'string' ? entry.name.trim() : entry.prefix.trim(),
-                });
-            }
-        }
-    }
-
-    return { categoryPrefixes: prefixes };
+    return {
+        urls: {
+            product: typeof urls?.product === 'string' ? urls.product : defaults.urls.product,
+            category: typeof urls?.category === 'string' ? urls.category : null,
+        },
+        defaultCategory: typeof raw.defaultCategory === 'string' ? raw.defaultCategory : null,
+    };
 }

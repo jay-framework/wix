@@ -49,11 +49,6 @@ tags:
         phase: fast+interactive
         description: Whether this choice has available stock
 
-      - tag: variantId
-        type: data
-        dataType: string
-        description: The variant ID to use when adding to cart (for single-option products)
-
       - tag: isSelected
         type: variant
         dataType: boolean

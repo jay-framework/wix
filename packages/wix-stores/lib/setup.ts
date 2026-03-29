@@ -22,20 +22,22 @@ const CONFIG_FILE_NAME = '.wix-stores.yaml';
 
 const CONFIG_TEMPLATE = `# Wix Stores Configuration
 #
-# Category Prefixes (optional):
-# Maps root Wix categories to URL prefix slugs.
-# Products under a root category get URLs like /products/{prefix}/{product-slug}
-# Each prefix gets its own search/listing page and product page templates.
+# URL templates for link generation.
+# Placeholders: {slug} (product), {category} (sub-category), {prefix} (root category)
 #
-# To find category IDs, use: jay-stack action wix-stores/getCategories
+# urls:
+#   product: "/products/{slug}"                              # simple (default)
+#   product: "/products/{category}/{slug}"                   # with categories
+#   product: "/products/{prefix}/{category}/{slug}"          # with prefixes + categories
+#   category: "/products/{prefix}/{category}"                # category deep-link pages
 #
-# categoryPrefixes:
-#   - categoryId: "<root-category-id>"
-#     prefix: "<url-prefix>"
-#     name: "<display-name>"
-#   - categoryId: "<another-root-category-id>"
-#     prefix: "<another-url-prefix>"
-#     name: "<another-display-name>"
+# Fallback category for pages without category context:
+# defaultCategory: "all-products"
+#
+# To see available categories: jay-stack setup wix-stores (generates category tree reference)
+
+urls:
+  product: "/products/{slug}"
 `;
 
 export async function setupWixStores(ctx: PluginSetupContext): Promise<PluginSetupResult> {
@@ -69,11 +71,7 @@ export async function setupWixStores(ctx: PluginSetupContext): Promise<PluginSet
     }
 
     const service = getService(WIX_STORES_SERVICE_MARKER);
-    const prefixCount = service.categoryPrefixes.length;
-    const message =
-        prefixCount > 0
-            ? `Wix Stores configured with ${prefixCount} category prefix(es): ${service.categoryPrefixes.map((p) => p.prefix).join(', ')}`
-            : 'Wix Stores service verified';
+    const message = `Wix Stores configured (product URL: ${service.urls.product})`;
 
     return {
         status: 'configured',
@@ -115,8 +113,7 @@ export async function generateWixStoresReferences(
     fs.mkdirSync(ctx.referencesDir, { recursive: true });
 
     // Fetch all visible categories
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const allCategories: any[] = [];
+    const allCategories: Array<{ _id?: string; name?: string; slug?: string; itemCounter?: number; parentCategory?: { _id?: string } }> = [];
 
     let result = await storesService.categories
         .queryCategories({
@@ -158,15 +155,6 @@ export async function generateWixStoresReferences(
         }
     }
 
-    // Build prefix info
-    const prefixConfig = storesService.categoryPrefixes;
-    const configuredPrefixes = prefixConfig.map((p) => ({
-        categoryId: p.categoryId,
-        prefix: p.prefix,
-        name: p.name,
-        categoryName: nodeMap.get(p.categoryId)?.name ?? 'unknown',
-    }));
-
     // Write YAML
     const categoriesPath = path.join(ctx.referencesDir, 'categories.yaml');
     fs.writeFileSync(
@@ -175,9 +163,13 @@ export async function generateWixStoresReferences(
             {
                 _generated: new Date().toISOString(),
                 _description:
-                    'Wix Stores category tree for agent discovery. Shows category hierarchy, IDs, product counts, and configured URL prefixes.',
+                    'Wix Stores category tree for agent discovery. Shows category hierarchy, IDs, slugs, product counts, and parent-child relationships.',
                 totalCategories: allCategories.length,
-                configuredPrefixes: configuredPrefixes.length > 0 ? configuredPrefixes : undefined,
+                urlTemplates: {
+                    product: storesService.urls.product,
+                    category: storesService.urls.category,
+                },
+                defaultCategory: storesService.defaultCategory,
                 categoryTree: roots,
             },
             { indent: 2, lineWidth: 120, noRefs: true },

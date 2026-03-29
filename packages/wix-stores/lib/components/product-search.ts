@@ -7,6 +7,7 @@ import {
 } from '@jay-framework/fullstack-component';
 import { createSignal, createEffect, Props } from '@jay-framework/component';
 import {
+    CategoryHeaderOfProductSearchViewState,
     CurrentSort,
     ProductSearchContract,
     ProductSearchFastViewState,
@@ -17,16 +18,19 @@ import {
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
 import { patch, REPLACE, ADD } from '@jay-framework/json-patch';
 import { searchProducts, ProductSortField } from '../actions/stores-actions';
-import { mapProductToCard } from '../utils/product-mapper';
+import { buildCategoryUrl } from '../utils/product-mapper';
 import { WIX_STORES_CONTEXT, WixStoresContext } from '../contexts/wix-stores-context';
+import { type Category } from '@wix/auto_sdk_categories_categories'
 
 /**
  * URL parameters for product search routes.
- * When used as a category listing, `category` is the prefix slug (e.g., 'polgat').
+ * Supports: category (prefix slug), subcategory (sub-category slug).
  */
 export interface ProductSearchParams extends UrlParams {
-    /** Category prefix slug. When present, scopes search to this category hierarchy. */
+    /** Top-level category slug (e.g., 'polgat'). Scopes search to this category. */
     category?: string;
+    /** Sub-category slug (e.g., 'shirts'). Further scopes within the category. */
+    subcategory?: string;
 }
 
 /**
@@ -69,12 +73,260 @@ interface SearchFastCarryForward {
 
 const PAGE_SIZE = 12;
 
+/** Map CurrentSort enum to action sort field */
+function mapSortToAction(sort: CurrentSort): ProductSortField {
+    switch (sort) {
+        case CurrentSort.priceAsc:
+            return 'price_asc';
+        case CurrentSort.priceDesc:
+            return 'price_desc';
+        case CurrentSort.newest:
+            return 'newest';
+        case CurrentSort.nameAsc:
+            return 'name_asc';
+        case CurrentSort.nameDesc:
+            return 'name_desc';
+        default:
+            return 'relevance';
+    }
+}
+
+// ============================================================================
+// Filter URL Persistence
+// ============================================================================
+
+interface ParsedUrlFilters {
+    searchTerm: string;
+    selectedCategorySlugs: string[];
+    minPrice: number | null;
+    maxPrice: number | null;
+    inStockOnly: boolean;
+    sort: string;
+}
+
+/**
+ * Parse filter state from URL query parameters.
+ */
+function parseUrlFilters(url: string): ParsedUrlFilters {
+    try {
+        const params = new URL(url, 'http://x').searchParams;
+        return {
+            searchTerm: params.get('q') || '',
+            selectedCategorySlugs: params.get('cat')?.split(',').filter(Boolean) || [],
+            minPrice: params.has('min') ? Number(params.get('min')) : null,
+            maxPrice: params.has('max') ? Number(params.get('max')) : null,
+            inStockOnly: params.get('inStock') === '1',
+            sort: params.get('sort') || 'relevance',
+        };
+    } catch {
+        return {
+            searchTerm: '',
+            selectedCategorySlugs: [],
+            minPrice: null,
+            maxPrice: null,
+            inStockOnly: false,
+            sort: 'relevance',
+        };
+    }
+}
+
+/**
+ * Map a sort string to CurrentSort enum.
+ */
+function parseSortParam(sort: string): CurrentSort {
+    const sortMap: Record<string, CurrentSort> = {
+        relevance: CurrentSort.relevance,
+        priceAsc: CurrentSort.priceAsc,
+        priceDesc: CurrentSort.priceDesc,
+        newest: CurrentSort.newest,
+        nameAsc: CurrentSort.nameAsc,
+        nameDesc: CurrentSort.nameDesc,
+    };
+    return sortMap[sort] ?? CurrentSort.relevance;
+}
+
+/**
+ * Update URL query parameters from current filter state (client-side only).
+ */
+function updateUrlFilters(
+    searchTerm: string | null,
+    filters: ProductSearchFastViewState['filters'],
+    sort: CurrentSort,
+    categories: CategoryInfos,
+): void {
+    if (typeof window === 'undefined') return;
+
+    const params = new URLSearchParams();
+
+    if (searchTerm) params.set('q', searchTerm);
+
+    // Use slugs for category params, not IDs
+    const selectedSlugs = filters.categoryFilter.categories
+        .filter((c) => c.isSelected)
+        .map((c) => {
+            const info = categories.find((cat) => cat.categoryId === c.categoryId);
+            return info?.categorySlug;
+        })
+        .filter(Boolean);
+    if (selectedSlugs.length) params.set('cat', selectedSlugs.join(','));
+
+    if (filters.priceRange.minPrice > 0) params.set('min', String(filters.priceRange.minPrice));
+    if (
+        filters.priceRange.maxPrice > 0 &&
+        filters.priceRange.maxPrice < filters.priceRange.maxBound
+    ) {
+        params.set('max', String(filters.priceRange.maxPrice));
+    }
+    if (filters.inStockOnly) params.set('inStock', '1');
+    if (sort !== CurrentSort.relevance) {
+        const sortNames: Record<number, string> = {
+            [CurrentSort.priceAsc]: 'priceAsc',
+            [CurrentSort.priceDesc]: 'priceDesc',
+            [CurrentSort.newest]: 'newest',
+            [CurrentSort.nameAsc]: 'nameAsc',
+            [CurrentSort.nameDesc]: 'nameDesc',
+        };
+        const sortName = sortNames[sort];
+        if (sortName) params.set('sort', sortName);
+    }
+
+    const query = params.toString();
+    window.history.replaceState(null, '', query ? `?${query}` : window.location.pathname);
+}
+
+/** Empty category header used as default */
+const EMPTY_CATEGORY_HEADER: CategoryHeaderOfProductSearchViewState = {
+    name: '',
+    description: '',
+    imageUrl: '',
+    hasImage: false,
+    productCount: 0,
+    breadcrumbs: [],
+    seoData: { tags: [], settings: { preventAutoRedirect: false, keywords: [] } },
+};
+
+/**
+ * Look up a category by slug via the Wix API.
+ */
+async function findCategoryBySlug(
+    categoriesClient: WixStoresService['categories'],
+    slug: string,
+): Promise<Category | null> {
+    const result = await categoriesClient
+        .queryCategories({ treeReference: { appNamespace: '@wix/stores' } })
+        .eq('slug', slug)
+        .eq('visible', true)
+        .limit(1)
+        .find();
+    return result.items?.[0] ?? null;
+}
+
+/**
+ * Load category details with DESCRIPTION and BREADCRUMBS_INFO.
+ */
+async function loadCategoryDetails(
+    categoriesClient: WixStoresService['categories'],
+    categoryId: string,
+): Promise<Category | null> {
+    try {
+        return await categoriesClient.getCategory(
+            categoryId,
+            { appNamespace: '@wix/stores' },
+            { fields: ['DESCRIPTION', 'BREADCRUMBS_INFO'] },
+        );
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * Build category header from category data, with parent-chain inheritance for missing fields.
+ */
+async function buildCategoryHeader(
+    wixStoreService: WixStoresService,
+    category: Category,
+    categoryUrlTemplate: string | null,
+): Promise<CategoryHeaderOfProductSearchViewState> {
+    // Load full details
+    const details = await loadCategoryDetails(wixStoreService.categories, category._id);
+    const cat = details || category;
+
+    const imageUrl = cat.image || '';
+    const description = cat.description || '';
+
+    // Build breadcrumbs from BREADCRUMBS_INFO
+    const categoryTree = await wixStoreService.getCategoryTree();
+    const breadcrumbs = (cat.breadcrumbsInfo?.breadcrumbs || []).map((b) => ({
+        categoryId: b.categoryId,
+        name: b.categoryName,
+        slug: b.categorySlug,
+        url: categoryUrlTemplate
+            ? (buildCategoryUrl(wixStoreService.urls, categoryTree, b.categorySlug, b.categoryId))
+            : '',
+    }));
+
+    // Map SEO data
+    const seoData = cat.seoData? {
+            tags: (cat.seoData.tags || []).map((tag, index: number) => ({
+                position: index.toString().padStart(2, '0'),
+                type: tag.type || '',
+                props: Object.entries(tag.props || {}).map(([key, value]) => ({
+                    key,
+                    value: value as string,
+                })),
+                meta: Object.entries(tag.meta || {}).map(([key, value]) => ({
+                    key,
+                    value: value as string,
+                })),
+                children: tag.children || '',
+            })),
+            settings: {
+                preventAutoRedirect: cat.seoData.settings?.preventAutoRedirect || false,
+                keywords: (cat.seoData.settings?.keywords || []).map((k) => ({
+                    term: k.term || '',
+                    isMain: k.isMain || false,
+                    origin: k.origin || '',
+                })),
+            },
+        }
+        : EMPTY_CATEGORY_HEADER.seoData;
+
+    let header: CategoryHeaderOfProductSearchViewState = {
+        name: cat.name || '',
+        description,
+        imageUrl,
+        hasImage: !!imageUrl,
+        productCount: cat.itemCounter || 0,
+        breadcrumbs,
+        seoData,
+    };
+
+    // Inherit missing fields from parent chain
+    if ((!description || !imageUrl) && cat.parentCategory?._id) {
+        const parent = await loadCategoryDetails(wixStoreService.categories, cat.parentCategory._id);
+        if (parent) {
+            if (!header.description && parent.description) {
+                header = { ...header, description: parent.description };
+            }
+            if (!header.imageUrl) {
+                const parentImage =
+                    parent.image || '';
+                if (parentImage) {
+                    header = { ...header, imageUrl: parentImage, hasImage: true };
+                }
+            }
+        }
+    }
+
+    return header;
+}
+
 /**
  * Slow Rendering Phase
- * Loads semi-static configuration:
+ * Loads:
+ * - Category header (name, description, image, breadcrumbs, SEO) via fallback chain
+ * - Available categories for filtering
  * - Search field configuration
- * - Fuzzy search settings
- * - Available categories for filtering (relatively static)
  */
 async function renderSlowlyChanging(
     props: PageProps & ProductSearchParams,
@@ -82,12 +334,33 @@ async function renderSlowlyChanging(
 ) {
     const Pipeline = RenderPipeline.for<ProductSearchSlowViewState, SearchSlowCarryForward>();
 
-    // Resolve category prefix to root category ID
-    const categoryPrefix = props.category;
-    const categoryConfig = categoryPrefix
-        ? wixStores.categoryPrefixes.find((c) => c.prefix === categoryPrefix)
-        : null;
-    const baseCategoryId = categoryConfig?.categoryId ?? null;
+    // Resolve the active category via fallback chain:
+    // 1. subcategory param → 2. category param → 3. defaultCategory config
+    const subcategorySlug = props.subcategory ?? null;
+    const categorySlug = props.category ?? null;
+    const defaultCategorySlug = wixStores.defaultCategory;
+
+    let activeCategory: Category | null = null;
+    let baseCategoryId: string | null = null;
+
+    if (subcategorySlug) {
+        activeCategory = await findCategoryBySlug(wixStores.categories, subcategorySlug);
+        baseCategoryId = activeCategory?._id ?? null;
+    } else if (categorySlug) {
+        activeCategory = await findCategoryBySlug(wixStores.categories, categorySlug);
+        baseCategoryId = activeCategory?._id ?? null;
+    } else if (defaultCategorySlug) {
+        activeCategory = await findCategoryBySlug(wixStores.categories, defaultCategorySlug);
+        // Don't set baseCategoryId for default — show all products
+    }
+
+    // Get category tree (lazily built, cached on service)
+    const tree = await wixStores.getCategoryTree();
+
+    // Build category header
+    const categoryHeader = activeCategory
+        ? await buildCategoryHeader(wixStores, activeCategory, wixStores.urls.category)
+        : EMPTY_CATEGORY_HEADER;
 
     return Pipeline.try(async () => {
         let query = wixStores.categories
@@ -96,7 +369,7 @@ async function renderSlowlyChanging(
             })
             .eq('visible', true);
 
-        // When scoped to a category prefix, show only direct children of the root
+        // When scoped to a category, show only direct children as filters
         if (baseCategoryId) {
             query = query.eq('parentCategory.id', baseCategoryId);
         }
@@ -113,6 +386,13 @@ async function renderSlowlyChanging(
                 categoryId: cat._id || '',
                 categoryName: cat.name || '',
                 categorySlug: cat.slug || '',
+                categoryUrl:
+                    buildCategoryUrl(
+                        wixStores.urls,
+                        tree,
+                        cat.slug || '',
+                        cat._id || '',
+                    ) ?? '',
             }));
 
             return {
@@ -125,6 +405,7 @@ async function renderSlowlyChanging(
                             categories: categoryInfos,
                         },
                     },
+                    categoryHeader,
                 },
                 carryForward: {
                     searchFields: 'name,description,sku',
@@ -150,15 +431,31 @@ async function renderFastChanging(
 ) {
     const Pipeline = RenderPipeline.for<ProductSearchFastViewState, SearchFastCarryForward>();
 
+    // Parse URL query params to restore filter state
+    const urlFilters = parseUrlFilters(props.url);
+    const initialSort = parseSortParam(urlFilters.sort);
+
+    // Map category slugs from URL to category IDs
+    const initialCategoryIds = urlFilters.selectedCategorySlugs
+        .map((slug) => slowCarryForward.categories.find((c) => c.categorySlug === slug)?.categoryId)
+        .filter(Boolean) as string[];
+
     return Pipeline.try(async () => {
-        // Use searchProducts action to get products with aggregations
-        // When scoped to a category, apply the root category as base filter
+        // Combine base category with URL-restored category filters
         const baseCategoryIds = slowCarryForward.baseCategoryId
-            ? [slowCarryForward.baseCategoryId]
-            : [];
+            ? [slowCarryForward.baseCategoryId, ...initialCategoryIds]
+            : initialCategoryIds;
+
         const result = await searchProducts({
-            query: '',
-            filters: baseCategoryIds.length > 0 ? { categoryIds: baseCategoryIds } : undefined,
+            query: urlFilters.searchTerm || '',
+            filters: {
+                categoryIds: baseCategoryIds.length > 0 ? baseCategoryIds : undefined,
+                minPrice: urlFilters.minPrice ?? undefined,
+                maxPrice: urlFilters.maxPrice ?? undefined,
+                inStockOnly: urlFilters.inStockOnly || undefined,
+            },
+            sortBy:
+                initialSort !== CurrentSort.relevance ? mapSortToAction(initialSort) : undefined,
             pageSize: PAGE_SIZE,
         });
 
@@ -205,20 +502,19 @@ async function renderFastChanging(
 
             return {
                 viewState: {
-                    searchExpression: '',
+                    searchExpression: urlFilters.searchTerm,
                     isSearching: false,
-                    hasSearched: false,
+                    hasSearched: !!urlFilters.searchTerm,
                     searchResults: result.products,
                     resultCount: result.products.length,
                     hasResults: result.products.length > 0,
                     hasSuggestions: false,
                     suggestions: [],
                     filters: {
-                        inStockOnly: false,
+                        inStockOnly: urlFilters.inStockOnly,
                         priceRange: {
-                            // Initialize sliders to full range (bounds)
-                            minPrice: priceAgg.minBound,
-                            maxPrice: priceAgg.maxBound,
+                            minPrice: urlFilters.minPrice ?? priceAgg.minBound,
+                            maxPrice: urlFilters.maxPrice ?? priceAgg.maxBound,
                             minBound: priceAgg.minBound,
                             maxBound: priceAgg.maxBound,
                             ranges: priceAgg.ranges,
@@ -226,12 +522,12 @@ async function renderFastChanging(
                         categoryFilter: {
                             categories: slowCarryForward.categories.map((cat) => ({
                                 categoryId: cat.categoryId,
-                                isSelected: false,
+                                isSelected: initialCategoryIds.includes(cat.categoryId),
                             })),
                         },
                     },
                     sortBy: {
-                        currentSort: CurrentSort.relevance,
+                        currentSort: initialSort,
                     },
                     hasMore: result.hasMore,
                     loadedCount: result.products.length,
@@ -295,24 +591,6 @@ function ProductSearchInteractive(
     let searchVersion = 0;
     const DEBOUNCE_MS = 300;
 
-    // Map CurrentSort enum to action sort field
-    const mapSortToAction = (sort: CurrentSort): ProductSortField => {
-        switch (sort) {
-            case CurrentSort.priceAsc:
-                return 'price_asc';
-            case CurrentSort.priceDesc:
-                return 'price_desc';
-            case CurrentSort.newest:
-                return 'newest';
-            case CurrentSort.nameAsc:
-                return 'name_asc';
-            case CurrentSort.nameDesc:
-                return 'name_desc';
-            default:
-                return 'relevance';
-        }
-    };
-
     // Perform search (replaces results, resets cursor)
     const performSearch = async (
         version: number,
@@ -359,6 +637,9 @@ function ProductSearchInteractive(
 
             // Store cursor for load more
             currentCursor = result.nextCursor;
+
+            // Update URL with current filter state
+            updateUrlFilters(searchTerm, currentFilters, currentSort, fastCarryForward.categories);
         } catch (error) {
             if (version === searchVersion) {
                 console.error('Search failed:', error);
@@ -709,10 +990,54 @@ function ProductSearchInteractive(
  * import { productSearch } from '@jay-framework/wix-stores';
  * ```
  */
+/**
+ * Load category slugs for static site generation.
+ * Yields all visible categories so the framework can match them
+ * against existing filesystem routes.
+ */
+async function* loadSearchParams([wixStores]: [WixStoresService]): AsyncIterable<
+    ProductSearchParams[]
+> {
+    try {
+        const result = await wixStores.categories
+            .queryCategories({
+                treeReference: { appNamespace: '@wix/stores' },
+            })
+            .eq('visible', true)
+            .limit(100)
+            .find();
+
+        const categories = result.items || [];
+
+        // Yield each category as a potential route param
+        // The framework matches against existing routes — only categories
+        // with matching fs routes get pages generated
+        yield categories
+            .filter((cat) => cat.slug && (cat.itemCounter ?? 0) > 0)
+            .map((cat) => ({
+                category: cat.slug!,
+            }));
+
+        // Also yield subcategory params for categories that have parents
+        for (const cat of categories) {
+            if (!cat.slug || !cat.parentCategory?._id || (cat.itemCounter ?? 0) === 0) continue;
+            // Find parent slug
+            const parent = categories.find((c) => c._id === cat.parentCategory?._id);
+            if (parent?.slug) {
+                yield [{ category: parent.slug, subcategory: cat.slug }];
+            }
+        }
+    } catch (error) {
+        console.error('Failed to load category params:', error);
+        yield [];
+    }
+}
+
 export const productSearch = makeJayStackComponent<ProductSearchContract>()
     .withProps<PageProps & ProductSearchParams>()
     .withServices(WIX_STORES_SERVICE_MARKER)
     .withContexts(WIX_STORES_CONTEXT)
+    .withLoadParams(loadSearchParams)
     .withSlowlyRender(renderSlowlyChanging)
     .withFastRender(renderFastChanging)
     .withInteractive(ProductSearchInteractive);

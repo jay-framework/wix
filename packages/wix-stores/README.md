@@ -4,11 +4,13 @@ Wix Stores integration for Jay Framework using the Catalog V3 API. Provides head
 
 ## Features
 
-- **Catalog V3 API** - Uses `productsV3` and `@wix/categories` for product and category data
-- **Three-phase rendering** - Slow (build/SSG), Fast (request/SSR), Interactive (client)
-- **Category-prefixed routes** - Optional URL prefixes per product line (e.g., `/products/polgat/shirt-name`)
-- **Unified search + category** - Single `product-search` component handles both search pages and category listings
-- **Shared cart** - Delegates cart operations to `@jay-framework/wix-cart`
+- **Catalog V3 API** — Uses `productsV3` and `@wix/categories` for product and category data
+- **Three-phase rendering** — Slow (build/SSG), Fast (request/SSR), Interactive (client)
+- **Flexible URL patterns** — Configurable URL templates with `{prefix}`, `{category}`, `{slug}` placeholders
+- **Category header** — Automatic category metadata (name, description, image, breadcrumbs, SEO)
+- **Filter URL persistence** — Filters saved to query params for sharable, bookmarkable URLs
+- **Canonical redirects** — 301 redirects for non-canonical product/category URLs
+- **Shared cart** — Delegates cart operations to `@jay-framework/wix-cart`
 
 ## Headless Components
 
@@ -20,21 +22,19 @@ Complete product detail page with variant selection and add-to-cart.
 - **Fast phase**: Inventory status, pricing, variant availability
 - **Interactive**: Option/modifier selection, quantity, add to cart
 
-Route: `/products/[slug]` or `/products/[category]/[slug]` (when category prefixes are configured)
-
 ### Product Search (`product-search`)
 
-Unified search and category listing component. Replaces the previous separate `category-page` component.
+Unified search, category listing, and product browsing component.
 
-- **Slow phase**: Available categories for filtering
-- **Fast phase**: Initial product results with price aggregations
-- **Interactive**: Search input, category/price/stock filters, sorting, load more
+- **Slow phase**: Category header (name, description, image, breadcrumbs, SEO), available categories for filtering
+- **Fast phase**: Initial product results with price aggregations, filters restored from URL query params
+- **Interactive**: Search input, category/price/stock filters, sorting, load more, filter URL persistence
 
-When a `category` URL parameter is provided (e.g., from a route like `/products/polgat/`):
+Supports three roles depending on route params:
 
-- Scopes all searches to products within that category hierarchy
-- Shows only child categories of the root as filter options (root category is hidden)
-- Enables per-category template designs via separate jay-html files
+- **Search page** — no category context, shows all products
+- **Top-level category page** — scoped to a root category, shows child categories as filters
+- **Sub-category page** — scoped to a sub-category, shows header with breadcrumbs
 
 ### Category List (`category-list`)
 
@@ -42,74 +42,177 @@ Lists all store categories for navigation.
 
 ## Configuration
 
-### Basic Setup
+### Setup
 
 The plugin requires `@jay-framework/wix-server-client` to be configured with Wix API credentials.
 
-Run setup to create the config template:
-
 ```bash
 jay-stack setup wix-stores
 ```
 
-### Category Prefixes (Optional)
+This creates `config/.wix-stores.yaml` and generates `agent-kit/references/wix-stores/categories.yaml` with the full category tree.
 
-To enable category-prefixed product routes, create `config/.wix-stores.yaml`:
+### Config File (`config/.wix-stores.yaml`)
 
 ```yaml
-categoryPrefixes:
-  - categoryId: '024a9fff-77de-4508-b82c-5fce24f74757'
-    prefix: 'polgat'
-    name: 'פולגת'
-  - categoryId: 'eac4db24-04cc-4f36-86cf-c9da6e873421'
-    prefix: 'kitan'
-    name: 'כיתן'
+# URL templates — how the component builds canonical links
+urls:
+  product: '/products/{slug}' # default
+  category: null # no category pages by default
+
+# Fallback category for pages without category context
+defaultCategory: 'all-products' # slug of the fallback category
 ```
 
-Each entry maps a root Wix category to a URL prefix. Products belonging to any child of the root category get URLs like `/products/{prefix}/{product-slug}`.
+URL templates use three placeholders:
 
-To find category IDs, run setup to generate the category tree reference:
+| Placeholder  | Source                                     | Description               |
+| ------------ | ------------------------------------------ | ------------------------- |
+| `{slug}`     | Wix product slug                           | Product identifier in URL |
+| `{category}` | Wix category slug (from `mainCategoryId`)  | Sub-category in URL       |
+| `{prefix}`   | Wix root category slug (from parent chain) | Top-level category in URL |
 
-```bash
-jay-stack setup wix-stores
+## URL Patterns
+
+### Pattern 1: Simple Store (No Categories)
+
+```yaml
+urls:
+  product: '/products/{slug}'
 ```
-
-This creates `agent-kit/references/wix-stores/categories.yaml` with all category IDs, names, product counts, and parent-child relationships as a tree.
-
-### Route Structure with Category Prefixes
 
 ```
 src/pages/products/
-├── page.jay-html                         # /products (default search, optional)
-├── [slug]/page.jay-html                  # /products/:slug (default product page, optional)
-├── polgat/
-│   ├── page.jay-html                     # /products/polgat (polgat-design search)
-│   └── [slug]/page.jay-html              # /products/polgat/:slug (polgat product page)
-└── kitan/
-    ├── page.jay-html                     # /products/kitan (kitan-design search)
-    └── [slug]/page.jay-html              # /products/kitan/:slug (kitan product page)
+├── page.jay-html              → /products (search page)
+└── [slug]/page.jay-html       → /products/:slug (product page)
 ```
 
-Each prefix directory gets its own jay-html templates, enabling different visual designs per product line. Jay's routing precedence ensures static segments (`polgat`, `kitan`) take priority over the dynamic `[slug]` parameter.
+### Pattern 2: Categories (No Top-Level Prefixes)
 
-Products without a matching category prefix fall back to `/products/[slug]` if that route exists, or return 404 if it doesn't.
+```yaml
+urls:
+  product: '/products/{category}/{slug}'
+  category: '/products/{category}'
+```
+
+```
+src/pages/products/
+├── page.jay-html              → /products (all products)
+└── [category]/
+    ├── page.jay-html          → /products/:category (category listing)
+    └── [slug]/page.jay-html   → /products/:category/:slug (product)
+```
+
+### Pattern 3: Top-Level Prefixes + Sub-Categories
+
+```yaml
+urls:
+  product: '/products/{prefix}/{category}/{slug}'
+  category: '/products/{prefix}/{category}'
+defaultCategory: 'all-products'
+```
+
+```
+src/pages/products/
+├── page.jay-html                                → /products (all products)
+├── [prefix]/
+│   ├── page.jay-html                            → /products/:prefix (generic prefix page)
+│   └── [category]/
+│       ├── page.jay-html                        → /products/:prefix/:category (sub-category)
+│       └── [slug]/page.jay-html                 → /products/:prefix/:category/:slug (product)
+├── polgat/
+│   ├── page.jay-html                            → /products/polgat (custom design)
+│   └── [category]/
+│       ├── page.jay-html                        → /products/polgat/:category
+│       └── [slug]/page.jay-html                 → /products/polgat/:category/:slug
+└── kitan/
+    ├── page.jay-html                            → /products/kitan (custom design)
+    └── [category]/
+        ├── page.jay-html                        → /products/kitan/:category
+        └── [slug]/page.jay-html                 → /products/kitan/:category/:slug
+```
+
+Static directories (`polgat/`, `kitan/`) override the dynamic `[prefix]/` route, enabling different template designs per category. Any other prefix falls through to `[prefix]/`.
+
+### Static Overrides
+
+Jay's routing supports static segments overriding dynamic params at any level:
+
+```
+src/pages/products/polgat/
+├── [category]/page.jay-html          → default sub-category design
+├── sale/page.jay-html                → custom design for "sale" sub-category
+└── [category]/
+    ├── [slug]/page.jay-html          → default product page
+    └── premium-oxford/page.jay-html  → custom page for one specific product
+```
+
+### Setting Params for Static Routes
+
+Static route directories use `jay-params` to tell the component which category they represent:
+
+```html
+<!-- src/pages/products/polgat/page.jay-html -->
+<script type="application/jay-params">
+  category: polgat
+</script>
+<script
+  type="application/jay-headless"
+  plugin="@jay-framework/wix-stores"
+  contract="product-search"
+  key="search"
+></script>
+```
+
+## Category Header
+
+The category header is always loaded. The component resolves category metadata using a fallback chain:
+
+1. **`subcategory` param** → load sub-category
+2. **`category` / `prefix` param** → load root category
+3. **Neither** → load `defaultCategory` from config
+
+If the resolved category is missing image, description, or SEO data, the component walks up the parent chain until it finds the data. Each field inherits independently.
+
+The header includes:
+
+- Category name and description
+- Category image
+- Product count
+- Breadcrumb trail with navigation URLs
+- SEO metadata (title tags, meta description, keywords)
+
+## Filter URL Persistence
+
+Filters are persisted in URL query parameters for sharable, bookmarkable URLs:
+
+| Filter          | Query Param | Example             |
+| --------------- | ----------- | ------------------- |
+| Search term     | `q`         | `?q=cotton`         |
+| Category filter | `cat`       | `?cat=shirts,pants` |
+| Min price       | `min`       | `?min=50`           |
+| Max price       | `max`       | `?max=200`          |
+| In stock only   | `inStock`   | `?inStock=1`        |
+| Sort            | `sort`      | `?sort=priceAsc`    |
+
+All values use slugs/display values, not internal IDs.
+
+Example: `/products/polgat?q=cotton&cat=shirts&min=50&sort=priceAsc`
+
+- **Saving**: On filter change, the URL is updated via `replaceState` (no page reload)
+- **Restoring**: On page load (SSR), query params are parsed and applied as the initial filter state. The server-rendered page shows filtered results immediately.
+
+## Canonical URLs & Redirects
+
+The `urls` config defines canonical URLs. If a page is accessed at a non-canonical path, the component issues a 301 redirect.
+
+**Products:** Identified by slug. The canonical `{category}` comes from `mainCategoryId`, and `{prefix}` from the root category. Wrong category or prefix in the URL → 301 redirect.
+
+**Categories:** Identified by slug. The canonical `{prefix}` comes from the parent chain. Wrong prefix in the URL → 301 redirect.
 
 ## Server Actions
 
 ### `searchProducts`
-
-Search products with filtering, sorting, and price aggregations.
-
-```typescript
-const results = await searchProducts({
-  query: 'shoes',
-  filters: { inStockOnly: true, categoryIds: ['cat-123'] },
-  sortBy: 'price_asc',
-  pageSize: 12,
-});
-```
-
-CLI:
 
 ```bash
 jay-stack action wix-stores/searchProducts
@@ -118,27 +221,11 @@ jay-stack action wix-stores/searchProducts --input '{"query": "shoes", "pageSize
 
 ### `getProductBySlug`
 
-Fetch a single product by its URL slug.
-
-```typescript
-const product = await getProductBySlug({ slug: 'blue-sneakers' });
-```
-
-CLI:
-
 ```bash
 jay-stack action wix-stores/getProductBySlug --input '{"slug": "blue-sneakers"}'
 ```
 
 ### `getCategories`
-
-Get all visible categories for filtering.
-
-```typescript
-const categories = await getCategories();
-```
-
-CLI:
 
 ```bash
 jay-stack action wix-stores/getCategories
@@ -146,38 +233,12 @@ jay-stack action wix-stores/getCategories
 
 ## Agent Kit References
 
-Running `jay-stack setup wix-stores` or `jay-stack agent-kit` generates a category tree reference at `agent-kit/references/wix-stores/categories.yaml`. This file contains:
+Running `jay-stack setup wix-stores` generates `agent-kit/references/wix-stores/categories.yaml` — the full category tree with IDs, names, slugs, product counts, and parent-child hierarchy.
 
-- All visible categories with IDs, names, slugs, and product counts
-- Full parent-child hierarchy as a nested tree
-- Configured category prefixes (if any) with their mapped category names
+## Design Logs
 
-## Architecture
-
-### Plugin Initialization
-
-```
-wix-server-client (init first)
-  └── Registers WIX_CLIENT_SERVICE (API key auth)
-
-wix-stores (init second)
-  ├── Loads config/.wix-stores.yaml (category prefixes)
-  ├── Registers WIX_STORES_SERVICE_MARKER (products, categories, inventory)
-  └── Client: Registers WIX_STORES_CONTEXT (delegates cart to wix-cart)
-```
-
-### Category Prefix Resolution
-
-When category prefixes are configured:
-
-1. **`loadProductParams`** fetches all products with `ALL_CATEGORIES_INFO` and resolves each product's prefix
-2. **`searchProducts`** includes `ALL_CATEGORIES_INFO` to generate correct prefixed URLs in results
-3. **`mapProductToCard`** generates URLs like `/products/polgat/shirt-name` based on the product's category ancestry
-4. **Product page** validates that the URL's category prefix matches the product's actual category
-
-## Design Log
-
-See [Design Log 10 - Category-Prefixed Product Routes](../../design-log/10%20-%20category-prefixed-product-routes.md) for the full design rationale.
+- [Design Log 10 - Category-Prefixed Product Routes](../../design-log/10%20-%20category-prefixed-product-routes.md)
+- [Design Log 11 - Category Deep-Linking & Header](../../design-log/11%20-%20category-deep-linking-and-header.md)
 
 ## License
 

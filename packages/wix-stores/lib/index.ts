@@ -34,9 +34,18 @@ export {
     provideWixStoresService,
     WIX_STORES_SERVICE_MARKER,
     type WixStoresService,
-    type CategoryPrefixConfig,
     type WixStoresServiceOptions,
 } from './services/wix-stores-service';
+
+// Export URL building and category utilities
+export {
+    buildProductUrl,
+    buildCategoryUrl,
+    findRootCategoryId,
+    findRootCategorySlug,
+    findCategoryImage,
+    type CategoryTree,
+} from './utils/product-mapper';
 
 // Export stores client context
 export {

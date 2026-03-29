@@ -22,7 +22,7 @@ import {
     StockStatus,
 } from '../contracts/product-page.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service';
-import { resolveProductPrefix } from '../utils/product-mapper';
+import { buildProductUrl } from '../utils/product-mapper';
 import {
     ChoiceTypeWithLiterals,
     ConnectedModifier,
@@ -88,39 +88,29 @@ interface ProductFastCarryForward {
 
 /**
  * Load product slugs for static site generation.
- * When category prefixes are configured, fetches ALL_CATEGORIES_INFO
- * and yields params with the resolved category prefix for each product.
+ * Yields params with slug (and optionally category/subcategory from URL template).
  * Called once — the framework distributes params to matching routes.
  */
 async function* loadProductParams([wixStores]: [WixStoresService]): AsyncIterable<
     ProductPageParams[]
 > {
-    const prefixConfig = wixStores.categoryPrefixes;
-    const hasPrefixes = prefixConfig.length > 0;
-    const fields = hasPrefixes ? (['ALL_CATEGORIES_INFO'] as const) : ([] as const);
+    const template = wixStores.urls.product;
+    const needsCategories = template.includes('{category}') || template.includes('{prefix}');
+    const fields = needsCategories ? (['ALL_CATEGORIES_INFO'] as const) : ([] as const);
 
     try {
         let result = await wixStores.products.queryProducts({ fields: [...fields] }).find();
-        yield result.items.map((product) => mapProductToParams(product, prefixConfig));
+        yield result.items.map((product) => ({ slug: product.slug ?? '' })).filter((p) => p.slug);
         while (result.hasNext()) {
             result = await result.next();
-            yield result.items.map((product) => mapProductToParams(product, prefixConfig));
+            yield result.items
+                .map((product) => ({ slug: product.slug ?? '' }))
+                .filter((p) => p.slug);
         }
     } catch (error) {
         console.error('Failed to load product slugs:', error);
         yield [];
     }
-}
-
-function mapProductToParams(
-    product: { slug?: string; allCategoriesInfo?: { categories?: Array<{ _id?: string }> } },
-    prefixConfig: WixStoresService['categoryPrefixes'],
-): ProductPageParams {
-    const prefix = resolveProductPrefix(product, prefixConfig);
-    return {
-        slug: product.slug ?? '',
-        ...(prefix ? { category: prefix } : {}),
-    };
 }
 
 function mapProductType(productType: string): ProductType {
@@ -350,8 +340,8 @@ async function renderSlowlyChanging(
     wixStores: WixStoresService,
 ): Promise<SlowlyRenderResult<ProductPageSlowViewState, ProductSlowCarryForward>> {
     const Pipeline = RenderPipeline.for<ProductPageSlowViewState, ProductSlowCarryForward>();
-    const prefixConfig = wixStores.categoryPrefixes;
-    const hasPrefixes = prefixConfig.length > 0;
+    const template = wixStores.urls.product;
+    const needsCategories = template.includes('{category}') || template.includes('{prefix}');
 
     return Pipeline.try(async () => {
         const fields = [
@@ -360,19 +350,14 @@ async function renderSlowlyChanging(
             'MEDIA_ITEMS_INFO',
             'PLAIN_DESCRIPTION',
             'CURRENCY',
-            ...(hasPrefixes ? (['ALL_CATEGORIES_INFO'] as const) : []),
+            ...(needsCategories ? (['ALL_CATEGORIES_INFO'] as const) : []),
         ] as const;
         const response = await wixStores.products.getProductBySlug(props.slug, {
             fields: [...fields],
         });
 
-        // Validate that product belongs to the claimed category prefix
-        if (props.category && hasPrefixes) {
-            const actualPrefix = resolveProductPrefix(response.product, prefixConfig);
-            if (actualPrefix !== props.category) {
-                throw new Error('Category prefix mismatch');
-            }
-        }
+        // TODO: canonical URL redirect — if props.category/subcategory don't match
+        // the product's actual category (from mainCategoryId), redirect 301
 
         return response;
     })
