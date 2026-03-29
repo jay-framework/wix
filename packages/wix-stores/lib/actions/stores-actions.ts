@@ -371,7 +371,9 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
 
                 // Map products to card view state with URL resolution
                 const tree = await wixStores.getCategoryTree();
-                const mappedProducts = products.map((p) => mapProductToCard(p, wixStores.urls, tree));
+                const mappedProducts = products.map((p) =>
+                    mapProductToCard(p, wixStores.urls, tree),
+                );
 
                 return {
                     products: mappedProducts,

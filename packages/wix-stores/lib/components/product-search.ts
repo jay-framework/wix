@@ -20,7 +20,7 @@ import { patch, REPLACE, ADD } from '@jay-framework/json-patch';
 import { searchProducts, ProductSortField } from '../actions/stores-actions';
 import { buildCategoryUrl } from '../utils/product-mapper';
 import { WIX_STORES_CONTEXT, WixStoresContext } from '../contexts/wix-stores-context';
-import { type Category } from '@wix/auto_sdk_categories_categories'
+import { type Category } from '@wix/auto_sdk_categories_categories';
 
 /**
  * URL parameters for product search routes.
@@ -261,34 +261,35 @@ async function buildCategoryHeader(
         name: b.categoryName,
         slug: b.categorySlug,
         url: categoryUrlTemplate
-            ? (buildCategoryUrl(wixStoreService.urls, categoryTree, b.categorySlug, b.categoryId))
+            ? buildCategoryUrl(wixStoreService.urls, categoryTree, b.categorySlug, b.categoryId)
             : '',
     }));
 
     // Map SEO data
-    const seoData = cat.seoData? {
-            tags: (cat.seoData.tags || []).map((tag, index: number) => ({
-                position: index.toString().padStart(2, '0'),
-                type: tag.type || '',
-                props: Object.entries(tag.props || {}).map(([key, value]) => ({
-                    key,
-                    value: value as string,
-                })),
-                meta: Object.entries(tag.meta || {}).map(([key, value]) => ({
-                    key,
-                    value: value as string,
-                })),
-                children: tag.children || '',
-            })),
-            settings: {
-                preventAutoRedirect: cat.seoData.settings?.preventAutoRedirect || false,
-                keywords: (cat.seoData.settings?.keywords || []).map((k) => ({
-                    term: k.term || '',
-                    isMain: k.isMain || false,
-                    origin: k.origin || '',
-                })),
-            },
-        }
+    const seoData = cat.seoData
+        ? {
+              tags: (cat.seoData.tags || []).map((tag, index: number) => ({
+                  position: index.toString().padStart(2, '0'),
+                  type: tag.type || '',
+                  props: Object.entries(tag.props || {}).map(([key, value]) => ({
+                      key,
+                      value: value as string,
+                  })),
+                  meta: Object.entries(tag.meta || {}).map(([key, value]) => ({
+                      key,
+                      value: value as string,
+                  })),
+                  children: tag.children || '',
+              })),
+              settings: {
+                  preventAutoRedirect: cat.seoData.settings?.preventAutoRedirect || false,
+                  keywords: (cat.seoData.settings?.keywords || []).map((k) => ({
+                      term: k.term || '',
+                      isMain: k.isMain || false,
+                      origin: k.origin || '',
+                  })),
+              },
+          }
         : EMPTY_CATEGORY_HEADER.seoData;
 
     let header: CategoryHeaderOfProductSearchViewState = {
@@ -303,14 +304,16 @@ async function buildCategoryHeader(
 
     // Inherit missing fields from parent chain
     if ((!description || !imageUrl) && cat.parentCategory?._id) {
-        const parent = await loadCategoryDetails(wixStoreService.categories, cat.parentCategory._id);
+        const parent = await loadCategoryDetails(
+            wixStoreService.categories,
+            cat.parentCategory._id,
+        );
         if (parent) {
             if (!header.description && parent.description) {
                 header = { ...header, description: parent.description };
             }
             if (!header.imageUrl) {
-                const parentImage =
-                    parent.image || '';
+                const parentImage = parent.image || '';
                 if (parentImage) {
                     header = { ...header, imageUrl: parentImage, hasImage: true };
                 }
@@ -387,12 +390,7 @@ async function renderSlowlyChanging(
                 categoryName: cat.name || '',
                 categorySlug: cat.slug || '',
                 categoryUrl:
-                    buildCategoryUrl(
-                        wixStores.urls,
-                        tree,
-                        cat.slug || '',
-                        cat._id || '',
-                    ) ?? '',
+                    buildCategoryUrl(wixStores.urls, tree, cat.slug || '', cat._id || '') ?? '',
             }));
 
             return {

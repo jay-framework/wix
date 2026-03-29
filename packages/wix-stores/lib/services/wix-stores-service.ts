@@ -16,11 +16,11 @@ import { createJayService } from '@jay-framework/fullstack-component';
 import { registerService } from '@jay-framework/stack-server-runtime';
 import { type UrlTemplates } from '../config-loader';
 import { type CategoryTree } from '../utils/product-mapper';
-import {BuildDescriptors} from "@wix/sdk-types";
-import {productsV3} from "@wix/stores";
-import {categories} from "@wix/categories";
-import {inventoryItemsV3} from "@wix/stores";
-import {currentCart} from "@wix/ecom";
+import { BuildDescriptors } from '@wix/sdk-types';
+import { productsV3 } from '@wix/stores';
+import { categories } from '@wix/categories';
+import { inventoryItemsV3 } from '@wix/stores';
+import { currentCart } from '@wix/ecom';
 
 export interface WixStoresService {
     products: BuildDescriptors<typeof productsV3, {}>;
@@ -77,7 +77,14 @@ export function provideWixStoresService(
             const imageMap = new Map<string, string>();
 
             try {
-                const processItems = (items: Array<{ _id?: string; slug?: string; parentCategory?: { _id?: string }; media?: { mainMedia?: { image?: { url?: string }; url?: string } } }>) => {
+                const processItems = (
+                    items: Array<{
+                        _id?: string;
+                        slug?: string;
+                        parentCategory?: { _id?: string };
+                        media?: { mainMedia?: { image?: { url?: string }; url?: string } };
+                    }>,
+                ) => {
                     for (const cat of items) {
                         if (!cat._id || !cat.slug) continue;
                         slugMap.set(cat._id, cat.slug);
@@ -86,7 +93,8 @@ export function provideWixStoresService(
                         } else {
                             rootIds.add(cat._id);
                         }
-                        const imageUrl = cat.media?.mainMedia?.image?.url || cat.media?.mainMedia?.url;
+                        const imageUrl =
+                            cat.media?.mainMedia?.image?.url || cat.media?.mainMedia?.url;
                         if (imageUrl) {
                             imageMap.set(cat._id, imageUrl);
                         }

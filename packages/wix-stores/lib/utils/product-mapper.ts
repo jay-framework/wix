@@ -49,8 +49,7 @@ export function findRootCategoryId(categoryId: string, tree: CategoryTree): stri
             return current;
         }
         const parentId = tree.parentMap.get(current);
-        if (!parentId)
-            return current;
+        if (!parentId) return current;
         current = parentId;
     }
     return current;
@@ -176,7 +175,10 @@ function isValidPrice(amount: string | undefined): boolean {
 // Quick Add Option Mapping
 // ============================================================================
 
-export function getQuickAddType(product: { options?: unknown[]; modifiers?: unknown[] }): QuickAddType {
+export function getQuickAddType(product: {
+    options?: unknown[];
+    modifiers?: unknown[];
+}): QuickAddType {
     const optionCount = product.options?.length ?? 0;
     const hasModifiers = (product.modifiers?.length ?? 0) > 0;
 
@@ -214,7 +216,10 @@ interface WixChoice {
     inStock?: boolean;
 }
 
-export function mapQuickOption(option: WixOption | undefined, variantsInfo: unknown): ProductOptionsViewState | null {
+export function mapQuickOption(
+    option: WixOption | undefined,
+    variantsInfo: unknown,
+): ProductOptionsViewState | null {
     if (!option) return null;
 
     const choices = option.choicesSettings?.choices || [];
@@ -245,7 +250,14 @@ export interface V3ProductForCard {
     slug?: string;
     mainCategoryId?: string;
     media?: { main?: { _id?: string; url?: string; altText?: string; mediaType?: string } };
-    variantsInfo?: { variants?: Array<{ price?: { actualPrice?: { amount?: string; formattedAmount?: string }; compareAtPrice?: { amount?: string; formattedAmount?: string } } }> };
+    variantsInfo?: {
+        variants?: Array<{
+            price?: {
+                actualPrice?: { amount?: string; formattedAmount?: string };
+                compareAtPrice?: { amount?: string; formattedAmount?: string };
+            };
+        }>;
+    };
     actualPriceRange?: { minValue?: { amount?: string; formattedAmount?: string } };
     compareAtPriceRange?: { minValue?: { amount?: string; formattedAmount?: string } };
     inventory?: { availabilityStatus?: string; preorderStatus?: string };

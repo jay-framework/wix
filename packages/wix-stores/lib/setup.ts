@@ -113,7 +113,13 @@ export async function generateWixStoresReferences(
     fs.mkdirSync(ctx.referencesDir, { recursive: true });
 
     // Fetch all visible categories
-    const allCategories: Array<{ _id?: string; name?: string; slug?: string; itemCounter?: number; parentCategory?: { _id?: string } }> = [];
+    const allCategories: Array<{
+        _id?: string;
+        name?: string;
+        slug?: string;
+        itemCounter?: number;
+        parentCategory?: { _id?: string };
+    }> = [];
 
     let result = await storesService.categories
         .queryCategories({
