@@ -176,13 +176,23 @@ function isValidPrice(amount: string | undefined): boolean {
 // ============================================================================
 
 export function getQuickAddType(product: {
-    options?: unknown[];
+    options?: WixOption[];
     modifiers?: unknown[];
 }): QuickAddType {
     const optionCount = product.options?.length ?? 0;
     const hasModifiers = (product.modifiers?.length ?? 0) > 0;
 
-    if (hasModifiers || optionCount > 1) {
+    if (hasModifiers || optionCount > 2) {
+        return QuickAddType.NEEDS_CONFIGURATION;
+    }
+    if (optionCount === 2) {
+        const hasColor = product.options!.some(
+            (o) => o.optionRenderType === 'COLOR_SWATCH_CHOICES',
+        );
+        const hasText = product.options!.some((o) => o.optionRenderType !== 'COLOR_SWATCH_CHOICES');
+        if (hasColor && hasText) {
+            return QuickAddType.COLOR_AND_TEXT_OPTIONS;
+        }
         return QuickAddType.NEEDS_CONFIGURATION;
     }
     if (optionCount === 1) {
@@ -240,6 +250,137 @@ export function mapQuickOption(
 }
 
 // ============================================================================
+// Two-Option Quick Add (COLOR_AND_TEXT_OPTIONS)
+// ============================================================================
+
+/** Variant stock map: colorChoiceId -> textChoiceId -> inStock */
+export type VariantStockMap = Record<string, Record<string, boolean>>;
+
+/** Per-product variant stock maps: productId -> VariantStockMap */
+export type VariantStockMaps = Record<string, VariantStockMap>;
+
+/**
+ * Build a stock availability matrix for color+text two-option products.
+ * Maps colorChoiceId -> textChoiceId -> inStock.
+ */
+function buildVariantStockMap(
+    colorOption: WixOption,
+    textOption: WixOption,
+    variants: V3ProductForCard['variantsInfo']['variants'],
+): VariantStockMap {
+    const stockMap: VariantStockMap = {};
+    if (!variants) return stockMap;
+
+    const colorOptionId = colorOption._id || '';
+    const textOptionId = textOption._id || '';
+    const colorChoices = colorOption.choicesSettings?.choices || [];
+    const textChoices = textOption.choicesSettings?.choices || [];
+
+    for (const colorChoice of colorChoices) {
+        const cId = colorChoice.choiceId || '';
+        stockMap[cId] = {};
+        for (const textChoice of textChoices) {
+            const tId = textChoice.choiceId || '';
+            const variant = variants.find(
+                (v) =>
+                    v.choices?.some(
+                        (c) =>
+                            c.optionChoiceIds?.optionId === colorOptionId &&
+                            c.optionChoiceIds?.choiceId === cId,
+                    ) &&
+                    v.choices?.some(
+                        (c) =>
+                            c.optionChoiceIds?.optionId === textOptionId &&
+                            c.optionChoiceIds?.choiceId === tId,
+                    ),
+            );
+            stockMap[cId][tId] = variant?.inventoryStatus?.inStock ?? false;
+        }
+    }
+
+    return stockMap;
+}
+
+/**
+ * Map quick-add options based on quickAddType.
+ *
+ * - SINGLE_OPTION: quickOption = the single option, secondQuickOption = null
+ * - COLOR_AND_TEXT_OPTIONS: quickOption = color (first in-stock pre-selected),
+ *   secondQuickOption = text option, variantStockMap populated
+ * - Otherwise: both null
+ */
+function mapQuickAddOptions(
+    product: V3ProductForCard,
+): Pick<ProductCardViewState, 'quickAddType' | 'quickOption' | 'secondQuickOption'> & {
+    variantStockMap: VariantStockMap | null;
+} {
+    const quickAddType = getQuickAddType(product);
+
+    if (quickAddType === QuickAddType.COLOR_AND_TEXT_OPTIONS) {
+        const colorOption = product.options!.find(
+            (o) => o.optionRenderType === 'COLOR_SWATCH_CHOICES',
+        )!;
+        const textOption = product.options!.find(
+            (o) => o.optionRenderType !== 'COLOR_SWATCH_CHOICES',
+        )!;
+        const quickOption = mapQuickOption(colorOption, product.variantsInfo);
+        const secondQuickOption = mapQuickOption(textOption, product.variantsInfo);
+
+        // Pre-select first in-stock color
+        if (quickOption?.choices) {
+            const firstInStock = quickOption.choices.find((c) => c.inStock);
+            if (firstInStock) {
+                firstInStock.isSelected = true;
+            }
+        }
+
+        // Build variant stock map
+        const variantStockMap = buildVariantStockMap(
+            colorOption,
+            textOption,
+            product.variantsInfo?.variants,
+        );
+
+        // Set initial text choice inStock based on pre-selected color
+        const selectedColor = quickOption?.choices?.find((c) => c.isSelected);
+        if (selectedColor && secondQuickOption?.choices) {
+            const colorStock = variantStockMap[selectedColor.choiceId];
+            if (colorStock) {
+                for (const textChoice of secondQuickOption.choices) {
+                    textChoice.inStock = colorStock[textChoice.choiceId] ?? false;
+                }
+            }
+        }
+
+        return { quickAddType, quickOption, secondQuickOption, variantStockMap };
+    }
+
+    if (quickAddType === QuickAddType.SINGLE_OPTION) {
+        return {
+            quickAddType,
+            quickOption: mapQuickOption(product.options?.[0], product.variantsInfo),
+            secondQuickOption: null,
+            variantStockMap: null,
+        };
+    }
+
+    return { quickAddType, quickOption: null, secondQuickOption: null, variantStockMap: null };
+}
+
+type QuickAddResult = ReturnType<typeof mapQuickAddOptions>;
+
+/** Extract only the view state fields (no variantStockMap) */
+function pickQuickAddViewState(
+    result: QuickAddResult,
+): Pick<ProductCardViewState, 'quickAddType' | 'quickOption' | 'secondQuickOption'> {
+    return {
+        quickAddType: result.quickAddType,
+        quickOption: result.quickOption,
+        secondQuickOption: result.secondQuickOption,
+    };
+}
+
+// ============================================================================
 // Product Card Mapper
 // ============================================================================
 
@@ -252,10 +393,15 @@ export interface V3ProductForCard {
     media?: { main?: { _id?: string; url?: string; altText?: string; mediaType?: string } };
     variantsInfo?: {
         variants?: Array<{
+            _id?: string;
+            choices?: Array<{
+                optionChoiceIds?: { optionId?: string; choiceId?: string };
+            }>;
             price?: {
                 actualPrice?: { amount?: string; formattedAmount?: string };
                 compareAtPrice?: { amount?: string; formattedAmount?: string };
             };
+            inventoryStatus?: { inStock?: boolean };
         }>;
     };
     actualPriceRange?: { minValue?: { amount?: string; formattedAmount?: string } };
@@ -268,14 +414,20 @@ export interface V3ProductForCard {
     modifiers?: unknown[];
 }
 
+export interface MappedProductCard {
+    viewState: ProductCardViewState;
+    variantStockMap: VariantStockMap | null;
+}
+
 /**
- * Map a Wix Stores Catalog V3 product to ProductCardViewState.
+ * Map a Wix Stores Catalog V3 product to ProductCardViewState,
+ * along with variant stock map for COLOR_AND_TEXT_OPTIONS products.
  */
 export function mapProductToCard(
     product: V3ProductForCard,
     urls: UrlTemplates,
     tree: CategoryTree,
-): ProductCardViewState {
+): MappedProductCard {
     const mainMedia = product.media?.main;
     const slug = product.slug || '';
     const mainCategoryId = product.mainCategoryId || '';
@@ -301,8 +453,9 @@ export function mapProductToCard(
         '';
 
     const hasDiscount = isValidPrice(compareAtAmount) && compareAtAmount !== actualAmount;
+    const quickAddResult = mapQuickAddOptions(product);
 
-    return {
+    const viewState: ProductCardViewState = {
         _id: product._id || '',
         name: product.name || '',
         slug,
@@ -339,10 +492,8 @@ export function mapProductToCard(
         },
         productType: mapProductType(product.productType),
         isAddingToCart: false,
-        quickAddType: getQuickAddType(product),
-        quickOption:
-            getQuickAddType(product) === QuickAddType.SINGLE_OPTION
-                ? mapQuickOption(product.options?.[0], product.variantsInfo)
-                : null,
+        ...pickQuickAddViewState(quickAddResult),
     };
+
+    return { viewState, variantStockMap: quickAddResult.variantStockMap };
 }

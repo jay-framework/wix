@@ -165,15 +165,21 @@ tags:
   # Quick-add behavior
   - tag: quickAddType
     type: variant
-    dataType: enum (SIMPLE | SINGLE_OPTION | NEEDS_CONFIGURATION)
+    dataType: enum (SIMPLE | SINGLE_OPTION | COLOR_AND_TEXT_OPTIONS | NEEDS_CONFIGURATION)
     description: |
       SIMPLE = no options, show Add to Cart button
       SINGLE_OPTION = one option, show choices on hover (click = add to cart)
+      COLOR_AND_TEXT_OPTIONS = two options (color + text), color pre-selected, text selection adds to cart
       NEEDS_CONFIGURATION = multiple options or modifiers, link to product page
 
   - tag: quickOption
     type: sub-contract
-    description: Primary option for quick selection (only when quickAddType = SINGLE_OPTION)
+    description: Primary option for quick selection (color swatches for COLOR_AND_TEXT_OPTIONS, or the single option for SINGLE_OPTION)
+    link: ./product-options
+
+  - tag: secondQuickOption
+    type: sub-contract
+    description: Secondary option for quick selection (text choices for COLOR_AND_TEXT_OPTIONS). Rendered as buttons or dropdown. Selection adds to cart.
     link: ./product-options
 
   - tag: viewOptionsButton

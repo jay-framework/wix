@@ -18,8 +18,9 @@ import {
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
 import { patch, REPLACE, ADD } from '@jay-framework/json-patch';
 import { searchProducts, ProductSortField } from '../actions/stores-actions';
-import { buildCategoryUrl } from '../utils/product-mapper';
+import { buildCategoryUrl, type VariantStockMaps } from '../utils/product-mapper';
 import { WIX_STORES_CONTEXT, WixStoresContext } from '../contexts/wix-stores-context';
+import { QuickAddType } from '../contracts/product-card.jay-contract';
 import { type Category } from '@wix/auto_sdk_categories_categories';
 
 /**
@@ -69,6 +70,8 @@ interface SearchFastCarryForward {
     categories: CategoryInfos;
     /** Root category ID when scoped to a category prefix (always applied, hidden from UI) */
     baseCategoryId: string | null;
+    /** Variant stock maps for COLOR_AND_TEXT_OPTIONS products (productId -> VariantStockMap) */
+    variantStockMaps: VariantStockMaps;
 }
 
 const PAGE_SIZE = 12;
@@ -480,6 +483,7 @@ async function renderFastChanging(
                         },
                     ],
                 },
+                variantStockMaps: {},
             });
         })
         .toPhaseOutput((result) => {
@@ -536,6 +540,7 @@ async function renderFastChanging(
                     fuzzySearch: slowCarryForward.fuzzySearch,
                     categories: slowCarryForward.categories,
                     baseCategoryId: slowCarryForward.baseCategoryId,
+                    variantStockMaps: result.variantStockMaps ?? {},
                 },
             };
         });
@@ -561,6 +566,9 @@ function ProductSearchInteractive(
 ) {
     // Base category filter — always applied when scoped to a category prefix
     const baseCategoryId = fastCarryForward.baseCategoryId;
+
+    // Variant stock maps for COLOR_AND_TEXT_OPTIONS (replaced on search/load-more)
+    let variantStockMaps = fastCarryForward.variantStockMaps;
 
     const {
         searchExpression: [searchExpression, setSearchExpression],
@@ -633,6 +641,9 @@ function ProductSearchInteractive(
             setHasMore(result.hasMore);
             setHasResults(result.products.length > 0);
 
+            // Replace variant stock maps on new search
+            variantStockMaps = result.variantStockMaps ?? {};
+
             // Store cursor for load more
             currentCursor = result.nextCursor;
 
@@ -689,6 +700,9 @@ function ProductSearchInteractive(
             setResultCount(newResults.length);
             setLoadedCount(newResults.length);
             setHasMore(result.hasMore);
+
+            // Merge variant stock maps from new page
+            variantStockMaps = { ...variantStockMaps, ...result.variantStockMaps };
 
             // Update cursor for next load
             currentCursor = result.nextCursor;
@@ -904,7 +918,7 @@ function ProductSearchInteractive(
         }
     });
 
-    // Quick option choice click (SINGLE_OPTION products)
+    // Quick option choice click
     refs.searchResults.quickOption.choices.choiceButton.onclick(async ({ coordinate }) => {
         const [productId, choiceId] = coordinate;
 
@@ -913,6 +927,47 @@ function ProductSearchInteractive(
         if (productIndex === -1) return;
 
         const product = currentResults[productIndex];
+
+        // COLOR_AND_TEXT_OPTIONS: color click toggles selection, does NOT add to cart
+        if (product.quickAddType === QuickAddType.COLOR_AND_TEXT_OPTIONS) {
+            const choices = product.quickOption?.choices;
+            if (!choices) return;
+            const updatedChoices = choices.map((c) => ({
+                ...c,
+                isSelected: c.choiceId === choiceId,
+            }));
+
+            // Update color selection
+            let updated = patch(currentResults, [
+                {
+                    op: REPLACE,
+                    path: [productIndex, 'quickOption', 'choices'],
+                    value: updatedChoices,
+                },
+            ]);
+
+            // Update text choice inStock based on variant stock map
+            const colorStock = variantStockMaps[productId]?.[choiceId];
+            const textChoices = product.secondQuickOption?.choices;
+            if (colorStock && textChoices) {
+                const updatedTextChoices = textChoices.map((c) => ({
+                    ...c,
+                    inStock: colorStock[c.choiceId] ?? false,
+                }));
+                updated = patch(updated, [
+                    {
+                        op: REPLACE,
+                        path: [productIndex, 'secondQuickOption', 'choices'],
+                        value: updatedTextChoices,
+                    },
+                ]);
+            }
+
+            setSearchResults(updated);
+            return;
+        }
+
+        // SINGLE_OPTION: click = add to cart
         const choice = product.quickOption?.choices?.find((c) => c.choiceId === choiceId);
 
         if (!choice || !choice.inStock) {
@@ -930,6 +985,51 @@ function ProductSearchInteractive(
             const optionId = product.quickOption._id;
             await storesContext.addToCart(productId, 1, {
                 options: { [optionId]: choice.choiceId },
+                modifiers: {},
+                customTextFields: {},
+            });
+        } catch (error) {
+            console.error('Failed to add to cart:', error);
+        } finally {
+            setSearchResults(
+                patch(searchResults(), [
+                    { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: false },
+                ]),
+            );
+        }
+    });
+
+    // Second quick option choice click (text choices for COLOR_AND_TEXT_OPTIONS)
+    refs.searchResults.secondQuickOption.choices.choiceButton.onclick(async ({ coordinate }) => {
+        const [productId, choiceId] = coordinate;
+
+        const currentResults = searchResults();
+        const productIndex = currentResults.findIndex((p) => p._id === productId);
+        if (productIndex === -1) return;
+
+        const product = currentResults[productIndex];
+        const textChoice = product.secondQuickOption?.choices?.find((c) => c.choiceId === choiceId);
+        const selectedColor = product.quickOption?.choices?.find((c) => c.isSelected);
+
+        if (!textChoice || !textChoice.inStock) {
+            console.warn('Text choice not available or out of stock');
+            return;
+        }
+
+        setSearchResults(
+            patch(currentResults, [
+                { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: true },
+            ]),
+        );
+
+        try {
+            const colorOptionId = product.quickOption?._id || '';
+            const textOptionId = product.secondQuickOption?._id || '';
+            await storesContext.addToCart(productId, 1, {
+                options: {
+                    [colorOptionId]: selectedColor?.choiceId || '',
+                    [textOptionId]: textChoice.choiceId,
+                },
                 modifiers: {},
                 customTextFields: {},
             });

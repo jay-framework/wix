@@ -107,6 +107,17 @@ export type CategoryPageSlowViewState = Pick<
                     >
                 >;
             };
+            secondQuickOption: Pick<
+                CategoryPageViewState['products'][number]['secondQuickOption'],
+                '_id' | 'name' | 'optionRenderType'
+            > & {
+                choices: Array<
+                    Pick<
+                        CategoryPageViewState['products'][number]['secondQuickOption']['choices'][number],
+                        'choiceId' | 'name' | 'choiceType' | 'colorCode'
+                    >
+                >;
+            };
         }
     >;
 };
@@ -124,6 +135,14 @@ export type CategoryPageFastViewState = Pick<
                 choices: Array<
                     Pick<
                         CategoryPageViewState['products'][number]['quickOption']['choices'][number],
+                        'choiceId' | 'inStock' | 'isSelected'
+                    >
+                >;
+            };
+            secondQuickOption: {
+                choices: Array<
+                    Pick<
+                        CategoryPageViewState['products'][number]['secondQuickOption']['choices'][number],
                         'choiceId' | 'inStock' | 'isSelected'
                     >
                 >;
@@ -146,6 +165,14 @@ export type CategoryPageInteractiveViewState = Pick<
                 choices: Array<
                     Pick<
                         CategoryPageViewState['products'][number]['quickOption']['choices'][number],
+                        'choiceId' | 'inStock' | 'isSelected'
+                    >
+                >;
+            };
+            secondQuickOption: {
+                choices: Array<
+                    Pick<
+                        CategoryPageViewState['products'][number]['secondQuickOption']['choices'][number],
                         'choiceId' | 'inStock' | 'isSelected'
                     >
                 >;

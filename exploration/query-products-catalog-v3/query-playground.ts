@@ -5,8 +5,9 @@ import * as path from 'path';
 import { categories } from '@wix/categories';
 import { WixClient } from '@wix/sdk';
 import {
-    X as V3ProductSearch, Y as SearchProductsOptions
-} from "@wix/auto_sdk_stores_products-v-3/build/cjs/stores-catalog-v3-product-products-v-3.universal-BPteII-3";
+    X as V3ProductSearch,
+    Y as SearchProductsOptions,
+} from '@wix/auto_sdk_stores_products-v-3/build/cjs/stores-catalog-v3-product-products-v-3.universal-BPteII-3';
 
 interface ProductsResponse {
     products: any[];
@@ -51,26 +52,26 @@ async function queryProducts(wixClient: WixClient): Promise<void> {
         'DIRECT_CATEGORIES_INFO',
         'THUMBNAIL',
         'INFO_SECTION_DESCRIPTION',
-    ]
+    ];
 
     const optionFilter: V3ProductSearch['filter'] = {
-        "options.name": {
-            "$hasSome": ["צבע"]
+        'options.name': {
+            $hasSome: ['צבע'],
         },
         // "options.choicesSettings.choices.name": {
         //     "$hasAll": ["שחור"]
         // }
-    }
+    };
 
     const priceFilter: V3ProductSearch['filter'] = {
         $and: [
             { 'actualPriceRange.minValue.amount': { $gt: '50' } },
             { 'actualPriceRange.minValue.amount': { $lt: '500' } },
         ],
-    }
+    };
     const inStockFilter: V3ProductSearch['filter'] = {
         'inventory.availabilityStatus': { $eq: 'IN_STOCK' },
-    }
+    };
 
     const allCategoriesFilter: V3ProductSearch['filter'] = {
         'allCategoriesInfo.categories': {
@@ -82,28 +83,25 @@ async function queryProducts(wixClient: WixClient): Promise<void> {
                 },
             ],
         },
-    }
+    };
 
     while (next) {
         const cursorPaging = next !== 'initial' ? { cursor: next, limit: 50 } : { limit: 50 };
         const filter: V3ProductSearch['filter'] = {
-            ...optionFilter
+            ...optionFilter,
             // ...priceFilter,
             // ...inStockFilter,
             // ...allCategoriesFilter,
         };
-        const sort: V3ProductSearch['sort'] = [{ fieldName: 'actualPriceRange.minValue.amount', order: 'ASC' }];
-        const productSearch = next === 'initial' ?
-            { filter, cursorPaging, sort } :
-            { cursorPaging };
+        const sort: V3ProductSearch['sort'] = [
+            { fieldName: 'actualPriceRange.minValue.amount', order: 'ASC' },
+        ];
+        const productSearch =
+            next === 'initial' ? { filter, cursorPaging, sort } : { cursorPaging };
 
-        let response = await productsClient.searchProducts(
-            productSearch,
-            {
-                fields: searchFields,
-            },
-        );
-
+        let response = await productsClient.searchProducts(productSearch, {
+            fields: searchFields,
+        });
 
         if (response.products && response.products.length > 0) {
             response.products.forEach((product) => console.log(product.name));

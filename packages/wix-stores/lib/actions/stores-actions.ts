@@ -8,7 +8,7 @@
 import { makeJayQuery, ActionError } from '@jay-framework/fullstack-component';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
 import { ProductCardViewState } from '../contracts/product-card.jay-contract';
-import { mapProductToCard } from '../utils/product-mapper.js';
+import { mapProductToCard, type VariantStockMaps } from '../utils/product-mapper.js';
 import { type V3ProductSearch } from '@wix/auto_sdk_stores_products-v-3';
 
 /** Check if URL templates use category/prefix placeholders */
@@ -128,6 +128,8 @@ export interface SearchProductsOutput {
     hasMore: boolean;
     /** Price aggregation data (bounds and ranges) */
     priceAggregation?: PriceAggregationData;
+    /** Variant stock maps for COLOR_AND_TEXT_OPTIONS products (productId -> stockMap) */
+    variantStockMaps?: VariantStockMaps;
 }
 
 /**
@@ -371,9 +373,18 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
 
                 // Map products to card view state with URL resolution
                 const tree = await wixStores.getCategoryTree();
-                const mappedProducts = products.map((p) =>
-                    mapProductToCard(p, wixStores.urls, tree),
-                );
+                const variantStockMaps: VariantStockMaps = {};
+                const mappedProducts = products.map((p) => {
+                    const { viewState, variantStockMap } = mapProductToCard(
+                        p,
+                        wixStores.urls,
+                        tree,
+                    );
+                    if (variantStockMap && p._id) {
+                        variantStockMaps[p._id] = variantStockMap;
+                    }
+                    return viewState;
+                });
 
                 return {
                     products: mappedProducts,
@@ -385,6 +396,7 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
                         maxBound,
                         ranges: priceRanges,
                     },
+                    variantStockMaps,
                 };
             } catch (error) {
                 console.error('[wixStores.searchProducts] Search failed:', error);
@@ -431,7 +443,7 @@ export const getProductBySlug = makeJayQuery('wixStores.getProductBySlug')
                 }
 
                 const tree = await wixStores.getCategoryTree();
-                return mapProductToCard(product, wixStores.urls, tree);
+                return mapProductToCard(product, wixStores.urls, tree).viewState;
             } catch (error) {
                 console.error('[wixStores.getProductBySlug] Failed to get product:', error);
                 // Return null for not found instead of throwing

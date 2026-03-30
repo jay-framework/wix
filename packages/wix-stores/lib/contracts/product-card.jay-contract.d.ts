@@ -58,6 +58,7 @@ export enum ProductType {
 export enum QuickAddType {
     SIMPLE,
     SINGLE_OPTION,
+    COLOR_AND_TEXT_OPTIONS,
     NEEDS_CONFIGURATION,
 }
 
@@ -80,6 +81,7 @@ export interface ProductCardViewState {
     isAddingToCart: boolean;
     quickAddType: QuickAddType;
     quickOption: ProductOptionsViewState;
+    secondQuickOption: ProductOptionsViewState;
 }
 
 export type ProductCardSlowViewState = Pick<
@@ -107,6 +109,17 @@ export type ProductCardSlowViewState = Pick<
             >
         >;
     };
+    secondQuickOption: Pick<
+        ProductCardViewState['secondQuickOption'],
+        '_id' | 'name' | 'optionRenderType'
+    > & {
+        choices: Array<
+            Pick<
+                ProductCardViewState['secondQuickOption']['choices'][number],
+                'choiceId' | 'name' | 'choiceType' | 'colorCode'
+            >
+        >;
+    };
 };
 
 export type ProductCardFastViewState = Pick<
@@ -117,6 +130,14 @@ export type ProductCardFastViewState = Pick<
         choices: Array<
             Pick<
                 ProductCardViewState['quickOption']['choices'][number],
+                'choiceId' | 'inStock' | 'isSelected'
+            >
+        >;
+    };
+    secondQuickOption: {
+        choices: Array<
+            Pick<
+                ProductCardViewState['secondQuickOption']['choices'][number],
                 'choiceId' | 'inStock' | 'isSelected'
             >
         >;
@@ -135,6 +156,14 @@ export type ProductCardInteractiveViewState = Pick<
             >
         >;
     };
+    secondQuickOption: {
+        choices: Array<
+            Pick<
+                ProductCardViewState['secondQuickOption']['choices'][number],
+                'choiceId' | 'inStock' | 'isSelected'
+            >
+        >;
+    };
 };
 
 export interface ProductCardRefs {
@@ -142,6 +171,7 @@ export interface ProductCardRefs {
     addToCartButton: HTMLElementProxy<ProductCardViewState, HTMLButtonElement>;
     viewOptionsButton: HTMLElementProxy<ProductCardViewState, HTMLButtonElement>;
     quickOption: ProductOptionsRefs;
+    secondQuickOption: ProductOptionsRefs;
 }
 
 export interface ProductCardRepeatedRefs {
@@ -149,6 +179,7 @@ export interface ProductCardRepeatedRefs {
     addToCartButton: HTMLElementCollectionProxy<ProductCardViewState, HTMLButtonElement>;
     viewOptionsButton: HTMLElementCollectionProxy<ProductCardViewState, HTMLButtonElement>;
     quickOption: ProductOptionsRepeatedRefs;
+    secondQuickOption: ProductOptionsRepeatedRefs;
 }
 
 export type ProductCardContract = JayContract<

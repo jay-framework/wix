@@ -17,6 +17,7 @@ Design documentation for the Jay Framework Wix integration packages.
 | 09  | [Wix Data List Field Mapping](./09%20-%20wix-data%20list%20field%20mapping.md)             | Draft         |
 | 10  | [Category-Prefixed Product Routes](./10%20-%20category-prefixed-product-routes.md)         | Draft         |
 | 11  | [Category Deep-Linking & Header](./11%20-%20category-deep-linking-and-header.md)           | Draft         |
+| 12  | [Two-Option Quick Add](./12%20-%20two-option-quick-add.md)                                 | Draft         |
 
 ## Packages Covered
 
