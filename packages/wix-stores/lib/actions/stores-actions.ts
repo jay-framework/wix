@@ -8,7 +8,11 @@
 import { makeJayQuery, ActionError } from '@jay-framework/fullstack-component';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
 import { ProductCardViewState } from '../contracts/product-card.jay-contract';
-import { mapProductToCard, type VariantStockMaps } from '../utils/product-mapper.js';
+import {
+    mapProductToCard,
+    buildVariantStockMap,
+    type VariantStockMap,
+} from '../utils/product-mapper.js';
 import { type V3ProductSearch } from '@wix/auto_sdk_stores_products-v-3';
 
 /** Check if URL templates use category/prefix placeholders */
@@ -128,8 +132,6 @@ export interface SearchProductsOutput {
     hasMore: boolean;
     /** Price aggregation data (bounds and ranges) */
     priceAggregation?: PriceAggregationData;
-    /** Variant stock maps for COLOR_AND_TEXT_OPTIONS products (productId -> stockMap) */
-    variantStockMaps?: VariantStockMaps;
 }
 
 /**
@@ -373,18 +375,9 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
 
                 // Map products to card view state with URL resolution
                 const tree = await wixStores.getCategoryTree();
-                const variantStockMaps: VariantStockMaps = {};
-                const mappedProducts = products.map((p) => {
-                    const { viewState, variantStockMap } = mapProductToCard(
-                        p,
-                        wixStores.urls,
-                        tree,
-                    );
-                    if (variantStockMap && p._id) {
-                        variantStockMaps[p._id] = variantStockMap;
-                    }
-                    return viewState;
-                });
+                const mappedProducts = products.map((p) =>
+                    mapProductToCard(p, wixStores.urls, tree),
+                );
 
                 return {
                     products: mappedProducts,
@@ -396,7 +389,6 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
                         maxBound,
                         ranges: priceRanges,
                     },
-                    variantStockMaps,
                 };
             } catch (error) {
                 console.error('[wixStores.searchProducts] Search failed:', error);
@@ -443,11 +435,34 @@ export const getProductBySlug = makeJayQuery('wixStores.getProductBySlug')
                 }
 
                 const tree = await wixStores.getCategoryTree();
-                return mapProductToCard(product, wixStores.urls, tree).viewState;
+                return mapProductToCard(product, wixStores.urls, tree);
             } catch (error) {
                 console.error('[wixStores.getProductBySlug] Failed to get product:', error);
                 // Return null for not found instead of throwing
                 return null;
+            }
+        },
+    );
+
+/**
+ * Get variant stock availability for a COLOR_AND_TEXT_OPTIONS product.
+ * Fetches full product data and builds a stock map: colorChoiceId -> textChoiceId -> inStock.
+ */
+export const getVariantStock = makeJayQuery('wixStores.getVariantStock')
+    .withServices(WIX_STORES_SERVICE_MARKER)
+    .withHandler(
+        async (
+            input: { productId: string },
+            wixStores: WixStoresService,
+        ): Promise<VariantStockMap> => {
+            try {
+                const product = await wixStores.products.getProduct(input.productId, {
+                    fields: ['VARIANT_OPTION_CHOICE_NAMES'],
+                });
+                return buildVariantStockMap(product);
+            } catch (error) {
+                console.error('[wixStores.getVariantStock] Failed:', error);
+                return {};
             }
         },
     );

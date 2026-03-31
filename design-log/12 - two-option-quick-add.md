@@ -198,10 +198,18 @@ For the slow phase, `inStock` reflects overall availability. In the interactive 
 1. Size button click adds to cart with both selected color + clicked size
 2. Wire up `secondQuickOption.choices.choiceButton` handler
 
-### Phase 5: Stock per Variant
+### Phase 5: Lazy-Load Variant Stock on Hover
 
-1. When color changes, update size `inStock` based on variant availability
-2. Requires variant data in carry-forward
+The `searchProducts` API does not return `variantsInfo` — only `getProduct` does. Variant stock data cannot be pre-computed at search time.
+
+Variant data is loaded lazily on **product card hover** via `productLink.onmouseenter`:
+
+1. On initial render, text choices are shown as **disabled** (`inStock: false`)
+2. On hover over the product card, call `getVariantStock` action to fetch variant data
+3. Build the variant stock map and cache it per product
+4. Update text choice `inStock` based on the pre-selected color — choices become enabled
+5. On subsequent color changes, update text choice `inStock` from the cached stock map (no additional fetch)
+6. Fallback for touch devices: if hover didn't trigger, color swatch click triggers the load
 
 ## Trade-offs
 
@@ -214,11 +222,10 @@ For the slow phase, `inStock` reflects overall availability. In the interactive 
 ### Cons
 
 - More complex interactive logic for product cards
-- Variant-level stock checking adds data to carry-forward
+- Lazy-loading variant data adds a brief disabled state on first interaction
 - Only supports color+text combination — other two-option combos still redirect
 
 ## Scope
 
 - Only products with exactly 2 options: one COLOR_SWATCH + one TEXT_CHOICES
 - Products with 2 TEXT options, 2 COLOR options, or any modifiers → still NEEDS_CONFIGURATION
-- Stock-per-variant update (Phase 5) adds data to carry-forward but is necessary for correct UX

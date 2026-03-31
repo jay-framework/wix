@@ -17,8 +17,8 @@ import {
 } from '../contracts/product-search.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
 import { patch, REPLACE, ADD } from '@jay-framework/json-patch';
-import { searchProducts, ProductSortField } from '../actions/stores-actions';
-import { buildCategoryUrl, type VariantStockMaps } from '../utils/product-mapper';
+import { searchProducts, getVariantStock, ProductSortField } from '../actions/stores-actions';
+import { buildCategoryUrl, type VariantStockMap } from '../utils/product-mapper';
 import { WIX_STORES_CONTEXT, WixStoresContext } from '../contexts/wix-stores-context';
 import { QuickAddType } from '../contracts/product-card.jay-contract';
 import { type Category } from '@wix/auto_sdk_categories_categories';
@@ -70,8 +70,6 @@ interface SearchFastCarryForward {
     categories: CategoryInfos;
     /** Root category ID when scoped to a category prefix (always applied, hidden from UI) */
     baseCategoryId: string | null;
-    /** Variant stock maps for COLOR_AND_TEXT_OPTIONS products (productId -> VariantStockMap) */
-    variantStockMaps: VariantStockMaps;
 }
 
 const PAGE_SIZE = 12;
@@ -483,7 +481,6 @@ async function renderFastChanging(
                         },
                     ],
                 },
-                variantStockMaps: {},
             });
         })
         .toPhaseOutput((result) => {
@@ -540,7 +537,6 @@ async function renderFastChanging(
                     fuzzySearch: slowCarryForward.fuzzySearch,
                     categories: slowCarryForward.categories,
                     baseCategoryId: slowCarryForward.baseCategoryId,
-                    variantStockMaps: result.variantStockMaps ?? {},
                 },
             };
         });
@@ -567,8 +563,8 @@ function ProductSearchInteractive(
     // Base category filter — always applied when scoped to a category prefix
     const baseCategoryId = fastCarryForward.baseCategoryId;
 
-    // Variant stock maps for COLOR_AND_TEXT_OPTIONS (replaced on search/load-more)
-    let variantStockMaps = fastCarryForward.variantStockMaps;
+    // Variant stock maps for COLOR_AND_TEXT_OPTIONS (loaded lazily per product)
+    const variantStockCache: Record<string, VariantStockMap> = {};
 
     const {
         searchExpression: [searchExpression, setSearchExpression],
@@ -641,9 +637,6 @@ function ProductSearchInteractive(
             setHasMore(result.hasMore);
             setHasResults(result.products.length > 0);
 
-            // Replace variant stock maps on new search
-            variantStockMaps = result.variantStockMaps ?? {};
-
             // Store cursor for load more
             currentCursor = result.nextCursor;
 
@@ -700,9 +693,6 @@ function ProductSearchInteractive(
             setResultCount(newResults.length);
             setLoadedCount(newResults.length);
             setHasMore(result.hasMore);
-
-            // Merge variant stock maps from new page
-            variantStockMaps = { ...variantStockMaps, ...result.variantStockMaps };
 
             // Update cursor for next load
             currentCursor = result.nextCursor;
@@ -918,6 +908,57 @@ function ProductSearchInteractive(
         }
     });
 
+    // Lazy-load variant stock on product card hover (for COLOR_AND_TEXT_OPTIONS)
+    const loadVariantStock = async (productId: string) => {
+        if (variantStockCache[productId]) return;
+
+        const stockMap = await getVariantStock({ productId });
+        variantStockCache[productId] = stockMap;
+
+        // Update text choice inStock based on currently selected color
+        const currentResults = searchResults();
+        const productIndex = currentResults.findIndex((p) => p._id === productId);
+        if (productIndex === -1) return;
+
+        const product = currentResults[productIndex];
+        if (product.quickAddType !== QuickAddType.COLOR_AND_TEXT_OPTIONS) return;
+
+        const selectedColor = product.quickOption?.choices?.find((c) => c.isSelected);
+        const textChoices = product.secondQuickOption?.choices;
+        if (!selectedColor || !textChoices) return;
+
+        const colorStock = stockMap[selectedColor.choiceId];
+        const updatedTextChoices = textChoices.map((c) => ({
+            ...c,
+            inStock: colorStock?.[c.choiceId] ?? false,
+        }));
+        setSearchResults(
+            patch(searchResults(), [
+                {
+                    op: REPLACE,
+                    path: [productIndex, 'secondQuickOption', 'choices'],
+                    value: updatedTextChoices,
+                },
+            ]),
+        );
+    };
+
+    refs.searchResults.productLink.onmouseenter(({ coordinate }) => {
+        const [productId] = coordinate;
+        const product = searchResults().find((p) => p._id === productId);
+        if (product?.quickAddType === QuickAddType.COLOR_AND_TEXT_OPTIONS) {
+            loadVariantStock(productId);
+        }
+    });
+
+    refs.searchResults.quickOption.choices.choiceButton.onmouseenter(({ coordinate }) => {
+        const [productId] = coordinate;
+        const product = searchResults().find((p) => p._id === productId);
+        if (product?.quickAddType === QuickAddType.COLOR_AND_TEXT_OPTIONS) {
+            loadVariantStock(productId);
+        }
+    });
+
     // Quick option choice click
     refs.searchResults.quickOption.choices.choiceButton.onclick(async ({ coordinate }) => {
         const [productId, choiceId] = coordinate;
@@ -946,21 +987,27 @@ function ProductSearchInteractive(
                 },
             ]);
 
-            // Update text choice inStock based on variant stock map
-            const colorStock = variantStockMaps[productId]?.[choiceId];
-            const textChoices = product.secondQuickOption?.choices;
-            if (colorStock && textChoices) {
-                const updatedTextChoices = textChoices.map((c) => ({
-                    ...c,
-                    inStock: colorStock[c.choiceId] ?? false,
-                }));
-                updated = patch(updated, [
-                    {
-                        op: REPLACE,
-                        path: [productIndex, 'secondQuickOption', 'choices'],
-                        value: updatedTextChoices,
-                    },
-                ]);
+            // Update text choice inStock from cache (loaded on hover)
+            const stockMap = variantStockCache[productId];
+            if (stockMap) {
+                const colorStock = stockMap[choiceId];
+                const textChoices = product.secondQuickOption?.choices;
+                if (textChoices) {
+                    const updatedTextChoices = textChoices.map((c) => ({
+                        ...c,
+                        inStock: colorStock?.[c.choiceId] ?? false,
+                    }));
+                    updated = patch(updated, [
+                        {
+                            op: REPLACE,
+                            path: [productIndex, 'secondQuickOption', 'choices'],
+                            value: updatedTextChoices,
+                        },
+                    ]);
+                }
+            } else {
+                // Fallback: trigger load if hover was missed (e.g. touch devices)
+                loadVariantStock(productId);
             }
 
             setSearchResults(updated);
