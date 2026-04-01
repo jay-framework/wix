@@ -18,7 +18,8 @@
     "./category-list.jay-contract": "./dist/contracts/category-list.jay-contract",
     "./search-products.jay-action": "./dist/actions/search-products.jay-action",
     "./get-product-by-slug.jay-action": "./dist/actions/get-product-by-slug.jay-action",
-    "./get-categories.jay-action": "./dist/actions/get-categories.jay-action"
+    "./get-categories.jay-action": "./dist/actions/get-categories.jay-action",
+    "./get-variant-stock.jay-action": "./dist/actions/get-variant-stock.jay-action"
   },
   "scripts": {
     "build": "npm run clean && npm run definitions && npm run build:client && npm run build:server && npm run build:copy-contract && npm run build:types",
