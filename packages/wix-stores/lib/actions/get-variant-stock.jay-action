@@ -1,0 +1,7 @@
+name: getVariantStock
+description: Get variant stock availability for a product with color + text options. Returns a map of colorChoiceId -> textChoiceId -> inStock.
+
+inputSchema:
+  productId: string
+
+outputSchema: record(record(boolean))

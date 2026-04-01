@@ -24,6 +24,8 @@ actions:
     action: get-product-by-slug.jay-action
   - name: getCategories
     action: get-categories.jay-action
+  - name: getVariantStock
+    action: get-variant-stock.jay-action
 
 # Plugin initialization uses makeJayInit pattern in lib/init.ts
 # Export name defaults to 'init'
