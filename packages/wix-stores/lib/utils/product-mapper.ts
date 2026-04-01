@@ -315,8 +315,8 @@ export function buildVariantStockMap(product: {
     const variants = product.variantsInfo?.variants;
     if (!options || options.length !== 2 || !variants) return stockMap;
 
-    const colorOption = options.find((o) => o.optionRenderType === 'COLOR_SWATCH_CHOICES');
-    const textOption = options.find((o) => o.optionRenderType !== 'COLOR_SWATCH_CHOICES');
+    const colorOption = options.find((o) => o.optionRenderType === 'SWATCH_CHOICES');
+    const textOption = options.find((o) => o.optionRenderType === 'TEXT_CHOICES');
     if (!colorOption || !textOption) return stockMap;
 
     const colorOptionId = colorOption._id || '';
