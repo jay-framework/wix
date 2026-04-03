@@ -912,16 +912,18 @@ function ProductSearchInteractive(
     const loadVariantStock = async (productId: string) => {
         if (variantStockCache[productId]) return;
 
-        const stockMap = await getVariantStock({ productId });
-        variantStockCache[productId] = stockMap;
-
         // Update text choice inStock based on currently selected color
         const currentResults = searchResults();
         const productIndex = currentResults.findIndex((p) => p._id === productId);
         if (productIndex === -1) return;
 
         const product = currentResults[productIndex];
-        if (product.quickAddType !== QuickAddType.COLOR_AND_TEXT_OPTIONS) return;
+
+        if (product?.quickAddType !== QuickAddType.COLOR_AND_TEXT_OPTIONS)
+            return
+
+        const stockMap = await getVariantStock({ productId });
+        variantStockCache[productId] = stockMap;
 
         const selectedColor = product.quickOption?.choices?.find((c) => c.isSelected);
         const textChoices = product.secondQuickOption?.choices;
@@ -945,18 +947,12 @@ function ProductSearchInteractive(
 
     refs.searchResults.productLink.onmouseenter(({ coordinate }) => {
         const [productId] = coordinate;
-        const product = searchResults().find((p) => p._id === productId);
-        if (product?.quickAddType === QuickAddType.COLOR_AND_TEXT_OPTIONS) {
-            loadVariantStock(productId);
-        }
+        loadVariantStock(productId);
     });
 
     refs.searchResults.quickOption.choices.choiceButton.onmouseenter(({ coordinate }) => {
         const [productId] = coordinate;
-        const product = searchResults().find((p) => p._id === productId);
-        if (product?.quickAddType === QuickAddType.COLOR_AND_TEXT_OPTIONS) {
-            loadVariantStock(productId);
-        }
+        loadVariantStock(productId);
     });
 
     // Quick option choice click
@@ -1089,6 +1085,11 @@ function ProductSearchInteractive(
                 ]),
             );
         }
+    });
+
+    refs.searchResults.secondQuickOption.choices.choiceButton.onmouseenter(({ coordinate }) => {
+        const [productId] = coordinate;
+        loadVariantStock(productId);
     });
 
     // View options button (NEEDS_CONFIGURATION products)
