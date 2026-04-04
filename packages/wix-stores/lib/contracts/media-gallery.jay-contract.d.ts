@@ -1,53 +1,69 @@
-import {HTMLElementCollectionProxy, JayContract} from "@jay-framework/runtime";
-import {MediaViewState, MediaRefs, MediaRepeatedRefs} from "./media.jay-contract";
+import { HTMLElementCollectionProxy, JayContract } from '@jay-framework/runtime';
+import { MediaViewState, MediaRefs, MediaRepeatedRefs } from './media.jay-contract';
 
 export enum Selected {
-  selected,
-  notSelected
+    selected,
+    notSelected,
 }
 
 export interface AvailableMediaOfMediaGalleryViewState {
-  mediaId: string,
-  media: MediaViewState,
-  selected: Selected
+    mediaId: string;
+    media: MediaViewState;
+    selected: Selected;
 }
 
 export interface MediaGalleryViewState {
-  selectedMedia: MediaViewState,
-  availableMedia: Array<AvailableMediaOfMediaGalleryViewState>
+    selectedMedia: MediaViewState;
+    availableMedia: Array<AvailableMediaOfMediaGalleryViewState>;
 }
 
 export type MediaGallerySlowViewState = {
     selectedMedia: MediaGalleryViewState['selectedMedia'];
-    availableMedia: Array<Pick<MediaGalleryViewState['availableMedia'][number], 'mediaId'> & {
-    media: MediaGalleryViewState['availableMedia'][number]['media'];
-}>;
+    availableMedia: Array<
+        Pick<MediaGalleryViewState['availableMedia'][number], 'mediaId'> & {
+            media: MediaGalleryViewState['availableMedia'][number]['media'];
+        }
+    >;
 };
 
 export type MediaGalleryFastViewState = {
-    availableMedia: Array<Pick<MediaGalleryViewState['availableMedia'][number], 'mediaId' | 'selected'>>;
+    availableMedia: Array<
+        Pick<MediaGalleryViewState['availableMedia'][number], 'mediaId' | 'selected'>
+    >;
 };
 
 export type MediaGalleryInteractiveViewState = {
-    availableMedia: Array<Pick<MediaGalleryViewState['availableMedia'][number], 'mediaId' | 'selected'>>;
+    availableMedia: Array<
+        Pick<MediaGalleryViewState['availableMedia'][number], 'mediaId' | 'selected'>
+    >;
 };
 
-
 export interface MediaGalleryRefs {
-  selectedMedia: MediaRefs,
-  availableMedia: {
-    selected: HTMLElementCollectionProxy<AvailableMediaOfMediaGalleryViewState, HTMLImageElement | HTMLDivElement>,
-    media: MediaRefs
-  }
+    selectedMedia: MediaRefs;
+    availableMedia: {
+        selected: HTMLElementCollectionProxy<
+            AvailableMediaOfMediaGalleryViewState,
+            HTMLImageElement | HTMLDivElement
+        >;
+        media: MediaRefs;
+    };
 }
-
 
 export interface MediaGalleryRepeatedRefs {
-  selectedMedia: MediaRepeatedRefs,
-  availableMedia: {
-    selected: HTMLElementCollectionProxy<AvailableMediaOfMediaGalleryViewState, HTMLImageElement | HTMLDivElement>,
-    media: MediaRepeatedRefs
-  }
+    selectedMedia: MediaRepeatedRefs;
+    availableMedia: {
+        selected: HTMLElementCollectionProxy<
+            AvailableMediaOfMediaGalleryViewState,
+            HTMLImageElement | HTMLDivElement
+        >;
+        media: MediaRepeatedRefs;
+    };
 }
 
-export type MediaGalleryContract = JayContract<MediaGalleryViewState, MediaGalleryRefs, MediaGallerySlowViewState, MediaGalleryFastViewState, MediaGalleryInteractiveViewState>
+export type MediaGalleryContract = JayContract<
+    MediaGalleryViewState,
+    MediaGalleryRefs,
+    MediaGallerySlowViewState,
+    MediaGalleryFastViewState,
+    MediaGalleryInteractiveViewState
+>;

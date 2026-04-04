@@ -33,6 +33,7 @@
     "@jay-framework/stack-client-runtime": "^0.15.4",
     "@jay-framework/stack-server-runtime": "^0.15.4",
     "@wix/sdk": "^1.21.5",
+    "@wix/sdk-runtime": "^1.0.11",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {

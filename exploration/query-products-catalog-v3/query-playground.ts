@@ -1,13 +1,8 @@
 import { getClient } from './wix-client.js';
 import { productsV3 } from '@wix/stores';
-import * as fs from 'fs';
-import * as path from 'path';
 import { categories } from '@wix/categories';
 import { WixClient } from '@wix/sdk';
-import {
-    X as V3ProductSearch,
-    Y as SearchProductsOptions,
-} from '@wix/auto_sdk_stores_products-v-3/build/cjs/stores-catalog-v3-product-products-v-3.universal-BPteII-3';
+import { V3ProductSearch, SearchProductsOptions } from '@wix/auto_sdk_stores_products-v-3';
 
 interface ProductsResponse {
     products: any[];
@@ -58,9 +53,9 @@ async function queryProducts(wixClient: WixClient): Promise<void> {
         'options.name': {
             $hasSome: ['צבע'],
         },
-        // "options.choicesSettings.choices.name": {
-        //     "$hasAll": ["שחור"]
-        // }
+        "options.choicesSettings.choices.name": {
+            "$hasSome": ["שחור"]
+        }
     };
 
     const priceFilter: V3ProductSearch['filter'] = {
@@ -86,7 +81,7 @@ async function queryProducts(wixClient: WixClient): Promise<void> {
     };
 
     while (next) {
-        const cursorPaging = next !== 'initial' ? { cursor: next, limit: 50 } : { limit: 50 };
+        const cursorPaging = next !== 'initial' ? { cursor: next, limit: 100 } : { limit: 100 };
         const filter: V3ProductSearch['filter'] = {
             ...optionFilter,
             // ...priceFilter,
@@ -103,10 +98,10 @@ async function queryProducts(wixClient: WixClient): Promise<void> {
             fields: searchFields,
         });
 
-        if (response.products && response.products.length > 0) {
-            response.products.forEach((product) => console.log(product.name));
-        }
-
+        // if (response.products && response.products.length > 0) {
+        //     response.products.forEach((product) => console.log(product.name));
+        // }
+        console.log('loading', itemCount)
         // Check if there are more pages
         next = response.pagingMetadata?.cursors?.next;
         itemCount += response.products?.length || 0;

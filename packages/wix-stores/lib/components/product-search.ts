@@ -919,8 +919,7 @@ function ProductSearchInteractive(
 
         const product = currentResults[productIndex];
 
-        if (product?.quickAddType !== QuickAddType.COLOR_AND_TEXT_OPTIONS)
-            return
+        if (product?.quickAddType !== QuickAddType.COLOR_AND_TEXT_OPTIONS) return;
 
         const stockMap = await getVariantStock({ productId });
         variantStockCache[productId] = stockMap;
