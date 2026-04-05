@@ -272,6 +272,8 @@ Interactive Phase:
 
 **Choice name collision across options.** The `choiceNames` VALUE aggregation returns a flat list across all options. If two different options share a choice name (e.g., Size has "M" and Material has "M"), their counts are combined into a single aggregation entry. The customization cross-reference correctly assigns each choice to the right option, but the `productCount` may be inflated for colliding names. A nested aggregation (VALUE on `options.name` → VALUE on choices) would fix this, but it's unclear whether the Wix search API supports nesting on these repeated sub-fields. In practice, choice name collisions across options are rare.
 
+**No per-category product counts.** The Wix search API does not support VALUE aggregation on `allCategoriesInfo.categories._id`. This means we cannot get per-category product counts from the search results. Categories remain a static list without counts or disabled state — unlike option filter choices which do get live counts via the `choiceNames` aggregation.
+
 ## Answers
 
 1. **Choice sorting**: Preserve the customization order from the Wix Customizations API. The `choicesSettings.choices` array comes in the store owner's configured order (manual, alphabetical, or by product count — as set in Wix dashboard). We overlay live `productCount` values but do not re-sort by them.
@@ -315,7 +317,9 @@ Different filter types need different aggregation strategies:
 
 **Price filter** — always reflects the fully-filtered set. When the user narrows by category or option, the price range should shrink to match. This is the current behavior and is correct.
 
-**Categories and option choices** — the list of values stays **static** (established from the initial unfiltered search). Counts update to reflect the current filtered set, and choices with count=0 become **disabled**. Users see the full option landscape at all times but know which combinations are empty.
+**Option choices** — the list of values stays **static** (established from the initial unfiltered search). Counts update to reflect the current filtered set, and choices with count=0 become **disabled**. Users see the full option landscape at all times but know which combinations are empty.
+
+**Categories** — static list without live counts. The Wix search API does not support aggregation on category IDs, so we cannot get per-category product counts. Categories remain a simple checkbox list.
 
 ### Behavior
 
@@ -346,7 +350,7 @@ User also selects Size=M:
 
 ### Contract Changes
 
-Add `isDisabled` to option filter choices and category filter:
+Add `isDisabled` to option filter choices:
 
 ```yaml
 # In optionFilters > choices:
@@ -355,20 +359,9 @@ Add `isDisabled` to option filter choices and category filter:
   dataType: boolean
   phase: fast+interactive
   description: Whether this choice has no matching products (count=0)
-
-# In categoryFilter > categories:
-- tag: productCount
-  type: data
-  dataType: number
-  phase: fast+interactive
-  description: Number of products in this category with current filters
-
-- tag: isDisabled
-  type: data
-  dataType: boolean
-  phase: fast+interactive
-  description: Whether this category has no matching products (count=0)
 ```
+
+Note: Categories do not get `productCount` or `isDisabled` — the Wix search API does not support aggregation on category IDs.
 
 ### Data Flow
 
@@ -376,56 +369,41 @@ Add `isDisabled` to option filter choices and category filter:
 Slow phase (always unfiltered, only base category scope):
   searchProducts(no filters) → aggregations
   → base optionFilters list (full choices with unfiltered counts)
-  → base category counts
   Stored in preloadedResult carry-forward
 
 Fast phase:
   If no URL filters → use preloadedResult directly, base lists = preloaded
   If URL filters → run filtered searchProducts
-    → merge filtered counts into base lists from preloadedResult
+    → merge filtered option counts into base lists from preloadedResult
     → choices absent from filtered aggregation → count=0, disabled
   Price range: always from the current (possibly filtered) aggregation
+  Categories: static list, no counts
 
 Interactive phase (user applies filters):
   searchProducts → new aggregations
-  Merge new counts into base lists (carried forward from slow):
-    - for each base choice/category:
+  Merge new counts into base option filter lists (carried forward from slow):
+    - for each base choice:
         find matching entry in new aggregation
         update productCount (or 0 if absent)
         set isDisabled = (productCount === 0)
   Price range: use new aggregation directly (not merged)
+  Categories: unchanged (no counts available)
 ```
 
-### Aggregation for Categories
+### Files Modified
 
-Currently categories don't have aggregation counts. Need to add a VALUE aggregation on category IDs:
-
-```typescript
-{
-    fieldPath: 'allCategoriesInfo.categories.id',
-    name: 'categoryIds',
-    type: 'VALUE',
-    value: { limit: 50, sortType: 'VALUE', sortDirection: 'DESC' },
-}
-```
-
-This returns `{ value: categoryId, count: N }` per category, which can be merged into the base category list.
-
-### Files to Modify
-
-1. **`product-search.jay-contract`** — add `isDisabled` to option choices and categories, add `productCount` to categories
-2. **`stores-actions.ts`** — add category VALUE aggregation, return category counts in output
-3. **`product-search.ts`** — store base lists from initial search, merge filtered counts on subsequent searches
-4. **`search-products.jay-action`** — update output schema
+1. **`product-search.jay-contract`** — added `isDisabled` to option choices
+2. **`product-search.ts`** — store base option filter lists from slow phase, merge filtered counts on subsequent searches
+3. No category count aggregation (Wix API limitation)
 
 ### Static Filter Lists — Implementation Results
 
-Implemented as designed. Key details:
+Implemented for option filters only. Categories do not get live counts (Wix API limitation).
 
-- **Aggregation field path**: `allCategoriesInfo.categories._id` (not `.id` — the Wix SDK uses `_id` for category IDs in this context)
-- **Carry-forward**: Added `baseOptionFilters: ProductOptionFilter[]` and `baseCategoryCounts: Record<string, number>` to both `SearchSlowCarryForward` and `SearchFastCarryForward`
-- **Merge helpers**: `buildOptionFiltersViewState()` and `buildCategoryFilterViewState()` handle merging filtered counts into static base lists, setting `isDisabled = (count === 0)`
-- **Interactive phase**: After each `performSearch`, counts and disabled state are updated via `setFilters` while preserving user selections
+- **Carry-forward**: Added `baseOptionFilters: ProductOptionFilter[]` to both `SearchSlowCarryForward` and `SearchFastCarryForward`
+- **Merge helper**: `buildOptionFiltersViewState()` merges filtered counts into the static base list, setting `isDisabled = (count === 0)`
+- **Interactive phase**: After each `performSearch`, option filter counts and disabled state are updated via `setFilters` while preserving user selections
 - **Choice sort order**: Preserves customization order from the Wix Customizations API (no re-sorting by count)
+- **Categories**: Static list without counts — the Wix search API does not support VALUE aggregation on `allCategoriesInfo.categories._id`
 
 Verification: `yarn definitions` succeeds, `npx tsc --noEmit` — 0 type errors.

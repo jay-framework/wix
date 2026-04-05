@@ -45,8 +45,4 @@ export interface SearchProductsOutput {
             productCount: number;
         }>;
     }>;
-    categoryCounts?: Array<{
-        categoryId: string;
-        productCount: number;
-    }>;
 }

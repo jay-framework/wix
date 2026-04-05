@@ -5,7 +5,7 @@ import {
     Signals,
     UrlParams,
 } from '@jay-framework/fullstack-component';
-import { createSignal, createEffect, Props } from '@jay-framework/component';
+import { createSignal, createEffect, createMemo, Props } from '@jay-framework/component';
 import {
     CategoryHeaderOfProductSearchViewState,
     CurrentSort,
@@ -70,8 +70,6 @@ interface SearchSlowCarryForward {
     preloadedResult: SearchProductsOutput | null;
     /** Base option filters from unfiltered search (static list, counts updated per search) */
     baseOptionFilters: ProductOptionFilter[];
-    /** Base category counts from unfiltered search (categoryId → productCount) */
-    baseCategoryCounts: Record<string, number>;
 }
 
 /**
@@ -85,8 +83,6 @@ interface SearchFastCarryForward {
     baseCategoryId: string | null;
     /** Base option filters from unfiltered search (static list structure) */
     baseOptionFilters: ProductOptionFilter[];
-    /** Base category counts from unfiltered search (categoryId → productCount) */
-    baseCategoryCounts: Record<string, number>;
 }
 
 const PAGE_SIZE = 12;
@@ -285,36 +281,6 @@ function buildOptionFiltersViewState(
             };
         }),
     }));
-}
-
-/**
- * Build category filter view state by merging filtered counts into the base list.
- */
-function buildCategoryFilterViewState(
-    categories: CategoryInfos,
-    baseCategoryCounts: Record<string, number>,
-    filteredCategoryCounts: Array<{ categoryId: string; productCount: number }> | undefined,
-    selectedCategoryIds: string[],
-) {
-    // Use filtered counts if available, otherwise fall back to base counts
-    const countMap = new Map<string, number>();
-    if (filteredCategoryCounts) {
-        for (const cc of filteredCategoryCounts) {
-            countMap.set(cc.categoryId, cc.productCount);
-        }
-    }
-
-    return categories.map((cat) => {
-        const count = filteredCategoryCounts
-            ? (countMap.get(cat.categoryId) ?? 0)
-            : (baseCategoryCounts[cat.categoryId] ?? 0);
-        return {
-            categoryId: cat.categoryId,
-            isSelected: selectedCategoryIds.includes(cat.categoryId),
-            productCount: count,
-            isDisabled: count === 0,
-        };
-    });
 }
 
 /** Empty category header used as default */
@@ -534,12 +500,8 @@ async function renderSlowlyChanging(
                     buildCategoryUrl(wixStores.urls, tree, cat.slug || '', cat._id || '') ?? '',
             }));
 
-            // Extract base lists from unfiltered preloaded search
+            // Extract base option filters from unfiltered preloaded search
             const baseOptionFilters = productsResult?.optionFilters || [];
-            const baseCategoryCounts: Record<string, number> = {};
-            for (const cc of productsResult?.categoryCounts || []) {
-                baseCategoryCounts[cc.categoryId] = cc.productCount;
-            }
 
             return {
                 viewState: {
@@ -560,7 +522,6 @@ async function renderSlowlyChanging(
                     baseCategoryId,
                     preloadedResult: productsResult,
                     baseOptionFilters,
-                    baseCategoryCounts,
                 },
             };
         });
@@ -651,7 +612,6 @@ async function renderFastChanging(
                     ],
                 },
                 optionFilters: [],
-                categoryCounts: [],
             });
         })
         .toPhaseOutput((result) => {
@@ -690,12 +650,10 @@ async function renderFastChanging(
                             ranges: priceAgg.ranges,
                         },
                         categoryFilter: {
-                            categories: buildCategoryFilterViewState(
-                                slowCarryForward.categories,
-                                slowCarryForward.baseCategoryCounts,
-                                hasActiveFilters ? result.categoryCounts : undefined,
-                                initialCategoryIds,
-                            ),
+                            categories: slowCarryForward.categories.map((cat) => ({
+                                categoryId: cat.categoryId,
+                                isSelected: initialCategoryIds.includes(cat.categoryId),
+                            })),
                         },
                         optionFilters: buildOptionFiltersViewState(
                             slowCarryForward.baseOptionFilters,
@@ -716,7 +674,6 @@ async function renderFastChanging(
                     categories: slowCarryForward.categories,
                     baseCategoryId: slowCarryForward.baseCategoryId,
                     baseOptionFilters: slowCarryForward.baseOptionFilters,
-                    baseCategoryCounts: slowCarryForward.baseCategoryCounts,
                 },
             };
         });
@@ -773,6 +730,36 @@ function ProductSearchInteractive(
     let searchVersion = 0;
     const DEBOUNCE_MS = 300;
 
+    // Separate signal for search result counts — updated by performSearch without
+    // triggering the reactive search effect (which watches `filters` for selections).
+    const [latestSearchResult, setLatestSearchResult] = createSignal<SearchProductsOutput | null>(
+        null,
+    );
+
+    // Merged filters: combines user selections (from `filters`) with live counts
+    // (from `latestSearchResult`). Used for rendering only.
+    const mergedFilters = createMemo((): ProductSearchFastViewState['filters'] => {
+        const f = filters();
+        const result = latestSearchResult();
+        if (!result) return f;
+
+        // Build current selections map from the filters signal
+        const selections = new Map<string, Set<string>>();
+        for (const opt of f.optionFilters || []) {
+            const selected = opt.choices.filter((c) => c.isSelected).map((c) => c.choiceName);
+            if (selected.length > 0) selections.set(opt.optionName, new Set(selected));
+        }
+
+        return {
+            ...f,
+            optionFilters: buildOptionFiltersViewState(
+                fastCarryForward.baseOptionFilters,
+                result,
+                selections,
+            ),
+        };
+    });
+
     // Perform search (replaces results, resets cursor)
     const performSearch = async (
         version: number,
@@ -826,28 +813,8 @@ function ProductSearchInteractive(
             setHasMore(result.hasMore);
             setHasResults(result.products.length > 0);
 
-            // Merge filtered counts into base lists (static structure, live counts)
-            const currentSelections = new Map<string, Set<string>>();
-            for (const opt of currentFilters.optionFilters || []) {
-                const selected = opt.choices.filter((c) => c.isSelected).map((c) => c.choiceName);
-                if (selected.length > 0) currentSelections.set(opt.optionName, new Set(selected));
-            }
-            const updatedOptionFilters = buildOptionFiltersViewState(
-                fastCarryForward.baseOptionFilters,
-                result,
-                currentSelections,
-            );
-            const updatedCategories = buildCategoryFilterViewState(
-                fastCarryForward.categories,
-                fastCarryForward.baseCategoryCounts,
-                result.categoryCounts,
-                userSelectedCategoryIds,
-            );
-            setFilters({
-                ...currentFilters,
-                optionFilters: updatedOptionFilters,
-                categoryFilter: { categories: updatedCategories },
-            });
+            // Store search result for count merging (via mergedFilters memo)
+            setLatestSearchResult(result);
 
             // Store cursor for load more
             currentCursor = result.nextCursor;
@@ -1362,7 +1329,7 @@ function ProductSearchInteractive(
             hasResults: hasResults(),
             hasSuggestions: hasSuggestions(),
             suggestions: suggestions(),
-            filters: filters(),
+            filters: mergedFilters(),
             sortBy: sortBy(),
             hasMore: hasMore(),
             loadedCount: loadedCount(),

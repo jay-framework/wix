@@ -28,8 +28,6 @@ export interface CategoryOfCategoryFilterOfFilterOfProductSearchViewState {
     categorySlug: string;
     isSelected: boolean;
     categoryUrl: string;
-    productCount: number;
-    isDisabled: boolean;
 }
 
 export interface CategoryFilterOfFilterOfProductSearchViewState {
@@ -189,7 +187,7 @@ export type ProductSearchFastViewState = Pick<
             categories: Array<
                 Pick<
                     ProductSearchViewState['filters']['categoryFilter']['categories'][number],
-                    'categoryId' | 'isSelected' | 'productCount' | 'isDisabled'
+                    'categoryId' | 'isSelected'
                 >
             >;
         };
@@ -218,7 +216,7 @@ export type ProductSearchInteractiveViewState = Pick<
             categories: Array<
                 Pick<
                     ProductSearchViewState['filters']['categoryFilter']['categories'][number],
-                    'categoryId' | 'isSelected' | 'productCount' | 'isDisabled'
+                    'categoryId' | 'isSelected'
                 >
             >;
         };

@@ -173,18 +173,6 @@ tags:
                 type: data
                 dataType: string
                 description: Deep-link URL to this category's dedicated page
-
-              - tag: productCount
-                type: data
-                dataType: number
-                phase: fast+interactive
-                description: Number of products in this category with current filters
-
-              - tag: isDisabled
-                type: data
-                dataType: boolean
-                phase: fast+interactive
-                description: Whether this category has no matching products (count=0)
       
       # Availability filter (fast+interactive)
       - tag: inStockOnly

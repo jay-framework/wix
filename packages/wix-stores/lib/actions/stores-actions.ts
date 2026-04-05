@@ -158,8 +158,6 @@ export interface SearchProductsOutput {
     priceAggregation?: PriceAggregationData;
     /** Available product option filters with choices and counts */
     optionFilters?: ProductOptionFilter[];
-    /** Category product counts from aggregation */
-    categoryCounts?: Array<{ categoryId: string; productCount: number }>;
 }
 
 /**
@@ -405,17 +403,6 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
                             sortDirection: 'DESC' as const,
                         },
                     },
-                    // Category IDs for per-category product counts
-                    {
-                        fieldPath: 'allCategoriesInfo.categories._id',
-                        name: 'categoryIds',
-                        type: 'VALUE' as const,
-                        value: {
-                            limit: 50,
-                            sortType: 'VALUE' as const,
-                            sortDirection: 'DESC' as const,
-                        },
-                    },
                 ];
 
                 // Call searchProducts (includes aggregations for count, price bounds, and buckets)
@@ -507,15 +494,6 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
                 const customizations = await wixStores.getCustomizations();
                 const optionFilters = getAvailableProductOptions(aggResults, customizations);
 
-                // Extract category counts from aggregation
-                const categoryIdsAgg = aggResults.find((a) => a.name === 'categoryIds')?.values as
-                    | AggregationResultsValueResults
-                    | undefined;
-                const categoryCounts = (categoryIdsAgg?.results || []).map((entry) => ({
-                    categoryId: entry.value || '',
-                    productCount: entry.count ?? 0,
-                }));
-
                 // Map products to card view state with URL resolution
                 const tree = await wixStores.getCategoryTree();
                 const mappedProducts = products.map((p) =>
@@ -533,7 +511,6 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
                         ranges: priceRanges,
                     },
                     optionFilters,
-                    categoryCounts,
                 };
             } catch (error) {
                 console.error('[wixStores.searchProducts] Search failed:', error);
