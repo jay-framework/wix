@@ -19,6 +19,7 @@ Design documentation for the Jay Framework Wix integration packages.
 | 11  | [Category Deep-Linking & Header](./11%20-%20category-deep-linking-and-header.md)               | Draft         |
 | 12  | [Two-Option Quick Add](./12%20-%20two-option-quick-add.md)                                     | Draft         |
 | 13  | [Product Search Slow Phase Optimization](./13%20-%20product-search-slow-phase-optimization.md) | Draft         |
+| 14  | [Option-Based Product Filters](./14%20-%20option-based-product-filters.md)                     | Draft         |
 
 ## Packages Covered
 
