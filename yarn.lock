@@ -4000,6 +4000,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@wix/auto_sdk_search_site-search@npm:1.0.26":
+  version: 1.0.26
+  resolution: "@wix/auto_sdk_search_site-search@npm:1.0.26"
+  dependencies:
+    "@wix/sdk-runtime": "npm:^1.0.8"
+    "@wix/sdk-types": "npm:^1.17.4"
+  checksum: 10/aa7df62bdf872ced880f6278f1097818e7f9ae519e8a25a4084ccc73d63d1f40aadfe2a5839e4732cd7c1d7ba72077b31a75444a75e32e34f2fc49b2b916d817
+  languageName: node
+  linkType: hard
+
+"@wix/auto_sdk_search_wix-site-search@npm:1.0.27":
+  version: 1.0.27
+  resolution: "@wix/auto_sdk_search_wix-site-search@npm:1.0.27"
+  dependencies:
+    "@wix/sdk-runtime": "npm:^1.0.8"
+    "@wix/sdk-types": "npm:^1.17.4"
+  checksum: 10/ca0e5eaf4c24d8648be9dca32dbd389b9747b64beb0b1b34bd39407bdb71cee3954e1cdbc59b8795a96ab9881c2acbb8ebeab0a133cd3247a52ed9e7bbf5c1c7
+  languageName: node
+  linkType: hard
+
 "@wix/auto_sdk_stores_abandoned-carts@npm:1.0.38":
   version: 1.0.38
   resolution: "@wix/auto_sdk_stores_abandoned-carts@npm:1.0.38"
@@ -4654,7 +4674,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wix/sdk-types@npm:1.17.6, @wix/sdk-types@npm:^1.13.2, @wix/sdk-types@npm:^1.13.35, @wix/sdk-types@npm:^1.13.41, @wix/sdk-types@npm:^1.14.0, @wix/sdk-types@npm:^1.15.0, @wix/sdk-types@npm:^1.17.6":
+"@wix/sdk-types@npm:1.17.6, @wix/sdk-types@npm:^1.13.2, @wix/sdk-types@npm:^1.13.35, @wix/sdk-types@npm:^1.13.41, @wix/sdk-types@npm:^1.14.0, @wix/sdk-types@npm:^1.15.0, @wix/sdk-types@npm:^1.17.4, @wix/sdk-types@npm:^1.17.6":
   version: 1.17.6
   resolution: "@wix/sdk-types@npm:1.17.6"
   dependencies:
@@ -4682,6 +4702,16 @@ __metadata:
     graphql:
       optional: true
   checksum: 10/bc6bbdb0cf43057d88c9b723de4f243740808a26dc299012c114853f8045a12f38eee12b9af69dd83e00d9084e53a069805cac14aa4530c95b283a90023abd30
+  languageName: node
+  linkType: hard
+
+"@wix/search@npm:^1.0.81":
+  version: 1.0.81
+  resolution: "@wix/search@npm:1.0.81"
+  dependencies:
+    "@wix/auto_sdk_search_site-search": "npm:1.0.26"
+    "@wix/auto_sdk_search_wix-site-search": "npm:1.0.27"
+  checksum: 10/ef98906fbb0466662bb583b1ab71600597daaec10db896b28a0996203ac1f293ff5f344dc4e578aad6f1f9c333360cf46ec6d993fd7d0ddabb11547c98430336
   languageName: node
   linkType: hard
 
@@ -8365,7 +8395,9 @@ __metadata:
     "@types/js-yaml": "npm:^4.0.9"
     "@types/node": "npm:^20.0.0"
     "@wix/categories": "npm:^1.0.185"
+    "@wix/data": "npm:^1.0.433"
     "@wix/sdk": "npm:^1.21.5"
+    "@wix/search": "npm:^1.0.81"
     "@wix/stores": "npm:^1.0.742"
     js-yaml: "npm:^4.1.0"
     ts-node: "npm:^10.9.2"

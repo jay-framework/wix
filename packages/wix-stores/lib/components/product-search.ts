@@ -9,6 +9,7 @@ import { createSignal, createEffect, Props } from '@jay-framework/component';
 import {
     CategoryHeaderOfProductSearchViewState,
     CurrentSort,
+    OptionRenderType,
     ProductSearchContract,
     ProductSearchFastViewState,
     ProductSearchInteractiveViewState,
@@ -110,6 +111,8 @@ interface ParsedUrlFilters {
     maxPrice: number | null;
     inStockOnly: boolean;
     sort: string;
+    /** Parsed option selections: optionName → Set of selected choice names */
+    optionSelections: Map<string, Set<string>>;
 }
 
 /**
@@ -118,6 +121,26 @@ interface ParsedUrlFilters {
 function parseUrlFilters(url: string): ParsedUrlFilters {
     try {
         const params = new URL(url, 'http://x').searchParams;
+
+        // Parse option selections: opt=Color:Red,Blue;Size:M,L
+        const optionSelections = new Map<string, Set<string>>();
+        const optParam = params.get('opt');
+        if (optParam) {
+            for (const segment of optParam.split(';')) {
+                const colonIdx = segment.indexOf(':');
+                if (colonIdx === -1) continue;
+                const name = decodeURIComponent(segment.slice(0, colonIdx));
+                const choices = segment
+                    .slice(colonIdx + 1)
+                    .split(',')
+                    .map((c) => decodeURIComponent(c))
+                    .filter(Boolean);
+                if (choices.length > 0) {
+                    optionSelections.set(name, new Set(choices));
+                }
+            }
+        }
+
         return {
             searchTerm: params.get('q') || '',
             selectedCategorySlugs: params.get('cat')?.split(',').filter(Boolean) || [],
@@ -125,6 +148,7 @@ function parseUrlFilters(url: string): ParsedUrlFilters {
             maxPrice: params.has('max') ? Number(params.get('max')) : null,
             inStockOnly: params.get('inStock') === '1',
             sort: params.get('sort') || 'relevance',
+            optionSelections,
         };
     } catch {
         return {
@@ -134,6 +158,7 @@ function parseUrlFilters(url: string): ParsedUrlFilters {
             maxPrice: null,
             inStockOnly: false,
             sort: 'relevance',
+            optionSelections: new Map(),
         };
     }
 }
@@ -186,6 +211,17 @@ function updateUrlFilters(
         params.set('max', String(filters.priceRange.maxPrice));
     }
     if (filters.inStockOnly) params.set('inStock', '1');
+
+    // Serialize option filter selections: opt=Color:Red,Blue;Size:M,L
+    const optSegments: string[] = [];
+    for (const opt of filters.optionFilters || []) {
+        const selected = opt.choices.filter((c) => c.isSelected).map((c) => encodeURIComponent(c.choiceName));
+        if (selected.length > 0) {
+            optSegments.push(`${encodeURIComponent(opt.optionName)}:${selected.join(',')}`);
+        }
+    }
+    if (optSegments.length > 0) params.set('opt', optSegments.join(';'));
+
     if (sort !== CurrentSort.relevance) {
         const sortNames: Record<number, string> = {
             [CurrentSort.priceAsc]: 'priceAsc',
@@ -463,13 +499,20 @@ async function renderFastChanging(
         .map((slug) => slowCarryForward.categories.find((c) => c.categorySlug === slug)?.categoryId)
         .filter(Boolean) as string[];
 
+    // Build initial option filters from URL
+    const initialOptionFilters: Array<{ optionName: string; choiceNames: string[] }> = [];
+    for (const [optionName, choiceNames] of urlFilters.optionSelections) {
+        initialOptionFilters.push({ optionName, choiceNames: [...choiceNames] });
+    }
+
     const hasActiveFilters =
         !!urlFilters.searchTerm ||
         initialCategoryIds.length > 0 ||
         urlFilters.minPrice !== null ||
         urlFilters.maxPrice !== null ||
         urlFilters.inStockOnly ||
-        initialSort !== CurrentSort.relevance;
+        initialSort !== CurrentSort.relevance ||
+        initialOptionFilters.length > 0;
 
     return Pipeline.try(async () => {
         // Use pre-loaded products from slow phase when no filters are active
@@ -489,6 +532,8 @@ async function renderFastChanging(
                 minPrice: urlFilters.minPrice ?? undefined,
                 maxPrice: urlFilters.maxPrice ?? undefined,
                 inStockOnly: urlFilters.inStockOnly || undefined,
+                optionFilters:
+                    initialOptionFilters.length > 0 ? initialOptionFilters : undefined,
             },
             sortBy:
                 initialSort !== CurrentSort.relevance ? mapSortToAction(initialSort) : undefined,
@@ -518,6 +563,7 @@ async function renderFastChanging(
                         },
                     ],
                 },
+                optionFilters: [],
             });
         })
         .toPhaseOutput((result) => {
@@ -561,6 +607,22 @@ async function renderFastChanging(
                                 isSelected: initialCategoryIds.includes(cat.categoryId),
                             })),
                         },
+                        optionFilters: (result.optionFilters || []).map((opt) => ({
+                            optionId: opt.optionId,
+                            optionName: opt.optionName,
+                            optionRenderType:
+                                opt.optionRenderType === 'SWATCH_CHOICES'
+                                    ? OptionRenderType.SWATCH_CHOICES
+                                    : OptionRenderType.TEXT_CHOICES,
+                            choices: opt.choices.map((ch) => ({
+                                choiceId: ch.choiceId,
+                                choiceName: ch.choiceName,
+                                colorCode: ch.colorCode,
+                                productCount: ch.productCount,
+                                isSelected:
+                                    urlFilters.optionSelections.get(opt.optionName)?.has(ch.choiceName) ?? false,
+                            })),
+                        })),
                     },
                     sortBy: {
                         currentSort: initialSort,
@@ -649,6 +711,16 @@ function ProductSearchInteractive(
                 ? [baseCategoryId, ...userSelectedCategoryIds]
                 : userSelectedCategoryIds;
 
+            // Build option filters from current view state
+            const activeOptionFilters = (currentFilters.optionFilters || [])
+                .map((opt) => ({
+                    optionName: opt.optionName,
+                    choiceNames: opt.choices
+                        .filter((c) => c.isSelected)
+                        .map((c) => c.choiceName),
+                }))
+                .filter((o) => o.choiceNames.length > 0);
+
             const result = await searchProducts({
                 query: searchTerm || '',
                 filters: {
@@ -656,6 +728,8 @@ function ProductSearchInteractive(
                     maxPrice: currentFilters.priceRange.maxPrice || undefined,
                     categoryIds,
                     inStockOnly: currentFilters.inStockOnly,
+                    optionFilters:
+                        activeOptionFilters.length > 0 ? activeOptionFilters : undefined,
                 },
                 sortBy: mapSortToAction(currentSort),
                 // No cursor = start from beginning
@@ -709,6 +783,16 @@ function ProductSearchInteractive(
                 ? [baseCategoryId, ...userSelectedCategoryIds]
                 : userSelectedCategoryIds;
 
+            // Build option filters from current view state
+            const activeOptionFilters = (currentFilters.optionFilters || [])
+                .map((opt) => ({
+                    optionName: opt.optionName,
+                    choiceNames: opt.choices
+                        .filter((c) => c.isSelected)
+                        .map((c) => c.choiceName),
+                }))
+                .filter((o) => o.choiceNames.length > 0);
+
             const result = await searchProducts({
                 query: searchTerm || '',
                 filters: {
@@ -716,6 +800,8 @@ function ProductSearchInteractive(
                     maxPrice: currentFilters.priceRange.maxPrice || undefined,
                     categoryIds,
                     inStockOnly: currentFilters.inStockOnly,
+                    optionFilters:
+                        activeOptionFilters.length > 0 ? activeOptionFilters : undefined,
                 },
                 sortBy: mapSortToAction(currentSort),
                 cursor: currentCursor,
@@ -876,6 +962,32 @@ function ProductSearchInteractive(
         setFilters(patch(filters(), [{ op: REPLACE, path: ['inStockOnly'], value: isChecked }]));
     });
 
+    // Option filter choice checkboxes
+    refs.filters.optionFilters.choices.isSelected.oninput(({ event, coordinate }) => {
+        const [optionId, choiceId] = coordinate;
+        const currentFilters = filters();
+        const optionIndex = currentFilters.optionFilters.findIndex(
+            (o) => o.optionId === optionId,
+        );
+        if (optionIndex === -1) return;
+
+        const choiceIndex = currentFilters.optionFilters[optionIndex].choices.findIndex(
+            (c) => c.choiceId === choiceId,
+        );
+        if (choiceIndex === -1) return;
+
+        const isChecked = (event.target as HTMLInputElement).checked;
+        setFilters(
+            patch(currentFilters, [
+                {
+                    op: REPLACE,
+                    path: ['optionFilters', optionIndex, 'choices', choiceIndex, 'isSelected'],
+                    value: isChecked,
+                },
+            ]),
+        );
+    });
+
     // Clear filters button
     refs.filters.clearFilters.onclick(() => {
         const currentFilters = filters();
@@ -890,6 +1002,12 @@ function ProductSearchInteractive(
             isSelected: i === 0, // First one is "Show all"
         }));
 
+        // Reset option filter selections
+        const clearedOptionFilters = (currentFilters.optionFilters || []).map((opt) => ({
+            ...opt,
+            choices: opt.choices.map((ch) => ({ ...ch, isSelected: false })),
+        }));
+
         setFilters({
             priceRange: {
                 minPrice: 0,
@@ -900,6 +1018,7 @@ function ProductSearchInteractive(
             },
             categoryFilter: { categories: clearedCategories },
             inStockOnly: false,
+            optionFilters: clearedOptionFilters,
         });
     });
 

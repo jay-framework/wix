@@ -8,6 +8,7 @@
 import { WixClient } from '@wix/sdk';
 import {
     getCategoriesClient,
+    getCustomizationsV3Client,
     getInventoryClient,
     getProductsV3Client,
 } from '../utils/wix-store-api';
@@ -17,15 +18,17 @@ import { registerService } from '@jay-framework/stack-server-runtime';
 import { type UrlTemplates } from '../config-loader';
 import { type CategoryTree } from '../utils/product-mapper';
 import { BuildDescriptors } from '@wix/sdk-types';
-import { productsV3 } from '@wix/stores';
+import { customizationsV3, productsV3 } from '@wix/stores';
 import { categories } from '@wix/categories';
 import { inventoryItemsV3 } from '@wix/stores';
 import { currentCart } from '@wix/ecom';
+import { type Customization } from '@wix/auto_sdk_stores_customizations-v-3';
 
 export interface WixStoresService {
     products: BuildDescriptors<typeof productsV3, {}>;
     categories: BuildDescriptors<typeof categories, {}>;
     inventory: BuildDescriptors<typeof inventoryItemsV3, {}>;
+    customizations: BuildDescriptors<typeof customizationsV3, {}>;
     /** @deprecated Use WIX_CART_SERVICE from @jay-framework/wix-cart instead */
     cart: BuildDescriptors<typeof currentCart, {}>;
     /** URL templates for building canonical links */
@@ -34,6 +37,8 @@ export interface WixStoresService {
     defaultCategory: string | null;
     /** Get the cached category tree. Lazily built on first call. */
     getCategoryTree(): Promise<CategoryTree>;
+    /** Get cached product customizations (options with choices). Lazily loaded. */
+    getCustomizations(): Promise<Customization[]>;
 }
 
 /**
@@ -57,13 +62,16 @@ export function provideWixStoresService(
     options?: WixStoresServiceOptions,
 ): WixStoresService {
     let cachedTree: CategoryTree | null = null;
+    let cachedCustomizations: Customization[] | null = null;
 
     const categoriesClient = getCategoriesClient(wixClient);
+    const customizationsClient = getCustomizationsV3Client(wixClient);
 
     const service: WixStoresService = {
         products: getProductsV3Client(wixClient),
         categories: categoriesClient,
         inventory: getInventoryClient(wixClient),
+        customizations: customizationsClient,
         cart: getCurrentCartClient(wixClient),
         urls: options?.urls ?? { product: '/products/{slug}', category: null },
         defaultCategory: options?.defaultCategory ?? null,
@@ -118,6 +126,25 @@ export function provideWixStoresService(
 
             cachedTree = { slugMap, parentMap, rootIds, imageMap };
             return cachedTree;
+        },
+
+        async getCustomizations(): Promise<Customization[]> {
+            if (cachedCustomizations) return cachedCustomizations;
+
+            try {
+                const result = await customizationsClient
+                    .queryCustomizations()
+                    .eq('customizationType', 'PRODUCT_OPTION')
+                    .limit(100)
+                    .find();
+
+                cachedCustomizations = result.items || [];
+            } catch (error) {
+                console.error('[wix-stores] Failed to load customizations:', error);
+                cachedCustomizations = [];
+            }
+
+            return cachedCustomizations;
         },
     };
 

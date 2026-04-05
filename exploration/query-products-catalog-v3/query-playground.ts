@@ -1,6 +1,7 @@
 import { getClient } from './wix-client.js';
-import { productsV3 } from '@wix/stores';
+import { productsV3, customizationsV3 } from '@wix/stores';
 import { categories } from '@wix/categories';
+import { items } from '@wix/data';
 import { WixClient } from '@wix/sdk';
 import { V3ProductSearch, SearchProductsOptions } from '@wix/auto_sdk_stores_products-v-3';
 
@@ -53,9 +54,9 @@ async function queryProducts(wixClient: WixClient): Promise<void> {
         'options.name': {
             $hasSome: ['צבע'],
         },
-        "options.choicesSettings.choices.name": {
-            "$hasSome": ["שחור"]
-        }
+        'options.choicesSettings.choices.name': {
+            $hasSome: ['שחור'],
+        },
     };
 
     const priceFilter: V3ProductSearch['filter'] = {
@@ -101,7 +102,7 @@ async function queryProducts(wixClient: WixClient): Promise<void> {
         // if (response.products && response.products.length > 0) {
         //     response.products.forEach((product) => console.log(product.name));
         // }
-        console.log('loading', itemCount)
+        console.log('loading', itemCount);
         // Check if there are more pages
         next = response.pagingMetadata?.cursors?.next;
         itemCount += response.products?.length || 0;
@@ -156,9 +157,41 @@ export async function aggregateProducts(wixClient: WixClient): Promise<void> {
                 type: 'SCALAR',
                 scalar: { type: 'COUNT_DISTINCT' },
             },
+            {
+                fieldPath: 'options.name',
+                name: 'options_name',
+                type: 'VALUE',
+                value: {
+                    limit: 50
+                },
+            },
+            {
+                fieldPath: 'options.choicesSettings.choices.name',
+                name: 'options_value',
+                type: 'VALUE',
+                value: {
+                    limit: 50
+                },
+            },
         ],
+        filter: {
+            'options.name': {
+                $hasSome: ['צבע'],
+            }
+        },
     });
     console.log('result:', JSON.stringify(result?.aggregationData?.results, undefined, 2));
+}
+
+async function customizations(wixClient: WixClient): Promise<void> {
+    const client = wixClient.use(customizationsV3);
+
+    const res = await client.queryCustomizations({})
+    console.log(JSON.stringify(res, undefined, 2));
+
+    res.customizations?.forEach(customization => {
+        console.log(customization.choicesSettings?.choices?.length);
+    })
 }
 
 async function queryPlayground() {
@@ -170,9 +203,12 @@ async function queryPlayground() {
 
         // await queryCategories(wixClient);
 
-        await queryProducts(wixClient);
+        // await queryProducts(wixClient);
 
-        // await aggregateProducts(wixClient);
+        await aggregateProducts(wixClient);
+
+        // await customizations(wixClient);
+
     } catch (error) {
         console.error('❌ Error querying products:', error);
         if (error instanceof Error) {
@@ -185,3 +221,4 @@ async function queryPlayground() {
 
 // Run the query
 queryPlayground();
+// aggregateProducts();

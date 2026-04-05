@@ -8,7 +8,7 @@
  */
 
 import { WixClient } from '@wix/sdk';
-import { inventoryItemsV3, productsV3 } from '@wix/stores';
+import { customizationsV3, inventoryItemsV3, productsV3 } from '@wix/stores';
 import { categories } from '@wix/categories';
 import { BuildDescriptors } from '@wix/sdk-types';
 
@@ -16,10 +16,12 @@ const instances: {
     productsV3ClientInstance: BuildDescriptors<typeof productsV3, {}> | undefined;
     categoriesClientInstance: BuildDescriptors<typeof categories, {}> | undefined;
     inventoryV3ClientInstance: BuildDescriptors<typeof inventoryItemsV3, {}> | undefined;
+    customizationsV3ClientInstance: BuildDescriptors<typeof customizationsV3, {}> | undefined;
 } = {
     productsV3ClientInstance: undefined,
     categoriesClientInstance: undefined,
     inventoryV3ClientInstance: undefined,
+    customizationsV3ClientInstance: undefined,
 };
 
 /**
@@ -68,4 +70,21 @@ export function getInventoryClient(
         instances.inventoryV3ClientInstance = wixClient.use(inventoryItemsV3);
     }
     return instances.inventoryV3ClientInstance;
+}
+
+/**
+ * Get a configured Wix Stores Customizations V3 client (singleton)
+ *
+ * The Customizations API manages product options and modifiers (e.g., Color, Size).
+ *
+ * @returns Customizations V3 client instance from @wix/stores
+ * @see https://dev.wix.com/docs/sdk/backend-modules/stores/customizations/introduction
+ */
+export function getCustomizationsV3Client(
+    wixClient: WixClient,
+): BuildDescriptors<typeof customizationsV3, {}> {
+    if (!instances.customizationsV3ClientInstance) {
+        instances.customizationsV3ClientInstance = wixClient.use(customizationsV3);
+    }
+    return instances.customizationsV3ClientInstance;
 }

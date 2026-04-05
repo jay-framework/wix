@@ -24,7 +24,9 @@ import {
     AggregationDataAggregationResults,
     AggregationDataAggregationResultsScalarResult,
     AggregationResultsRangeResults,
+    AggregationResultsValueResults,
 } from '@wix/auto_sdk_stores_products-v-3';
+import { type Customization } from '@wix/auto_sdk_stores_customizations-v-3';
 
 // ============================================================================
 // Types
@@ -53,6 +55,8 @@ export interface ProductSearchFilters {
     maxPrice?: number;
     /** Filter by category IDs */
     categoryIds?: string[];
+    /** Filter by product options (e.g., Color=Red, Size=M) */
+    optionFilters?: Array<{ optionName: string; choiceNames: string[] }>;
 }
 
 /**
@@ -65,6 +69,26 @@ export interface PriceRangeBucket {
     maxValue: number | null;
     productCount: number;
     isSelected: boolean;
+}
+
+/**
+ * A single choice within a product option filter
+ */
+export interface ProductOptionChoice {
+    choiceId: string;
+    choiceName: string;
+    colorCode: string;
+    productCount: number;
+}
+
+/**
+ * A product option filter (e.g., Color, Size) with available choices
+ */
+export interface ProductOptionFilter {
+    optionId: string;
+    optionName: string;
+    optionRenderType: 'TEXT_CHOICES' | 'SWATCH_CHOICES';
+    choices: ProductOptionChoice[];
 }
 
 /**
@@ -132,6 +156,8 @@ export interface SearchProductsOutput {
     hasMore: boolean;
     /** Price aggregation data (bounds and ranges) */
     priceAggregation?: PriceAggregationData;
+    /** Available product option filters with choices and counts */
+    optionFilters?: ProductOptionFilter[];
 }
 
 /**
@@ -145,6 +171,55 @@ export interface GetProductBySlugInput {
 // ============================================================================
 // Actions
 // ============================================================================
+
+/**
+ * Cross-reference search aggregation results with customizations to build
+ * structured option filters. Options and choices are filtered to only include
+ * those present in the current search results.
+ */
+function getAvailableProductOptions(
+    aggResults: AggregationDataAggregationResults[],
+    customizations: Customization[],
+): ProductOptionFilter[] {
+    const optionNamesAgg = aggResults.find((a) => a.name === 'optionNames')
+        ?.values as AggregationResultsValueResults | undefined;
+    const choiceNamesAgg = aggResults.find((a) => a.name === 'choiceNames')
+        ?.values as AggregationResultsValueResults | undefined;
+
+    if (!optionNamesAgg?.results?.length || !choiceNamesAgg?.results?.length) {
+        return [];
+    }
+
+    const optionNames = new Set(optionNamesAgg.results.map((e) => e.value!));
+    const choiceCounts = new Map(
+        choiceNamesAgg.results.map((e) => [e.value!.toLowerCase(), e.count ?? 0]),
+    );
+
+    return customizations
+        .filter(
+            (c) =>
+                c.customizationType === 'PRODUCT_OPTION' &&
+                c.name &&
+                optionNames.has(c.name) &&
+                (c.customizationRenderType === 'TEXT_CHOICES' ||
+                    c.customizationRenderType === 'SWATCH_CHOICES'),
+        )
+        .map((c) => ({
+            optionId: c._id || '',
+            optionName: c.name || '',
+            optionRenderType: c.customizationRenderType as 'TEXT_CHOICES' | 'SWATCH_CHOICES',
+            choices: (c.choicesSettings?.choices || [])
+                .filter((ch) => ch.name && choiceCounts.has(ch.name.toLowerCase()))
+                .map((ch) => ({
+                    choiceId: ch._id || '',
+                    choiceName: ch.name || '',
+                    colorCode: ch.colorCode || '',
+                    productCount: choiceCounts.get(ch.name!.toLowerCase()) ?? 0,
+                }))
+                .sort((a, b) => b.productCount - a.productCount),
+        }))
+        .filter((o) => o.choices.length > 0);
+}
 
 /**
  * Search products using the Wix Stores Catalog V3 searchProducts API.
@@ -216,6 +291,24 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
                     });
                 }
 
+                // Option filters (OR within option, AND across options)
+                if (filters.optionFilters && filters.optionFilters.length > 0) {
+                    for (const optFilter of filters.optionFilters) {
+                        if (optFilter.choiceNames.length > 0) {
+                            filterConditions.push({
+                                $and: [
+                                    { 'options.name': { $hasSome: [optFilter.optionName] } },
+                                    {
+                                        'options.choicesSettings.choices.name': {
+                                            $hasSome: optFilter.choiceNames,
+                                        },
+                                    },
+                                ],
+                            });
+                        }
+                    }
+                }
+
                 // Combine all conditions with $and
                 const filter: Record<string, unknown> =
                     filterConditions.length === 1
@@ -285,6 +378,20 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
                         name: 'max-price',
                         type: 'SCALAR' as const,
                         scalar: { type: 'MAX' as const },
+                    },
+                    // Option names for option-based filtering
+                    {
+                        fieldPath: 'options.name',
+                        name: 'optionNames',
+                        type: 'VALUE' as const,
+                        value: { limit: 20, sortType: 'VALUE' as const, sortDirection: 'DESC' as const },
+                    },
+                    // Choice names for option-based filtering
+                    {
+                        fieldPath: 'options.choicesSettings.choices.name',
+                        name: 'choiceNames',
+                        type: 'VALUE' as const,
+                        value: { limit: 50, sortType: 'VALUE' as const, sortDirection: 'DESC' as const },
                     },
                 ];
 
@@ -373,6 +480,10 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
 
                 priceRanges.push(...bucketRanges);
 
+                // Build option filters from aggregation + customizations
+                const customizations = await wixStores.getCustomizations();
+                const optionFilters = getAvailableProductOptions(aggResults, customizations);
+
                 // Map products to card view state with URL resolution
                 const tree = await wixStores.getCategoryTree();
                 const mappedProducts = products.map((p) =>
@@ -389,6 +500,7 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
                         maxBound,
                         ranges: priceRanges,
                     },
+                    optionFilters,
                 };
             } catch (error) {
                 console.error('[wixStores.searchProducts] Search failed:', error);

@@ -1,6 +1,6 @@
 # 14 - Option-Based Product Filters
 
-## Status: Draft
+## Status: Implemented
 
 ## Background
 
@@ -266,3 +266,28 @@ Interactive Phase:
 1. **Choice sorting**: By product count descending — most used choices appear first. The aggregation already returns counts per value.
 2. **Product counts**: Yes — the aggregation `values.results` includes a `count` field per value. Exposed as `productCount` on each choice.
 3. **Multi-selection**: OR within an option (Color=Red OR Blue), AND across options (Color=Red AND Size=M).
+
+## Implementation Results
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `packages/wix-stores/lib/utils/wix-store-api.ts` | Added `getCustomizationsV3Client()` singleton factory |
+| `packages/wix-stores/lib/services/wix-stores-service.ts` | Added `customizations` client + `getCustomizations()` lazy-cached method |
+| `packages/wix-stores/lib/actions/stores-actions.ts` | Added option aggregations, filter input/output types, `getAvailableProductOptions()` |
+| `packages/wix-stores/lib/contracts/product-search.jay-contract` | Added `optionFilters` sub-contract to filters |
+| `packages/wix-stores/lib/components/product-search.ts` | Interactive: checkbox toggle, URL persistence, search with options, clear filters |
+| `packages/wix-stores/lib/actions/search-products.jay-action` | Updated input/output schemas with `optionFilters` |
+
+### Deviations from Design
+
+1. **Contract `isSelected` tag**: Changed from `type: variant` to `type: [data, interactive]` with `elementType: HTMLInputElement` — makes it a checkbox that can be bound to an `<input>` element and also carries data. Removed explicit `phase: fast+interactive` since the `interactive` type implicitly sets this.
+2. **Removed `choiceCheckbox` tag**: The `isSelected` tag with `type: [data, interactive]` serves both as the data carrier and the interactive element, so a separate `choiceCheckbox` tag is unnecessary.
+3. **`queryCustomizations()` call**: Called without arguments instead of `queryCustomizations({})` — the `{}` argument matched the wrong overload (query overload returning a Promise instead of builder overload returning `CustomizationsQueryBuilder`).
+4. **URL encoding**: Option filter URL param uses `encodeURIComponent` for option names and choice names to handle special characters safely.
+
+### Verification
+
+- `yarn definitions` — generates updated `.d.ts` files successfully
+- `npx tsc --noEmit` — 0 type errors

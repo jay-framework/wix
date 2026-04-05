@@ -180,7 +180,63 @@ tags:
         dataType: boolean
         elementType: HTMLInputElement
         description: Show only in-stock products checkbox
-        
+
+      # Option-based filters (e.g., Color, Size)
+      - tag: optionFilters
+        type: sub-contract
+        repeated: true
+        trackBy: optionId
+        phase: fast+interactive
+        description: Filter by product options (e.g., Color, Size)
+        tags:
+          - tag: optionId
+            type: data
+            dataType: string
+            description: Customization ID
+
+          - tag: optionName
+            type: data
+            dataType: string
+            description: Option display name (e.g., Color, Size)
+
+          - tag: optionRenderType
+            type: variant
+            dataType: enum (TEXT_CHOICES | SWATCH_CHOICES)
+            description: How to render the option choices
+
+          - tag: choices
+            type: sub-contract
+            repeated: true
+            trackBy: choiceId
+            description: Available choices for this option
+            tags:
+              - tag: choiceId
+                type: data
+                dataType: string
+                description: Choice ID
+
+              - tag: choiceName
+                type: data
+                dataType: string
+                description: Choice display name (e.g., Red, Large)
+
+              - tag: colorCode
+                type: data
+                dataType: string
+                description: HEX color code (for swatch rendering)
+
+              - tag: productCount
+                type: data
+                dataType: number
+                phase: fast+interactive
+                description: Number of products with this choice in current results
+
+              - tag: isSelected
+                type: [data, interactive]
+                dataType: boolean
+                elementType: HTMLInputElement
+                description: Checkbox to toggle this choice filter
+
       - tag: clearFilters
         type: interactive
         elementType: HTMLButtonElement

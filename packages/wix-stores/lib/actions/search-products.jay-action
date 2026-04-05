@@ -11,6 +11,9 @@ inputSchema:
     minPrice?: number
     maxPrice?: number
     categoryIds?: string[]
+    optionFilters?:
+      - optionName: string
+        choiceNames: string[]
   sortBy?: enum(relevance | price_asc | price_desc | name_asc | name_desc | newest)
   cursor?: string
   pageSize?: number
@@ -31,3 +34,12 @@ outputSchema:
         maxValue?: number
         productCount: number
         isSelected: boolean
+  optionFilters?:
+    - optionId: string
+      optionName: string
+      optionRenderType: enum(TEXT_CHOICES | SWATCH_CHOICES)
+      choices:
+        - choiceId: string
+          choiceName: string
+          colorCode: string
+          productCount: number
