@@ -17,7 +17,12 @@ import {
 } from '../contracts/product-search.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
 import { patch, REPLACE, ADD } from '@jay-framework/json-patch';
-import { searchProducts, getVariantStock, ProductSortField } from '../actions/stores-actions';
+import {
+    searchProducts,
+    getVariantStock,
+    ProductSortField,
+    type SearchProductsOutput,
+} from '../actions/stores-actions';
 import { buildCategoryUrl, type VariantStockMap } from '../utils/product-mapper';
 import { WIX_STORES_CONTEXT, WixStoresContext } from '../contexts/wix-stores-context';
 import { QuickAddType } from '../contracts/product-card.jay-contract';
@@ -59,6 +64,8 @@ interface SearchSlowCarryForward {
     categories: CategoryInfos;
     /** Root category ID when scoped to a category prefix (always applied, hidden from UI) */
     baseCategoryId: string | null;
+    /** Pre-loaded product results from slow phase (used when no query params) */
+    preloadedResult: SearchProductsOutput | null;
 }
 
 /**
@@ -378,14 +385,32 @@ async function renderSlowlyChanging(
             query = query.eq('parentCategory.id', baseCategoryId);
         }
 
-        const categoriesResult = await query.find();
-        return categoriesResult.items || [];
+        // Load categories and pre-load default products in parallel
+        const baseCategoryIds = baseCategoryId ? [baseCategoryId] : [];
+        const [categoriesResult, productsResult] = await Promise.all([
+            query.find(),
+            searchProducts({
+                query: '',
+                filters: {
+                    categoryIds: baseCategoryIds.length > 0 ? baseCategoryIds : undefined,
+                },
+                pageSize: PAGE_SIZE,
+            }),
+        ]);
+
+        return {
+            categories: categoriesResult.items || [],
+            productsResult,
+        };
     })
         .recover((error) => {
-            console.error('Failed to load categories:', error);
-            return Pipeline.ok([]);
+            console.error('Failed to load categories/products:', error);
+            return Pipeline.ok({
+                categories: [] as Category[],
+                productsResult: null as SearchProductsOutput | null,
+            });
         })
-        .toPhaseOutput((categories) => {
+        .toPhaseOutput(({ categories, productsResult }) => {
             const categoryInfos: CategoryInfos = categories.map((cat) => ({
                 categoryId: cat._id || '',
                 categoryName: cat.name || '',
@@ -411,6 +436,7 @@ async function renderSlowlyChanging(
                     fuzzySearch: true,
                     categories: categoryInfos,
                     baseCategoryId,
+                    preloadedResult: productsResult,
                 },
             };
         });
@@ -418,10 +444,8 @@ async function renderSlowlyChanging(
 
 /**
  * Fast Rendering Phase
- * Loads dynamic data per request:
- * - Initial products (via searchProducts for aggregation support)
- * - Price bounds and ranges from aggregations
- * - Load more state
+ * Uses pre-loaded products from slow phase when no filters are active.
+ * Otherwise fetches fresh with filters/sort/search.
  */
 async function renderFastChanging(
     props: PageProps & ProductSearchParams,
@@ -439,8 +463,21 @@ async function renderFastChanging(
         .map((slug) => slowCarryForward.categories.find((c) => c.categorySlug === slug)?.categoryId)
         .filter(Boolean) as string[];
 
+    const hasActiveFilters =
+        !!urlFilters.searchTerm ||
+        initialCategoryIds.length > 0 ||
+        urlFilters.minPrice !== null ||
+        urlFilters.maxPrice !== null ||
+        urlFilters.inStockOnly ||
+        initialSort !== CurrentSort.relevance;
+
     return Pipeline.try(async () => {
-        // Combine base category with URL-restored category filters
+        // Use pre-loaded products from slow phase when no filters are active
+        if (!hasActiveFilters && slowCarryForward.preloadedResult) {
+            return slowCarryForward.preloadedResult;
+        }
+
+        // Fetch with filters
         const baseCategoryIds = slowCarryForward.baseCategoryId
             ? [slowCarryForward.baseCategoryId, ...initialCategoryIds]
             : initialCategoryIds;
