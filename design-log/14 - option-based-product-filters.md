@@ -1,10 +1,11 @@
 # 14 - Option-Based Product Filters
 
-## Status: Implemented (static filter lists — draft)
+## Status: Implemented
 
 ## Background
 
 The product search component currently supports filtering by:
+
 - **Price range** — computed from search API aggregations
 - **Categories** — loaded from the Wix Categories API
 - **In-stock** — simple boolean filter
@@ -63,9 +64,9 @@ Load customizations once on service startup and cache on the `WixStoresService`:
 
 ```typescript
 export interface WixStoresService {
-    // ... existing ...
-    /** Cached product customizations (options with choices). Lazily loaded. */
-    getCustomizations(): Promise<Customization[]>;
+  // ... existing ...
+  /** Cached product customizations (options with choices). Lazily loaded. */
+  getCustomizations(): Promise<Customization[]>;
 }
 ```
 
@@ -75,19 +76,19 @@ Add `optionNames` and `choiceNames` aggregations to the existing `searchProducts
 
 ```typescript
 const aggregations = [
-    // ... existing price aggregations ...
-    {
-        fieldPath: 'options.name',
-        name: 'optionNames',
-        type: 'VALUE',
-        value: { limit: 20, sortType: 'VALUE', sortDirection: 'DESC' },
-    },
-    {
-        fieldPath: 'options.choicesSettings.choices.name',
-        name: 'choiceNames',
-        type: 'VALUE',
-        value: { limit: 50, sortType: 'VALUE', sortDirection: 'DESC' },
-    },
+  // ... existing price aggregations ...
+  {
+    fieldPath: 'options.name',
+    name: 'optionNames',
+    type: 'VALUE',
+    value: { limit: 20, sortType: 'VALUE', sortDirection: 'DESC' },
+  },
+  {
+    fieldPath: 'options.choicesSettings.choices.name',
+    name: 'choiceNames',
+    type: 'VALUE',
+    value: { limit: 50, sortType: 'VALUE', sortDirection: 'DESC' },
+  },
 ];
 ```
 
@@ -97,37 +98,36 @@ Cross-reference customizations with aggregation results:
 
 ```typescript
 function getAvailableProductOptions(
-    aggregationResults: AggregationResults[],
-    customizations: Customization[],
+  aggregationResults: AggregationResults[],
+  customizations: Customization[],
 ): ProductOptionFilter[] {
-    // Extract option names and choice names with counts from aggregation
-    const optionEntries = extractValuesWithCounts(aggregationResults, 'optionNames');
-    const choiceEntries = extractValuesWithCounts(aggregationResults, 'choiceNames');
-    const optionNames = new Set(optionEntries.map(e => e.value));
-    const choiceCounts = new Map(choiceEntries.map(e => [e.value.toLowerCase(), e.count]));
+  // Extract option names and choice names with counts from aggregation
+  const optionEntries = extractValuesWithCounts(aggregationResults, 'optionNames');
+  const choiceEntries = extractValuesWithCounts(aggregationResults, 'choiceNames');
+  const optionNames = new Set(optionEntries.map((e) => e.value));
+  const choiceCounts = new Map(choiceEntries.map((e) => [e.value.toLowerCase(), e.count]));
 
-    return customizations
-        // Only PRODUCT_OPTION type, only options present in aggregation
-        .filter(c =>
-            c.customizationType === 'PRODUCT_OPTION' &&
-            optionNames.has(c.name)
-        )
-        .map(c => ({
-            id: c._id,
-            name: c.name,
-            renderType: c.customizationRenderType,
-            choices: c.choicesSettings.choices
-                .filter(ch => choiceCounts.has(ch.name.toLowerCase()))
-                .map(ch => ({
-                    id: ch._id,
-                    name: ch.name,
-                    colorCode: ch.colorCode,
-                    productCount: choiceCounts.get(ch.name.toLowerCase()) ?? 0,
-                }))
-                // Sort by product count descending (most used first)
-                .sort((a, b) => b.productCount - a.productCount),
-        }))
-        .filter(o => o.choices.length > 0);
+  return (
+    customizations
+      // Only PRODUCT_OPTION type, only options present in aggregation
+      .filter((c) => c.customizationType === 'PRODUCT_OPTION' && optionNames.has(c.name))
+      .map((c) => ({
+        id: c._id,
+        name: c.name,
+        renderType: c.customizationRenderType,
+        choices: c.choicesSettings.choices
+          .filter((ch) => choiceCounts.has(ch.name.toLowerCase()))
+          .map((ch) => ({
+            id: ch._id,
+            name: ch.name,
+            colorCode: ch.colorCode,
+            productCount: choiceCounts.get(ch.name.toLowerCase()) ?? 0,
+          }))
+          // Sort by product count descending (most used first)
+          .sort((a, b) => b.productCount - a.productCount),
+      }))
+      .filter((o) => o.choices.length > 0)
+  );
 }
 ```
 
@@ -195,11 +195,11 @@ When option filters are selected, use OR semantics within each option (e.g., Col
 
 ```typescript
 // For each option with selected choices, filter products that have ANY of the selected values
-const optionFilters = selectedOptions.map(option => ({
-    $and: [
-        { 'options.name': { $hasSome: [option.name] } },
-        { 'options.choicesSettings.choices.name': { $hasSome: option.selectedChoices } },
-    ],
+const optionFilters = selectedOptions.map((option) => ({
+  $and: [
+    { 'options.name': { $hasSome: [option.name] } },
+    { 'options.choicesSettings.choices.name': { $hasSome: option.selectedChoices } },
+  ],
 }));
 // Multiple options are AND-ed together (e.g., Color=Red AND Size=M)
 ```
@@ -225,25 +225,30 @@ Interactive Phase:
 ## Implementation Plan
 
 ### Phase 1: Customizations on Service
+
 1. Add `customizationsV3` client to `WixStoresService`
 2. Add `getCustomizations()` with lazy loading and caching
 3. Load `PRODUCT_OPTION` customizations only
 
 ### Phase 2: Search Aggregation
+
 1. Add `optionNames` and `choiceNames` aggregations to `searchProducts`
 2. Return aggregation results alongside products
 
 ### Phase 3: Contract
+
 1. Add `optionFilters` sub-contract to product-search filters
 2. Regenerate types
 
 ### Phase 4: Mapper
+
 1. Build `getAvailableProductOptions()` from aggregation + customizations
 2. Sort choices by product count descending (most used first)
 3. Include product count per choice from aggregation data
 4. Populate `optionFilters` in search output
 
 ### Phase 5: Interactive — Filter Selection
+
 1. Choice checkbox toggles `isSelected`
 2. Trigger search with option filter applied (OR within option, AND across options)
 3. URL persistence for selected options
@@ -251,12 +256,14 @@ Interactive Phase:
 ## Trade-offs
 
 ### Pros
+
 - Structured option filters (choices grouped by option)
 - Scoped to current results (only shows relevant options/choices)
 - Customizations loaded once (cached), aggregations are lightweight
 - Supports both swatch and text rendering
 
 ### Cons
+
 - Requires two data sources (customizations + aggregation)
 - Customizations cache may become stale (options added/removed)
 - Aggregation limits (20 option names, 50 choice names) may truncate large catalogs
@@ -275,14 +282,14 @@ Interactive Phase:
 
 ### Files Modified
 
-| File | Change |
-|------|--------|
-| `packages/wix-stores/lib/utils/wix-store-api.ts` | Added `getCustomizationsV3Client()` singleton factory |
-| `packages/wix-stores/lib/services/wix-stores-service.ts` | Added `customizations` client + `getCustomizations()` lazy-cached method |
-| `packages/wix-stores/lib/actions/stores-actions.ts` | Added option aggregations, filter input/output types, `getAvailableProductOptions()` |
-| `packages/wix-stores/lib/contracts/product-search.jay-contract` | Added `optionFilters` sub-contract to filters |
-| `packages/wix-stores/lib/components/product-search.ts` | Interactive: checkbox toggle, URL persistence, search with options, clear filters |
-| `packages/wix-stores/lib/actions/search-products.jay-action` | Updated input/output schemas with `optionFilters` |
+| File                                                            | Change                                                                               |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `packages/wix-stores/lib/utils/wix-store-api.ts`                | Added `getCustomizationsV3Client()` singleton factory                                |
+| `packages/wix-stores/lib/services/wix-stores-service.ts`        | Added `customizations` client + `getCustomizations()` lazy-cached method             |
+| `packages/wix-stores/lib/actions/stores-actions.ts`             | Added option aggregations, filter input/output types, `getAvailableProductOptions()` |
+| `packages/wix-stores/lib/contracts/product-search.jay-contract` | Added `optionFilters` sub-contract to filters                                        |
+| `packages/wix-stores/lib/components/product-search.ts`          | Interactive: checkbox toggle, URL persistence, search with options, clear filters    |
+| `packages/wix-stores/lib/actions/search-products.jay-action`    | Updated input/output schemas with `optionFilters`                                    |
 
 ### Deviations from Design
 
@@ -331,6 +338,7 @@ User also selects Size=M:
 **Base list**: Established from the **slow phase's unfiltered search**. The slow phase always runs `searchProducts` with no user filters (only the base category scope if any). This result is already carried forward to the fast phase via `preloadedResult`. The option filters and category counts from this unfiltered result become the canonical base lists — even when the fast phase runs a second filtered search due to URL params.
 
 **Filtered counts**: Every subsequent search (fast phase with URL filters, or interactive phase) still returns aggregations. The component merges filtered counts into the base list:
+
 - Choice present in aggregation → update `productCount`
 - Choice absent from aggregation → set `productCount = 0`, `isDisabled = true`
 
@@ -409,3 +417,15 @@ This returns `{ value: categoryId, count: N }` per category, which can be merged
 2. **`stores-actions.ts`** — add category VALUE aggregation, return category counts in output
 3. **`product-search.ts`** — store base lists from initial search, merge filtered counts on subsequent searches
 4. **`search-products.jay-action`** — update output schema
+
+### Static Filter Lists — Implementation Results
+
+Implemented as designed. Key details:
+
+- **Aggregation field path**: `allCategoriesInfo.categories._id` (not `.id` — the Wix SDK uses `_id` for category IDs in this context)
+- **Carry-forward**: Added `baseOptionFilters: ProductOptionFilter[]` and `baseCategoryCounts: Record<string, number>` to both `SearchSlowCarryForward` and `SearchFastCarryForward`
+- **Merge helpers**: `buildOptionFiltersViewState()` and `buildCategoryFilterViewState()` handle merging filtered counts into static base lists, setting `isDisabled = (count === 0)`
+- **Interactive phase**: After each `performSearch`, counts and disabled state are updated via `setFilters` while preserving user selections
+- **Choice sort order**: Preserves customization order from the Wix Customizations API (no re-sorting by count)
+
+Verification: `yarn definitions` succeeds, `npx tsc --noEmit` — 0 type errors.

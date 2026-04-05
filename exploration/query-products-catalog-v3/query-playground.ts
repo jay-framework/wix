@@ -161,23 +161,13 @@ export async function aggregateProducts(wixClient: WixClient): Promise<void> {
                 fieldPath: 'options.name',
                 name: 'options_name',
                 type: 'VALUE',
-                value: {
-                    limit: 50
-                },
-            },
-            {
-                fieldPath: 'options.choicesSettings.choices.name',
-                name: 'options_value',
-                type: 'VALUE',
-                value: {
-                    limit: 50
-                },
+                value: { limit: 50, sortType: 'VALUE' as const, sortDirection: 'DESC' as const },
             },
         ],
         filter: {
             'options.name': {
                 $hasSome: ['צבע'],
-            }
+            },
         },
     });
     console.log('result:', JSON.stringify(result?.aggregationData?.results, undefined, 2));
@@ -186,12 +176,12 @@ export async function aggregateProducts(wixClient: WixClient): Promise<void> {
 async function customizations(wixClient: WixClient): Promise<void> {
     const client = wixClient.use(customizationsV3);
 
-    const res = await client.queryCustomizations({})
+    const res = await client.queryCustomizations({});
     console.log(JSON.stringify(res, undefined, 2));
 
-    res.customizations?.forEach(customization => {
+    res.customizations?.forEach((customization) => {
         console.log(customization.choicesSettings?.choices?.length);
-    })
+    });
 }
 
 async function queryPlayground() {
@@ -208,7 +198,6 @@ async function queryPlayground() {
         await aggregateProducts(wixClient);
 
         // await customizations(wixClient);
-
     } catch (error) {
         console.error('❌ Error querying products:', error);
         if (error instanceof Error) {

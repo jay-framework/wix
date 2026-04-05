@@ -23,6 +23,7 @@ import {
     getVariantStock,
     ProductSortField,
     type SearchProductsOutput,
+    type ProductOptionFilter,
 } from '../actions/stores-actions';
 import { buildCategoryUrl, type VariantStockMap } from '../utils/product-mapper';
 import { WIX_STORES_CONTEXT, WixStoresContext } from '../contexts/wix-stores-context';
@@ -67,6 +68,10 @@ interface SearchSlowCarryForward {
     baseCategoryId: string | null;
     /** Pre-loaded product results from slow phase (used when no query params) */
     preloadedResult: SearchProductsOutput | null;
+    /** Base option filters from unfiltered search (static list, counts updated per search) */
+    baseOptionFilters: ProductOptionFilter[];
+    /** Base category counts from unfiltered search (categoryId → productCount) */
+    baseCategoryCounts: Record<string, number>;
 }
 
 /**
@@ -78,6 +83,10 @@ interface SearchFastCarryForward {
     categories: CategoryInfos;
     /** Root category ID when scoped to a category prefix (always applied, hidden from UI) */
     baseCategoryId: string | null;
+    /** Base option filters from unfiltered search (static list structure) */
+    baseOptionFilters: ProductOptionFilter[];
+    /** Base category counts from unfiltered search (categoryId → productCount) */
+    baseCategoryCounts: Record<string, number>;
 }
 
 const PAGE_SIZE = 12;
@@ -215,7 +224,9 @@ function updateUrlFilters(
     // Serialize option filter selections: opt=Color:Red,Blue;Size:M,L
     const optSegments: string[] = [];
     for (const opt of filters.optionFilters || []) {
-        const selected = opt.choices.filter((c) => c.isSelected).map((c) => encodeURIComponent(c.choiceName));
+        const selected = opt.choices
+            .filter((c) => c.isSelected)
+            .map((c) => encodeURIComponent(c.choiceName));
         if (selected.length > 0) {
             optSegments.push(`${encodeURIComponent(opt.optionName)}:${selected.join(',')}`);
         }
@@ -236,6 +247,74 @@ function updateUrlFilters(
 
     const query = params.toString();
     window.history.replaceState(null, '', query ? `?${query}` : window.location.pathname);
+}
+
+/**
+ * Build option filters view state by merging filtered counts into the base list.
+ * Base list structure (options and choices) stays static; counts and isDisabled update.
+ */
+function buildOptionFiltersViewState(
+    baseOptionFilters: ProductOptionFilter[],
+    filteredResult: SearchProductsOutput,
+    optionSelections: Map<string, Set<string>>,
+) {
+    // Build lookup from filtered aggregation: choiceName (lowercase) → count
+    const filteredChoiceCounts = new Map<string, number>();
+    for (const opt of filteredResult.optionFilters || []) {
+        for (const ch of opt.choices) {
+            filteredChoiceCounts.set(ch.choiceName.toLowerCase(), ch.productCount);
+        }
+    }
+
+    return baseOptionFilters.map((opt) => ({
+        optionId: opt.optionId,
+        optionName: opt.optionName,
+        optionRenderType:
+            opt.optionRenderType === 'SWATCH_CHOICES'
+                ? OptionRenderType.SWATCH_CHOICES
+                : OptionRenderType.TEXT_CHOICES,
+        choices: opt.choices.map((ch) => {
+            const count = filteredChoiceCounts.get(ch.choiceName.toLowerCase()) ?? 0;
+            return {
+                choiceId: ch.choiceId,
+                choiceName: ch.choiceName,
+                colorCode: ch.colorCode,
+                productCount: count,
+                isSelected: optionSelections.get(opt.optionName)?.has(ch.choiceName) ?? false,
+                isDisabled: count === 0,
+            };
+        }),
+    }));
+}
+
+/**
+ * Build category filter view state by merging filtered counts into the base list.
+ */
+function buildCategoryFilterViewState(
+    categories: CategoryInfos,
+    baseCategoryCounts: Record<string, number>,
+    filteredCategoryCounts: Array<{ categoryId: string; productCount: number }> | undefined,
+    selectedCategoryIds: string[],
+) {
+    // Use filtered counts if available, otherwise fall back to base counts
+    const countMap = new Map<string, number>();
+    if (filteredCategoryCounts) {
+        for (const cc of filteredCategoryCounts) {
+            countMap.set(cc.categoryId, cc.productCount);
+        }
+    }
+
+    return categories.map((cat) => {
+        const count = filteredCategoryCounts
+            ? (countMap.get(cat.categoryId) ?? 0)
+            : (baseCategoryCounts[cat.categoryId] ?? 0);
+        return {
+            categoryId: cat.categoryId,
+            isSelected: selectedCategoryIds.includes(cat.categoryId),
+            productCount: count,
+            isDisabled: count === 0,
+        };
+    });
 }
 
 /** Empty category header used as default */
@@ -455,6 +534,13 @@ async function renderSlowlyChanging(
                     buildCategoryUrl(wixStores.urls, tree, cat.slug || '', cat._id || '') ?? '',
             }));
 
+            // Extract base lists from unfiltered preloaded search
+            const baseOptionFilters = productsResult?.optionFilters || [];
+            const baseCategoryCounts: Record<string, number> = {};
+            for (const cc of productsResult?.categoryCounts || []) {
+                baseCategoryCounts[cc.categoryId] = cc.productCount;
+            }
+
             return {
                 viewState: {
                     searchFields: 'name,description,sku',
@@ -473,6 +559,8 @@ async function renderSlowlyChanging(
                     categories: categoryInfos,
                     baseCategoryId,
                     preloadedResult: productsResult,
+                    baseOptionFilters,
+                    baseCategoryCounts,
                 },
             };
         });
@@ -532,8 +620,7 @@ async function renderFastChanging(
                 minPrice: urlFilters.minPrice ?? undefined,
                 maxPrice: urlFilters.maxPrice ?? undefined,
                 inStockOnly: urlFilters.inStockOnly || undefined,
-                optionFilters:
-                    initialOptionFilters.length > 0 ? initialOptionFilters : undefined,
+                optionFilters: initialOptionFilters.length > 0 ? initialOptionFilters : undefined,
             },
             sortBy:
                 initialSort !== CurrentSort.relevance ? mapSortToAction(initialSort) : undefined,
@@ -564,6 +651,7 @@ async function renderFastChanging(
                     ],
                 },
                 optionFilters: [],
+                categoryCounts: [],
             });
         })
         .toPhaseOutput((result) => {
@@ -602,27 +690,18 @@ async function renderFastChanging(
                             ranges: priceAgg.ranges,
                         },
                         categoryFilter: {
-                            categories: slowCarryForward.categories.map((cat) => ({
-                                categoryId: cat.categoryId,
-                                isSelected: initialCategoryIds.includes(cat.categoryId),
-                            })),
+                            categories: buildCategoryFilterViewState(
+                                slowCarryForward.categories,
+                                slowCarryForward.baseCategoryCounts,
+                                hasActiveFilters ? result.categoryCounts : undefined,
+                                initialCategoryIds,
+                            ),
                         },
-                        optionFilters: (result.optionFilters || []).map((opt) => ({
-                            optionId: opt.optionId,
-                            optionName: opt.optionName,
-                            optionRenderType:
-                                opt.optionRenderType === 'SWATCH_CHOICES'
-                                    ? OptionRenderType.SWATCH_CHOICES
-                                    : OptionRenderType.TEXT_CHOICES,
-                            choices: opt.choices.map((ch) => ({
-                                choiceId: ch.choiceId,
-                                choiceName: ch.choiceName,
-                                colorCode: ch.colorCode,
-                                productCount: ch.productCount,
-                                isSelected:
-                                    urlFilters.optionSelections.get(opt.optionName)?.has(ch.choiceName) ?? false,
-                            })),
-                        })),
+                        optionFilters: buildOptionFiltersViewState(
+                            slowCarryForward.baseOptionFilters,
+                            result,
+                            urlFilters.optionSelections,
+                        ),
                     },
                     sortBy: {
                         currentSort: initialSort,
@@ -636,6 +715,8 @@ async function renderFastChanging(
                     fuzzySearch: slowCarryForward.fuzzySearch,
                     categories: slowCarryForward.categories,
                     baseCategoryId: slowCarryForward.baseCategoryId,
+                    baseOptionFilters: slowCarryForward.baseOptionFilters,
+                    baseCategoryCounts: slowCarryForward.baseCategoryCounts,
                 },
             };
         });
@@ -715,9 +796,7 @@ function ProductSearchInteractive(
             const activeOptionFilters = (currentFilters.optionFilters || [])
                 .map((opt) => ({
                     optionName: opt.optionName,
-                    choiceNames: opt.choices
-                        .filter((c) => c.isSelected)
-                        .map((c) => c.choiceName),
+                    choiceNames: opt.choices.filter((c) => c.isSelected).map((c) => c.choiceName),
                 }))
                 .filter((o) => o.choiceNames.length > 0);
 
@@ -728,8 +807,7 @@ function ProductSearchInteractive(
                     maxPrice: currentFilters.priceRange.maxPrice || undefined,
                     categoryIds,
                     inStockOnly: currentFilters.inStockOnly,
-                    optionFilters:
-                        activeOptionFilters.length > 0 ? activeOptionFilters : undefined,
+                    optionFilters: activeOptionFilters.length > 0 ? activeOptionFilters : undefined,
                 },
                 sortBy: mapSortToAction(currentSort),
                 // No cursor = start from beginning
@@ -747,6 +825,29 @@ function ProductSearchInteractive(
             setLoadedCount(result.products.length);
             setHasMore(result.hasMore);
             setHasResults(result.products.length > 0);
+
+            // Merge filtered counts into base lists (static structure, live counts)
+            const currentSelections = new Map<string, Set<string>>();
+            for (const opt of currentFilters.optionFilters || []) {
+                const selected = opt.choices.filter((c) => c.isSelected).map((c) => c.choiceName);
+                if (selected.length > 0) currentSelections.set(opt.optionName, new Set(selected));
+            }
+            const updatedOptionFilters = buildOptionFiltersViewState(
+                fastCarryForward.baseOptionFilters,
+                result,
+                currentSelections,
+            );
+            const updatedCategories = buildCategoryFilterViewState(
+                fastCarryForward.categories,
+                fastCarryForward.baseCategoryCounts,
+                result.categoryCounts,
+                userSelectedCategoryIds,
+            );
+            setFilters({
+                ...currentFilters,
+                optionFilters: updatedOptionFilters,
+                categoryFilter: { categories: updatedCategories },
+            });
 
             // Store cursor for load more
             currentCursor = result.nextCursor;
@@ -787,9 +888,7 @@ function ProductSearchInteractive(
             const activeOptionFilters = (currentFilters.optionFilters || [])
                 .map((opt) => ({
                     optionName: opt.optionName,
-                    choiceNames: opt.choices
-                        .filter((c) => c.isSelected)
-                        .map((c) => c.choiceName),
+                    choiceNames: opt.choices.filter((c) => c.isSelected).map((c) => c.choiceName),
                 }))
                 .filter((o) => o.choiceNames.length > 0);
 
@@ -800,8 +899,7 @@ function ProductSearchInteractive(
                     maxPrice: currentFilters.priceRange.maxPrice || undefined,
                     categoryIds,
                     inStockOnly: currentFilters.inStockOnly,
-                    optionFilters:
-                        activeOptionFilters.length > 0 ? activeOptionFilters : undefined,
+                    optionFilters: activeOptionFilters.length > 0 ? activeOptionFilters : undefined,
                 },
                 sortBy: mapSortToAction(currentSort),
                 cursor: currentCursor,
@@ -966,9 +1064,7 @@ function ProductSearchInteractive(
     refs.filters.optionFilters.choices.isSelected.oninput(({ event, coordinate }) => {
         const [optionId, choiceId] = coordinate;
         const currentFilters = filters();
-        const optionIndex = currentFilters.optionFilters.findIndex(
-            (o) => o.optionId === optionId,
-        );
+        const optionIndex = currentFilters.optionFilters.findIndex((o) => o.optionId === optionId);
         if (optionIndex === -1) return;
 
         const choiceIndex = currentFilters.optionFilters[optionIndex].choices.findIndex(

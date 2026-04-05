@@ -43,3 +43,6 @@ outputSchema:
           choiceName: string
           colorCode: string
           productCount: number
+  categoryCounts?:
+    - categoryId: string
+      productCount: number
