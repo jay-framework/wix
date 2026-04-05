@@ -208,6 +208,7 @@ function getAvailableProductOptions(
             optionId: c._id || '',
             optionName: c.name || '',
             optionRenderType: c.customizationRenderType as 'TEXT_CHOICES' | 'SWATCH_CHOICES',
+            // Preserve customization order (store owner's configured order)
             choices: (c.choicesSettings?.choices || [])
                 .filter((ch) => ch.name && choiceCounts.has(ch.name.toLowerCase()))
                 .map((ch) => ({
@@ -215,8 +216,7 @@ function getAvailableProductOptions(
                     choiceName: ch.name || '',
                     colorCode: ch.colorCode || '',
                     productCount: choiceCounts.get(ch.name!.toLowerCase()) ?? 0,
-                }))
-                .sort((a, b) => b.productCount - a.productCount),
+                })),
         }))
         .filter((o) => o.choices.length > 0);
 }
