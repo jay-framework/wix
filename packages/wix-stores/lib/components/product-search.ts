@@ -1127,39 +1127,45 @@ function ProductSearchInteractive(
     });
 
     // Lazy-load variant stock on product card hover (for COLOR_AND_TEXT_OPTIONS)
+    const variantStockLoading = new Set<string>();
     const loadVariantStock = async (productId: string) => {
-        if (variantStockCache[productId]) return;
+        if (variantStockCache[productId] || variantStockLoading.has(productId)) return;
+        variantStockLoading.add(productId);
 
-        // Update text choice inStock based on currently selected color
-        const currentResults = searchResults();
-        const productIndex = currentResults.findIndex((p) => p._id === productId);
-        if (productIndex === -1) return;
+        try {
+            // Update text choice inStock based on currently selected color
+            const currentResults = searchResults();
+            const productIndex = currentResults.findIndex((p) => p._id === productId);
+            if (productIndex === -1) return;
 
-        const product = currentResults[productIndex];
+            const product = currentResults[productIndex];
 
-        if (product?.quickAddType !== QuickAddType.COLOR_AND_TEXT_OPTIONS) return;
+            if (product?.quickAddType !== QuickAddType.COLOR_AND_TEXT_OPTIONS) return;
 
-        const stockMap = await getVariantStock({ productId });
-        variantStockCache[productId] = stockMap;
+            const stockMap = await getVariantStock({ productId });
+            variantStockCache[productId] = stockMap;
 
-        const selectedColor = product.quickOption?.choices?.find((c) => c.isSelected);
-        const textChoices = product.secondQuickOption?.choices;
-        if (!selectedColor || !textChoices) return;
+            const selectedColor = product.quickOption?.choices?.find((c) => c.isSelected);
+            const textChoices = product.secondQuickOption?.choices;
+            if (!selectedColor || !textChoices) return;
 
-        const colorStock = stockMap[selectedColor.choiceId];
-        const updatedTextChoices = textChoices.map((c) => ({
-            ...c,
-            inStock: colorStock?.[c.choiceId] ?? false,
-        }));
-        setSearchResults(
-            patch(searchResults(), [
-                {
-                    op: REPLACE,
-                    path: [productIndex, 'secondQuickOption', 'choices'],
-                    value: updatedTextChoices,
-                },
-            ]),
-        );
+            const colorStock = stockMap[selectedColor.choiceId];
+            const updatedTextChoices = textChoices.map((c) => ({
+                ...c,
+                inStock: colorStock?.[c.choiceId] ?? false,
+            }));
+            setSearchResults(
+                patch(searchResults(), [
+                    {
+                        op: REPLACE,
+                        path: [productIndex, 'secondQuickOption', 'choices'],
+                        value: updatedTextChoices,
+                    },
+                ]),
+            );
+        } finally {
+            variantStockLoading.delete(productId);
+        }
     };
 
     refs.searchResults.productLink.onmouseenter(({ coordinate }) => {
