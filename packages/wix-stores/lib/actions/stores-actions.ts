@@ -27,81 +27,11 @@ import {
     AggregationResultsValueResults,
 } from '@wix/auto_sdk_stores_products-v-3';
 import { type Customization } from '@wix/auto_sdk_stores_customizations-v-3';
+import { SearchProductsInput, SearchProductsOutput } from './search-products.jay-action';
 
 // ============================================================================
 // Types
 // ============================================================================
-
-/**
- * Sort options for product search
- */
-export type ProductSortField =
-    | 'relevance'
-    | 'price_asc'
-    | 'price_desc'
-    | 'name_asc'
-    | 'name_desc'
-    | 'newest';
-
-/**
- * Product search filters
- */
-export interface ProductSearchFilters {
-    /** Only show products in stock */
-    inStockOnly?: boolean;
-    /** Minimum price filter */
-    minPrice?: number;
-    /** Maximum price filter */
-    maxPrice?: number;
-    /** Filter by category IDs */
-    categoryIds?: string[];
-    /** Filter by product options (e.g., Color=Red, Size=M) */
-    optionFilters?: Array<{ optionName: string; choiceNames: string[] }>;
-}
-
-/**
- * Price range bucket for aggregation
- */
-export interface PriceRangeBucket {
-    rangeId: string;
-    label: string;
-    minValue: number | null;
-    maxValue: number | null;
-    productCount: number;
-    isSelected: boolean;
-}
-
-/**
- * A single choice within a product option filter
- */
-export interface ProductOptionChoice {
-    choiceId: string;
-    choiceName: string;
-    colorCode: string;
-    productCount: number;
-}
-
-/**
- * A product option filter (e.g., Color, Size) with available choices
- */
-export interface ProductOptionFilter {
-    optionId: string;
-    optionName: string;
-    optionRenderType: 'TEXT_CHOICES' | 'SWATCH_CHOICES';
-    choices: ProductOptionChoice[];
-}
-
-/**
- * Price aggregation data from search
- */
-export interface PriceAggregationData {
-    /** Minimum price across all products */
-    minBound: number;
-    /** Maximum price across all products */
-    maxBound: number;
-    /** Price range buckets with product counts */
-    ranges: PriceRangeBucket[];
-}
 
 /**
  * Pre-computed wide-range price buckets using logarithmic scale.
@@ -127,40 +57,6 @@ PRICE_BUCKETS.push({ from: PRICE_BUCKET_BOUNDARIES[PRICE_BUCKET_BOUNDARIES.lengt
 });
 
 /**
- * Input for searchProducts action
- */
-export interface SearchProductsInput {
-    /** Search query text */
-    query: string;
-    /** Filters to apply */
-    filters?: ProductSearchFilters;
-    /** Sort order */
-    sortBy?: ProductSortField;
-    /** Cursor for pagination (from previous response's nextCursor) */
-    cursor?: string;
-    /** Items per page (default: 12) */
-    pageSize?: number;
-}
-
-/**
- * Output for searchProducts action
- */
-export interface SearchProductsOutput {
-    /** List of matching products */
-    products: ProductCardViewState[];
-    /** Total number of matching products */
-    totalCount: number;
-    /** Cursor for next page (null if no more results) */
-    nextCursor: string | null;
-    /** Whether there are more results */
-    hasMore: boolean;
-    /** Price aggregation data (bounds and ranges) */
-    priceAggregation?: PriceAggregationData;
-    /** Available product option filters with choices and counts */
-    optionFilters?: ProductOptionFilter[];
-}
-
-/**
  * Input for getProductBySlug action
  */
 export interface GetProductBySlugInput {
@@ -180,7 +76,7 @@ export interface GetProductBySlugInput {
 function getAvailableProductOptions(
     aggResults: AggregationDataAggregationResults[],
     customizations: Customization[],
-): ProductOptionFilter[] {
+): SearchProductsOutput['optionFilters'] {
     const optionNamesAgg = aggResults.find((a) => a.name === 'optionNames')?.values as
         | AggregationResultsValueResults
         | undefined;
@@ -459,7 +355,7 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
                               : '$';
 
                 // Map price ranges from aggregation
-                const priceRanges: PriceRangeBucket[] = [
+                const priceRanges: SearchProductsOutput['priceAggregation']['ranges'] = [
                     {
                         rangeId: 'all',
                         label: 'Show all',

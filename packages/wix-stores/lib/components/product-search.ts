@@ -18,17 +18,12 @@ import {
 } from '../contracts/product-search.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
 import { patch, REPLACE, ADD } from '@jay-framework/json-patch';
-import {
-    searchProducts,
-    getVariantStock,
-    ProductSortField,
-    type SearchProductsOutput,
-    type ProductOptionFilter,
-} from '../actions/stores-actions';
+import { searchProducts, getVariantStock } from '../actions/stores-actions';
 import { buildCategoryUrl, type VariantStockMap } from '../utils/product-mapper';
 import { WIX_STORES_CONTEXT, WixStoresContext } from '../contexts/wix-stores-context';
 import { QuickAddType } from '../contracts/product-card.jay-contract';
 import { type Category } from '@wix/auto_sdk_categories_categories';
+import { SearchProductsInput, SearchProductsOutput } from '../actions/search-products.jay-action';
 
 /**
  * URL parameters for product search routes.
@@ -69,7 +64,7 @@ interface SearchSlowCarryForward {
     /** Pre-loaded product results from slow phase (used when no query params) */
     preloadedResult: SearchProductsOutput | null;
     /** Base option filters from unfiltered search (static list, counts updated per search) */
-    baseOptionFilters: ProductOptionFilter[];
+    baseOptionFilters: SearchProductsOutput['optionFilters'];
 }
 
 /**
@@ -82,13 +77,13 @@ interface SearchFastCarryForward {
     /** Root category ID when scoped to a category prefix (always applied, hidden from UI) */
     baseCategoryId: string | null;
     /** Base option filters from unfiltered search (static list structure) */
-    baseOptionFilters: ProductOptionFilter[];
+    baseOptionFilters: SearchProductsOutput['optionFilters'];
 }
 
 const PAGE_SIZE = 12;
 
 /** Map CurrentSort enum to action sort field */
-function mapSortToAction(sort: CurrentSort): ProductSortField {
+function mapSortToAction(sort: CurrentSort): SearchProductsInput['sortBy'] {
     switch (sort) {
         case CurrentSort.priceAsc:
             return 'price_asc';
@@ -250,7 +245,7 @@ function updateUrlFilters(
  * Base list structure (options and choices) stays static; counts and isDisabled update.
  */
 function buildOptionFiltersViewState(
-    baseOptionFilters: ProductOptionFilter[],
+    baseOptionFilters: SearchProductsOutput['optionFilters'],
     filteredResult: SearchProductsOutput,
     optionSelections: Map<string, Set<string>>,
 ) {
@@ -604,8 +599,8 @@ async function renderFastChanging(
                         {
                             rangeId: 'all',
                             label: 'Show all',
-                            minValue: null,
-                            maxValue: null,
+                            minValue: 0,
+                            maxValue: 1000,
                             productCount: 0,
                             isSelected: true,
                         },
@@ -622,8 +617,8 @@ async function renderFastChanging(
                     {
                         rangeId: 'all',
                         label: 'Show all',
-                        minValue: null,
-                        maxValue: null,
+                        minValue: 0,
+                        maxValue: 1000,
                         productCount: result.totalCount,
                         isSelected: true,
                     },
@@ -647,7 +642,11 @@ async function renderFastChanging(
                             maxPrice: urlFilters.maxPrice ?? priceAgg.maxBound,
                             minBound: priceAgg.minBound,
                             maxBound: priceAgg.maxBound,
-                            ranges: priceAgg.ranges,
+                            ranges: priceAgg.ranges.map((r) => ({
+                                ...r,
+                                minValue: r.minValue ?? 0,
+                                maxValue: r.maxValue ?? 0,
+                            })),
                         },
                         categoryFilter: {
                             categories: slowCarryForward.categories.map((cat) => ({
