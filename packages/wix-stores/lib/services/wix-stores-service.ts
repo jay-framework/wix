@@ -12,7 +12,6 @@ import {
     getInventoryClient,
     getProductsV3Client,
 } from '../utils/wix-store-api';
-import { getCurrentCartClient } from '@jay-framework/wix-cart';
 import { createJayService } from '@jay-framework/fullstack-component';
 import { registerService } from '@jay-framework/stack-server-runtime';
 import { type UrlTemplates } from '../config-loader';
@@ -29,8 +28,6 @@ export interface WixStoresService {
     categories: BuildDescriptors<typeof categories, {}>;
     inventory: BuildDescriptors<typeof inventoryItemsV3, {}>;
     customizations: BuildDescriptors<typeof customizationsV3, {}>;
-    /** @deprecated Use WIX_CART_SERVICE from @jay-framework/wix-cart instead */
-    cart: BuildDescriptors<typeof currentCart, {}>;
     /** URL templates for building canonical links */
     urls: UrlTemplates;
     /** Slug of the fallback category for pages without category context */
@@ -72,7 +69,6 @@ export function provideWixStoresService(
         categories: categoriesClient,
         inventory: getInventoryClient(wixClient),
         customizations: customizationsClient,
-        cart: getCurrentCartClient(wixClient),
         urls: options?.urls ?? { product: '/products/{slug}', category: null },
         defaultCategory: options?.defaultCategory ?? null,
 
