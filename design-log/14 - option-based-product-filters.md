@@ -276,7 +276,7 @@ Interactive Phase:
 
 ## Answers
 
-1. **Choice sorting**: Preserve the customization order from the Wix Customizations API. The `choicesSettings.choices` array comes in the store owner's configured order (manual, alphabetical, or by product count — as set in Wix dashboard). We overlay live `productCount` values but do not re-sort by them.
+1. **Choice sorting**: By product count descending — most used choices appear first. The aggregation returns counts per value, and choices are sorted from highest to lowest count.
 2. **Product counts**: Yes — the aggregation `values.results` includes a `count` field per value. Exposed as `productCount` on each choice.
 3. **Multi-selection**: OR within an option (Color=Red OR Blue), AND across options (Color=Red AND Size=M).
 
@@ -403,7 +403,7 @@ Implemented for option filters only. Categories do not get live counts (Wix API 
 - **Carry-forward**: Added `baseOptionFilters: ProductOptionFilter[]` to both `SearchSlowCarryForward` and `SearchFastCarryForward`
 - **Merge helper**: `buildOptionFiltersViewState()` merges filtered counts into the static base list, setting `isDisabled = (count === 0)`
 - **Interactive phase**: After each `performSearch`, option filter counts and disabled state are updated via `setFilters` while preserving user selections
-- **Choice sort order**: Preserves customization order from the Wix Customizations API (no re-sorting by count)
+- **Choice sort order**: Sorted by product count descending (most used first)
 - **Categories**: Static list without counts — the Wix search API does not support VALUE aggregation on `allCategoriesInfo.categories._id`
 
 Verification: `yarn definitions` succeeds, `npx tsc --noEmit` — 0 type errors.
