@@ -23,6 +23,7 @@ import { buildCategoryUrl, type VariantStockMap } from '../utils/product-mapper'
 import { WIX_STORES_CONTEXT, WixStoresContext } from '../contexts/wix-stores-context';
 import { QuickAddType } from '../contracts/product-card.jay-contract';
 import { type Category } from '@wix/auto_sdk_categories_categories';
+import { formatWixMediaUrl } from '@jay-framework/wix-utils';
 import { SearchProductsInput, SearchProductsOutput } from '../actions/search-products.jay-action';
 
 /**
@@ -335,7 +336,7 @@ async function buildCategoryHeader(
     const details = await loadCategoryDetails(wixStoreService.categories, category._id);
     const cat = details || category;
 
-    const imageUrl = cat.image || '';
+    const imageUrl = cat.image ? formatWixMediaUrl('', cat.image) : '';
     const description = cat.description || '';
 
     // Build breadcrumbs from BREADCRUMBS_INFO
@@ -397,7 +398,7 @@ async function buildCategoryHeader(
                 header = { ...header, description: parent.description };
             }
             if (!header.imageUrl) {
-                const parentImage = parent.image || '';
+                const parentImage = parent.image ? formatWixMediaUrl('', parent.image) : '';
                 if (parentImage) {
                     header = { ...header, imageUrl: parentImage, hasImage: true };
                 }
