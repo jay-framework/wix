@@ -120,13 +120,21 @@ export function buildCategoryUrl(
     if (!urls.category) return null;
 
     let url = urls.category;
-    url = url.replace('{category}', categorySlug);
 
     if (url.includes('{prefix}')) {
         const prefixSlug = findRootCategorySlug(categoryId, tree);
         if (!prefixSlug) return null;
         url = url.replace('{prefix}', prefixSlug);
+
+        // If this category IS the root, drop {category} (it would duplicate the prefix)
+        const isRoot = tree.rootIds.has(categoryId);
+        url = url.replace('{category}', isRoot ? '' : categorySlug);
+    } else {
+        url = url.replace('{category}', categorySlug);
     }
+
+    // Clean up trailing/double slashes
+    url = url.replace(/\/\/+/g, '/').replace(/\/+$/, '/');
 
     return url.includes('{') ? null : url;
 }

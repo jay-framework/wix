@@ -339,16 +339,32 @@ async function buildCategoryHeader(
     const imageUrl = cat.image ? formatWixMediaUrl('', cat.image) : '';
     const description = cat.description || '';
 
-    // Build breadcrumbs from BREADCRUMBS_INFO
+    // Build breadcrumbs from BREADCRUMBS_INFO + current category
+    // The API returns ancestors only, so we append the current category
     const categoryTree = await wixStoreService.getCategoryTree();
-    const breadcrumbs = (cat.breadcrumbsInfo?.breadcrumbs || []).map((b) => ({
-        categoryId: b.categoryId,
-        name: b.categoryName,
-        slug: b.categorySlug,
-        url: categoryUrlTemplate
-            ? buildCategoryUrl(wixStoreService.urls, categoryTree, b.categorySlug, b.categoryId)
-            : '',
-    }));
+    const breadcrumbs = [
+        ...(cat.breadcrumbsInfo?.breadcrumbs || []).map((b) => ({
+            categoryId: b.categoryId,
+            name: b.categoryName,
+            slug: b.categorySlug,
+            url: categoryUrlTemplate
+                ? buildCategoryUrl(wixStoreService.urls, categoryTree, b.categorySlug, b.categoryId)
+                : '',
+        })),
+        {
+            categoryId: cat._id || '',
+            name: cat.name || '',
+            slug: cat.slug || '',
+            url: categoryUrlTemplate
+                ? buildCategoryUrl(
+                      wixStoreService.urls,
+                      categoryTree,
+                      cat.slug || '',
+                      cat._id || '',
+                  )
+                : '',
+        },
+    ];
 
     // Map SEO data
     const seoData = cat.seoData
