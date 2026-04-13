@@ -38,17 +38,6 @@ export interface ProductSearchParams extends UrlParams {
 }
 
 /**
- * Search sort options
- */
-export type SearchSortOption =
-    | 'relevance'
-    | 'priceAsc'
-    | 'priceDesc'
-    | 'newest'
-    | 'nameAsc'
-    | 'nameDesc';
-
-/**
  * Category info carried forward from slow to fast phase
  */
 type CategoryInfos = ProductSearchSlowViewState['filters']['categoryFilter']['categories'];

@@ -24,6 +24,7 @@
   "scripts": {
     "build": "npm run clean && npm run definitions && npm run build:client && npm run build:server && npm run build:copy-contract && npm run build:types",
     "definitions": "jay-cli definitions lib",
+    "validate": "jay-stack-cli validate-plugin",
     "build:client": "vite build",
     "build:server": "vite build --ssr",
     "build:copy-contract": "mkdir -p dist/contracts && cp lib/contracts/*.jay-contract* dist/contracts/ && mkdir -p dist/actions && cp lib/actions/*.jay-action dist/actions/",
@@ -56,6 +57,7 @@
     "@babel/preset-typescript": "^7.23.3",
     "@jay-framework/compiler-jay-stack": "^0.15.5",
     "@jay-framework/jay-cli": "^0.15.5",
+    "@jay-framework/jay-stack-cli": "^0.15.5",
     "@jay-framework/vite-plugin": "^0.15.5",
     "nodemon": "^3.0.3",
     "rimraf": "^5.0.5",

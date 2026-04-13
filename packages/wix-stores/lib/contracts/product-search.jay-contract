@@ -1,4 +1,14 @@
 name: product-search
+props:
+  - name: category
+    type: string
+    description: Top-level category slug. Scopes search to this category.
+  - name: subcategory
+    type: string
+    description: Sub-category slug. Further scopes within the category.
+params:
+  category: string?
+  subcategory: string?
 tags:
   # Search input (matches Wix searchProducts search.search parameter)
   - tag: searchExpression

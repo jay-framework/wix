@@ -1,4 +1,8 @@
 name: category-list
+props:
+  - name: parentCategory
+    type: string
+    description: Parent category slug. When set, only direct children of this category are shown. Falls back to defaultCategory from config.
 tags:
   # List of visible categories
   - tag: categories

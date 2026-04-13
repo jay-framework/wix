@@ -2,12 +2,22 @@ import {
     makeJayStackComponent,
     PageProps,
     RenderPipeline,
+    UrlParams,
 } from '@jay-framework/fullstack-component';
 import {
     CategoryListContract,
     CategoryListSlowViewState,
 } from '../contracts/category-list.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service';
+
+/**
+ * URL parameters for category list.
+ * Supports optional parentCategory to scope the list to direct children.
+ */
+export interface CategoryListParams extends UrlParams {
+    /** Parent category slug. When set, only direct children of this category are shown. */
+    parentCategory?: string;
+}
 
 /**
  * Category item for the list view
@@ -22,23 +32,58 @@ interface CategoryItem {
 }
 
 /**
- * Slow Rendering Phase
- * Loads all visible categories with their metadata.
+ * Look up a category by slug via the Wix API.
+ */
+async function findCategoryBySlug(
+    categoriesClient: WixStoresService['categories'],
+    slug: string,
+) {
+    const result = await categoriesClient
+        .queryCategories({ treeReference: { appNamespace: '@wix/stores' } })
+        .eq('slug', slug)
+        .eq('visible', true)
+        .limit(1)
+        .find();
+    return result.items?.[0] ?? null;
+}
+
+/**
+* Slow Rendering Phase
+ * Loads visible categories with their metadata.
+ * When parentCategory prop is provided, only direct children of that category are loaded.
+ * When not provided, falls back to defaultCategory from config.
  * Categories are relatively static so this is done in slow phase.
  */
-async function renderSlowlyChanging(props: PageProps, wixStores: WixStoresService) {
+async function renderSlowlyChanging(
+    props: PageProps & CategoryListParams,
+    wixStores: WixStoresService,
+) {
     const Pipeline = RenderPipeline.for<CategoryListSlowViewState, Record<string, never>>();
 
+    // Resolve parent category: prop → defaultCategory config
+    const parentCategorySlug = props.parentCategory ?? wixStores.defaultCategory;
+
+    let parentCategoryId: string | null = null;
+    if (parentCategorySlug) {
+        const parentCat = await findCategoryBySlug(wixStores.categories, parentCategorySlug);
+        parentCategoryId = parentCat?._id ?? null;
+    }
+
     return Pipeline.try(async () => {
-        // Query all visible categories
-        const result = await wixStores.categories
+        let query = wixStores.categories
             .queryCategories({
                 treeReference: {
                     appNamespace: '@wix/stores',
                 },
             })
-            .eq('visible', true)
-            .find();
+            .eq('visible', true);
+
+        // When scoped to a parent category, show only its direct children
+        if (parentCategoryId) {
+            query = query.eq('parentCategory.id', parentCategoryId);
+        }
+
+        const result = await query.find();
 
         return result.items || [];
     })
@@ -92,6 +137,6 @@ async function renderSlowlyChanging(props: PageProps, wixStores: WixStoresServic
  * ```
  */
 export const categoryList = makeJayStackComponent<CategoryListContract>()
-    .withProps<PageProps>()
+    .withProps<PageProps & CategoryListParams>()
     .withServices(WIX_STORES_SERVICE_MARKER)
     .withSlowlyRender(renderSlowlyChanging);

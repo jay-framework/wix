@@ -2190,6 +2190,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@jay-framework/jay-wix-packages@workspace:."
   dependencies:
+    "@jay-framework/jay-stack-cli": "npm:^0.15.5"
     commander: "npm:^14.0.0"
     esbuild: "npm:^0.20.0"
     prettier: "npm:^3.2.4"
@@ -2533,6 +2534,7 @@ __metadata:
     "@jay-framework/component": "npm:^0.15.5"
     "@jay-framework/fullstack-component": "npm:^0.15.5"
     "@jay-framework/jay-cli": "npm:^0.15.5"
+    "@jay-framework/jay-stack-cli": "npm:^0.15.5"
     "@jay-framework/reactive": "npm:^0.15.5"
     "@jay-framework/runtime": "npm:^0.15.5"
     "@jay-framework/secure": "npm:^0.15.5"
