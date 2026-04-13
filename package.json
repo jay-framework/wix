@@ -18,7 +18,7 @@
     "format:extensions": "node ./scripts/fix-imports-ts-extension.js",
     "format:prettier": "prettier . --write",
     "format:newlines": "node ./scripts/fix-trailing-newlines.js",
-    "agent-kit": "jay-stack-cli agent-kit",
+    "agent-kit": "jay-stack-cli agent-kit -m plugin",
     "rebuild": "yarn run clean && yarn run build",
     "reinstall": "npm run clean:node_modules && yarn install && yarn run rebuild",
     "test": "wsrun -te --report test",
