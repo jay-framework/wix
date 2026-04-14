@@ -412,7 +412,8 @@ async function renderSlowlyChanging(
                             : '',
                     pricePerUnit: physicalProperties?.pricePerUnitRange?.minValue?.description,
                     stockStatus:
-                        inventory?.availabilityStatus === 'IN_STOCK'
+                        inventory?.availabilityStatus === 'IN_STOCK' ||
+                        inventory?.availabilityStatus === 'PARTIALLY_OUT_OF_STOCK'
                             ? StockStatus.IN_STOCK
                             : StockStatus.OUT_OF_STOCK,
                     variants: mapVariants(variantsInfo),
@@ -437,19 +438,56 @@ async function renderFastChanging(
 ) {
     const Pipeline = RenderPipeline.for<ProductPageFastViewState, ProductFastCarryForward>();
 
-    // Determine if actions should be enabled based on stock status
+    // Select default variant: prefer first in-stock variant, fall back to first
+    const { variants } = slowCarryForward;
+    const defaultVariant =
+        variants.find((v) => v.inventoryStatus === StockStatus.IN_STOCK) || variants[0];
+
+    // Pre-select the default variant's option choices
+    const options = slowCarryForward.options.map((option) => {
+        const variantChoice = defaultVariant.choices.find(
+            (c) => c.optionChoiceIds.optionId === option._id,
+        );
+        if (!variantChoice) return option;
+        return {
+            ...option,
+            choices: option.choices.map((choice) => ({
+                ...choice,
+                isSelected: choice.choiceId === variantChoice.optionChoiceIds.choiceId,
+            })),
+        };
+    });
+
+    // Select the variant's media in the gallery
+    let mediaGallery = slowCarryForward.mediaGallery;
+    if (defaultVariant.mediaId) {
+        const mediaIndex = mediaGallery.availableMedia.findIndex(
+            (m) => m.mediaId === defaultVariant.mediaId,
+        );
+        if (mediaIndex >= 0) {
+            mediaGallery = {
+                selectedMedia: mediaGallery.availableMedia[mediaIndex].media,
+                availableMedia: mediaGallery.availableMedia.map((m, i) => ({
+                    ...m,
+                    selected:
+                        i === mediaIndex ? Selected.selected : Selected.notSelected,
+                })),
+            };
+        }
+    }
+
     const isInStock = slowCarryForward.stockStatus === StockStatus.IN_STOCK;
 
     return Pipeline.ok({
-        actionsEnabled: isInStock,
-        options: slowCarryForward.options,
+        actionsEnabled: isInStock && defaultVariant.inventoryStatus === StockStatus.IN_STOCK,
+        options,
         modifiers: slowCarryForward.modifiers,
-        mediaGallery: slowCarryForward.mediaGallery,
-        sku: slowCarryForward.variants[0].sku,
-        price: slowCarryForward.variants[0].price,
+        mediaGallery,
+        sku: defaultVariant.sku,
+        price: defaultVariant.price,
         pricePerUnit: slowCarryForward.pricePerUnit || '',
-        stockStatus: slowCarryForward.stockStatus,
-        strikethroughPrice: slowCarryForward.variants[0].strikethroughPrice,
+        stockStatus: defaultVariant.inventoryStatus,
+        strikethroughPrice: defaultVariant.strikethroughPrice,
         quantity: { quantity: 1 },
     }).toPhaseOutput((viewState) => ({
         viewState,
