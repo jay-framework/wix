@@ -126,6 +126,7 @@ export interface ProductPageViewState {
   stockStatus: StockStatus,
   quantity: QuantityOfProductPageViewState,
   actionsEnabled: boolean,
+  isAddingToCart: boolean,
   options: Array<OptionOfProductPageViewState>,
   infoSections: Array<InfoSectionOfProductPageViewState>,
   modifiers: Array<ModifierOfProductPageViewState>,
@@ -143,7 +144,7 @@ export type ProductPageSlowViewState = Pick<ProductPageViewState, '_id' | 'produ
     seoData: ProductPageViewState['seoData'];
 };
 
-export type ProductPageFastViewState = Pick<ProductPageViewState, 'sku' | 'price' | 'strikethroughPrice' | 'pricePerUnit' | 'stockStatus' | 'actionsEnabled'> & {
+export type ProductPageFastViewState = Pick<ProductPageViewState, 'sku' | 'price' | 'strikethroughPrice' | 'pricePerUnit' | 'stockStatus' | 'actionsEnabled' | 'isAddingToCart'> & {
     mediaGallery: ProductPageViewState['mediaGallery'];
     quantity: ProductPageViewState['quantity'];
     options: Array<Pick<ProductPageViewState['options'][number], '_id' | 'textChoiceSelection'> & {
@@ -154,7 +155,7 @@ export type ProductPageFastViewState = Pick<ProductPageViewState, 'sku' | 'price
 }>;
 };
 
-export type ProductPageInteractiveViewState = Pick<ProductPageViewState, 'sku' | 'price' | 'strikethroughPrice' | 'pricePerUnit' | 'stockStatus' | 'actionsEnabled'> & {
+export type ProductPageInteractiveViewState = Pick<ProductPageViewState, 'sku' | 'price' | 'strikethroughPrice' | 'pricePerUnit' | 'stockStatus' | 'actionsEnabled' | 'isAddingToCart'> & {
     mediaGallery: ProductPageViewState['mediaGallery'];
     quantity: ProductPageViewState['quantity'];
     options: Array<Pick<ProductPageViewState['options'][number], '_id' | 'textChoiceSelection'> & {

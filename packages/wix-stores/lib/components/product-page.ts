@@ -488,6 +488,7 @@ async function renderFastChanging(
         pricePerUnit: slowCarryForward.pricePerUnit || '',
         stockStatus: defaultVariant.inventoryStatus,
         strikethroughPrice: defaultVariant.strikethroughPrice,
+        isAddingToCart: false,
         quantity: { quantity: 1 },
     }).toPhaseOutput((viewState) => ({
         viewState,
@@ -747,6 +748,7 @@ function ProductPageInteractive(
                 quantity: quantity(),
             },
             actionsEnabled: computedActionsEnabled,
+            isAddingToCart,
             options,
             modifiers,
             mediaGallery: interactiveMedia,

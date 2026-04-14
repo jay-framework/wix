@@ -34,6 +34,7 @@ tags:
   - {tag: addToCartButton, type: interactive, elementType: HTMLButtonElement, required: true, description: Add product to cart button}
   - {tag: buyNowButton, type: interactive, elementType: HTMLButtonElement, required: true, description: Buy now button}
   - {tag: actionsEnabled, type: variant, dataType: boolean, phase: fast+interactive, description: should the add to cart and buy now buttons be enabled}
+  - {tag: isAddingToCart, type: variant, dataType: boolean, phase: fast+interactive, description: Whether an add-to-cart request is currently in progress}
 
   - tag: options
     type: sub-contract
