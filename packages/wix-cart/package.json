@@ -24,8 +24,9 @@
     "./mini-cart.jay-contract": "./dist/contracts/mini-cart.jay-contract"
   },
   "scripts": {
-    "build": "npm run clean && npm run definitions && npm run build:client && npm run build:server && npm run build:copy-contract && npm run build:types",
+    "build": "npm run clean && npm run definitions && npm run build:client && npm run build:server && npm run build:copy-contract && npm run build:types && npm run validate",
     "definitions": "jay-cli definitions lib",
+    "validate": "jay-stack-cli validate-plugin",
     "build:client": "vite build",
     "build:server": "vite build --ssr",
     "build:copy-contract": "mkdir -p dist/contracts && cp lib/contracts/*.jay-contract* dist/contracts/",
