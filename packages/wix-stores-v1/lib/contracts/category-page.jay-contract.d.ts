@@ -179,6 +179,12 @@ export interface CategoryPageRepeatedRefs {
     loadedProducts: ProductCardRepeatedRefs;
 }
 
+import { UrlParams } from '@jay-framework/fullstack-component';
+
+export interface CategoryPageParams extends UrlParams {
+    slug: string;
+}
+
 export type CategoryPageContract = JayContract<
     CategoryPageViewState,
     CategoryPageRefs,

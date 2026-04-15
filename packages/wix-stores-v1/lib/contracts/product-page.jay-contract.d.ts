@@ -295,6 +295,12 @@ export interface ProductPageRepeatedRefs {
     };
 }
 
+import { UrlParams } from '@jay-framework/fullstack-component';
+
+export interface ProductPageParams extends UrlParams {
+    slug: string;
+}
+
 export type ProductPageContract = JayContract<
     ProductPageViewState,
     ProductPageRefs,

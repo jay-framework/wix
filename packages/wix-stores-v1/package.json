@@ -22,7 +22,8 @@
     "./get-collections.jay-action": "./dist/actions/get-collections.jay-action"
   },
   "scripts": {
-    "build": "npm run clean && npm run definitions && npm run build:client && npm run build:server && npm run build:copy-contract && npm run build:types",
+    "build": "npm run clean && npm run definitions && npm run build:client && npm run build:server && npm run build:copy-contract && npm run build:types && npm run validate",
+    "validate": "jay-stack-cli validate-plugin",
     "definitions": "jay-cli definitions lib",
     "build:client": "vite build",
     "build:server": "vite build --ssr",

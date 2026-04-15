@@ -4,6 +4,16 @@ name: wix-server-client
 # Plugin initialization uses makeJayInit pattern in lib/init.ts
 # Export name defaults to 'init'
 
+services:
+  - name: wix-client
+    marker: WIX_CLIENT_SERVICE
+    description: Core Wix SDK client with API key authentication
+
+contexts:
+  - name: wix-client
+    marker: WIX_CLIENT_CONTEXT
+    description: Client-side OAuth authentication and token management
+
 setup:
   handler: setupWixServerClient
   description: Configure Wix API credentials (API key, site ID, OAuth client ID)

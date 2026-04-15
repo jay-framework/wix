@@ -5,6 +5,7 @@ import {
     Signals,
     SlowlyRenderResult,
     UrlParams,
+    type HeadTag,
 } from '@jay-framework/fullstack-component';
 import { createMemo, createSignal, Props } from '@jay-framework/component';
 import { formatWixMediaUrl } from '@jay-framework/wix-utils';
@@ -18,7 +19,6 @@ import {
     ProductPageRefs,
     ProductPageSlowViewState,
     ProductType,
-    SeoDatumOfProductPageViewState,
     StockStatus,
 } from '../contracts/product-page.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service';
@@ -125,24 +125,31 @@ function mapInfoSections(infoSections: InfoSection[]): Array<InfoSectionOfProduc
         uniqueName: infoSection.uniqueName || '',
     }));
 }
-function mapSeoData(seoData: SeoSchema): SeoDatumOfProductPageViewState {
-    return {
-        tags: seoData?.tags?.map((tag, index) => ({
-            position: index.toString().padStart(2, '0'),
-            type: tag.type,
-            props: Object.entries(tag.props || {}).map(([key, value]) => ({ key, value })),
-            meta: Object.entries(tag.meta || {}).map(([key, value]) => ({ key, value })),
-            children: tag.children,
-        })),
-        settings: {
-            preventAutoRedirect: seoData?.settings?.preventAutoRedirect || false,
-            keywords: seoData?.settings?.keywords.map((keyword) => ({
-                isMain: keyword.isMain,
-                origin: keyword.origin,
-                term: keyword.term,
-            })),
-        },
-    };
+/** Map Wix seoData to HeadTag[] for SSR head injection */
+function mapSeoHeadTags(seoData: SeoSchema | undefined): HeadTag[] {
+    if (!seoData) return [];
+
+    const headTags: HeadTag[] = (seoData.tags || []).map((tag) => ({
+        tag: tag.type || 'meta',
+        attrs: Object.fromEntries(
+            Object.entries(tag.props || {}).map(([key, value]) => [key, value as string]),
+        ),
+        children: tag.children || undefined,
+    }));
+
+    // Add keywords meta tag from SEO settings
+    const keywords = seoData.settings?.keywords;
+    if (keywords?.length) {
+        const terms = keywords.map((k) => k.term).filter(Boolean);
+        if (terms.length) {
+            headTags.push({
+                tag: 'meta',
+                attrs: { name: 'keywords', content: terms.join(', ') },
+            });
+        }
+    }
+
+    return headTags;
 }
 
 function mapMediaType(mediaType: MediaTypeWithLiterals): MediaType {
@@ -396,8 +403,8 @@ async function renderSlowlyChanging(
                     options: mapOptionsToSlowVS(options),
                     infoSections: mapInfoSections(infoSections),
                     modifiers: mapModifiersToSlowVS(modifiers),
-                    seoData: mapSeoData(seoData),
                 },
+                headTags: mapSeoHeadTags(seoData),
                 carryForward: {
                     productId: _id,
                     mediaGallery: mapMedia(media),
@@ -469,8 +476,7 @@ async function renderFastChanging(
                 selectedMedia: mediaGallery.availableMedia[mediaIndex].media,
                 availableMedia: mediaGallery.availableMedia.map((m, i) => ({
                     ...m,
-                    selected:
-                        i === mediaIndex ? Selected.selected : Selected.notSelected,
+                    selected: i === mediaIndex ? Selected.selected : Selected.notSelected,
                 })),
             };
         }

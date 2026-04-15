@@ -1,4 +1,6 @@
 name: category-page
+params:
+  slug: string
 tags:
   # Category/Collection information (from Wix Stores Collection API)
   - tag: _id

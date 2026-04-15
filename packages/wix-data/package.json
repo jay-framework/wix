@@ -18,7 +18,8 @@
     "./get-categories.jay-action": "./dist/actions/get-categories.jay-action"
   },
   "scripts": {
-    "build": "npm run clean && npm run definitions && npm run build:client && npm run build:server && npm run build:copy-actions && npm run build:types",
+    "build": "npm run clean && npm run definitions && npm run build:client && npm run build:server && npm run build:copy-actions && npm run build:types && npm run validate",
+    "validate": "jay-stack-cli validate-plugin",
     "definitions": "jay-cli definitions lib/actions",
     "build:copy-actions": "mkdir -p dist/actions && cp lib/actions/*.jay-action dist/actions/",
     "build:client": "vite build",

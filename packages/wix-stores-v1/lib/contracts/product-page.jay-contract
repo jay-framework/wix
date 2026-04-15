@@ -1,4 +1,6 @@
 name: product-page
+params:
+  slug: string
 tags:
   - {tag: _id, type: data, dataType: string, description: Product GUID}
   - {tag: productName, type: data, dataType: string, required: true, description: Product name}

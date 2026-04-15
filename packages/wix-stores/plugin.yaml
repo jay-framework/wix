@@ -27,8 +27,15 @@ actions:
   - name: getVariantStock
     action: get-variant-stock.jay-action
 
-# Plugin initialization uses makeJayInit pattern in lib/init.ts
-# Export name defaults to 'init'
+services:
+  - name: wix-stores
+    marker: WIX_STORES_SERVICE_MARKER
+    description: Wix Stores Catalog V3 API (products, categories, inventory, customizations) with lazy-loaded caching
+
+contexts:
+  - name: wix-stores
+    marker: WIX_STORES_CONTEXT
+    description: Client-side stores access with product variant resolution and delegated cart operations
 
 setup:
   handler: setupWixStores

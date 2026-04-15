@@ -28,4 +28,14 @@ actions:
   - name: getCollections
     action: get-collections.jay-action
 
+services:
+  - name: wix-stores-v1
+    marker: WIX_STORES_V1_SERVICE_MARKER
+    description: Wix Stores Catalog V1 API (products, collections, inventory)
+
+contexts:
+  - name: wix-stores-v1
+    marker: WIX_STORES_V1_CONTEXT
+    description: Client-side V1 stores access with collection pagination and delegated cart operations
+
 # Plugin initialization uses makeJayInit pattern in lib/init.ts

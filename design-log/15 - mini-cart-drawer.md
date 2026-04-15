@@ -9,6 +9,7 @@ When a user adds a product to the cart from a search or category page, there's n
 ## Problem
 
 We need a mini-cart drawer that:
+
 1. Automatically opens when a product is added to cart
 2. Shows the cart contents (delegated to whatever the template author places inside)
 3. Can be closed by clicking a close button
@@ -23,9 +24,24 @@ The mini-cart is a **container component** — it controls open/close visibility
 
 ```html
 <head>
-  <script type="application/jay-headless" plugin="@jay-framework/wix-cart" contract="cart-indicator" key="cart"></script>
-  <script type="application/jay-headless" plugin="@jay-framework/wix-cart" contract="mini-cart" key="mc"></script>
-  <script type="application/jay-headless" plugin="@jay-framework/wix-cart" contract="cart-page" key="cartPage"></script>
+  <script
+    type="application/jay-headless"
+    plugin="@jay-framework/wix-cart"
+    contract="cart-indicator"
+    key="cart"
+  ></script>
+  <script
+    type="application/jay-headless"
+    plugin="@jay-framework/wix-cart"
+    contract="mini-cart"
+    key="mc"
+  ></script>
+  <script
+    type="application/jay-headless"
+    plugin="@jay-framework/wix-cart"
+    contract="cart-page"
+    key="cartPage"
+  ></script>
 </head>
 <body>
   <!-- Header with cart indicator that opens the drawer -->
@@ -93,10 +109,12 @@ User clicks "Add to Cart" on product card
 ### Open/Close Behavior
 
 The drawer opens when:
+
 1. An item is added to cart (itemCount increases)
 2. User clicks `openButton`
 
 The drawer closes when:
+
 1. User clicks `closeButton`
 
 ### Component Implementation
@@ -108,27 +126,29 @@ The drawer closes when:
 // - Interactive: watch itemCount, open on increase, open/close on button clicks
 
 function MiniCartInteractive(props, refs, viewStateSignals, carryForward, cartContext) {
-    const { isOpen: [isOpen, setIsOpen] } = viewStateSignals;
-    let prevItemCount = cartContext.cartIndicator.itemCount();
+  const {
+    isOpen: [isOpen, setIsOpen],
+  } = viewStateSignals;
+  let prevItemCount = cartContext.cartIndicator.itemCount();
 
-    // Open when item count increases
-    createMemo(() => {
-        const currentCount = cartContext.cartIndicator.itemCount();
-        if (currentCount > prevItemCount) {
-            setIsOpen(true);
-        }
-        prevItemCount = currentCount;
-    });
+  // Open when item count increases
+  createMemo(() => {
+    const currentCount = cartContext.cartIndicator.itemCount();
+    if (currentCount > prevItemCount) {
+      setIsOpen(true);
+    }
+    prevItemCount = currentCount;
+  });
 
-    // Open button
-    refs.openButton.onclick(() => {
-        setIsOpen(true);
-    });
+  // Open button
+  refs.openButton.onclick(() => {
+    setIsOpen(true);
+  });
 
-    // Close button
-    refs.closeButton.onclick(() => {
-        setIsOpen(false);
-    });
+  // Close button
+  refs.closeButton.onclick(() => {
+    setIsOpen(false);
+  });
 }
 ```
 
@@ -152,6 +172,7 @@ Interactive phase:
 ## Implementation Plan
 
 ### Phase 1: Contract & Component
+
 1. Create `mini-cart.jay-contract` in `packages/wix-cart/lib/contracts/`
 2. Create `mini-cart.ts` component in `packages/wix-cart/lib/components/`
 3. Register in `plugin.yaml`
@@ -171,6 +192,7 @@ Interactive phase:
 ## Trade-offs
 
 ### Pros
+
 - Minimal contract — the template controls all visual aspects
 - Reuses existing `cartIndicator.itemCount` signal — no new API calls
 - Works with any cart content (cart-page, custom summary, etc.)
@@ -178,6 +200,7 @@ Interactive phase:
 - Template-level "config" via `openButton` — no code configuration needed
 
 ### Cons
+
 - No built-in cart content — requires template author to nest a cart-page or similar
 - Opening on every add-to-cart may be disruptive for bulk-adding users (could be mitigated with a debounce or "don't show again" pattern in the template)
 

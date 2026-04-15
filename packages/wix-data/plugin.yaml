@@ -24,6 +24,16 @@ dynamic_contracts:
     component: collectionCard
     generator: cardContractGenerator
 
+services:
+  - name: wix-data
+    marker: WIX_DATA_SERVICE_MARKER
+    description: Wix Data API access with collection schema caching
+
+contexts:
+  - name: wix-data
+    marker: WIX_DATA_CONTEXT
+    description: Client-side access to Wix Data items API
+
 setup:
   handler: setupWixData
   references: generateWixDataReferences

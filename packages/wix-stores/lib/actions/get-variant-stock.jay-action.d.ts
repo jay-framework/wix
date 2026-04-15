@@ -1,5 +1,5 @@
 export interface GetVariantStockInput {
-  productId: string;
+    productId: string;
 }
 
 export type GetVariantStockOutput = Record<string, Record<string, boolean>>;

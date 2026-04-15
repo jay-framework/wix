@@ -34,10 +34,7 @@ interface CategoryItem {
 /**
  * Look up a category by slug via the Wix API.
  */
-async function findCategoryBySlug(
-    categoriesClient: WixStoresService['categories'],
-    slug: string,
-) {
+async function findCategoryBySlug(categoriesClient: WixStoresService['categories'], slug: string) {
     const result = await categoriesClient
         .queryCategories({ treeReference: { appNamespace: '@wix/stores' } })
         .eq('slug', slug)
@@ -48,7 +45,7 @@ async function findCategoryBySlug(
 }
 
 /**
-* Slow Rendering Phase
+ * Slow Rendering Phase
  * Loads visible categories with their metadata.
  * When parentCategory prop is provided, only direct children of that category are loaded.
  * When not provided, falls back to defaultCategory from config.

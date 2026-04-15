@@ -15,4 +15,14 @@ contracts:
     component: miniCart
     description: Drawer that auto-opens when a product is added to cart
 
+services:
+  - name: wix-cart
+    marker: WIX_CART_SERVICE
+    description: Wix eCommerce cart API for server-side cart operations
+
+contexts:
+  - name: wix-cart
+    marker: WIX_CART_CONTEXT
+    description: Client-side reactive cart state with add-to-cart, remove, quantity, coupon, and checkout operations
+
 # Plugin initialization uses makeJayInit pattern in lib/init.ts
