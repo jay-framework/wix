@@ -24,6 +24,7 @@ export type {
 // Export components for client-side hydration
 export * from './components/cart-indicator';
 export * from './components/cart-page';
+export * from './components/mini-cart';
 
 // Export init for client-side initialization
 export { init } from './init.js';

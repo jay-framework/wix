@@ -20,7 +20,8 @@
     },
     "./plugin.yaml": "./plugin.yaml",
     "./cart-indicator.jay-contract": "./dist/contracts/cart-indicator.jay-contract",
-    "./cart-page.jay-contract": "./dist/contracts/cart-page.jay-contract"
+    "./cart-page.jay-contract": "./dist/contracts/cart-page.jay-contract",
+    "./mini-cart.jay-contract": "./dist/contracts/mini-cart.jay-contract"
   },
   "scripts": {
     "build": "npm run clean && npm run definitions && npm run build:client && npm run build:server && npm run build:copy-contract && npm run build:types",

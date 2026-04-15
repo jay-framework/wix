@@ -10,5 +10,9 @@ contracts:
     contract: cart-page.jay-contract
     component: cartPage
     description: Full cart page with line item management and checkout
+  - name: mini-cart
+    contract: mini-cart.jay-contract
+    component: miniCart
+    description: Drawer that auto-opens when a product is added to cart
 
 # Plugin initialization uses makeJayInit pattern in lib/init.ts

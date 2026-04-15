@@ -1,0 +1,19 @@
+name: mini-cart
+description: Drawer that auto-opens when a product is added to cart. Place cart content inside.
+
+tags:
+  - tag: isOpen
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether the mini-cart drawer is currently open
+
+  - tag: openButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Button to manually open the mini-cart drawer
+
+  - tag: closeButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Button to close the mini-cart drawer

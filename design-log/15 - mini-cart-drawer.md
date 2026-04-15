@@ -1,6 +1,6 @@
 # 15 - Mini Cart Drawer
 
-## Status: Draft
+## Status: Implemented
 
 ## Background
 

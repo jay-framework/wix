@@ -43,6 +43,7 @@ export type {
 // Export components
 export { cartIndicator } from './components/cart-indicator';
 export { cartPage } from './components/cart-page';
+export { miniCart } from './components/mini-cart';
 
 // Export init
 export { init } from './init';
