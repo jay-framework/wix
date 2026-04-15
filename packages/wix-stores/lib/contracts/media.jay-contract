@@ -1,4 +1,5 @@
 name: media
+description: Single media item with URL, type, and thumbnail. Used as a sub-contract in media galleries.
 tags:
   - {tag: url, type: data, dataType: string, description: Media Url}
   - {tag: mediaType, type: variant, dataType: "enum (IMAGE | VIDEO)", description: Media type}

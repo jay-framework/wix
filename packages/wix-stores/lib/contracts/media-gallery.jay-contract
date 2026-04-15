@@ -1,4 +1,5 @@
 name: mediaGallery
+description: Image and video gallery with thumbnail navigation. Used as a sub-contract in product pages.
 tags:
   - tag: selectedMedia
     type: sub-contract

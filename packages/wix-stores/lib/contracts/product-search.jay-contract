@@ -1,4 +1,5 @@
 name: product-search
+description: Product listing with filters, sorting, and pagination. Use for search results and category pages.
 props:
   - name: category
     type: string

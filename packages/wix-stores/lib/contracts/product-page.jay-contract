@@ -1,4 +1,5 @@
 name: product-page
+description: Full product detail page with variants, options, media gallery, and add-to-cart. Use for individual product pages.
 params:
   slug: string
   category: string?

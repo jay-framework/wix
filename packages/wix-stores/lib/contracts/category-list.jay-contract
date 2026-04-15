@@ -1,4 +1,5 @@
 name: category-list
+description: Displays a list of store categories. Use for category navigation grids and menus.
 props:
   - name: parentCategory
     type: string

@@ -1,4 +1,5 @@
 name: product-card
+description: Single product card with image, price, and quick-add options. Used as a sub-contract in product grids and search results.
 tags:
   # Product basic info (from Wix Stores Product API)
   - tag: _id
