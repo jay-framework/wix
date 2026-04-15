@@ -88,7 +88,16 @@ function copyPackage(packageName, sourcePath) {
     try {
       // Only copy content from dist folder to dist folder, preserving existing package.json
       copyDirSync(sourceDistPath, targetDistPath);
-      console.log(`  ✓ Copied to ${targetDistPath}`);
+      console.log(`  ✓ Copied dist to ${targetDistPath}`);
+
+      // Also copy agent-kit-template folder if it exists
+      const sourceAgentKitPath = path.join(sourcePath, 'agent-kit-template');
+      const targetAgentKitPath = path.join(targetPath, 'agent-kit-template');
+      if (fs.existsSync(sourceAgentKitPath)) {
+        copyDirSync(sourceAgentKitPath, targetAgentKitPath);
+        console.log(`  ✓ Copied agent-kit-template`);
+      }
+
       return true;
     } catch (error) {
       console.log(`${colors.red}  ✗ Error copying ${packageName}: ${error.message}${colors.reset}`);
