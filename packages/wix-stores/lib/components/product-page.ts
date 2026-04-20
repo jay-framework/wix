@@ -157,13 +157,17 @@ function mapMediaType(mediaType: MediaTypeWithLiterals): MediaType {
     else return MediaType.IMAGE;
 }
 
-function mapMedia(media: Media): MediaGalleryViewState {
-    const mainMediaType = mapMediaType(media.main.mediaType);
+function mapMedia(media: Media | undefined): MediaGalleryViewState {
+    const main = media?.main;
+    if (!main) {
+        return { selectedMedia: { url: '', mediaType: MediaType.IMAGE, thumbnail_50x50: '' }, availableMedia: [] };
+    }
+    const mainMediaType = mapMediaType(main.mediaType);
     return {
         selectedMedia: {
-            url: formatWixMediaUrl(media.main._id, media.main.url),
+            url: formatWixMediaUrl(main._id, main.url),
             mediaType: mainMediaType,
-            thumbnail_50x50: formatWixMediaUrl(media.main._id, media.main.url, { w: 50, h: 50 }),
+            thumbnail_50x50: formatWixMediaUrl(main._id, main.url, { w: 50, h: 50 }),
         },
         availableMedia:
             media.itemsInfo?.items?.map((item) => ({
@@ -173,7 +177,7 @@ function mapMedia(media: Media): MediaGalleryViewState {
                     mediaType: item.mediaType === 'IMAGE' ? MediaType.IMAGE : MediaType.VIDEO,
                     thumbnail_50x50: formatWixMediaUrl(item._id, item.url, { w: 50, h: 50 }),
                 },
-                selected: item._id === media.main._id ? Selected.selected : Selected.notSelected,
+                selected: item._id === main._id ? Selected.selected : Selected.notSelected,
             })) ?? [],
     };
 }
