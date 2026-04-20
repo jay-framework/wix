@@ -1,17 +1,18 @@
-import { HTMLElementCollectionProxy, JayContract } from '@jay-framework/runtime';
+import {HTMLElementCollectionProxy, JayContract} from "@jay-framework/runtime";
+
 
 export interface CategoryOfCategoryListViewState {
-    _id: string;
-    name: string;
-    slug: string;
-    description: string;
-    productCount: number;
-    imageUrl: string;
+  _id: string,
+  name: string,
+  slug: string,
+  description: string,
+  productCount: number,
+  imageUrl: string
 }
 
 export interface CategoryListViewState {
-    categories: Array<CategoryOfCategoryListViewState>;
-    hasCategories: boolean;
+  categories: Array<CategoryOfCategoryListViewState>,
+  hasCategories: boolean
 }
 
 export type CategoryListSlowViewState = Pick<CategoryListViewState, 'hasCategories'> & {
@@ -22,33 +23,22 @@ export type CategoryListFastViewState = {};
 
 export type CategoryListInteractiveViewState = {};
 
+
 export interface CategoryListRefs {
-    categories: {
-        categoryLink: HTMLElementCollectionProxy<
-            CategoryOfCategoryListViewState,
-            HTMLAnchorElement
-        >;
-    };
+  categories: {
+    categoryLink: HTMLElementCollectionProxy<CategoryOfCategoryListViewState, HTMLAnchorElement>
+  }
 }
 
+
 export interface CategoryListRepeatedRefs {
-    categories: {
-        categoryLink: HTMLElementCollectionProxy<
-            CategoryOfCategoryListViewState,
-            HTMLAnchorElement
-        >;
-    };
+  categories: {
+    categoryLink: HTMLElementCollectionProxy<CategoryOfCategoryListViewState, HTMLAnchorElement>
+  }
 }
 
 export interface CategoryListProps {
-    parentCategory?: string;
+  parentCategory?: string;
 }
 
-export type CategoryListContract = JayContract<
-    CategoryListViewState,
-    CategoryListRefs,
-    CategoryListSlowViewState,
-    CategoryListFastViewState,
-    CategoryListInteractiveViewState,
-    CategoryListProps
->;
+export type CategoryListContract = JayContract<CategoryListViewState, CategoryListRefs, CategoryListSlowViewState, CategoryListFastViewState, CategoryListInteractiveViewState, CategoryListProps>
