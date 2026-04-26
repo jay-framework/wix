@@ -825,3 +825,44 @@ The `countProducts` API uses a different filter syntax than `searchProducts`. Cu
 ### File Modified
 
 - `packages/wix-stores/lib/components/product-search.ts` — `loadSearchParams` function rewritten
+
+---
+
+## Revision 5: Rename category/subcategory → prefix/category
+
+### Problem
+
+The URL param naming caused confusion. In a route like `/kitan/[[category]]`, the dynamic `:category` param mapped to `ProductSearchParams.subcategory` in the code, while the fixed root `kitan` mapped to `ProductSearchParams.category`. This was backwards from the user's perspective.
+
+Similarly, `ProductPageParams.category` was actually the root prefix (e.g., 'polgat'), not a browsable category.
+
+### Rename
+
+| Old field     | New field  | Meaning                                  |
+| ------------- | ---------- | ---------------------------------------- |
+| `category`    | `prefix`   | Root category slug (static path segment) |
+| `subcategory` | `category` | Browsable category within the prefix     |
+
+Now the URL param `:category` maps directly to the code field `category`. The root scope is called `prefix` — short and clear.
+
+### Consistency
+
+Both components use the same naming:
+
+| Component      | `prefix`      | `category`     | `slug`       |
+| -------------- | ------------- | -------------- | ------------ |
+| product-search | root category | child category | —            |
+| product-page   | root category | child category | product slug |
+
+`loadSearchParams` yields `{ prefix, category }` and `loadProductParams` yields `{ prefix, category, slug }`, keeping them in sync.
+
+### Files Modified
+
+- `packages/wix-stores/lib/contracts/product-search.jay-contract` — renamed props and params
+- `packages/wix-stores/lib/contracts/product-search.jay-contract.d.ts` — renamed interfaces
+- `packages/wix-stores/lib/contracts/product-page.jay-contract` — renamed params, added `category`
+- `packages/wix-stores/lib/contracts/product-page.jay-contract.d.ts` — renamed interface, added `category`
+- `packages/wix-stores/lib/components/product-search.ts` — renamed `ProductSearchParams`, updated `loadSearchParams`, `renderSlowlyChanging`
+- `packages/wix-stores/lib/components/product-page.ts` — renamed `ProductPageParams`, updated `loadProductParams` to yield prefix/category from category tree
+- `packages/wix-stores/plugin.yaml` — updated comment
+- `packages/wix-stores/README.md` — updated fallback chain docs and jay-params example

@@ -149,12 +149,12 @@ src/pages/products/polgat/
 
 ### Setting Params for Static Routes
 
-Static route directories use `jay-params` to tell the component which category they represent:
+Static route directories use `jay-params` to tell the component which prefix they represent:
 
 ```html
 <!-- src/pages/products/polgat/page.jay-html -->
 <script type="application/jay-params">
-  category: polgat
+  prefix: polgat
 </script>
 <script
   type="application/jay-headless"
@@ -168,8 +168,8 @@ Static route directories use `jay-params` to tell the component which category t
 
 The category header is always loaded. The component resolves category metadata using a fallback chain:
 
-1. **`subcategory` param** → load sub-category
-2. **`category` / `prefix` param** → load root category
+1. **`category` param** → load category
+2. **`prefix` param** → load root category
 3. **Neither** → load `defaultCategory` from config
 
 If the resolved category is missing image, description, or SEO data, the component walks up the parent chain until it finds the data. Each field inherits independently.

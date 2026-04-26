@@ -10,7 +10,7 @@ contracts:
     contract: product-search.jay-contract
     component: productSearch
     description: Headless product search page
-  # category-page removed — use product-search with category param instead
+  # category-page removed — use product-search with prefix/category params instead
   - name: category-list
     contract: category-list.jay-contract
     component: categoryList

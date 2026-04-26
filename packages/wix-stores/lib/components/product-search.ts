@@ -3,7 +3,6 @@ import {
     PageProps,
     RenderPipeline,
     Signals,
-    UrlParams,
 } from '@jay-framework/fullstack-component';
 import { createSignal, createEffect, createMemo, Props } from '@jay-framework/component';
 import {
@@ -13,6 +12,7 @@ import {
     ProductSearchContract,
     ProductSearchFastViewState,
     ProductSearchInteractiveViewState,
+    ProductSearchParams,
     ProductSearchRefs,
     ProductSearchSlowViewState,
 } from '../contracts/product-search.jay-contract';
@@ -25,17 +25,6 @@ import { QuickAddType } from '../contracts/product-card.jay-contract';
 import { type Category } from '@wix/auto_sdk_categories_categories';
 import { formatWixMediaUrl } from '@jay-framework/wix-utils';
 import { SearchProductsInput, SearchProductsOutput } from '../actions/search-products.jay-action';
-
-/**
- * URL parameters for product search routes.
- * Supports: category (prefix slug), subcategory (sub-category slug).
- */
-export interface ProductSearchParams extends UrlParams {
-    /** Top-level category slug (e.g., 'polgat'). Scopes search to this category. */
-    category?: string;
-    /** Sub-category slug (e.g., 'shirts'). Further scopes within the category. */
-    subcategory?: string;
-}
 
 /**
  * Category info carried forward from slow to fast phase
@@ -428,19 +417,19 @@ async function renderSlowlyChanging(
     const Pipeline = RenderPipeline.for<ProductSearchSlowViewState, SearchSlowCarryForward>();
 
     // Resolve the active category via fallback chain:
-    // 1. subcategory param → 2. category param → 3. defaultCategory config
-    const subcategorySlug = props.subcategory ?? null;
+    // 1. category param → 2. prefix param → 3. defaultCategory config
     const categorySlug = props.category ?? null;
+    const prefixSlug = props.prefix ?? null;
     const defaultCategorySlug = wixStores.defaultCategory;
 
     let activeCategory: Category | null = null;
     let baseCategoryId: string | null = null;
 
-    if (subcategorySlug) {
-        activeCategory = await findCategoryBySlug(wixStores.categories, subcategorySlug);
-        baseCategoryId = activeCategory?._id ?? null;
-    } else if (categorySlug) {
+    if (categorySlug) {
         activeCategory = await findCategoryBySlug(wixStores.categories, categorySlug);
+        baseCategoryId = activeCategory?._id ?? null;
+    } else if (prefixSlug) {
+        activeCategory = await findCategoryBySlug(wixStores.categories, prefixSlug);
         baseCategoryId = activeCategory?._id ?? null;
     } else if (defaultCategorySlug) {
         activeCategory = await findCategoryBySlug(wixStores.categories, defaultCategorySlug);
@@ -1371,8 +1360,8 @@ function ProductSearchInteractive(
  * against existing filesystem routes.
  *
  * Each category is yielded exactly once:
- * - Root categories (no parent): { category: slug }
- * - Child categories (has parent): { category: rootParentSlug, subcategory: slug }
+ * - Root categories (no parent): { prefix: slug }
+ * - Child categories (has parent): { prefix: rootParentSlug, category: slug }
  */
 async function* loadSearchParams([wixStores]: [WixStoresService]): AsyncIterable<
     ProductSearchParams[]
@@ -1419,9 +1408,9 @@ async function* loadSearchParams([wixStores]: [WixStoresService]): AsyncIterable
 
             const rootParent = findRootParent(cat);
             if (rootParent?.slug) {
-                params.push({ category: rootParent.slug, subcategory: cat.slug });
+                params.push({ prefix: rootParent.slug, category: cat.slug });
             } else {
-                params.push({ category: cat.slug });
+                params.push({ prefix: cat.slug });
             }
         }
 

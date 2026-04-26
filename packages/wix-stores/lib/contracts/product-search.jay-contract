@@ -1,15 +1,8 @@
 name: product-search
 description: Product listing with filters, sorting, and pagination. Use for search results and category pages.
-props:
-  - name: category
-    type: string
-    description: Top-level category slug. Scopes search to this category.
-  - name: subcategory
-    type: string
-    description: Sub-category slug. Further scopes within the category.
 params:
+  prefix: string?
   category: string?
-  subcategory: string?
 tags:
   # Search input (matches Wix searchProducts search.search parameter)
   - tag: searchExpression
@@ -328,7 +321,7 @@ tags:
         elementType: HTMLButtonElement
         description: Button to use this suggestion
 
-  # Category header — always populated via fallback chain (subcategory → category → defaultCategory)
+  # Category header — always populated via fallback chain (category → prefix → defaultCategory)
   - tag: categoryHeader
     type: sub-contract
     description: Active category information for the page header

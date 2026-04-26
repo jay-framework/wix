@@ -26,8 +26,12 @@ export type {
 // Export stores-specific headless components
 export * from './components/product-search';
 export * from './components/product-page';
-// category-page removed — use product-search with category param instead
+// category-page removed — use product-search with prefix/category params instead
 export * from './components/category-list';
+
+// Re-export param types from contracts (canonical source)
+export type { ProductSearchParams } from './contracts/product-search.jay-contract';
+export type { ProductPageParams } from './contracts/product-page.jay-contract';
 
 // Export server service
 export {

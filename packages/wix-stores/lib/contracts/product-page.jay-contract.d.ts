@@ -276,6 +276,7 @@ import { UrlParams } from '@jay-framework/fullstack-component';
 
 export interface ProductPageParams extends UrlParams {
     slug: string;
+    prefix?: string;
     category?: string;
 }
 

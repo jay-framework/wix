@@ -4,7 +4,6 @@ import {
     RenderPipeline,
     Signals,
     SlowlyRenderResult,
-    UrlParams,
     type HeadTag,
 } from '@jay-framework/fullstack-component';
 import { createMemo, createSignal, Props } from '@jay-framework/component';
@@ -16,13 +15,14 @@ import {
     OptionRenderType,
     ProductPageContract,
     ProductPageFastViewState,
+    ProductPageParams,
     ProductPageRefs,
     ProductPageSlowViewState,
     ProductType,
     StockStatus,
 } from '../contracts/product-page.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service';
-import { buildProductUrl } from '../utils/product-mapper';
+import { buildProductUrl, findRootCategorySlug } from '../utils/product-mapper';
 import {
     ChoiceTypeWithLiterals,
     ConnectedModifier,
@@ -44,16 +44,6 @@ import {
     WIX_STORES_CONTEXT,
     WixStoresContext,
 } from '../contexts/wix-stores-context';
-
-/**
- * URL parameters for product page routes.
- * Supports /products/[slug] and /products/polgat/[slug] (category-prefixed).
- */
-export interface ProductPageParams extends UrlParams {
-    slug: string;
-    /** Category prefix from static route (e.g., 'polgat'). Undefined for unprefixed routes. */
-    category?: string;
-}
 
 interface InteractiveVariant {
     _id: string;
@@ -87,25 +77,48 @@ interface ProductFastCarryForward {
 }
 
 /**
- * Load product slugs for static site generation.
- * Yields params with slug (and optionally category/subcategory from URL template).
+ * Load product params for static site generation.
+ * Yields params with slug, and optionally prefix/category from the product's
+ * category tree when the URL template requires them.
  * Called once — the framework distributes params to matching routes.
  */
 async function* loadProductParams([wixStores]: [WixStoresService]): AsyncIterable<
     ProductPageParams[]
 > {
     const template = wixStores.urls.product;
-    const needsCategories = template.includes('{category}') || template.includes('{prefix}');
+    const needsPrefix = template.includes('{prefix}');
+    const needsCategory = template.includes('{category}');
+    const needsCategories = needsPrefix || needsCategory;
     const fields = needsCategories ? (['ALL_CATEGORIES_INFO'] as const) : ([] as const);
 
     try {
+        // Load category tree when URL template uses {prefix} or {category}
+        const tree = needsCategories ? await wixStores.getCategoryTree() : null;
+
         let result = await wixStores.products.queryProducts({ fields: [...fields] }).find();
-        yield result.items.map((product) => ({ slug: product.slug ?? '' })).filter((p) => p.slug);
+
+        const mapProduct = (product: { slug?: string | null; mainCategoryId?: string | null }) => {
+            const slug = product.slug ?? '';
+            if (!slug) return null;
+
+            const params: ProductPageParams = { slug };
+
+            if (tree && product.mainCategoryId) {
+                if (needsCategory) {
+                    params.category = tree.slugMap.get(product.mainCategoryId);
+                }
+                if (needsPrefix) {
+                    params.prefix = findRootCategorySlug(product.mainCategoryId, tree);
+                }
+            }
+
+            return params;
+        };
+
+        yield result.items.map(mapProduct).filter((p): p is ProductPageParams => p !== null);
         while (result.hasNext()) {
             result = await result.next();
-            yield result.items
-                .map((product) => ({ slug: product.slug ?? '' }))
-                .filter((p) => p.slug);
+            yield result.items.map(mapProduct).filter((p): p is ProductPageParams => p !== null);
         }
     } catch (error) {
         console.error('Failed to load product slugs:', error);
@@ -370,7 +383,7 @@ async function renderSlowlyChanging(
             fields: [...fields],
         });
 
-        // TODO: canonical URL redirect — if props.category/subcategory don't match
+        // TODO: canonical URL redirect — if props.prefix/category don't match
         // the product's actual category (from mainCategoryId), redirect 301
 
         return response;

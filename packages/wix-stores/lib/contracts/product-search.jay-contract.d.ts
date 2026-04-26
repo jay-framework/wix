@@ -332,16 +332,11 @@ export interface ProductSearchRepeatedRefs {
     };
 }
 
-export interface ProductSearchProps {
-    category?: string;
-    subcategory?: string;
-}
-
 import { UrlParams } from '@jay-framework/fullstack-component';
 
 export interface ProductSearchParams extends UrlParams {
+    prefix?: string;
     category?: string;
-    subcategory?: string;
 }
 
 export type ProductSearchContract = JayContract<
@@ -349,6 +344,5 @@ export type ProductSearchContract = JayContract<
     ProductSearchRefs,
     ProductSearchSlowViewState,
     ProductSearchFastViewState,
-    ProductSearchInteractiveViewState,
-    ProductSearchProps
+    ProductSearchInteractiveViewState
 >;
