@@ -1369,12 +1369,18 @@ function ProductSearchInteractive(
  * Load category slugs for static site generation.
  * Yields all visible categories so the framework can match them
  * against existing filesystem routes.
+ *
+ * Each category is yielded exactly once:
+ * - Root categories (no parent): { category: slug }
+ * - Child categories (has parent): { category: rootParentSlug, subcategory: slug }
  */
 async function* loadSearchParams([wixStores]: [WixStoresService]): AsyncIterable<
     ProductSearchParams[]
 > {
     try {
-        const result = await wixStores.categories
+        // Load ALL categories by paginating through results
+        const allCategories: Category[] = [];
+        let result = await wixStores.categories
             .queryCategories({
                 treeReference: { appNamespace: '@wix/stores' },
             })
@@ -1382,26 +1388,44 @@ async function* loadSearchParams([wixStores]: [WixStoresService]): AsyncIterable
             .limit(100)
             .find();
 
-        const categories = result.items || [];
+        allCategories.push(...(result.items || []));
 
-        // Yield each category as a potential route param
-        // The framework matches against existing routes — only categories
-        // with matching fs routes get pages generated
-        yield categories
-            .filter((cat) => cat.slug && (cat.itemCounter ?? 0) > 0)
-            .map((cat) => ({
-                category: cat.slug!,
-            }));
+        while (result.hasNext()) {
+            result = await result.next();
+            allCategories.push(...(result.items || []));
+        }
 
-        // Also yield subcategory params for categories that have parents
-        for (const cat of categories) {
-            if (!cat.slug || !cat.parentCategory?._id || (cat.itemCounter ?? 0) === 0) continue;
-            // Find parent slug
-            const parent = categories.find((c) => c._id === cat.parentCategory?._id);
-            if (parent?.slug) {
-                yield [{ category: parent.slug, subcategory: cat.slug }];
+        // Build lookup map for walking parent chains
+        const categoryById = new Map<string, Category>();
+        for (const cat of allCategories) {
+            if (cat._id) categoryById.set(cat._id, cat);
+        }
+
+        // Walk up the parent chain to find the root ancestor
+        function findRootParent(cat: Category): Category | null {
+            let current = cat;
+            while (current.parentCategory?._id) {
+                const parent = categoryById.get(current.parentCategory._id);
+                if (!parent) break;
+                current = parent;
+            }
+            return current._id !== cat._id ? current : null;
+        }
+
+        // Yield each category exactly once
+        const params: ProductSearchParams[] = [];
+        for (const cat of allCategories) {
+            if (!cat.slug || (cat.itemCounter ?? 0) === 0) continue;
+
+            const rootParent = findRootParent(cat);
+            if (rootParent?.slug) {
+                params.push({ category: rootParent.slug, subcategory: cat.slug });
+            } else {
+                params.push({ category: cat.slug });
             }
         }
+
+        yield params;
     } catch (error) {
         console.error('Failed to load category params:', error);
         yield [];
