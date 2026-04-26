@@ -800,3 +800,28 @@ await wixStores.products.searchProducts(
 
 **Note on countProducts:**
 The `countProducts` API uses a different filter syntax than `searchProducts`. Currently only applying `visible` and `categoryIds` filters for count accuracy. Full filter parity would require translating all searchProducts filters to countProducts format.
+
+---
+
+## Revision 4: Fix loadSearchParams category yielding
+
+### Problem
+
+`loadSearchParams` in `product-search.ts` had three bugs:
+
+1. **No pagination** — only fetched the first 100 categories (`.limit(100).find()`), never called `.next()` for additional pages. Sites with >100 categories would miss routes.
+2. **Duplicate yields** — categories with parents were yielded twice: first as `{ category: slug }` (in the batch with all categories), then again as `{ category: parent.slug, subcategory: slug }`. Each category should be yielded exactly once.
+3. **Direct parent instead of root parent** — used the immediate parent as the `category` field. The correct behavior is to walk up the parent chain to the root ancestor.
+
+### Fix
+
+- Paginate through all categories using `result.hasNext()` / `result.next()`.
+- Build a lookup map (`categoryById`) to walk parent chains.
+- `findRootParent(cat)` walks up `parentCategory._id` until it reaches a category with no parent.
+- Each category yielded exactly once:
+  - **Root categories** (no parent): `{ category: slug }`
+  - **Child categories** (has parent): `{ category: rootParent.slug, subcategory: slug }`
+
+### File Modified
+
+- `packages/wix-stores/lib/components/product-search.ts` — `loadSearchParams` function rewritten
