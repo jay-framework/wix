@@ -17,6 +17,7 @@
   "dependencies": {
     "@wix/categories": "^1.0.185",
     "@wix/data": "^1.0.433",
+    "@wix/data-extension-schema": "^1.0.214",
     "@wix/sdk": "^1.21.5",
     "@wix/search": "^1.0.81",
     "@wix/stores": "^1.0.742",

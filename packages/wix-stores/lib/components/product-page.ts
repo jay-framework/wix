@@ -160,7 +160,10 @@ function mapMediaType(mediaType: MediaTypeWithLiterals): MediaType {
 function mapMedia(media: Media | undefined): MediaGalleryViewState {
     const main = media?.main;
     if (!main) {
-        return { selectedMedia: { url: '', mediaType: MediaType.IMAGE, thumbnail_50x50: '' }, availableMedia: [] };
+        return {
+            selectedMedia: { url: '', mediaType: MediaType.IMAGE, thumbnail_50x50: '' },
+            availableMedia: [],
+        };
     }
     const mainMediaType = mapMediaType(main.mediaType);
     return {

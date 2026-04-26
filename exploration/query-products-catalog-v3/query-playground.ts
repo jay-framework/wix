@@ -2,6 +2,7 @@ import { getClient } from './wix-client.js';
 import { productsV3, customizationsV3 } from '@wix/stores';
 import { categories } from '@wix/categories';
 import { items } from '@wix/data';
+import { schemas as dataExtensionSchemas } from '@wix/data-extension-schema';
 import { WixClient } from '@wix/sdk';
 import { V3ProductSearch, SearchProductsOptions } from '@wix/auto_sdk_stores_products-v-3';
 
@@ -184,6 +185,15 @@ async function customizations(wixClient: WixClient): Promise<void> {
     });
 }
 
+async function listExtensionSchemas(wixClient: WixClient): Promise<void> {
+    const client = wixClient.use(dataExtensionSchemas);
+
+    const result = await client.listDataExtensionSchemas('wix.stores.v3.product', {
+        namespaces: ['_user_fields'],
+    });
+    console.log(JSON.stringify(result, undefined, 2));
+}
+
 async function queryPlayground() {
     console.log('🚀 Starting Wix Products Query (Catalog V3)...\n');
 
@@ -195,7 +205,9 @@ async function queryPlayground() {
 
         // await queryProducts(wixClient);
 
-        await aggregateProducts(wixClient);
+        // await aggregateProducts(wixClient);
+
+        await listExtensionSchemas(wixClient);
 
         // await customizations(wixClient);
     } catch (error) {

@@ -1,8 +1,8 @@
 export interface GetItemBySlugInput {
-  collectionId: string;
-  slug: string;
+    collectionId: string;
+    slug: string;
 }
 
 export interface GetItemBySlugOutput {
-  item: Record<string, unknown>;
+    item: Record<string, unknown>;
 }
