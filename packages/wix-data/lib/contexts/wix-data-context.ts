@@ -29,7 +29,7 @@ export interface WixDataContext {
 /**
  * Client context marker for Wix Data
  */
-export const WIX_DATA_CONTEXT = createJayContext<WixDataContext>();
+export const WIX_DATA_CONTEXT = createJayContext<WixDataContext>('wix:data');
 
 /**
  * Create and register the client-side Wix Data context

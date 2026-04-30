@@ -173,7 +173,7 @@ export interface WixCartContext {
 /**
  * Context marker for client-side Wix Cart operations.
  */
-export const WIX_CART_CONTEXT = createJayContext<WixCartContext>();
+export const WIX_CART_CONTEXT = createJayContext<WixCartContext>('wix:cart');
 
 // ============================================================================
 // Context Factory

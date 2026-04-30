@@ -14,7 +14,7 @@ export interface WixClientContext {
     refreshToken(): Promise<Tokens>;
 }
 
-export const WIX_CLIENT_CONTEXT = createJayContext<WixClientContext>();
+export const WIX_CLIENT_CONTEXT = createJayContext<WixClientContext>('wix:cc');
 
 // ============================================================================
 // Token Storage (client-only, but defined here for co-location)

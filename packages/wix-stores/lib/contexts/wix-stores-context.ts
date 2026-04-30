@@ -107,7 +107,7 @@ export interface WixStoresContext {
 /**
  * Context marker for client-side Wix Stores operations.
  */
-export const WIX_STORES_CONTEXT = createJayContext<WixStoresContext>();
+export const WIX_STORES_CONTEXT = createJayContext<WixStoresContext>('wix:stores');
 
 // ============================================================================
 // Context Factory
