@@ -40,6 +40,7 @@ export default defineConfig(({ isSsrBuild }) => ({
                 '@wix/sdk',
                 '@wix/stores',
                 '@wix/ecom',
+                '@wix/data-extension-schema',
             ],
         },
     },

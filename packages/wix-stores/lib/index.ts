@@ -66,3 +66,6 @@ export { init } from './init.js';
 
 // Export setup handler (Design Log #87, #10)
 export { setupWixStores, generateWixStoresReferences } from './setup.js';
+
+// Export contract generators (Design Log #16)
+export { generator as productPageContractGenerator } from './generators/product-page-contract-generator';

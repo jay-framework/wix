@@ -46,6 +46,7 @@
     "@jay-framework/wix-server-client": "workspace:^",
     "@jay-framework/wix-utils": "workspace:^",
     "@wix/categories": "^1.0.185",
+    "@wix/data-extension-schema": "^1.0.221",
     "@wix/sdk": "^1.21.5",
     "@wix/sdk-runtime": "^1.0.11",
     "@wix/stores": "^1.0.742",

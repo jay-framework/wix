@@ -1,0 +1,157 @@
+/**
+ * Product Page Contract Generator
+ *
+ * Materializes the product-page contract by extending the base static contract
+ * with site-specific data extension fields from the Wix Data Extension Schema API.
+ *
+ * Design Log #16
+ */
+
+import { makeContractGenerator } from '@jay-framework/fullstack-component';
+import { WIX_STORES_SERVICE_MARKER } from '../services/wix-stores-service';
+import { buildExtendedFieldsSubContract } from '../utils/data-extension-schema';
+
+/**
+ * Base product-page contract YAML.
+ * Inlined to avoid file-system dependencies at runtime.
+ * Source of truth: lib/contracts/product-page.jay-contract
+ */
+const BASE_CONTRACT_YAML = `name: product-page
+description: Full product detail page with variants, options, media gallery, and add-to-cart. Use for individual product pages.
+params:
+  slug: string
+  prefix: string?
+  category: string?
+tags:
+  - {tag: _id, type: data, dataType: string, description: Product GUID}
+  - {tag: productName, type: data, dataType: string, required: true, description: Product name}
+
+  - tag: mediaGallery
+    type: sub-contract
+    phase: fast+interactive
+    link: ./media-gallery
+
+  - {tag: description, type: data, dataType: string, description: Product description}
+  - {tag: brand, type: data, dataType: string, description: Brand name}
+  - {tag: ribbon, type: data, dataType: string, description: "Ribbon text (e.g., \\"New\\", \\"Sale\\")"}
+  - {tag: productType, type: variant, dataType: "enum (PHYSICAL | DIGITAL)", description: Product type }
+
+  - {tag: sku, type: data, dataType: string, phase: fast+interactive, description: Product SKU, or chosen variant SKU}
+  - {tag: price, type: data, dataType: string, phase: fast+interactive, description: The product or variant price}
+  - {tag: strikethroughPrice, type: data, dataType: string, phase: fast+interactive, description: A Strikethrough product price for sales}
+  - {tag: pricePerUnit, type: data, dataType: string, phase: fast+interactive, description: formatted price per unit, if used}
+  - {tag: stockStatus, type: variant, dataType: "enum (OUT_OF_STOCK | IN_STOCK)", phase: fast+interactive, description: indicator if the product or current variant are in stock }
+
+  - tag: quantity
+    type: sub-contract
+    description: Quantity selection controls
+    tags:
+      - {tag: decrementButton, type: interactive, elementType: HTMLButtonElement, description: Button to decrease quantity}
+      - {tag: incrementButton, type: interactive, elementType: HTMLButtonElement, description: Button to increase quantity}
+      - {tag: quantity, type: [data, interactive], dataType: number, elementType: HTMLInputElement, description: Selected Quantity and Direct quantity input field}
+
+  # Call to action
+  - {tag: addToCartButton, type: interactive, elementType: HTMLButtonElement, required: true, description: Add product to cart button}
+  - {tag: buyNowButton, type: interactive, elementType: HTMLButtonElement, required: true, description: Buy now button}
+  - {tag: actionsEnabled, type: variant, dataType: boolean, phase: fast+interactive, description: should the add to cart and buy now buttons be enabled}
+  - {tag: isAddingToCart, type: variant, dataType: boolean, phase: fast+interactive, description: Whether an add-to-cart request is currently in progress}
+
+  - tag: options
+    type: sub-contract
+    repeated: true
+    trackBy: _id
+    description: Product customization options that generate variants
+    tags:
+      - {tag: _id, type: data, dataType: string, description: "Option GUID (customization ID)"}
+      - {tag: name, type: data, dataType: string, description: "Option name (e.g., \\"Color\\", \\"Size\\")"}
+      - {tag: optionRenderType, type: variant, dataType: "enum (TEXT_CHOICES | COLOR_SWATCH_CHOICES)", description: How the option should be rendered}
+      - {tag: textChoice, type: interactive, elementType: HTMLSelectElement, description: dropdown for text choice}
+      - {tag: textChoiceSelection, type: data, dataType: string, phase: fast+interactive, description: the selected text option}
+
+      - tag: choices
+        type: sub-contract
+        repeated: true
+        trackBy: choiceId
+        description: Available choices for this option
+        tags:
+          - {tag: choiceId, type: data, dataType: string, description: Choice GUID}
+          - {tag: choiceType, type: variant, dataType: "enum (CHOICE_TEXT | ONE_COLOR)", description: Type of choice}
+          - {tag: name, type: data, dataType: string, description: "Choice name (e.g., \\"Red\\", \\"Large\\")"}
+          - {tag: colorCode, type: data, dataType: string, description: Color code in HEX format (for color choices)}
+          - {tag: inStock, type: data, dataType: boolean, description: Whether at least one variant with this choice is in stock}
+          - {tag: isSelected, type: variant, dataType: boolean, phase: fast+interactive, description: Whether this choice is currently selected (UI state)}
+          - {tag: choiceButton, type: interactive, elementType: HTMLButtonElement, description: Button to select this choice}
+
+  # Additional info sections (from Wix Stores API)
+  - tag: infoSections
+    type: sub-contract
+    repeated: true
+    trackBy: _id
+    description: Additional product information sections
+    tags:
+      - {tag: _id, type: data, dataType: string, description: Info section GUID}
+      - {tag: title, type: data, dataType: string, description: Info section title}
+      - {tag: plainDescription, type: data, dataType: string, description: Info section description in HTML}
+
+  - tag: modifiers
+    type: sub-contract
+    repeated: true
+    trackBy: _id
+    description: Product customization options that do not generate variants
+    tags:
+      - {tag: _id, type: data, dataType: string, description: "modifier id"}
+      - {tag: name, type: data, dataType: string, description: "modifier name (e.g., \\"Color\\", \\"Size\\")"}
+      - {tag: modifierType, type: variant, dataType: "enum (TEXT_CHOICES | COLOR_SWATCH_CHOICES | FREE_TEXT)", description: What type of modifier to use?}
+      - {tag: textModifier, type: interactive, elementType: HTMLSelectElement, description: dropdown for text modifier}
+      - {tag: textModifierSelection, type: data, dataType: string, phase: fast+interactive, description: the selected text modifier}
+      - {tag: textInput, type: interactive, elementType: HTMLInputElement | HTMLAreaElement, description: text input for free text}
+      - {tag: textInputLength, type: data, dataType: number, description: the limit on the length of free text}
+      - {tag: textInputRequired, type: data, dataType: boolean, description: Is the free text input required?}
+
+      - tag: choices
+        type: sub-contract
+        repeated: true
+        trackBy: choiceId
+        description: Available choices for this Modifier
+        tags:
+          - {tag: choiceId, type: data, dataType: string, description: Choice GUID}
+          - {tag: choiceType, type: variant, dataType: "enum (CHOICE_TEXT | ONE_COLOR)", description: Type of choice}
+          - {tag: name, type: data, dataType: string, description: "Choice name (e.g., \\"Red\\", \\"Large\\")"}
+          - {tag: colorCode, type: data, dataType: string, description: Color code in HEX format (for color choices)}
+          - {tag: isSelected, type: variant, dataType: boolean, phase: fast+interactive, description: Whether this choice is currently selected (UI state)}
+          - {tag: choiceButton, type: interactive, elementType: HTMLButtonElement, description: Button to select this choice}
+
+  # SEO data is injected into <head> via headTags (Design Log #127), not part of the contract view state.`;
+
+/**
+ * Generator for the product-page contract.
+ * Takes the base contract YAML and appends an extendedFields sub-contract
+ * generated from the site's data extension schemas.
+ */
+export const generator = makeContractGenerator()
+    .withServices(WIX_STORES_SERVICE_MARKER)
+    .generateWith(async (wixStoresService) => {
+        // Fetch data extension schemas
+        const schemas = await wixStoresService.getDataExtensionSchemas();
+        const extendedFieldsBlock = buildExtendedFieldsSubContract(schemas);
+
+        // Append extended fields to the base contract
+        let yaml = BASE_CONTRACT_YAML;
+        if (extendedFieldsBlock) {
+            yaml = yaml + '\n\n' + extendedFieldsBlock;
+        }
+
+        return [
+            {
+                yaml,
+                description: 'Product page with data extension fields',
+                metadata: {
+                    extendedFieldCount: schemas.reduce(
+                        (count, s) =>
+                            count + Object.keys(s.jsonSchema?.properties ?? {}).length,
+                        0,
+                    ),
+                },
+            },
+        ];
+    });

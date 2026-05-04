@@ -22,6 +22,8 @@ import { categories } from '@wix/categories';
 import { inventoryItemsV3 } from '@wix/stores';
 import { currentCart } from '@wix/ecom';
 import { type Customization } from '@wix/auto_sdk_stores_customizations-v-3';
+import { schemas as dataExtensionSchemas } from '@wix/data-extension-schema';
+import type { DataExtensionSchema } from '../utils/data-extension-schema';
 
 export interface WixStoresService {
     products: BuildDescriptors<typeof productsV3, {}>;
@@ -36,6 +38,8 @@ export interface WixStoresService {
     getCategoryTree(): Promise<CategoryTree>;
     /** Get cached product customizations (options with choices). Lazily loaded. */
     getCustomizations(): Promise<Customization[]>;
+    /** Get cached data extension schemas for products. Lazily loaded. */
+    getDataExtensionSchemas(): Promise<DataExtensionSchema[]>;
 }
 
 /**
@@ -60,6 +64,7 @@ export function provideWixStoresService(
 ): WixStoresService {
     let cachedTree: CategoryTree | null = null;
     let cachedCustomizations: Customization[] | null = null;
+    let cachedExtensionSchemas: DataExtensionSchema[] | null = null;
 
     const categoriesClient = getCategoriesClient(wixClient);
     const customizationsClient = getCustomizationsV3Client(wixClient);
@@ -141,6 +146,30 @@ export function provideWixStoresService(
             }
 
             return cachedCustomizations;
+        },
+
+        async getDataExtensionSchemas(): Promise<DataExtensionSchema[]> {
+            if (cachedExtensionSchemas) return cachedExtensionSchemas;
+
+            try {
+                const client = wixClient.use(dataExtensionSchemas);
+                const result = await client.listDataExtensionSchemas(
+                    'wix.stores.catalog.v3.product',
+                );
+                cachedExtensionSchemas = (result?.dataExtensionSchemas as DataExtensionSchema[]) ?? [];
+                const fieldCount = cachedExtensionSchemas.reduce(
+                    (n, s) => n + Object.keys(s.jsonSchema?.properties ?? {}).length,
+                    0,
+                );
+                console.log(
+                    `[wix-stores] Loaded ${cachedExtensionSchemas.length} data extension schema(s), ${fieldCount} field(s)`,
+                );
+            } catch (error) {
+                console.error('[wix-stores] Failed to load data extension schemas:', error);
+                cachedExtensionSchemas = [];
+            }
+
+            return cachedExtensionSchemas;
         },
     };
 

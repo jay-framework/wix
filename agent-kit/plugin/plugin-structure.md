@@ -19,6 +19,16 @@ contracts:
     component: productSearch
     description: Product listing with filters and pagination
 
+dynamic_contracts:
+  # Single contract: prefix used as the contract name directly
+  - prefix: product-page
+    component: productPage
+    generator: productPageContractGenerator
+  # Multiple contracts: prefix/name format (e.g., list/recipes, list/articles)
+  - prefix: list
+    component: dynamicList
+    generator: listContractGenerator
+
 actions:
   - name: searchProducts
     action: search-products.jay-action
@@ -35,6 +45,12 @@ contexts:
     marker: MY_CART_CONTEXT
     description: Client-side cart state (add/remove items, totals)
 
+routes:
+  - path: /admin/dashboard
+    jayHtml: ./pages/admin/page.jay-html
+    component: ./pages/admin/page.ts
+    description: Admin dashboard with product stats
+
 setup:
   handler: setup-handler
   references: references-handler
@@ -49,6 +65,38 @@ setup:
 - `contract` — Path to `.jay-contract` file (relative to plugin root)
 - `component` — Export name of the component (e.g., `productPage`)
 - `description` — What this component does and when to use it
+
+### Dynamic Contract Entry Fields
+
+Dynamic contracts are generated at setup time from site-specific data (e.g., CMS collection schemas, extended product fields).
+
+- `prefix` — Identifier for this dynamic contract group. Used as the contract name for single contracts, or as `prefix/name` for multiple.
+- `component` — Export name of the headless component that serves these contracts
+- `generator` — Export name of the generator function that produces contract YAML
+
+**Single contract** — generator returns one `{ yaml }` without a name:
+
+```yaml
+dynamic_contracts:
+  - prefix: product-page
+    component: productPage
+    generator: productPageContractGenerator
+```
+
+Referenced as `contract="product-page"` in jay-html.
+
+**Multiple contracts** — generator yields `{ name, yaml }` for each:
+
+```yaml
+dynamic_contracts:
+  - prefix: list
+    component: dynamicList
+    generator: listContractGenerator
+```
+
+Referenced as `contract="list/recipes"`, `contract="list/articles"` etc.
+
+Contracts are materialized by `jay-stack agent-kit` or `jay-stack setup` and stored in `agent-kit/materialized-contracts/`.
 
 ### Action Entry Fields
 
@@ -92,6 +140,16 @@ services:
   }
 }
 ```
+
+### Route Entry Fields
+
+- `path` — Route path (e.g., `/admin/products`, `/dashboard/[section]`)
+- `jayHtml` — Path to the page's jay-html template (relative to plugin root, or export subpath for NPM)
+- `css` — (optional) Path to the page's CSS file
+- `component` — Path to the page component (relative to plugin root, or exported member name for NPM)
+- `description` — What this page does
+
+Plugin routes are served by the dev server alongside project routes. If a project defines the same route path, the project's page takes precedence.
 
 ### Setup Fields
 
@@ -145,21 +203,100 @@ my-project/
 
 See `examples/jay-stack/fake-shop` for a working example.
 
+## Dual Entry Points
+
+Jay plugins are fullstack — they run on both server and client. The build produces two bundles:
+
+- **Server** (`dist/index.js`) — actions, services, SSR rendering, `init()`. Built with `vite build --ssr`.
+- **Client** (`dist/index.client.js`) — components for hydration, context tokens, `init()`. Built with `vite build`.
+
+Create two entry files:
+
+| File                  | Exports                                                    |
+| --------------------- | ---------------------------------------------------------- |
+| `lib/index.ts`        | Actions, services, components (SSR), init, service markers |
+| `lib/index.client.ts` | Components (hydration), context markers, init              |
+
+Actions and service providers are server-only. Components appear in **both** entries.
+
+## Build Scripts
+
+```json
+{
+  "scripts": {
+    "build": "npm run clean && npm run definitions && npm run build:client && npm run build:server && npm run build:copy-assets && npm run build:types && npm run validate",
+    "definitions": "jay-cli definitions lib",
+    "build:client": "vite build",
+    "build:server": "vite build --ssr",
+    "build:copy-assets": "cp lib/*.jay-contract* dist/",
+    "build:types": "tsup lib/index.ts lib/index.client.ts --dts-only --format esm",
+    "validate": "jay-stack-cli validate-plugin",
+    "clean": "rimraf dist"
+  }
+}
+```
+
+The `vite.config.ts` uses `isSsrBuild` to switch entry points:
+
+```typescript
+import { resolve } from 'path';
+import { defineConfig } from 'vite';
+import { jayStackCompiler } from '@jay-framework/compiler-jay-stack';
+
+const jayOptions = { tsConfigFilePath: resolve(__dirname, 'tsconfig.json'), outputDir: 'build' };
+
+export default defineConfig(({ isSsrBuild }) => ({
+  plugins: [...jayStackCompiler(jayOptions)],
+  build: {
+    minify: false,
+    ssr: isSsrBuild,
+    emptyOutDir: false,
+    lib: {
+      entry: isSsrBuild
+        ? { index: resolve(__dirname, 'lib/index.ts') }
+        : { 'index.client': resolve(__dirname, 'lib/index.client.ts') },
+      formats: ['es'],
+    },
+    rollupOptions: {
+      external: [
+        '@jay-framework/component',
+        '@jay-framework/fullstack-component',
+        '@jay-framework/stack-client-runtime',
+        '@jay-framework/stack-server-runtime',
+        '@jay-framework/reactive',
+        '@jay-framework/runtime',
+      ],
+    },
+  },
+}));
+```
+
 ## package.json Exports
 
-For NPM packages, declare exports so the framework can resolve the plugin:
+For NPM packages, declare exports for both server and client entry points:
 
 ```json
 {
   "name": "@my-org/my-plugin",
   "type": "module",
+  "main": "dist/index.js",
   "exports": {
-    ".": "./dist/index.js",
-    "./plugin.yaml": "./plugin.yaml"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/index.client.d.ts",
+      "default": "./dist/index.client.js"
+    },
+    "./plugin.yaml": "./plugin.yaml",
+    "./my-contract.jay-contract": "./dist/my-contract.jay-contract"
   },
-  "files": ["dist", "plugin.yaml", "lib/contracts", "lib/actions"]
+  "files": ["dist", "plugin.yaml"]
 }
 ```
+
+The `./client` export is required — the framework uses it for browser-side hydration code. The `.` export handles server-side rendering and action execution.
 
 ## Plugin-Contributed Agent-Kit Guides
 

@@ -45,6 +45,16 @@ import {
     WixStoresContext,
 } from '../contexts/wix-stores-context';
 
+/**
+ * Extract user-defined extended fields from the product response.
+ * Returns a flat record of field values, suitable for the extendedFields view state.
+ */
+function mapExtendedFields(
+    product: { extendedFields?: { namespaces?: Record<string, Record<string, unknown>> } },
+): Record<string, unknown> {
+    return (product.extendedFields?.namespaces?.['_user_fields'] as Record<string, unknown>) ?? {};
+}
+
 interface InteractiveVariant {
     _id: string;
     sku: string;
@@ -423,6 +433,7 @@ async function renderSlowlyChanging(
                     options: mapOptionsToSlowVS(options),
                     infoSections: mapInfoSections(infoSections),
                     modifiers: mapModifiersToSlowVS(modifiers),
+                    extendedFields: mapExtendedFields(product),
                 },
                 headTags: mapSeoHeadTags(seoData),
                 carryForward: {

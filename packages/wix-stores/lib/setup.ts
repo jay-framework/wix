@@ -17,6 +17,7 @@ import type {
 } from '@jay-framework/stack-server-runtime';
 import { getService } from '@jay-framework/stack-server-runtime';
 import { WIX_STORES_SERVICE_MARKER, type WixStoresService } from './services/wix-stores-service';
+import type { DataExtensionSchema } from './utils/data-extension-schema';
 
 const CONFIG_FILE_NAME = '.wix-stores.yaml';
 
@@ -177,8 +178,50 @@ export async function generateWixStoresReferences(
         'utf-8',
     );
 
+    // Fetch and write data extension schemas
+    let extensionFieldCount = 0;
+    try {
+        const extensionSchemas = await storesService.getDataExtensionSchemas();
+        const userFieldsSchema = extensionSchemas.find(
+            (s: DataExtensionSchema) => s.namespace === '_user_fields',
+        );
+        const properties = userFieldsSchema?.jsonSchema?.properties;
+
+        if (properties && Object.keys(properties).length > 0) {
+            extensionFieldCount = Object.keys(properties).length;
+            const extensionPath = path.join(ctx.referencesDir, 'data-extension-fields.yaml');
+            fs.writeFileSync(
+                extensionPath,
+                yaml.dump(
+                    {
+                        _description:
+                            'Product data extension fields (custom fields defined in Wix dashboard).',
+                        fqdn: 'wix.stores.v3.product',
+                        namespace: '_user_fields',
+                        fieldCount: extensionFieldCount,
+                        fields: Object.fromEntries(
+                            Object.entries(properties).map(([key, prop]) => [
+                                key,
+                                { type: (prop as any).type },
+                            ]),
+                        ),
+                    },
+                    { indent: 2, lineWidth: 120, noRefs: true },
+                ),
+                'utf-8',
+            );
+        }
+    } catch (error) {
+        console.error('[wix-stores] Failed to fetch data extension schemas:', error);
+    }
+
+    const referencesCreated = [`agent-kit/references/${ctx.pluginName}/categories.yaml`];
+    if (extensionFieldCount > 0) {
+        referencesCreated.push(`agent-kit/references/${ctx.pluginName}/data-extension-fields.yaml`);
+    }
+
     return {
-        referencesCreated: [`agent-kit/references/${ctx.pluginName}/categories.yaml`],
-        message: `${allCategories.length} categories (${roots.length} root)`,
+        referencesCreated,
+        message: `${allCategories.length} categories (${roots.length} root), ${extensionFieldCount} extension fields`,
     };
 }

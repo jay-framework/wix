@@ -189,7 +189,7 @@ async function listExtensionSchemas(wixClient: WixClient): Promise<void> {
     const client = wixClient.use(dataExtensionSchemas);
 
     const result = await client.listDataExtensionSchemas('wix.stores.catalog.v3.product', {
-        namespaces: ['_user_fields'],
+        // namespaces: ['_user_fields'],
     });
     console.log(JSON.stringify(result, undefined, 2));
 }
