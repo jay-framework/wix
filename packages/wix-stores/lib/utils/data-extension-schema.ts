@@ -70,10 +70,20 @@ function objectSubContract(
     const prefix = ' '.repeat(indent);
     const innerTags = jsonSchemaToContractTags(properties, indent + 2);
 
-    const repeatedLine = repeated ? `\n${prefix}  repeated: true\n${prefix}  trackBy: _index` : '';
+    if (repeated) {
+        const indexTag = dataTag('_index', 'number', indent + 2);
+        return `${prefix}- tag: ${key}
+${prefix}  type: sub-contract
+${prefix}  repeated: true
+${prefix}  trackBy: _index
+${prefix}  description: ${key}
+${prefix}  tags:
+${indexTag}
+${innerTags.join('\n')}`;
+    }
 
     return `${prefix}- tag: ${key}
-${prefix}  type: sub-contract${repeatedLine}
+${prefix}  type: sub-contract
 ${prefix}  description: ${key}
 ${prefix}  tags:
 ${innerTags.join('\n')}`;

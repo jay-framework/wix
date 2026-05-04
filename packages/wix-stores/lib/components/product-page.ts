@@ -48,11 +48,26 @@ import {
 /**
  * Extract user-defined extended fields from the product response.
  * Returns a flat record of field values, suitable for the extendedFields view state.
+ * Array items get an injected `_index` field for trackBy support.
  */
 function mapExtendedFields(
     product: { extendedFields?: { namespaces?: Record<string, Record<string, unknown>> } },
 ): Record<string, unknown> {
-    return (product.extendedFields?.namespaces?.['_user_fields'] as Record<string, unknown>) ?? {};
+    const raw =
+        (product.extendedFields?.namespaces?.['_user_fields'] as Record<string, unknown>) ?? {};
+    const result: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(raw)) {
+        if (Array.isArray(value)) {
+            result[key] = value.map((item, i) =>
+                typeof item === 'object' && item !== null
+                    ? { ...item, _index: i }
+                    : { value: item, _index: i },
+            );
+        } else {
+            result[key] = value;
+        }
+    }
+    return result;
 }
 
 interface InteractiveVariant {
