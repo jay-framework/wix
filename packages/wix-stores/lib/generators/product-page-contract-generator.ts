@@ -29,7 +29,7 @@ tags:
   - tag: mediaGallery
     type: sub-contract
     phase: fast+interactive
-    link: ./media-gallery
+    link: "@jay-framework/wix-stores/media-gallery"
 
   - {tag: description, type: data, dataType: string, description: Product description}
   - {tag: brand, type: data, dataType: string, description: Brand name}
