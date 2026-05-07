@@ -16,8 +16,8 @@
  * ```
  */
 
-import { createJayContext, useGlobalContext } from '@jay-framework/runtime';
-import { createSignal, registerReactiveGlobalContext, useReactive } from '@jay-framework/component';
+import { createJayContext, useGlobalContext, EventEmitter } from '@jay-framework/runtime';
+import { createSignal, createEvent, registerReactiveGlobalContext, useReactive } from '@jay-framework/component';
 import { Getter } from '@jay-framework/reactive';
 import { WIX_CLIENT_CONTEXT } from '@jay-framework/wix-server-client';
 import { getCurrentCartClient } from '../utils/cart-client';
@@ -168,6 +168,12 @@ export interface WixCartContext {
      * @returns Updated cart state
      */
     removeCoupon(): Promise<CartOperationResult>;
+
+    // ========================================================================
+    // Events
+    // ========================================================================
+
+    onItemAddedToCart: EventEmitter<void, any>;
 }
 
 /**
@@ -201,6 +207,7 @@ export function provideWixCartContext(): WixCartContext {
         const [itemCount, setItemCount] = createSignal(0);
         const [hasItems, setHasItems] = createSignal(false);
         const reactive = useReactive();
+        const onItemAddedToCart = createEvent<void>();
 
         // Helper to update indicator signals from cart data
         function updateIndicatorFromCart(cart: Awaited<ReturnType<typeof getCurrentCartOrNull>>) {
@@ -249,6 +256,7 @@ export function provideWixCartContext(): WixCartContext {
             });
 
             updateIndicatorFromCart(result.cart ?? null);
+            onItemAddedToCart.emit();
             return { cartState: mapCartToState(result.cart ?? null) };
         }
 
@@ -318,6 +326,7 @@ export function provideWixCartContext(): WixCartContext {
             clearCart,
             applyCoupon,
             removeCoupon,
+            onItemAddedToCart,
         };
     });
 

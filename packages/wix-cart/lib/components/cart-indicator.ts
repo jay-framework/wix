@@ -11,7 +11,7 @@ import {
     Signals,
     PageProps,
 } from '@jay-framework/fullstack-component';
-import { createEffect, createSignal, Props } from '@jay-framework/component';
+import { Props } from '@jay-framework/component';
 import {
     CartIndicatorContract,
     CartIndicatorFastViewState,
@@ -72,18 +72,9 @@ function CartIndicatorInteractive(
         justAdded: [justAdded, setJustAdded],
     } = viewStateSignals;
 
-    // Track previous item count for "just added" animation
-    const [prevItemCount, setPrevItemCount] = createSignal(cartContext.cartIndicator.itemCount());
-
-    // Watch for item count changes to trigger animation
-    createEffect(() => {
-        const currentCount = cartContext.cartIndicator.itemCount();
-        if (currentCount > prevItemCount()) {
-            // Items were added - trigger animation
-            setJustAdded(true);
-            setTimeout(() => setJustAdded(false), 1500);
-        }
-        setPrevItemCount(currentCount);
+    cartContext.onItemAddedToCart(() => {
+        setJustAdded(true);
+        setTimeout(() => setJustAdded(false), 1500);
     });
 
     refs.cartLink?.onclick(() => {

@@ -11,7 +11,7 @@ import {
     Signals,
     PageProps,
 } from '@jay-framework/fullstack-component';
-import { createMemo, Props } from '@jay-framework/component';
+import { Props } from '@jay-framework/component';
 import {
     MiniCartContract,
     MiniCartFastViewState,
@@ -50,15 +50,8 @@ function MiniCartInteractive(
         isOpen: [isOpen, setIsOpen],
     } = viewStateSignals;
 
-    let prevItemCount = cartContext.cartIndicator.itemCount();
-
-    // Open when item count increases
-    createMemo(() => {
-        const currentCount = cartContext.cartIndicator.itemCount();
-        if (currentCount > prevItemCount) {
-            setIsOpen(true);
-        }
-        prevItemCount = currentCount;
+    cartContext.onItemAddedToCart(() => {
+        setIsOpen(true);
     });
 
     // Open button

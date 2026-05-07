@@ -275,16 +275,18 @@ Each package builds:
 When making changes to packages:
 
 1. Make changes in `packages/*/lib/`
-2. Run `npm run build` in the package (or `yarn build` at root)
-3. Type definitions (`.d.ts`) are generated for `.jay-action` and `.jay-contract` files
-4. Changes propagate to examples via workspace dependencies
+2. Use the plugin role from the agent-kit - [INSTRUCTIONS.md](agent-kit/plugin/INSTRUCTIONS.md)
+3. Run `npm run build` in the package (or `yarn build` at root)
+4. Type definitions (`.d.ts`) are generated for `.jay-action` and `.jay-contract` files
+5. Changes propagate to examples via workspace dependencies
 
 When working on examples:
 
 1. Run `npm run setup` to regenerate agent-kit with latest contracts
-2. Edit `.jay-html` files in `src/pages/`
-3. Run `npm run validate` to check against contracts
-4. Run `npm run dev` to test locally
+2. Use the per example agent-kit designer role
+3. Edit `.jay-html` files in `src/pages/`
+4. Run `npm run validate` to check against contracts
+5. Run `npm run dev` to test locally
 
 ### Sync Script
 
