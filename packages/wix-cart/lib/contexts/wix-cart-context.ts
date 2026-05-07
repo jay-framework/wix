@@ -17,7 +17,12 @@
  */
 
 import { createJayContext, useGlobalContext, EventEmitter } from '@jay-framework/runtime';
-import { createSignal, createEvent, registerReactiveGlobalContext, useReactive } from '@jay-framework/component';
+import {
+    createSignal,
+    createEvent,
+    registerReactiveGlobalContext,
+    useReactive,
+} from '@jay-framework/component';
 import { Getter } from '@jay-framework/reactive';
 import { WIX_CLIENT_CONTEXT } from '@jay-framework/wix-server-client';
 import { getCurrentCartClient } from '../utils/cart-client';

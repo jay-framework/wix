@@ -156,7 +156,8 @@ export function provideWixStoresService(
                 const result = await client.listDataExtensionSchemas(
                     'wix.stores.catalog.v3.product',
                 );
-                cachedExtensionSchemas = (result?.dataExtensionSchemas as DataExtensionSchema[]) ?? [];
+                cachedExtensionSchemas =
+                    (result?.dataExtensionSchemas as DataExtensionSchema[]) ?? [];
                 const fieldCount = cachedExtensionSchemas.reduce(
                     (n, s) => n + Object.keys(s.jsonSchema?.properties ?? {}).length,
                     0,

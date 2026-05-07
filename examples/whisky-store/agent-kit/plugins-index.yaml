@@ -1,4 +1,3 @@
-jay_stack_version: 0.0.0
 plugins:
   - name: webmcp
     path: ./../../node_modules/@jay-framework/webmcp-plugin
@@ -7,27 +6,55 @@ plugins:
     path: ./../../packages/wix-cart
     contracts:
       - name: cart-indicator
+        description: Lightweight cart indicator for site headers showing item count
         type: static
         path: ./../../packages/wix-cart/dist/contracts/cart-indicator.jay-contract
       - name: cart-page
+        description: Full cart page with line item management and checkout
         type: static
         path: ./../../packages/wix-cart/dist/contracts/cart-page.jay-contract
+      - name: mini-cart
+        description: Drawer that auto-opens when a product is added to cart
+        type: static
+        path: ./../../packages/wix-cart/dist/contracts/mini-cart.jay-contract
+    services:
+      - name: wix-cart
+        marker: WIX_CART_SERVICE
+        description: Wix eCommerce cart API for server-side cart operations
+    contexts:
+      - name: wix-cart
+        marker: WIX_CART_CONTEXT
+        description: Client-side reactive cart state with add-to-cart, remove, quantity,
+          coupon, and checkout operations
   - name: wix-server-client
     path: ./../../packages/wix-server-client
     contracts: []
+    services:
+      - name: wix-client
+        marker: WIX_CLIENT_SERVICE
+        description: Core Wix SDK client with API key authentication
+    contexts:
+      - name: wix-client
+        marker: WIX_CLIENT_CONTEXT
+        description: Client-side OAuth authentication and token management
   - name: wix-stores-v1
     path: ./../../packages/wix-stores-v1
     contracts:
       - name: product-page
+        description: Complete headless product page with server-side rendering (Catalog V1)
         type: static
         path: ./../../packages/wix-stores-v1/dist/contracts/product-page.jay-contract
       - name: product-search
+        description: Headless product search page (Catalog V1)
         type: static
         path: ./../../packages/wix-stores-v1/dist/contracts/product-search.jay-contract
       - name: category-page
+        description: Collection page showing products (V1 uses collections instead of
+          categories)
         type: static
         path: ./../../packages/wix-stores-v1/dist/contracts/category-page.jay-contract
       - name: category-list
+        description: List of store collections (V1 uses collections instead of categories)
         type: static
         path: ./../../packages/wix-stores-v1/dist/contracts/category-list.jay-contract
     actions:
@@ -45,3 +72,12 @@ plugins:
           collections instead of categories. Returns collection details
           including name, slug, description, image, and product count.
         path: ./../../packages/wix-stores-v1/dist/actions/get-collections.jay-action
+    services:
+      - name: wix-stores-v1
+        marker: WIX_STORES_V1_SERVICE_MARKER
+        description: Wix Stores Catalog V1 API (products, collections, inventory)
+    contexts:
+      - name: wix-stores-v1
+        marker: WIX_STORES_V1_CONTEXT
+        description: Client-side V1 stores access with collection pagination and
+          delegated cart operations

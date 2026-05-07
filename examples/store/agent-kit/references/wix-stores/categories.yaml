@@ -1,7 +1,6 @@
-_generated: '2026-03-23T16:40:13.855Z'
 _description: >-
-  Wix Stores category tree for agent discovery. Shows category hierarchy, IDs, product counts, and configured URL
-  prefixes.
+  Wix Stores category tree for agent discovery. Shows category hierarchy, IDs, slugs, product counts, and parent-child
+  relationships.
 totalCategories: 2
 categoryTree:
   - _id: bc0990ba-e6c6-450c-94cc-a0c62543eb13

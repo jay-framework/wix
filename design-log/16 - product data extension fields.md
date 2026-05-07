@@ -25,13 +25,13 @@ A: Not in this iteration. Search results typically show summary cards, not full 
 
 **Q4: How should the JSON Schema types map to contract tag types?**
 
-| JSON Schema type | Contract dataType | Contract structure |
-|-----------------|------------------|-------------------|
-| `string` | `string` | `data` tag |
-| `boolean` | `boolean` | `data` tag |
-| `number` | `number` | `data` tag |
-| `array` (of strings) | `string` | `data` tag (repeated) |
-| `array` (of objects) | — | `sub-contract` (repeated, trackBy index) |
+| JSON Schema type     | Contract dataType | Contract structure                       |
+| -------------------- | ----------------- | ---------------------------------------- |
+| `string`             | `string`          | `data` tag                               |
+| `boolean`            | `boolean`         | `data` tag                               |
+| `number`             | `number`          | `data` tag                               |
+| `array` (of strings) | `string`          | `data` tag (repeated)                    |
+| `array` (of objects) | —                 | `sub-contract` (repeated, trackBy index) |
 
 **Q5: Should the generator be in wix-stores or a shared utility?**
 A: The JSON Schema → contract tag mapping is generic and could be reused. Put it in wix-stores for now as a utility, move to shared if needed later.
@@ -44,20 +44,21 @@ A function `jsonSchemaToContractTags` that converts a JSON Schema `properties` o
 
 ```typescript
 interface JsonSchemaProperty {
-    type: string;
-    items?: JsonSchemaProperty & { properties?: Record<string, JsonSchemaProperty> };
-    properties?: Record<string, JsonSchemaProperty>;
-    maxLength?: number;
-    maxItems?: number;
+  type: string;
+  items?: JsonSchemaProperty & { properties?: Record<string, JsonSchemaProperty> };
+  properties?: Record<string, JsonSchemaProperty>;
+  maxLength?: number;
+  maxItems?: number;
 }
 
 function jsonSchemaToContractTags(
-    properties: Record<string, JsonSchemaProperty>,
-    indent = 4
-): string[]
+  properties: Record<string, JsonSchemaProperty>,
+  indent = 4,
+): string[];
 ```
 
 For each property:
+
 - `type: "string"` → `{tag: fieldName, type: data, dataType: string}`
 - `type: "boolean"` → `{tag: fieldName, type: data, dataType: boolean}`
 - `type: "number"` → `{tag: fieldName, type: data, dataType: number}`
@@ -76,6 +77,7 @@ dynamic_contracts:
 ```
 
 The generator:
+
 1. Reads the base static contract YAML
 2. Calls `listDataExtensionSchemas('wix.stores.v3.product')`
 3. Converts the JSON schema to contract tags via the generic utility
@@ -85,8 +87,9 @@ The generator:
 ### 3. Component Mapping
 
 In `product-page.ts`, the slow render phase:
+
 1. Fetches the product (already done)
-2. Extracts `product.extendedFields?.namespaces?._user_fields` 
+2. Extracts `product.extendedFields?.namespaces?._user_fields`
 3. Maps each field value to the `extendedFields` view state
 
 The mapping is straightforward — field names in the schema match field names on the product object.
@@ -100,38 +103,38 @@ Given the schema from `dataExtensionSchemas.json`, the materialized contract wou
   type: sub-contract
   description: Custom product fields from data extension schema
   tags:
-    - {tag: embroidery, type: data, dataType: boolean}
-    - {tag: comingSoon, type: data, dataType: boolean}
-    - {tag: fabricComposition, type: data, dataType: string}
-    - {tag: fabricWeight, type: data, dataType: string}
-    - {tag: countryOfOrigin, type: data, dataType: string}
-    - {tag: density, type: data, dataType: string}
-    - {tag: chain, type: data, dataType: string}
-    - {tag: fragile, type: data, dataType: boolean}
+    - { tag: embroidery, type: data, dataType: boolean }
+    - { tag: comingSoon, type: data, dataType: boolean }
+    - { tag: fabricComposition, type: data, dataType: string }
+    - { tag: fabricWeight, type: data, dataType: string }
+    - { tag: countryOfOrigin, type: data, dataType: string }
+    - { tag: density, type: data, dataType: string }
+    - { tag: chain, type: data, dataType: string }
+    - { tag: fragile, type: data, dataType: boolean }
     - tag: sizeContent
       type: sub-contract
       repeated: true
       trackBy: _index
       description: sizeContent items
       tags:
-        - {tag: value, type: data, dataType: string}
+        - { tag: value, type: data, dataType: string }
     - tag: icons
       type: sub-contract
       repeated: true
       trackBy: _index
       description: icons items
       tags:
-        - {tag: text, type: data, dataType: string}
-        - {tag: mediaId, type: data, dataType: string}
+        - { tag: text, type: data, dataType: string }
+        - { tag: mediaId, type: data, dataType: string }
     - tag: colorCodeMap
       type: sub-contract
       repeated: true
       trackBy: _index
       description: colorCodeMap items
       tags:
-        - {tag: code, type: data, dataType: string}
-        - {tag: name, type: data, dataType: string}
-        - {tag: groupCode, type: data, dataType: string}
+        - { tag: code, type: data, dataType: string }
+        - { tag: name, type: data, dataType: string }
+        - { tag: groupCode, type: data, dataType: string }
 ```
 
 ### 5. Jay-HTML Usage
@@ -176,12 +179,12 @@ Given the schema from `dataExtensionSchemas.json`, the materialized contract wou
 
 ## Trade-offs
 
-| Decision | Pros | Cons |
-|----------|------|------|
-| `extendedFields` sub-contract | Clean namespace, no collision with base tags | One extra nesting level in templates |
-| Generic JSON Schema mapper | Reusable for other entities | May need extending for edge-case types |
-| Dynamic contract (generator) | Per-site customization | Requires `jay-stack agent-kit` to materialize |
-| Array of strings as repeated sub-contract | Consistent pattern, works with forEach | More verbose than a simple comma-separated string |
+| Decision                                  | Pros                                         | Cons                                              |
+| ----------------------------------------- | -------------------------------------------- | ------------------------------------------------- |
+| `extendedFields` sub-contract             | Clean namespace, no collision with base tags | One extra nesting level in templates              |
+| Generic JSON Schema mapper                | Reusable for other entities                  | May need extending for edge-case types            |
+| Dynamic contract (generator)              | Per-site customization                       | Requires `jay-stack agent-kit` to materialize     |
+| Array of strings as repeated sub-contract | Consistent pattern, works with forEach       | More verbose than a simple comma-separated string |
 
 ## Verification Criteria
 
@@ -211,7 +214,7 @@ Given the schema from `dataExtensionSchemas.json`, the materialized contract wou
 ### Key Decisions
 
 - **extendedFields as sub-contract**: All extension fields are nested under an `extendedFields` tag to avoid name collisions with base contract tags
-- **_user_fields namespace**: The generator specifically looks for the `_user_fields` namespace, which contains user-defined custom fields
+- **\_user_fields namespace**: The generator specifically looks for the `_user_fields` namespace, which contains user-defined custom fields
 - **Array of primitives**: Mapped as a simple `data` tag (runtime handles array rendering). Array of objects → repeated sub-contract with nested tags.
 - **Lazy caching**: `getDataExtensionSchemas()` caches the API result, consistent with `getCategoryTree()` and `getCustomizations()` patterns
 

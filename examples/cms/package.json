@@ -13,13 +13,13 @@
     "validate": "jay-stack-cli validate",
     "clean": "rimraf dist && rimraf build && rimraf -g 'src/**/*.d.ts'",
     "definitions": "jay-cli definitions src",
-    "build": "npm run definitions & echo 'build not implemented yet'",
+    "build": "npm run agent-kit && npm run definitions",
     "build:check-types": "tsc",
     "test": ":"
   },
   "dependencies": {
-    "@jay-framework/fullstack-component": "^0.16.3",
-    "@jay-framework/jay-stack-cli": "^0.16.3",
+    "@jay-framework/fullstack-component": "^0.16.4",
+    "@jay-framework/jay-stack-cli": "^0.16.4",
     "@jay-framework/wix-data": "workspace:^",
     "@jay-framework/wix-server-client": "workspace:^",
     "compression": "^1.7.5",
@@ -27,7 +27,7 @@
     "sirv": "^3.0.0"
   },
   "devDependencies": {
-    "@jay-framework/jay-cli": "^0.16.3",
+    "@jay-framework/jay-cli": "^0.16.4",
     "@jay-framework/wix-dev-environment": "workspace:^",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.0",

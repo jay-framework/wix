@@ -98,6 +98,17 @@ Referenced as `contract="list/recipes"`, `contract="list/articles"` etc.
 
 Contracts are materialized by `jay-stack agent-kit` or `jay-stack setup` and stored in `agent-kit/materialized-contracts/`.
 
+**Linking to static contracts from generated YAML** — materialized contracts live in a different directory than the plugin source. Use the plugin's package path (not relative paths) for `link:` references to static contracts:
+
+```yaml
+# In the generated contract YAML:
+tags:
+  - tag: gallery
+    type: sub-contract
+    link: '@my-org/my-plugin/media-gallery' # package path — works from any directory
+    # NOT: link: ./media-gallery            # relative path — breaks in materialized location
+```
+
 ### Action Entry Fields
 
 - `name` — Action name (used with `jay-stack action <plugin>/<action>`)
@@ -311,6 +322,34 @@ my-plugin/
     │   └── my-plugin-config.md   # How to configure the plugin
     └── plugin/
         └── my-plugin-extending.md  # How to extend the plugin
+```
+
+For NPM packages, include `agent-kit` in the `files` array:
+
+```json
+{
+  "files": ["dist", "plugin.yaml", "agent-kit"]
+}
+```
+
+No `plugin.yaml` declaration needed — the CLI discovers guides by scanning the `agent-kit/` directory. Files are copied as-is into the project's `agent-kit/{role}/`.
+
+**File format convention:** The first line after the `#` heading is used as the description in the INSTRUCTIONS.md index table. Write it as a short sentence explaining when to use this guide:
+
+```markdown
+# Scroll Carousel
+
+Horizontal slider with prev/next buttons and edge detection. Headless component — requires import.
+
+## Import
+
+...
+```
+
+The INSTRUCTIONS.md table will show:
+
+```
+| scroll-carousel.md | my-plugin | Horizontal slider with prev/next buttons and edge detection. Headless component — requires import. |
 ```
 
 ## Reference Declarations

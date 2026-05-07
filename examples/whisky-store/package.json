@@ -6,10 +6,11 @@
   "license": "Apache-2.0",
   "scripts": {
     "dev": "jay-stack-cli dev",
+    "agent-kit": "jay-stack-cli agent-kit",
     "validate": "jay-stack-cli validate",
     "clean": "rimraf dist && rimraf build && rimraf -g 'src/**/*.d.ts'",
     "definitions": "jay-cli definitions src",
-    "build": "npm run definitions & echo 'build not implemented yet'",
+    "build": "npm run agent-kit && npm run definitions",
     "build:disabled": "npm run build:client && # npm run build:server",
     "build:client": "vite build --outDir dist/client",
     "build:server": "vite build --ssr src/entry-server.ts --outDir dist/server",
@@ -18,9 +19,9 @@
     "preview": "cross-env NODE_ENV=production node server"
   },
   "dependencies": {
-    "@jay-framework/fullstack-component": "^0.16.3",
-    "@jay-framework/jay-stack-cli": "^0.16.3",
-    "@jay-framework/webmcp-plugin": "^0.16.3",
+    "@jay-framework/fullstack-component": "^0.16.4",
+    "@jay-framework/jay-stack-cli": "^0.16.4",
+    "@jay-framework/webmcp-plugin": "^0.16.4",
     "@jay-framework/wix-cart": "workspace:^",
     "@jay-framework/wix-server-client": "workspace:^",
     "@jay-framework/wix-stores-v1": "workspace:^",
@@ -29,7 +30,7 @@
     "sirv": "^3.0.0"
   },
   "devDependencies": {
-    "@jay-framework/jay-cli": "^0.16.3",
+    "@jay-framework/jay-cli": "^0.16.4",
     "@jay-framework/wix-dev-environment": "workspace:^",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.0",

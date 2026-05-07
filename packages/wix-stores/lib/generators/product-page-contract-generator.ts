@@ -147,8 +147,7 @@ export const generator = makeContractGenerator()
                 description: 'Product page with data extension fields',
                 metadata: {
                     extendedFieldCount: schemas.reduce(
-                        (count, s) =>
-                            count + Object.keys(s.jsonSchema?.properties ?? {}).length,
+                        (count, s) => count + Object.keys(s.jsonSchema?.properties ?? {}).length,
                         0,
                     ),
                 },
