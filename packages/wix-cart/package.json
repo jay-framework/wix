@@ -1,6 +1,6 @@
 {
   "name": "@jay-framework/wix-cart",
-  "version": "0.16.3",
+  "version": "0.16.4",
   "type": "module",
   "description": "Wix Cart/Ecom shared package for Jay Framework",
   "license": "Apache-2.0",

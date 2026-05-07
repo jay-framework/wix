@@ -1,6 +1,6 @@
 {
   "name": "@jay-framework/wix-server-client",
-  "version": "0.16.3",
+  "version": "0.16.4",
   "type": "module",
   "description": "Wix SDK client configuration and authentication for Jay Framework",
   "license": "Apache-2.0",

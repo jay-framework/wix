@@ -1,6 +1,6 @@
 {
   "name": "@jay-framework/wix-stores-v1",
-  "version": "0.16.3",
+  "version": "0.16.4",
   "type": "module",
   "description": "Wix Stores Catalog V1 API client for Jay Framework",
   "license": "Apache-2.0",

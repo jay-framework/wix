@@ -1,6 +1,6 @@
 {
   "name": "@jay-framework/wix-data",
-  "version": "0.16.3",
+  "version": "0.16.4",
   "type": "module",
   "description": "Wix Data plugin for Jay Framework with dynamic contract generation",
   "license": "Apache-2.0",
