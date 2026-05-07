@@ -1,0 +1,15 @@
+_description: >-
+  Wix Stores category tree for agent discovery. Shows category hierarchy, IDs, slugs, product counts, and parent-child
+  relationships.
+totalCategories: 2
+categoryTree:
+  - _id: bc0990ba-e6c6-450c-94cc-a0c62543eb13
+    name: Recommended Products
+    slug: recommended-products
+    productCount: 5
+    children: []
+  - _id: becc814c-0375-45e8-a826-cd0391f935ef
+    name: All Products
+    slug: all-products
+    productCount: 12
+    children: []

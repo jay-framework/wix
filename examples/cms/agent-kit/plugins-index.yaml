@@ -1,0 +1,60 @@
+plugins:
+  - name: wix-data
+    path: ./../../packages/wix-data
+    contracts:
+      - name: item/food-service-product-lines-item
+        description: Item page for Product_lines
+        type: dynamic
+        path: ./agent-kit/materialized-contracts/wix-data/item-food-service-product-lines-item.jay-contract
+        metadata:
+          collectionId: Food_Service--Product_lines
+      - name: item/recipes-item
+        description: Item page for Recipes
+        type: dynamic
+        path: ./agent-kit/materialized-contracts/wix-data/item-recipes-item.jay-contract
+        metadata:
+          collectionId: Recipes
+      - name: list/food-service-product-lines-list
+        description: List page for Product_lines
+        type: dynamic
+        path: ./agent-kit/materialized-contracts/wix-data/list-food-service-product-lines-list.jay-contract
+        metadata:
+          collectionId: Food_Service--Product_lines
+      - name: list/recipes-list
+        description: List page for Recipes
+        type: dynamic
+        path: ./agent-kit/materialized-contracts/wix-data/list-recipes-list.jay-contract
+        metadata:
+          collectionId: Recipes
+    actions:
+      - name: queryItems
+        description: Query items from a Wix Data collection with pagination, sorting,
+          and filtering. Returns matching items with total count.
+        path: ./../../packages/wix-data/dist/actions/query-items.jay-action
+      - name: getItemBySlug
+        description: Get a single item from a Wix Data collection by its URL slug.
+          Returns the item data or null if not found.
+        path: ./../../packages/wix-data/dist/actions/get-item-by-slug.jay-action
+      - name: getCategories
+        description: Get categories for a Wix Data collection. Returns category names,
+          slugs, and item counts.
+        path: ./../../packages/wix-data/dist/actions/get-categories.jay-action
+    services:
+      - name: wix-data
+        marker: WIX_DATA_SERVICE_MARKER
+        description: Wix Data API access with collection schema caching
+    contexts:
+      - name: wix-data
+        marker: WIX_DATA_CONTEXT
+        description: Client-side access to Wix Data items API
+  - name: wix-server-client
+    path: ./../../packages/wix-server-client
+    contracts: []
+    services:
+      - name: wix-client
+        marker: WIX_CLIENT_SERVICE
+        description: Core Wix SDK client with API key authentication
+    contexts:
+      - name: wix-client
+        marker: WIX_CLIENT_CONTEXT
+        description: Client-side OAuth authentication and token management

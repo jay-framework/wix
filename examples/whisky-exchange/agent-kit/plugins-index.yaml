@@ -1,0 +1,98 @@
+plugins:
+  - name: gemini-agent
+    path: ./../../node_modules/@jay-framework/gemini-agent-plugin
+    contracts:
+      - name: gemini-chat
+        description: AI chat agent powered by Gemini with page automation capabilities
+        type: static
+        path: ./../../node_modules/@jay-framework/gemini-agent-plugin/dist/contracts/gemini-chat.jay-contract
+    actions:
+      - name: sendMessage
+        description: Send a user message to the Gemini agent. Includes conversation
+          history, page automation tool definitions, and current page state.
+          Returns either a text response or pending tool calls.
+        path: ./../../node_modules/@jay-framework/gemini-agent-plugin/dist/actions/send-message.jay-action
+      - name: submitToolResults
+        description: Submit tool execution results back to continue the Gemini
+          conversation. Called after the client executes page automation tools.
+          Returns either a text response or more pending tool calls.
+        path: ./../../node_modules/@jay-framework/gemini-agent-plugin/dist/actions/submit-tool-results.jay-action
+  - name: wix-cart
+    path: ./../../packages/wix-cart
+    contracts:
+      - name: cart-indicator
+        description: Lightweight cart indicator for site headers showing item count
+        type: static
+        path: ./../../packages/wix-cart/dist/contracts/cart-indicator.jay-contract
+      - name: cart-page
+        description: Full cart page with line item management and checkout
+        type: static
+        path: ./../../packages/wix-cart/dist/contracts/cart-page.jay-contract
+      - name: mini-cart
+        description: Drawer that auto-opens when a product is added to cart
+        type: static
+        path: ./../../packages/wix-cart/dist/contracts/mini-cart.jay-contract
+    services:
+      - name: wix-cart
+        marker: WIX_CART_SERVICE
+        description: Wix eCommerce cart API for server-side cart operations
+    contexts:
+      - name: wix-cart
+        marker: WIX_CART_CONTEXT
+        description: Client-side reactive cart state with add-to-cart, remove, quantity,
+          coupon, and checkout operations
+  - name: wix-server-client
+    path: ./../../packages/wix-server-client
+    contracts: []
+    services:
+      - name: wix-client
+        marker: WIX_CLIENT_SERVICE
+        description: Core Wix SDK client with API key authentication
+    contexts:
+      - name: wix-client
+        marker: WIX_CLIENT_CONTEXT
+        description: Client-side OAuth authentication and token management
+  - name: wix-stores-v1
+    path: ./../../packages/wix-stores-v1
+    contracts:
+      - name: product-page
+        description: Complete headless product page with server-side rendering (Catalog V1)
+        type: static
+        path: ./../../packages/wix-stores-v1/dist/contracts/product-page.jay-contract
+      - name: product-search
+        description: Headless product search page (Catalog V1)
+        type: static
+        path: ./../../packages/wix-stores-v1/dist/contracts/product-search.jay-contract
+      - name: category-page
+        description: Collection page showing products (V1 uses collections instead of
+          categories)
+        type: static
+        path: ./../../packages/wix-stores-v1/dist/contracts/category-page.jay-contract
+      - name: category-list
+        description: List of store collections (V1 uses collections instead of categories)
+        type: static
+        path: ./../../packages/wix-stores-v1/dist/contracts/category-list.jay-contract
+    actions:
+      - name: searchProducts
+        description: Search products using Wix Stores Catalog V1 with page-based
+          pagination. Supports text search, price and collection filtering,
+          sorting, and returns price aggregation data.
+        path: ./../../packages/wix-stores-v1/dist/actions/search-products.jay-action
+      - name: getProductBySlug
+        description: Get a single product by its URL slug using Catalog V1. Returns full
+          ProductCardViewState or null if not found.
+        path: ./../../packages/wix-stores-v1/dist/actions/get-product-by-slug.jay-action
+      - name: getCollections
+        description: Get available store collections for filtering products. V1 uses
+          collections instead of categories. Returns collection details
+          including name, slug, description, image, and product count.
+        path: ./../../packages/wix-stores-v1/dist/actions/get-collections.jay-action
+    services:
+      - name: wix-stores-v1
+        marker: WIX_STORES_V1_SERVICE_MARKER
+        description: Wix Stores Catalog V1 API (products, collections, inventory)
+    contexts:
+      - name: wix-stores-v1
+        marker: WIX_STORES_V1_CONTEXT
+        description: Client-side V1 stores access with collection pagination and
+          delegated cart operations
