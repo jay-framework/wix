@@ -183,6 +183,11 @@ tags:
     description: Secondary option for quick selection (text choices for COLOR_AND_TEXT_OPTIONS). Rendered as buttons or dropdown. Selection adds to cart.
     link: ./product-options
 
+  - tag: cardContainer
+    type: interactive
+    elementType: HTMLElement
+    description: The product card root element. Must be placed on the outermost card wrapper so that mouseenter preloads variant stock for quick-add options.
+
   - tag: viewOptionsButton
     type: interactive
     elementType: HTMLButtonElement

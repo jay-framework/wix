@@ -1165,12 +1165,7 @@ function ProductSearchInteractive(
         }
     };
 
-    refs.searchResults.productLink.onmouseenter(({ coordinate }) => {
-        const [productId] = coordinate;
-        loadVariantStock(productId);
-    });
-
-    refs.searchResults.quickOption.choices.choiceButton.onmouseenter(({ coordinate }) => {
+    refs.searchResults.cardContainer.onmouseenter(({ coordinate }) => {
         const [productId] = coordinate;
         loadVariantStock(productId);
     });
@@ -1305,11 +1300,6 @@ function ProductSearchInteractive(
                 ]),
             );
         }
-    });
-
-    refs.searchResults.secondQuickOption.choices.choiceButton.onmouseenter(({ coordinate }) => {
-        const [productId] = coordinate;
-        loadVariantStock(productId);
     });
 
     // View options button (NEEDS_CONFIGURATION products)

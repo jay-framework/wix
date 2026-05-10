@@ -169,6 +169,7 @@ export type ProductCardInteractiveViewState = Pick<
 export interface ProductCardRefs {
     productLink: HTMLElementProxy<ProductCardViewState, HTMLAnchorElement>;
     addToCartButton: HTMLElementProxy<ProductCardViewState, HTMLButtonElement>;
+    cardContainer: HTMLElementProxy<ProductCardViewState, HTMLElement>;
     viewOptionsButton: HTMLElementProxy<ProductCardViewState, HTMLButtonElement>;
     quickOption: ProductOptionsRefs;
     secondQuickOption: ProductOptionsRefs;
@@ -177,6 +178,7 @@ export interface ProductCardRefs {
 export interface ProductCardRepeatedRefs {
     productLink: HTMLElementCollectionProxy<ProductCardViewState, HTMLAnchorElement>;
     addToCartButton: HTMLElementCollectionProxy<ProductCardViewState, HTMLButtonElement>;
+    cardContainer: HTMLElementCollectionProxy<ProductCardViewState, HTMLElement>;
     viewOptionsButton: HTMLElementCollectionProxy<ProductCardViewState, HTMLButtonElement>;
     quickOption: ProductOptionsRepeatedRefs;
     secondQuickOption: ProductOptionsRepeatedRefs;
