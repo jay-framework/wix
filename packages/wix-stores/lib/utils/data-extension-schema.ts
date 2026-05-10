@@ -61,6 +61,21 @@ function dataTag(key: string, type: string, indent: number): string {
     return `${prefix}- {tag: ${key}, type: data, dataType: ${type}}`;
 }
 
+function primitiveArraySubContract(key: string, itemType: string, indent: number): string {
+    const prefix = ' '.repeat(indent);
+    const innerIndent = indent + 2;
+    const indexTag = dataTag('_index', 'number', innerIndent);
+    const valueTag = dataTag('value', jsonTypeToContractType(itemType), innerIndent);
+    return `${prefix}- tag: ${key}
+${prefix}  type: sub-contract
+${prefix}  repeated: true
+${prefix}  trackBy: _index
+${prefix}  description: ${key}
+${prefix}  tags:
+${indexTag}
+${valueTag}`;
+}
+
 function objectSubContract(
     key: string,
     properties: Record<string, JsonSchemaProperty>,
@@ -98,7 +113,7 @@ ${innerTags.join('\n')}`;
  *
  * Handles:
  * - string/boolean/number → data tag
- * - array of primitives → data tag (values joined at runtime)
+ * - array of primitives → repeated sub-contract with _index + value tags
  * - array of objects → repeated sub-contract with nested tags
  * - object → sub-contract with nested tags
  */
@@ -126,8 +141,8 @@ export function jsonSchemaToContractTags(
                     // Array of objects → repeated sub-contract
                     tags.push(objectSubContract(key, items.properties, true, indent));
                 } else {
-                    // Array of primitives → data tag (rendered as array at runtime)
-                    tags.push(dataTag(key, jsonTypeToContractType(items.type || 'string'), indent));
+                    // Array of primitives → repeated sub-contract with _index + value
+                    tags.push(primitiveArraySubContract(key, items.type || 'string', indent));
                 }
                 break;
             }
