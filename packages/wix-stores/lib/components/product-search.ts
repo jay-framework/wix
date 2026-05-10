@@ -696,6 +696,7 @@ function ProductSearchInteractive(
 
     // Variant stock maps for COLOR_AND_TEXT_OPTIONS (loaded lazily per product)
     const variantStockCache: Record<string, VariantStockMap> = {};
+    let variantStockApplied = new Set<string>();
 
     const {
         searchExpression: [searchExpression, setSearchExpression],
@@ -800,6 +801,7 @@ function ProductSearchInteractive(
                 return;
             }
 
+            variantStockApplied = new Set();
             setSearchResults(result.products);
             setResultCount(result.products.length);
             setTotalCount(result.totalCount);
@@ -1124,11 +1126,10 @@ function ProductSearchInteractive(
     // Lazy-load variant stock on product card hover (for COLOR_AND_TEXT_OPTIONS)
     const variantStockLoading = new Set<string>();
     const loadVariantStock = async (productId: string) => {
-        if (variantStockCache[productId] || variantStockLoading.has(productId)) return;
+        if (variantStockApplied.has(productId) || variantStockLoading.has(productId)) return;
         variantStockLoading.add(productId);
 
         try {
-            // Update text choice inStock based on currently selected color
             const currentResults = searchResults();
             const productIndex = currentResults.findIndex((p) => p._id === productId);
             if (productIndex === -1) return;
@@ -1137,8 +1138,9 @@ function ProductSearchInteractive(
 
             if (product?.quickAddType !== QuickAddType.COLOR_AND_TEXT_OPTIONS) return;
 
-            const stockMap = await getVariantStock({ productId });
+            const stockMap = variantStockCache[productId] ?? (await getVariantStock({ productId }));
             variantStockCache[productId] = stockMap;
+            variantStockApplied.add(productId);
 
             const selectedColor = product.quickOption?.choices?.find((c) => c.isSelected);
             const textChoices = product.secondQuickOption?.choices;
