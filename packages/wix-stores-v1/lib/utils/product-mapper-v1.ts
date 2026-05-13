@@ -170,7 +170,6 @@ export function mapProductToCard(
     const formattedCompareAtPrice = product.price?.formatted?.price || '';
 
     const hasDiscount = hasProductDiscount(product);
-    console.log('product', product.name, product.slug);
     return {
         _id: product._id || '',
         name: product.name || '',
