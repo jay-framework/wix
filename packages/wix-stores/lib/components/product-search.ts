@@ -25,6 +25,7 @@ import { QuickAddType } from '../contracts/product-card.jay-contract';
 import { type Category } from '@wix/auto_sdk_categories_categories';
 import { formatWixMediaUrl } from '@jay-framework/wix-utils';
 import { SearchProductsInput, SearchProductsOutput } from '../actions/search-products.jay-action';
+import { handleError } from '../utils/wix-error-handler';
 
 /**
  * Category info carried forward from slow to fast phase
@@ -475,11 +476,7 @@ async function renderSlowlyChanging(
         };
     })
         .recover((error) => {
-            console.error('Failed to load categories/products:', error);
-            return Pipeline.ok({
-                categories: [] as Category[],
-                productsResult: null as SearchProductsOutput | null,
-            });
+            return handleError(error);
         })
         .toPhaseOutput(({ categories, productsResult }) => {
             const categoryInfos: CategoryInfos = categories.map((cat) => ({

@@ -44,6 +44,7 @@ import {
     WIX_STORES_CONTEXT,
     WixStoresContext,
 } from '../contexts/wix-stores-context';
+import { handleError } from '../utils/wix-error-handler';
 
 /**
  * Extract user-defined extended fields from the product response.
@@ -414,8 +415,7 @@ async function renderSlowlyChanging(
         return response;
     })
         .recover((error) => {
-            console.log('product page error', error);
-            return Pipeline.clientError(404, 'not found');
+            return handleError(error);
         })
         .toPhaseOutput((getProductResponse) => {
             const product = getProductResponse.product;
