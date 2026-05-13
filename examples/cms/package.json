@@ -13,7 +13,9 @@
     "validate": "jay-stack-cli validate",
     "clean": "rimraf dist && rimraf build && rimraf -g 'src/**/*.d.ts'",
     "definitions": "jay-cli definitions src",
-    "build": "npm run agent-kit && npm run definitions",
+    "build": "npm run agent-kit && npm run definitions && jay-stack-cli build",
+    "build:no-minify": "npm run agent-kit && npm run definitions && jay-stack-cli build --no-minify",
+    "serve": "jay-stack-cli serve",
     "build:check-types": "tsc",
     "test": ":"
   },
