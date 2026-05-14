@@ -1373,34 +1373,73 @@ async function* loadSearchParams([wixStores]: [WixStoresService]): AsyncIterable
             allCategories.push(...(result.items || []));
         }
 
-        // Build lookup map for walking parent chains
-        const categoryById = new Map<string, Category>();
-        for (const cat of allCategories) {
-            if (cat._id) categoryById.set(cat._id, cat);
+        // Build category tree and compute transitive item counts
+        interface CatNode {
+            slug: string;
+            itemCount: number;
+            children: CatNode[];
         }
 
-        // Walk up the parent chain to find the root ancestor
-        function findRootParent(cat: Category): Category | null {
-            let current = cat;
-            while (current.parentCategory?._id) {
-                const parent = categoryById.get(current.parentCategory._id);
-                if (!parent) break;
-                current = parent;
+        const nodeById = new Map<string, CatNode>();
+        const roots: CatNode[] = [];
+        const childPendingParent = new Map<string, CatNode[]>();
+
+        for (const cat of allCategories) {
+            if (!cat._id) continue;
+            const node: CatNode = {
+                slug: cat.slug || '',
+                itemCount: cat.itemCounter ?? 0,
+                children: [],
+            };
+            nodeById.set(cat._id, node);
+
+            // Attach pending children that were seen before their parent
+            const pending = childPendingParent.get(cat._id);
+            if (pending) {
+                node.children.push(...pending);
+                childPendingParent.delete(cat._id);
             }
-            return current._id !== cat._id ? current : null;
-        }
 
-        // Yield each category exactly once
-        const params: ProductSearchParams[] = [];
-        for (const cat of allCategories) {
-            if (!cat.slug || (cat.itemCounter ?? 0) === 0) continue;
-
-            const rootParent = findRootParent(cat);
-            if (rootParent?.slug) {
-                params.push({ prefix: rootParent.slug, category: cat.slug });
+            if (cat.parentCategory?._id) {
+                const parent = nodeById.get(cat.parentCategory._id);
+                if (parent) {
+                    parent.children.push(node);
+                } else {
+                    const siblings = childPendingParent.get(cat.parentCategory._id);
+                    if (siblings) siblings.push(node);
+                    else childPendingParent.set(cat.parentCategory._id, [node]);
+                }
             } else {
-                params.push({ prefix: cat.slug });
+                roots.push(node);
             }
+        }
+
+        // DFS to sum item counts from leaves up
+        function sumItems(node: CatNode): number {
+            for (const child of node.children) {
+                node.itemCount += sumItems(child);
+            }
+            return node.itemCount;
+        }
+        for (const root of roots) {
+            sumItems(root);
+        }
+
+        // DFS to collect params, skipping empty subtrees
+        const params: ProductSearchParams[] = [];
+        function collectParams(node: CatNode, rootSlug: string | null) {
+            if (!node.slug || node.itemCount === 0) return;
+            if (rootSlug) {
+                params.push({ prefix: rootSlug, category: node.slug });
+            } else {
+                params.push({ prefix: node.slug });
+            }
+            for (const child of node.children) {
+                collectParams(child, rootSlug ?? node.slug);
+            }
+        }
+        for (const root of roots) {
+            collectParams(root, null);
         }
 
         yield params;
