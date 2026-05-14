@@ -405,19 +405,22 @@ async function renderSlowlyChanging(
             'CURRENCY',
             ...(needsCategories ? (['ALL_CATEGORIES_INFO'] as const) : []),
         ] as const;
-        const response = await wixStores.products.getProductBySlug(props.slug, {
-            fields: [...fields],
-        });
+        const [response, tree] = await Promise.all([
+            wixStores.products.getProductBySlug(props.slug, {
+                fields: [...fields],
+            }),
+            wixStores.getCategoryTree(),
+        ]);
 
         // TODO: canonical URL redirect — if props.prefix/category don't match
         // the product's actual category (from mainCategoryId), redirect 301
 
-        return response;
+        return { response, tree };
     })
         .recover((error) => {
             return handleError(error);
         })
-        .toPhaseOutput((getProductResponse) => {
+        .toPhaseOutput(({ response: getProductResponse, tree }) => {
             const product = getProductResponse.product;
             const {
                 _id,
@@ -437,11 +440,13 @@ async function renderSlowlyChanging(
                 inventory,
                 variantsInfo,
             } = product;
+            const categorySlug = tree.slugMap.get(product.mainCategoryId) || '';
             return {
                 viewState: {
                     _id: _id,
                     productName: name || '',
                     description: plainDescription,
+                    categorySlug,
                     brand: brand?.name || '',
                     ribbon: ribbon?.name || '',
                     productType: mapProductType(productType),

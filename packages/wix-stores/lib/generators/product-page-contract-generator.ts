@@ -34,6 +34,7 @@ tags:
   - {tag: description, type: data, dataType: string, description: Product description}
   - {tag: brand, type: data, dataType: string, description: Brand name}
   - {tag: ribbon, type: data, dataType: string, description: "Ribbon text (e.g., \\"New\\", \\"Sale\\")"}
+  - {tag: categorySlug, type: data, dataType: string, description: Slug of the product's main category}
   - {tag: productType, type: variant, dataType: "enum (PHYSICAL | DIGITAL)", description: Product type }
 
   - {tag: sku, type: data, dataType: string, phase: fast+interactive, description: Product SKU, or chosen variant SKU}

@@ -22,6 +22,7 @@ Design documentation for the Jay Framework Wix integration packages.
 | 14  | [Option-Based Product Filters](./14%20-%20option-based-product-filters.md)                     | Implemented   |
 | 15  | [Mini Cart Drawer](./15%20-%20mini-cart-drawer.md)                                             | Implemented   |
 | 16  | [Product Data Extension Fields](./16%20-%20product%20data%20extension%20fields.md)             | Draft         |
+| 17  | [Related Products](./17%20-%20related-products.md)                                             | Draft         |
 
 ## Packages Covered
 

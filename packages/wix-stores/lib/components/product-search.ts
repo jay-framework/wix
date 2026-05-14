@@ -17,11 +17,11 @@ import {
     ProductSearchSlowViewState,
 } from '../contracts/product-search.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
-import { patch, REPLACE, ADD } from '@jay-framework/json-patch';
-import { searchProducts, getVariantStock } from '../actions/stores-actions';
-import { buildCategoryUrl, type VariantStockMap } from '../utils/product-mapper';
+import { patch, REPLACE } from '@jay-framework/json-patch';
+import { searchProducts } from '../actions/stores-actions';
+import { buildCategoryUrl } from '../utils/product-mapper';
+import { setupCardInteractions } from '../utils/card-interactions.js';
 import { WIX_STORES_CONTEXT, WixStoresContext } from '../contexts/wix-stores-context';
-import { QuickAddType } from '../contracts/product-card.jay-contract';
 import { type Category } from '@wix/auto_sdk_categories_categories';
 import { formatWixMediaUrl } from '@jay-framework/wix-utils';
 import { SearchProductsInput, SearchProductsOutput } from '../actions/search-products.jay-action';
@@ -691,10 +691,6 @@ function ProductSearchInteractive(
     // Base category filter — always applied when scoped to a category prefix
     const baseCategoryId = fastCarryForward.baseCategoryId;
 
-    // Variant stock maps for COLOR_AND_TEXT_OPTIONS (loaded lazily per product)
-    const variantStockCache: Record<string, VariantStockMap> = {};
-    let variantStockApplied = new Set<string>();
-
     const {
         searchExpression: [searchExpression, setSearchExpression],
         isSearching: [isSearching, setIsSearching],
@@ -798,7 +794,7 @@ function ProductSearchInteractive(
                 return;
             }
 
-            variantStockApplied = new Set();
+            resetCardCache();
             setSearchResults(result.products);
             setResultCount(result.products.length);
             setTotalCount(result.totalCount);
@@ -1093,220 +1089,12 @@ function ProductSearchInteractive(
         }
     });
 
-    // Product card add to cart (SIMPLE products)
-    refs.searchResults.addToCartButton.onclick(async ({ coordinate }) => {
-        const [productId] = coordinate;
-
-        const currentResults = searchResults();
-        const productIndex = currentResults.findIndex((p) => p._id === productId);
-        if (productIndex === -1) return;
-
-        setSearchResults(
-            patch(currentResults, [
-                { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: true },
-            ]),
-        );
-
-        try {
-            await storesContext.addToCart(productId, 1);
-        } catch (error) {
-            console.error('Failed to add to cart:', error);
-        } finally {
-            setSearchResults(
-                patch(searchResults(), [
-                    { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: false },
-                ]),
-            );
-        }
-    });
-
-    // Lazy-load variant stock on product card hover (for COLOR_AND_TEXT_OPTIONS)
-    const variantStockLoading = new Set<string>();
-    const loadVariantStock = async (productId: string) => {
-        if (variantStockApplied.has(productId) || variantStockLoading.has(productId)) return;
-        variantStockLoading.add(productId);
-
-        try {
-            const currentResults = searchResults();
-            const productIndex = currentResults.findIndex((p) => p._id === productId);
-            if (productIndex === -1) return;
-
-            const product = currentResults[productIndex];
-
-            if (product?.quickAddType !== QuickAddType.COLOR_AND_TEXT_OPTIONS) return;
-
-            const stockMap = variantStockCache[productId] ?? (await getVariantStock({ productId }));
-            variantStockCache[productId] = stockMap;
-            variantStockApplied.add(productId);
-
-            const selectedColor = product.quickOption?.choices?.find((c) => c.isSelected);
-            const textChoices = product.secondQuickOption?.choices;
-            if (!selectedColor || !textChoices) return;
-
-            const colorStock = stockMap[selectedColor.choiceId];
-            const updatedTextChoices = textChoices.map((c) => ({
-                ...c,
-                inStock: colorStock?.[c.choiceId] ?? false,
-            }));
-            setSearchResults(
-                patch(searchResults(), [
-                    {
-                        op: REPLACE,
-                        path: [productIndex, 'secondQuickOption', 'choices'],
-                        value: updatedTextChoices,
-                    },
-                ]),
-            );
-        } finally {
-            variantStockLoading.delete(productId);
-        }
-    };
-
-    refs.searchResults.cardContainer.onmouseenter(({ coordinate }) => {
-        const [productId] = coordinate;
-        loadVariantStock(productId);
-    });
-
-    // Quick option choice click
-    refs.searchResults.quickOption.choices.choiceButton.onclick(async ({ coordinate }) => {
-        const [productId, choiceId] = coordinate;
-
-        const currentResults = searchResults();
-        const productIndex = currentResults.findIndex((p) => p._id === productId);
-        if (productIndex === -1) return;
-
-        const product = currentResults[productIndex];
-
-        // COLOR_AND_TEXT_OPTIONS: color click toggles selection, does NOT add to cart
-        if (product.quickAddType === QuickAddType.COLOR_AND_TEXT_OPTIONS) {
-            const choices = product.quickOption?.choices;
-            if (!choices) return;
-            const updatedChoices = choices.map((c) => ({
-                ...c,
-                isSelected: c.choiceId === choiceId,
-            }));
-
-            // Update color selection
-            let updated = patch(currentResults, [
-                {
-                    op: REPLACE,
-                    path: [productIndex, 'quickOption', 'choices'],
-                    value: updatedChoices,
-                },
-            ]);
-
-            // Update text choice inStock from cache (loaded on hover)
-            const stockMap = variantStockCache[productId];
-            if (stockMap) {
-                const colorStock = stockMap[choiceId];
-                const textChoices = product.secondQuickOption?.choices;
-                if (textChoices) {
-                    const updatedTextChoices = textChoices.map((c) => ({
-                        ...c,
-                        inStock: colorStock?.[c.choiceId] ?? false,
-                    }));
-                    updated = patch(updated, [
-                        {
-                            op: REPLACE,
-                            path: [productIndex, 'secondQuickOption', 'choices'],
-                            value: updatedTextChoices,
-                        },
-                    ]);
-                }
-            } else {
-                // Fallback: trigger load if hover was missed (e.g. touch devices)
-                loadVariantStock(productId);
-            }
-
-            setSearchResults(updated);
-            return;
-        }
-
-        // SINGLE_OPTION: click = add to cart
-        const choice = product.quickOption?.choices?.find((c) => c.choiceId === choiceId);
-
-        if (!choice || !choice.inStock) {
-            console.warn('Choice not available or out of stock');
-            return;
-        }
-
-        setSearchResults(
-            patch(currentResults, [
-                { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: true },
-            ]),
-        );
-
-        try {
-            const optionId = product.quickOption._id;
-            await storesContext.addToCart(productId, 1, {
-                options: { [optionId]: choice.choiceId },
-                modifiers: {},
-                customTextFields: {},
-            });
-        } catch (error) {
-            console.error('Failed to add to cart:', error);
-        } finally {
-            setSearchResults(
-                patch(searchResults(), [
-                    { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: false },
-                ]),
-            );
-        }
-    });
-
-    // Second quick option choice click (text choices for COLOR_AND_TEXT_OPTIONS)
-    refs.searchResults.secondQuickOption.choices.choiceButton.onclick(async ({ coordinate }) => {
-        const [productId, choiceId] = coordinate;
-
-        const currentResults = searchResults();
-        const productIndex = currentResults.findIndex((p) => p._id === productId);
-        if (productIndex === -1) return;
-
-        const product = currentResults[productIndex];
-        const textChoice = product.secondQuickOption?.choices?.find((c) => c.choiceId === choiceId);
-        const selectedColor = product.quickOption?.choices?.find((c) => c.isSelected);
-
-        if (!textChoice || !textChoice.inStock) {
-            console.warn('Text choice not available or out of stock');
-            return;
-        }
-
-        setSearchResults(
-            patch(currentResults, [
-                { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: true },
-            ]),
-        );
-
-        try {
-            const colorOptionId = product.quickOption?._id || '';
-            const textOptionId = product.secondQuickOption?._id || '';
-            await storesContext.addToCart(productId, 1, {
-                options: {
-                    [colorOptionId]: selectedColor?.choiceId || '',
-                    [textOptionId]: textChoice.choiceId,
-                },
-                modifiers: {},
-                customTextFields: {},
-            });
-        } catch (error) {
-            console.error('Failed to add to cart:', error);
-        } finally {
-            setSearchResults(
-                patch(searchResults(), [
-                    { op: REPLACE, path: [productIndex, 'isAddingToCart'], value: false },
-                ]),
-            );
-        }
-    });
-
-    // View options button (NEEDS_CONFIGURATION products)
-    refs.searchResults.viewOptionsButton.onclick(({ coordinate }) => {
-        const [productId] = coordinate;
-        const product = searchResults().find((p) => p._id === productId);
-        if (product?.productUrl) {
-            window.location.href = product.productUrl;
-        }
-    });
+    // Product card interactions (add to cart, quick-add, variant stock)
+    const { resetCache: resetCardCache } = setupCardInteractions(
+        refs.searchResults,
+        { get: searchResults, set: setSearchResults },
+        storesContext,
+    );
 
     return {
         render: (): ProductSearchInteractiveViewState => ({

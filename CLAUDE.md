@@ -275,7 +275,7 @@ Each package builds:
 When making changes to packages:
 
 1. Make changes in `packages/*/lib/`
-2. Use the plugin role from the agent-kit - [INSTRUCTIONS.md](agent-kit/plugin/INSTRUCTIONS.md)
+2. **Read the plugin development guides** in [`agent-kit/plugin/`](agent-kit/plugin/INSTRUCTIONS.md) — covers contracts, headless components, server actions, services, and plugin structure
 3. Run `npm run build` in the package (or `yarn build` at root)
 4. Type definitions (`.d.ts`) are generated for `.jay-action` and `.jay-contract` files
 5. Changes propagate to examples via workspace dependencies

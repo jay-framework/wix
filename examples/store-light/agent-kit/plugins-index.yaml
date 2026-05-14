@@ -41,6 +41,10 @@ plugins:
         description: Headless product search page
         type: static
         path: ./../../packages/wix-stores/dist/contracts/product-search.jay-contract
+      - name: related-products
+        description: Related products from the same category
+        type: static
+        path: ./../../packages/wix-stores/dist/contracts/related-products.jay-contract
       - name: category-list
         description: Category list listing the categories
         type: static

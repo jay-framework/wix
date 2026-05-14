@@ -7,6 +7,10 @@ contracts:
     component: productSearch
     description: Headless product search page
   # category-page removed — use product-search with prefix/category params instead
+  - name: related-products
+    contract: related-products.jay-contract
+    component: relatedProducts
+    description: Related products from the same category
   - name: category-list
     contract: category-list.jay-contract
     component: categoryList

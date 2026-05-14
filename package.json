@@ -18,7 +18,7 @@
     "format:extensions": "node ./scripts/fix-imports-ts-extension.js",
     "format:prettier": "prettier . --write",
     "format:newlines": "node ./scripts/fix-trailing-newlines.js",
-    "agent-kit": "jay-stack-cli agent-kit -m plugin",
+    "agent-kit": "jay-stack-cli agent-kit",
     "rebuild": "yarn run clean && yarn run build",
     "reinstall": "npm run clean:node_modules && yarn install && yarn run rebuild",
     "test": "wsrun -te --report test",
@@ -41,7 +41,7 @@
     ]
   },
   "devDependencies": {
-    "@jay-framework/jay-stack-cli": "^0.17.0",
+    "@jay-framework/jay-stack-cli": "^0.17.1",
     "commander": "^14.0.0",
     "esbuild": "^0.20.0",
     "prettier": "^3.2.4",

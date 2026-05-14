@@ -10,6 +10,10 @@
             contract="cart-indicator"
             key="cartIndicator"
     ></script>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="related-products"
+    ></script>
     <script type="application/jay-data">
       data:
     </script>
@@ -382,6 +386,41 @@
         color: var(--text-secondary);
       }
 
+      /* Related Products Section */
+      .related-section {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        padding: 60px var(--page-padding);
+        border-top: 1px solid var(--border);
+      }
+
+      .related-section .section-title {
+        font-family: var(--font-serif);
+        font-size: 28px;
+        font-weight: 500;
+        color: var(--text-primary);
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .related-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+      }
+
+      @media (max-width: 1024px) {
+        .related-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 600px) {
+        .related-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
       /* Responsive */
       @media (max-width: 768px) {
         .action-bar-inner {
@@ -587,6 +626,46 @@
           </div>
         </div>
       </section>
+
+      <!-- Related Products -->
+      <jay:related-products productId="{productPage._id}" categorySlug="{productPage.categorySlug}" limit="4">
+        <section class="related-section" if="hasProducts">
+          <h2 class="section-title">More from {categoryName}</h2>
+          <div class="related-grid">
+            <article class="product-card {isAddingToCart ? is-adding}" forEach="products" trackBy="_id">
+              <a href="{productUrl}" class="product-card-image">
+                <img src="{thumbnail.url}" alt="{thumbnail.altText}" loading="lazy" />
+                <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
+              </a>
+              <div class="product-card-content">
+                <p class="product-card-brand" if="brand.name">{brand.name}</p>
+                <h3 class="product-card-name">
+                  <a href="{productUrl}" ref="products.productLink">{name}</a>
+                </h3>
+                <div class="product-card-price">
+                  <span class="current-price">{price}</span>
+                  <span class="original-price" if="hasDiscount">{strikethroughPrice}</span>
+                </div>
+                <button
+                  class="btn btn-secondary btn-block"
+                  ref="products.addToCartButton"
+                  if="quickAddType === SIMPLE && inventory.availabilityStatus === IN_STOCK"
+                >
+                  Add to Cart
+                </button>
+                <a
+                  href="{productUrl}"
+                  class="btn btn-secondary btn-block"
+                  ref="products.viewOptionsButton"
+                  if="quickAddType !== SIMPLE && inventory.availabilityStatus !== OUT_OF_STOCK"
+                >
+                  View Options
+                </a>
+              </div>
+            </article>
+          </div>
+        </section>
+      </jay:related-products>
 
       <!-- Sticky Action Bar -->
       <div class="sticky-action-bar">
