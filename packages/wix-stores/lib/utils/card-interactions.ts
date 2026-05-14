@@ -1,24 +1,12 @@
 import { patch, REPLACE } from '@jay-framework/json-patch';
-import { ProductCardViewState, QuickAddType } from '../contracts/product-card.jay-contract';
+import {
+    ProductCardRepeatedRefs,
+    ProductCardViewState,
+    QuickAddType,
+} from '../contracts/product-card.jay-contract';
 import { getVariantStock } from '../actions/stores-actions';
 import type { VariantStockMap } from './product-mapper';
 import type { WixStoresContext } from '../contexts/wix-stores-context';
-
-interface CardInteractionRefs {
-    addToCartButton: { onclick: (handler: (ctx: { coordinate: string[] }) => void) => void };
-    cardContainer: { onmouseenter: (handler: (ctx: { coordinate: string[] }) => void) => void };
-    quickOption: {
-        choices: {
-            choiceButton: { onclick: (handler: (ctx: { coordinate: string[] }) => void) => void };
-        };
-    };
-    secondQuickOption: {
-        choices: {
-            choiceButton: { onclick: (handler: (ctx: { coordinate: string[] }) => void) => void };
-        };
-    };
-    viewOptionsButton: { onclick: (handler: (ctx: { coordinate: string[] }) => void) => void };
-}
 
 interface CardSignals {
     get(): ProductCardViewState[];
@@ -26,7 +14,7 @@ interface CardSignals {
 }
 
 export function setupCardInteractions(
-    refs: CardInteractionRefs,
+    refs: ProductCardRepeatedRefs,
     cards: CardSignals,
     storesContext: WixStoresContext,
 ) {

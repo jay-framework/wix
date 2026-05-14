@@ -17,6 +17,7 @@ import { searchProducts } from '../actions/stores-actions';
 import { WIX_STORES_CONTEXT, WixStoresContext } from '../contexts/wix-stores-context';
 import { setupCardInteractions } from '../utils/card-interactions.js';
 import { handleError } from '../utils/wix-error-handler';
+import { ProductCardViewState } from '../contracts/product-card.jay-contract';
 
 const DEFAULT_LIMIT = 4;
 
@@ -27,9 +28,7 @@ export interface RelatedProductsProps {
 }
 
 interface RelatedSlowCarryForward {
-    categoryId: string;
-    productId: string;
-    limit: number;
+    products: ProductCardViewState[];
 }
 
 async function renderSlowlyChanging(
@@ -38,13 +37,16 @@ async function renderSlowlyChanging(
 ) {
     const Pipeline = RenderPipeline.for<RelatedProductsSlowViewState, RelatedSlowCarryForward>();
     const limit = props.limit ?? DEFAULT_LIMIT;
+    const categorySlug = props.categorySlug;
+
+    if (!categorySlug) {
+        return Pipeline.ok({ categoryName: '' }).toPhaseOutput((viewState) => ({
+            viewState,
+            carryForward: { products: [] },
+        }));
+    }
 
     return Pipeline.try(async () => {
-        const categorySlug = props.categorySlug;
-        if (!categorySlug) {
-            return { categoryId: '', categoryName: '' };
-        }
-
         const tree = await wixStores.getCategoryTree();
         let categoryId = '';
         let categoryName = '';
@@ -56,36 +58,41 @@ async function renderSlowlyChanging(
             }
         }
 
-        // Resolve display name from categories API if we found the ID
-        if (categoryId) {
-            try {
-                const result = await wixStores.categories
-                    .queryCategories({ treeReference: { appNamespace: '@wix/stores' } })
-                    .eq('_id', categoryId)
-                    .limit(1)
-                    .find();
-                if (result.items?.[0]?.name) {
-                    categoryName = result.items[0].name;
-                }
-            } catch {
-                // Fall back to slug as name
-            }
+        if (!categoryId) {
+            return { categoryName: '', products: [] as ProductCardViewState[] };
         }
 
-        return { categoryId, categoryName };
+        // Load category name and products in parallel
+        const [categoryResult, searchResult] = await Promise.all([
+            wixStores.categories
+                .queryCategories({ treeReference: { appNamespace: '@wix/stores' } })
+                .eq('_id', categoryId)
+                .limit(1)
+                .find()
+                .catch(() => null),
+            searchProducts({
+                query: '',
+                filters: { categoryIds: [categoryId] },
+                pageSize: limit + 1,
+            }),
+        ]);
+
+        if (categoryResult?.items?.[0]?.name) {
+            categoryName = categoryResult.items[0].name;
+        }
+
+        const products = searchResult.products
+            .filter((p) => p._id !== props.productId)
+            .slice(0, limit);
+
+        return { categoryName, products };
     })
         .recover((error) => {
             return handleError(error);
         })
-        .toPhaseOutput(({ categoryId, categoryName }) => ({
-            viewState: {
-                categoryName,
-            },
-            carryForward: {
-                categoryId,
-                productId: props.productId,
-                limit,
-            },
+        .toPhaseOutput(({ categoryName, products }) => ({
+            viewState: { categoryName },
+            carryForward: { products },
         }));
 }
 
@@ -95,37 +102,12 @@ async function renderFastChanging(
     _wixStores: WixStoresService,
 ) {
     const Pipeline = RenderPipeline.for<RelatedProductsFastViewState, Record<string, never>>();
-    const { categoryId, productId, limit } = slowCarryForward;
+    const { products } = slowCarryForward;
 
-    if (!categoryId) {
-        return Pipeline.ok({
-            products: [],
-            hasProducts: false,
-        }).toPhaseOutput((viewState) => ({ viewState, carryForward: {} }));
-    }
-
-    return Pipeline.try(async () => {
-        const result = await searchProducts({
-            query: '',
-            filters: { categoryIds: [categoryId] },
-            pageSize: limit + 1,
-        });
-
-        const products = result.products.filter((p) => p._id !== productId).slice(0, limit);
-
-        return {
-            products,
-            hasProducts: products.length > 0,
-        };
-    })
-        .recover((error) => {
-            console.error('Failed to load related products:', error);
-            return Pipeline.ok({
-                products: [],
-                hasProducts: false,
-            });
-        })
-        .toPhaseOutput((viewState) => ({ viewState, carryForward: {} }));
+    return Pipeline.ok({
+        products,
+        hasProducts: products.length > 0,
+    }).toPhaseOutput((viewState) => ({ viewState, carryForward: {} }));
 }
 
 function RelatedProductsInteractive(

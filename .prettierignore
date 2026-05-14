@@ -3,3 +3,5 @@ dist-secure
 build
 .vscode
 .yarn
+agent-kit
+*.d.ts
