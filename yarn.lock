@@ -1966,69 +1966,70 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jay-framework/compiler-analyze-exported-types@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/compiler-analyze-exported-types@npm:0.16.5"
+"@jay-framework/compiler-analyze-exported-types@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/compiler-analyze-exported-types@npm:0.17.0"
   dependencies:
-    "@jay-framework/compiler-shared": "npm:^0.16.5"
-    "@jay-framework/component": "npm:^0.16.5"
-    "@jay-framework/runtime": "npm:^0.16.5"
-    "@jay-framework/secure": "npm:^0.16.5"
+    "@jay-framework/compiler-shared": "npm:^0.17.0"
+    "@jay-framework/component": "npm:^0.17.0"
+    "@jay-framework/runtime": "npm:^0.17.0"
+    "@jay-framework/secure": "npm:^0.17.0"
     "@types/js-yaml": "npm:^4.0.9"
     change-case: "npm:^4.1.2"
     js-yaml: "npm:^4.1.0"
     node-html-parser: "npm:^6.1.12"
     pluralize: "npm:^8.0.0"
     typescript: "npm:^5.3.3"
-  checksum: 10/7226acf0332ff01f1ef24967ebdf87029ea1ea5b88d0a88256355dc1d013f5d7f5bbf7cf68082e5176e0dfc9a654983bb6f38c831851a6019929b890e1eb0f1c
+  checksum: 10/009843108a8a36b6d0720c57110d64a989deb967488a3a466211e3f370c57bb28997669df5ddf2bf576445fdcd75bd36b2cc8495bd907c25f8b928979bcef5e2
   languageName: node
   linkType: hard
 
-"@jay-framework/compiler-jay-html@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/compiler-jay-html@npm:0.16.5"
+"@jay-framework/compiler-jay-html@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/compiler-jay-html@npm:0.17.0"
   dependencies:
-    "@jay-framework/compiler-analyze-exported-types": "npm:^0.16.5"
-    "@jay-framework/compiler-shared": "npm:^0.16.5"
-    "@jay-framework/component": "npm:^0.16.5"
-    "@jay-framework/logger": "npm:^0.16.5"
-    "@jay-framework/runtime": "npm:^0.16.5"
-    "@jay-framework/secure": "npm:^0.16.5"
+    "@jay-framework/compiler-analyze-exported-types": "npm:^0.17.0"
+    "@jay-framework/compiler-shared": "npm:^0.17.0"
+    "@jay-framework/component": "npm:^0.17.0"
+    "@jay-framework/logger": "npm:^0.17.0"
+    "@jay-framework/runtime": "npm:^0.17.0"
+    "@jay-framework/secure": "npm:^0.17.0"
     "@types/js-yaml": "npm:^4.0.9"
     change-case: "npm:^4.1.2"
+    he: "npm:^1.2.0"
     js-yaml: "npm:^4.1.0"
     node-html-parser: "npm:^6.1.12"
     pegjs: "npm:^0.10.0"
     pluralize: "npm:^8.0.0"
     style-to-object: "npm:^1.0.8"
     typescript: "npm:^5.3.3"
-  checksum: 10/241ccf2797c5a08d321a12284c11f37f21d3440f6330a9357f4f6f8b198c7e5d93bfb1b7a40317102c5a774eab24ecbcbb2c6ad73e09644a8e1054a0f8da140a
+  checksum: 10/d646d3072450a9651a78f434bc81a33c8401d5c42dc108573f45a77e518cd3f1bbca05b4be60241bd46dae8708c9e6f3352523b979b1d7ae32c52069bf16698f
   languageName: node
   linkType: hard
 
-"@jay-framework/compiler-jay-stack@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/compiler-jay-stack@npm:0.16.5"
+"@jay-framework/compiler-jay-stack@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/compiler-jay-stack@npm:0.17.0"
   dependencies:
-    "@jay-framework/compiler": "npm:^0.16.5"
-    "@jay-framework/compiler-shared": "npm:^0.16.5"
-    "@jay-framework/logger": "npm:^0.16.5"
-    "@jay-framework/typescript-bridge": "npm:^0.16.5"
-    "@jay-framework/vite-plugin": "npm:^0.16.5"
+    "@jay-framework/compiler": "npm:^0.17.0"
+    "@jay-framework/compiler-shared": "npm:^0.17.0"
+    "@jay-framework/logger": "npm:^0.17.0"
+    "@jay-framework/typescript-bridge": "npm:^0.17.0"
+    "@jay-framework/vite-plugin": "npm:^0.17.0"
     typescript: "npm:^5.3.3"
     vite: "npm:^5.0.11"
-  checksum: 10/1b764b92ae64025ae33a4dbdf8e7c06186ec5a9a0c714484a5a4ee4e6266b8b9c9adddab3610b9a515f418434cd6066099d1ae61c629a644bbd8825dad0e8fd9
+  checksum: 10/e76e1a166ed7a9f58dac5d64323285ced48c60f99df2f5fd7b76295af47854878716cb0a83f75f20835762d4f23df36afad7356505d79f4c715a2152fb9ad713
   languageName: node
   linkType: hard
 
-"@jay-framework/compiler-shared@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/compiler-shared@npm:0.16.5"
+"@jay-framework/compiler-shared@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/compiler-shared@npm:0.17.0"
   dependencies:
-    "@jay-framework/component": "npm:^0.16.5"
-    "@jay-framework/runtime": "npm:^0.16.5"
-    "@jay-framework/secure": "npm:^0.16.5"
-    "@jay-framework/typescript-bridge": "npm:^0.16.5"
+    "@jay-framework/component": "npm:^0.17.0"
+    "@jay-framework/runtime": "npm:^0.17.0"
+    "@jay-framework/secure": "npm:^0.17.0"
+    "@jay-framework/typescript-bridge": "npm:^0.17.0"
     "@types/js-yaml": "npm:^4.0.9"
     change-case: "npm:^4.1.2"
     js-beautify: "npm:^1.14.11"
@@ -2038,20 +2039,20 @@ __metadata:
     pluralize: "npm:^8.0.0"
     prettier: "npm:^3.6.2"
     typescript: "npm:^5.3.3"
-  checksum: 10/92798b3e71b0a41f05f6ac9d9bee7a86e61c3edf1e4fe6ebf78651a6bd8199afb5fa07e62dc3158b91f21d62d140d72f53695f0ffe56e95c38ad92dc914a574c
+  checksum: 10/8de331e414862cfb4119892e64e0b422db7b6345b93feb28dcd0715710bfea716b61729b27cbce5e59f63ca9f25b33cb9b46d9949f1a74fa7b50a59b3d18f0bd
   languageName: node
   linkType: hard
 
-"@jay-framework/compiler@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/compiler@npm:0.16.5"
+"@jay-framework/compiler@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/compiler@npm:0.17.0"
   dependencies:
-    "@jay-framework/compiler-analyze-exported-types": "npm:^0.16.5"
-    "@jay-framework/compiler-jay-html": "npm:^0.16.5"
-    "@jay-framework/compiler-shared": "npm:^0.16.5"
-    "@jay-framework/component": "npm:^0.16.5"
-    "@jay-framework/runtime": "npm:^0.16.5"
-    "@jay-framework/secure": "npm:^0.16.5"
+    "@jay-framework/compiler-analyze-exported-types": "npm:^0.17.0"
+    "@jay-framework/compiler-jay-html": "npm:^0.17.0"
+    "@jay-framework/compiler-shared": "npm:^0.17.0"
+    "@jay-framework/component": "npm:^0.17.0"
+    "@jay-framework/runtime": "npm:^0.17.0"
+    "@jay-framework/secure": "npm:^0.17.0"
     "@types/js-yaml": "npm:^4.0.9"
     change-case: "npm:^4.1.2"
     js-yaml: "npm:^4.1.0"
@@ -2059,120 +2060,121 @@ __metadata:
     pluralize: "npm:^8.0.0"
     style-to-object: "npm:^1.0.8"
     typescript: "npm:^5.3.3"
-  checksum: 10/4dabb5948813e96b046bd38ca5d3a3715eaae2b6a3a7f92b192cc8ebdf5b3d91d70755e914c0e8720089010fb5596313f9ef183134ccba1ddd5fbe084f594697
+  checksum: 10/cca6cb3fabd123212353215fd6e066b85917b066778b35b475f0731f3a3c8d6e9b3a64b3e8901d4b3774db745490beec0d521d37265616dbdee6947b5bef7242
   languageName: node
   linkType: hard
 
-"@jay-framework/component@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/component@npm:0.16.5"
+"@jay-framework/component@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/component@npm:0.17.0"
   dependencies:
-    "@jay-framework/json-patch": "npm:^0.16.5"
-    "@jay-framework/reactive": "npm:^0.16.5"
-    "@jay-framework/runtime": "npm:^0.16.5"
-  checksum: 10/59309703df3a8f849bad1d22fc7e9509ad2220dacff2311f2659e5366204fcf69d0f4fea36de8e402c4c45875636d491e4b07b433692c6e14f85336e13aa2942
+    "@jay-framework/json-patch": "npm:^0.17.0"
+    "@jay-framework/reactive": "npm:^0.17.0"
+    "@jay-framework/runtime": "npm:^0.17.0"
+  checksum: 10/cb2d61d4d744468d2d2b20ae31a9158c5485da779eb6fa6b9b72d784f76da7aee377d61517ce61c7e28431ace06e1482b4e70c070659516abac4f285543a2056
   languageName: node
   linkType: hard
 
-"@jay-framework/dev-server@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/dev-server@npm:0.16.5"
+"@jay-framework/dev-server@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/dev-server@npm:0.17.0"
   dependencies:
-    "@jay-framework/compiler-jay-stack": "npm:^0.16.5"
-    "@jay-framework/compiler-shared": "npm:^0.16.5"
-    "@jay-framework/component": "npm:^0.16.5"
-    "@jay-framework/fullstack-component": "npm:^0.16.5"
-    "@jay-framework/logger": "npm:^0.16.5"
-    "@jay-framework/runtime": "npm:^0.16.5"
-    "@jay-framework/stack-client-runtime": "npm:^0.16.5"
-    "@jay-framework/stack-route-scanner": "npm:^0.16.5"
-    "@jay-framework/stack-server-runtime": "npm:^0.16.5"
-    "@jay-framework/view-state-merge": "npm:^0.16.5"
+    "@jay-framework/compiler-jay-stack": "npm:^0.17.0"
+    "@jay-framework/compiler-shared": "npm:^0.17.0"
+    "@jay-framework/component": "npm:^0.17.0"
+    "@jay-framework/fullstack-component": "npm:^0.17.0"
+    "@jay-framework/logger": "npm:^0.17.0"
+    "@jay-framework/runtime": "npm:^0.17.0"
+    "@jay-framework/stack-client-runtime": "npm:^0.17.0"
+    "@jay-framework/stack-route-scanner": "npm:^0.17.0"
+    "@jay-framework/stack-server-runtime": "npm:^0.17.0"
+    "@jay-framework/view-state-merge": "npm:^0.17.0"
     busboy: "npm:^1.6.0"
     vite: "npm:^5.0.11"
-  checksum: 10/34f97df201d56386b556239f4fb57528849cc9bbbb75556f7f84c80fb5b1f1459bc5cd9590cdfa274c0bbf11ab4f6543e094b6ac3712733b98582b602f38a620
+  checksum: 10/f7013d5971a6526c833569f540990464d17247ad79ec74c01c3abd935aa084718caabddb52f4c0e95b08d87f570264577fc0eaa5dee33f233deff769b104918c
   languageName: node
   linkType: hard
 
-"@jay-framework/editor-protocol@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/editor-protocol@npm:0.16.5"
+"@jay-framework/editor-protocol@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/editor-protocol@npm:0.17.0"
   dependencies:
-    "@jay-framework/compiler-shared": "npm:^0.16.5"
-  checksum: 10/c4d17794ad29d2b2b766530937327f49df89302bbb75d652b6c756f0c51f692534d546f01b3bea938b852f30f3519144972133c3e8fbd4b8489f0c19f41bc1eb
+    "@jay-framework/compiler-shared": "npm:^0.17.0"
+  checksum: 10/8de443229361b95dc0a9f17b10c3efa83a203dd4da4f05f1cc45c2e86c3351e0078ec3c2a6f4441b1a0215695093db93d7eaf420e90bbe4f2d9f47a11526f451
   languageName: node
   linkType: hard
 
-"@jay-framework/editor-server@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/editor-server@npm:0.16.5"
+"@jay-framework/editor-server@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/editor-server@npm:0.17.0"
   dependencies:
-    "@jay-framework/editor-protocol": "npm:^0.16.5"
-    "@jay-framework/logger": "npm:^0.16.5"
+    "@jay-framework/editor-protocol": "npm:^0.17.0"
+    "@jay-framework/logger": "npm:^0.17.0"
     get-port: "npm:^7.0.0"
     socket.io: "npm:^4.7.4"
     uuid: "npm:^9.0.1"
     yaml: "npm:^2.3.4"
-  checksum: 10/0b18920a87d2648493094ae8e081e8fa078afe082a95ca1b315d7e6137d9d11b603a0a9a6a3682dbd24f76250cbaaaf2917b834f9497f690f7021dde4df94f4e
+  checksum: 10/d1ed575d8accb26e3b8c5933295bb3d510b022646fbbbf7c3e781512f9f2a87fd25d949eb522cb33faf4537fad19fb5882cdfb56ab3aa9c0eda0ec341fa00ab7
   languageName: node
   linkType: hard
 
-"@jay-framework/fullstack-component@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/fullstack-component@npm:0.16.5"
+"@jay-framework/fullstack-component@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/fullstack-component@npm:0.17.0"
   dependencies:
-    "@jay-framework/component": "npm:^0.16.5"
-    "@jay-framework/runtime": "npm:^0.16.5"
-  checksum: 10/4a3f0e9f12c705755986cb3ab02b68682e873ee3c05afb2ed01a194bb50b02d35445b22c8f70f347578dda05c6dcf15771ca016d726f88966e51ac45e02a62e7
+    "@jay-framework/component": "npm:^0.17.0"
+    "@jay-framework/runtime": "npm:^0.17.0"
+  checksum: 10/4964615d57c907f03450e116098a31662bfbecc94b9d24c3a5bc1fab200459858090e9ec9f335053bce7885ca5f059ff66f5160836d910cb1e3931c7229d789e
   languageName: node
   linkType: hard
 
-"@jay-framework/gemini-agent-plugin@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/gemini-agent-plugin@npm:0.16.5"
+"@jay-framework/gemini-agent-plugin@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/gemini-agent-plugin@npm:0.17.0"
   dependencies:
     "@google/genai": "npm:^0.14.0"
-    "@jay-framework/component": "npm:^0.16.5"
-    "@jay-framework/fullstack-component": "npm:^0.16.5"
-    "@jay-framework/logger": "npm:^0.16.5"
-    "@jay-framework/runtime": "npm:^0.16.5"
-    "@jay-framework/runtime-automation": "npm:^0.16.5"
-    "@jay-framework/stack-client-runtime": "npm:^0.16.5"
-    "@jay-framework/stack-server-runtime": "npm:^0.16.5"
+    "@jay-framework/component": "npm:^0.17.0"
+    "@jay-framework/fullstack-component": "npm:^0.17.0"
+    "@jay-framework/logger": "npm:^0.17.0"
+    "@jay-framework/runtime": "npm:^0.17.0"
+    "@jay-framework/runtime-automation": "npm:^0.17.0"
+    "@jay-framework/stack-client-runtime": "npm:^0.17.0"
+    "@jay-framework/stack-server-runtime": "npm:^0.17.0"
     js-yaml: "npm:^4.1.0"
-  checksum: 10/8b8e5ad15e2ebc95bf61da91ab0cfad3ac88293a6e22555e37ba457698a4d194e671612aea38a78b2ee80c0bd8392cb35d83fb692308aa791f53eecef2697ff1
+  checksum: 10/b3b56e94032c2d02c94db05ef366d953c01635a476453496c4f58780fcc0a196a858caa96919615417bfde9ba41ccfd93766ca544144bc2d64ea4c97ed86be57
   languageName: node
   linkType: hard
 
-"@jay-framework/jay-cli@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/jay-cli@npm:0.16.5"
+"@jay-framework/jay-cli@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/jay-cli@npm:0.17.0"
   dependencies:
-    "@jay-framework/compiler": "npm:^0.16.5"
-    "@jay-framework/logger": "npm:^0.16.5"
-    "@jay-framework/rollup-plugin": "npm:^0.16.5"
+    "@jay-framework/compiler": "npm:^0.17.0"
+    "@jay-framework/logger": "npm:^0.17.0"
+    "@jay-framework/rollup-plugin": "npm:^0.17.0"
     chalk: "npm:^4.1.2"
     commander: "npm:^14.0.0"
     glob: "npm:^10.4.5"
     rollup: "npm:^4.9.5"
   bin:
     jay-cli: dist/index.js
-  checksum: 10/cb754fc6160d3a318181baaaa816dd7c2f732a7e97a465b87fb361991c08190d1212847397569d29f094f459fd3753078db6d05132edac537ed58d6d4683df03
+  checksum: 10/03572e30b2ceddb811bd4e0c032b6168dcabf7aa0bd6056fdce3ad386818f87484f376fabdfae60e0d0a103aa77509bc9e9e4a9c2c1ce6242889f8a412a73d3c
   languageName: node
   linkType: hard
 
-"@jay-framework/jay-stack-cli@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/jay-stack-cli@npm:0.16.5"
+"@jay-framework/jay-stack-cli@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/jay-stack-cli@npm:0.17.0"
   dependencies:
-    "@jay-framework/compiler-jay-html": "npm:^0.16.5"
-    "@jay-framework/compiler-shared": "npm:^0.16.5"
-    "@jay-framework/dev-server": "npm:^0.16.5"
-    "@jay-framework/editor-server": "npm:^0.16.5"
-    "@jay-framework/fullstack-component": "npm:^0.16.5"
-    "@jay-framework/logger": "npm:^0.16.5"
-    "@jay-framework/plugin-validator": "npm:^0.16.5"
-    "@jay-framework/stack-server-runtime": "npm:^0.16.5"
+    "@jay-framework/compiler-jay-html": "npm:^0.17.0"
+    "@jay-framework/compiler-shared": "npm:^0.17.0"
+    "@jay-framework/dev-server": "npm:^0.17.0"
+    "@jay-framework/editor-server": "npm:^0.17.0"
+    "@jay-framework/fullstack-component": "npm:^0.17.0"
+    "@jay-framework/logger": "npm:^0.17.0"
+    "@jay-framework/plugin-validator": "npm:^0.17.0"
+    "@jay-framework/production-server": "npm:^0.17.0"
+    "@jay-framework/stack-server-runtime": "npm:^0.17.0"
     chalk: "npm:^4.1.2"
     commander: "npm:^14.0.0"
     express: "npm:^5.0.1"
@@ -2183,7 +2185,7 @@ __metadata:
     yaml: "npm:^2.3.4"
   bin:
     jay-stack-cli: dist/index.js
-  checksum: 10/f217d6a79bef6e834ed19efb73780a8bacd8dfb1ee4f7086213e4789bc99779c085b13751bd0182595c7c6846684d36f53e3edb3e334d95577c6897447e1a52f
+  checksum: 10/a0e27e7e2cbebee8c9f9015810266b4f6116a99c2dc63c84bf107c101effef74510465835cdb3d55ef08aa47a5cfc0f4f9ddf2736fd4114def29ee0ec0c167a0
   languageName: node
   linkType: hard
 
@@ -2191,7 +2193,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@jay-framework/jay-wix-packages@workspace:."
   dependencies:
-    "@jay-framework/jay-stack-cli": "npm:^0.16.5"
+    "@jay-framework/jay-stack-cli": "npm:^0.17.0"
     commander: "npm:^14.0.0"
     esbuild: "npm:^0.20.0"
     prettier: "npm:^3.2.4"
@@ -2200,186 +2202,205 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jay-framework/json-patch@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/json-patch@npm:0.16.5"
+"@jay-framework/json-patch@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/json-patch@npm:0.17.0"
   dependencies:
-    "@jay-framework/list-compare": "npm:^0.16.5"
-  checksum: 10/063a37a4e159361c72fa16f14fb0829e9a8548bbc495df022a2eb2fd174c3315ce015804ae6d309b442097f167e97294fc7e7301f4a6b0d9edf9a5d9aaef290b
+    "@jay-framework/list-compare": "npm:^0.17.0"
+  checksum: 10/01ac666053a01c48169f56a6043d099688b4efb663340458d6930bcb4c79362024c987d6ee0ed3a37e34123274056cbdf0eba4b80282d45a64e77fd9c9894d15
   languageName: node
   linkType: hard
 
-"@jay-framework/list-compare@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/list-compare@npm:0.16.5"
-  checksum: 10/8c952557682f4a11d9836847b9e7ebcb2948dd123b269720d678089f17be8e8c47dd9a81f6cf49042510752de883fcbfb4936464b68e8c9c7840fbe6e0a803d6
+"@jay-framework/list-compare@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/list-compare@npm:0.17.0"
+  checksum: 10/91e26b2153f8f5a1be1a1ea6635d4ca73b041750af0df0ebd788be248b15ac63330686639192551a0125bbc6ef693a5db8e8795065cd079cc20325042687c718
   languageName: node
   linkType: hard
 
-"@jay-framework/logger@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/logger@npm:0.16.5"
-  checksum: 10/3b2fb9b764ed492f94581f779586dd25864b05d365f658fb2b2585fc4143d2bdcced49f9d77158e672040894eeadfdec1f5cb61ff50147c058d132be9f3d598d
+"@jay-framework/logger@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/logger@npm:0.17.0"
+  checksum: 10/4e8c89dd805c9e7f9ac7e7affb268ae9443d7f91dc7cf60d27f24c687ab873202be23cb31dc511358fd16c9ec934512da6f5a3e7c014fe49df3d854df20f7a61
   languageName: node
   linkType: hard
 
-"@jay-framework/plugin-validator@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/plugin-validator@npm:0.16.5"
+"@jay-framework/plugin-validator@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/plugin-validator@npm:0.17.0"
   dependencies:
-    "@jay-framework/compiler-jay-html": "npm:^0.16.5"
-    "@jay-framework/compiler-shared": "npm:^0.16.5"
-    "@jay-framework/editor-protocol": "npm:^0.16.5"
-    "@jay-framework/typescript-bridge": "npm:^0.16.5"
+    "@jay-framework/compiler-jay-html": "npm:^0.17.0"
+    "@jay-framework/compiler-shared": "npm:^0.17.0"
+    "@jay-framework/editor-protocol": "npm:^0.17.0"
+    "@jay-framework/typescript-bridge": "npm:^0.17.0"
     chalk: "npm:^4.1.2"
     yaml: "npm:^2.3.4"
-  checksum: 10/5c4b7c45996c2cfc906faf94a7c8a35b852da472235274eddb57459887e736769659a15d76e3fc2309ba81c0a2bab8a61408551dd2f3fb9278dc832033d12464
+  checksum: 10/19eba2a90fdfe4f044e77295d787f6ce47a6ea3e293382587fcac27445195adb2d2204488b62223443db39a54b18dcddd09cbb141b0206a31b3289fd170d4ad1
   languageName: node
   linkType: hard
 
-"@jay-framework/reactive@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/reactive@npm:0.16.5"
-  checksum: 10/cd35b766a29037cc35ad8bca49d15dc3eaa41c9caf866daad01b8956d2dfa623267e0fc62958f8167307ddeeef4a3f15d584ace767ea66d28aadc9c98ac81fdb
-  languageName: node
-  linkType: hard
-
-"@jay-framework/rollup-plugin@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/rollup-plugin@npm:0.16.5"
+"@jay-framework/production-server@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/production-server@npm:0.17.0"
   dependencies:
-    "@jay-framework/compiler": "npm:^0.16.5"
-    "@jay-framework/compiler-jay-html": "npm:^0.16.5"
-    "@jay-framework/logger": "npm:^0.16.5"
+    "@jay-framework/compiler-jay-html": "npm:^0.17.0"
+    "@jay-framework/compiler-jay-stack": "npm:^0.17.0"
+    "@jay-framework/compiler-shared": "npm:^0.17.0"
+    "@jay-framework/fullstack-component": "npm:^0.17.0"
+    "@jay-framework/logger": "npm:^0.17.0"
+    "@jay-framework/ssr-runtime": "npm:^0.17.0"
+    "@jay-framework/stack-route-scanner": "npm:^0.17.0"
+    "@jay-framework/stack-server-runtime": "npm:^0.17.0"
+    "@jay-framework/view-state-merge": "npm:^0.17.0"
+    "@jay-framework/vite-plugin": "npm:^0.17.0"
+    vite: "npm:^5.0.11"
+  checksum: 10/c4227ee960813f0b0560d1ced70b9e3c01bdce0ed3a8c22ea2f2b500b8753ffbad8e7b4b6de4d58808e26e2e99c76e4956751a694ae6c64ac23a8d17d038f031
+  languageName: node
+  linkType: hard
+
+"@jay-framework/reactive@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/reactive@npm:0.17.0"
+  checksum: 10/308b26eccfe328848ec9b34a89cd5b8cc350811a1e125a85aefa76436e18112be08bff149b6e172268da1115f5edcbed57fd0996f8df4379d07a45249c9877f3
+  languageName: node
+  linkType: hard
+
+"@jay-framework/rollup-plugin@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/rollup-plugin@npm:0.17.0"
+  dependencies:
+    "@jay-framework/compiler": "npm:^0.17.0"
+    "@jay-framework/compiler-jay-html": "npm:^0.17.0"
+    "@jay-framework/logger": "npm:^0.17.0"
     fast-glob: "npm:^3.3.2"
     typescript: "npm:^5.3.3"
-  checksum: 10/0185d9130077e0fe796f0056eecad559aaf61d9a708f3c1db6d92a4bcd098fee9188118ae735c55f87c81eed9a53b5d939611538626afd894379d74b7420a48d
+  checksum: 10/fe39d36f6bdbf9158b8c86fc50090e40cee19ebb2621921d7bc5f52edb7d8538469cfb904206e8cb409c5a73434dcefc07ba8fbe64a532e4cb219883f0eae2d5
   languageName: node
   linkType: hard
 
-"@jay-framework/runtime-automation@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/runtime-automation@npm:0.16.5"
+"@jay-framework/runtime-automation@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/runtime-automation@npm:0.17.0"
   dependencies:
-    "@jay-framework/runtime": "npm:^0.16.5"
-    "@jay-framework/view-state-merge": "npm:^0.16.5"
-  checksum: 10/5641c02714dc1fbc916ce2a489e455ba1164fba6815e4988e2acc328359b6bc77f7be71e21dd0fab61f5ddf2bc286ace383c6f5aa02583c718b426cdbd04a32f
+    "@jay-framework/runtime": "npm:^0.17.0"
+    "@jay-framework/view-state-merge": "npm:^0.17.0"
+  checksum: 10/aadc702ae6a8159242fa0a7f53add47dbc1dabb6e73158c700c6e42de156be6d080a284ef8937c46abbadc166f4d32f3f1198bbd44716fd558d7521888c34efc
   languageName: node
   linkType: hard
 
-"@jay-framework/runtime@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/runtime@npm:0.16.5"
+"@jay-framework/runtime@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/runtime@npm:0.17.0"
   dependencies:
-    "@jay-framework/list-compare": "npm:^0.16.5"
-    "@jay-framework/reactive": "npm:^0.16.5"
-  checksum: 10/3804eb86ddbb705ef935dee9d7d62bebdec4a196616832fad64d5affd1b40513ee0f1cff84e2d92973439cb31d75b20f9707f907733d3fe893ea9d076928e4ba
+    "@jay-framework/list-compare": "npm:^0.17.0"
+    "@jay-framework/reactive": "npm:^0.17.0"
+  checksum: 10/0e63afaac8344df65d2a456c512135cbd6cff49c60efe7e5ccc98c73a5d4e0634561e43c5eeed6a4321a722ab245ca2d6893fb8c8c5c5641775b45b7794cd8ad
   languageName: node
   linkType: hard
 
-"@jay-framework/secure@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/secure@npm:0.16.5"
+"@jay-framework/secure@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/secure@npm:0.17.0"
   dependencies:
-    "@jay-framework/component": "npm:^0.16.5"
-    "@jay-framework/json-patch": "npm:^0.16.5"
-    "@jay-framework/reactive": "npm:^0.16.5"
-    "@jay-framework/runtime": "npm:^0.16.5"
-    "@jay-framework/serialization": "npm:^0.16.5"
-  checksum: 10/750160de7ce980977ae8ec868f93d34f42349162816cacb627e937036faf1d070d7c3691f491376021a64ffe4019baf0bc3d4a928601902ec98a820340d2ca60
+    "@jay-framework/component": "npm:^0.17.0"
+    "@jay-framework/json-patch": "npm:^0.17.0"
+    "@jay-framework/reactive": "npm:^0.17.0"
+    "@jay-framework/runtime": "npm:^0.17.0"
+    "@jay-framework/serialization": "npm:^0.17.0"
+  checksum: 10/196d272ae0d9ebb0fd19c0191c72e977ec6dd84bdabe0d720f36ca2eb83096f40a3a065f7dd5616ef24f99ee4a81237a77d8b297e3526c8767f78287197040f9
   languageName: node
   linkType: hard
 
-"@jay-framework/serialization@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/serialization@npm:0.16.5"
+"@jay-framework/serialization@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/serialization@npm:0.17.0"
   dependencies:
-    "@jay-framework/json-patch": "npm:^0.16.5"
-  checksum: 10/e9351038c21465ce5f7941a873c8ef18eb090e07836ed70a8df6d222d525f7b60a934e753ab817e9aad4f78bb22f00f7edb48807862173d78e8277cf924496fc
+    "@jay-framework/json-patch": "npm:^0.17.0"
+  checksum: 10/b2922a2a2ab84c7502316cce43f82c1c3bb631a40e13a298d931792e684281a8dd25d9026b433dc0a82e96ff255c4f8963eda7d1d529e637d361da2b744f4249
   languageName: node
   linkType: hard
 
-"@jay-framework/ssr-runtime@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/ssr-runtime@npm:0.16.5"
-  checksum: 10/d47e0d9267beae7cb0bd3b2c5442fc2300fcb51008e1c86b1317a80cb3c2b93ea7a9b57d96f984ca30fd9f001ec3b27115922d24297efd6d9f5691ceddfef05e
+"@jay-framework/ssr-runtime@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/ssr-runtime@npm:0.17.0"
+  checksum: 10/05c683591307212388a23b842fc57777ea0573f7982d3bfde3f5a666713451cbbdb16210c29a0efaaa6e23aaf31e56c3c464634a7bd2f24fcd9585f3764ce340
   languageName: node
   linkType: hard
 
-"@jay-framework/stack-client-runtime@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/stack-client-runtime@npm:0.16.5"
+"@jay-framework/stack-client-runtime@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/stack-client-runtime@npm:0.17.0"
   dependencies:
-    "@jay-framework/component": "npm:^0.16.5"
-    "@jay-framework/fullstack-component": "npm:^0.16.5"
-    "@jay-framework/runtime": "npm:^0.16.5"
-    "@jay-framework/runtime-automation": "npm:^0.16.5"
-    "@jay-framework/view-state-merge": "npm:^0.16.5"
-  checksum: 10/b90fa318b069e854df749e8e80c07b0b5c2e03312bb700a5fb0ed3b2d6d1606fda6561764df6f0140974ac952ce1e8de0e269eba3de0816bb94a30864a0d0edb
+    "@jay-framework/component": "npm:^0.17.0"
+    "@jay-framework/fullstack-component": "npm:^0.17.0"
+    "@jay-framework/runtime": "npm:^0.17.0"
+    "@jay-framework/runtime-automation": "npm:^0.17.0"
+    "@jay-framework/view-state-merge": "npm:^0.17.0"
+  checksum: 10/5f9a92c4f80f1a2d866d9540c517997bbf01576ff50d83c4710b6327c785d2a0f2a19ae325a2605b20f5c65e69770a619965b75b0ac6b4389ef7d5e98dc9b166
   languageName: node
   linkType: hard
 
-"@jay-framework/stack-route-scanner@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/stack-route-scanner@npm:0.16.5"
+"@jay-framework/stack-route-scanner@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/stack-route-scanner@npm:0.17.0"
   dependencies:
-    "@jay-framework/logger": "npm:^0.16.5"
+    "@jay-framework/logger": "npm:^0.17.0"
     node-html-parser: "npm:^6.1.12"
     yaml: "npm:^2.3.4"
-  checksum: 10/43bcc410db3b3d7e4aba22e2fccf6351928be4886474ec625de401d23ac30bb556780c9fbc6b07802bcb17d64a83bb2ae7469512497eb163707505eec6404d11
+  checksum: 10/9e5c8c98a66f46aaa9e85e9350c8984d1bfbe73821799ac452e7de0b32ea0fa8d54c7f6da817e071fdcaaa8ca775da8b462d20c647ac8830aaaa920881e7d6c8
   languageName: node
   linkType: hard
 
-"@jay-framework/stack-server-runtime@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/stack-server-runtime@npm:0.16.5"
+"@jay-framework/stack-server-runtime@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/stack-server-runtime@npm:0.17.0"
   dependencies:
-    "@jay-framework/compiler-jay-html": "npm:^0.16.5"
-    "@jay-framework/compiler-shared": "npm:^0.16.5"
-    "@jay-framework/component": "npm:^0.16.5"
-    "@jay-framework/fullstack-component": "npm:^0.16.5"
-    "@jay-framework/logger": "npm:^0.16.5"
-    "@jay-framework/runtime": "npm:^0.16.5"
-    "@jay-framework/ssr-runtime": "npm:^0.16.5"
-    "@jay-framework/stack-route-scanner": "npm:^0.16.5"
-    "@jay-framework/view-state-merge": "npm:^0.16.5"
+    "@jay-framework/compiler-jay-html": "npm:^0.17.0"
+    "@jay-framework/compiler-shared": "npm:^0.17.0"
+    "@jay-framework/component": "npm:^0.17.0"
+    "@jay-framework/fullstack-component": "npm:^0.17.0"
+    "@jay-framework/logger": "npm:^0.17.0"
+    "@jay-framework/runtime": "npm:^0.17.0"
+    "@jay-framework/ssr-runtime": "npm:^0.17.0"
+    "@jay-framework/stack-route-scanner": "npm:^0.17.0"
+    "@jay-framework/view-state-merge": "npm:^0.17.0"
     yaml: "npm:^2.3.4"
-  checksum: 10/2c0df76d588495db36de4c9bdb8540a1f533e48f3e82df507cc41e65ba2d5920179a9f4fe79d930848dcdcaa79fbff3555c3e9ece3798fc0fa535971b57fe673
+  checksum: 10/257b3b1b206a276a4140edadc3da2486909779a2c0350001692016635e17670c360ba8a55f24594411e106fd0ea2626bf932fcd1df59642a5fe9b353a3e058b5
   languageName: node
   linkType: hard
 
-"@jay-framework/typescript-bridge@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/typescript-bridge@npm:0.16.5"
+"@jay-framework/typescript-bridge@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/typescript-bridge@npm:0.17.0"
   dependencies:
     typescript: "npm:^5.3.3"
-  checksum: 10/e9f3aa16c4a6070c0295d3a55c246ed03f8c29ee7b476ab49db653d7254171f70bacfd6630cb3ea5146ea92ce8024042d90a5af4948d5bce7124ec3231c0d0e0
+  checksum: 10/55f447f753204c8846164324c555ac3736be5c26861d588a0312f05792da247ca281bc094612d353f6622f2b8a8d3f6b1d2034077d3ed1656b01a80e4b471b16
   languageName: node
   linkType: hard
 
-"@jay-framework/view-state-merge@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/view-state-merge@npm:0.16.5"
-  checksum: 10/9812ab7786dc5949e7dc03c2e3f46485e95a0324f27d8c30e2948909f04ae39294780113155f5ca5b31e0cda953e056caeedc534d7404ec501268af41255715b
+"@jay-framework/view-state-merge@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/view-state-merge@npm:0.17.0"
+  checksum: 10/3fa824c26684c4683bd3c9cdab23e5dd8fb73f20c0ff0687a99930f7d007918b3ba140762339c86b12c89b6dfc809229c8136000ef81a0372390e6e2b647fda5
   languageName: node
   linkType: hard
 
-"@jay-framework/vite-plugin@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/vite-plugin@npm:0.16.5"
+"@jay-framework/vite-plugin@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/vite-plugin@npm:0.17.0"
   dependencies:
-    "@jay-framework/rollup-plugin": "npm:^0.16.5"
-  checksum: 10/38171f6f829f100ed31a67bec156c0666b73d0eac47ed1bf719d7a35bc8ef497e3d4554ff0c2967e9a196e89aad0dd8ad2e502e0aac835158536c5ed69d195e6
+    "@jay-framework/rollup-plugin": "npm:^0.17.0"
+  checksum: 10/f8e7a465cb59175e6085faa6a05e8f3104da24d1997b9d9961583f3ed763bd2d923c3acc7d363a279a5dc7db50e2eb9782a725e0f7f97c56de63f2cd95be91ac
   languageName: node
   linkType: hard
 
-"@jay-framework/webmcp-plugin@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@jay-framework/webmcp-plugin@npm:0.16.5"
+"@jay-framework/webmcp-plugin@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@jay-framework/webmcp-plugin@npm:0.17.0"
   dependencies:
-    "@jay-framework/fullstack-component": "npm:^0.16.5"
-    "@jay-framework/runtime-automation": "npm:^0.16.5"
-  checksum: 10/c4264ffc0271f6fe6bc058c351d8448e36a9b42363aa0c52891dbfaa605b169cd70ef2cf873e7daa3d6aa7b506f20ce0d0fbcaad6347aed2070331c406f89a1b
+    "@jay-framework/fullstack-component": "npm:^0.17.0"
+    "@jay-framework/runtime-automation": "npm:^0.17.0"
+  checksum: 10/5e2050ef8e7024c71ca66ff39f268e4ab969aec9b9d5b8122f9ae7ee40300a5817728b3fcbb9091e47d0dc0666cfe8a1e02530a881d75dfd23f084ccb5528b01
   languageName: node
   linkType: hard
 
@@ -2390,16 +2411,16 @@ __metadata:
     "@babel/core": "npm:^7.23.7"
     "@babel/preset-env": "npm:^7.23.8"
     "@babel/preset-typescript": "npm:^7.23.3"
-    "@jay-framework/compiler-jay-stack": "npm:^0.16.5"
-    "@jay-framework/component": "npm:^0.16.5"
-    "@jay-framework/fullstack-component": "npm:^0.16.5"
-    "@jay-framework/jay-cli": "npm:^0.16.5"
-    "@jay-framework/reactive": "npm:^0.16.5"
-    "@jay-framework/runtime": "npm:^0.16.5"
-    "@jay-framework/secure": "npm:^0.16.5"
-    "@jay-framework/stack-client-runtime": "npm:^0.16.5"
-    "@jay-framework/stack-server-runtime": "npm:^0.16.5"
-    "@jay-framework/vite-plugin": "npm:^0.16.5"
+    "@jay-framework/compiler-jay-stack": "npm:^0.17.0"
+    "@jay-framework/component": "npm:^0.17.0"
+    "@jay-framework/fullstack-component": "npm:^0.17.0"
+    "@jay-framework/jay-cli": "npm:^0.17.0"
+    "@jay-framework/reactive": "npm:^0.17.0"
+    "@jay-framework/runtime": "npm:^0.17.0"
+    "@jay-framework/secure": "npm:^0.17.0"
+    "@jay-framework/stack-client-runtime": "npm:^0.17.0"
+    "@jay-framework/stack-server-runtime": "npm:^0.17.0"
+    "@jay-framework/vite-plugin": "npm:^0.17.0"
     "@jay-framework/wix-dev-environment": "workspace:^"
     "@jay-framework/wix-server-client": "workspace:^"
     "@jay-framework/wix-utils": "workspace:^"
@@ -2423,16 +2444,16 @@ __metadata:
     "@babel/core": "npm:^7.23.7"
     "@babel/preset-env": "npm:^7.23.8"
     "@babel/preset-typescript": "npm:^7.23.3"
-    "@jay-framework/compiler-jay-stack": "npm:^0.16.5"
-    "@jay-framework/component": "npm:^0.16.5"
-    "@jay-framework/fullstack-component": "npm:^0.16.5"
-    "@jay-framework/jay-cli": "npm:^0.16.5"
-    "@jay-framework/reactive": "npm:^0.16.5"
-    "@jay-framework/runtime": "npm:^0.16.5"
-    "@jay-framework/secure": "npm:^0.16.5"
-    "@jay-framework/stack-client-runtime": "npm:^0.16.5"
-    "@jay-framework/stack-server-runtime": "npm:^0.16.5"
-    "@jay-framework/vite-plugin": "npm:^0.16.5"
+    "@jay-framework/compiler-jay-stack": "npm:^0.17.0"
+    "@jay-framework/component": "npm:^0.17.0"
+    "@jay-framework/fullstack-component": "npm:^0.17.0"
+    "@jay-framework/jay-cli": "npm:^0.17.0"
+    "@jay-framework/reactive": "npm:^0.17.0"
+    "@jay-framework/runtime": "npm:^0.17.0"
+    "@jay-framework/secure": "npm:^0.17.0"
+    "@jay-framework/stack-client-runtime": "npm:^0.17.0"
+    "@jay-framework/stack-server-runtime": "npm:^0.17.0"
+    "@jay-framework/vite-plugin": "npm:^0.17.0"
     "@jay-framework/wix-server-client": "workspace:^"
     "@jay-framework/wix-utils": "workspace:^"
     "@types/js-yaml": "npm:^4.0.9"
@@ -2468,16 +2489,16 @@ __metadata:
     "@babel/core": "npm:^7.23.7"
     "@babel/preset-env": "npm:^7.23.8"
     "@babel/preset-typescript": "npm:^7.23.3"
-    "@jay-framework/compiler-jay-stack": "npm:^0.16.5"
-    "@jay-framework/component": "npm:^0.16.5"
-    "@jay-framework/fullstack-component": "npm:^0.16.5"
-    "@jay-framework/jay-cli": "npm:^0.16.5"
-    "@jay-framework/reactive": "npm:^0.16.5"
-    "@jay-framework/runtime": "npm:^0.16.5"
-    "@jay-framework/secure": "npm:^0.16.5"
-    "@jay-framework/stack-client-runtime": "npm:^0.16.5"
-    "@jay-framework/stack-server-runtime": "npm:^0.16.5"
-    "@jay-framework/vite-plugin": "npm:^0.16.5"
+    "@jay-framework/compiler-jay-stack": "npm:^0.17.0"
+    "@jay-framework/component": "npm:^0.17.0"
+    "@jay-framework/fullstack-component": "npm:^0.17.0"
+    "@jay-framework/jay-cli": "npm:^0.17.0"
+    "@jay-framework/reactive": "npm:^0.17.0"
+    "@jay-framework/runtime": "npm:^0.17.0"
+    "@jay-framework/secure": "npm:^0.17.0"
+    "@jay-framework/stack-client-runtime": "npm:^0.17.0"
+    "@jay-framework/stack-server-runtime": "npm:^0.17.0"
+    "@jay-framework/vite-plugin": "npm:^0.17.0"
     "@types/js-yaml": "npm:^4.0.9"
     "@types/node": "npm:^20.11.0"
     "@wix/sdk": "npm:^1.21.5"
@@ -2500,16 +2521,16 @@ __metadata:
     "@babel/core": "npm:^7.23.7"
     "@babel/preset-env": "npm:^7.23.8"
     "@babel/preset-typescript": "npm:^7.23.3"
-    "@jay-framework/compiler-jay-stack": "npm:^0.16.5"
-    "@jay-framework/component": "npm:^0.16.5"
-    "@jay-framework/fullstack-component": "npm:^0.16.5"
-    "@jay-framework/jay-cli": "npm:^0.16.5"
-    "@jay-framework/reactive": "npm:^0.16.5"
-    "@jay-framework/runtime": "npm:^0.16.5"
-    "@jay-framework/secure": "npm:^0.16.5"
-    "@jay-framework/stack-client-runtime": "npm:^0.16.5"
-    "@jay-framework/stack-server-runtime": "npm:^0.16.5"
-    "@jay-framework/vite-plugin": "npm:^0.16.5"
+    "@jay-framework/compiler-jay-stack": "npm:^0.17.0"
+    "@jay-framework/component": "npm:^0.17.0"
+    "@jay-framework/fullstack-component": "npm:^0.17.0"
+    "@jay-framework/jay-cli": "npm:^0.17.0"
+    "@jay-framework/reactive": "npm:^0.17.0"
+    "@jay-framework/runtime": "npm:^0.17.0"
+    "@jay-framework/secure": "npm:^0.17.0"
+    "@jay-framework/stack-client-runtime": "npm:^0.17.0"
+    "@jay-framework/stack-server-runtime": "npm:^0.17.0"
+    "@jay-framework/vite-plugin": "npm:^0.17.0"
     "@jay-framework/wix-cart": "workspace:^"
     "@jay-framework/wix-server-client": "workspace:^"
     "@jay-framework/wix-utils": "workspace:^"
@@ -2533,17 +2554,17 @@ __metadata:
     "@babel/core": "npm:^7.23.7"
     "@babel/preset-env": "npm:^7.23.8"
     "@babel/preset-typescript": "npm:^7.23.3"
-    "@jay-framework/compiler-jay-stack": "npm:^0.16.5"
-    "@jay-framework/component": "npm:^0.16.5"
-    "@jay-framework/fullstack-component": "npm:^0.16.5"
-    "@jay-framework/jay-cli": "npm:^0.16.5"
-    "@jay-framework/jay-stack-cli": "npm:^0.16.5"
-    "@jay-framework/reactive": "npm:^0.16.5"
-    "@jay-framework/runtime": "npm:^0.16.5"
-    "@jay-framework/secure": "npm:^0.16.5"
-    "@jay-framework/stack-client-runtime": "npm:^0.16.5"
-    "@jay-framework/stack-server-runtime": "npm:^0.16.5"
-    "@jay-framework/vite-plugin": "npm:^0.16.5"
+    "@jay-framework/compiler-jay-stack": "npm:^0.17.0"
+    "@jay-framework/component": "npm:^0.17.0"
+    "@jay-framework/fullstack-component": "npm:^0.17.0"
+    "@jay-framework/jay-cli": "npm:^0.17.0"
+    "@jay-framework/jay-stack-cli": "npm:^0.17.0"
+    "@jay-framework/reactive": "npm:^0.17.0"
+    "@jay-framework/runtime": "npm:^0.17.0"
+    "@jay-framework/secure": "npm:^0.17.0"
+    "@jay-framework/stack-client-runtime": "npm:^0.17.0"
+    "@jay-framework/stack-server-runtime": "npm:^0.17.0"
+    "@jay-framework/vite-plugin": "npm:^0.17.0"
     "@jay-framework/wix-cart": "workspace:^"
     "@jay-framework/wix-server-client": "workspace:^"
     "@jay-framework/wix-utils": "workspace:^"
@@ -6393,10 +6414,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "example-whisky-exchange@workspace:examples/whisky-exchange"
   dependencies:
-    "@jay-framework/fullstack-component": "npm:^0.16.5"
-    "@jay-framework/gemini-agent-plugin": "npm:^0.16.5"
-    "@jay-framework/jay-cli": "npm:^0.16.5"
-    "@jay-framework/jay-stack-cli": "npm:^0.16.5"
+    "@jay-framework/fullstack-component": "npm:^0.17.0"
+    "@jay-framework/gemini-agent-plugin": "npm:^0.17.0"
+    "@jay-framework/jay-cli": "npm:^0.17.0"
+    "@jay-framework/jay-stack-cli": "npm:^0.17.0"
     "@jay-framework/wix-cart": "workspace:^"
     "@jay-framework/wix-dev-environment": "workspace:^"
     "@jay-framework/wix-server-client": "workspace:^"
@@ -6416,10 +6437,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "example-whisky-shop@workspace:examples/whisky-store"
   dependencies:
-    "@jay-framework/fullstack-component": "npm:^0.16.5"
-    "@jay-framework/jay-cli": "npm:^0.16.5"
-    "@jay-framework/jay-stack-cli": "npm:^0.16.5"
-    "@jay-framework/webmcp-plugin": "npm:^0.16.5"
+    "@jay-framework/fullstack-component": "npm:^0.17.0"
+    "@jay-framework/jay-cli": "npm:^0.17.0"
+    "@jay-framework/jay-stack-cli": "npm:^0.17.0"
+    "@jay-framework/webmcp-plugin": "npm:^0.17.0"
     "@jay-framework/wix-cart": "workspace:^"
     "@jay-framework/wix-dev-environment": "workspace:^"
     "@jay-framework/wix-server-client": "workspace:^"
@@ -6439,9 +6460,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "example-wix-cms@workspace:examples/cms"
   dependencies:
-    "@jay-framework/fullstack-component": "npm:^0.16.5"
-    "@jay-framework/jay-cli": "npm:^0.16.5"
-    "@jay-framework/jay-stack-cli": "npm:^0.16.5"
+    "@jay-framework/fullstack-component": "npm:^0.17.0"
+    "@jay-framework/jay-cli": "npm:^0.17.0"
+    "@jay-framework/jay-stack-cli": "npm:^0.17.0"
     "@jay-framework/wix-data": "workspace:^"
     "@jay-framework/wix-dev-environment": "workspace:^"
     "@jay-framework/wix-server-client": "workspace:^"
@@ -6460,9 +6481,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "example-wix-shop-light@workspace:examples/store-light"
   dependencies:
-    "@jay-framework/fullstack-component": "npm:^0.16.5"
-    "@jay-framework/jay-cli": "npm:^0.16.5"
-    "@jay-framework/jay-stack-cli": "npm:^0.16.5"
+    "@jay-framework/fullstack-component": "npm:^0.17.0"
+    "@jay-framework/jay-cli": "npm:^0.17.0"
+    "@jay-framework/jay-stack-cli": "npm:^0.17.0"
     "@jay-framework/wix-cart": "workspace:^"
     "@jay-framework/wix-dev-environment": "workspace:^"
     "@jay-framework/wix-server-client": "workspace:^"
@@ -6482,9 +6503,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "example-wix-shop@workspace:examples/store"
   dependencies:
-    "@jay-framework/fullstack-component": "npm:^0.16.5"
-    "@jay-framework/jay-cli": "npm:^0.16.5"
-    "@jay-framework/jay-stack-cli": "npm:^0.16.5"
+    "@jay-framework/fullstack-component": "npm:^0.17.0"
+    "@jay-framework/jay-cli": "npm:^0.17.0"
+    "@jay-framework/jay-stack-cli": "npm:^0.17.0"
     "@jay-framework/wix-cart": "workspace:^"
     "@jay-framework/wix-dev-environment": "workspace:^"
     "@jay-framework/wix-server-client": "workspace:^"
@@ -6504,9 +6525,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "example-wix-studio-store@workspace:examples/studio-store"
   dependencies:
-    "@jay-framework/fullstack-component": "npm:^0.16.5"
-    "@jay-framework/jay-cli": "npm:^0.16.5"
-    "@jay-framework/jay-stack-cli": "npm:^0.16.5"
+    "@jay-framework/fullstack-component": "npm:^0.17.0"
+    "@jay-framework/jay-cli": "npm:^0.17.0"
+    "@jay-framework/jay-stack-cli": "npm:^0.17.0"
     "@jay-framework/wix-cart": "workspace:^"
     "@jay-framework/wix-dev-environment": "workspace:^"
     "@jay-framework/wix-server-client": "workspace:^"
@@ -7009,7 +7030,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"he@npm:1.2.0":
+"he@npm:1.2.0, he@npm:^1.2.0":
   version: 1.2.0
   resolution: "he@npm:1.2.0"
   bin:
