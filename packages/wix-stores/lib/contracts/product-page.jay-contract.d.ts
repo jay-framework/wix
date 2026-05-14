@@ -1,192 +1,290 @@
-import {HTMLElementCollectionProxy, HTMLElementProxy, JayContract} from "@jay-framework/runtime";
-import {MediaGalleryViewState, MediaGalleryRefs, MediaGalleryRepeatedRefs} from "./media-gallery.jay-contract";
+import { HTMLElementCollectionProxy, HTMLElementProxy, JayContract } from '@jay-framework/runtime';
+import {
+    MediaGalleryViewState,
+    MediaGalleryRefs,
+    MediaGalleryRepeatedRefs,
+} from './media-gallery.jay-contract';
 
 export enum ProductType {
-  PHYSICAL,
-  DIGITAL
+    PHYSICAL,
+    DIGITAL,
 }
 
 export enum StockStatus {
-  OUT_OF_STOCK,
-  IN_STOCK
+    OUT_OF_STOCK,
+    IN_STOCK,
 }
 
 export interface QuantityOfProductPageViewState {
-  quantity: number
+    quantity: number;
 }
 
 export enum OptionRenderType {
-  TEXT_CHOICES,
-  COLOR_SWATCH_CHOICES
+    TEXT_CHOICES,
+    COLOR_SWATCH_CHOICES,
 }
 
 export enum ChoiceType {
-  CHOICE_TEXT,
-  ONE_COLOR
+    CHOICE_TEXT,
+    ONE_COLOR,
 }
 
 export interface ChoiceOfOptionOfProductPageViewState {
-  choiceId: string,
-  choiceType: ChoiceType,
-  name: string,
-  colorCode: string,
-  inStock: boolean,
-  isSelected: boolean
+    choiceId: string;
+    choiceType: ChoiceType;
+    name: string;
+    colorCode: string;
+    inStock: boolean;
+    isSelected: boolean;
 }
 
 export interface OptionOfProductPageViewState {
-  _id: string,
-  name: string,
-  optionRenderType: OptionRenderType,
-  textChoiceSelection: string,
-  choices: Array<ChoiceOfOptionOfProductPageViewState>
+    _id: string;
+    name: string;
+    optionRenderType: OptionRenderType;
+    textChoiceSelection: string;
+    choices: Array<ChoiceOfOptionOfProductPageViewState>;
 }
 
 export interface InfoSectionOfProductPageViewState {
-  _id: string,
-  title: string,
-  plainDescription: string
+    _id: string;
+    title: string;
+    plainDescription: string;
 }
 
 export enum ModifierType {
-  TEXT_CHOICES,
-  COLOR_SWATCH_CHOICES,
-  FREE_TEXT
+    TEXT_CHOICES,
+    COLOR_SWATCH_CHOICES,
+    FREE_TEXT,
 }
 
 export enum ChoiceType {
-  CHOICE_TEXT,
-  ONE_COLOR
+    CHOICE_TEXT,
+    ONE_COLOR,
 }
 
 export interface ChoiceOfModifierOfProductPageViewState {
-  choiceId: string,
-  choiceType: ChoiceType,
-  name: string,
-  colorCode: string,
-  isSelected: boolean
+    choiceId: string;
+    choiceType: ChoiceType;
+    name: string;
+    colorCode: string;
+    isSelected: boolean;
 }
 
 export interface ModifierOfProductPageViewState {
-  _id: string,
-  name: string,
-  modifierType: ModifierType,
-  textModifierSelection: string,
-  textInputLength: number,
-  textInputRequired: boolean,
-  choices: Array<ChoiceOfModifierOfProductPageViewState>
+    _id: string;
+    name: string;
+    modifierType: ModifierType;
+    textModifierSelection: string;
+    textInputLength: number;
+    textInputRequired: boolean;
+    choices: Array<ChoiceOfModifierOfProductPageViewState>;
 }
 
 export interface ProductPageViewState {
-  _id: string,
-  productName: string,
-  mediaGallery: MediaGalleryViewState,
-  description: string,
-  brand: string,
-  ribbon: string,
-  categorySlug: string,
-  productType: ProductType,
-  sku: string,
-  price: string,
-  strikethroughPrice: string,
-  pricePerUnit: string,
-  stockStatus: StockStatus,
-  quantity: QuantityOfProductPageViewState,
-  actionsEnabled: boolean,
-  isAddingToCart: boolean,
-  options: Array<OptionOfProductPageViewState>,
-  infoSections: Array<InfoSectionOfProductPageViewState>,
-  modifiers: Array<ModifierOfProductPageViewState>
+    _id: string;
+    productName: string;
+    mediaGallery: MediaGalleryViewState;
+    description: string;
+    brand: string;
+    ribbon: string;
+    categorySlug: string;
+    productType: ProductType;
+    sku: string;
+    price: string;
+    strikethroughPrice: string;
+    pricePerUnit: string;
+    stockStatus: StockStatus;
+    quantity: QuantityOfProductPageViewState;
+    actionsEnabled: boolean;
+    isAddingToCart: boolean;
+    options: Array<OptionOfProductPageViewState>;
+    infoSections: Array<InfoSectionOfProductPageViewState>;
+    modifiers: Array<ModifierOfProductPageViewState>;
 }
 
-export type ProductPageSlowViewState = Pick<ProductPageViewState, '_id' | 'productName' | 'description' | 'brand' | 'ribbon' | 'categorySlug' | 'productType'> & {
-    options: Array<Pick<ProductPageViewState['options'][number], '_id' | 'name' | 'optionRenderType'> & {
-    choices: Array<Pick<ProductPageViewState['options'][number]['choices'][number], 'choiceId' | 'choiceType' | 'name' | 'colorCode' | 'inStock'>>;
-}>;
+export type ProductPageSlowViewState = Pick<
+    ProductPageViewState,
+    '_id' | 'productName' | 'description' | 'brand' | 'ribbon' | 'categorySlug' | 'productType'
+> & {
+    options: Array<
+        Pick<ProductPageViewState['options'][number], '_id' | 'name' | 'optionRenderType'> & {
+            choices: Array<
+                Pick<
+                    ProductPageViewState['options'][number]['choices'][number],
+                    'choiceId' | 'choiceType' | 'name' | 'colorCode' | 'inStock'
+                >
+            >;
+        }
+    >;
     infoSections: Array<ProductPageViewState['infoSections'][number]>;
-    modifiers: Array<Pick<ProductPageViewState['modifiers'][number], '_id' | 'name' | 'modifierType' | 'textInputLength' | 'textInputRequired'> & {
-    choices: Array<Pick<ProductPageViewState['modifiers'][number]['choices'][number], 'choiceId' | 'choiceType' | 'name' | 'colorCode'>>;
-}>;
+    modifiers: Array<
+        Pick<
+            ProductPageViewState['modifiers'][number],
+            '_id' | 'name' | 'modifierType' | 'textInputLength' | 'textInputRequired'
+        > & {
+            choices: Array<
+                Pick<
+                    ProductPageViewState['modifiers'][number]['choices'][number],
+                    'choiceId' | 'choiceType' | 'name' | 'colorCode'
+                >
+            >;
+        }
+    >;
 };
 
-export type ProductPageFastViewState = Pick<ProductPageViewState, 'sku' | 'price' | 'strikethroughPrice' | 'pricePerUnit' | 'stockStatus' | 'actionsEnabled' | 'isAddingToCart'> & {
+export type ProductPageFastViewState = Pick<
+    ProductPageViewState,
+    | 'sku'
+    | 'price'
+    | 'strikethroughPrice'
+    | 'pricePerUnit'
+    | 'stockStatus'
+    | 'actionsEnabled'
+    | 'isAddingToCart'
+> & {
     mediaGallery: ProductPageViewState['mediaGallery'];
     quantity: ProductPageViewState['quantity'];
-    options: Array<Pick<ProductPageViewState['options'][number], '_id' | 'textChoiceSelection'> & {
-    choices: Array<Pick<ProductPageViewState['options'][number]['choices'][number], 'choiceId' | 'isSelected'>>;
-}>;
-    modifiers: Array<Pick<ProductPageViewState['modifiers'][number], '_id' | 'textModifierSelection'> & {
-    choices: Array<Pick<ProductPageViewState['modifiers'][number]['choices'][number], 'choiceId' | 'isSelected'>>;
-}>;
+    options: Array<
+        Pick<ProductPageViewState['options'][number], '_id' | 'textChoiceSelection'> & {
+            choices: Array<
+                Pick<
+                    ProductPageViewState['options'][number]['choices'][number],
+                    'choiceId' | 'isSelected'
+                >
+            >;
+        }
+    >;
+    modifiers: Array<
+        Pick<ProductPageViewState['modifiers'][number], '_id' | 'textModifierSelection'> & {
+            choices: Array<
+                Pick<
+                    ProductPageViewState['modifiers'][number]['choices'][number],
+                    'choiceId' | 'isSelected'
+                >
+            >;
+        }
+    >;
 };
 
-export type ProductPageInteractiveViewState = Pick<ProductPageViewState, 'sku' | 'price' | 'strikethroughPrice' | 'pricePerUnit' | 'stockStatus' | 'actionsEnabled' | 'isAddingToCart'> & {
+export type ProductPageInteractiveViewState = Pick<
+    ProductPageViewState,
+    | 'sku'
+    | 'price'
+    | 'strikethroughPrice'
+    | 'pricePerUnit'
+    | 'stockStatus'
+    | 'actionsEnabled'
+    | 'isAddingToCart'
+> & {
     mediaGallery: ProductPageViewState['mediaGallery'];
     quantity: ProductPageViewState['quantity'];
-    options: Array<Pick<ProductPageViewState['options'][number], '_id' | 'textChoiceSelection'> & {
-    choices: Array<Pick<ProductPageViewState['options'][number]['choices'][number], 'choiceId' | 'isSelected'>>;
-}>;
-    modifiers: Array<Pick<ProductPageViewState['modifiers'][number], '_id' | 'textModifierSelection'> & {
-    choices: Array<Pick<ProductPageViewState['modifiers'][number]['choices'][number], 'choiceId' | 'isSelected'>>;
-}>;
+    options: Array<
+        Pick<ProductPageViewState['options'][number], '_id' | 'textChoiceSelection'> & {
+            choices: Array<
+                Pick<
+                    ProductPageViewState['options'][number]['choices'][number],
+                    'choiceId' | 'isSelected'
+                >
+            >;
+        }
+    >;
+    modifiers: Array<
+        Pick<ProductPageViewState['modifiers'][number], '_id' | 'textModifierSelection'> & {
+            choices: Array<
+                Pick<
+                    ProductPageViewState['modifiers'][number]['choices'][number],
+                    'choiceId' | 'isSelected'
+                >
+            >;
+        }
+    >;
 };
-
 
 export interface ProductPageRefs {
-  addToCartButton: HTMLElementProxy<ProductPageViewState, HTMLButtonElement>,
-  buyNowButton: HTMLElementProxy<ProductPageViewState, HTMLButtonElement>,
-  mediaGallery: MediaGalleryRefs,
-  quantity: {
-    decrementButton: HTMLElementProxy<QuantityOfProductPageViewState, HTMLButtonElement>,
-    incrementButton: HTMLElementProxy<QuantityOfProductPageViewState, HTMLButtonElement>,
-    quantity: HTMLElementProxy<QuantityOfProductPageViewState, HTMLInputElement>
-  },
-  options: {
-    textChoice: HTMLElementCollectionProxy<OptionOfProductPageViewState, HTMLSelectElement>,
-    choices: {
-      choiceButton: HTMLElementCollectionProxy<ChoiceOfOptionOfProductPageViewState, HTMLButtonElement>
-    }
-  },
-  modifiers: {
-    textModifier: HTMLElementCollectionProxy<ModifierOfProductPageViewState, HTMLSelectElement>,
-    textInput: HTMLElementCollectionProxy<ModifierOfProductPageViewState, HTMLInputElement | HTMLAreaElement>,
-    choices: {
-      choiceButton: HTMLElementCollectionProxy<ChoiceOfModifierOfProductPageViewState, HTMLButtonElement>
-    }
-  }
+    addToCartButton: HTMLElementProxy<ProductPageViewState, HTMLButtonElement>;
+    buyNowButton: HTMLElementProxy<ProductPageViewState, HTMLButtonElement>;
+    mediaGallery: MediaGalleryRefs;
+    quantity: {
+        decrementButton: HTMLElementProxy<QuantityOfProductPageViewState, HTMLButtonElement>;
+        incrementButton: HTMLElementProxy<QuantityOfProductPageViewState, HTMLButtonElement>;
+        quantity: HTMLElementProxy<QuantityOfProductPageViewState, HTMLInputElement>;
+    };
+    options: {
+        textChoice: HTMLElementCollectionProxy<OptionOfProductPageViewState, HTMLSelectElement>;
+        choices: {
+            choiceButton: HTMLElementCollectionProxy<
+                ChoiceOfOptionOfProductPageViewState,
+                HTMLButtonElement
+            >;
+        };
+    };
+    modifiers: {
+        textModifier: HTMLElementCollectionProxy<ModifierOfProductPageViewState, HTMLSelectElement>;
+        textInput: HTMLElementCollectionProxy<
+            ModifierOfProductPageViewState,
+            HTMLInputElement | HTMLAreaElement
+        >;
+        choices: {
+            choiceButton: HTMLElementCollectionProxy<
+                ChoiceOfModifierOfProductPageViewState,
+                HTMLButtonElement
+            >;
+        };
+    };
 }
 
-
 export interface ProductPageRepeatedRefs {
-  addToCartButton: HTMLElementCollectionProxy<ProductPageViewState, HTMLButtonElement>,
-  buyNowButton: HTMLElementCollectionProxy<ProductPageViewState, HTMLButtonElement>,
-  mediaGallery: MediaGalleryRepeatedRefs,
-  quantity: {
-    decrementButton: HTMLElementCollectionProxy<QuantityOfProductPageViewState, HTMLButtonElement>,
-    incrementButton: HTMLElementCollectionProxy<QuantityOfProductPageViewState, HTMLButtonElement>,
-    quantity: HTMLElementCollectionProxy<QuantityOfProductPageViewState, HTMLInputElement>
-  },
-  options: {
-    textChoice: HTMLElementCollectionProxy<OptionOfProductPageViewState, HTMLSelectElement>,
-    choices: {
-      choiceButton: HTMLElementCollectionProxy<ChoiceOfOptionOfProductPageViewState, HTMLButtonElement>
-    }
-  },
-  modifiers: {
-    textModifier: HTMLElementCollectionProxy<ModifierOfProductPageViewState, HTMLSelectElement>,
-    textInput: HTMLElementCollectionProxy<ModifierOfProductPageViewState, HTMLInputElement | HTMLAreaElement>,
-    choices: {
-      choiceButton: HTMLElementCollectionProxy<ChoiceOfModifierOfProductPageViewState, HTMLButtonElement>
-    }
-  }
+    addToCartButton: HTMLElementCollectionProxy<ProductPageViewState, HTMLButtonElement>;
+    buyNowButton: HTMLElementCollectionProxy<ProductPageViewState, HTMLButtonElement>;
+    mediaGallery: MediaGalleryRepeatedRefs;
+    quantity: {
+        decrementButton: HTMLElementCollectionProxy<
+            QuantityOfProductPageViewState,
+            HTMLButtonElement
+        >;
+        incrementButton: HTMLElementCollectionProxy<
+            QuantityOfProductPageViewState,
+            HTMLButtonElement
+        >;
+        quantity: HTMLElementCollectionProxy<QuantityOfProductPageViewState, HTMLInputElement>;
+    };
+    options: {
+        textChoice: HTMLElementCollectionProxy<OptionOfProductPageViewState, HTMLSelectElement>;
+        choices: {
+            choiceButton: HTMLElementCollectionProxy<
+                ChoiceOfOptionOfProductPageViewState,
+                HTMLButtonElement
+            >;
+        };
+    };
+    modifiers: {
+        textModifier: HTMLElementCollectionProxy<ModifierOfProductPageViewState, HTMLSelectElement>;
+        textInput: HTMLElementCollectionProxy<
+            ModifierOfProductPageViewState,
+            HTMLInputElement | HTMLAreaElement
+        >;
+        choices: {
+            choiceButton: HTMLElementCollectionProxy<
+                ChoiceOfModifierOfProductPageViewState,
+                HTMLButtonElement
+            >;
+        };
+    };
 }
 
 import { UrlParams } from '@jay-framework/fullstack-component';
 
 export interface ProductPageParams extends UrlParams {
-  slug: string;
-  prefix?: string;
-  category?: string;
+    slug: string;
+    prefix?: string;
+    category?: string;
 }
 
-export type ProductPageContract = JayContract<ProductPageViewState, ProductPageRefs, ProductPageSlowViewState, ProductPageFastViewState, ProductPageInteractiveViewState>
+export type ProductPageContract = JayContract<
+    ProductPageViewState,
+    ProductPageRefs,
+    ProductPageSlowViewState,
+    ProductPageFastViewState,
+    ProductPageInteractiveViewState
+>;

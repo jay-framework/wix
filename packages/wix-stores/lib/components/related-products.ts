@@ -111,9 +111,7 @@ async function renderFastChanging(
             pageSize: limit + 1,
         });
 
-        const products = result.products
-            .filter((p) => p._id !== productId)
-            .slice(0, limit);
+        const products = result.products.filter((p) => p._id !== productId).slice(0, limit);
 
         return {
             products,
@@ -142,11 +140,7 @@ function RelatedProductsInteractive(
         hasProducts: [hasProducts],
     } = viewStateSignals;
 
-    setupCardInteractions(
-        refs.products,
-        { get: products, set: setProducts },
-        storesContext,
-    );
+    setupCardInteractions(refs.products, { get: products, set: setProducts }, storesContext);
 
     return {
         render: (): RelatedProductsInteractiveViewState => ({

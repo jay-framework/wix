@@ -46,8 +46,7 @@ export function setupCardInteractions(
             const product = currentResults[productIndex];
             if (product?.quickAddType !== QuickAddType.COLOR_AND_TEXT_OPTIONS) return;
 
-            const stockMap =
-                variantStockCache[productId] ?? (await getVariantStock({ productId }));
+            const stockMap = variantStockCache[productId] ?? (await getVariantStock({ productId }));
             variantStockCache[productId] = stockMap;
             variantStockApplied.add(productId);
 
@@ -193,9 +192,7 @@ export function setupCardInteractions(
         if (productIndex === -1) return;
 
         const product = currentResults[productIndex];
-        const textChoice = product.secondQuickOption?.choices?.find(
-            (c) => c.choiceId === choiceId,
-        );
+        const textChoice = product.secondQuickOption?.choices?.find((c) => c.choiceId === choiceId);
         const selectedColor = product.quickOption?.choices?.find((c) => c.isSelected);
 
         if (!textChoice || !textChoice.inStock) return;

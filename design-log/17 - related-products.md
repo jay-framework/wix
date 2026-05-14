@@ -9,6 +9,7 @@ The wix-stores plugin already has the `product-search` component which displays 
 ## Problem
 
 We need a `related-products` component that:
+
 - Shows products from the same category as the current product page
 - Excludes the current product from results
 - Uses the same `product-card` sub-contract for rendering
@@ -19,6 +20,7 @@ We need a `related-products` component that:
 **Q1: How does the component receive context (which product, which category)?**
 
 Two approaches:
+
 - (a) Props passed directly: `categorySlug` + `productSlug` (or `productId`)
 - (b) Derive from the product-page component's data (shared carry-forward or service state)
 
@@ -51,6 +53,7 @@ Actually — if we want add-to-cart on related product cards (quick-add), we nee
 **Q6: How much of product-search can we reuse?**
 
 The product-search component has:
+
 1. Category loading and tree building → **reuse** (same service methods)
 2. `searchProducts` action call → **reuse** directly
 3. `mapProductToCard` from product-mapper.ts → **reuse** directly
@@ -99,8 +102,14 @@ tags:
 ### Product Page Contract Extension
 
 Add to `product-page.jay-contract`:
+
 ```yaml
-  - {tag: categorySlug, type: data, dataType: string, description: Slug of the product's main category}
+- {
+    tag: categorySlug,
+    type: data,
+    dataType: string,
+    description: Slug of the product's main category,
+  }
 ```
 
 ### Component: `related-products.ts`
@@ -143,6 +152,7 @@ export function setupCardInteractions(
 ### Plugin Registration
 
 Add to `plugin.yaml`:
+
 ```yaml
 contracts:
   - name: related-products
@@ -154,16 +164,19 @@ contracts:
 ## Implementation Plan
 
 ### Phase 1: Product Page Extension
+
 1. Add `categorySlug` tag to `product-page.jay-contract`
 2. Map it in product-page slow render from `mainCategoryId` via category tree
 
 ### Phase 2: Extract Card Interactions
+
 1. Create `lib/utils/card-interactions.ts`
 2. Extract card interaction handlers from product-search interactive phase
 3. Refactor product-search to use the shared utility
 4. Verify product-search still works (no behavior change)
 
 ### Phase 3: Related Products Component
+
 1. Create `lib/contracts/related-products.jay-contract`
 2. Create `lib/components/related-products.ts` with slow/fast/interactive phases
 3. Register in `plugin.yaml`
@@ -171,6 +184,7 @@ contracts:
 5. Regenerate definitions
 
 ### Phase 4: Verification
+
 1. Build the package
 2. Type check passes
 3. Test in an example (e.g., store-light product page)
@@ -178,14 +192,17 @@ contracts:
 ## Trade-offs
 
 **Reusing searchProducts action vs. a dedicated query:**
+
 - Pro: No new API surface, consistent product card mapping
 - Con: Fetches one extra product to handle exclusion; returns aggregation data we don't need
 - Decision: Reuse — the overhead is negligible and reduces maintenance
 
 **Extracting card interactions vs. duplicating:**
+
 - Pro: Single source of truth, ~200 fewer lines to maintain
 - Con: Adds coupling between components, function signature must accommodate both
 - Decision: Extract — the logic is identical and will stay that way
 
 **No pagination (load more):**
+
 - Related products are typically 4-8 items. If more are needed, the user navigates to the category page. No pagination needed.
