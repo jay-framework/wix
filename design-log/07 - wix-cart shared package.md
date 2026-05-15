@@ -292,11 +292,13 @@ export const cartIndicator = makeJayStackComponent()
 The cart context exposes an `onItemAddedToCart` event (via `createEvent<void>()`) that fires after `addToCart()` completes. Components subscribe to it in their interactive phase to react when items are added from anywhere on the page.
 
 **Event flow:**
+
 1. Any component calls `storesContext.addToCart(...)` (delegated to `cartContext.addToCart()`)
 2. `cartContext.addToCart()` calls the Wix eCommerce API, updates the reactive cart indicator, then calls `onItemAddedToCart.emit()`
 3. All subscribers are notified
 
 **Components using the event:**
+
 - **cart-indicator** — flashes a `justAdded` flag for 1.5s (CSS animation feedback)
 - **mini-cart** — sets `isOpen = true` to auto-open the drawer
 - **cart-page** — reloads cart data via `loadCart()` to reflect the new item (added 2026-05-15; previously the cart page only loaded on mount, so adding a product from a related-products widget on the same page wouldn't update the cart)
