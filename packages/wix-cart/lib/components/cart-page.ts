@@ -350,6 +350,9 @@ function CartPageInteractive(
         handleRemoveItem(viewState.lineItemId);
     });
 
+    // Reload cart when a product is added (e.g. from another component on the page)
+    cartContext.onItemAddedToCart(() => loadCart());
+
     // Load cart on mount
     loadCart();
 

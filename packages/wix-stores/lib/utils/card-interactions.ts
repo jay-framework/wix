@@ -62,7 +62,7 @@ export function setupCardInteractions(
     };
 
     // Add to cart (SIMPLE products)
-    refs.addToCartButton.onclick(async ({ coordinate }) => {
+    refs.addToCartButton?.onclick(async ({ coordinate }) => {
         const [productId] = coordinate;
         const currentResults = cards.get();
         const productIndex = currentResults.findIndex((p) => p._id === productId);
@@ -88,13 +88,13 @@ export function setupCardInteractions(
     });
 
     // Lazy-load variant stock on hover
-    refs.cardContainer.onmouseenter(({ coordinate }) => {
+    refs.cardContainer?.onmouseenter(({ coordinate }) => {
         const [productId] = coordinate;
         loadVariantStock(productId);
     });
 
     // Quick option choice click
-    refs.quickOption.choices.choiceButton.onclick(async ({ coordinate }) => {
+    refs.quickOption?.choices?.choiceButton?.onclick(async ({ coordinate }) => {
         const [productId, choiceId] = coordinate;
         const currentResults = cards.get();
         const productIndex = currentResults.findIndex((p) => p._id === productId);
@@ -173,7 +173,7 @@ export function setupCardInteractions(
     });
 
     // Second quick option choice click (COLOR_AND_TEXT_OPTIONS)
-    refs.secondQuickOption.choices.choiceButton.onclick(async ({ coordinate }) => {
+    refs.secondQuickOption?.choices?.choiceButton?.onclick(async ({ coordinate }) => {
         const [productId, choiceId] = coordinate;
         const currentResults = cards.get();
         const productIndex = currentResults.findIndex((p) => p._id === productId);
@@ -214,7 +214,7 @@ export function setupCardInteractions(
     });
 
     // View options button (NEEDS_CONFIGURATION)
-    refs.viewOptionsButton.onclick(({ coordinate }) => {
+    refs.viewOptionsButton?.onclick(({ coordinate }) => {
         const [productId] = coordinate;
         const product = cards.get().find((p) => p._id === productId);
         if (product?.productUrl) {
