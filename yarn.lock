@@ -9988,6 +9988,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"wix-members-auth@workspace:exploration/wix-members-auth":
+  version: 0.0.0-use.local
+  resolution: "wix-members-auth@workspace:exploration/wix-members-auth"
+  dependencies:
+    "@types/node": "npm:^20.0.0"
+    "@wix/sdk": "npm:^1.21.5"
+    typescript: "npm:^5.3.3"
+    vite: "npm:^5.0.0"
+  languageName: unknown
+  linkType: soft
+
 "wix-stores-cart-problem@workspace:exploration/wix-stores-cart-problem":
   version: 0.0.0-use.local
   resolution: "wix-stores-cart-problem@workspace:exploration/wix-stores-cart-problem"
