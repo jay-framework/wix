@@ -22,9 +22,9 @@
     "preview": "cross-env NODE_ENV=production node server"
   },
   "dependencies": {
-    "@jay-framework/fullstack-component": "^0.17.3",
-    "@jay-framework/gemini-agent-plugin": "^0.17.3",
-    "@jay-framework/jay-stack-cli": "^0.17.3",
+    "@jay-framework/fullstack-component": "^0.17.4",
+    "@jay-framework/gemini-agent-plugin": "^0.17.4",
+    "@jay-framework/jay-stack-cli": "^0.17.4",
     "@jay-framework/wix-cart": "workspace:^",
     "@jay-framework/wix-server-client": "workspace:^",
     "@jay-framework/wix-stores-v1": "workspace:^",
@@ -33,7 +33,7 @@
     "sirv": "^3.0.0"
   },
   "devDependencies": {
-    "@jay-framework/jay-cli": "^0.17.3",
+    "@jay-framework/jay-cli": "^0.17.4",
     "@jay-framework/wix-dev-environment": "workspace:^",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.0",
