@@ -18,14 +18,23 @@ const origError = console.error.bind(console);
 
 function appendLog(prefix: string, ...args: unknown[]) {
     const time = new Date().toLocaleTimeString();
-    const msg = args.map(a => (typeof a === 'string' ? a : JSON.stringify(a, null, 2))).join(' ');
+    const msg = args.map((a) => (typeof a === 'string' ? a : JSON.stringify(a, null, 2))).join(' ');
     logEl.textContent += `[${time}] ${prefix} ${msg}\n`;
     logEl.scrollTop = logEl.scrollHeight;
 }
 
-console.log = (...args) => { origLog(...args); appendLog('', ...args); };
-console.warn = (...args) => { origWarn(...args); appendLog('WARN:', ...args); };
-console.error = (...args) => { origError(...args); appendLog('ERROR:', ...args); };
+console.log = (...args) => {
+    origLog(...args);
+    appendLog('', ...args);
+};
+console.warn = (...args) => {
+    origWarn(...args);
+    appendLog('WARN:', ...args);
+};
+console.error = (...args) => {
+    origError(...args);
+    appendLog('ERROR:', ...args);
+};
 
 // UI helpers
 function setStatus(state: 'loading' | 'online' | 'offline', text: string) {
@@ -55,8 +64,9 @@ function updateAuthStatus() {
         setStatus('offline', `Visitor (not logged in)`);
     }
 
-    document.getElementById('member-info')!.textContent =
-        loggedIn ? `role: ${tokens?.refreshToken?.role}` : '';
+    document.getElementById('member-info')!.textContent = loggedIn
+        ? `role: ${tokens?.refreshToken?.role}`
+        : '';
 }
 
 // Expose to window for inline onclick handlers
@@ -129,7 +139,7 @@ function updateAuthStatus() {
     submitBtn.textContent = 'Registering...';
 
     try {
-        const profile = (firstName || lastName) ? { firstName, lastName } : undefined;
+        const profile = firstName || lastName ? { firstName, lastName } : undefined;
         const result = await registerMember(email, password, profile);
 
         if (result.loginState === 'SUCCESS') {
@@ -137,16 +147,28 @@ function updateAuthStatus() {
             updateAuthStatus();
             (window as any).refreshTokenDisplay();
         } else if (result.loginState === 'OWNER_APPROVAL_REQUIRED') {
-            showResult('register-result', 'info', 'Registration submitted — pending admin approval.');
+            showResult(
+                'register-result',
+                'info',
+                'Registration submitted — pending admin approval.',
+            );
         } else if (result.loginState === 'EMAIL_VERIFICATION_REQUIRED') {
-            showResult('register-result', 'info', 'Please check your email to verify your account.');
+            showResult(
+                'register-result',
+                'info',
+                'Please check your email to verify your account.',
+            );
             document.getElementById('verify-section')!.style.display = 'block';
         } else if (result.loginState === 'FAILURE') {
             const errorCode = (result as any).errorCode ?? 'unknown';
             const errorMsg = (result as any).error ?? 'Registration failed';
             showResult('register-result', 'error', `${errorCode}: ${errorMsg}`);
         } else {
-            showResult('register-result', 'info', `State: ${result.loginState} — see log for details`);
+            showResult(
+                'register-result',
+                'info',
+                `State: ${result.loginState} — see log for details`,
+            );
         }
     } catch (err: any) {
         console.error('Register exception:', err);
@@ -236,7 +258,10 @@ async function init() {
         // Log what auth methods are available
         const { getClient } = await import('./wix-client');
         const c = getClient();
-        console.log('client.auth methods:', Object.keys(c.auth).filter(k => typeof (c.auth as any)[k] === 'function'));
+        console.log(
+            'client.auth methods:',
+            Object.keys(c.auth).filter((k) => typeof (c.auth as any)[k] === 'function'),
+        );
         console.log('client.auth.loggedIn():', c.auth.loggedIn());
 
         // Check if captcha keys are available

@@ -68,7 +68,11 @@ export function isLoggedIn(): boolean {
     return client?.auth.loggedIn() ?? false;
 }
 
-async function exchangeSessionToken(c: ReturnType<typeof createClient>, sessionToken: string, context: string) {
+async function exchangeSessionToken(
+    c: ReturnType<typeof createClient>,
+    sessionToken: string,
+    context: string,
+) {
     console.log(`[${context}] Got session token, exchanging for member tokens...`);
     console.log(`[${context}] Session token (first 50 chars):`, sessionToken.substring(0, 50));
 
@@ -77,29 +81,40 @@ async function exchangeSessionToken(c: ReturnType<typeof createClient>, sessionT
 
         // Race against a timeout — this uses an iframe internally and may hang
         const timeoutPromise = new Promise<never>((_, reject) =>
-            setTimeout(() => reject(new Error('getMemberTokensForDirectLogin timed out after 10s')), 10000),
+            setTimeout(
+                () => reject(new Error('getMemberTokensForDirectLogin timed out after 10s')),
+                10000,
+            ),
         );
 
         const memberTokens = await Promise.race([tokenPromise, timeoutPromise]);
         console.log(`[${context}] Member tokens received!`);
         console.log(`[${context}] Token role:`, (memberTokens.refreshToken as any)?.role);
-        console.log(`[${context}] Access token expires:`, memberTokens.accessToken?.expiresAt
-            ? new Date(memberTokens.accessToken.expiresAt * 1000).toLocaleString()
-            : 'N/A');
+        console.log(
+            `[${context}] Access token expires:`,
+            memberTokens.accessToken?.expiresAt
+                ? new Date(memberTokens.accessToken.expiresAt * 1000).toLocaleString()
+                : 'N/A',
+        );
 
         c.auth.setTokens(memberTokens);
         storeTokens(memberTokens);
         console.log(`[${context}] Member session established`);
     } catch (err) {
         console.error(`[${context}] Failed to exchange session token for member tokens:`, err);
-        console.warn(`[${context}] Login succeeded but token upgrade failed. You may need to reload.`);
+        console.warn(
+            `[${context}] Login succeeded but token upgrade failed. You may need to reload.`,
+        );
 
         // Check if loggedIn() works even without the token exchange
         console.log(`[${context}] client.auth.loggedIn() =`, c.auth.loggedIn());
-        console.log(`[${context}] Current tokens:`, JSON.stringify({
-            role: (c.auth.getTokens()?.refreshToken as any)?.role,
-            hasAccess: !!c.auth.getTokens()?.accessToken?.value,
-        }));
+        console.log(
+            `[${context}] Current tokens:`,
+            JSON.stringify({
+                role: (c.auth.getTokens()?.refreshToken as any)?.role,
+                hasAccess: !!c.auth.getTokens()?.accessToken?.value,
+            }),
+        );
     }
 }
 

@@ -1,6 +1,7 @@
 # Design Log 18: Wix Members Package
 
 ## Status
+
 Draft
 
 ## Background
@@ -14,6 +15,7 @@ Wix provides two SDK layers for auth. After scanning the actual installed SDK ty
 ### Two API Layers
 
 **1. `@wix/sdk` OAuthStrategy (`client.auth.*`)** -- the right one for headless:
+
 - `client.auth.login({ email, password, captchaTokens? })` → `StateMachine`
 - `client.auth.register({ email, password, profile?, captchaTokens? })` → `StateMachine`
 - `client.auth.getMemberTokensForDirectLogin(sessionToken)` → `Tokens`
@@ -25,6 +27,7 @@ Wix provides two SDK layers for auth. After scanning the actual installed SDK ty
 - `client.auth.getMemberTokensForExternalLogin(memberId, apiKey)` → `Tokens` (admin/server only)
 
 **2. `@wix/identity` (`authentication.loginV2`/`registerV2`)** -- lower-level server REST APIs:
+
 - `registerV2(loginId, options)` → `StateMachineResponse`
 - `loginV2(loginId, options)` → `StateMachineResponse`
 - `signOn(loginId, options)` → `SignOnResponse` (trusted, no password, server-only)
@@ -32,6 +35,7 @@ Wix provides two SDK layers for auth. After scanning the actual installed SDK ty
 - `logout(options)` → `RawHttpResponse`
 
 **3. `@wix/authentication`** -- Velo/Wix Hosted only, NOT suitable for headless OAuth:
+
 - Simple `login()`/`register()`/`logout()` but manages sessions via cookies
 - Does NOT return tokens
 
@@ -71,6 +75,7 @@ Login/register may require CAPTCHA depending on Wix site settings. OAuthStrategy
 All flows tested in `exploration/wix-members-auth/` against a live Wix site.
 
 **Registration flow:**
+
 - `client.auth.register({ email, password })` → `EMAIL_VERIFICATION_REQUIRED` (with `stateToken`)
 - User receives code via email
 - `client.auth.processVerification({ verificationCode })` → `SUCCESS` (with `sessionToken`)
@@ -78,25 +83,30 @@ All flows tested in `exploration/wix-members-auth/` against a live Wix site.
 - Site must be **published** — unpublished site returns `SITE_NOT_PUBLISHED_EXCEPTION`
 
 **Login flow:**
+
 - `client.auth.login({ email, password })` → `SUCCESS` (with `sessionToken`)
 - `client.auth.getMemberTokensForDirectLogin(sessionToken)` → member `Tokens`
 - Error codes: `invalidPassword`, `resetPassword` (forced reset), `invalidEmail`
 
 **Token exchange (`getMemberTokensForDirectLogin`):**
+
 - Uses a hidden iframe to hit `{site-url}/_api/oauth2/authorize` with `responseMode=web_message`
 - Internally calls `redirects.createRedirectSession()` to get the authorize URL
 - **Requires the calling domain in the Wix headless app's "Allowed redirect domains"** — otherwise returns `Allowed_domains_fetch_failed`
 - For local dev, `localhost` must be added to allowed domains in Wix dashboard
 
 **Auth state detection:**
+
 - `client.auth.loggedIn()` checks `refreshToken.role === 'member'`
 - Works on page reload when tokens are loaded from localStorage
 
 **Logout:**
+
 - `client.auth.logout(currentUrl)` → `{ logoutUrl }`
 - Then generate fresh visitor tokens with `generateVisitorTokens()`
 
 **Password reset:**
+
 - `client.auth.sendPasswordResetEmail(email, redirectUri)` — sends Wix-managed reset email
 
 ## Problem
@@ -137,6 +147,7 @@ A: Let the HTML decide. Templates can implement a drawer using the popover API w
 
 Q9: How should we handle CAPTCHA? The SDK may return `SILENT_CAPTCHA_REQUIRED` or `USER_CAPTCHA_REQUIRED` states. This requires loading Google reCAPTCHA and getting a token.
 A: The SDK has **hardcoded** Google reCAPTCHA site keys (`captchaInvisibleSiteKey` = `6LdoPaUfAAAAAJphvHoUoOob7mx0KDlXyXlgrx5v`, `captchaVisibleSiteKey` = `6Ld0J8IcAAAAANyrnxzrRlX1xrrdXsOmsepUYosy`). CAPTCHA is configured per-site in Wix dashboard (Settings > Signup & Login Security). When enabled, CAPTCHA is triggered either always or for suspected bots. The flow:
+
 1. Call `login()`/`register()` without CAPTCHA token
 2. If CAPTCHA required, SDK returns `FAILURE` with `errorCode: 'missingCaptchaToken'`
 3. Load Google reCAPTCHA with the appropriate site key
@@ -149,12 +160,14 @@ Q10: How does the login indicator interact with page caching?
 A: Two modes depending on what the page needs:
 
 **Mode 1: Cacheable pages (most pages)** — login indicator resolved client-side only.
+
 - Server renders the indicator in its loading/logged-out state (fast phase returns `isLoggedIn: false, isLoading: true`)
 - The page can be cached (CDN, SSG, etc.)
 - Client interactive phase checks stored tokens (from cookies), updates reactive signals
 - Brief flash of logged-out state until client resolves — acceptable for headers
 
 **Mode 2: Login-protected pages** — auth resolved server-side, page not cached.
+
 - Server reads member tokens from cookie on the request
 - If not authenticated: component's fast phase returns redirect (302) or 403
 - If authenticated: render page with member data in fast phase, serve with `Cache-Control: no-store`
@@ -162,6 +175,7 @@ A: Two modes depending on what the page needs:
 
 Q11: How should login-protected pages work?
 A: Uses the existing keyed headless component fast-render mechanism:
+
 1. Member tokens are stored in **cookies** (set by client after login, readable by server)
 2. A "login-protected" component's fast phase reads tokens from the cookie
 3. If no valid member tokens → fast phase returns redirect to login page (302) or 403
@@ -302,6 +316,7 @@ tags:
 ```
 
 Template usage example:
+
 ```html
 <div jay-headless plugin="@jay-framework/wix-members" contract="login-indicator">
   <div if="isLoading">...</div>
@@ -442,8 +457,8 @@ import { LoginState, StateMachine, Tokens, TokenRole } from '@wix/sdk';
 
 export interface LoginResult {
   state: LoginState;
-  errorCode?: string;         // on FAILURE
-  errorMessage?: string;      // human-readable
+  errorCode?: string; // on FAILURE
+  errorMessage?: string; // human-readable
   requiresCaptcha?: 'silent' | 'visible'; // on CAPTCHA states
 }
 
@@ -466,7 +481,12 @@ export interface WixMembersContext {
 
   // Auth operations (use client.auth.* internally)
   login(email: string, password: string, captchaToken?: string): Promise<LoginResult>;
-  register(email: string, password: string, profile?: { firstName?: string; lastName?: string }, captchaToken?: string): Promise<RegisterResult>;
+  register(
+    email: string,
+    password: string,
+    profile?: { firstName?: string; lastName?: string },
+    captchaToken?: string,
+  ): Promise<RegisterResult>;
   logout(): Promise<void>;
   sendPasswordResetEmail(email: string, redirectUri: string): Promise<void>;
   refreshMemberState(): Promise<void>;
@@ -480,6 +500,7 @@ export const WIX_MEMBERS_CONTEXT = createJayContext<WixMembersContext>('wix:memb
 ```
 
 Key implementation detail: on successful login/register, the context must:
+
 1. Call `client.auth.getMemberTokensForDirectLogin(sessionToken)`
 2. Call `client.auth.setTokens(memberTokens)`
 3. Store updated tokens in localStorage (reuse wix-server-client's storage key)
@@ -487,6 +508,7 @@ Key implementation detail: on successful login/register, the context must:
 5. Emit `onLogin` event
 
 On logout:
+
 1. Call `client.auth.logout(window.location.href)`
 2. Generate fresh visitor tokens and set them
 3. Clear member signals
@@ -621,31 +643,37 @@ contexts:
 ## Implementation Plan
 
 ### Phase 1: Package Scaffolding
+
 - Create `packages/wix-members/` with standard structure
 - Add `package.json` -- no new Wix SDK deps needed, uses `client.auth.*` from `@wix/sdk` via `wix-server-client`
 - Add `plugin.yaml`, `tsconfig.json`, `vite.config.ts`
 - Add to workspace
 
 ### Phase 2: Contracts
+
 - Write the three `.jay-contract` files
 - Generate TypeScript definitions
 
 ### Phase 3: Service + Context
+
 - Implement `WixMembersService` (server-side, API Key auth)
 - Implement `WixMembersContext` (client-side, OAuth)
 - Token upgrade flow (visitor → member)
 - Reactive signals for login indicator
 
 ### Phase 4: Components
+
 - `loginIndicator` component (fast + interactive phases)
 - `loginForm` component (interactive only)
 - `registerForm` component (interactive only)
 
 ### Phase 5: Init + Integration
+
 - `init.ts` with `makeJayInit` pattern
 - Event emission for cross-plugin integration (cart merge on login)
 
 ### Phase 6: Agent-Kit Guide
+
 - Add guide to `agent-kit/plugin/` explaining:
   - How to add a login indicator to any page header (contract tags, template pattern, plain links for login/register)
   - How to create login and register pages using the form contracts
@@ -655,16 +683,17 @@ contexts:
 - This guide is what the designer agent uses to help template authors wire up auth
 
 ### Phase 7: Example Integration
+
 - Add to whisky-exchange or store example
 - Login indicator in header
 - Login/register page
 
 ## Trade-offs
 
-| Decision | Benefit | Cost |
-|----------|---------|------|
-| Separate login/register contracts | Template flexibility, can place them independently | More contracts to maintain |
-| Client-side only auth forms | No server round-trip for form state, instant feedback | Forms don't work without JS |
-| Events for cross-plugin integration | Loose coupling, wix-members doesn't know about cart | Cart merge timing may be tricky |
-| No password reset in v1 | Simpler scope | Users may expect it |
-| Contract-agnostic UI (no modal opinion) | Template designer chooses modal vs page | Slightly more work for template authors |
+| Decision                                | Benefit                                               | Cost                                    |
+| --------------------------------------- | ----------------------------------------------------- | --------------------------------------- |
+| Separate login/register contracts       | Template flexibility, can place them independently    | More contracts to maintain              |
+| Client-side only auth forms             | No server round-trip for form state, instant feedback | Forms don't work without JS             |
+| Events for cross-plugin integration     | Loose coupling, wix-members doesn't know about cart   | Cart merge timing may be tricky         |
+| No password reset in v1                 | Simpler scope                                         | Users may expect it                     |
+| Contract-agnostic UI (no modal opinion) | Template designer chooses modal vs page               | Slightly more work for template authors |

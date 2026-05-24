@@ -1,143 +1,275 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Wix Members Auth Exploration</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: system-ui, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
-        h1 { margin-bottom: 20px; }
-        h2 { margin-bottom: 10px; color: #333; }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      h1 {
+        margin-bottom: 20px;
+      }
+      h2 {
+        margin-bottom: 10px;
+        color: #333;
+      }
 
-        .card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+      .card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
 
-        .status-bar { display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: #1a1a2e; color: white; border-radius: 8px; margin-bottom: 20px; }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; }
-        .status-dot.online { background: #4ade80; }
-        .status-dot.offline { background: #f87171; }
-        .status-dot.loading { background: #fbbf24; }
-        #status-text { flex: 1; }
-        #logout-btn { background: #ef4444; color: white; border: none; padding: 6px 16px; border-radius: 4px; cursor: pointer; display: none; }
-        #logout-btn:hover { background: #dc2626; }
+      .status-bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        background: #1a1a2e;
+        color: white;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+      .status-dot.online {
+        background: #4ade80;
+      }
+      .status-dot.offline {
+        background: #f87171;
+      }
+      .status-dot.loading {
+        background: #fbbf24;
+      }
+      #status-text {
+        flex: 1;
+      }
+      #logout-btn {
+        background: #ef4444;
+        color: white;
+        border: none;
+        padding: 6px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: none;
+      }
+      #logout-btn:hover {
+        background: #dc2626;
+      }
 
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; margin-bottom: 4px; font-weight: 500; color: #555; }
-        .form-group input { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+      .form-group {
+        margin-bottom: 12px;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 4px;
+        font-weight: 500;
+        color: #555;
+      }
+      .form-group input {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
 
-        button.primary { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 14px; }
-        button.primary:hover { background: #2563eb; }
-        button.primary:disabled { background: #93c5fd; cursor: not-allowed; }
+      button.primary {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      button.primary:hover {
+        background: #2563eb;
+      }
+      button.primary:disabled {
+        background: #93c5fd;
+        cursor: not-allowed;
+      }
 
-        .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
 
-        #log { background: #1a1a2e; color: #a5f3fc; padding: 16px; border-radius: 8px; font-family: monospace; font-size: 12px; max-height: 400px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
+      #log {
+        background: #1a1a2e;
+        color: #a5f3fc;
+        padding: 16px;
+        border-radius: 8px;
+        font-family: monospace;
+        font-size: 12px;
+        max-height: 400px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
 
-        .result { margin-top: 12px; padding: 10px; border-radius: 4px; font-size: 13px; display: none; }
-        .result.error { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; display: block; }
-        .result.success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; display: block; }
-        .result.info { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; display: block; }
+      .result {
+        margin-top: 12px;
+        padding: 10px;
+        border-radius: 4px;
+        font-size: 13px;
+        display: none;
+      }
+      .result.error {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #991b1b;
+        display: block;
+      }
+      .result.success {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        color: #166534;
+        display: block;
+      }
+      .result.info {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        color: #1e40af;
+        display: block;
+      }
 
-        #token-info { font-family: monospace; font-size: 11px; color: #666; margin-top: 8px; word-break: break-all; }
+      #token-info {
+        font-family: monospace;
+        font-size: 11px;
+        color: #666;
+        margin-top: 8px;
+        word-break: break-all;
+      }
 
-        #clear-btn { background: transparent; color: #888; border: 1px solid #888; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-top: 8px; }
+      #clear-btn {
+        background: transparent;
+        color: #888;
+        border: 1px solid #888;
+        padding: 4px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        margin-top: 8px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Wix Members Auth Exploration</h1>
 
     <!-- Auth Status Indicator -->
     <div class="status-bar">
-        <div id="status-dot" class="status-dot loading"></div>
-        <span id="status-text">Initializing...</span>
-        <span id="member-info"></span>
-        <button id="logout-btn" onclick="handleLogout()">Log Out</button>
+      <div id="status-dot" class="status-dot loading"></div>
+      <span id="status-text">Initializing...</span>
+      <span id="member-info"></span>
+      <button id="logout-btn" onclick="handleLogout()">Log Out</button>
     </div>
 
     <div class="columns">
-        <!-- Login Form -->
-        <div class="card">
-            <h2>Login</h2>
-            <form id="login-form" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label for="login-email">Email</label>
-                    <input type="email" id="login-email" required />
-                </div>
-                <div class="form-group">
-                    <label for="login-password">Password</label>
-                    <input type="password" id="login-password" required />
-                </div>
-                <button type="submit" class="primary" id="login-submit">Log In</button>
-                <div id="login-result" class="result"></div>
-            </form>
-        </div>
+      <!-- Login Form -->
+      <div class="card">
+        <h2>Login</h2>
+        <form id="login-form" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label for="login-email">Email</label>
+            <input type="email" id="login-email" required />
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" required />
+          </div>
+          <button type="submit" class="primary" id="login-submit">Log In</button>
+          <div id="login-result" class="result"></div>
+        </form>
+      </div>
 
-        <!-- Register Form -->
-        <div class="card">
-            <h2>Register</h2>
-            <form id="register-form" onsubmit="handleRegister(event)">
-                <div class="form-group">
-                    <label for="reg-email">Email</label>
-                    <input type="email" id="reg-email" required />
-                </div>
-                <div class="form-group">
-                    <label for="reg-password">Password</label>
-                    <input type="password" id="reg-password" required />
-                </div>
-                <div class="form-group">
-                    <label for="reg-first">First Name (optional)</label>
-                    <input type="text" id="reg-first" />
-                </div>
-                <div class="form-group">
-                    <label for="reg-last">Last Name (optional)</label>
-                    <input type="text" id="reg-last" />
-                </div>
-                <button type="submit" class="primary" id="reg-submit">Register</button>
-                <div id="register-result" class="result"></div>
-            </form>
+      <!-- Register Form -->
+      <div class="card">
+        <h2>Register</h2>
+        <form id="register-form" onsubmit="handleRegister(event)">
+          <div class="form-group">
+            <label for="reg-email">Email</label>
+            <input type="email" id="reg-email" required />
+          </div>
+          <div class="form-group">
+            <label for="reg-password">Password</label>
+            <input type="password" id="reg-password" required />
+          </div>
+          <div class="form-group">
+            <label for="reg-first">First Name (optional)</label>
+            <input type="text" id="reg-first" />
+          </div>
+          <div class="form-group">
+            <label for="reg-last">Last Name (optional)</label>
+            <input type="text" id="reg-last" />
+          </div>
+          <button type="submit" class="primary" id="reg-submit">Register</button>
+          <div id="register-result" class="result"></div>
+        </form>
 
-            <!-- Email Verification (shown after EMAIL_VERIFICATION_REQUIRED) -->
-            <div id="verify-section" style="display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid #eee;">
-                <h3 style="margin-bottom: 8px;">Email Verification</h3>
-                <form onsubmit="handleVerify(event)">
-                    <div class="form-group">
-                        <label for="verify-code">Verification Code</label>
-                        <input type="text" id="verify-code" placeholder="Enter code from email" required />
-                    </div>
-                    <button type="submit" class="primary" id="verify-submit">Verify</button>
-                    <div id="verify-result" class="result"></div>
-                </form>
+        <!-- Email Verification (shown after EMAIL_VERIFICATION_REQUIRED) -->
+        <div
+          id="verify-section"
+          style="display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid #eee"
+        >
+          <h3 style="margin-bottom: 8px">Email Verification</h3>
+          <form onsubmit="handleVerify(event)">
+            <div class="form-group">
+              <label for="verify-code">Verification Code</label>
+              <input type="text" id="verify-code" placeholder="Enter code from email" required />
             </div>
+            <button type="submit" class="primary" id="verify-submit">Verify</button>
+            <div id="verify-result" class="result"></div>
+          </form>
         </div>
+      </div>
     </div>
 
     <!-- Password Reset -->
     <div class="card">
-        <h2>Password Reset</h2>
-        <form onsubmit="handlePasswordReset(event)">
-            <div class="form-group">
-                <label for="reset-email">Email</label>
-                <input type="email" id="reset-email" required />
-            </div>
-            <button type="submit" class="primary" id="reset-submit">Send Reset Email</button>
-            <div id="reset-result" class="result"></div>
-        </form>
+      <h2>Password Reset</h2>
+      <form onsubmit="handlePasswordReset(event)">
+        <div class="form-group">
+          <label for="reset-email">Email</label>
+          <input type="email" id="reset-email" required />
+        </div>
+        <button type="submit" class="primary" id="reset-submit">Send Reset Email</button>
+        <div id="reset-result" class="result"></div>
+      </form>
     </div>
 
     <!-- Token Info -->
     <div class="card">
-        <h2>Current Token State</h2>
-        <button class="primary" onclick="refreshTokenDisplay()">Refresh</button>
-        <button id="clear-btn" onclick="handleClearTokens()">Clear Stored Tokens</button>
-        <div id="token-info">Loading...</div>
+      <h2>Current Token State</h2>
+      <button class="primary" onclick="refreshTokenDisplay()">Refresh</button>
+      <button id="clear-btn" onclick="handleClearTokens()">Clear Stored Tokens</button>
+      <div id="token-info">Loading...</div>
     </div>
 
     <!-- Console Log -->
     <div class="card">
-        <h2>Log</h2>
-        <div id="log"></div>
+      <h2>Log</h2>
+      <div id="log"></div>
     </div>
 
     <script type="module" src="./main.ts"></script>
-</body>
+  </body>
 </html>
