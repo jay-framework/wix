@@ -24,6 +24,7 @@ Design documentation for the Jay Framework Wix integration packages.
 | 16  | [Product Data Extension Fields](./16%20-%20product%20data%20extension%20fields.md)             | Draft         |
 | 17  | [Related Products](./17%20-%20related-products.md)                                             | Draft         |
 | 18  | [Wix Members Package](./18%20-%20wix-members-package.md)                                       | Draft         |
+| 19  | [Wix Media Plugin](./19%20-%20wix-media-plugin.md)                                             | Draft         |
 
 ## Packages Covered
 
