@@ -65,6 +65,7 @@ Available on npm, not currently installed. Sub-modules:
 ### Key API Operations (from Wix docs)
 
 **Files:**
+
 - `listFiles(options?)` — list files in a folder, with pagination
 - `importFile(url, options?)` — import file from external URL into Media Manager
 - `bulkImportFiles(urls, options?)` — bulk import
@@ -73,11 +74,13 @@ Available on npm, not currently installed. Sub-modules:
 - `deleteFiles(fileIds)` — delete files
 
 **Folders:**
+
 - `listFolders(options?)` — list folders
 - `createFolder(name, options?)` — create folder
 - Root folders: `MEDIA_ROOT`, `TRASH_ROOT`, `VISITOR_UPLOADS_ROOT`
 
 **Import notes:**
+
 - Import is via URL (not binary upload) — file must be publicly accessible
 - Imported files are not immediately available (async processing)
 - Triggers events: `FileDescriptorFileReady`, `FileDescriptorFileFailed`
@@ -87,10 +90,12 @@ Available on npm, not currently installed. Sub-modules:
 Already implemented in `packages/wix-utils/lib/media.ts`:
 
 **URL Parsing:**
+
 - `parseWixMediaUrl(url)` → `{ type, mediaId, fileName, originWidth, originHeight, posterUri, ... }`
 - Handles: `wix:image://`, `wix:video://`, `wix:document://`, `wix:audio://`
 
 **URL Formatting:**
+
 - `formatWixMediaUrl(id, url, resize?)` → `https://static.wixstatic.com/media/{mediaId}`
 - With resize: `https://static.wixstatic.com/media/{mediaId}/v1/fit/w_{w},h_{h},q_90/file.jpg`
 - `getVideoPosterUrl(url, resize?)` → poster image URL
@@ -98,6 +103,7 @@ Already implemented in `packages/wix-utils/lib/media.ts`:
 - `getAudioUrl(url)` → `https://static.wixstatic.com/mp3/{mediaId}`
 
 **URL format reference:**
+
 ```
 Images:  https://static.wixstatic.com/media/{mediaId}
 Resized: https://static.wixstatic.com/media/{mediaId}/v1/fit/w_{w},h_{h},q_{q}/file.jpg
@@ -112,12 +118,12 @@ Audio:   https://static.wixstatic.com/mp3/{mediaId}
 
 The wix-media plugin is a **setup-time and CLI tool**, not a runtime component. It:
 
-1. Scans Wix Media Manager and builds a flat media index for agent-kit
-2. Uploads local files from `public/` to Wix Media Manager via a CLI command
-3. Generates agent-kit reference files with slug-based media lookup and usage instructions
-4. Excludes private files from the index
+1. **Agent-kit reference** (generated during `agent-kit`) — scans Wix Media Manager and generates a flat media index as a reference in agent-kit, like other generated references
+2. **Upload CLI command** — uploads local files from `public/` to Wix Media Manager, then regenerates the index
+3. Excludes private files from the index
 
 Separate concerns (parked):
+
 - **Upload UI component** (headless file upload) → separate plugin reusing this package's service/context
 - **Private file URL generation** → separate plugin
 
@@ -128,38 +134,68 @@ Generated at `agent-kit/media/MEDIA-INDEX.md`. Flat list, no folder hierarchy. F
 ```markdown
 # Available Media
 
-| Slug | Display Name | Type | Dimensions | Labels | Folder | URL |
-|------|-------------|------|-----------|--------|--------|-----|
-| logo | Company Logo | image | 200x80 | branding | Site Assets | https://static.wixstatic.com/media/abc123 |
-| hero-banner | Hero Banner | image | 1920x600 | homepage, banner | Banners | https://static.wixstatic.com/media/def456 |
-| promo-video | Summer Promo | video | 1280x720 | campaign | Videos | https://static.wixstatic.com/media/ghi789 |
+| Folder      | Slug        | Display Name | Type  | Dimensions | Labels           | URL                                       |
+| ----------- | ----------- | ------------ | ----- | ---------- | ---------------- | ----------------------------------------- |
+| Site Assets | logo        | Company Logo | image | 200x80     | branding         | https://static.wixstatic.com/media/abc123 |
+| Banners     | hero-banner | Hero Banner  | image | 1920x600   | homepage, banner | https://static.wixstatic.com/media/def456 |
+| Videos      | promo-video | Summer Promo | video | 1280x720   | campaign         | https://static.wixstatic.com/media/ghi789 |
 
 ## How to Use
 
 ### By slug in templates
+
 Find the media by slug in the table above, use the URL in `src` attributes:
 `<img src="https://static.wixstatic.com/media/abc123" alt="Company Logo" />`
 
-### Resized (recommended for performance)
-Append resize parameters:
-`https://static.wixstatic.com/media/{mediaId}/v1/fit/w_{width},h_{height},q_90/file.jpg`
+### Image Transformations
 
-### Common sizes
-- Thumbnail: `/v1/fit/w_100,h_100,q_90/file.jpg`
-- Card image: `/v1/fit/w_400,h_300,q_90/file.jpg`
-- Hero: `/v1/fit/w_1920,h_600,q_90/file.jpg`
+URL format: `https://static.wixstatic.com/media/{mediaId}/v1/{mode}/{params}/file.{ext}`
 
-### Resize modes
-- `/v1/fit/` — fit within bounds, preserve aspect ratio
-- `/v1/fill/` — fill bounds, crop if needed
+#### Modes
 
-### Quality
-- `q_90` — high quality (default)
-- `q_75` — balanced
-- `q_50` — compressed (thumbnails, previews)
+**fit** — scale to fit within dimensions, preserve aspect ratio (may add padding)
+`/v1/fit/w_640,h_480/file.jpg`
+
+**fill** — scale to fill dimensions, crop from center if needed
+`/v1/fill/w_640,h_480/file.jpg`
+
+**crop** — extract a rectangle from the original image at specific coordinates
+`/v1/crop/x_100,y_50,w_800,h_600/file.jpg`
+
+#### Parameters
+
+- `w_{width}` — target width (1–5000 px)
+- `h_{height}` — target height (1–5000 px)
+- `x_{x},y_{y}` — crop origin (crop mode only)
+- `q_{quality}` — JPEG quality (1–100, default 90)
+
+#### Output formats
+
+Use the file extension to convert:
+
+- `file.jpg` — JPEG (photos, many colors)
+- `file.png` — PNG (transparency, simple graphics)
+- `file.webp` — WebP (modern, better compression)
+- `file.gif` — GIF (animation)
+
+#### Common sizes
+
+- Thumbnail: `/v1/fill/w_100,h_100/file.jpg`
+- Card image: `/v1/fill/w_400,h_300/file.jpg`
+- Hero: `/v1/fill/w_1920,h_600/file.jpg`
+- Full width fit: `/v1/fit/w_1200,h_800/file.webp`
+
+#### Limits
+
+- Max dimension: 5000px per side
+- WebP max: 16,383px per side
+- Images are not upscaled beyond original size
+- Only works with public Wix-hosted media (`static.wixstatic.com`)
 ```
 
 Slugs are derived from display names (lowercased, hyphenated). Not guaranteed unique — if duplicates exist, append a suffix (e.g., `logo-2`).
+
+Table is sorted by **folder (alphabetically), then slug (alphabetically)** within each folder. This gives visual grouping and keeps the table stable across regenerations.
 
 ### Upload Flow (CLI Command)
 
@@ -178,6 +214,7 @@ Exposed as a plugin CLI command (e.g., `jay media upload`):
 ```
 
 **Upload index** (`config/.wix-media-uploads.json`):
+
 ```json
 {
   "public/images/logo.png": { "mediaId": "abc123", "status": "ready" },
@@ -187,36 +224,22 @@ Exposed as a plugin CLI command (e.g., `jay media upload`):
 
 Filename-based tracking — simple, maps local path to Wix mediaId and status.
 
-### Framework Requirement: Plugin CLI Commands
-
-Plugins need a way to expose CLI commands to `jay-stack-cli`, similar to how actions are exposed. For example:
-
-```yaml
-# plugin.yaml
-commands:
-  - name: media:upload
-    handler: uploadMedia
-    description: Upload local public/ files to Wix Media Manager
-  - name: media:index
-    handler: generateIndex
-    description: Rebuild media index from Wix Media Manager
-```
-
-This allows `jay media:upload` and `jay media:index` from the CLI.
-
 ### Plugin Structure
 
 ```
 packages/wix-media/
 ├── lib/
 │   ├── index.ts                    # Server exports
-│   ├── setup.ts                    # Setup handler (index generation for agent-kit)
+│   ├── setup.ts                    # Setup handler (validation)
 │   ├── services/
 │   │   ├── wix-media-service.ts    # Media Manager API wrapper (list, import)
 │   │   └── wix-media-service-marker.ts
 │   ├── commands/
-│   │   ├── upload.ts               # CLI: upload public/ files to Wix
-│   │   └── index.ts                # CLI: rebuild media index
+│   │   ├── upload-public.ts        # CLI command: upload public/ files to Wix
+│   │   └── rebuild-index.ts        # CLI command: rebuild media index
+│   ├── contracts/
+│   │   ├── upload-public.jay-command   # Command metadata + args schema
+│   │   └── rebuild-index.jay-command
 │   ├── upload/
 │   │   └── upload-index.ts         # Filename-based upload tracking
 │   └── index-generator.ts          # Generate MEDIA-INDEX.md and INSTRUCTIONS.md
@@ -224,6 +247,50 @@ packages/wix-media/
 ├── package.json
 ├── tsconfig.json
 └── vite.config.ts
+```
+
+### CLI Commands
+
+Uses the framework's `makeCliCommand` pattern with `.jay-command` metadata files.
+
+#### upload-public.jay-command
+
+```yaml
+name: upload-public
+description: Upload local public/ files to Wix Media Manager
+
+inputSchema:
+  folder?: string    # Subfolder of public/ to upload (default: all)
+  dryRun?: boolean   # List files that would be uploaded without uploading
+```
+
+#### rebuild-index.jay-command
+
+```yaml
+name: rebuild-index
+description: Rebuild agent-kit media index from current Wix Media Manager state
+```
+
+#### Command handler example
+
+```typescript
+import { makeCliCommand } from '@jay-framework/fullstack-component';
+import { WIX_MEDIA_SERVICE } from '../services/wix-media-service-marker';
+import { CONSOLE_CONTEXT } from '@jay-framework/stack-server-runtime';
+
+export const uploadPublic = makeCliCommand('upload-public')
+    .withServices(WIX_MEDIA_SERVICE, CONSOLE_CONTEXT)
+    .withHandler(async (mediaService, console, args) => {
+        const { projectRoot, publicFolder } = console;
+        // scan publicFolder, upload to Wix, regenerate index
+    });
+```
+
+#### Invocation
+
+```bash
+jay-stack run wix-media/upload-public --folder images --dry-run
+jay-stack run wix-media/rebuild-index
 ```
 
 ### plugin.yaml
@@ -239,16 +306,13 @@ services:
 setup:
   handler: setupWixMedia
   references: generateMediaReferences
-  description: Scans Wix Media Manager, generates agent-kit media index
+  description: Validates Wix Media Manager access, generates agent-kit media index
 
-# CLI commands (framework requirement — plugin-exposed commands)
 commands:
-  - name: media:upload
-    handler: uploadMedia
-    description: Upload local public/ files to Wix Media Manager
-  - name: media:index
-    handler: generateIndex
-    description: Rebuild media index from Wix Media Manager
+  - name: upload-public
+    command: upload-public.jay-command
+  - name: rebuild-index
+    command: rebuild-index.jay-command
 ```
 
 ### Agent-Kit Instructions
@@ -259,77 +323,123 @@ Generated at `agent-kit/media/INSTRUCTIONS.md`:
 # Using Media in Jay Framework
 
 ## Finding Media
+
 See MEDIA-INDEX.md for all available media with ready-to-use URLs.
+Look up media by slug, then use the URL from the table.
 
 ## Image URLs
 
 ### Basic usage
+
 <img src="https://static.wixstatic.com/media/{mediaId}" alt="description" />
 
-### Resized (recommended)
-<img src="https://static.wixstatic.com/media/{mediaId}/v1/fit/w_800,h_600,q_90/file.jpg" />
+### Transformed (recommended for performance)
 
-### Common sizes
-- Thumbnail: w_100,h_100
-- Card: w_400,h_300
-- Hero: w_1920,h_600
-- Full width: w_1200,h_auto (use originWidth from index)
+URL format: /v1/{mode}/{params}/file.{ext}
 
-### Resize modes
-- `/v1/fit/` — fit within bounds, preserve aspect ratio (letterbox)
-- `/v1/fill/` — fill bounds, crop if needed
+#### Modes
 
-### Quality
-- q_90 — high quality (default)
-- q_75 — balanced
-- q_50 — compressed (thumbnails, previews)
+- **fit** — scale to fit within dimensions, preserve aspect ratio
+  <img src="https://static.wixstatic.com/media/{mediaId}/v1/fit/w_800,h_600/file.jpg" alt="" />
+- **fill** — scale to fill dimensions exactly, crop from center
+  <img src="https://static.wixstatic.com/media/{mediaId}/v1/fill/w_800,h_600/file.jpg" alt="" />
+- **crop** — extract a rectangle at specific coordinates
+  <img src="https://static.wixstatic.com/media/{mediaId}/v1/crop/x_100,y_50,w_800,h_600/file.jpg" alt="" />
+
+#### Parameters
+
+- w\_{width} — target width (1–5000 px)
+- h\_{height} — target height (1–5000 px)
+- x*{x},y*{y} — crop start position (crop mode only)
+- q\_{quality} — JPEG quality (1–100)
+
+#### Output format (set via file extension)
+
+- file.jpg — JPEG (photos)
+- file.webp — WebP (modern, smaller)
+- file.png — PNG (transparency)
+- file.gif — GIF (animation)
+
+#### Common sizes
+
+- Thumbnail: /v1/fill/w_100,h_100/file.jpg
+- Card: /v1/fill/w_400,h_300/file.jpg
+- Hero: /v1/fill/w_1920,h_600/file.jpg
+- Full width: /v1/fit/w_1200,h_800/file.webp
 
 ## Video
+
 Use the media URL directly in <video> tags.
-Poster image: append /v1/fit/w_{w},h_{h},q_90/file.jpg to video mediaId.
+Poster image: /v1/fit/w*{w},h*{h}/file.jpg appended to video mediaId.
 
 ## Documents
+
 URL format: https://static.wixstatic.com/ugd/{mediaId}
 
 ## Audio
+
 URL format: https://static.wixstatic.com/mp3/{mediaId}
+
+## Limits
+
+- Max dimension: 5000px per side
+- WebP max: 16,383px per side
+- Images are not upscaled beyond original size
+- Transformations only work with public Wix-hosted media
 ```
 
 ## Implementation Plan
 
 ### Phase 1: Package Scaffolding
+
 - Create `packages/wix-media/`
 - Add `@wix/media` dependency
 - Add `plugin.yaml`, config files
 
 ### Phase 2: Media Service
+
 - Implement `WixMediaService` wrapping `@wix/media` files/folders APIs
 - List all public files with pagination (filter out private/state checks)
 - List folders (for metadata/tagging)
 - Slug generation from display names (with dedup suffix)
 
-### Phase 3: Index Generator
-- Scan all public media from Wix Media Manager
-- Generate `MEDIA-INDEX.md` with flat table (slug, display name, type, dimensions, labels, folder, URL)
-- Generate `INSTRUCTIONS.md` with usage guide and transformation reference
+### Phase 3: Index Generator (agent-kit reference)
+
+- Implement `generateMediaReferences` — the `references` handler in plugin.yaml
+- Runs during `jay agent-kit` (not setup) alongside other reference generators
+- Scans all public media from Wix Media Manager
+- Generates `MEDIA-INDEX.md` with flat table (slug, display name, type, dimensions, labels, folder, URL)
+- Generates `INSTRUCTIONS.md` with usage guide and transformation reference
+- Output goes to `agent-kit/media/` like other generated references
 
 ### Phase 4: CLI Commands
-- `media:upload` — scan `public/`, filename-based tracking via `.wix-media-uploads.json`, import to Wix
-- `media:index` — rebuild media index from current Wix Media Manager state
-- Framework requirement: plugin CLI command registration mechanism
+
+- `upload-public` command — scan `public/`, filename-based tracking via `.wix-media-uploads.json`, import to Wix, regenerate index
+- `rebuild-index` command — regenerate agent-kit media index from current Wix Media Manager state
+- Uses `makeCliCommand` + `.jay-command` metadata pattern
+- Invoked via `jay-stack run wix-media/upload-public`
 
 ### Phase 5: Setup Integration
-- Wire `setup` handler to generate agent-kit references on `jay setup`
-- Index generation runs during setup (read-only, no upload)
+
+- Wire `setup` handler for validation (check Wix Media Manager access)
+- Reference generation happens in agent-kit stage, not setup
+
+### Phase 6: Example Integration
+
+- Add to whisky-exchange or store example
+- Upload existing `public/` media to Wix via `jay-stack run wix-media/upload-public`
+- Run `jay agent-kit` and verify MEDIA-INDEX.md is generated with correct slugs, URLs, and metadata
+- Update existing jay-html templates to use Wix media URLs (with transformations) instead of local `public/` paths
+- Verify images render correctly with fit/fill/crop transformations at various sizes
 
 ## Trade-offs
 
-| Decision | Benefit | Cost |
-|----------|---------|------|
-| URL-based import (not binary) | Uses Wix's importFile API directly | Local files need to be publicly accessible during upload |
-| Filename-based dedup | Simple, easy to inspect and edit | Renamed files re-upload |
-| Flat index with folder as metadata | Simple for agent to search, all media in one table | Loses folder hierarchy |
-| Slug-based agent references | Human-readable, agent-friendly | Not guaranteed unique, needs suffix dedup |
-| Upload as CLI command (not setup) | Explicit, controlled, no accidental uploads | Extra step in workflow |
-| Exclude private files | Index only has usable media | Agent can't reference private media |
-| Upload UI component in separate plugin | Clean separation: tooling vs runtime | Two packages to maintain |
+| Decision                               | Benefit                                            | Cost                                                     |
+| -------------------------------------- | -------------------------------------------------- | -------------------------------------------------------- |
+| URL-based import (not binary)          | Uses Wix's importFile API directly                 | Local files need to be publicly accessible during upload |
+| Filename-based dedup                   | Simple, easy to inspect and edit                   | Renamed files re-upload                                  |
+| Flat index with folder as metadata     | Simple for agent to search, all media in one table | Loses folder hierarchy                                   |
+| Slug-based agent references            | Human-readable, agent-friendly                     | Not guaranteed unique, needs suffix dedup                |
+| Upload as CLI command (not setup)      | Explicit, controlled, no accidental uploads        | Extra step in workflow                                   |
+| Exclude private files                  | Index only has usable media                        | Agent can't reference private media                      |
+| Upload UI component in separate plugin | Clean separation: tooling vs runtime               | Two packages to maintain                                 |

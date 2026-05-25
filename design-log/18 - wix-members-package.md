@@ -685,8 +685,11 @@ contexts:
 ### Phase 7: Example Integration
 
 - Add to whisky-exchange or store example
-- Login indicator in header
-- Login/register page
+- Login indicator in site header (all pages)
+- Login page with login-form contract
+- Register page with register-form contract
+- At least one login-protected page to verify the redirect/403 flow
+- Verify end-to-end: register → verify email → login → indicator updates → logout → indicator resets
 
 ## Trade-offs
 
