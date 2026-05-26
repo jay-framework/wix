@@ -8,7 +8,7 @@ import type {
 } from '@jay-framework/stack-server-runtime';
 import { getService } from '@jay-framework/stack-server-runtime';
 import { WIX_MEDIA_SERVICE_MARKER, type WixMediaService } from './services/wix-media-service.js';
-import { generateMediaIndex, generateInstructions } from './index-generator.js';
+import { generateMediaIndex } from './index-generator.js';
 
 export async function setupWixMedia(ctx: PluginSetupContext): Promise<PluginSetupResult> {
     if (ctx.initError) {
@@ -54,19 +54,11 @@ export async function generateWixMediaReferences(
     const files = await mediaService.listPublicFiles();
 
     const mediaIndexContent = generateMediaIndex(files);
-    const instructionsContent = generateInstructions();
-
     const mediaIndexPath = path.join(ctx.referencesDir, 'MEDIA-INDEX.md');
-    const instructionsPath = path.join(ctx.referencesDir, 'INSTRUCTIONS.md');
-
     fs.writeFileSync(mediaIndexPath, mediaIndexContent, 'utf-8');
-    fs.writeFileSync(instructionsPath, instructionsContent, 'utf-8');
 
     return {
-        referencesCreated: [
-            `agent-kit/references/${ctx.pluginName}/MEDIA-INDEX.md`,
-            `agent-kit/references/${ctx.pluginName}/INSTRUCTIONS.md`,
-        ],
+        referencesCreated: [`agent-kit/references/${ctx.pluginName}/MEDIA-INDEX.md`],
         message: `${files.length} media files indexed.`,
     };
 }

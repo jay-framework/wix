@@ -5,6 +5,12 @@ services:
     marker: WIX_MEDIA_SERVICE_MARKER
     description: Wix Media Manager API for listing files and folders
 
+commands:
+  - name: upload-public
+    command: upload-public.jay-command
+  - name: rebuild-index
+    command: rebuild-index.jay-command
+
 setup:
   handler: setupWixMedia
   references: generateWixMediaReferences

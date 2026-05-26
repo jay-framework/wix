@@ -20,8 +20,13 @@ export interface MediaFileInfo {
     folderName: string;
 }
 
+export interface UploadUrlResult {
+    uploadUrl: string;
+}
+
 export interface WixMediaService {
     listPublicFiles(): Promise<MediaFileInfo[]>;
+    generateUploadUrl(mimeType: string, fileName: string): Promise<UploadUrlResult>;
 }
 
 export const WIX_MEDIA_SERVICE_MARKER = createJayService<WixMediaService>('Wix Media Service');
@@ -61,7 +66,10 @@ function deduplicateSlugs(items: { slug: string }[]): void {
     }
 }
 
-function extractDimensions(file: { media?: { image?: { image?: string }; vector?: { image?: string } }; url?: string }): { width?: number; height?: number } {
+function extractDimensions(file: {
+    media?: { image?: { image?: string }; vector?: { image?: string } };
+    url?: string;
+}): { width?: number; height?: number } {
     const url = file.url ?? '';
     const widthMatch = url.match(/originWidth=(\d+)/);
     const heightMatch = url.match(/originHeight=(\d+)/);
@@ -92,15 +100,17 @@ async function fetchAllFolders(foldersClient: FoldersClient): Promise<Map<string
     return folderMap;
 }
 
-async function fetchAllPublicFiles(filesClient: FilesClient): Promise<Array<{
-    id: string;
-    displayName: string;
-    url: string;
-    mediaType: string;
-    labels: string[];
-    folderId: string;
-    media?: any;
-}>> {
+async function fetchAllPublicFiles(filesClient: FilesClient): Promise<
+    Array<{
+        id: string;
+        displayName: string;
+        url: string;
+        mediaType: string;
+        labels: string[];
+        folderId: string;
+        media?: any;
+    }>
+> {
     const allFiles: Array<{
         id: string;
         displayName: string;
@@ -144,6 +154,13 @@ export function provideWixMediaService(wixClient: WixClient): WixMediaService {
     const foldersClient = getFoldersClient(wixClient);
 
     const service: WixMediaService = {
+        async generateUploadUrl(mimeType: string, fileName: string): Promise<UploadUrlResult> {
+            const result = await filesClient.generateFileUploadUrl(mimeType, {
+                fileName,
+            });
+            return { uploadUrl: result.uploadUrl ?? '' };
+        },
+
         async listPublicFiles(): Promise<MediaFileInfo[]> {
             const [folderMap, rawFiles] = await Promise.all([
                 fetchAllFolders(foldersClient),
