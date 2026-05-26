@@ -2482,6 +2482,38 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@jay-framework/wix-members@workspace:packages/wix-members":
+  version: 0.0.0-use.local
+  resolution: "@jay-framework/wix-members@workspace:packages/wix-members"
+  dependencies:
+    "@babel/core": "npm:^7.23.7"
+    "@babel/preset-env": "npm:^7.23.8"
+    "@babel/preset-typescript": "npm:^7.23.3"
+    "@jay-framework/compiler-jay-stack": "npm:^0.17.4"
+    "@jay-framework/component": "npm:^0.17.4"
+    "@jay-framework/fullstack-component": "npm:^0.17.4"
+    "@jay-framework/jay-cli": "npm:^0.17.4"
+    "@jay-framework/reactive": "npm:^0.17.4"
+    "@jay-framework/runtime": "npm:^0.17.4"
+    "@jay-framework/secure": "npm:^0.17.4"
+    "@jay-framework/stack-client-runtime": "npm:^0.17.4"
+    "@jay-framework/stack-server-runtime": "npm:^0.17.4"
+    "@jay-framework/vite-plugin": "npm:^0.17.4"
+    "@jay-framework/wix-dev-environment": "workspace:^"
+    "@jay-framework/wix-server-client": "workspace:^"
+    "@jay-framework/wix-utils": "workspace:^"
+    "@wix/sdk": "npm:^1.21.5"
+    "@wix/sdk-runtime": "npm:^1.0.11"
+    nodemon: "npm:^3.0.3"
+    rimraf: "npm:^5.0.5"
+    tslib: "npm:^2.6.2"
+    tsup: "npm:^8.5.1"
+    typescript: "npm:^5.3.3"
+    vite: "npm:^5.0.11"
+    vitest: "npm:^1.2.0"
+  languageName: unknown
+  linkType: soft
+
 "@jay-framework/wix-server-client@workspace:^, @jay-framework/wix-server-client@workspace:packages/wix-server-client":
   version: 0.0.0-use.local
   resolution: "@jay-framework/wix-server-client@workspace:packages/wix-server-client"

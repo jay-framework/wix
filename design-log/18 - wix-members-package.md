@@ -258,11 +258,13 @@ packages/wix-members/
 │   ├── components/
 │   │   ├── login-indicator.ts            # Header login/logout indicator
 │   │   ├── login-form.ts                 # Login form component
-│   │   └── register-form.ts             # Registration form component
+│   │   ├── register-form.ts             # Registration form component
+│   │   └── protected-page.ts            # Page-level login guard (redirect)
 │   ├── contracts/
 │   │   ├── login-indicator.jay-contract  # Auth status display
 │   │   ├── login-form.jay-contract       # Login form
-│   │   └── register-form.jay-contract    # Registration form
+│   │   ├── register-form.jay-contract    # Registration form
+│   │   └── protected-page.jay-contract   # Login-required page guard
 │   └── utils/
 │       └── member-helpers.ts             # Token upgrade, member data mapping
 ├── plugin.yaml
@@ -448,6 +450,70 @@ tags:
     description: Whether registration completed successfully
 ```
 
+#### protected-page.jay-contract
+
+A headless component that protects an entire page behind login. The template author wraps the page content with this component — no code needed. The component's fast phase reads the visitor's tokens from a cookie, and if they are not a logged-in member, returns a 302 redirect to a configurable login page. If they are logged in, it renders normally with `Cache-Control: no-store`.
+
+This is the only way to protect a page, because templates cannot add code — they can only place headless components.
+
+```yaml
+name: protected-page
+description: Wraps page content to require member login. Redirects to login page if not authenticated.
+
+props:
+  - name: loginUrl
+    type: string
+    default: '/login'
+    description: URL to redirect to when visitor is not logged in
+
+tags:
+  - tag: isLoggedIn
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether the current visitor is a logged-in member
+```
+
+The contract is intentionally minimal. The component acts as a page-level guard, not a data provider.
+
+This is a **keyed component** — declared in the page `<head>` via `<script type="application/jay-headless">`, not a nested wrapper around content. The page content is authored normally; the component's fast phase controls whether the page renders or redirects.
+
+**How it works:**
+
+1. Fast phase reads `props.cookies` for the token cookie
+2. Parses the tokens and checks `refreshToken.role === 'member'`
+3. If not a member → `redirect3xx(302, props.loginUrl)`
+4. If a member → `phaseOutput({ isLoggedIn: true }, {}, { responseHeaders: { 'Cache-Control': 'no-store' } })`
+
+**Template usage:**
+
+```html
+<!-- Protected account page -->
+<html>
+  <head>
+    <script
+      type="application/jay-headless"
+      plugin="@jay-framework/wix-members"
+      contract="protected-page"
+      key="auth"
+    ></script>
+    <script type="application/jay-data">
+      data:
+          loginUrl: /login
+    </script>
+  </head>
+  <body>
+    <h1>My Account</h1>
+    <p>Welcome! This content is only visible to logged-in members.</p>
+  </body>
+</html>
+```
+
+The `isLoggedIn` tag is always `true` when the page renders (visitors get redirected), but it's available for the template to use if needed (e.g. `<div if="isLoggedIn">`). The interactive phase is a no-op — the guard runs server-side only.
+
+**Q: Does the component need a `memberId` or `memberName` tag?**
+A: Not in v1. If a protected page needs member data, it can also include the `login-indicator` component, which already provides name/avatar. Keeping the protected-page contract minimal avoids duplicating member data resolution. If we find pages commonly need member identity alongside the guard, we can add tags later.
+
 ### Context (Client-Side)
 
 Uses `WIX_CLIENT_CONTEXT` to access `client.auth.*` methods from OAuthStrategy.
@@ -597,6 +663,11 @@ contracts:
     component: registerForm
     description: Member registration form
 
+  - name: protected-page
+    contract: protected-page.jay-contract
+    component: protectedPage
+    description: Page-level login guard — redirects visitors to login page
+
 services:
   - name: wix-members
     marker: WIX_MEMBERS_SERVICE
@@ -651,7 +722,7 @@ contexts:
 
 ### Phase 2: Contracts
 
-- Write the three `.jay-contract` files
+- Write the four `.jay-contract` files (login-indicator, login-form, register-form, protected-page)
 - Generate TypeScript definitions
 
 ### Phase 3: Service + Context
@@ -666,6 +737,7 @@ contexts:
 - `loginIndicator` component (fast + interactive phases)
 - `loginForm` component (interactive only)
 - `registerForm` component (interactive only)
+- `protectedPage` component (fast phase only — reads cookie, redirects or renders with no-cache)
 
 ### Phase 5: Init + Integration
 
