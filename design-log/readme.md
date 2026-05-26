@@ -25,6 +25,7 @@ Design documentation for the Jay Framework Wix integration packages.
 | 17  | [Related Products](./17%20-%20related-products.md)                                             | Draft         |
 | 18  | [Wix Members Package](./18%20-%20wix-members-package.md)                                       | Draft         |
 | 19  | [Wix Media Plugin](./19%20-%20wix-media-plugin.md)                                             | Draft         |
+| 20  | [Wix BaaS Deployment](./20%20-%20wix-baas-deployment.md)                                       | Draft         |
 
 ## Packages Covered
 
