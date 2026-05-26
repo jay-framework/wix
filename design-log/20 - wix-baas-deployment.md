@@ -67,7 +67,7 @@ We need a deployment path from Jay Framework to Wix BaaS that splits the monolit
 ## Questions & Answers
 
 Q1: Should we reuse the Wix CLI for deployment, create our own deploy code, or create a plugin that prepares the project and delegates to the Wix CLI?
-A: Reuse the Wix CLI if possible — it handles auth, upload, CDN, versioning. We need to prepare the output in the format the Wix CLI expects.
+A: **Reuse the Wix CLI — validated.** Successfully deployed using `wix preview` / `wix release`. The CLI handles auth, upload, CDN, versioning. We prepare the output in the format it expects (see Deployment Exploration Results below).
 
 Q2: How does the Wix CLI authenticate for deployment? Can we reuse its auth?
 A: Three methods: (1) Device code OAuth flow (interactive, default), (2) API key (`--api-key`), (3) Refresh token (`--refresh-token`). Tokens stored in `~/.wix/auth/`. For CI, API key is the simplest.
@@ -400,10 +400,65 @@ DL#134 uses `build-metadata.json` mtime polling — main server re-reads manifes
 
 This matches DL#134's approach: "main server reads artifacts from the artifact storage service on each request... reads from files each time."
 
-## Open Questions
+## Deployment Exploration Results (2026-05-26)
 
+Tested in `exploration/wix-baas-deploy/` — successfully deployed a minimal fetch handler to Wix BaaS.
+
+### Setup Steps
+
+1. **Initialize project**: `npm create @wix/new@latest init` — creates `wix.config.json`
+2. **Configure output directories** in `wix.config.json`:
+   ```json
+   {
+     "site": {
+       "outputDirectory": {
+         "client": "./build/v1/frontend",
+         "server": "./dist"
+       }
+     }
+   }
+   ```
+3. **Install Wix CLI** globally (internal build, public release pending)
+4. **Deploy**: `wix preview` (test) or `wix release` (production)
+
+### Key Requirements
+
+- Must have at least one file in the `client` (frontend) directory
+- `entry.mjs` must be in the `server` directory, exporting `default { fetch: handler }`
+- The `wix.config.json` `site.outputDirectory` tells the CLI where to find build artifacts
+
+### What Works
+
+- Wix CLI handles: auth, file upload, CDN hosting, deployment lifecycle
+- No need for custom ambassador API calls — the CLI does it all
+- `wix preview` for test deployments, `wix release` for production
+
+### Implications for Jay Deployment
+
+The Jay deploy plugin (Option C from above) becomes:
+1. `jay-stack build` → produces `build/v1/frontend/` and `build/v1/backend/`
+2. Plugin prepares: bundles `entry.mjs` from backend + framework into `dist/`
+3. Configure `wix.config.json` to point at the right directories
+4. User runs `wix preview` or `wix release`
+
+The entry.mjs bundling (step 2) is what the golf PoC already does, minus the 54 MB problem. With the three-part split (frontend on CDN, backend in data collection, small entry.mjs), the `dist/entry.mjs` stays at ~4-5 MB.
+
+### BaaS Runtime Profile (verified 2026-05-26)
+
+| Property | Value |
+|----------|-------|
+| Node.js | v20.3.0 |
+| Module system | ESM (`file:///user-code/entry.mjs`) |
+| Platform | Linux x64, Kubernetes |
+| Memory | 900 MB total |
+| Temp disk | `/tmp` — writable, persists within pod lifetime |
+| Deployed files location | `/user-code/` |
+| Web APIs | Response, Request, fetch, ReadableStream, TextEncoder |
+
+## Open Questions (partially answered)
+
+- ~~Does BaaS support ESM or only CommonJS?~~ **ESM confirmed.**
+- ~~Does BaaS provide persistent storage or only in-memory?~~ **`/tmp` writable, persists within pod lifetime.** Not persistent across cold starts.
 - What are BaaS's actual file size/count limits?
-- Does BaaS provide persistent storage or only in-memory?
 - What's the cold start time budget?
 - Can we use Wix data collections from BaaS without additional auth?
-- Does BaaS support ESM or only CommonJS?
