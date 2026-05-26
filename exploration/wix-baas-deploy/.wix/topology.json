@@ -1,0 +1,11 @@
+{
+  "production": {
+    "id": "d3f4ab8a-668f-4446-a8ce-cf667cca15bb",
+    "site": {
+      "main": "https://ybaxbd-wix-baas-d-5f908959-yoav68.wix-site-host.com"
+    },
+    "dashboard": {
+      "main": "https://manage.wix.com/dashboard/24405411-006d-4b77-85e4-7557ab645eb5?apps-override=d3f4ab8a-668f-4446-a8ce-cf667cca15bb"
+    }
+  }
+}
