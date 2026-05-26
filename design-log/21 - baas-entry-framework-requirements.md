@@ -215,3 +215,82 @@ loadPageModule(path):
 | Separate `/serve` export | No build deps in entry.mjs, no stubs needed | Must maintain two entry points |
 | Pre-imported modules | esbuild can bundle everything, no filesystem discovery at runtime | Must list plugins explicitly in entry template |
 | /tmp cache | Fast after first fetch, survives within pod lifetime | Lost on cold start, must re-fetch |
+
+## Framework Response: DL#143 Implementation Summary
+
+The framework implemented DL#143 in response to our requirements. All critical requirements (R1-R5) are implemented. Packages synced to this monorepo.
+
+### R1: ArtifactStore Interface — IMPLEMENTED
+
+```typescript
+// @jay-framework/production-server/serve
+export interface ArtifactStore {
+    readManifest(): Promise<RouteManifest>;
+    readPreRenderedHtml(relativePath: string): Promise<PreRenderedEntry>;
+    loadServerElement(relativePath: string): Promise<ServerElementModule>;
+    getAssetPath(relativePath: string): string;
+    getBuildDir(): string;
+}
+```
+
+Smaller than proposed — `loadPageModule()` and `readRawFile()` removed as unused by serve pipeline.
+
+### R2: createJayFetchHandler Accepts Custom ArtifactStore — IMPLEMENTED
+
+```typescript
+interface JayFetchHandlerOptions {
+    backendDir?: string;           // filesystem (existing)
+    artifactStore?: ArtifactStore; // custom store (new)
+    staticBaseUrl?: string;
+    frontendDir?: string;
+    plugins?: PreImportedPlugin[];
+    actionModules?: Array<{ module: Record<string, unknown>; name: string }>;
+}
+```
+
+Falls back to `FilesystemArtifactStore` when only `backendDir` provided.
+
+### R3: Serve-Only Export — IMPLEMENTED
+
+New entry point: `@jay-framework/production-server/serve`
+
+Exports only serve functions — no build deps (Vite, compilers, TypeScript). BaaS entry.mjs imports from this path. Self-hosted deployments continue using the main export.
+
+### R4: initializeServicesFromModules — IMPLEMENTED
+
+```typescript
+export interface PreImportedPlugin {
+    name: string;
+    init: { _serverInit: () => Promise<any> };
+}
+
+await initializeServicesFromModules(plugins, 'FetchHandler');
+```
+
+`createJayFetchHandler` uses this when `plugins` option is provided.
+
+### R5: registerActionsFromModules — IMPLEMENTED
+
+```typescript
+await registerActionsFromModules([
+    { module: wixStoresModule, name: 'wix-stores' },
+]);
+```
+
+`createJayFetchHandler` uses this when `actionModules` option is provided.
+
+### R6: Page Parts via ArtifactStore — DEFERRED
+
+Page parts still use `getAssetPath()` + `getBuildDir()` for path resolution. Full abstraction deferred — esbuild bundling makes lazy loading unnecessary for initial BaaS support.
+
+### What We Still Need to Build (wix side)
+
+1. **WixDataArtifactStore** — implements `ArtifactStore`, fetches from Wix data collection, caches to `/tmp`
+2. **Entry builder** — generates `entry.mjs` with pre-imported plugins, actions, and the WixDataArtifactStore
+3. **Deploy pipeline** — `jay-stack build` → bundle entry.mjs → `wix preview`/`wix release`
+
+### Verification
+
+- All framework tests passing: production-server (85/85), stack-server-runtime (143/143)
+- No breaking changes for self-hosted deployments
+- Both paths coexist: BaaS uses `/serve` import + custom store, self-hosted uses main import + filesystem
