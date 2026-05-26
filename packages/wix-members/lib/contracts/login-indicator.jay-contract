@@ -1,0 +1,32 @@
+name: login-indicator
+description: Shows member login state in site header/navigation
+
+tags:
+  - tag: isLoggedIn
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether a member is currently logged in
+
+  - tag: memberName
+    type: data
+    dataType: string
+    phase: fast+interactive
+    description: Logged-in member's display name
+
+  - tag: memberAvatar
+    type: data
+    dataType: string
+    phase: fast+interactive
+    description: URL of member's profile image
+
+  - tag: isLoading
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether auth state is being resolved
+
+  - tag: logoutButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Button to trigger logout

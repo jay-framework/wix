@@ -1,0 +1,47 @@
+name: login-form
+description: Member login form with email/password
+
+tags:
+  - tag: emailInput
+    type: interactive
+    elementType: HTMLInputElement
+    description: Email input field
+
+  - tag: passwordInput
+    type: interactive
+    elementType: HTMLInputElement
+    description: Password input field
+
+  - tag: submitButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Submit login form
+
+  - tag: isSubmitting
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether login request is in progress
+
+  - tag: errorMessage
+    type: data
+    dataType: string
+    phase: fast+interactive
+    description: Login error message (empty if no error)
+
+  - tag: hasError
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether there is a login error
+
+  - tag: forgotPasswordButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Sends password reset email using the email input value
+
+  - tag: resetSent
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether a password reset email was sent successfully

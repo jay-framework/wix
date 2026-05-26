@@ -1,0 +1,29 @@
+name: wix-members
+
+contracts:
+  - name: login-indicator
+    contract: login-indicator.jay-contract
+    component: loginIndicator
+    description: Shows member auth state in site header
+  - name: login-form
+    contract: login-form.jay-contract
+    component: loginForm
+    description: Email/password login form
+  - name: register-form
+    contract: register-form.jay-contract
+    component: registerForm
+    description: Member registration form
+  - name: protected-page
+    contract: protected-page.jay-contract
+    component: protectedPage
+    description: Page-level login guard — redirects visitors to login page
+
+services:
+  - name: wix-members
+    marker: WIX_MEMBERS_SERVICE
+    description: Server-side member operations via Wix Members API
+
+contexts:
+  - name: wix-members
+    marker: WIX_MEMBERS_CONTEXT
+    description: Client-side member auth state, login/register/logout operations

@@ -1,0 +1,58 @@
+name: register-form
+description: Member registration form
+
+tags:
+  - tag: emailInput
+    type: interactive
+    elementType: HTMLInputElement
+    description: Email input field
+
+  - tag: passwordInput
+    type: interactive
+    elementType: HTMLInputElement
+    description: Password input field
+
+  - tag: firstNameInput
+    type: interactive
+    elementType: HTMLInputElement
+    description: First name input (optional)
+
+  - tag: lastNameInput
+    type: interactive
+    elementType: HTMLInputElement
+    description: Last name input (optional)
+
+  - tag: submitButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Submit registration form
+
+  - tag: isSubmitting
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether registration request is in progress
+
+  - tag: errorMessage
+    type: data
+    dataType: string
+    phase: fast+interactive
+    description: Registration error message
+
+  - tag: hasError
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether there is a registration error
+
+  - tag: isPending
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether registration requires admin approval
+
+  - tag: isSuccess
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether registration completed successfully
