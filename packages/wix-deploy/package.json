@@ -1,0 +1,41 @@
+{
+  "name": "@jay-framework/wix-deploy",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Wix BaaS deployment adapter for Jay Framework — WixDataArtifactStore and entry builder",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./artifact-store": {
+      "types": "./dist/artifact-store.d.ts",
+      "default": "./dist/artifact-store.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "build:check-types": "tsc --noEmit",
+    "clean": "rimraf dist",
+    "test": ":"
+  },
+  "dependencies": {
+    "@jay-framework/production-server": "*",
+    "@jay-framework/stack-server-runtime": "*",
+    "@wix/data": "^1.0.433",
+    "@wix/sdk": "^1.21.5",
+    "esbuild": "^0.21.0",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
