@@ -14,6 +14,7 @@ import type { ConsoleContext } from '@jay-framework/fullstack-component';
 import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
 import type { WixClientService } from '@jay-framework/wix-server-client';
 import { items } from '@wix/data';
+import { DEFAULT_COLLECTION_ID } from '../constants.js';
 
 interface UploadBackendInput {
     collectionId?: string;
@@ -90,7 +91,7 @@ export const uploadBackend = makeCliCommand('upload-backend')
         const path = await import('node:path');
 
         const buildDir = ctx.build.backend;
-        const collectionId = input.collectionId || 'jay-backend-files';
+        const collectionId = input.collectionId || DEFAULT_COLLECTION_ID;
         const dryRun = input.dryRun || false;
 
         ctx.log(`Backend dir: ${buildDir}`);

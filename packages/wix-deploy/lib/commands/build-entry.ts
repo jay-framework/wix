@@ -8,6 +8,7 @@
 
 import { makeCliCommand, CONSOLE_CONTEXT } from '@jay-framework/fullstack-component';
 import type { ConsoleContext } from '@jay-framework/fullstack-component';
+import { DEFAULT_COLLECTION_ID, DEFAULT_CACHE_DIR } from '../constants.js';
 
 interface BuildEntryInput {
     collectionId?: string;
@@ -112,7 +113,7 @@ const SITE_ID = process.env.WIX_SITE_ID || '';
 // Artifact store
 const artifacts = new WixDataArtifactStore({
     collectionId: COLLECTION_ID,
-    cacheDir: '/tmp/jay-backend',
+    cacheDir: '${DEFAULT_CACHE_DIR}',
     apiKey: API_KEY,
     siteId: SITE_ID,
 });
@@ -178,7 +179,7 @@ export const buildEntry = makeCliCommand('build-entry')
         const buildDir = ctx.build.backend;
         const outFile = path.resolve(ctx.projectRoot, 'dist/entry.mjs');
 
-        const collectionId = input.collectionId || 'jay-backend-files';
+        const collectionId = input.collectionId || DEFAULT_COLLECTION_ID;
         const staticBaseUrl = input.staticBaseUrl || '/';
         const excludePlugins = input.excludePlugins?.split(',') || [];
 
