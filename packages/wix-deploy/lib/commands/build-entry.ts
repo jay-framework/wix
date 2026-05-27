@@ -187,6 +187,7 @@ function generateServeSource(frontendDir: string): string {
         'import path from "node:path";',
         'import { Readable } from "node:stream";',
         '',
+        'process.env.STATIC_BASE_URL = process.env.STATIC_BASE_URL || "/";',
         'const entry = await import("./entry.mjs");',
         'const handler = entry.default?.fetch || entry.fetch;',
         'const PORT = parseInt(process.env.PORT || "4000", 10);',
