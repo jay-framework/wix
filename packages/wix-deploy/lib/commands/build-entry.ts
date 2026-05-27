@@ -67,6 +67,7 @@ function generateEntrySource(
     actionPackages: string[],
     collectionId: string,
     staticBaseUrl: string,
+    version: number,
 ): string {
     const pluginImports = plugins.map(
         (p, i) => `import { init as pluginInit_${i} } from '${p.packageName}';`,
@@ -103,19 +104,27 @@ import { parseCookies } from '@jay-framework/stack-server-runtime';
 
 // BaaS adapter
 import { WixDataArtifactStore } from '@jay-framework/wix-deploy/artifact-store';
+import { createClient, ApiKeyStrategy } from '@wix/sdk';
 
 // Configuration from environment
 const COLLECTION_ID = process.env.JAY_COLLECTION_ID || '${collectionId}';
 const STATIC_BASE_URL = process.env.STATIC_BASE_URL || '${staticBaseUrl}';
+const VERSION = parseInt(process.env.JAY_BUILD_VERSION || '${version}', 10);
 const API_KEY = process.env.WIX_API_KEY || '';
 const SITE_ID = process.env.WIX_SITE_ID || '';
 
+// Wix client for data collection access
+const wixClient = createClient({
+    auth: ApiKeyStrategy({ apiKey: API_KEY, siteId: SITE_ID }),
+    modules: {},
+});
+
 // Artifact store
 const artifacts = new WixDataArtifactStore({
+    wixClient,
     collectionId: COLLECTION_ID,
+    version: VERSION,
     cacheDir: '${DEFAULT_CACHE_DIR}',
-    apiKey: API_KEY,
-    siteId: SITE_ID,
 });
 
 // Initialization state
@@ -195,6 +204,14 @@ export const buildEntry = makeCliCommand('build-entry')
 
         const manifest: RouteManifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 
+        // Read version from build-metadata.json
+        const metadataPath = path.join(buildDir, 'build-metadata.json');
+        let version = 1;
+        if (fs.existsSync(metadataPath)) {
+            const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+            version = metadata.version || 1;
+        }
+
         const plugins = manifest.plugins.filter(
             p => !excludePlugins.includes(p.name) && !excludePlugins.includes(p.packageName),
         );
@@ -204,10 +221,11 @@ export const buildEntry = makeCliCommand('build-entry')
             .map(a => a.packageName!)
             .filter((v, i, arr) => arr.indexOf(v) === i);
 
+        ctx.log(`Version: ${version}`);
         ctx.log(`Plugins: ${plugins.map(p => p.name).join(', ')}`);
         ctx.log(`Action packages: ${actionPackages.join(', ')}`);
 
-        const entrySource = generateEntrySource(plugins, actionPackages, collectionId, staticBaseUrl);
+        const entrySource = generateEntrySource(plugins, actionPackages, collectionId, staticBaseUrl, version);
 
         const entryDir = path.dirname(outFile);
         fs.mkdirSync(entryDir, { recursive: true });
@@ -285,6 +303,12 @@ export const buildEntry = makeCliCommand('build-entry')
             ctx.log(`Bundled ${Object.keys(result.metafile.inputs).length} input files`);
             fs.writeFileSync(outFile.replace(/\.mjs$/, '.meta.json'), JSON.stringify(result.metafile));
         }
+
+        // Generate serve.mjs for local testing
+        const serveFile = path.join(entryDir, 'serve.mjs');
+        const frontendDir = ctx.build.frontend;
+        fs.writeFileSync(serveFile, generateServeSource(frontendDir));
+        ctx.log(`Generated ${serveFile} — run with: node dist/serve.mjs`);
 
         return { success: true, outFile, sizeMB };
     });

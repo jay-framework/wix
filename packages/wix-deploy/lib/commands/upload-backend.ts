@@ -2,19 +2,15 @@
  * jay-stack run wix-deploy/upload-backend
  *
  * Uploads backend build files to a Wix data collection for BaaS serving.
- * Skips images and .jay-html files (not used at serve time).
- * Categorizes files as eager (loaded on cold start) or lazy (per-page).
- *
- * Uses WIX_CLIENT_SERVICE for authentication (API key from wix-server-client plugin).
- * Loads file content only at upload time to avoid memory issues with large builds.
+ * Uses WixDataArtifactStore for consistent schema, versioning, and writes.
  */
 
 import { makeCliCommand, CONSOLE_CONTEXT } from '@jay-framework/fullstack-component';
 import type { ConsoleContext } from '@jay-framework/fullstack-component';
 import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
 import type { WixClientService } from '@jay-framework/wix-server-client';
-import { items } from '@wix/data';
 import { DEFAULT_COLLECTION_ID } from '../constants.js';
+import { WixDataArtifactStore } from '../artifact-store.js';
 
 interface UploadBackendInput {
     collectionId?: string;
@@ -22,7 +18,7 @@ interface UploadBackendInput {
 }
 
 const SKIP_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.jay-html']);
-const MAX_BATCH_BYTES = 400_000; // Stay under Wix data 512 KB per-row limit with margin
+const MAX_BATCH_BYTES = 400_000;
 
 function categorize(relativePath: string): 'eager' | 'lazy' {
     if (relativePath === 'route-manifest.json') return 'eager';
@@ -35,7 +31,6 @@ interface FileEntry {
     relativePath: string;
     fullPath: string;
     sizeBytes: number;
-    fileType: string;
     category: 'eager' | 'lazy';
 }
 
@@ -54,7 +49,6 @@ function scanFileEntries(dir: string, base: string, fs: typeof import('node:fs')
                 relativePath,
                 fullPath,
                 sizeBytes: stat.size,
-                fileType: ext.slice(1),
                 category: categorize(relativePath),
             });
         }
@@ -66,7 +60,6 @@ function buildBatches(entries: FileEntry[]): FileEntry[][] {
     const batches: FileEntry[][] = [];
     let currentBatch: FileEntry[] = [];
     let currentSize = 0;
-
     for (const entry of entries) {
         if (currentBatch.length > 0 && currentSize + entry.sizeBytes > MAX_BATCH_BYTES) {
             batches.push(currentBatch);
@@ -76,11 +69,7 @@ function buildBatches(entries: FileEntry[]): FileEntry[][] {
         currentBatch.push(entry);
         currentSize += entry.sizeBytes;
     }
-
-    if (currentBatch.length > 0) {
-        batches.push(currentBatch);
-    }
-
+    if (currentBatch.length > 0) batches.push(currentBatch);
     return batches;
 }
 
@@ -94,8 +83,17 @@ export const uploadBackend = makeCliCommand('upload-backend')
         const collectionId = input.collectionId || DEFAULT_COLLECTION_ID;
         const dryRun = input.dryRun || false;
 
+        // Read version from build-metadata.json
+        const metadataPath = path.join(buildDir, 'build-metadata.json');
+        let version = 1;
+        if (fs.existsSync(metadataPath)) {
+            const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+            version = metadata.version || 1;
+        }
+
         ctx.log(`Backend dir: ${buildDir}`);
         ctx.log(`Collection: ${collectionId}`);
+        ctx.log(`Version: ${version}`);
         if (dryRun) ctx.log('DRY RUN — no uploads');
 
         if (!fs.existsSync(buildDir)) {
@@ -103,7 +101,6 @@ export const uploadBackend = makeCliCommand('upload-backend')
             return { success: false };
         }
 
-        // Scan files — metadata only, no content loaded yet
         const entries = scanFileEntries(buildDir, '', fs, path);
         const eager = entries.filter(f => f.category === 'eager');
         const lazy = entries.filter(f => f.category === 'lazy');
@@ -120,45 +117,33 @@ export const uploadBackend = makeCliCommand('upload-backend')
             return { success: true, fileCount: entries.length, totalSize };
         }
 
-        const dataClient = wixClient.wixClient.use({ items });
-        const batches = buildBatches(entries);
+        const store = new WixDataArtifactStore({
+            wixClient: wixClient.wixClient,
+            collectionId,
+            version,
+            cacheDir: '/tmp/upload-staging',
+        });
 
-        ctx.log(`Uploading in ${batches.length} batches (max ${(MAX_BATCH_BYTES / 1024).toFixed(0)} KB per batch)`);
+        const batches = buildBatches(entries);
+        ctx.log(`Uploading in ${batches.length} batches`);
 
         let uploaded = 0;
         let errors = 0;
 
         for (let i = 0; i < batches.length; i++) {
             const batch = batches[i];
-
-            // Load content only for this batch
-            const dataItems = batch.map(f => ({
-                _id: f.relativePath.replace(/[/\\]/g, '__'),
+            const files = batch.map(f => ({
                 path: f.relativePath,
                 content: fs.readFileSync(f.fullPath, 'utf8'),
-                fileType: f.fileType,
-                sizeBytes: f.sizeBytes,
-                category: f.category,
+                category: f.category as 'eager' | 'lazy',
             }));
 
-            try {
-                await dataClient.items.bulkSave(collectionId, dataItems);
-                uploaded += batch.length;
-                ctx.log(`  Batch ${i + 1}/${batches.length}: ${batch.length} files (${uploaded}/${entries.length})`);
-            } catch (err: any) {
-                ctx.warn(`  Batch ${i + 1} failed, retrying individually: ${err.message?.substring(0, 200)}`);
-                for (const item of dataItems) {
-                    try {
-                        await dataClient.items.save(collectionId, item);
-                        uploaded++;
-                    } catch (e: any) {
-                        errors++;
-                        ctx.error(`  FAILED: ${item.path} (${item.sizeBytes} bytes): ${e.message?.substring(0, 100)}`);
-                    }
-                }
-            }
+            const count = await store.writeFiles(files);
+            uploaded += count;
+            errors += batch.length - count;
+            ctx.log(`  Batch ${i + 1}/${batches.length}: ${count}/${batch.length} files (${uploaded}/${entries.length})`);
         }
 
         ctx.log(`Done: ${uploaded} uploaded, ${errors} errors`);
-        return { success: errors === 0, uploaded, errors };
+        return { success: errors === 0, uploaded, errors, version };
     });

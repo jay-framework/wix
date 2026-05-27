@@ -285,12 +285,29 @@ Page parts still use `getAssetPath()` + `getBuildDir()` for path resolution. Ful
 
 ### What We Still Need to Build (wix side)
 
-1. **WixDataArtifactStore** — implements `ArtifactStore`, fetches from Wix data collection, caches to `/tmp`
-2. **Entry builder** — generates `entry.mjs` with pre-imported plugins, actions, and the WixDataArtifactStore
-3. **Deploy pipeline** — `jay-stack build` → bundle entry.mjs → `wix preview`/`wix release`
+1. ~~**WixDataArtifactStore**~~ — Done. `packages/wix-deploy/lib/artifact-store.ts`
+2. ~~**Entry builder**~~ — Done. `packages/wix-deploy/lib/commands/build-entry.ts`
+3. ~~**Deploy pipeline**~~ — Done. `build-entry` + `upload-backend` commands + Wix CLI
 
 ### Verification
 
 - All framework tests passing: production-server (85/85), stack-server-runtime (143/143)
 - No breaking changes for self-hosted deployments
 - Both paths coexist: BaaS uses `/serve` import + custom store, self-hosted uses main import + filesystem
+
+## Implementation Deviations
+
+**ArtifactStore interface duplicated locally.**
+The production-server package doesn't export `ArtifactStore` from its main entry (no `exports` map in package.json for `/serve` sub-path). The artifact-store module duplicates the interface. To be removed once the package export is fixed.
+
+**WixDataArtifactStore accepts WixClient, not credentials.**
+DL21 proposed `apiKey`/`siteId` in options. Implementation uses a `WixClient` instance — reuses `WIX_CLIENT_SERVICE` at build time, creates from env vars at BaaS runtime. Cleaner separation.
+
+**WixDataArtifactStore owns writes too.**
+DL21 only described reads. Implementation adds `writeFile()` and `writeFiles()` methods to ensure consistent schema, ID format (`v{version}__{path}`), and versioning between upload and serve operations.
+
+**Versioning added to all data collection items.**
+Not in DL21. Items keyed by `v{version}__{path}`, queries filter by version. Supports uploading next version while serving current version.
+
+**Entry builder reads version from build-metadata.json.**
+Bakes version into the generated source as default, overridable via `JAY_BUILD_VERSION` env var at runtime.

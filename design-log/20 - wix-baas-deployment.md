@@ -459,6 +459,83 @@ The entry.mjs bundling (step 2) is what the golf PoC already does, minus the 54 
 
 - ~~Does BaaS support ESM or only CommonJS?~~ **ESM confirmed.**
 - ~~Does BaaS provide persistent storage or only in-memory?~~ **`/tmp` writable, persists within pod lifetime.** Not persistent across cold starts.
-- What are BaaS's actual file size/count limits?
+- ~~What are BaaS's actual file size/count limits?~~ **20 MB upload limit. 512 KB per data collection row.**
+- ~~Can we use Wix data collections from BaaS without additional auth?~~ **Yes, using API key auth.**
 - What's the cold start time budget?
-- Can we use Wix data collections from BaaS without additional auth?
+
+## Implementation Results
+
+### Package: `@jay-framework/wix-deploy`
+
+Created `packages/wix-deploy/` with:
+
+```
+packages/wix-deploy/
+├── lib/
+│   ├── index.ts
+│   ├── artifact-store.ts          # WixDataArtifactStore
+│   ├── constants.ts               # DEFAULT_COLLECTION_ID, DEFAULT_CACHE_DIR
+│   └── commands/
+│       ├── build-entry.ts         # jay-stack run wix-deploy/build-entry
+│       ├── build-entry.jay-command
+│       ├── upload-backend.ts      # jay-stack run wix-deploy/upload-backend
+│       └── upload-backend.jay-command
+├── agent-kit/
+│   └── wix-baas-deployment.md     # Deployment guide for devops agent
+├── plugin.yaml
+├── package.json
+└── tsconfig.json
+```
+
+### Deviations from Original Design
+
+**Option C (plugin prepares, Wix CLI deploys) confirmed over Options A and B.**
+The original design proposed three options. Exploration validated Option C: Jay plugin prepares `entry.mjs` + uploads backend files, Wix CLI handles the actual deployment. No custom ambassador API calls needed.
+
+**3.2 MB entry.mjs, not 4-5 MB estimated.**
+The golf project entry bundled to 3.2 MB (711 input files), better than the 4-5 MB estimate. Down from 54 MB in the PoC.
+
+**Versioned data collection items.**
+Not in the original design — added during implementation. Items keyed as `v{version}__{path}` so multiple versions coexist. Both `upload-backend` and `WixDataArtifactStore` read version from `build-metadata.json`. Critical for uploading v2 while serving v1.
+
+**WixDataArtifactStore owns both reads and writes.**
+Original design had writes in `upload-backend` with its own schema. Moved to the artifact store to ensure consistent schema, ID format, and versioning between upload and serve.
+
+**Artifact store accepts WixClient, not raw credentials.**
+Original design had `apiKey`/`siteId` in options. Changed to accept a `WixClient` instance — reuses `WIX_CLIENT_SERVICE` at build time (jay-stack runtime), creates its own client from env vars at BaaS runtime (entry.mjs).
+
+**upload-backend uses size-based batching, not count-based.**
+Original exploration used batch size of 50 items. Changed to `MAX_BATCH_BYTES = 400 KB` to stay under Wix data's 512 KB per-row limit. File content loaded per-batch (not all upfront) to avoid OOM on large builds.
+
+**jay-stack run commands, not standalone CLI.**
+Original implementation had a standalone `build-entry-cli.ts` with custom arg parsing. Replaced with `makeCliCommand` + `.jay-command` pattern using `CONSOLE_CONTEXT` for build paths — consistent with the framework's plugin command system.
+
+**production-server/serve not yet available as package export.**
+The framework implemented the `/serve` entry point (DL#143) but the synced package.json doesn't have an `exports` map for it. The `build-entry` command uses an esbuild alias plugin to resolve `@jay-framework/production-server/serve` → `dist/serve-index.js` directly. Also duplicates the `ArtifactStore` interface in the artifact-store module. Both should be removed once the package export is fixed.
+
+**Build-time dependency stubs.**
+The entry builder stubs out `@jay-framework/compiler-jay-html`, `compiler-shared`, `compiler-jay-stack`, `vite`, `typescript`, etc. with named exports matching what `stack-server-runtime` and `production-server` import. This is a workaround for the serve code still importing build-time modules transitively.
+
+### Exploration Projects
+
+- `exploration/wix-members-auth/` — OAuth login/register/verification (DL18)
+- `exploration/wix-baas-data-collection/` — upload/fetch backend files to Wix data (DL20)
+- `exploration/wix-baas-deploy/` — minimal BaaS deployment via Wix CLI (DL20)
+
+### Tested on Golf Project
+
+```
+$ npx tsx packages/wix-deploy/lib/commands/build-entry-cli.ts \
+    --build-dir /Users/yoav/work/jay/golf/build/v1/backend \
+    --out /Users/yoav/work/jay/golf/dist/entry-v2.mjs \
+    --exclude-plugins aiditor,ui-kit
+
+Plugins: wix-cart, wix-server-client, wix-stores
+Action packages: @jay-framework/wix-stores
+Done: entry-v2.mjs (3.2 MB) — 711 input files
+```
+
+| Version | Size | Approach |
+|---------|------|----------|
+| Golf PoC (entry.mjs) | 54 MB | Everything inlined |
+| wix-deploy v2 (entry-v2.mjs) | 3.2 MB | Code only, data from collection |
