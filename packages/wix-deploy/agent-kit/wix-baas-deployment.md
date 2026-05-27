@@ -74,7 +74,19 @@ Generates `dist/entry.mjs` (~3-5 MB) — a bundled fetch handler that:
 
 Use `--exclude-plugins aiditor,ui-kit` to exclude dev-only plugins.
 
-### 6. Deploy via Wix CLI
+Also generates `dist/serve.mjs` for local testing.
+
+### 6. Test locally (optional)
+
+```bash
+node dist/serve.mjs
+```
+
+Starts a local HTTP server at `http://localhost:4000` that serves static files from the frontend build directory and delegates page/action requests to `entry.mjs`. Use this to verify the entry works before deploying to BaaS.
+
+Set a custom port with `PORT=3000 node dist/serve.mjs`.
+
+### 7. Deploy via Wix CLI
 
 ```bash
 # Test deployment (preview environment)
