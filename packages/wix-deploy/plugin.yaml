@@ -5,3 +5,5 @@ commands:
     command: build-entry.jay-command
   - name: upload-backend
     command: upload-backend.jay-command
+  - name: deploy-baas
+    command: deploy-baas.jay-command

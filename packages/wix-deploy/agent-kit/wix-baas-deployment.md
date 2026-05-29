@@ -48,8 +48,10 @@ Update the generated `wix.config.json` to point at the Jay build output:
 ### 4. Upload backend files to Wix data collection
 
 ```bash
-jay-stack run wix-deploy/upload-backend --collection-id jay-backend-files
+jay-stack run wix-deploy/upload-backend
 ```
+
+Default collection: `jay-backend-files`. Override with `--collection-id <name>`.
 
 Uploads server artifacts (manifests, server elements, cache data) to a Wix data collection. Files are categorized as:
 - **eager** — manifests, shared server modules, actions (loaded on cold start)
@@ -63,9 +65,10 @@ Use `--dry-run` to preview what would be uploaded.
 
 ```bash
 jay-stack run wix-deploy/build-entry \
-  --static-base-url https://static.parastorage.com/services/<app-slug>/<version>/ \
-  --collection-id jay-backend-files
+  --static-base-url https://static.parastorage.com/services/<app-slug>/<version>/
 ```
+
+Default collection: `jay-backend-files`. Override with `--collection-id <name>`.
 
 Generates `dist/entry.mjs` (~3-5 MB) — a bundled fetch handler that:
 - Pre-imports all plugin init modules and action handlers
@@ -90,10 +93,10 @@ Set a custom port with `PORT=3000 node dist/serve.mjs`.
 
 ```bash
 # Test deployment (preview environment)
-wix app preview
+wix preview
 
 # Production deployment
-wix app release
+wix release
 ```
 
 The Wix CLI uploads `frontend/` to CDN and `dist/entry.mjs` to BaaS.

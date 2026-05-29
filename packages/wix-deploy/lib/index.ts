@@ -2,3 +2,4 @@ export { WixDataArtifactStore } from './artifact-store.js';
 export type { WixDataArtifactStoreOptions } from './artifact-store.js';
 export { buildEntry } from './commands/build-entry.js';
 export { uploadBackend } from './commands/upload-backend.js';
+export { deployBaas } from './commands/deploy-baas.js';

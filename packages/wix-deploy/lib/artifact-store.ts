@@ -131,7 +131,7 @@ export class WixDataArtifactStore implements ArtifactStore {
         if (cached) return cached;
         await this.ensureFile(relativePath);
         const fullPath = path.join(this.cacheDir, relativePath);
-        const mod = await import(fullPath);
+        const mod = await import(/* @vite-ignore */ fullPath);
         this.moduleCache.set(relativePath, mod);
         return mod;
     }
@@ -174,6 +174,29 @@ export class WixDataArtifactStore implements ArtifactStore {
         }
 
         console.log(`[WixDataArtifactStore] Loaded ${totalLoaded} eager files`);
+    }
+
+    // ========================================================================
+    // Lazy page file loading
+    // ========================================================================
+
+    /**
+     * Ensure the 3 files needed to render a page are on disk:
+     * 1. page-parts.json (per route, shared by all instances)
+     * 2. *.cache.json (per instance — slow view state + carry forward)
+     * 3. *.server-element.js (per instance — SSR render function)
+     */
+    async ensurePageFiles(preRenderedPath: string): Promise<void> {
+        const dir = path.dirname(preRenderedPath);
+        const base = preRenderedPath.replace(/\.jay-html$/, '');
+
+        const filesToEnsure = [
+            path.join(dir, 'page-parts.json'),
+            `${base}.cache.json`,
+            `${base}.server-element.js`,
+        ];
+
+        await Promise.all(filesToEnsure.map(f => this.ensureFile(f)));
     }
 
     // ========================================================================
@@ -280,6 +303,36 @@ export class WixDataArtifactStore implements ArtifactStore {
     private writeToCache(relativePath: string, content: string): void {
         const fullPath = path.join(this.cacheDir, relativePath);
         fs.mkdirSync(path.dirname(fullPath), { recursive: true });
+
+        // Rewrite page-parts.json modulePath entries from absolute build paths
+        // to package names that Node can resolve from the bundled entry.mjs
+        if (relativePath.endsWith('page-parts.json')) {
+            try {
+                const config = JSON.parse(content);
+                const rewriteParts = (parts: any[]) => {
+                    for (const part of parts) {
+                        if (part.modulePath && part.source === 'npm') {
+                            // Extract package dir name from absolute path and map to npm name
+                            // e.g. /Users/.../packages/wix-stores/dist/index.js → @jay-framework/wix-stores
+                            // e.g. /Users/.../node_modules/@jay-framework/wix-stores/dist/index.js → @jay-framework/wix-stores
+                            const npmMatch = part.modulePath.match(/\/@jay-framework\/([^/]+)\//);
+                            if (npmMatch) {
+                                part.modulePath = `@jay-framework/${npmMatch[1]}`;
+                            } else {
+                                const pkgMatch = part.modulePath.match(/\/packages\/(wix-[^/]+)\//);
+                                if (pkgMatch) {
+                                    part.modulePath = `@jay-framework/${pkgMatch[1]}`;
+                                }
+                            }
+                        }
+                    }
+                };
+                if (config.parts) rewriteParts(config.parts);
+                if (config.instanceComponents) rewriteParts(config.instanceComponents);
+                content = JSON.stringify(config);
+            } catch { /* keep original content if parsing fails */ }
+        }
+
         fs.writeFileSync(fullPath, content, 'utf8');
     }
 }
