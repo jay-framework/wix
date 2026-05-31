@@ -29,7 +29,7 @@ const client = createClient({
 
 if (!stored) {
     appendLog('Generating visitor tokens...');
-    client.auth.generateVisitorTokens().then(tokens => {
+    client.auth.generateVisitorTokens().then((tokens) => {
         client.auth.setTokens(tokens);
         localStorage.setItem(TOKENS_KEY, JSON.stringify(tokens));
         appendLog('Tokens ready');
@@ -89,7 +89,9 @@ let firstProductId: string | null = null;
         );
         firstProductId = result.products?.[0]?._id || null;
         appendLog(`Products: ${result.products?.length}`);
-        appendLog(`Aggregation results: ${JSON.stringify(result.aggregationData, null, 2)?.substring(0, 500)}`);
+        appendLog(
+            `Aggregation results: ${JSON.stringify(result.aggregationData, null, 2)?.substring(0, 500)}`,
+        );
         appendLog('Check Network tab for full request/response!');
     } catch (e: any) {
         appendLog(`ERROR: ${e.message}`);
@@ -112,9 +114,12 @@ let firstProductId: string | null = null;
 (window as any).doQueryProducts = async () => {
     appendLog('\n--- queryProducts ---');
     try {
-        const result = await client.productsV3.queryProducts({
-            fields: ['CURRENCY'],
-        }).limit(3).find();
+        const result = await client.productsV3
+            .queryProducts({
+                fields: ['CURRENCY'],
+            })
+            .limit(3)
+            .find();
         firstProductId = result.items?.[0]?._id || null;
         appendLog(`Products: ${result.items?.length}`);
         appendLog('Check Network tab for full request/response!');
@@ -128,9 +133,13 @@ let firstProductId: string | null = null;
 (window as any).doQueryCategories = async () => {
     appendLog('\n--- queryCategories ---');
     try {
-        const result = await client.categories.queryCategories({
-            treeReference: { appNamespace: '@wix/stores' },
-        }).eq('visible', true).limit(10).find();
+        const result = await client.categories
+            .queryCategories({
+                treeReference: { appNamespace: '@wix/stores' },
+            })
+            .eq('visible', true)
+            .limit(10)
+            .find();
         appendLog(`Categories: ${result.items?.length}`);
         for (const cat of result.items || []) {
             appendLog(`  ${cat.name} (${cat.slug})`);
@@ -161,13 +170,15 @@ let firstProductId: string | null = null;
     }
     try {
         const result = await client.currentCart.addToCurrentCart({
-            lineItems: [{
-                catalogReference: {
-                    catalogItemId: firstProductId,
-                    appId: '215238eb-22a5-4c36-9e7b-e7c08025e04e',
+            lineItems: [
+                {
+                    catalogReference: {
+                        catalogItemId: firstProductId,
+                        appId: '215238eb-22a5-4c36-9e7b-e7c08025e04e',
+                    },
+                    quantity: 1,
                 },
-                quantity: 1,
-            }],
+            ],
         });
         appendLog(`Added to cart! Items: ${result.cart?.lineItems?.length}`);
         appendLog('Check Network tab for full request/response!');

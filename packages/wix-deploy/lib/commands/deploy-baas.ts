@@ -14,9 +14,7 @@ import {
     createAppDeployment,
     completeAppDeployment,
 } from '@wix/ambassador-velo-backend-v1-app-deployment/http';
-import {
-    createComponentsOverride,
-} from '@wix/ambassador-devcenter-components-overrides-v1-components-override/http';
+import { createComponentsOverride } from '@wix/ambassador-devcenter-components-overrides-v1-components-override/http';
 import { getLatestProductionVersion } from '@wix/ambassador-devcenter-apps-v1-app-version/http';
 import { release } from '@wix/ambassador-ctp-gradual-rollout-v1-baas-release/http';
 import fs from 'node:fs';
@@ -36,9 +34,13 @@ function md5(buffer: Buffer): string {
 function getMimeType(filePath: string): string {
     const ext = path.extname(filePath).toLowerCase();
     const types: Record<string, string> = {
-        '.mjs': 'application/javascript', '.js': 'application/javascript',
-        '.json': 'application/json', '.html': 'text/html',
-        '.css': 'text/css', '.yaml': 'text/yaml', '.yml': 'text/yaml',
+        '.mjs': 'application/javascript',
+        '.js': 'application/javascript',
+        '.json': 'application/json',
+        '.html': 'text/html',
+        '.css': 'text/css',
+        '.yaml': 'text/yaml',
+        '.yml': 'text/yaml',
     };
     return types[ext] || 'application/octet-stream';
 }
@@ -105,15 +107,16 @@ export const deployBaas = makeCliCommand('deploy-baas')
 
         // Check if token is expired and refresh
         const issuedAt = authData.issuedAt * 1000; // epoch seconds → ms
-        const expiresAt = issuedAt + (authData.expiresIn * 1000);
-        if (Date.now() > expiresAt - 60_000) { // 1 min buffer
+        const expiresAt = issuedAt + authData.expiresIn * 1000;
+        if (Date.now() > expiresAt - 60_000) {
+            // 1 min buffer
             ctx.log('Access token expired, refreshing...');
             const refreshResponse = await fetch('https://manage.wix.com/oauth2/token', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-XSRF-TOKEN': 'nocheck',
-                    'Cookie': 'XSRF-TOKEN=nocheck',
+                    Cookie: 'XSRF-TOKEN=nocheck',
                 },
                 body: JSON.stringify({
                     clientId: '6f95cec8-3e98-48b9-b4e5-1fb92fcd9973',
@@ -122,10 +125,12 @@ export const deployBaas = makeCliCommand('deploy-baas')
                 }),
             });
             if (!refreshResponse.ok) {
-                ctx.error(`Token refresh failed: ${refreshResponse.status}. Run \`wix login\` again.`);
+                ctx.error(
+                    `Token refresh failed: ${refreshResponse.status}. Run \`wix login\` again.`,
+                );
                 return { success: false };
             }
-            const tokenData = await refreshResponse.json() as any;
+            const tokenData = (await refreshResponse.json()) as any;
             accessToken = tokenData.access_token;
             // Update stored token
             authData.accessToken = accessToken;
@@ -143,12 +148,15 @@ export const deployBaas = makeCliCommand('deploy-baas')
             getAppToken: async () => accessToken,
             createHeaders: () => ({
                 'X-XSRF-TOKEN': 'nocheck',
-                'Cookie': 'XSRF-TOKEN=nocheck',
+                Cookie: 'XSRF-TOKEN=nocheck',
             }),
         });
 
         // Collect files: client (statics for CDN) and server (backend for BaaS worker)
-        const frontendDir = path.resolve(ctx.projectRoot, wixConfig.site?.outputDirectory?.client || 'build/v1/frontend');
+        const frontendDir = path.resolve(
+            ctx.projectRoot,
+            wixConfig.site?.outputDirectory?.client || 'build/v1/frontend',
+        );
         const serverDir = distDir;
 
         ctx.log(`Frontend dir: ${frontendDir}`);
@@ -158,7 +166,9 @@ export const deployBaas = makeCliCommand('deploy-baas')
         const serverFiles = collectFiles(serverDir);
         const files = [...clientFiles, ...serverFiles];
         const totalSize = files.reduce((sum, f) => sum + f.size, 0);
-        ctx.log(`Found ${clientFiles.length} client + ${serverFiles.length} server = ${files.length} files (${(totalSize / 1024 / 1024).toFixed(1)} MB)`);
+        ctx.log(
+            `Found ${clientFiles.length} client + ${serverFiles.length} server = ${files.length} files (${(totalSize / 1024 / 1024).toFixed(1)} MB)`,
+        );
 
         if (dryRun) {
             for (const f of files) {
@@ -169,8 +179,11 @@ export const deployBaas = makeCliCommand('deploy-baas')
 
         // Step 1: Create deployment — client files as statics
         ctx.log(`Creating deployment for app ${appId}...`);
-        const staticFilesMetadata = clientFiles.map(f => ({
-            path: f.path, hash: f.hash, contentType: f.contentType, size: f.size,
+        const staticFilesMetadata = clientFiles.map((f) => ({
+            path: f.path,
+            hash: f.hash,
+            contentType: f.contentType,
+            size: f.size,
         }));
 
         const { data: deployData } = await httpClient.request(
@@ -202,7 +215,9 @@ export const deployBaas = makeCliCommand('deploy-baas')
                 ctx.log('Uploading files (Kubernetes PUT)...');
                 let uploaded = 0;
                 for (const uploadInfo of uploadUrls) {
-                    const file = clientFiles.find(f => f.path === uploadInfo.staticFileMetadata?.path);
+                    const file = clientFiles.find(
+                        (f) => f.path === uploadInfo.staticFileMetadata?.path,
+                    );
                     if (!file || !uploadInfo.uploadUrl) continue;
                     const response = await fetch(uploadInfo.uploadUrl!, {
                         method: 'PUT',
@@ -219,27 +234,34 @@ export const deployBaas = makeCliCommand('deploy-baas')
             } else {
                 ctx.log('Uploading files (CloudFlare FormData)...');
                 const uploadUrl = uploadUrls[0].uploadUrl!;
-                const buckets = uploadBuckets.length > 0
-                    ? uploadBuckets
-                    : [{ hashes: clientFiles.map(f => f.hash) }];
+                const buckets =
+                    uploadBuckets.length > 0
+                        ? uploadBuckets
+                        : [{ hashes: clientFiles.map((f) => f.hash) }];
 
                 for (let i = 0; i < buckets.length; i++) {
                     const bucket = buckets[i];
                     const formData = new FormData();
-                    for (const hash of (bucket.hashes || [])) {
-                        const file = clientFiles.find(f => f.hash === hash);
+                    for (const hash of bucket.hashes || []) {
+                        const file = clientFiles.find((f) => f.hash === hash);
                         if (!file) continue;
-                        formData.append(hash, new Blob([file.content], { type: file.contentType }), hash);
+                        formData.append(
+                            hash,
+                            new Blob([file.content], { type: file.contentType }),
+                            hash,
+                        );
                     }
                     const response = await fetch(uploadUrl, {
                         method: 'POST',
-                        headers: { 'Authorization': `Bearer ${uploadToken}` },
+                        headers: { Authorization: `Bearer ${uploadToken}` },
                         body: formData,
                     });
                     if (!response.ok) {
                         ctx.error(`  Bucket ${i + 1} FAILED: ${response.status}`);
                     } else {
-                        ctx.log(`  Bucket ${i + 1}/${buckets.length}: ${bucket.hashes?.length} files`);
+                        ctx.log(
+                            `  Bucket ${i + 1}/${buckets.length}: ${bucket.hashes?.length} files`,
+                        );
                     }
                 }
             }
@@ -248,11 +270,16 @@ export const deployBaas = makeCliCommand('deploy-baas')
         // Step 3: Complete deployment — server files as backend
         // Paths must be relative (no leading /) — matching CLI's file.relativePath
         ctx.log(`Completing deployment with ${serverFiles.length} server files...`);
-        const backendFiles = serverFiles.map(f => ({
+        const backendFiles = serverFiles.map((f) => ({
             path: f.path.startsWith('/') ? f.path.slice(1) : f.path,
             content: f.content.toString('base64'),
         }));
-        ctx.log(`  Sample paths: ${backendFiles.slice(0, 3).map(f => f.path).join(', ')}`);
+        ctx.log(
+            `  Sample paths: ${backendFiles
+                .slice(0, 3)
+                .map((f) => f.path)
+                .join(', ')}`,
+        );
 
         const { data: completeData } = await httpClient.request(
             completeAppDeployment({
@@ -263,7 +290,8 @@ export const deployBaas = makeCliCommand('deploy-baas')
 
         const completedDeployment = completeData.appDeployment || {};
         const deploymentId = appDeployment?.id;
-        const deploymentBaseUrl = completedDeployment.deploymentBaseUrl || appDeployment?.deploymentBaseUrl || '';
+        const deploymentBaseUrl =
+            completedDeployment.deploymentBaseUrl || appDeployment?.deploymentBaseUrl || '';
         ctx.log('Deployment response:');
         for (const [key, value] of Object.entries(completedDeployment)) {
             if (typeof value === 'string' || typeof value === 'number') {
@@ -296,16 +324,18 @@ export const deployBaas = makeCliCommand('deploy-baas')
                     appVersion,
                     externalId: appId,
                     id: overrideId,
-                    modifiedComponents: [{
-                        componentId: BACKEND_WORKER_COMPONENT_ID,
-                        type: 'BACKEND_WORKER',
-                        data: {
-                            backendWorker: {
-                                deploymentId,
-                                deploymentUrl: deploymentBaseUrl,
+                    modifiedComponents: [
+                        {
+                            componentId: BACKEND_WORKER_COMPONENT_ID,
+                            type: 'BACKEND_WORKER',
+                            data: {
+                                backendWorker: {
+                                    deploymentId,
+                                    deploymentUrl: deploymentBaseUrl,
+                                },
                             },
                         },
-                    }] as any,
+                    ] as any,
                 },
             }),
         );

@@ -5,21 +5,13 @@
  * Used by both context and components.
  */
 
-import type { currentCart } from '@wix/ecom';
-import type { Cart, LineItem, CartDiscount } from '@wix/auto_sdk_ecom_current-cart';
+import type { WixClient } from '@wix/sdk';
+import type { Cart, LineItem, CartDiscount } from '../wix-apis/types.js';
+import { getCurrentCart, estimateCurrentCartTotals } from '../wix-apis/index.js';
 import { formatWixMediaUrl } from '@jay-framework/wix-utils';
-import { BuildDescriptors } from '@wix/sdk-types';
 
-// ============================================================================
-// Types
-// ============================================================================
-
-type CurrentCartClient = BuildDescriptors<typeof currentCart, {}>;
-
-// Get the return type of estimateCurrentCartTotals
-// The client method returns a Promise, so we need to unwrap it
-type EstimateMethod = CurrentCartClient['estimateCurrentCartTotals'];
-type EstimateTotalsResult = Awaited<ReturnType<EstimateMethod>>;
+import type { EstimateCurrentCartTotalsResponse } from '../wix-apis/types.js';
+type EstimateTotalsResult = EstimateCurrentCartTotalsResponse;
 
 /**
  * Cart line item for display
@@ -117,18 +109,26 @@ export function mapLineItem(item: LineItem): CartLineItem {
             (line) =>
                 `${line.name?.translated}: ${line.colorInfo?.translated || line.plainText?.translated || ''}`,
         );
-    // Extract slug from item.url (set by our addToCart with the correct catalog slug)
-    const slug = item.url?.split('/').pop() || '';
+    // Extract slug from item.url — REST returns { relativePath, url } object, SDK returned string
+    const rawUrl = item.url;
+    const urlString =
+        typeof rawUrl === 'string' ? rawUrl : rawUrl?.relativePath || rawUrl?.url || '';
+    const slug = urlString.split('/').pop() || '';
+
+    // image — REST returns { id, url } object, SDK returned string
+    const rawImage = item.image;
+    const imageUrl = typeof rawImage === 'string' ? rawImage : rawImage?.url || '';
+    const imageId = typeof rawImage === 'string' ? '' : rawImage?.id || '';
 
     return {
-        lineItemId: item._id || '',
+        lineItemId: item._id || item.id || '',
         productId: catalogRef?.catalogItemId || '',
         productName: item.productName?.translated || item.productName?.original || '',
         productUrl: slug ? `/products/${slug}` : '',
         variantName: variantParts.join(' / '),
         sku: physicalProperties?.sku || '',
         image: {
-            url: formatWixMediaUrl('', item.image || ''),
+            url: formatWixMediaUrl(imageId, imageUrl),
             altText: item.productName?.translated || '',
         },
         quantity: item.quantity || 1,
@@ -230,7 +230,7 @@ export function mapCartToState(cart: Cart | null): CartState {
     const appliedCoupon = cart.appliedDiscounts?.find((d) => d.coupon?.code)?.coupon?.code || '';
 
     return {
-        cartId: cart._id || '',
+        cartId: cart._id || cart.id || '',
         isEmpty: lineItems.length === 0,
         lineItems,
         summary: mapCartSummary(cart),
@@ -305,10 +305,10 @@ function isCartNotFoundError(error: unknown): boolean {
  * The Wix Cart API returns 404 when no cart exists (before first item is added).
  * This helper normalizes that case to return null, which the mappers handle as empty.
  */
-export async function getCurrentCartOrNull(cartClient: CurrentCartClient): Promise<Cart | null> {
+export async function getCurrentCartOrNull(wixClient: WixClient): Promise<Cart | null> {
     try {
-        const response = await cartClient.getCurrentCart();
-        return response ?? null;
+        const response = await getCurrentCart(wixClient);
+        return response.cart ?? null;
     } catch (error) {
         if (isCartNotFoundError(error)) {
             return null;
@@ -319,17 +319,10 @@ export async function getCurrentCartOrNull(cartClient: CurrentCartClient): Promi
 
 /**
  * Estimate the current cart totals, treating 404 as an empty cart.
- *
- * This API provides complete price totals including tax calculations.
- * Use this for cart pages where accurate totals are needed.
- *
- * @see https://dev.wix.com/docs/sdk/backend-modules/ecom/current-cart/estimate-current-cart-totals
  */
-export async function estimateCurrentCartTotalsOrNull(
-    cartClient: CurrentCartClient,
-): Promise<EstimateTotalsResult | null> {
+export async function estimateCurrentCartTotalsOrNull(wixClient: WixClient): Promise<any | null> {
     try {
-        const response = await cartClient.estimateCurrentCartTotals({});
+        const response = await estimateCurrentCartTotals(wixClient);
         return response ?? null;
     } catch (error) {
         if (isCartNotFoundError(error)) {
@@ -363,7 +356,7 @@ export function mapEstimateTotalsToState(estimate: EstimateTotalsResult | null):
     const hasTax = parseFloat(taxSummary?.totalTax?.amount || '0') > 0;
 
     return {
-        cartId: cart._id || '',
+        cartId: cart._id || cart.id || '',
         isEmpty: lineItems.length === 0,
         lineItems,
         summary: {

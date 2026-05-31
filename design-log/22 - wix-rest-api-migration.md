@@ -9,6 +9,7 @@ Draft
 The Jay Framework Wix packages (`wix-stores`, `wix-cart`, `wix-server-client`) use the Wix SDK's module system (`client.use(productsV3)`) to call Wix APIs. This pulls in `@wix/stores`, `@wix/ecom`, `@wix/categories`, `@wix/data-extension-schema` — totaling 53 MB in node_modules. BaaS has a 20 MB deployment limit, making the current approach unworkable.
 
 The Wix SDK does two things:
+
 1. **Auth management** — `ApiKeyStrategy`, `OAuthStrategy`, token lifecycle, OAuth flows (login, register, token refresh, PKCE). This is complex and valuable.
 2. **API modules** — `productsV3`, `currentCart`, `categories` — typed wrappers around REST endpoints. These add bulk but are functionally just `fetch()` calls with auth headers.
 
@@ -25,18 +26,19 @@ The SDK's auth system stays unchanged:
 ```typescript
 // Server — API key auth
 const client = createClient({
-    auth: ApiKeyStrategy({ apiKey, siteId }),
-    modules: {},  // no modules needed
+  auth: ApiKeyStrategy({ apiKey, siteId }),
+  modules: {}, // no modules needed
 });
 
 // Client — OAuth auth
 const client = createClient({
-    auth: OAuthStrategy({ clientId, tokens }),
-    modules: {},
+  auth: OAuthStrategy({ clientId, tokens }),
+  modules: {},
 });
 ```
 
 The `client.auth` provides:
+
 - `getAuthHeaders()` → `{ headers: { Authorization: '...' } }`
 - `generateVisitorTokens()`, `renewToken()`, `setTokens()`, `getTokens()`
 - `login()`, `register()`, `processVerification()`, `loggedIn()`, `logout()`
@@ -54,24 +56,24 @@ import type { WixClient } from '@wix/sdk';
 const WIX_API_BASE = 'https://www.wixapis.com';
 
 async function wixFetch<T>(
-    client: WixClient,
-    method: string,
-    path: string,
-    body?: any,
+  client: WixClient,
+  method: string,
+  path: string,
+  body?: any,
 ): Promise<T> {
-    const { headers } = await client.auth.getAuthHeaders();
-    const response = await fetch(`${WIX_API_BASE}${path}`, {
-        method,
-        headers: {
-            ...headers,
-            'Content-Type': 'application/json',
-        },
-        body: body ? JSON.stringify(body) : undefined,
-    });
-    if (!response.ok) {
-        throw new Error(`Wix API ${response.status}: ${path}`);
-    }
-    return response.json();
+  const { headers } = await client.auth.getAuthHeaders();
+  const response = await fetch(`${WIX_API_BASE}${path}`, {
+    method,
+    headers: {
+      ...headers,
+      'Content-Type': 'application/json',
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!response.ok) {
+    throw new Error(`Wix API ${response.status}: ${path}`);
+  }
+  return response.json();
 }
 ```
 
@@ -122,16 +124,16 @@ The REST calls are inlined where they're currently used — inside the service (
 ```typescript
 // In wix-stores-service.ts (server)
 export function provideWixStoresService(wixClient: WixClient) {
-    async function queryProducts(query) {
-        const { headers } = await wixClient.auth.getAuthHeaders();
-        const res = await fetch('https://www.wixapis.com/stores/v3/products/query', {
-            method: 'POST',
-            headers: { ...headers, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query }),
-        });
-        return res.json();
-    }
-    // ...
+  async function queryProducts(query) {
+    const { headers } = await wixClient.auth.getAuthHeaders();
+    const res = await fetch('https://www.wixapis.com/stores/v3/products/query', {
+      method: 'POST',
+      headers: { ...headers, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query }),
+    });
+    return res.json();
+  }
+  // ...
 }
 ```
 
@@ -173,38 +175,39 @@ A: Drop query builders. Use plain JSON query bodies directly.
 
 ### Stores (wix-stores package)
 
-| Current SDK call | REST endpoint | Method | Used in |
-|-----------------|---------------|--------|---------|
-| `productsV3.queryProducts(query)` | `/stores/v3/products/query` | POST | `stores-actions.ts` (searchProducts, getProductBySlug) |
-| `productsV3.getProduct(id)` | `/stores/v3/products/{id}` | GET | `stores-actions.ts` (related products) |
-| `categories.queryCategories()` | `/stores/v1/categories/query` | POST | `stores-actions.ts` (getCategories) |
-| `inventoryItemsV3.queryInventory()` | `/stores/v3/inventoryItems/query` | POST | `stores-actions.ts` (getVariantStock) |
-| `customizationsV3.listCustomizations()` | `/stores/v3/customizations` | GET | `product-page.ts` (modifiers) |
-| `dataExtensionSchemas.querySchemas()` | `/data-extension-schema/v1/schemas/query` | POST | `wix-stores-service.ts` (setup) |
+| Current SDK call                        | REST endpoint                             | Method | Used in                                                |
+| --------------------------------------- | ----------------------------------------- | ------ | ------------------------------------------------------ |
+| `productsV3.queryProducts(query)`       | `/stores/v3/products/query`               | POST   | `stores-actions.ts` (searchProducts, getProductBySlug) |
+| `productsV3.getProduct(id)`             | `/stores/v3/products/{id}`                | GET    | `stores-actions.ts` (related products)                 |
+| `categories.queryCategories()`          | `/stores/v1/categories/query`             | POST   | `stores-actions.ts` (getCategories)                    |
+| `inventoryItemsV3.queryInventory()`     | `/stores/v3/inventoryItems/query`         | POST   | `stores-actions.ts` (getVariantStock)                  |
+| `customizationsV3.listCustomizations()` | `/stores/v3/customizations`               | GET    | `product-page.ts` (modifiers)                          |
+| `dataExtensionSchemas.querySchemas()`   | `/data-extension-schema/v1/schemas/query` | POST   | `wix-stores-service.ts` (setup)                        |
 
 ### Cart (wix-cart package)
 
-| Current SDK call | REST endpoint | Method | Used in |
-|-----------------|---------------|--------|---------|
-| `currentCart.getCurrentCart()` | `/ecom/v1/carts/current` | GET | `wix-cart-context.ts` |
-| `currentCart.addToCurrentCart(items)` | `/ecom/v1/carts/current/add` | POST | `wix-cart-context.ts` |
-| `currentCart.removeLineItemsFromCurrentCart(ids)` | `/ecom/v1/carts/current/removeLineItems` | POST | `wix-cart-context.ts` |
-| `currentCart.updateCurrentCartLineItemQuantity(items)` | `/ecom/v1/carts/current/updateLineItemQuantity` | POST | `wix-cart-context.ts` |
-| `currentCart.updateCurrentCart(cart)` | `/ecom/v1/carts/current` | PATCH | `wix-cart-context.ts` (coupon) |
-| `currentCart.removeCouponFromCurrentCart()` | `/ecom/v1/carts/current/removeCoupon` | POST | `wix-cart-context.ts` |
-| `currentCart.estimateCurrentCartTotals()` | `/ecom/v1/carts/current/estimateTotals` | POST | `wix-cart-context.ts` |
+| Current SDK call                                       | REST endpoint                                   | Method | Used in                        |
+| ------------------------------------------------------ | ----------------------------------------------- | ------ | ------------------------------ |
+| `currentCart.getCurrentCart()`                         | `/ecom/v1/carts/current`                        | GET    | `wix-cart-context.ts`          |
+| `currentCart.addToCurrentCart(items)`                  | `/ecom/v1/carts/current/add`                    | POST   | `wix-cart-context.ts`          |
+| `currentCart.removeLineItemsFromCurrentCart(ids)`      | `/ecom/v1/carts/current/removeLineItems`        | POST   | `wix-cart-context.ts`          |
+| `currentCart.updateCurrentCartLineItemQuantity(items)` | `/ecom/v1/carts/current/updateLineItemQuantity` | POST   | `wix-cart-context.ts`          |
+| `currentCart.updateCurrentCart(cart)`                  | `/ecom/v1/carts/current`                        | PATCH  | `wix-cart-context.ts` (coupon) |
+| `currentCart.removeCouponFromCurrentCart()`            | `/ecom/v1/carts/current/removeCoupon`           | POST   | `wix-cart-context.ts`          |
+| `currentCart.estimateCurrentCartTotals()`              | `/ecom/v1/carts/current/estimateTotals`         | POST   | `wix-cart-context.ts`          |
 
 ### Server Client (wix-server-client package)
 
-| Current SDK call | REST equivalent | Notes |
-|-----------------|----------------|-------|
-| `createClient({ auth: ApiKeyStrategy(...) })` | Keep as-is | Auth only, no modules |
-| `createClient({ auth: OAuthStrategy(...) })` | Keep as-is | Auth only, no modules |
-| `client.auth.*` methods | Keep as-is | OAuth flows stay in SDK |
+| Current SDK call                              | REST equivalent | Notes                   |
+| --------------------------------------------- | --------------- | ----------------------- |
+| `createClient({ auth: ApiKeyStrategy(...) })` | Keep as-is      | Auth only, no modules   |
+| `createClient({ auth: OAuthStrategy(...) })`  | Keep as-is      | Auth only, no modules   |
+| `client.auth.*` methods                       | Keep as-is      | OAuth flows stay in SDK |
 
 ## Impact
 
 ### What's removed
+
 - `@wix/stores` (includes `@wix/auto_sdk_stores_products-v-3`, `@wix/auto_sdk_stores_inventory-items-v-3`, `@wix/auto_sdk_stores_customizations-v-3`)
 - `@wix/ecom` (includes `@wix/auto_sdk_ecom_current-cart`, `@wix/auto_sdk_ecom_cart-v-2`, `@wix/auto_sdk_ecom_checkout`, `@wix/auto_sdk_ecom_orders`, `@wix/auto_sdk_ecom_draft-orders`, ...)
 - `@wix/categories` (includes `@wix/auto_sdk_categories_categories`)
@@ -212,15 +215,18 @@ A: Drop query builders. Use plain JSON query bodies directly.
 - All their transitive dependencies
 
 ### What's kept
+
 - `@wix/sdk` — auth strategies, token management, OAuth flows
 - `@wix/sdk-types` — shared types (if needed)
 
 ### Size impact
+
 - **Before**: 53 MB `@wix/*` in node_modules
 - **After**: ~200 KB (`@wix/sdk` only, already bundled in entry.mjs)
 - **BaaS dist**: drops from 55+ MB to ~3.5 MB
 
 ### Risk
+
 - REST endpoint URLs could change (unlikely for v3 APIs)
 - Response shapes might differ slightly from SDK types (need to verify)
 - Query builder patterns need manual JSON translation
@@ -228,6 +234,7 @@ A: Drop query builders. Use plain JSON query bodies directly.
 ## Implementation Plan
 
 ### Phase 0: Exploration — validate REST approach
+
 - Create `exploration/wix-rest-api/`
 - Use `@wix/sdk` with `ApiKeyStrategy` for server auth, `OAuthStrategy` for client auth
 - Call `client.auth.getAuthHeaders()` and use with `fetch()` directly
@@ -236,11 +243,13 @@ A: Drop query builders. Use plain JSON query bodies directly.
 - Validate: response types, error handling, auth headers, both environments
 
 ### Phase 1: wixFetch helper in wix-server-client
+
 - Add `wixFetch<T>(client, method, path, body?)` to `wix-server-client`
 - Uses `client.auth.getAuthHeaders()` — works with both ApiKey and OAuth
 - Export from the package for use by other packages
 
 ### Phase 2: Stores API functions
+
 - Create `wix-stores/lib/wix-apis/` with one file per API call
 - Copy and adjust response types from SDK modules
 - Replace usage in services, components, and actions
@@ -248,6 +257,7 @@ A: Drop query builders. Use plain JSON query bodies directly.
 - Remove from vite.config.ts externals
 
 ### Phase 3: Cart API functions
+
 - Create `wix-cart/lib/wix-apis/` with one file per API call
 - Copy and adjust response types from SDK modules
 - Replace usage in service and context (both server and client)
@@ -255,20 +265,78 @@ A: Drop query builders. Use plain JSON query bodies directly.
 - Remove from vite.config.ts externals
 
 ### Phase 4: Verify locally
+
 - Rebuild all packages
 - Run store-light example with `jay-stack dev`
 - Verify: product pages render, search works, cart add/remove/checkout works
 
 ### Phase 5: BaaS deployment
+
 - Rebuild for BaaS: `build:production` → `deploy:build-entry` → `deploy:deploy`
 - dist/node_modules should now be ~1 MB (only `@jay-framework/*`)
 - Verify deployed site works end-to-end
 
 ## Trade-offs
 
-| Decision | Benefit | Cost |
-|----------|---------|------|
-| Keep @wix/sdk for auth | OAuth complexity handled, tested, maintained by Wix | Still a dependency (~200 KB bundled) |
-| Direct REST calls | 53 MB → 0 MB for API modules, BaaS-deployable | Must maintain endpoint URLs, lose query builder |
-| Types from response | Lightweight, no extra deps | Less type safety than SDK-generated types |
-| wixFetch in wix-utils | Shared across packages, single auth pattern | One more module in wix-utils |
+| Decision                      | Benefit                                             | Cost                                            |
+| ----------------------------- | --------------------------------------------------- | ----------------------------------------------- |
+| Keep @wix/sdk for auth        | OAuth complexity handled, tested, maintained by Wix | Still a dependency (~200 KB bundled)            |
+| Direct REST calls             | 53 MB → 0 MB for API modules, BaaS-deployable       | Must maintain endpoint URLs, lose query builder |
+| Types from response           | Lightweight, no extra deps                          | Less type safety than SDK-generated types       |
+| wixFetch in wix-server-client | Shared across packages, single auth pattern         | One more export from wix-server-client          |
+
+## Implementation Results
+
+### Completed (2026-05-31)
+
+**Phase 0: Exploration** — Validated REST approach in `exploration/wix-rest-api/`. Both server (ApiKey) and client (OAuth) auth work with `wixFetch`. Captured real API responses as reference files.
+
+**Phase 1: wixFetch helper** — Added to `wix-server-client/lib/wix-fetch.ts`. Exports `wixFetch`, `WixApiError`, `WixFilter`, `WixSort`, `WixPaging`, `WixCursorPaging`. Shared types for filters, sorting, and paging.
+
+**Phase 2: Stores API functions** — Created `wix-stores/lib/wix-apis/` with 9 functions:
+
+- `queryProducts`, `searchProducts`, `getProduct`, `getProductBySlug`
+- `queryCategories`, `getCategory`
+- `queryInventory`, `queryCustomizations`, `querySchemas`
+
+Updated all consumers: `stores-actions.ts`, `product-page.ts`, `product-search.ts`, `category-list.ts`, `related-products.ts`, `setup.ts`, `wix-stores-context.ts`, `wix-stores-service.ts`.
+
+**Phase 3: Cart API functions** — Created `wix-cart/lib/wix-apis/` with 7 functions:
+
+- `getCurrentCart`, `addToCurrentCart`, `removeLineItemsFromCurrentCart`
+- `updateCurrentCartLineItemQuantity`, `updateCurrentCart`
+- `removeCouponFromCurrentCart`, `estimateCurrentCartTotals`
+
+Updated `wix-cart-context.ts`, `cart-helpers.ts`, `wix-cart-service.ts`, `wix-cart-service-marker.ts`.
+
+**Phase 4: Verification** — store-light dev server works. Products page, product detail pages, and homepage all return 200.
+
+### Dependencies removed
+
+- `@wix/stores` (was ~6 MB with transitive deps)
+- `@wix/ecom` (was ~40 MB with transitive deps)
+- `@wix/categories` (was ~2 MB)
+- `@wix/data-extension-schema` (was ~1.5 MB)
+- `@wix/sdk-runtime`
+- `@wix/sdk-types`
+
+### Dependencies kept
+
+- `@wix/sdk` — auth strategies, token management, OAuth flows
+
+### Key findings
+
+- **Search API uses GET with base64 query params** on the edge, but POST works on `www.wixapis.com`
+- **Aggregation format**: `fieldPath` is a sibling of `type`/`scalar`/`range` in each aggregation item, not nested inside them
+- **Response shape differences**: REST uses `id` not `_id`, `media.main.image.url` not `media.main.url`. Product mapper needs `as any` casts until types are fully aligned.
+- **Query builder replacement**: SDK's `.eq('visible', true).limit(100).find()` becomes `{ filter: { visible: true }, paging: { limit: 100 } }` — straightforward
+
+### Known issues
+
+- `product-page.ts` still imports types from `@wix/auto_sdk_stores_products-v-3` (type-only, erased at runtime). Should be replaced with local types eventually.
+- Product mapper uses `as any` casts for REST response products due to media shape differences between SDK and REST. Needs type alignment.
+- Cart `EstimateTotalsResult` uses `any` for the response type. Should be properly typed.
+
+### Phase 5: BaaS deployment — pending
+
+With SDK modules removed, `dist/node_modules/` should drop from 53+ MB to ~1 MB (only `@jay-framework/*` packages). Needs verification.

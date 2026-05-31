@@ -21,7 +21,10 @@ async function handler(request: Request): Promise<Response> {
     // Test 2: Multi-file import — renders HTML from a separate module
     if (path === '/page') {
         const name = url.searchParams.get('name') || 'World';
-        const html = renderPage('Test Page', `<h1>Hello, ${name}!</h1><p>Rendered by a separate module.</p>`);
+        const html = renderPage(
+            'Test Page',
+            `<h1>Hello, ${name}!</h1><p>Rendered by a separate module.</p>`,
+        );
         return new Response(html, {
             headers: { 'Content-Type': 'text/html; charset=utf-8' },
         });
@@ -37,7 +40,10 @@ async function handler(request: Request): Promise<Response> {
         return jsonResponse(await getEnvInfo());
     }
 
-    return jsonResponse({ error: 'Not found', routes: ['/', '/hello', '/page', '/disk', '/env'] }, 404);
+    return jsonResponse(
+        { error: 'Not found', routes: ['/', '/hello', '/page', '/disk', '/env'] },
+        404,
+    );
 }
 
 function jsonResponse(data: any, status = 200) {

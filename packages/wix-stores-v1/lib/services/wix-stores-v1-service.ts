@@ -13,7 +13,6 @@ import {
     getInventoryClient,
     getProductsClient,
 } from '../utils/wix-store-v1-api';
-import { getCurrentCartClient } from '@jay-framework/wix-cart';
 import { createJayService } from '@jay-framework/fullstack-component';
 import { registerService } from '@jay-framework/stack-server-runtime';
 
@@ -21,8 +20,6 @@ export interface WixStoresV1Service {
     products: ReturnType<typeof getProductsClient>;
     collections: ReturnType<typeof getCollectionsClient>;
     inventory: ReturnType<typeof getInventoryClient>;
-    /** @deprecated Use WIX_CART_SERVICE from @jay-framework/wix-cart instead */
-    cart: ReturnType<typeof getCurrentCartClient>;
 }
 
 /**
@@ -41,8 +38,6 @@ export function provideWixStoresV1Service(wixClient: WixClient): WixStoresV1Serv
         products: getProductsClient(wixClient),
         collections: getCollectionsClient(wixClient),
         inventory: getInventoryClient(wixClient),
-        // Keep cart for backward compatibility, but prefer WIX_CART_SERVICE
-        cart: getCurrentCartClient(wixClient),
     };
 
     registerService(WIX_STORES_V1_SERVICE_MARKER, service);

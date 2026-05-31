@@ -13,20 +13,26 @@ import {
     buildVariantStockMap,
     type VariantStockMap,
 } from '../utils/product-mapper.js';
-import { type V3ProductSearch } from '@wix/auto_sdk_stores_products-v-3';
+import {
+    searchProducts as searchProductsApi,
+    getProductBySlug as getProductBySlugApi,
+    getProduct as getProductApi,
+    queryCategories as queryCategoriesApi,
+} from '../wix-apis/index.js';
+import type { SearchProductsRequest } from '../wix-apis/search-products.js';
+import type {
+    AggregationDataAggregationResults,
+    AggregationDataAggregationResultsScalarResult,
+    AggregationResultsRangeResults,
+    AggregationResultsValueResults,
+    Customization,
+} from '../wix-apis/types.js';
 
 /** Check if URL templates use category/prefix placeholders */
 function needsCategoryInfo(wixStores: WixStoresService): boolean {
     const template = wixStores.urls.product;
     return template.includes('{category}') || template.includes('{prefix}');
 }
-import {
-    AggregationDataAggregationResults,
-    AggregationDataAggregationResultsScalarResult,
-    AggregationResultsRangeResults,
-    AggregationResultsValueResults,
-} from '@wix/auto_sdk_stores_products-v-3';
-import { type Customization } from '@wix/auto_sdk_stores_customizations-v-3';
 import { SearchProductsInput, SearchProductsOutput } from './search-products.jay-action';
 
 // ============================================================================
@@ -249,7 +255,7 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
                     : undefined;
 
                 // Build aggregations for price bounds, buckets, and total count
-                const aggregations: V3ProductSearch['aggregations'] = [
+                const aggregations: SearchProductsRequest['aggregations'] = [
                     // Total count via COUNT_DISTINCT on slug
                     {
                         fieldPath: 'slug',
@@ -303,7 +309,8 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
                 ];
 
                 // Call searchProducts (includes aggregations for count, price bounds, and buckets)
-                const searchResult = await wixStores.products.searchProducts(
+                const searchResult = await searchProductsApi(
+                    wixStores.wixClient,
                     {
                         filter,
                         sort: sort.length > 0 ? sort : undefined,
@@ -444,7 +451,8 @@ export const getProductBySlug = makeJayQuery('wixStores.getProductBySlug')
                     'VARIANT_OPTION_CHOICE_NAMES',
                     ...(needsCategoryInfo(wixStores) ? (['ALL_CATEGORIES_INFO'] as const) : []),
                 ] as const;
-                const result = await wixStores.products.getProductBySlug(slug, {
+                const result = await getProductBySlugApi(wixStores.wixClient, slug, {
+                    includeMerchantSpecificData: true,
                     fields: [...fields],
                 });
                 const product = result.product;
@@ -475,10 +483,12 @@ export const getVariantStock = makeJayQuery('wixStores.getVariantStock')
             wixStores: WixStoresService,
         ): Promise<VariantStockMap> => {
             try {
-                const product = await wixStores.products.getProduct(input.productId, {
+                const result = await getProductApi(wixStores.wixClient, input.productId, {
+                    includeMerchantSpecificData: true,
                     fields: ['VARIANT_OPTION_CHOICE_NAMES'],
                 });
-                return buildVariantStockMap(product);
+                if (!result.product) return {};
+                return buildVariantStockMap(result.product);
             } catch (error) {
                 console.error('[wixStores.getVariantStock] Failed:', error);
                 return {};
@@ -503,16 +513,11 @@ export const getCategories = makeJayQuery('wixStores.getCategories')
             wixStores: WixStoresService,
         ): Promise<Array<{ categoryId: string; categoryName: string }>> => {
             try {
-                const result = await wixStores.categories
-                    .queryCategories({
-                        treeReference: {
-                            appNamespace: '@wix/stores',
-                        },
-                    })
-                    .eq('visible', true)
-                    .find();
+                const result = await queryCategoriesApi(wixStores.wixClient, {
+                    filter: { visible: true },
+                });
 
-                return (result.items || []).map((cat) => ({
+                return (result.categories || []).map((cat) => ({
                     categoryId: cat._id || '',
                     categoryName: cat.name || '',
                 }));

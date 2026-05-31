@@ -21,7 +21,8 @@ async function main() {
     console.log(`Fetching files matching path prefix: "${routePrefix}"...`);
     const startTime = Date.now();
 
-    const result = await client.items.query(COLLECTION_ID)
+    const result = await client.items
+        .query(COLLECTION_ID)
         .startsWith('path', routePrefix)
         .limit(100)
         .find();
@@ -43,7 +44,7 @@ async function main() {
     }
 }
 
-main().catch(err => {
+main().catch((err) => {
     console.error('Fatal:', err);
     process.exit(1);
 });

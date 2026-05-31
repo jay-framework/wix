@@ -1,11 +1,10 @@
 import type { WixClient } from '@wix/sdk';
-import { wixFetch } from '@jay-framework/wix-server-client';
-import type { QueryInventoryResponse, Paging } from './types.js';
-import type { ProductFilter } from './search-products.js';
+import { wixFetch, type WixFilter, type WixPaging } from '@jay-framework/wix-server-client';
+import type { QueryInventoryResponse } from './types.js';
 
 export interface QueryInventoryRequest {
-    filter?: ProductFilter;
-    paging?: Paging;
+    filter?: WixFilter;
+    paging?: WixPaging;
 }
 
 export async function queryInventory(

@@ -27,7 +27,7 @@ import {
     type CartState,
     type CartOperationResult as CartResult,
 } from '@jay-framework/wix-cart';
-import { getProductsV3Client } from '../utils/wix-store-api';
+import { getProduct as getProductApi } from '../wix-apis/index.js';
 
 // ============================================================================
 // Type Definitions
@@ -129,8 +129,7 @@ export function provideWixStoresContext(): WixStoresContext {
     // Get the cart context (provided by wix-cart plugin)
     const cartContext = useGlobalContext(WIX_CART_CONTEXT);
 
-    // Get stores-specific API clients
-    const catalogClient = getProductsV3Client(wixClient);
+    // wixClient used for REST API calls
 
     // Create and register the reactive stores context
     const storesContext = registerReactiveGlobalContext(WIX_STORES_CONTEXT, () => {
@@ -146,9 +145,10 @@ export function provideWixStoresContext(): WixStoresContext {
             console.log(`[WixStores] Adding to cart: ${productId} x ${quantity}`, selections);
 
             // Fetch product to get variant info (V3 API)
-            const product = await catalogClient.getProduct(productId, {
-                fields: ['VARIANT_OPTION_CHOICE_NAMES'],
+            const result = await getProductApi(wixClient, productId, {
+                includeMerchantSpecificData: true,
             });
+            const product = result.product;
 
             // Find matching variant based on selected options
             let variant = product.variantsInfo?.variants?.find((v) =>

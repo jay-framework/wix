@@ -29,7 +29,11 @@ interface RouteManifest {
 
 const DEFAULT_EXCLUDE_PLUGINS = ['aiditor', 'ui-kit', 'wix-deploy'];
 
-function getDirectorySize(dir: string, fs: typeof import('node:fs'), path: typeof import('node:path')): number {
+function getDirectorySize(
+    dir: string,
+    fs: typeof import('node:fs'),
+    path: typeof import('node:path'),
+): number {
     let size = 0;
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
         const fullPath = path.join(dir, entry.name);
@@ -46,7 +50,7 @@ function sortPluginsByDeps(plugins: Array<{ name: string; packageName: string }>
     const priorityPackages = ['@jay-framework/wix-server-client'];
     const sorted: typeof plugins = [];
     for (const pkg of priorityPackages) {
-        const p = plugins.find(p => p.packageName === pkg);
+        const p = plugins.find((p) => p.packageName === pkg);
         if (p) sorted.push(p);
     }
     for (const p of plugins) {
@@ -104,16 +108,12 @@ function generateEntrySource(
     const moduleImports = plugins.map(
         (p, i) => `import * as pluginModule_${i} from '${p.packageName}';`,
     );
-    const pluginsArray = plugins.map(
-        (p, i) => `    { name: '${p.name}', init: pluginInit_${i} },`,
-    );
+    const pluginsArray = plugins.map((p, i) => `    { name: '${p.name}', init: pluginInit_${i} },`);
     // Build module registry keyed by package name
-    const registryEntries = plugins.map(
-        (p, i) => `    '${p.packageName}': pluginModule_${i},`,
-    );
+    const registryEntries = plugins.map((p, i) => `    '${p.packageName}': pluginModule_${i},`);
     // Action modules are a subset of plugin modules
-    const actionsArray = actionPackages.map(pkg => {
-        const idx = plugins.findIndex(p => p.packageName === pkg);
+    const actionsArray = actionPackages.map((pkg) => {
+        const idx = plugins.findIndex((p) => p.packageName === pkg);
         return `    { module: pluginModule_${idx}, name: '${pkg}' },`;
     });
 
@@ -367,21 +367,27 @@ export const buildEntry = makeCliCommand('build-entry')
         }
 
         const filteredPlugins = manifest.plugins.filter(
-            p => !excludePlugins.includes(p.name) && !excludePlugins.includes(p.packageName),
+            (p) => !excludePlugins.includes(p.name) && !excludePlugins.includes(p.packageName),
         );
         // wix-server-client must init before plugins that depend on it
         const plugins = sortPluginsByDeps(filteredPlugins);
-        const pluginPackages = new Set(plugins.map(p => p.packageName));
+        const pluginPackages = new Set(plugins.map((p) => p.packageName));
         const actionPackages = manifest.actions
-            .filter(a => a.isPlugin && a.packageName && pluginPackages.has(a.packageName!))
-            .map(a => a.packageName!)
+            .filter((a) => a.isPlugin && a.packageName && pluginPackages.has(a.packageName!))
+            .map((a) => a.packageName!)
             .filter((v, i, arr) => arr.indexOf(v) === i);
 
         ctx.log(`Version: ${version}`);
-        ctx.log(`Plugins: ${plugins.map(p => p.name).join(', ')}`);
+        ctx.log(`Plugins: ${plugins.map((p) => p.name).join(', ')}`);
         ctx.log(`Action packages: ${actionPackages.join(', ')}`);
 
-        const entrySource = generateEntrySource(plugins, actionPackages, collectionId, staticBaseUrl, version);
+        const entrySource = generateEntrySource(
+            plugins,
+            actionPackages,
+            collectionId,
+            staticBaseUrl,
+            version,
+        );
 
         const entryDir = path.dirname(outFile);
         fs.mkdirSync(entryDir, { recursive: true });
@@ -397,20 +403,26 @@ export const buildEntry = makeCliCommand('build-entry')
             '@jay-framework/compiler',
             '@jay-framework/rollup-plugin',
             '@jay-framework/vite-plugin',
-            'typescript', 'prettier', 'vite', 'lightningcss', 'fsevents',
+            'typescript',
+            'prettier',
+            'vite',
+            'lightningcss',
+            'fsevents',
         ];
         const stubFilter = new RegExp(
-            '^(' + stubs.map(s => s.replace(/[/.]/g, '\\$&')).join('|') + ')$',
+            '^(' + stubs.map((s) => s.replace(/[/.]/g, '\\$&')).join('|') + ')$',
         );
 
         const stubBuildDepsPlugin = {
             name: 'stub-build-deps',
             setup(build: any) {
                 build.onResolve({ filter: stubFilter }, (args: any) => ({
-                    path: args.path, namespace: 'stub',
+                    path: args.path,
+                    namespace: 'stub',
                 }));
                 build.onLoad({ filter: /.*/, namespace: 'stub' }, (args: any) => ({
-                    contents: generateStubContents(args.path), loader: 'js',
+                    contents: generateStubContents(args.path),
+                    loader: 'js',
                 }));
             },
         };
@@ -421,11 +433,15 @@ export const buildEntry = makeCliCommand('build-entry')
             name: 'resolve-aliases',
             setup(build: any) {
                 build.onResolve({ filter: /^@jay-framework\/production-server\/serve$/ }, () => {
-                    const pkgDir = path.dirname(require.resolve('@jay-framework/production-server/package.json'));
+                    const pkgDir = path.dirname(
+                        require.resolve('@jay-framework/production-server/package.json'),
+                    );
                     return { path: path.join(pkgDir, 'dist/serve-index.js') };
                 });
                 build.onResolve({ filter: /^@jay-framework\/wix-deploy\/artifact-store$/ }, () => {
-                    const pkgDir = path.dirname(require.resolve('@jay-framework/wix-deploy/package.json'));
+                    const pkgDir = path.dirname(
+                        require.resolve('@jay-framework/wix-deploy/package.json'),
+                    );
                     return { path: path.join(pkgDir, 'dist/artifact-store.js') };
                 });
             },
@@ -474,7 +490,10 @@ export const buildEntry = makeCliCommand('build-entry')
 
         if (result.metafile) {
             ctx.log(`Bundled ${Object.keys(result.metafile.inputs).length} input files`);
-            fs.writeFileSync(outFile.replace(/\.mjs$/, '.meta.json'), JSON.stringify(result.metafile));
+            fs.writeFileSync(
+                outFile.replace(/\.mjs$/, '.meta.json'),
+                JSON.stringify(result.metafile),
+            );
         }
 
         // Copy config/.wix.yaml to dist/ so wix-server-client can find it on BaaS
@@ -487,15 +506,21 @@ export const buildEntry = makeCliCommand('build-entry')
             fs.copyFileSync(wixConfigSrc, path.join(configDir, 'wix.yaml'));
             ctx.log(`Copied config/.wix.yaml to dist/config/`);
         } else {
-            ctx.warn(`config/.wix.yaml not found — wix-server-client init will fail on BaaS unless WIX_API_KEY env vars are set`);
+            ctx.warn(
+                `config/.wix.yaml not found — wix-server-client init will fail on BaaS unless WIX_API_KEY env vars are set`,
+            );
         }
 
         // Copy @jay-framework/* runtime dependencies to dist/node_modules/
         // These are needed for dynamic import() in page-parts resolution
-        const projectPkg = JSON.parse(fs.readFileSync(path.join(ctx.projectRoot, 'package.json'), 'utf8'));
+        const projectPkg = JSON.parse(
+            fs.readFileSync(path.join(ctx.projectRoot, 'package.json'), 'utf8'),
+        );
         const devOnlyPackages = new Set([
-            '@jay-framework/jay-cli', '@jay-framework/jay-stack-cli',
-            '@jay-framework/wix-deploy', '@jay-framework/wix-dev-environment',
+            '@jay-framework/jay-cli',
+            '@jay-framework/jay-stack-cli',
+            '@jay-framework/wix-deploy',
+            '@jay-framework/wix-dev-environment',
         ]);
         const copiedPackages = new Set<string>();
         const depRequire = createRequire(path.join(ctx.projectRoot, 'package.json'));
@@ -589,7 +614,9 @@ export const buildEntry = makeCliCommand('build-entry')
         }
 
         const distSize = getDirectorySize(entryDir, fs, path);
-        ctx.log(`Copied ${copiedPackages.size} packages to dist/node_modules/ (total dist: ${(distSize / 1024 / 1024).toFixed(1)} MB)`);
+        ctx.log(
+            `Copied ${copiedPackages.size} packages to dist/node_modules/ (total dist: ${(distSize / 1024 / 1024).toFixed(1)} MB)`,
+        );
 
         // Generate serve.mjs for local testing
         const serveFile = path.join(entryDir, 'serve.mjs');

@@ -149,7 +149,9 @@ export class WixDataArtifactStore implements ArtifactStore {
     // ========================================================================
 
     async loadEagerFiles(): Promise<void> {
-        console.log(`[WixDataArtifactStore] Loading eager files v${this.version} from "${this.collectionId}"...`);
+        console.log(
+            `[WixDataArtifactStore] Loading eager files v${this.version} from "${this.collectionId}"...`,
+        );
 
         let totalLoaded = 0;
         let hasMore = true;
@@ -157,7 +159,8 @@ export class WixDataArtifactStore implements ArtifactStore {
         const limit = 50;
 
         while (hasMore) {
-            const result = await this.dataClient.items.query(this.collectionId)
+            const result = await this.dataClient.items
+                .query(this.collectionId)
                 .eq('category', 'eager')
                 .eq('version', this.version)
                 .skip(offset)
@@ -196,7 +199,7 @@ export class WixDataArtifactStore implements ArtifactStore {
             `${base}.server-element.js`,
         ];
 
-        await Promise.all(filesToEnsure.map(f => this.ensureFile(f)));
+        await Promise.all(filesToEnsure.map((f) => this.ensureFile(f)));
     }
 
     // ========================================================================
@@ -206,7 +209,11 @@ export class WixDataArtifactStore implements ArtifactStore {
     /**
      * Write a single file to the data collection.
      */
-    async writeFile(relativePath: string, content: string, category: 'eager' | 'lazy'): Promise<void> {
+    async writeFile(
+        relativePath: string,
+        content: string,
+        category: 'eager' | 'lazy',
+    ): Promise<void> {
         const ext = path.extname(relativePath).slice(1);
         const item: BackendFileItem = {
             _id: makeItemId(this.version, relativePath),
@@ -224,8 +231,10 @@ export class WixDataArtifactStore implements ArtifactStore {
      * Write a batch of files to the data collection.
      * Returns the number of successfully written files.
      */
-    async writeFiles(files: Array<{ path: string; content: string; category: 'eager' | 'lazy' }>): Promise<number> {
-        const dataItems: BackendFileItem[] = files.map(f => ({
+    async writeFiles(
+        files: Array<{ path: string; content: string; category: 'eager' | 'lazy' }>,
+    ): Promise<number> {
+        const dataItems: BackendFileItem[] = files.map((f) => ({
             _id: makeItemId(this.version, f.path),
             version: this.version,
             path: f.path,
@@ -245,7 +254,9 @@ export class WixDataArtifactStore implements ArtifactStore {
                 try {
                     await this.dataClient.items.save(this.collectionId, item);
                     count++;
-                } catch { /* skip failed items */ }
+                } catch {
+                    /* skip failed items */
+                }
             }
             return count;
         }
@@ -278,14 +289,20 @@ export class WixDataArtifactStore implements ArtifactStore {
 
         const id = makeItemId(this.version, relativePath);
         try {
-            const item = await this.dataClient.items.get(this.collectionId, id) as BackendFileItem | null;
+            const item = (await this.dataClient.items.get(
+                this.collectionId,
+                id,
+            )) as BackendFileItem | null;
             if (item?.content) {
                 this.writeToCache(relativePath, item.content);
                 return item.content;
             }
-        } catch { /* get by ID failed — try query */ }
+        } catch {
+            /* get by ID failed — try query */
+        }
 
-        const result = await this.dataClient.items.query(this.collectionId)
+        const result = await this.dataClient.items
+            .query(this.collectionId)
             .eq('path', relativePath)
             .eq('version', this.version)
             .limit(1)
@@ -330,7 +347,9 @@ export class WixDataArtifactStore implements ArtifactStore {
                 if (config.parts) rewriteParts(config.parts);
                 if (config.instanceComponents) rewriteParts(config.instanceComponents);
                 content = JSON.stringify(config);
-            } catch { /* keep original content if parsing fails */ }
+            } catch {
+                /* keep original content if parsing fails */
+            }
         }
 
         fs.writeFileSync(fullPath, content, 'utf8');

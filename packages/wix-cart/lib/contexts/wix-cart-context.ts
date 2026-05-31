@@ -25,7 +25,13 @@ import {
 } from '@jay-framework/component';
 import { Getter } from '@jay-framework/reactive';
 import { WIX_CLIENT_CONTEXT } from '@jay-framework/wix-server-client';
-import { getCurrentCartClient } from '../utils/cart-client';
+import {
+    addToCurrentCart as addToCartApi,
+    removeLineItemsFromCurrentCart as removeLineItemsApi,
+    updateCurrentCartLineItemQuantity as updateQuantityApi,
+    updateCurrentCart as updateCartApi,
+    removeCouponFromCurrentCart as removeCouponApi,
+} from '../wix-apis/index.js';
 import {
     CartState,
     estimateCurrentCartTotalsOrNull,
@@ -203,9 +209,6 @@ export function provideWixCartContext(): WixCartContext {
     const wixClientContext = useGlobalContext(WIX_CLIENT_CONTEXT);
     const wixClient = wixClientContext.client;
 
-    // Get cart client
-    const cartClient = getCurrentCartClient(wixClient);
-
     // Create and register the reactive cart context
     const cartContext = registerReactiveGlobalContext(WIX_CART_CONTEXT, () => {
         // Reactive signals for cart indicator
@@ -225,13 +228,13 @@ export function provideWixCartContext(): WixCartContext {
 
         // Refresh cart indicator from server
         async function refreshCartIndicator(): Promise<void> {
-            const cart = await getCurrentCartOrNull(cartClient);
+            const cart = await getCurrentCartOrNull(wixClient);
             updateIndicatorFromCart(cart);
         }
 
         // Get full cart state with estimated totals
         async function getEstimatedCart(): Promise<CartState> {
-            const estimate = await estimateCurrentCartTotalsOrNull(cartClient);
+            const estimate = await estimateCurrentCartTotalsOrNull(wixClient);
             return mapEstimateTotalsToState(estimate);
         }
 
@@ -256,9 +259,7 @@ export function provideWixCartContext(): WixCartContext {
                 quantity,
             };
 
-            const result = await cartClient.addToCurrentCart({
-                lineItems: [lineItem],
-            });
+            const result = await addToCartApi(wixClient, [lineItem]);
 
             updateIndicatorFromCart(result.cart ?? null);
             onItemAddedToCart.emit();
@@ -267,7 +268,7 @@ export function provideWixCartContext(): WixCartContext {
 
         // Remove line items from cart
         async function removeLineItems(lineItemIds: string[]): Promise<CartOperationResult> {
-            const result = await cartClient.removeLineItemsFromCurrentCart(lineItemIds);
+            const result = await removeLineItemsApi(wixClient, lineItemIds);
             updateIndicatorFromCart(result.cart ?? null);
             return { cartState: mapCartToState(result.cart ?? null) };
         }
@@ -279,11 +280,9 @@ export function provideWixCartContext(): WixCartContext {
         ): Promise<CartOperationResult> {
             let result;
             if (quantity === 0) {
-                result = await cartClient.removeLineItemsFromCurrentCart([lineItemId]);
+                result = await removeLineItemsApi(wixClient, [lineItemId]);
             } else {
-                result = await cartClient.updateCurrentCartLineItemQuantity([
-                    { _id: lineItemId, quantity },
-                ]);
+                result = await updateQuantityApi(wixClient, [{ _id: lineItemId, quantity }]);
             }
             updateIndicatorFromCart(result.cart ?? null);
             return { cartState: mapCartToState(result.cart ?? null) };
@@ -291,13 +290,13 @@ export function provideWixCartContext(): WixCartContext {
 
         // Clear all items from cart
         async function clearCart(): Promise<void> {
-            const cart = await getCurrentCartOrNull(cartClient);
+            const cart = await getCurrentCartOrNull(wixClient);
             if (cart?.lineItems?.length) {
                 const lineItemIds = cart.lineItems
                     .map((item: { _id?: string }) => item._id || '')
                     .filter(Boolean);
                 if (lineItemIds.length > 0) {
-                    await cartClient.removeLineItemsFromCurrentCart(lineItemIds);
+                    await removeLineItemsApi(wixClient, lineItemIds);
                 }
             }
             setItemCount(0);
@@ -306,14 +305,14 @@ export function provideWixCartContext(): WixCartContext {
 
         // Apply coupon to cart
         async function applyCoupon(couponCode: string): Promise<CartOperationResult> {
-            const result = await cartClient.updateCurrentCart({ couponCode });
+            const result = await updateCartApi(wixClient, { couponCode });
             updateIndicatorFromCart(result ?? null);
             return { cartState: mapCartToState(result ?? null) };
         }
 
         // Remove coupon from cart
         async function removeCoupon(): Promise<CartOperationResult> {
-            const result = await cartClient.removeCouponFromCurrentCart();
+            const result = await removeCouponApi(wixClient);
             updateIndicatorFromCart(result.cart ?? null);
             return { cartState: mapCartToState(result.cart ?? null) };
         }

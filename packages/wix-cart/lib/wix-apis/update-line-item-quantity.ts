@@ -6,8 +6,13 @@ export async function updateCurrentCartLineItemQuantity(
     client: WixClient,
     lineItems: Array<{ _id: string; quantity: number }>,
 ): Promise<UpdateLineItemQuantityResponse> {
-    return wixFetch(client, '/ecom/v1/carts/current/updateLineItemsQuantity', {
+    return wixFetch(client, '/ecom/v1/carts/current/update-line-items-quantity', {
         method: 'POST',
-        body: { lineItems },
+        body: {
+            lineItems: lineItems.map((item) => ({
+                id: item._id,
+                quantity: item.quantity,
+            })),
+        },
     });
 }

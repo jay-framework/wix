@@ -1,136 +1,103 @@
 /**
  * Wix Stores / Categories / Inventory types.
- * Copied and simplified from @wix/auto_sdk_stores_products-v-3,
- * @wix/auto_sdk_categories_categories, etc.
- *
- * Only includes types actually used by the wix-stores package.
+ * Matches the REST V3 API response shape after normalizeProduct.
  */
 
 // ============================================================================
-// Products V3
+// Products V3 (REST API shape, after normalization)
 // ============================================================================
 
-export interface V3Product {
-    _id?: string;
+export type MediaTypeWithLiterals = 'IMAGE' | 'VIDEO' | (string & {});
+export type ChoiceTypeWithLiterals = 'CHOICE_TEXT' | 'ONE_COLOR' | (string & {});
+export type ModifierRenderTypeWithLiterals =
+    | 'FREE_TEXT'
+    | 'TEXT_CHOICES'
+    | 'SWATCH_CHOICES'
+    | (string & {});
+
+export interface ConnectedOptionChoice {
+    choiceId?: string;
     name?: string;
-    slug?: string;
-    description?: string;
-    sku?: string;
-    visible?: boolean;
-    productType?: string;
-    priceData?: PriceData;
-    media?: Media;
-    stock?: Stock;
-    productOptions?: ProductOption[];
-    variants?: Variant[];
-    brand?: string;
-    ribbon?: string;
-    numericId?: string;
-    weight?: number;
-    weightRange?: WeightRange;
-    discount?: Discount;
-    seoData?: SeoSchema;
-    additionalInfoSections?: AdditionalInfoSection[];
-    [key: string]: any;
-}
-
-export interface PriceData {
-    price?: number;
-    currency?: string;
-    discountedPrice?: number;
-    formatted?: FormattedPrice;
-    pricePerUnitData?: PricePerUnitData;
-}
-
-export interface FormattedPrice {
-    price?: string;
-    discountedPrice?: string;
-    pricePerUnit?: string;
-}
-
-export interface PricePerUnitData {
-    totalQuantity?: number;
-    totalMeasurementUnit?: string;
-    baseQuantity?: number;
-    baseMeasurementUnit?: string;
-}
-
-export interface Media {
-    items?: MediaItem[];
-    mainMedia?: MediaItem;
-}
-
-export interface MediaItem {
-    _id?: string;
-    mediaType?: string;
-    url?: string;
-    image?: ImageInfo;
-    video?: VideoInfo;
-    thumbnail?: ImageInfo;
-}
-
-export interface ImageInfo {
-    url?: string;
-    width?: number;
-    height?: number;
-    altText?: string;
-}
-
-export interface VideoInfo {
-    url?: string;
-}
-
-export interface Stock {
-    inventoryStatus?: string;
-    quantity?: number;
-    trackInventory?: boolean;
-    inStock?: boolean;
-}
-
-export interface ProductOption {
-    _id?: string;
-    name?: string;
-    optionType?: string;
-    choices?: ProductOptionChoice[];
-}
-
-export interface ProductOptionChoice {
-    _id?: string;
-    value?: string;
-    description?: string;
-    media?: MediaItem;
+    key?: string;
+    choiceType?: ChoiceTypeWithLiterals;
+    colorCode?: string;
     inStock?: boolean;
     visible?: boolean;
+    linkedMedia?: unknown[];
 }
 
-export interface Variant {
+export interface ConnectedOption {
     _id?: string;
-    choices?: Record<string, string>;
-    variant?: VariantData;
+    name?: string;
+    optionRenderType?: string;
+    choicesSettings?: { choices?: ConnectedOptionChoice[] };
+    key?: string;
 }
 
-export interface VariantData {
-    priceData?: PriceData;
-    stock?: Stock;
-    sku?: string;
-    weight?: number;
-    visible?: boolean;
+export interface ConnectedModifier {
+    _id?: string;
+    name?: string;
+    modifierRenderType?: ModifierRenderTypeWithLiterals;
+    mandatory?: boolean;
+    choicesSettings?: { choices?: ConnectedOptionChoice[] };
+    freeTextSettings?: { title?: string; maxCharCount?: number };
+    key?: string;
 }
 
-export interface WeightRange {
-    minValue?: number;
-    maxValue?: number;
-}
-
-export interface Discount {
-    type?: string;
-    value?: number;
-}
-
-export interface AdditionalInfoSection {
+export interface InfoSection {
     _id?: string;
     title?: string;
-    description?: string;
+    plainDescription?: string;
+    uniqueName?: string;
+}
+
+export interface ProductMediaItem {
+    _id?: string;
+    url?: string;
+    altText?: string;
+    mediaType?: MediaTypeWithLiterals;
+    width?: number;
+    height?: number;
+}
+
+export interface ProductMedia {
+    main?: ProductMediaItem;
+    itemsInfo?: { items?: ProductMediaItem[] };
+}
+
+export interface VariantChoice {
+    optionChoiceIds: { optionId: string; choiceId: string };
+    optionChoiceNames?: { optionName?: string; choiceName?: string; renderType?: string };
+}
+
+export interface PriceAmount {
+    amount?: string;
+    formattedAmount?: string;
+}
+
+export interface ProductVariant {
+    _id?: string;
+    visible?: boolean;
+    sku?: string;
+    choices?: VariantChoice[];
+    price?: { actualPrice?: PriceAmount; compareAtPrice?: PriceAmount };
+    media?: ProductMediaItem;
+    inventoryStatus?: { inStock?: boolean; preorderEnabled?: boolean };
+}
+
+export interface VariantsInfo {
+    variants?: ProductVariant[];
+}
+
+export interface PriceRange {
+    minValue?: PriceAmount;
+    maxValue?: PriceAmount;
+}
+
+export interface ProductInventory {
+    availabilityStatus?: string;
+    preorderStatus?: string;
+    preorderAvailability?: string;
 }
 
 export interface SeoSchema {
@@ -155,21 +122,36 @@ export interface SeoSettings {
 export interface SeoKeyword {
     term?: string;
     isMain?: boolean;
+    origin?: string;
+}
+
+export interface V3Product {
+    _id?: string;
+    name?: string;
+    slug?: string;
+    plainDescription?: string;
+    description?: string;
+    visible?: boolean;
+    productType?: string;
+    currency?: string;
+    numericId?: string;
+    mainCategoryId?: string;
+    media?: ProductMedia;
+    options?: ConnectedOption[];
+    modifiers?: ConnectedModifier[];
+    infoSections?: InfoSection[];
+    variantsInfo?: VariantsInfo;
+    actualPriceRange?: PriceRange;
+    compareAtPriceRange?: PriceRange;
+    inventory?: ProductInventory;
+    brand?: { _id?: string; name?: string };
+    ribbon?: { _id?: string; name?: string };
+    seoData?: SeoSchema;
+    physicalProperties?: { pricePerUnitRange?: { minValue?: { description?: string } } };
+    extendedFields?: { namespaces?: Record<string, Record<string, unknown>> };
 }
 
 // Query/Search types
-
-export interface V3ProductSearch {
-    query?: {
-        filter?: any;
-        sort?: any[];
-        paging?: Paging;
-        fields?: string[];
-        search?: any;
-    };
-    includeVariants?: boolean;
-    includeMerchantSpecificData?: boolean;
-}
 
 export interface Paging {
     limit?: number;
@@ -201,18 +183,30 @@ export interface GetProductBySlugResponse {
 // Aggregation types (used in search/filter)
 
 export interface AggregationDataAggregationResults {
-    scalarResults?: AggregationDataAggregationResultsScalarResult[];
-    groupResults?: any;
+    name?: string;
+    type?: string;
+    fieldPath?: string;
+    scalar?: AggregationDataAggregationResultsScalarResult;
+    values?: AggregationResultsValueResults;
+    ranges?: AggregationResultsRangeResults;
 }
 
 export interface AggregationDataAggregationResultsScalarResult {
-    name?: string;
-    value?: any;
     type?: string;
+    value?: number;
+}
+
+export interface AggregationResultsValueResults {
+    results?: ValueResult[];
+}
+
+export interface ValueResult {
+    value?: string;
+    count?: number;
 }
 
 export interface AggregationResultsRangeResults {
-    buckets?: RangeBucket[];
+    results?: RangeBucket[];
 }
 
 export interface RangeBucket {
@@ -221,18 +215,27 @@ export interface RangeBucket {
     count?: number;
 }
 
-export interface AggregationResultsValueResults {
-    values?: ValueResult[];
-}
-
-export interface ValueResult {
-    value?: string;
-    count?: number;
-}
-
 // ============================================================================
 // Categories
 // ============================================================================
+
+export interface CategoryMediaItem {
+    _id?: string;
+    mediaType?: string;
+    url?: string;
+    image?: { url?: string; width?: number; height?: number; altText?: string };
+}
+
+export interface CategoryMedia {
+    mainMedia?: CategoryMediaItem;
+    items?: CategoryMediaItem[];
+}
+
+export interface CategoryBreadcrumb {
+    categoryId?: string;
+    categoryName?: string;
+    categorySlug?: string;
+}
 
 export interface Category {
     _id?: string;
@@ -241,9 +244,12 @@ export interface Category {
     description?: string;
     visible?: boolean;
     numberOfProducts?: number;
-    media?: Media;
+    itemCounter?: number;
+    image?: string;
+    media?: CategoryMedia;
     parentCategory?: { _id?: string; name?: string; slug?: string };
-    [key: string]: any;
+    breadcrumbsInfo?: { breadcrumbs?: CategoryBreadcrumb[] };
+    seoData?: SeoSchema;
 }
 
 export interface QueryCategoriesResponse {
@@ -264,7 +270,6 @@ export interface InventoryItem {
     productId?: string;
     trackInventory?: boolean;
     variants?: InventoryVariant[];
-    [key: string]: any;
 }
 
 export interface InventoryVariant {
@@ -285,19 +290,21 @@ export interface QueryInventoryResponse {
 
 export interface Customization {
     _id?: string;
+    name?: string;
     productId?: string;
     title?: string;
     customizationType?: string;
+    customizationRenderType?: string;
     visible?: boolean;
-    choices?: CustomizationChoice[];
-    [key: string]: any;
+    choicesSettings?: { choices?: CustomizationChoice[] };
 }
 
 export interface CustomizationChoice {
     _id?: string;
+    name?: string;
     value?: string;
     description?: string;
-    media?: MediaItem;
+    colorCode?: string;
     inStock?: boolean;
     surcharge?: number;
 }
@@ -313,10 +320,9 @@ export interface ListCustomizationsResponse {
 export interface DataExtensionSchema {
     _id?: string;
     namespace?: string;
-    jsonSchema?: any;
-    [key: string]: any;
+    jsonSchema?: Record<string, unknown>;
 }
 
 export interface QuerySchemasResponse {
-    schemas?: DataExtensionSchema[];
+    dataExtensionSchemas?: DataExtensionSchema[];
 }

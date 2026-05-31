@@ -1,20 +1,16 @@
 import type { WixClient } from '@wix/sdk';
-import { wixFetch, type WixFilter, type WixCursorPaging } from '@jay-framework/wix-server-client';
-import type { V3Product, PagingMetadata, AggregationDataAggregationResults } from './types.js';
+import {
+    wixFetch,
+    type WixFilter,
+    type WixSort,
+    type WixCursorPaging,
+} from '@jay-framework/wix-server-client';
+import type { PagingMetadata, AggregationDataAggregationResults, V3Product } from './types.js';
+import { normalizeProducts } from './normalize-product.js';
 
 // ============================================================================
 // Search request types
 // ============================================================================
-
-export interface CursorPaging {
-    cursor?: string;
-    limit?: number;
-}
-
-export interface SearchSort {
-    fieldName: string;
-    order?: 'ASC' | 'DESC';
-}
 
 export interface SearchExpression {
     expression?: string;
@@ -22,16 +18,11 @@ export interface SearchExpression {
     fields?: string[];
 }
 
-export type ProductFilter = Record<string, Record<string, unknown> | string | number | boolean>;
-
 export interface ScalarAggregation {
-    fieldPath: string;
-    type: 'MIN' | 'MAX' | 'SUM' | 'AVG' | 'COUNT';
+    type: 'MIN' | 'MAX' | 'SUM' | 'AVG' | 'COUNT' | 'COUNT_DISTINCT';
 }
 
 export interface ValueAggregation {
-    fieldPath: string;
-    name?: string;
     limit?: number;
     sortType?: 'VALUE' | 'COUNT';
     sortDirection?: 'ASC' | 'DESC';
@@ -40,34 +31,32 @@ export interface ValueAggregation {
 }
 
 export interface RangeAggregation {
-    fieldPath: string;
     buckets?: Array<{ from?: number; to?: number }>;
 }
 
 export interface DateHistogramAggregation {
-    fieldPath: string;
     interval?: 'YEAR' | 'MONTH' | 'WEEK' | 'DAY' | 'HOUR' | 'MINUTE';
 }
 
 export interface NestedAggregation {
-    fieldPath: string;
     nestedAggregations?: Array<AggregationItem>;
 }
 
 export interface AggregationItem {
+    fieldPath: string;
     name?: string;
+    type?: 'VALUE' | 'SCALAR' | 'RANGE' | 'DATE_HISTOGRAM' | 'NESTED';
     scalar?: ScalarAggregation;
     value?: ValueAggregation;
     range?: RangeAggregation;
     dateHistogram?: DateHistogramAggregation;
     nested?: NestedAggregation;
-    type?: 'VALUE' | 'SCALAR' | 'RANGE' | 'DATE_HISTOGRAM' | 'NESTED';
 }
 
 export interface SearchProductsRequest {
-    filter?: ProductFilter;
-    sort?: SearchSort[];
-    cursorPaging?: CursorPaging;
+    filter?: WixFilter;
+    sort?: WixSort[];
+    cursorPaging?: WixCursorPaging;
     search?: SearchExpression;
     aggregations?: AggregationItem[];
 }
@@ -82,8 +71,10 @@ export interface SearchProductsOptions {
 
 export interface SearchProductsResponse {
     products?: V3Product[];
-    metadata?: PagingMetadata;
-    aggregationData?: AggregationDataAggregationResults;
+    pagingMetadata?: PagingMetadata;
+    aggregationData?: {
+        results?: AggregationDataAggregationResults[];
+    };
 }
 
 // ============================================================================
@@ -95,11 +86,15 @@ export async function searchProducts(
     search: SearchProductsRequest,
     options?: SearchProductsOptions,
 ): Promise<SearchProductsResponse> {
-    return wixFetch(client, '/stores/v3/products/search', {
+    const result = await wixFetch<SearchProductsResponse>(client, '/stores/v3/products/search', {
         method: 'POST',
         body: {
-            ...search,
+            search,
             ...(options?.fields ? { fields: options.fields } : {}),
         },
     });
+    if (result.products) {
+        result.products = normalizeProducts(result.products as Record<string, unknown>[]);
+    }
+    return result;
 }

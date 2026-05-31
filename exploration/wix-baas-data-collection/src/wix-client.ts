@@ -12,7 +12,9 @@ interface WixConfig {
 function loadConfig(): WixConfig {
     const configPath = path.join(process.cwd(), 'config', '.wix.yaml');
     if (!fs.existsSync(configPath)) {
-        throw new Error(`Config not found: ${configPath}\nCopy config/.wix.yaml.example and fill in your credentials.`);
+        throw new Error(
+            `Config not found: ${configPath}\nCopy config/.wix.yaml.example and fill in your credentials.`,
+        );
     }
     const raw = yaml.load(fs.readFileSync(configPath, 'utf8')) as any;
     return {

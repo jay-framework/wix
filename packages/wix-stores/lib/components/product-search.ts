@@ -22,7 +22,11 @@ import { searchProducts } from '../actions/stores-actions';
 import { buildCategoryUrl } from '../utils/product-mapper';
 import { setupCardInteractions } from '../utils/card-interactions.js';
 import { WIX_STORES_CONTEXT, WixStoresContext } from '../contexts/wix-stores-context';
-import { type Category } from '@wix/auto_sdk_categories_categories';
+import { type Category } from '../wix-apis/types.js';
+import {
+    queryCategories as queryCategoriesApi,
+    getCategory as getCategoryApi,
+} from '../wix-apis/index.js';
 import { formatWixMediaUrl } from '@jay-framework/wix-utils';
 import { SearchProductsInput, SearchProductsOutput } from '../actions/search-products.jay-action';
 import { handleError } from '../utils/wix-error-handler';
@@ -273,31 +277,26 @@ const EMPTY_CATEGORY_HEADER: CategoryHeaderOfProductSearchViewState = {
  * Look up a category by slug via the Wix API.
  */
 async function findCategoryBySlug(
-    categoriesClient: WixStoresService['categories'],
+    wixClient: WixStoresService['wixClient'],
     slug: string,
 ): Promise<Category | null> {
-    const result = await categoriesClient
-        .queryCategories({ treeReference: { appNamespace: '@wix/stores' } })
-        .eq('slug', slug)
-        .eq('visible', true)
-        .limit(1)
-        .find();
-    return result.items?.[0] ?? null;
+    const result = await queryCategoriesApi(wixClient, {
+        filter: { slug, visible: true },
+        paging: { limit: 1 },
+    });
+    return result.categories?.[0] ?? null;
 }
 
 /**
  * Load category details with DESCRIPTION and BREADCRUMBS_INFO.
  */
 async function loadCategoryDetails(
-    categoriesClient: WixStoresService['categories'],
+    wixClient: WixStoresService['wixClient'],
     categoryId: string,
 ): Promise<Category | null> {
     try {
-        return await categoriesClient.getCategory(
-            categoryId,
-            { appNamespace: '@wix/stores' },
-            { fields: ['DESCRIPTION', 'BREADCRUMBS_INFO'] },
-        );
+        const result = await getCategoryApi(wixClient, categoryId);
+        return result.category ?? null;
     } catch {
         return null;
     }
@@ -312,7 +311,7 @@ async function buildCategoryHeader(
     categoryUrlTemplate: string | null,
 ): Promise<CategoryHeaderOfProductSearchViewState> {
     // Load full details
-    const details = await loadCategoryDetails(wixStoreService.categories, category._id);
+    const details = await loadCategoryDetails(wixStoreService.wixClient, category._id);
     const cat = details || category;
 
     const imageUrl = cat.image ? formatWixMediaUrl('', cat.image) : '';
@@ -384,10 +383,7 @@ async function buildCategoryHeader(
 
     // Inherit missing fields from parent chain
     if ((!description || !imageUrl) && cat.parentCategory?._id) {
-        const parent = await loadCategoryDetails(
-            wixStoreService.categories,
-            cat.parentCategory._id,
-        );
+        const parent = await loadCategoryDetails(wixStoreService.wixClient, cat.parentCategory._id);
         if (parent) {
             if (!header.description && parent.description) {
                 header = { ...header, description: parent.description };
@@ -427,13 +423,13 @@ async function renderSlowlyChanging(
     let baseCategoryId: string | null = null;
 
     if (categorySlug) {
-        activeCategory = await findCategoryBySlug(wixStores.categories, categorySlug);
+        activeCategory = await findCategoryBySlug(wixStores.wixClient, categorySlug);
         baseCategoryId = activeCategory?._id ?? null;
     } else if (prefixSlug) {
-        activeCategory = await findCategoryBySlug(wixStores.categories, prefixSlug);
+        activeCategory = await findCategoryBySlug(wixStores.wixClient, prefixSlug);
         baseCategoryId = activeCategory?._id ?? null;
     } else if (defaultCategorySlug) {
-        activeCategory = await findCategoryBySlug(wixStores.categories, defaultCategorySlug);
+        activeCategory = await findCategoryBySlug(wixStores.wixClient, defaultCategorySlug);
         // Don't set baseCategoryId for default — show all products
     }
 
@@ -446,21 +442,15 @@ async function renderSlowlyChanging(
         : EMPTY_CATEGORY_HEADER;
 
     return Pipeline.try(async () => {
-        let query = wixStores.categories
-            .queryCategories({
-                treeReference: { appNamespace: '@wix/stores' },
-            })
-            .eq('visible', true);
-
-        // When scoped to a category, show only direct children as filters
+        const categoryFilter: Record<string, unknown> = { visible: true };
         if (baseCategoryId) {
-            query = query.eq('parentCategory.id', baseCategoryId);
+            categoryFilter['parentCategory.id'] = baseCategoryId;
         }
 
         // Load categories and pre-load default products in parallel
         const baseCategoryIds = baseCategoryId ? [baseCategoryId] : [];
         const [categoriesResult, productsResult] = await Promise.all([
-            query.find(),
+            queryCategoriesApi(wixStores.wixClient, { filter: categoryFilter }),
             searchProducts({
                 query: '',
                 filters: {
@@ -471,7 +461,7 @@ async function renderSlowlyChanging(
         ]);
 
         return {
-            categories: categoriesResult.items || [],
+            categories: categoriesResult.categories || [],
             productsResult,
         };
     })
@@ -1146,19 +1136,16 @@ async function* loadSearchParams([wixStores]: [WixStoresService]): AsyncIterable
     try {
         // Load ALL categories by paginating through results
         const allCategories: Category[] = [];
-        let result = await wixStores.categories
-            .queryCategories({
-                treeReference: { appNamespace: '@wix/stores' },
-            })
-            .eq('visible', true)
-            .limit(100)
-            .find();
-
-        allCategories.push(...(result.items || []));
-
-        while (result.hasNext()) {
-            result = await result.next();
-            allCategories.push(...(result.items || []));
+        let offset = 0;
+        let hasMore = true;
+        while (hasMore) {
+            const result = await queryCategoriesApi(wixStores.wixClient, {
+                filter: { visible: true },
+                paging: { limit: 100, offset },
+            });
+            allCategories.push(...(result.categories || []));
+            hasMore = (result.categories?.length || 0) === 100;
+            offset += 100;
         }
 
         // Build category tree and compute transitive item counts

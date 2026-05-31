@@ -13,6 +13,7 @@ import {
     RelatedProductsSlowViewState,
 } from '../contracts/related-products.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
+import { queryCategories as queryCategoriesApi } from '../wix-apis/index.js';
 import { searchProducts } from '../actions/stores-actions';
 import { WIX_STORES_CONTEXT, WixStoresContext } from '../contexts/wix-stores-context';
 import { setupCardInteractions } from '../utils/card-interactions.js';
@@ -64,12 +65,10 @@ async function renderSlowlyChanging(
 
         // Load category name and products in parallel
         const [categoryResult, searchResult] = await Promise.all([
-            wixStores.categories
-                .queryCategories({ treeReference: { appNamespace: '@wix/stores' } })
-                .eq('_id', categoryId)
-                .limit(1)
-                .find()
-                .catch(() => null),
+            queryCategoriesApi(wixStores.wixClient, {
+                filter: { _id: categoryId },
+                paging: { limit: 1 },
+            }).catch(() => null),
             searchProducts({
                 query: '',
                 filters: { categoryIds: [categoryId] },
@@ -77,8 +76,8 @@ async function renderSlowlyChanging(
             }),
         ]);
 
-        if (categoryResult?.items?.[0]?.name) {
-            categoryName = categoryResult.items[0].name;
+        if (categoryResult?.categories?.[0]?.name) {
+            categoryName = categoryResult.categories[0].name;
         }
 
         const products = searchResult.products

@@ -71,15 +71,15 @@ async function main() {
     console.log(`Scanning ${GOLF_BACKEND}...`);
     const files = scanBackendFiles(GOLF_BACKEND);
 
-    const eager = files.filter(f => f.category === 'eager');
-    const lazy = files.filter(f => f.category === 'lazy');
+    const eager = files.filter((f) => f.category === 'eager');
+    const lazy = files.filter((f) => f.category === 'lazy');
     const totalSize = files.reduce((sum, f) => sum + f.sizeBytes, 0);
-    const maxFileSize = Math.max(...files.map(f => f.sizeBytes));
+    const maxFileSize = Math.max(...files.map((f) => f.sizeBytes));
 
     console.log(`Found ${files.length} files (${eager.length} eager, ${lazy.length} lazy)`);
     console.log(`Total size: ${(totalSize / 1024 / 1024).toFixed(1)} MB`);
     console.log(`Largest file: ${(maxFileSize / 1024).toFixed(0)} KB`);
-    console.log(`File types: ${[...new Set(files.map(f => f.fileType))].join(', ')}`);
+    console.log(`File types: ${[...new Set(files.map((f) => f.fileType))].join(', ')}`);
 
     const client = createWixDataClient();
     console.log(`\nUploading to collection "${COLLECTION_ID}"...`);
@@ -90,7 +90,7 @@ async function main() {
 
     for (let i = 0; i < files.length; i += BATCH_SIZE) {
         const batch = files.slice(i, i + BATCH_SIZE);
-        const dataItems = batch.map(f => ({
+        const dataItems = batch.map((f) => ({
             _id: f.relativePath.replace(/[/\\]/g, '__'),
             path: f.relativePath,
             content: f.content,
@@ -102,10 +102,15 @@ async function main() {
         try {
             const result = await client.items.bulkInsert(COLLECTION_ID, dataItems);
             uploaded += batch.length;
-            console.log(`  Batch ${Math.floor(i / BATCH_SIZE) + 1}: uploaded ${batch.length} files (${uploaded}/${files.length})`);
+            console.log(
+                `  Batch ${Math.floor(i / BATCH_SIZE) + 1}: uploaded ${batch.length} files (${uploaded}/${files.length})`,
+            );
         } catch (err: any) {
             errors += batch.length;
-            console.error(`  Batch ${Math.floor(i / BATCH_SIZE) + 1} FAILED:`, err.message?.substring(0, 200));
+            console.error(
+                `  Batch ${Math.floor(i / BATCH_SIZE) + 1} FAILED:`,
+                err.message?.substring(0, 200),
+            );
 
             // Try individual inserts to find the problematic item
             if (batch.length > 1) {
@@ -116,7 +121,9 @@ async function main() {
                         uploaded++;
                         errors--;
                     } catch (e: any) {
-                        console.error(`    FAILED: ${item.path} (${item.sizeBytes} bytes): ${e.message?.substring(0, 100)}`);
+                        console.error(
+                            `    FAILED: ${item.path} (${item.sizeBytes} bytes): ${e.message?.substring(0, 100)}`,
+                        );
                     }
                 }
             }
@@ -126,7 +133,7 @@ async function main() {
     console.log(`\nDone: ${uploaded} uploaded, ${errors} errors`);
 }
 
-main().catch(err => {
+main().catch((err) => {
     console.error('Fatal:', err);
     process.exit(1);
 });

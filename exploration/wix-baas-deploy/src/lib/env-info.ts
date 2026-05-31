@@ -19,11 +19,15 @@ export async function getEnvInfo() {
 
     // Safe env vars only
     const safeEnvKeys = Object.keys(process.env).filter(
-        k => !k.includes('KEY') && !k.includes('SECRET') && !k.includes('TOKEN') && !k.includes('PASSWORD'),
+        (k) =>
+            !k.includes('KEY') &&
+            !k.includes('SECRET') &&
+            !k.includes('TOKEN') &&
+            !k.includes('PASSWORD'),
     );
     checks.envVarCount = Object.keys(process.env).length;
     checks.safeEnvVars = Object.fromEntries(
-        safeEnvKeys.slice(0, 30).map(k => [k, process.env[k]?.substring(0, 100)]),
+        safeEnvKeys.slice(0, 30).map((k) => [k, process.env[k]?.substring(0, 100)]),
     );
 
     // CWD contents
@@ -53,7 +57,11 @@ export async function getEnvInfo() {
     // /tmp access
     try {
         const tmpFiles = fs.readdirSync('/tmp');
-        checks.tmpDir = { readable: true, fileCount: tmpFiles.length, sampleFiles: tmpFiles.slice(0, 20) };
+        checks.tmpDir = {
+            readable: true,
+            fileCount: tmpFiles.length,
+            sampleFiles: tmpFiles.slice(0, 20),
+        };
     } catch (e: any) {
         checks.tmpDir = { readable: false, error: e.message };
     }

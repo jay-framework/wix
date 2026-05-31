@@ -46,19 +46,19 @@ class WixDataArtifactStore implements ArtifactStore {
 
 ### R2: createJayFetchHandler Accepts Custom ArtifactStore
 
-Currently `createJayFetchHandler` creates a `FilesystemArtifactStore` internally from `backendDir`. 
+Currently `createJayFetchHandler` creates a `FilesystemArtifactStore` internally from `backendDir`.
 
 **Requirement:** Accept an `ArtifactStore` instance as an alternative to `backendDir`.
 
 ```typescript
 interface JayFetchHandlerOptions {
-    // Option A: filesystem path (existing)
-    backendDir?: string;
-    // Option B: custom artifact store (new)
-    artifactStore?: ArtifactStore;
-    
-    staticBaseUrl?: string;
-    frontendDir?: string;
+  // Option A: filesystem path (existing)
+  backendDir?: string;
+  // Option B: custom artifact store (new)
+  artifactStore?: ArtifactStore;
+
+  staticBaseUrl?: string;
+  frontendDir?: string;
 }
 ```
 
@@ -69,6 +69,7 @@ When `artifactStore` is provided, use it directly. When `backendDir` is provided
 The golf PoC had to stub out compiler packages (`@jay-framework/compiler-jay-html`, `compiler-shared`, `compiler-jay-stack`, `typescript`, `prettier`) because `production-server` imports them for the build/renderer concern.
 
 **Requirement:** The serve-only exports of `production-server` must not pull in build-time dependencies. This means either:
+
 - (a) Separate entry points: `@jay-framework/production-server/serve` (no build deps) vs `@jay-framework/production-server` (full)
 - (b) Dynamic imports for build-only code (lazy loaded only when `--role=renderer`)
 - (c) Split into two packages: `production-server-core` (serve) and `production-server` (build + serve)
@@ -86,11 +87,14 @@ Option (a) is least disruptive — add a `/serve` export that re-exports only th
 await initializeServices(backendDir, cwd, 'FetchHandler');
 
 // New: pre-imported modules (for bundled entry.mjs)
-await initializeServicesFromModules([
+await initializeServicesFromModules(
+  [
     { name: 'wix-server-client', init: wixServerClientInit },
     { name: 'wix-stores', init: wixStoresInit },
     { name: 'wix-cart', init: wixCartInit },
-], 'FetchHandler');
+  ],
+  'FetchHandler',
+);
 ```
 
 This is what the golf PoC already does manually — the framework should support it.
@@ -106,9 +110,7 @@ Similarly, `registerActionsFromManifest` imports action modules from the filesys
 await registerActionsFromManifest(manifest.actions, backendDir);
 
 // New: pre-imported modules
-await registerActionsFromModules([
-    { module: wixStoresModule, name: 'wix-stores' },
-]);
+await registerActionsFromModules([{ module: wixStoresModule, name: 'wix-stores' }]);
 ```
 
 ### R6: Page Parts Loading Without Filesystem
@@ -132,22 +134,22 @@ import { init as wixCartInit } from '@jay-framework/wix-cart';
 import * as wixStoresModule from '@jay-framework/wix-stores';
 
 const artifactStore = new WixDataArtifactStore({
-    collectionId: 'jay-backend-files',
-    cacheDir: '/tmp/jay-backend',
-    // Wix client auth for data collection access
-    apiKey: process.env.WIX_API_KEY,
-    siteId: process.env.WIX_SITE_ID,
+  collectionId: 'jay-backend-files',
+  cacheDir: '/tmp/jay-backend',
+  // Wix client auth for data collection access
+  apiKey: process.env.WIX_API_KEY,
+  siteId: process.env.WIX_SITE_ID,
 });
 
 const handler = createJayFetchHandler({
-    artifactStore,
-    staticBaseUrl: 'https://static.parastorage.com/services/my-app/1.0.0/',
-    plugins: [
-        { name: 'wix-server-client', init: wixServerClientInit },
-        { name: 'wix-stores', init: wixStoresInit },
-        { name: 'wix-cart', init: wixCartInit },
-    ],
-    actionModules: [wixStoresModule],
+  artifactStore,
+  staticBaseUrl: 'https://static.parastorage.com/services/my-app/1.0.0/',
+  plugins: [
+    { name: 'wix-server-client', init: wixServerClientInit },
+    { name: 'wix-stores', init: wixStoresInit },
+    { name: 'wix-cart', init: wixCartInit },
+  ],
+  actionModules: [wixStoresModule],
 });
 
 export default { fetch: handler };
@@ -182,26 +184,31 @@ loadPageModule(path):
 ## Implementation Plan
 
 ### Phase 1: ArtifactStore Interface (framework)
+
 - Extract interface from `FilesystemArtifactStore`
 - Update `fetchPageRequest` and other serve functions to accept the interface
 - Update `createJayFetchHandler` to accept `artifactStore` option
 
 ### Phase 2: Serve-Only Exports (framework)
+
 - Add `@jay-framework/production-server/serve` entry point
 - Re-export only serve functions, no build-time dependencies
 - Verify esbuild can bundle it without stubs
 
 ### Phase 3: Pre-imported Init/Actions (framework)
+
 - Add `initializeServicesFromModules` function
 - Add `registerActionsFromModules` function
 - Update `createJayFetchHandler` to accept `plugins` and `actionModules` options
 
 ### Phase 4: WixDataArtifactStore (wix package)
+
 - Create `@jay-framework/wix-baas-adapter` package
 - Implements `ArtifactStore` with data collection backend + /tmp cache
 - Eager/lazy loading strategy
 
 ### Phase 5: Entry Builder (wix package)
+
 - CLI command or build script that generates `entry.mjs`
 - Auto-discovers plugins and actions from the project
 - Bundles with esbuild, stubs build-time deps
@@ -209,12 +216,12 @@ loadPageModule(path):
 
 ## Trade-offs
 
-| Decision | Benefit | Cost |
-|----------|---------|------|
-| ArtifactStore interface | Clean abstraction, testable, swappable backends | One more abstraction layer |
-| Separate `/serve` export | No build deps in entry.mjs, no stubs needed | Must maintain two entry points |
-| Pre-imported modules | esbuild can bundle everything, no filesystem discovery at runtime | Must list plugins explicitly in entry template |
-| /tmp cache | Fast after first fetch, survives within pod lifetime | Lost on cold start, must re-fetch |
+| Decision                 | Benefit                                                           | Cost                                           |
+| ------------------------ | ----------------------------------------------------------------- | ---------------------------------------------- |
+| ArtifactStore interface  | Clean abstraction, testable, swappable backends                   | One more abstraction layer                     |
+| Separate `/serve` export | No build deps in entry.mjs, no stubs needed                       | Must maintain two entry points                 |
+| Pre-imported modules     | esbuild can bundle everything, no filesystem discovery at runtime | Must list plugins explicitly in entry template |
+| /tmp cache               | Fast after first fetch, survives within pod lifetime              | Lost on cold start, must re-fetch              |
 
 ## Framework Response: DL#143 Implementation Summary
 
@@ -225,11 +232,11 @@ The framework implemented DL#143 in response to our requirements. All critical r
 ```typescript
 // @jay-framework/production-server/serve
 export interface ArtifactStore {
-    readManifest(): Promise<RouteManifest>;
-    readPreRenderedHtml(relativePath: string): Promise<PreRenderedEntry>;
-    loadServerElement(relativePath: string): Promise<ServerElementModule>;
-    getAssetPath(relativePath: string): string;
-    getBuildDir(): string;
+  readManifest(): Promise<RouteManifest>;
+  readPreRenderedHtml(relativePath: string): Promise<PreRenderedEntry>;
+  loadServerElement(relativePath: string): Promise<ServerElementModule>;
+  getAssetPath(relativePath: string): string;
+  getBuildDir(): string;
 }
 ```
 
@@ -239,12 +246,12 @@ Smaller than proposed — `loadPageModule()` and `readRawFile()` removed as unus
 
 ```typescript
 interface JayFetchHandlerOptions {
-    backendDir?: string;           // filesystem (existing)
-    artifactStore?: ArtifactStore; // custom store (new)
-    staticBaseUrl?: string;
-    frontendDir?: string;
-    plugins?: PreImportedPlugin[];
-    actionModules?: Array<{ module: Record<string, unknown>; name: string }>;
+  backendDir?: string; // filesystem (existing)
+  artifactStore?: ArtifactStore; // custom store (new)
+  staticBaseUrl?: string;
+  frontendDir?: string;
+  plugins?: PreImportedPlugin[];
+  actionModules?: Array<{ module: Record<string, unknown>; name: string }>;
 }
 ```
 
@@ -260,8 +267,8 @@ Exports only serve functions — no build deps (Vite, compilers, TypeScript). Ba
 
 ```typescript
 export interface PreImportedPlugin {
-    name: string;
-    init: { _serverInit: () => Promise<any> };
+  name: string;
+  init: { _serverInit: () => Promise<any> };
 }
 
 await initializeServicesFromModules(plugins, 'FetchHandler');
@@ -272,9 +279,7 @@ await initializeServicesFromModules(plugins, 'FetchHandler');
 ### R5: registerActionsFromModules — IMPLEMENTED
 
 ```typescript
-await registerActionsFromModules([
-    { module: wixStoresModule, name: 'wix-stores' },
-]);
+await registerActionsFromModules([{ module: wixStoresModule, name: 'wix-stores' }]);
 ```
 
 `createJayFetchHandler` uses this when `actionModules` option is provided.

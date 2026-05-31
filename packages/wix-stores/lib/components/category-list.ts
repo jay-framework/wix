@@ -9,6 +9,7 @@ import {
     CategoryListSlowViewState,
 } from '../contracts/category-list.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service';
+import { queryCategories as queryCategoriesApi } from '../wix-apis/index.js';
 
 /**
  * URL parameters for category list.
@@ -34,14 +35,12 @@ interface CategoryItem {
 /**
  * Look up a category by slug via the Wix API.
  */
-async function findCategoryBySlug(categoriesClient: WixStoresService['categories'], slug: string) {
-    const result = await categoriesClient
-        .queryCategories({ treeReference: { appNamespace: '@wix/stores' } })
-        .eq('slug', slug)
-        .eq('visible', true)
-        .limit(1)
-        .find();
-    return result.items?.[0] ?? null;
+async function findCategoryBySlug(wixClient: WixStoresService['wixClient'], slug: string) {
+    const result = await queryCategoriesApi(wixClient, {
+        filter: { slug, visible: true },
+        paging: { limit: 1 },
+    });
+    return result.categories?.[0] ?? null;
 }
 
 /**
@@ -62,27 +61,19 @@ async function renderSlowlyChanging(
 
     let parentCategoryId: string | null = null;
     if (parentCategorySlug) {
-        const parentCat = await findCategoryBySlug(wixStores.categories, parentCategorySlug);
+        const parentCat = await findCategoryBySlug(wixStores.wixClient, parentCategorySlug);
         parentCategoryId = parentCat?._id ?? null;
     }
 
     return Pipeline.try(async () => {
-        let query = wixStores.categories
-            .queryCategories({
-                treeReference: {
-                    appNamespace: '@wix/stores',
-                },
-            })
-            .eq('visible', true);
-
-        // When scoped to a parent category, show only its direct children
+        const filter: Record<string, unknown> = { visible: true };
         if (parentCategoryId) {
-            query = query.eq('parentCategory.id', parentCategoryId);
+            filter['parentCategory.id'] = parentCategoryId;
         }
 
-        const result = await query.find();
+        const result = await queryCategoriesApi(wixStores.wixClient, { filter });
 
-        return result.items || [];
+        return result.categories || [];
     })
         .recover((error) => {
             console.error('Failed to load categories:', error);

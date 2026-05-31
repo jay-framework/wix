@@ -11,7 +11,7 @@ export async function addToCurrentCart(
     client: WixClient,
     lineItems: AddToCartLineItem[],
 ): Promise<AddToCurrentCartResponse> {
-    return wixFetch(client, '/ecom/v1/carts/current/addToCart', {
+    return wixFetch(client, '/ecom/v1/carts/current/add-to-cart', {
         method: 'POST',
         body: { lineItems },
     });

@@ -6,7 +6,7 @@ export async function removeLineItemsFromCurrentCart(
     client: WixClient,
     lineItemIds: string[],
 ): Promise<RemoveLineItemsResponse> {
-    return wixFetch(client, '/ecom/v1/carts/current/removeLineItems', {
+    return wixFetch(client, '/ecom/v1/carts/current/remove-line-items', {
         method: 'POST',
         body: { lineItemIds },
     });

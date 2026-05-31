@@ -5,38 +5,54 @@
 
 export interface Cart {
     _id?: string;
+    id?: string;
     lineItems?: LineItem[];
     buyerInfo?: BuyerInfo;
     currency?: string;
     subtotal?: CartAmount;
     appliedDiscount?: CartDiscount;
-    [key: string]: any;
+    appliedDiscounts?: Array<{
+        coupon?: CartDiscount['coupon'];
+        discountRule?: CartDiscount['discountRule'];
+    }>;
+}
+
+export interface LineItemUrl {
+    relativePath?: string;
+    url?: string;
+}
+
+export interface LineItemImage {
+    id?: string;
+    url?: string;
+    height?: number;
+    width?: number;
 }
 
 export interface LineItem {
     _id?: string;
+    id?: string;
     quantity?: number;
     catalogReference?: CatalogReference;
     productName?: ProductName;
-    url?: string;
+    url?: string | LineItemUrl;
     price?: CartAmount;
     fullPrice?: CartAmount;
     priceBeforeDiscounts?: CartAmount;
     lineItemPrice?: CartAmount;
     descriptionLines?: DescriptionLine[];
-    image?: string;
+    image?: string | LineItemImage;
     availability?: Availability;
     physicalProperties?: PhysicalProperties;
     couponScopes?: Array<{ namespace?: string; group?: { name?: string; entityId?: string } }>;
     itemType?: ItemType;
     paymentOption?: string;
-    [key: string]: unknown;
 }
 
 export interface CatalogReference {
     catalogItemId?: string;
     appId?: string;
-    options?: Record<string, any>;
+    options?: Record<string, unknown>;
 }
 
 export interface ProductName {
@@ -53,7 +69,8 @@ export interface CartAmount {
 
 export interface CartDiscount {
     coupon?: { _id?: string; code?: string; amount?: CartAmount; name?: string };
-    discountRule?: any;
+    discountRule?: { _id?: string; name?: string; amount?: CartAmount };
+    merchantDiscount?: { amount?: CartAmount };
 }
 
 export interface DescriptionLine {
@@ -112,7 +129,10 @@ export interface EstimateCurrentCartTotalsResponse {
     cart?: Cart;
     calculatedLineItems?: CalculatedLineItem[];
     priceSummary?: PriceSummary;
-    appliedDiscounts?: any[];
+    appliedDiscounts?: Array<{
+        coupon?: CartDiscount['coupon'];
+        discountRule?: CartDiscount['discountRule'];
+    }>;
     [key: string]: any;
 }
 
