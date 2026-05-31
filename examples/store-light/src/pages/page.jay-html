@@ -3,7 +3,7 @@
     <script type="application/jay-data">
       data:
     </script>
-    <link rel="stylesheet" href="../../styles/atelier-theme.css" />
+    <link rel="stylesheet" href="../styles/atelier-theme.css" />
     <style>
       .hero {
         text-align: center;
