@@ -16,3 +16,14 @@ export { init } from './init.js';
 
 // Export setup handler (Design Log #87)
 export { setupWixServerClient } from './setup.js';
+
+// Export REST API helper (Design Log #22)
+export {
+    wixFetch,
+    WixApiError,
+    type WixFetchOptions,
+    type WixFilter,
+    type WixSort,
+    type WixPaging,
+    type WixCursorPaging,
+} from './wix-fetch.js';

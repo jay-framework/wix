@@ -27,6 +27,7 @@ Design documentation for the Jay Framework Wix integration packages.
 | 19  | [Wix Media Plugin](./19%20-%20wix-media-plugin.md)                                             | Draft         |
 | 20  | [Wix BaaS Deployment](./20%20-%20wix-baas-deployment.md)                                       | Draft         |
 | 21  | [BaaS Entry Framework Requirements](./21%20-%20baas-entry-framework-requirements.md)            | Draft         |
+| 22  | [Wix REST API Migration](./22%20-%20wix-rest-api-migration.md)                                  | Draft         |
 
 ## Packages Covered
 
