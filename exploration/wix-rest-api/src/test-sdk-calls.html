@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+    <title>Wix SDK Calls — Capture Network Requests</title>
+    <style>
+        body { font-family: monospace; max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        button { margin: 5px; padding: 8px 16px; cursor: pointer; }
+        #log { background: #1a1a2e; color: #a5f3fc; padding: 20px; border-radius: 8px; white-space: pre-wrap; min-height: 400px; overflow-y: auto; max-height: 600px; }
+        .section { margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>Wix SDK API Calls — Network Capture</h1>
+    <p>Open DevTools → Network tab, then click buttons below. Capture the request/response for each API call.</p>
+
+    <div class="section">
+        <h3>Products</h3>
+        <button onclick="doSearchProducts()">Search Products (with aggregations)</button>
+        <button onclick="doGetProductBySlug()">Get Product by Slug</button>
+        <button onclick="doQueryProducts()">Query Products (with fields)</button>
+    </div>
+
+    <div class="section">
+        <h3>Categories</h3>
+        <button onclick="doQueryCategories()">Query Categories</button>
+    </div>
+
+    <div class="section">
+        <h3>Cart</h3>
+        <button onclick="doGetCart()">Get Current Cart</button>
+        <button onclick="doAddToCart()">Add First Product to Cart</button>
+    </div>
+
+    <div id="log">Click a button to make an API call...\n</div>
+
+    <script type="module" src="./test-sdk-calls.ts"></script>
+</body>
+</html>

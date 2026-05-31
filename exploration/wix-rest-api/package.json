@@ -13,7 +13,10 @@
     "test": ":"
   },
   "dependencies": {
+    "@wix/categories": "^1.0.185",
+    "@wix/ecom": "^1.0.1996",
     "@wix/sdk": "^1.21.5",
+    "@wix/stores": "^1.0.742",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
