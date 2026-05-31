@@ -500,38 +500,82 @@ export const buildEntry = makeCliCommand('build-entry')
         const copiedPackages = new Set<string>();
         const depRequire = createRequire(path.join(ctx.projectRoot, 'package.json'));
 
-        function copyPackage(pkgName: string) {
-            if (copiedPackages.has(pkgName) || devOnlyPackages.has(pkgName)) return;
-            copiedPackages.add(pkgName);
-
+        function resolvePackageDir(pkgName: string): string | null {
             try {
                 const mainPath = depRequire.resolve(pkgName);
                 let pkgDir = path.dirname(mainPath);
                 while (pkgDir !== '/' && !fs.existsSync(path.join(pkgDir, 'package.json'))) {
                     pkgDir = path.dirname(pkgDir);
                 }
+                if (pkgDir === '/') return null;
+                return pkgDir;
+            } catch {
+                return null;
+            }
+        }
 
+        function copyPackage(pkgName: string) {
+            if (copiedPackages.has(pkgName) || devOnlyPackages.has(pkgName)) return;
+            copiedPackages.add(pkgName);
+
+            const pkgDir = resolvePackageDir(pkgName);
+            if (!pkgDir) {
+                ctx.warn(`Could not resolve ${pkgName}`);
+                return;
+            }
+
+            try {
                 const destDir = path.join(entryDir, 'node_modules', ...pkgName.split('/'));
                 fs.mkdirSync(destDir, { recursive: true });
 
                 const pkgJsonPath = path.join(pkgDir, 'package.json');
+                const depPkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
                 fs.copyFileSync(pkgJsonPath, path.join(destDir, 'package.json'));
 
-                const distSrc = path.join(pkgDir, 'dist');
-                if (fs.existsSync(distSrc)) {
-                    fs.cpSync(distSrc, path.join(destDir, 'dist'), { recursive: true });
-                }
+                // Copy exported files from package.json exports + main
+                const filesToCopy = new Set<string>();
 
-                const pluginYaml = path.join(pkgDir, 'plugin.yaml');
-                if (fs.existsSync(pluginYaml)) {
-                    fs.copyFileSync(pluginYaml, path.join(destDir, 'plugin.yaml'));
-                }
-
-                const depPkg = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
-                for (const dep of Object.keys(depPkg.dependencies || {})) {
-                    if (dep.startsWith('@jay-framework/')) {
-                        copyPackage(dep);
+                // Collect paths from exports field
+                function collectExportPaths(obj: any) {
+                    if (typeof obj === 'string') {
+                        filesToCopy.add(obj);
+                    } else if (obj && typeof obj === 'object') {
+                        for (const value of Object.values(obj)) {
+                            collectExportPaths(value);
+                        }
                     }
+                }
+                if (depPkgJson.exports) collectExportPaths(depPkgJson.exports);
+                if (depPkgJson.main) filesToCopy.add(depPkgJson.main);
+                if (depPkgJson.module) filesToCopy.add(depPkgJson.module);
+                if (depPkgJson.types) filesToCopy.add(depPkgJson.types);
+
+                for (const relPath of filesToCopy) {
+                    const src = path.join(pkgDir, relPath);
+                    if (fs.existsSync(src)) {
+                        const dest = path.join(destDir, relPath);
+                        fs.mkdirSync(path.dirname(dest), { recursive: true });
+                        if (fs.statSync(src).isDirectory()) {
+                            fs.cpSync(src, dest, { recursive: true });
+                        } else {
+                            fs.copyFileSync(src, dest);
+                        }
+                    }
+                }
+
+                // Fallback: if no exports found, copy common output dirs
+                if (filesToCopy.size === 0) {
+                    for (const dir of ['dist', 'build', 'es', 'cjs']) {
+                        const src = path.join(pkgDir, dir);
+                        if (fs.existsSync(src) && fs.statSync(src).isDirectory()) {
+                            fs.cpSync(src, path.join(destDir, dir), { recursive: true });
+                        }
+                    }
+                }
+
+                // Recursively copy ALL dependencies
+                for (const dep of Object.keys(depPkgJson.dependencies || {})) {
+                    copyPackage(dep);
                 }
             } catch (e: any) {
                 ctx.warn(`Could not copy ${pkgName}: ${e.message?.substring(0, 100)}`);
