@@ -26,9 +26,7 @@ import {
     OptionRenderType,
     ProductOptionsViewState,
 } from '../contracts/product-options.jay-contract';
-import { Product } from '@wix/auto_sdk_stores_products';
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Collection = any;
+import type { V1Product, V1ProductOption, V1Variant, V1Collection } from '../wix-apis/types.js';
 
 // ============================================================================
 // Helper Functions
@@ -72,7 +70,7 @@ export function mapProductType(productType: string | undefined): ProductType {
 /**
  * Check if a product has a discount
  */
-function hasProductDiscount(product: Product): boolean {
+function hasProductDiscount(product: V1Product): boolean {
     const price = product.price?.price || 0;
     const discountedPrice = product.price?.discountedPrice || price;
     return discountedPrice < price;
@@ -85,7 +83,7 @@ function hasProductDiscount(product: Product): boolean {
 /**
  * Determine the quick add behavior type for a V1 product.
  */
-export function getQuickAddType(product: Product): QuickAddType {
+export function getQuickAddType(product: V1Product): QuickAddType {
     const optionCount = product.productOptions?.length ?? 0;
 
     // V1 doesn't have modifiers in the same way as V3
@@ -111,8 +109,8 @@ function mapOptionRenderType(optionType: string | undefined): OptionRenderType {
  * Map the primary option for quick-add functionality (V1)
  */
 export function mapQuickOption(
-    option: Product['productOptions'][0] | undefined,
-    variants: Product['variants'] | undefined,
+    option: V1ProductOption | undefined,
+    variants: V1Variant[] | undefined,
 ): ProductOptionsViewState | null {
     if (!option) return null;
 
@@ -157,7 +155,7 @@ const DEFAULT_PRODUCT_PAGE_PATH = '/products';
  * - V1 uses stock.inventoryStatus instead of inventory.availabilityStatus
  */
 export function mapProductToCard(
-    product: Product,
+    product: V1Product,
     productPagePath: string = DEFAULT_PRODUCT_PAGE_PATH,
 ): ProductCardViewState {
     const mainMedia = product.media?.mainMedia;
@@ -221,21 +219,6 @@ export function mapProductToCard(
 // Collection Mapper (V1 uses collections, not categories)
 // ============================================================================
 
-export interface V1Collection {
-    _id?: string;
-    name?: string;
-    slug?: string;
-    description?: string;
-    media?: {
-        mainMedia?: {
-            image?: {
-                url: string;
-            };
-        };
-    };
-    numberOfProducts?: number;
-}
-
 export interface CollectionViewState {
     _id: string;
     name: string;
@@ -248,7 +231,7 @@ export interface CollectionViewState {
 /**
  * Map V1 Collection to a view state
  */
-export function mapCollectionToViewState(collection: Collection): CollectionViewState {
+export function mapCollectionToViewState(collection: V1Collection): CollectionViewState {
     return {
         _id: collection._id,
         name: collection.name || '',

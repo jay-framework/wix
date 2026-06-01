@@ -33,6 +33,7 @@ import { WIX_STORES_V1_CONTEXT, WixStoresV1Context } from '../contexts/wix-store
 import { mapProductToCard } from '../utils/product-mapper-v1';
 import { ProductCardViewState } from '../contracts/product-card.jay-contract';
 import { MediaType } from '../contracts/category-page.jay-contract';
+import { queryProducts as queryProductsApi, queryCollections as queryCollectionsApi } from '../wix-apis/index.js';
 
 /**
  * URL parameters for collection page routes
@@ -74,8 +75,8 @@ async function* loadCollectionParams([wixStores]: [WixStoresV1Service]): AsyncIt
     CollectionPageParams[]
 > {
     try {
-        const result = await wixStores.collections.queryCollections().find();
-        yield (result.items || []).filter((col) => col.slug).map((col) => ({ slug: col.slug! }));
+        const result = await queryCollectionsApi(wixStores.wixClient);
+        yield (result.collections || []).filter((col) => col.slug).map((col) => ({ slug: col.slug! }));
     } catch (error) {
         console.error('[CollectionPage V1] Failed to load collection slugs:', error);
         yield [];
@@ -90,19 +91,16 @@ async function loadCollectionProducts(
     wixStores: WixStoresV1Service,
     offset: number = 0,
 ): Promise<{ products: ProductCardViewState[]; total: number }> {
-    // Query products with collection filter
-    const result = await wixStores.products
-        .queryProducts()
-        .hasSome('collectionIds', [collectionId])
-        .skip(offset)
-        .limit(PAGE_SIZE)
-        .find();
+    const result = await queryProductsApi(wixStores.wixClient, {
+        filter: { 'collections.id': { $hasSome: [collectionId] } },
+        paging: { limit: PAGE_SIZE, offset },
+    });
 
-    const products = (result.items || []).map((product) => mapProductToCard(product, '/products'));
+    const products = (result.products || []).map((product) => mapProductToCard(product, '/products'));
 
     return {
         products,
-        total: result.totalCount || products.length,
+        total: result.totalResults || products.length,
     };
 }
 
@@ -141,9 +139,9 @@ async function renderSlowlyChanging(
     return Pipeline.try(async () => {
         // Query all collections and filter by slug
         // V1 collections API doesn't support .eq('slug', ...) directly
-        const result = await wixStores.collections.queryCollections().find();
+        const result = await queryCollectionsApi(wixStores.wixClient);
 
-        const collection = (result.items || []).find((col) => col.slug === props.slug);
+        const collection = (result.collections || []).find((col) => col.slug === props.slug);
 
         if (!collection) {
             throw new Error('Collection not found');

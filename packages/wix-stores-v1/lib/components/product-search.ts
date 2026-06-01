@@ -31,6 +31,7 @@ import {
 import { patch, REPLACE } from '@jay-framework/json-patch';
 import { searchProducts, ProductSortField } from '../actions/stores-v1-actions';
 import { WIX_STORES_V1_CONTEXT, WixStoresV1Context } from '../contexts/wix-stores-v1-context';
+import { queryCollections as queryCollectionsApi } from '../wix-apis/index.js';
 
 /**
  * Collection info for filtering (V1 uses collections, not categories)
@@ -65,8 +66,8 @@ async function renderSlowlyChanging(props: PageProps, wixStores: WixStoresV1Serv
 
     return Pipeline.try(async () => {
         // Load collections for filtering (V1 API)
-        const collectionsResult = await wixStores.collections.queryCollections().find();
-        return collectionsResult.items || [];
+        const collectionsResult = await queryCollectionsApi(wixStores.wixClient);
+        return collectionsResult.collections || [];
     })
         .recover((error) => {
             console.error('[ProductSearch V1] Failed to load collections:', error);

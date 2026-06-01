@@ -41,7 +41,8 @@ import { MediaGalleryViewState, Selected } from '../contracts/media-gallery.jay-
 import { MediaType } from '../contracts/media.jay-contract';
 import { JSONPatchOperation, patch, REPLACE } from '@jay-framework/json-patch';
 import { WIX_STORES_V1_CONTEXT, WixStoresV1Context } from '../contexts/wix-stores-v1-context';
-import { Product } from '@wix/auto_sdk_stores_products';
+import type { V1Product } from '../wix-apis/types.js';
+import { queryProducts as queryProductsApi } from '../wix-apis/index.js';
 
 /**
  * URL parameters for product page routes
@@ -82,7 +83,7 @@ function mapProductType(productType: string | undefined): ProductType {
 }
 
 function mapInfoSections(
-    sections: Product['additionalInfoSections'],
+    sections: V1Product['additionalInfoSections'],
 ): InfoSectionOfProductPageViewState[] {
     return (sections || []).map((section, index) => ({
         _id: String(index),
@@ -96,7 +97,7 @@ function mapInfoSections(
  * Map V1 media to MediaGalleryViewState
  * V1 provides complete URLs, no need for Wix image URL formatting
  */
-function mapMedia(product: Product): MediaGalleryViewState {
+function mapMedia(product: V1Product): MediaGalleryViewState {
     const mainMedia = product.media?.mainMedia;
     const mediaItems = product.media?.items || [];
 
@@ -125,7 +126,7 @@ function mapMedia(product: Product): MediaGalleryViewState {
 /**
  * Map V1 productOptions to SlowViewState options
  */
-function mapOptionsToSlowVS(product: Product): ProductPageSlowViewState['options'] {
+function mapOptionsToSlowVS(product: V1Product): ProductPageSlowViewState['options'] {
     return (product.productOptions || []).map((option) => ({
         _id: option.name || '',
         name: option.name || '',
@@ -147,7 +148,7 @@ function mapOptionsToSlowVS(product: Product): ProductPageSlowViewState['options
 /**
  * Map V1 productOptions to FastViewState options
  */
-function mapOptionsToFastVS(product: Product): ProductPageFastViewState['options'] {
+function mapOptionsToFastVS(product: V1Product): ProductPageFastViewState['options'] {
     return (product.productOptions || []).map((option) => ({
         _id: option.name || '',
         textChoiceSelection: undefined,
@@ -161,7 +162,7 @@ function mapOptionsToFastVS(product: Product): ProductPageFastViewState['options
 /**
  * Map V1 variants to InteractiveVariant format
  */
-function mapVariants(product: Product): InteractiveVariant[] {
+function mapVariants(product: V1Product): InteractiveVariant[] {
     return (product.variants || []).map((variant) => ({
         _id: variant._id || '',
         sku: variant.variant?.sku || '',
@@ -185,12 +186,18 @@ function mapVariants(product: Product): InteractiveVariant[] {
 async function* loadProductParams([wixStores]: [WixStoresV1Service]): AsyncIterable<
     ProductPageParams[]
 > {
+    const PAGE_SIZE = 100;
     try {
-        let result = await wixStores.products.queryProducts().find();
-        yield result.items.map((product) => ({ slug: product.slug || '' }));
-        while (result.hasNext()) {
-            result = await result.next();
-            yield result.items.map((product) => ({ slug: product.slug || '' }));
+        let offset = 0;
+        let hasMore = true;
+        while (hasMore) {
+            const result = await queryProductsApi(wixStores.wixClient, {
+                paging: { limit: PAGE_SIZE, offset },
+            });
+            const products = result.products || [];
+            yield products.map((product) => ({ slug: product.slug || '' }));
+            offset += products.length;
+            hasMore = products.length === PAGE_SIZE;
         }
     } catch (error) {
         console.error('[ProductPage V1] Failed to load product slugs:', error);
@@ -209,22 +216,22 @@ async function renderSlowlyChanging(
     const Pipeline = RenderPipeline.for<ProductPageSlowViewState, ProductSlowCarryForward>();
 
     return Pipeline.try(async () => {
-        // Try slug lookup first, then fall back to ID lookup
-        // (cart URLs use product IDs since item.url slugs may not match catalog slugs)
-        const bySlug = await wixStores.products
-            .queryProducts()
-            .eq('slug', props.slug)
-            .limit(1)
-            .find();
-        if (bySlug.items?.length) return bySlug;
-        return wixStores.products.queryProducts().eq('_id', props.slug).limit(1).find();
+        const bySlug = await queryProductsApi(wixStores.wixClient, {
+            filter: { slug: props.slug },
+            paging: { limit: 1 },
+        });
+        if (bySlug.products?.length) return bySlug;
+        return queryProductsApi(wixStores.wixClient, {
+            filter: { id: props.slug },
+            paging: { limit: 1 },
+        });
     })
         .recover((error) => {
             console.error('[ProductPage V1] Error loading product:', error);
             return Pipeline.clientError(404, 'Product not found');
         })
         .toPhaseOutput((result) => {
-            const product = result.items?.[0];
+            const product = result.products?.[0];
             if (!product) {
                 throw new Error('Product not found');
             }

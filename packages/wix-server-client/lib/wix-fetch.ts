@@ -52,11 +52,10 @@ export async function wixFetch<T = any>(
  * Supports operators: $eq, $ne, $gt, $gte, $lt, $lte, $in, $nin,
  * $exists, $begins, $hasSome, $hasAll, $matchItems, $contains.
  */
-export type WixFilter = Record<string, FilterValue>;
-type FilterValue = string | number | boolean | null | FilterOperator;
+type FilterPrimitive = string | number | boolean | null;
 type FilterOperator = {
-    $eq?: string | number | boolean | null;
-    $ne?: string | number | boolean | null;
+    $eq?: FilterPrimitive;
+    $ne?: FilterPrimitive;
     $gt?: string | number;
     $gte?: string | number;
     $lt?: string | number;
@@ -65,11 +64,15 @@ type FilterOperator = {
     $nin?: Array<string | number>;
     $exists?: boolean;
     $begins?: string;
+    $startsWith?: string;
     $hasSome?: Array<string | number>;
     $hasAll?: Array<string | number>;
     $contains?: string;
-    $matchItems?: Array<Record<string, FilterValue>>;
+    $matchItems?: WixFilter[];
 };
+export interface WixFilter {
+    [key: string]: FilterPrimitive | FilterOperator | WixFilter[];
+}
 
 /**
  * Standard Wix API sort type.

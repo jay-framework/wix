@@ -408,6 +408,10 @@ export const buildEntry = makeCliCommand('build-entry')
             'vite',
             'lightningcss',
             'fsevents',
+            '@types/js-yaml',
+            '@wix/sdk-runtime',
+            'yaml',
+            'js-beautify',
         ];
         const stubFilter = new RegExp(
             '^(' + stubs.map((s) => s.replace(/[/.]/g, '\\$&')).join('|') + ')$',
