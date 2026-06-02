@@ -8,6 +8,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { fileURLToPath } from 'url';
 import * as yaml from 'js-yaml';
 import type {
     PluginSetupContext,
@@ -20,6 +21,39 @@ import { WIX_STORES_SERVICE_MARKER, type WixStoresService } from './services/wix
 import type { DataExtensionSchema } from './utils/data-extension-schema';
 
 const CONFIG_FILE_NAME = '.wix-stores.yaml';
+const ADD_MENU_OUTPUT_REL = 'agent-kit/aiditor/add-menu/wix-stores.yaml';
+
+function resolveAddMenuTemplatePath(): string {
+    const thisDir = path.dirname(fileURLToPath(import.meta.url));
+    const fromDist = path.join(thisDir, 'agent-kit/aiditor/add-menu.template.yaml');
+    if (fs.existsSync(fromDist)) {
+        return fromDist;
+    }
+    return path.join(thisDir, '..', 'agent-kit/aiditor/add-menu.template.yaml');
+}
+
+/**
+ * Write Add Menu catalog from package template (Design Log #20 W1).
+ * Idempotent: skips when output exists unless ctx.force.
+ *
+ * Q8 note: product-page prompt references agent-kit/materialized-contracts/wix-stores/product-page.jay-contract,
+ * which is materialized by the existing wix-stores setup / agent-kit flow (not by this writer).
+ */
+function writeAddMenuCatalog(ctx: PluginSetupContext): string | null {
+    const outputPath = path.join(ctx.projectRoot, ADD_MENU_OUTPUT_REL);
+
+    if (fs.existsSync(outputPath) && !ctx.force) {
+        return null;
+    }
+
+    const templatePath = resolveAddMenuTemplatePath();
+    const templateContent = fs.readFileSync(templatePath, 'utf-8');
+
+    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+    fs.writeFileSync(outputPath, templateContent, 'utf-8');
+
+    return ADD_MENU_OUTPUT_REL;
+}
 
 const CONFIG_TEMPLATE = `# Wix Stores Configuration
 #
@@ -72,6 +106,11 @@ export async function setupWixStores(ctx: PluginSetupContext): Promise<PluginSet
     }
 
     const service = getService(WIX_STORES_SERVICE_MARKER);
+    const addMenuCreated = writeAddMenuCatalog(ctx);
+    if (addMenuCreated) {
+        configCreated.push(addMenuCreated);
+    }
+
     const message = `Wix Stores configured (product URL: ${service.urls.product})`;
 
     return {

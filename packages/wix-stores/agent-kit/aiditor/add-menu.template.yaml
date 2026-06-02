@@ -1,0 +1,53 @@
+items:
+  - id: wix-stores:product-search
+    title: Product search
+    category: Store
+    subCategory: Components
+    pluginName: wix-stores
+    packageName: "@jay-framework/wix-stores"
+    thumbnail: thumbnails/wix-stores/product-search.png
+    prompt: |
+      Use headless component @jay-framework/wix-stores / contract product-search.
+      Read agent-kit/materialized-contracts/wix-stores/product-search.jay-contract.
+      Script key: search
+      Bind ViewState and refs per agent-kit/designer/INSTRUCTIONS.md.
+
+  - id: wix-stores:product-page
+    title: Product page
+    category: Store
+    subCategory: Components
+    pluginName: wix-stores
+    packageName: "@jay-framework/wix-stores"
+    thumbnail: thumbnails/wix-stores/product-page.png
+    prompt: |
+      Use headless component @jay-framework/wix-stores / contract product-page.
+      Read agent-kit/materialized-contracts/wix-stores/product-page.jay-contract.
+      Script key: p
+      Bind ViewState and refs per agent-kit/designer/INSTRUCTIONS.md.
+
+  - id: wix-stores:related-products
+    title: Related products
+    category: Store
+    subCategory: Components
+    pluginName: wix-stores
+    packageName: "@jay-framework/wix-stores"
+    thumbnail: thumbnails/wix-stores/related-products.png
+    prompt: |
+      Use headless component @jay-framework/wix-stores / contract related-products.
+      Read agent-kit/materialized-contracts/wix-stores/related-products.jay-contract.
+      Script key: r
+      Bind ViewState and refs per agent-kit/designer/INSTRUCTIONS.md.
+      Use alongside product-page; pass productId and categorySlug as instance props.
+
+  - id: wix-stores:category-list
+    title: Category list
+    category: Store
+    subCategory: Components
+    pluginName: wix-stores
+    packageName: "@jay-framework/wix-stores"
+    thumbnail: thumbnails/wix-stores/category-list.png
+    prompt: |
+      Use headless component @jay-framework/wix-stores / contract category-list.
+      Read agent-kit/materialized-contracts/wix-stores/category-list.jay-contract.
+      Script key: categories
+      Bind ViewState and refs per agent-kit/designer/INSTRUCTIONS.md.
