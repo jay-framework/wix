@@ -34,7 +34,12 @@ interface FileEntry {
     category: 'eager' | 'lazy';
 }
 
-function scanFileEntries(dir: string, base: string, fs: typeof import('node:fs'), path: typeof import('node:path')): FileEntry[] {
+function scanFileEntries(
+    dir: string,
+    base: string,
+    fs: typeof import('node:fs'),
+    path: typeof import('node:path'),
+): FileEntry[] {
     const entries: FileEntry[] = [];
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
         const fullPath = path.join(dir, entry.name);
@@ -75,75 +80,81 @@ function buildBatches(entries: FileEntry[]): FileEntry[][] {
 
 export const uploadBackend = makeCliCommand('upload-backend')
     .withServices(WIX_CLIENT_SERVICE, CONSOLE_CONTEXT)
-    .withHandler(async (input: UploadBackendInput, wixClient: WixClientService, ctx: ConsoleContext) => {
-        const fs = await import('node:fs');
-        const path = await import('node:path');
+    .withHandler(
+        async (input: UploadBackendInput, wixClient: WixClientService, ctx: ConsoleContext) => {
+            const fs = await import('node:fs');
+            const path = await import('node:path');
 
-        const buildDir = ctx.build.backend;
-        const collectionId = input.collectionId || DEFAULT_COLLECTION_ID;
-        const dryRun = input.dryRun || false;
+            const buildDir = ctx.build.backend;
+            const collectionId = input.collectionId || DEFAULT_COLLECTION_ID;
+            const dryRun = input.dryRun || false;
 
-        // Read version from build-metadata.json
-        const metadataPath = path.join(buildDir, 'build-metadata.json');
-        let version = 1;
-        if (fs.existsSync(metadataPath)) {
-            const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
-            version = metadata.version || 1;
-        }
-
-        ctx.log(`Backend dir: ${buildDir}`);
-        ctx.log(`Collection: ${collectionId}`);
-        ctx.log(`Version: ${version}`);
-        if (dryRun) ctx.log('DRY RUN — no uploads');
-
-        if (!fs.existsSync(buildDir)) {
-            ctx.error(`Backend dir not found: ${buildDir}`);
-            return { success: false };
-        }
-
-        const entries = scanFileEntries(buildDir, '', fs, path);
-        const eager = entries.filter(f => f.category === 'eager');
-        const lazy = entries.filter(f => f.category === 'lazy');
-        const totalSize = entries.reduce((sum, f) => sum + f.sizeBytes, 0);
-
-        ctx.log(`Found ${entries.length} files (${eager.length} eager, ${lazy.length} lazy)`);
-        ctx.log(`Total size: ${(totalSize / 1024 / 1024).toFixed(1)} MB`);
-
-        if (dryRun) {
-            for (const f of entries.slice(0, 20)) {
-                ctx.log(`  [${f.category}] ${f.relativePath} (${(f.sizeBytes / 1024).toFixed(0)} KB)`);
+            // Read version from build-metadata.json
+            const metadataPath = path.join(buildDir, 'build-metadata.json');
+            let version = 1;
+            if (fs.existsSync(metadataPath)) {
+                const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+                version = metadata.version || 1;
             }
-            if (entries.length > 20) ctx.log(`  ... and ${entries.length - 20} more`);
-            return { success: true, fileCount: entries.length, totalSize };
-        }
 
-        const store = new WixDataArtifactStore({
-            wixClient: wixClient as any,
-            collectionId,
-            version,
-            cacheDir: '/tmp/upload-staging',
-        });
+            ctx.log(`Backend dir: ${buildDir}`);
+            ctx.log(`Collection: ${collectionId}`);
+            ctx.log(`Version: ${version}`);
+            if (dryRun) ctx.log('DRY RUN — no uploads');
 
-        const batches = buildBatches(entries);
-        ctx.log(`Uploading in ${batches.length} batches`);
+            if (!fs.existsSync(buildDir)) {
+                ctx.error(`Backend dir not found: ${buildDir}`);
+                return { success: false };
+            }
 
-        let uploaded = 0;
-        let errors = 0;
+            const entries = scanFileEntries(buildDir, '', fs, path);
+            const eager = entries.filter((f) => f.category === 'eager');
+            const lazy = entries.filter((f) => f.category === 'lazy');
+            const totalSize = entries.reduce((sum, f) => sum + f.sizeBytes, 0);
 
-        for (let i = 0; i < batches.length; i++) {
-            const batch = batches[i];
-            const files = batch.map(f => ({
-                path: f.relativePath,
-                content: fs.readFileSync(f.fullPath, 'utf8'),
-                category: f.category as 'eager' | 'lazy',
-            }));
+            ctx.log(`Found ${entries.length} files (${eager.length} eager, ${lazy.length} lazy)`);
+            ctx.log(`Total size: ${(totalSize / 1024 / 1024).toFixed(1)} MB`);
 
-            const count = await store.writeFiles(files);
-            uploaded += count;
-            errors += batch.length - count;
-            ctx.log(`  Batch ${i + 1}/${batches.length}: ${count}/${batch.length} files (${uploaded}/${entries.length})`);
-        }
+            if (dryRun) {
+                for (const f of entries.slice(0, 20)) {
+                    ctx.log(
+                        `  [${f.category}] ${f.relativePath} (${(f.sizeBytes / 1024).toFixed(0)} KB)`,
+                    );
+                }
+                if (entries.length > 20) ctx.log(`  ... and ${entries.length - 20} more`);
+                return { success: true, fileCount: entries.length, totalSize };
+            }
 
-        ctx.log(`Done: ${uploaded} uploaded, ${errors} errors`);
-        return { success: errors === 0, uploaded, errors, version };
-    });
+            const store = new WixDataArtifactStore({
+                wixClient: wixClient as any,
+                collectionId,
+                version,
+                cacheDir: '/tmp/upload-staging',
+            });
+
+            const batches = buildBatches(entries);
+            ctx.log(`Uploading in ${batches.length} batches`);
+
+            let uploaded = 0;
+            let errors = 0;
+
+            for (let i = 0; i < batches.length; i++) {
+                const batch = batches[i];
+                const files = batch.map((f) => ({
+                    path: f.relativePath,
+                    content: fs.readFileSync(f.fullPath, 'utf8'),
+                    category: f.category as 'eager' | 'lazy',
+                }));
+
+                const count = await store.writeFiles(files);
+                uploaded += count;
+                errors += batch.length - count;
+                ctx.log(
+                    `  Batch ${i + 1}/${batches.length}: ${count}/${batch.length} files (${uploaded}/${entries.length})`,
+                );
+            }
+
+            ctx.log(`Done: ${uploaded} uploaded, ${errors} errors`);
+            return { success: errors === 0, uploaded, errors, version };
+        },
+    );

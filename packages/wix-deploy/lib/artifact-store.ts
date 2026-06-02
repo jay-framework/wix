@@ -42,10 +42,16 @@ export interface ServerElementModule {
     renderToStream: (vs: object, ctx: any) => void;
 }
 
+export interface CacheEntry {
+    slowViewState: object;
+    carryForward: object;
+}
+
 export interface ArtifactStore {
     readManifest(): Promise<RouteManifest>;
-    readPreRenderedHtml(relativePath: string): Promise<PreRenderedEntry>;
+    readCacheData(relativePath: string): Promise<CacheEntry>;
     loadServerElement(relativePath: string): Promise<ServerElementModule>;
+    loadModule(modulePath: string, local?: boolean): Promise<any>;
     getAssetPath(relativePath: string): string;
     getBuildDir(): string;
 }
@@ -77,6 +83,7 @@ export interface WixDataArtifactStoreOptions {
     collectionId: string;
     cacheDir: string;
     version: number;
+    moduleRegistry?: Record<string, any>;
 }
 
 // ============================================================================
@@ -88,6 +95,7 @@ export class WixDataArtifactStore implements ArtifactStore {
     readonly version: number;
     private readonly cacheDir: string;
     private readonly dataClient: ReturnType<WixClient['use']>;
+    private readonly moduleRegistry: Record<string, any>;
     private manifestCache?: RouteManifest;
     private moduleCache = new Map<string, any>();
     private fetchPromises = new Map<string, Promise<string>>();
@@ -97,6 +105,7 @@ export class WixDataArtifactStore implements ArtifactStore {
         this.version = options.version;
         this.cacheDir = options.cacheDir;
         this.dataClient = options.wixClient.use({ items });
+        this.moduleRegistry = options.moduleRegistry || {};
         fs.mkdirSync(this.cacheDir, { recursive: true });
     }
 
@@ -111,28 +120,33 @@ export class WixDataArtifactStore implements ArtifactStore {
         return this.manifestCache!;
     }
 
-    async readPreRenderedHtml(relativePath: string): Promise<PreRenderedEntry> {
-        const cachePath = relativePath.replace(/\.jay-html$/, '.cache.json');
-        const cacheContent = await this.ensureFile(cachePath);
+    async readCacheData(relativePath: string): Promise<CacheEntry> {
+        const cacheContent = await this.ensureFile(relativePath);
         try {
             const cacheData = JSON.parse(cacheContent);
             return {
-                content: '',
                 slowViewState: cacheData.slowViewState || {},
                 carryForward: cacheData.carryForward || {},
             };
         } catch {
-            return { content: '', slowViewState: {}, carryForward: {} };
+            return { slowViewState: {}, carryForward: {} };
         }
     }
 
     async loadServerElement(relativePath: string): Promise<ServerElementModule> {
-        const cached = this.moduleCache.get(relativePath);
+        return this.loadModule(relativePath, true);
+    }
+
+    async loadModule(modulePath: string, _local?: boolean): Promise<any> {
+        if (this.moduleRegistry[modulePath]) {
+            return this.moduleRegistry[modulePath];
+        }
+        const cached = this.moduleCache.get(modulePath);
         if (cached) return cached;
-        await this.ensureFile(relativePath);
-        const fullPath = path.join(this.cacheDir, relativePath);
+        await this.ensureFile(modulePath);
+        const fullPath = path.join(this.cacheDir, modulePath);
         const mod = await import(/* @vite-ignore */ fullPath);
-        this.moduleCache.set(relativePath, mod);
+        this.moduleCache.set(modulePath, mod);
         return mod;
     }
 
@@ -149,7 +163,9 @@ export class WixDataArtifactStore implements ArtifactStore {
     // ========================================================================
 
     async loadEagerFiles(): Promise<void> {
-        console.log(`[WixDataArtifactStore] Loading eager files v${this.version} from "${this.collectionId}"...`);
+        console.log(
+            `[WixDataArtifactStore] Loading eager files v${this.version} from "${this.collectionId}"...`,
+        );
 
         let totalLoaded = 0;
         let hasMore = true;
@@ -157,7 +173,8 @@ export class WixDataArtifactStore implements ArtifactStore {
         const limit = 50;
 
         while (hasMore) {
-            const result = await this.dataClient.items.query(this.collectionId)
+            const result = await this.dataClient.items
+                .query(this.collectionId)
                 .eq('category', 'eager')
                 .eq('version', this.version)
                 .skip(offset)
@@ -181,22 +198,17 @@ export class WixDataArtifactStore implements ArtifactStore {
     // ========================================================================
 
     /**
-     * Ensure the 3 files needed to render a page are on disk:
-     * 1. page-parts.json (per route, shared by all instances)
-     * 2. *.cache.json (per instance — slow view state + carry forward)
-     * 3. *.server-element.js (per instance — SSR render function)
+     * Ensure the files needed to render a page are on disk:
+     * 1. cache.json (per instance — slow view state + carry forward)
+     * 2. page-parts.json (per route, shared by all instances)
+     * 3. route.server-element.js (per route, shared by all instances)
      */
-    async ensurePageFiles(preRenderedPath: string): Promise<void> {
-        const dir = path.dirname(preRenderedPath);
-        const base = preRenderedPath.replace(/\.jay-html$/, '');
+    async ensurePageFiles(cachePath: string): Promise<void> {
+        const dir = path.dirname(cachePath);
 
-        const filesToEnsure = [
-            path.join(dir, 'page-parts.json'),
-            `${base}.cache.json`,
-            `${base}.server-element.js`,
-        ];
+        const filesToEnsure = [cachePath, path.join(dir, 'page-parts.json')];
 
-        await Promise.all(filesToEnsure.map(f => this.ensureFile(f)));
+        await Promise.all(filesToEnsure.map((f) => this.ensureFile(f)));
     }
 
     // ========================================================================
@@ -206,7 +218,11 @@ export class WixDataArtifactStore implements ArtifactStore {
     /**
      * Write a single file to the data collection.
      */
-    async writeFile(relativePath: string, content: string, category: 'eager' | 'lazy'): Promise<void> {
+    async writeFile(
+        relativePath: string,
+        content: string,
+        category: 'eager' | 'lazy',
+    ): Promise<void> {
         const ext = path.extname(relativePath).slice(1);
         const item: BackendFileItem = {
             _id: makeItemId(this.version, relativePath),
@@ -224,8 +240,10 @@ export class WixDataArtifactStore implements ArtifactStore {
      * Write a batch of files to the data collection.
      * Returns the number of successfully written files.
      */
-    async writeFiles(files: Array<{ path: string; content: string; category: 'eager' | 'lazy' }>): Promise<number> {
-        const dataItems: BackendFileItem[] = files.map(f => ({
+    async writeFiles(
+        files: Array<{ path: string; content: string; category: 'eager' | 'lazy' }>,
+    ): Promise<number> {
+        const dataItems: BackendFileItem[] = files.map((f) => ({
             _id: makeItemId(this.version, f.path),
             version: this.version,
             path: f.path,
@@ -245,7 +263,9 @@ export class WixDataArtifactStore implements ArtifactStore {
                 try {
                     await this.dataClient.items.save(this.collectionId, item);
                     count++;
-                } catch { /* skip failed items */ }
+                } catch {
+                    /* skip failed items */
+                }
             }
             return count;
         }
@@ -278,14 +298,20 @@ export class WixDataArtifactStore implements ArtifactStore {
 
         const id = makeItemId(this.version, relativePath);
         try {
-            const item = await this.dataClient.items.get(this.collectionId, id) as BackendFileItem | null;
+            const item = (await this.dataClient.items.get(
+                this.collectionId,
+                id,
+            )) as BackendFileItem | null;
             if (item?.content) {
                 this.writeToCache(relativePath, item.content);
                 return item.content;
             }
-        } catch { /* get by ID failed — try query */ }
+        } catch {
+            /* get by ID failed — try query */
+        }
 
-        const result = await this.dataClient.items.query(this.collectionId)
+        const result = await this.dataClient.items
+            .query(this.collectionId)
             .eq('path', relativePath)
             .eq('version', this.version)
             .limit(1)
@@ -330,7 +356,9 @@ export class WixDataArtifactStore implements ArtifactStore {
                 if (config.parts) rewriteParts(config.parts);
                 if (config.instanceComponents) rewriteParts(config.instanceComponents);
                 content = JSON.stringify(config);
-            } catch { /* keep original content if parsing fails */ }
+            } catch {
+                /* keep original content if parsing fails */
+            }
         }
 
         fs.writeFileSync(fullPath, content, 'utf8');

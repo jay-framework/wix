@@ -76,7 +76,9 @@ async function testQueryCategories() {
 }
 
 async function testGetCurrentCart() {
-    console.log('\n=== Test 3: Get Current Cart (server — will likely fail without visitor context) ===');
+    console.log(
+        '\n=== Test 3: Get Current Cart (server — will likely fail without visitor context) ===',
+    );
 
     try {
         const result = await wixFetch<any>(client, '/ecom/v1/carts/current', {
@@ -125,7 +127,7 @@ async function main() {
     console.log('\n=== Done ===');
 }
 
-main().catch(err => {
+main().catch((err) => {
     console.error('Fatal:', err);
     process.exit(1);
 });

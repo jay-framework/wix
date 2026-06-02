@@ -101,6 +101,6 @@ async function main() {
     appendLog('\n=== Done ===');
 }
 
-main().catch(err => {
+main().catch((err) => {
     appendLog(`Fatal: ${err.message}`);
 });

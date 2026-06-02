@@ -12,13 +12,11 @@ async function main() {
     const total = await client.items.count(COLLECTION_ID);
     console.log(`Total items: ${total}`);
 
-    const eager = await client.items.query(COLLECTION_ID)
-        .eq('category', 'eager')
-        .limit(1)
-        .find();
+    const eager = await client.items.query(COLLECTION_ID).eq('category', 'eager').limit(1).find();
     console.log(`Eager items (via query count): checking...`);
 
-    const eagerAll = await client.items.query(COLLECTION_ID)
+    const eagerAll = await client.items
+        .query(COLLECTION_ID)
         .eq('category', 'eager')
         .limit(500)
         .find();
@@ -35,7 +33,8 @@ async function main() {
     console.log(`\nEager total size: ${(totalEagerSize / 1024).toFixed(0)} KB`);
 
     // Sample lazy items
-    const lazySample = await client.items.query(COLLECTION_ID)
+    const lazySample = await client.items
+        .query(COLLECTION_ID)
         .eq('category', 'lazy')
         .limit(10)
         .find();
@@ -45,7 +44,7 @@ async function main() {
     }
 }
 
-main().catch(err => {
+main().catch((err) => {
     console.error('Fatal:', err);
     process.exit(1);
 });

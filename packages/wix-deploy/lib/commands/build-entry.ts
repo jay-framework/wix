@@ -29,24 +29,11 @@ interface RouteManifest {
 
 const DEFAULT_EXCLUDE_PLUGINS = ['aiditor', 'ui-kit', 'wix-deploy'];
 
-function getDirectorySize(dir: string, fs: typeof import('node:fs'), path: typeof import('node:path')): number {
-    let size = 0;
-    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-        const fullPath = path.join(dir, entry.name);
-        if (entry.isDirectory()) {
-            size += getDirectorySize(fullPath, fs, path);
-        } else {
-            size += fs.statSync(fullPath).size;
-        }
-    }
-    return size;
-}
-
 function sortPluginsByDeps(plugins: Array<{ name: string; packageName: string }>) {
     const priorityPackages = ['@jay-framework/wix-server-client'];
     const sorted: typeof plugins = [];
     for (const pkg of priorityPackages) {
-        const p = plugins.find(p => p.packageName === pkg);
+        const p = plugins.find((p) => p.packageName === pkg);
         if (p) sorted.push(p);
     }
     for (const p of plugins) {
@@ -93,6 +80,7 @@ function generateStubContents(modulePath: string): string {
 function generateEntrySource(
     plugins: Array<{ name: string; packageName: string }>,
     actionPackages: string[],
+    serverElements: Array<{ relativePath: string; absolutePath: string }>,
     collectionId: string,
     staticBaseUrl: string,
     version: number,
@@ -100,20 +88,19 @@ function generateEntrySource(
     const pluginImports = plugins.map(
         (p, i) => `import { init as pluginInit_${i} } from '${p.packageName}';`,
     );
-    // Import full modules for page-parts resolution + actions
     const moduleImports = plugins.map(
         (p, i) => `import * as pluginModule_${i} from '${p.packageName}';`,
     );
-    const pluginsArray = plugins.map(
-        (p, i) => `    { name: '${p.name}', init: pluginInit_${i} },`,
+    const seImports = serverElements.map(
+        (se, i) => `import * as serverElement_${i} from '${se.absolutePath}';`,
     );
-    // Build module registry keyed by package name
-    const registryEntries = plugins.map(
-        (p, i) => `    '${p.packageName}': pluginModule_${i},`,
-    );
-    // Action modules are a subset of plugin modules
-    const actionsArray = actionPackages.map(pkg => {
-        const idx = plugins.findIndex(p => p.packageName === pkg);
+    const pluginsArray = plugins.map((p, i) => `    { name: '${p.name}', init: pluginInit_${i} },`);
+    const registryEntries = [
+        ...plugins.map((p, i) => `    '${p.packageName}': pluginModule_${i},`),
+        ...serverElements.map((se, i) => `    '${se.relativePath}': serverElement_${i},`),
+    ];
+    const actionsArray = actionPackages.map((pkg) => {
+        const idx = plugins.findIndex((p) => p.packageName === pkg);
         return `    { module: pluginModule_${idx}, name: '${pkg}' },`;
     });
 
@@ -123,6 +110,9 @@ function generateEntrySource(
 // Plugin imports (init + full modules for page-parts resolution)
 ${pluginImports.join('\n')}
 ${moduleImports.join('\n')}
+
+// Server element imports (bundled with ssr-runtime)
+${seImports.join('\n')}
 
 // Framework imports
 import {
@@ -137,6 +127,11 @@ import {
 import { parseCookies, getService } from '@jay-framework/stack-server-runtime';
 import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
 import { WixDataArtifactStore } from '@jay-framework/wix-deploy/artifact-store';
+
+// Module registry — npm packages + server elements (all bundled by esbuild)
+const MODULE_REGISTRY = {
+${registryEntries.join('\n')}
+};
 
 // Configuration
 const COLLECTION_ID = process.env.JAY_COLLECTION_ID || '${collectionId}';
@@ -193,6 +188,7 @@ ${actionsArray.join('\n')}
             collectionId: COLLECTION_ID,
             version: VERSION,
             cacheDir: '${DEFAULT_CACHE_DIR}',
+            moduleRegistry: MODULE_REGISTRY,
         });
         console.log('[BaaS] Loading eager files...');
         await artifacts.loadEagerFiles();
@@ -200,6 +196,19 @@ ${actionsArray.join('\n')}
 
     initialized = true;
     console.log('[BaaS] Initialization complete');
+}
+
+function errorPage(title, err, path) {
+    const html = '<!doctype html><html><head><meta charset="UTF-8"><title>' + title + '</title>'
+        + '<style>body{font-family:monospace;max-width:800px;margin:40px auto;padding:0 20px}'
+        + 'h1{color:#c00}pre{background:#f5f5f5;padding:16px;overflow-x:auto;border-radius:4px}'
+        + '.path{color:#666}</style></head><body>'
+        + '<h1>' + title + '</h1>'
+        + '<p class="path">' + path + '</p>'
+        + '<p><strong>' + (err.message || '') + '</strong></p>'
+        + '<pre>' + (err.stack || '') + '</pre>'
+        + '</body></html>';
+    return new Response(html, { status: 500, headers: { 'Content-Type': 'text/html' } });
 }
 
 async function handler(request) {
@@ -233,11 +242,7 @@ async function handler(request) {
             initError = e;
             console.error('[BaaS] INIT FAILED:', e.message, e.stack);
         }
-        return new Response(JSON.stringify({
-            error: 'Initialization failed',
-            message: e.message,
-            stack: e.stack,
-        }, null, 2), { status: 500, headers: { 'Content-Type': 'application/json' } });
+        return errorPage('Initialization Failed', e, url.pathname);
     }
 
     try {
@@ -248,21 +253,16 @@ async function handler(request) {
         if (!match) return new Response('Not Found', { status: 404 });
 
         // Ensure lazy page files are on disk before rendering
-        // (page-parts.json and server-element are read via filesystem, not artifact store)
-        if (artifacts.ensurePageFiles) {
-            await artifacts.ensurePageFiles(match.instance.preRenderedPath);
+        const pagePath = match.instance.cachePath || match.instance.preRenderedPath;
+        if (artifacts.ensurePageFiles && pagePath) {
+            await artifacts.ensurePageFiles(pagePath);
         }
 
         const cookies = parseCookies(request.headers.get('cookie') || '');
         return fetchPageRequest(match, manifest, url, artifacts, STATIC_BASE_URL, cookies);
     } catch (e) {
         console.error('[BaaS] REQUEST FAILED:', url.pathname, e.message, e.stack);
-        return new Response(JSON.stringify({
-            error: 'Request failed',
-            path: url.pathname,
-            message: e.message,
-            stack: e.stack,
-        }, null, 2), { status: 500, headers: { 'Content-Type': 'application/json' } });
+        return errorPage('Request Failed', e, url.pathname);
     }
 }
 
@@ -367,21 +367,39 @@ export const buildEntry = makeCliCommand('build-entry')
         }
 
         const filteredPlugins = manifest.plugins.filter(
-            p => !excludePlugins.includes(p.name) && !excludePlugins.includes(p.packageName),
+            (p) => !excludePlugins.includes(p.name) && !excludePlugins.includes(p.packageName),
         );
         // wix-server-client must init before plugins that depend on it
         const plugins = sortPluginsByDeps(filteredPlugins);
-        const pluginPackages = new Set(plugins.map(p => p.packageName));
+        const pluginPackages = new Set(plugins.map((p) => p.packageName));
         const actionPackages = manifest.actions
-            .filter(a => a.isPlugin && a.packageName && pluginPackages.has(a.packageName!))
-            .map(a => a.packageName!)
+            .filter((a) => a.isPlugin && a.packageName && pluginPackages.has(a.packageName!))
+            .map((a) => a.packageName!)
             .filter((v, i, arr) => arr.indexOf(v) === i);
 
-        ctx.log(`Version: ${version}`);
-        ctx.log(`Plugins: ${plugins.map(p => p.name).join(', ')}`);
-        ctx.log(`Action packages: ${actionPackages.join(', ')}`);
+        // Collect unique server element paths from routes
+        const seSet = new Set<string>();
+        for (const route of manifest.routes) {
+            if (route.serverElementPath) seSet.add(route.serverElementPath);
+        }
+        const serverElements = [...seSet].map((rel) => ({
+            relativePath: rel,
+            absolutePath: path.join(buildDir, rel),
+        }));
 
-        const entrySource = generateEntrySource(plugins, actionPackages, collectionId, staticBaseUrl, version);
+        ctx.log(`Version: ${version}`);
+        ctx.log(`Plugins: ${plugins.map((p) => p.name).join(', ')}`);
+        ctx.log(`Action packages: ${actionPackages.join(', ')}`);
+        ctx.log(`Server elements: ${serverElements.length} routes`);
+
+        const entrySource = generateEntrySource(
+            plugins,
+            actionPackages,
+            serverElements,
+            collectionId,
+            staticBaseUrl,
+            version,
+        );
 
         const entryDir = path.dirname(outFile);
         fs.mkdirSync(entryDir, { recursive: true });
@@ -397,20 +415,26 @@ export const buildEntry = makeCliCommand('build-entry')
             '@jay-framework/compiler',
             '@jay-framework/rollup-plugin',
             '@jay-framework/vite-plugin',
-            'typescript', 'prettier', 'vite', 'lightningcss', 'fsevents',
+            'typescript',
+            'prettier',
+            'vite',
+            'lightningcss',
+            'fsevents',
         ];
         const stubFilter = new RegExp(
-            '^(' + stubs.map(s => s.replace(/[/.]/g, '\\$&')).join('|') + ')$',
+            '^(' + stubs.map((s) => s.replace(/[/.]/g, '\\$&')).join('|') + ')$',
         );
 
         const stubBuildDepsPlugin = {
             name: 'stub-build-deps',
             setup(build: any) {
                 build.onResolve({ filter: stubFilter }, (args: any) => ({
-                    path: args.path, namespace: 'stub',
+                    path: args.path,
+                    namespace: 'stub',
                 }));
                 build.onLoad({ filter: /.*/, namespace: 'stub' }, (args: any) => ({
-                    contents: generateStubContents(args.path), loader: 'js',
+                    contents: generateStubContents(args.path),
+                    loader: 'js',
                 }));
             },
         };
@@ -421,12 +445,10 @@ export const buildEntry = makeCliCommand('build-entry')
             name: 'resolve-aliases',
             setup(build: any) {
                 build.onResolve({ filter: /^@jay-framework\/production-server\/serve$/ }, () => {
-                    const pkgDir = path.dirname(require.resolve('@jay-framework/production-server/package.json'));
-                    return { path: path.join(pkgDir, 'dist/serve-index.js') };
+                    return { path: require.resolve('@jay-framework/production-server/serve') };
                 });
                 build.onResolve({ filter: /^@jay-framework\/wix-deploy\/artifact-store$/ }, () => {
-                    const pkgDir = path.dirname(require.resolve('@jay-framework/wix-deploy/package.json'));
-                    return { path: path.join(pkgDir, 'dist/artifact-store.js') };
+                    return { path: require.resolve('@jay-framework/wix-deploy/artifact-store') };
                 });
             },
         };
@@ -474,7 +496,10 @@ export const buildEntry = makeCliCommand('build-entry')
 
         if (result.metafile) {
             ctx.log(`Bundled ${Object.keys(result.metafile.inputs).length} input files`);
-            fs.writeFileSync(outFile.replace(/\.mjs$/, '.meta.json'), JSON.stringify(result.metafile));
+            fs.writeFileSync(
+                outFile.replace(/\.mjs$/, '.meta.json'),
+                JSON.stringify(result.metafile),
+            );
         }
 
         // Copy config/.wix.yaml to dist/ so wix-server-client can find it on BaaS
@@ -487,109 +512,10 @@ export const buildEntry = makeCliCommand('build-entry')
             fs.copyFileSync(wixConfigSrc, path.join(configDir, 'wix.yaml'));
             ctx.log(`Copied config/.wix.yaml to dist/config/`);
         } else {
-            ctx.warn(`config/.wix.yaml not found — wix-server-client init will fail on BaaS unless WIX_API_KEY env vars are set`);
+            ctx.warn(
+                `config/.wix.yaml not found — wix-server-client init will fail on BaaS unless WIX_API_KEY env vars are set`,
+            );
         }
-
-        // Copy @jay-framework/* runtime dependencies to dist/node_modules/
-        // These are needed for dynamic import() in page-parts resolution
-        const projectPkg = JSON.parse(fs.readFileSync(path.join(ctx.projectRoot, 'package.json'), 'utf8'));
-        const devOnlyPackages = new Set([
-            '@jay-framework/jay-cli', '@jay-framework/jay-stack-cli',
-            '@jay-framework/wix-deploy', '@jay-framework/wix-dev-environment',
-        ]);
-        const copiedPackages = new Set<string>();
-        const depRequire = createRequire(path.join(ctx.projectRoot, 'package.json'));
-
-        function resolvePackageDir(pkgName: string): string | null {
-            try {
-                const mainPath = depRequire.resolve(pkgName);
-                let pkgDir = path.dirname(mainPath);
-                while (pkgDir !== '/' && !fs.existsSync(path.join(pkgDir, 'package.json'))) {
-                    pkgDir = path.dirname(pkgDir);
-                }
-                if (pkgDir === '/') return null;
-                return pkgDir;
-            } catch {
-                return null;
-            }
-        }
-
-        function copyPackage(pkgName: string) {
-            if (copiedPackages.has(pkgName) || devOnlyPackages.has(pkgName)) return;
-            copiedPackages.add(pkgName);
-
-            const pkgDir = resolvePackageDir(pkgName);
-            if (!pkgDir) {
-                ctx.warn(`Could not resolve ${pkgName}`);
-                return;
-            }
-
-            try {
-                const destDir = path.join(entryDir, 'node_modules', ...pkgName.split('/'));
-                fs.mkdirSync(destDir, { recursive: true });
-
-                const pkgJsonPath = path.join(pkgDir, 'package.json');
-                const depPkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
-                fs.copyFileSync(pkgJsonPath, path.join(destDir, 'package.json'));
-
-                // Copy exported files from package.json exports + main
-                const filesToCopy = new Set<string>();
-
-                // Collect paths from exports field
-                function collectExportPaths(obj: any) {
-                    if (typeof obj === 'string') {
-                        filesToCopy.add(obj);
-                    } else if (obj && typeof obj === 'object') {
-                        for (const value of Object.values(obj)) {
-                            collectExportPaths(value);
-                        }
-                    }
-                }
-                if (depPkgJson.exports) collectExportPaths(depPkgJson.exports);
-                if (depPkgJson.main) filesToCopy.add(depPkgJson.main);
-                if (depPkgJson.module) filesToCopy.add(depPkgJson.module);
-                if (depPkgJson.types) filesToCopy.add(depPkgJson.types);
-
-                for (const relPath of filesToCopy) {
-                    const src = path.join(pkgDir, relPath);
-                    if (fs.existsSync(src)) {
-                        const dest = path.join(destDir, relPath);
-                        fs.mkdirSync(path.dirname(dest), { recursive: true });
-                        if (fs.statSync(src).isDirectory()) {
-                            fs.cpSync(src, dest, { recursive: true });
-                        } else {
-                            fs.copyFileSync(src, dest);
-                        }
-                    }
-                }
-
-                // Fallback: if no exports found, copy common output dirs
-                if (filesToCopy.size === 0) {
-                    for (const dir of ['dist', 'build', 'es', 'cjs']) {
-                        const src = path.join(pkgDir, dir);
-                        if (fs.existsSync(src) && fs.statSync(src).isDirectory()) {
-                            fs.cpSync(src, path.join(destDir, dir), { recursive: true });
-                        }
-                    }
-                }
-
-                // Recursively copy ALL dependencies
-                for (const dep of Object.keys(depPkgJson.dependencies || {})) {
-                    copyPackage(dep);
-                }
-            } catch (e: any) {
-                ctx.warn(`Could not copy ${pkgName}: ${e.message?.substring(0, 100)}`);
-            }
-        }
-
-        for (const dep of Object.keys(projectPkg.dependencies || {})) {
-            if (dep.startsWith('@jay-framework/')) {
-                copyPackage(dep);
-            }
-        }
-
-        const distSize = getDirectorySize(entryDir, fs, path);
-        ctx.log(`Copied ${copiedPackages.size} packages to dist/node_modules/ (total dist: ${(distSize / 1024 / 1024).toFixed(1)} MB)`);
 
         // Generate serve.mjs for local testing
         const serveFile = path.join(entryDir, 'serve.mjs');

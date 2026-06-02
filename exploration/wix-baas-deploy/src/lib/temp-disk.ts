@@ -35,7 +35,7 @@ export function handleTempDisk(url: URL): Response {
 
         if (action === 'list') {
             const files = fs.existsSync(CACHE_DIR)
-                ? fs.readdirSync(CACHE_DIR).map(f => ({
+                ? fs.readdirSync(CACHE_DIR).map((f) => ({
                       name: f,
                       size: fs.statSync(path.join(CACHE_DIR, f)).size,
                   }))
