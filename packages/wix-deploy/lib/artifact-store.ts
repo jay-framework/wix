@@ -16,45 +16,17 @@
  */
 
 import type { WixClient } from '@wix/sdk';
+import type {
+    ArtifactStore,
+    RouteManifest,
+    CacheEntry,
+    ServerElementModule,
+} from '@jay-framework/production-server/serve';
 import { items } from '@wix/data';
 import fs from 'node:fs';
 import path from 'node:path';
 
-// ArtifactStore interface from @jay-framework/production-server (DL#143).
-export interface RouteManifest {
-    version: number;
-    buildTimestamp: string;
-    sourceHash: string;
-    projectRoot: string;
-    sharedManifest: Record<string, string>;
-    routes: any[];
-    actions: any[];
-    plugins: any[];
-}
-
-export interface PreRenderedEntry {
-    content: string;
-    slowViewState: object;
-    carryForward: object;
-}
-
-export interface ServerElementModule {
-    renderToStream: (vs: object, ctx: any) => void;
-}
-
-export interface CacheEntry {
-    slowViewState: object;
-    carryForward: object;
-}
-
-export interface ArtifactStore {
-    readManifest(): Promise<RouteManifest>;
-    readCacheData(relativePath: string): Promise<CacheEntry>;
-    loadServerElement(relativePath: string): Promise<ServerElementModule>;
-    loadModule(modulePath: string, local?: boolean): Promise<any>;
-    getAssetPath(relativePath: string): string;
-    getBuildDir(): string;
-}
+export type { ArtifactStore, RouteManifest, CacheEntry, ServerElementModule };
 
 // ============================================================================
 // Data collection item schema
@@ -296,6 +268,7 @@ export class WixDataArtifactStore implements ArtifactStore {
     private async fetchFromCollection(relativePath: string): Promise<string> {
         console.log(`[WixDataArtifactStore] Fetching: v${this.version}/${relativePath}`);
 
+        const t0 = new Date().getTime();
         const id = makeItemId(this.version, relativePath);
         try {
             const item = (await this.dataClient.items.get(
@@ -303,7 +276,10 @@ export class WixDataArtifactStore implements ArtifactStore {
                 id,
             )) as BackendFileItem | null;
             if (item?.content) {
+                const t1 = new Date().getTime();
                 this.writeToCache(relativePath, item.content);
+                const t2 = new Date().getTime();
+                console.log(`[WixDataArtifactStore] Fetched - id: v${this.version}/${relativePath}, wix data: ${t1-t0}, save: ${t2-t1}`);
                 return item.content;
             }
         } catch {
@@ -319,7 +295,10 @@ export class WixDataArtifactStore implements ArtifactStore {
 
         if (result.items.length > 0) {
             const item = result.items[0] as BackendFileItem;
+            const t1 = new Date().getTime();
             this.writeToCache(relativePath, item.content);
+            const t2 = new Date().getTime();
+            console.log(`[WixDataArtifactStore] Fetched - query: v${this.version}/${relativePath}, wix data: ${t1-t0}, save: ${t2-t1}`);
             return item.content;
         }
 

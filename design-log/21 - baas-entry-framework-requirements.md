@@ -161,6 +161,32 @@ The entry builder already generates these `import * as pluginModule_N` statement
 
 **Impact:** Eliminates the 400+ MB `dist/node_modules/` copy. The entry.mjs (~2.4 MB) becomes fully self-contained with its bundled modules.
 
+### R7: URL-Safe Frontend Asset Paths
+
+The production build outputs frontend files with route parameter brackets in the directory names:
+
+```
+build/v1/frontend/pages/products/[slug]/route.hydrate-CsvY07HH.js
+build/v1/frontend/pages/products/[slug]/route.client-BEzP61UL.js
+build/v1/frontend/pages/products/[slug]/route.css
+```
+
+These paths appear in the route manifest (`routeHydratePath`, `routeClientBundlePath`, `routeCssPath`) and are used to generate `<link>` and `<script>` tags in the rendered HTML. The browser requests them from the CDN.
+
+**Problem:** `[` and `]` are not valid URL characters (RFC 3986). CDNs and proxies reject requests containing them — Wix CDN returns 400 Bad Request. This affects any parameterized route (`[slug]`, `[id]`, etc.) and is not specific to Wix; any CDN deployment would hit this.
+
+Static routes work fine (`/products/ceramic-flower-vase/route.css`). Only parameterized routes are affected.
+
+**Requirement:** The build should use URL-safe directory names for frontend output. Options:
+
+- (a) URL-encode the brackets: `%5Bslug%5D` — standard, CDNs decode automatically
+- (b) Use a different convention: `_slug_`, `__slug__`, `$slug` — simpler but non-standard
+- (c) Flatten the path: hash-based or route-index-based naming (`route-2/route.css`)
+
+Option (a) is safest — it's the standard encoding and CDNs handle it transparently. The manifest paths and import map entries should match.
+
+**Scope:** This affects the build output only. The route matching logic uses `pattern` (e.g., `/products/[slug]`) which is internal and never appears in URLs. Only the `routeHydratePath`, `routeClientBundlePath`, `routeCssPath`, and the actual files in `build/v1/frontend/` need the encoding.
+
 ## How entry.mjs Would Look
 
 With these requirements met:
