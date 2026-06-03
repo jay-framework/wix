@@ -33,7 +33,10 @@ vi.mock('@jay-framework/stack-server-runtime', async (importOriginal) => {
     };
 });
 
-function makeCtx(projectRoot: string, overrides: Partial<PluginSetupContext> = {}): PluginSetupContext {
+function makeCtx(
+    projectRoot: string,
+    overrides: Partial<PluginSetupContext> = {},
+): PluginSetupContext {
     return {
         pluginName: 'wix-stores',
         projectRoot,
@@ -73,7 +76,10 @@ describe('setupWixStores add-menu catalog (Design Log #20 W2)', () => {
     beforeEach(() => {
         projectRoot = mkdtempSync(join(tmpdir(), 'wix-stores-setup-'));
         mkdirSync(join(projectRoot, 'config'), { recursive: true });
-        writeFileSync(join(projectRoot, 'config/.wix-stores.yaml'), 'urls:\n  product: "/products/{slug}"\n');
+        writeFileSync(
+            join(projectRoot, 'config/.wix-stores.yaml'),
+            'urls:\n  product: "/products/{slug}"\n',
+        );
     });
 
     afterEach(() => {

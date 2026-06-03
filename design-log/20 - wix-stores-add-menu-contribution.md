@@ -22,12 +22,12 @@ AIditor reads `agent-kit/aiditor/add-menu/*.yaml` on plugin setup. Extend existi
 
 ### Items (M19.1)
 
-| Contract | `id` | Notes |
-| --- | --- | --- |
-| `product-search` | `wix-stores:product-search` | Instance props common; optional params overlap with product-page — Rec #2 excludes optional keys (aiditor A7) |
-| `product-page` | `wix-stores:product-page` | **Q8:** requires `agent-kit/materialized-contracts/wix-stores/product-page.jay-contract` after **wix-stores setup** (dynamic contract materialization) |
-| `related-products` | `wix-stores:related-products` | |
-| `category-list` | `wix-stores:category-list` | |
+| Contract           | `id`                          | Notes                                                                                                                                                  |
+| ------------------ | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `product-search`   | `wix-stores:product-search`   | Instance props common; optional params overlap with product-page — Rec #2 excludes optional keys (aiditor A7)                                          |
+| `product-page`     | `wix-stores:product-page`     | **Q8:** requires `agent-kit/materialized-contracts/wix-stores/product-page.jay-contract` after **wix-stores setup** (dynamic contract materialization) |
+| `related-products` | `wix-stores:related-products` |                                                                                                                                                        |
+| `category-list`    | `wix-stores:category-list`    |                                                                                                                                                        |
 
 **Not in package:** `category-page` (removed from plugin.yaml).
 
@@ -41,11 +41,11 @@ AIditor reads `agent-kit/aiditor/add-menu/*.yaml` on plugin setup. Extend existi
 
 ## Task index
 
-| ID | Title | Priority |
-| --- | --- | --- |
-| W1 | Template + setup writer | P0 |
-| W2 | Tests (fixture compare, no aiditor import) | P0 |
-| W3 | Thumbnails | P2 |
+| ID  | Title                                      | Priority |
+| --- | ------------------------------------------ | -------- |
+| W1  | Template + setup writer                    | P0       |
+| W2  | Tests (fixture compare, no aiditor import) | P0       |
+| W3  | Thumbnails                                 | P2       |
 
 **Parallel with:** aiditor A1 (schema/fixtures). **Not blocked on** aiditor A3.
 
@@ -102,14 +102,14 @@ Defer until assets available.
 
 ## Verification
 
-| # | Check |
-| --- | --- |
-| 1 | setup without aiditor → yaml exists |
-| 2 | Field checks per W2 (not aiditor package import) |
-| 3 | Add Menu Store items after install (aiditor A11 on jay-golf) |
-| 4 | setup --force idempotent |
-| 5 | Uninstalled package → items hidden (aiditor filter) |
-| 6 | materialized product-page contract present after setup (Q8 smoke) |
+| #   | Check                                                             |
+| --- | ----------------------------------------------------------------- |
+| 1   | setup without aiditor → yaml exists                               |
+| 2   | Field checks per W2 (not aiditor package import)                  |
+| 3   | Add Menu Store items after install (aiditor A11 on jay-golf)      |
+| 4   | setup --force idempotent                                          |
+| 5   | Uninstalled package → items hidden (aiditor filter)               |
+| 6   | materialized product-page contract present after setup (Q8 smoke) |
 
 ## References
 

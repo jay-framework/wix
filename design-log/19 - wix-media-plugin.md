@@ -260,8 +260,8 @@ name: upload-public
 description: Upload local public/ files to Wix Media Manager
 
 inputSchema:
-  folder?: string    # Subfolder of public/ to upload (default: all)
-  dryRun?: boolean   # List files that would be uploaded without uploading
+  folder?: string # Subfolder of public/ to upload (default: all)
+  dryRun?: boolean # List files that would be uploaded without uploading
 ```
 
 #### rebuild-index.jay-command
@@ -279,11 +279,11 @@ import { WIX_MEDIA_SERVICE } from '../services/wix-media-service-marker';
 import { CONSOLE_CONTEXT } from '@jay-framework/stack-server-runtime';
 
 export const uploadPublic = makeCliCommand('upload-public')
-    .withServices(WIX_MEDIA_SERVICE, CONSOLE_CONTEXT)
-    .withHandler(async (mediaService, console, args) => {
-        const { projectRoot, publicFolder } = console;
-        // scan publicFolder, upload to Wix, regenerate index
-    });
+  .withServices(WIX_MEDIA_SERVICE, CONSOLE_CONTEXT)
+  .withHandler(async (mediaService, console, args) => {
+    const { projectRoot, publicFolder } = console;
+    // scan publicFolder, upload to Wix, regenerate index
+  });
 ```
 
 #### Invocation

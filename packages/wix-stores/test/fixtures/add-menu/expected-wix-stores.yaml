@@ -4,7 +4,7 @@ items:
     category: Store
     subCategory: Components
     pluginName: wix-stores
-    packageName: "@jay-framework/wix-stores"
+    packageName: '@jay-framework/wix-stores'
     thumbnail: thumbnails/wix-stores/product-search.png
     prompt: |
       Use headless component @jay-framework/wix-stores / contract product-search.
@@ -17,7 +17,7 @@ items:
     category: Store
     subCategory: Components
     pluginName: wix-stores
-    packageName: "@jay-framework/wix-stores"
+    packageName: '@jay-framework/wix-stores'
     thumbnail: thumbnails/wix-stores/product-page.png
     prompt: |
       Use headless component @jay-framework/wix-stores / contract product-page.
@@ -30,7 +30,7 @@ items:
     category: Store
     subCategory: Components
     pluginName: wix-stores
-    packageName: "@jay-framework/wix-stores"
+    packageName: '@jay-framework/wix-stores'
     thumbnail: thumbnails/wix-stores/related-products.png
     prompt: |
       Use headless component @jay-framework/wix-stores / contract related-products.
@@ -44,7 +44,7 @@ items:
     category: Store
     subCategory: Components
     pluginName: wix-stores
-    packageName: "@jay-framework/wix-stores"
+    packageName: '@jay-framework/wix-stores'
     thumbnail: thumbnails/wix-stores/category-list.png
     prompt: |
       Use headless component @jay-framework/wix-stores / contract category-list.
