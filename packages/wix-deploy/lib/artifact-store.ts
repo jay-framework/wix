@@ -23,6 +23,7 @@ import type {
     ServerElementModule,
 } from '@jay-framework/production-server/serve';
 import { items } from '@wix/data';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -43,7 +44,7 @@ export interface BackendFileItem {
 }
 
 export function makeItemId(version: number, relativePath: string): string {
-    return `v${version}__${relativePath.replace(/[/\\]/g, '__')}`;
+    return crypto.createHash('sha256').update(`v${version}/${relativePath}`).digest('hex').slice(0, 32);
 }
 
 // ============================================================================
@@ -105,6 +106,11 @@ export class WixDataArtifactStore implements ArtifactStore {
         }
     }
 
+    async readPagePartsConfig(relativePath: string): Promise<any> {
+        const content = await this.ensureFile(relativePath);
+        return JSON.parse(content);
+    }
+
     async loadServerElement(relativePath: string): Promise<ServerElementModule> {
         return this.loadModule(relativePath, true);
     }
@@ -163,24 +169,6 @@ export class WixDataArtifactStore implements ArtifactStore {
         }
 
         console.log(`[WixDataArtifactStore] Loaded ${totalLoaded} eager files`);
-    }
-
-    // ========================================================================
-    // Lazy page file loading
-    // ========================================================================
-
-    /**
-     * Ensure the files needed to render a page are on disk:
-     * 1. cache.json (per instance — slow view state + carry forward)
-     * 2. page-parts.json (per route, shared by all instances)
-     * 3. route.server-element.js (per route, shared by all instances)
-     */
-    async ensurePageFiles(cachePath: string): Promise<void> {
-        const dir = path.dirname(cachePath);
-
-        const filesToEnsure = [cachePath, path.join(dir, 'page-parts.json')];
-
-        await Promise.all(filesToEnsure.map((f) => this.ensureFile(f)));
     }
 
     // ========================================================================
@@ -266,43 +254,21 @@ export class WixDataArtifactStore implements ArtifactStore {
     }
 
     private async fetchFromCollection(relativePath: string): Promise<string> {
-        console.log(`[WixDataArtifactStore] Fetching: v${this.version}/${relativePath}`);
-
-        const t0 = new Date().getTime();
         const id = makeItemId(this.version, relativePath);
-        try {
-            const item = (await this.dataClient.items.get(
-                this.collectionId,
-                id,
-            )) as BackendFileItem | null;
-            if (item?.content) {
-                const t1 = new Date().getTime();
-                this.writeToCache(relativePath, item.content);
-                const t2 = new Date().getTime();
-                console.log(`[WixDataArtifactStore] Fetched - id: v${this.version}/${relativePath}, wix data: ${t1-t0}, save: ${t2-t1}`);
-                return item.content;
-            }
-        } catch {
-            /* get by ID failed — try query */
+        const t0 = Date.now();
+        const item = (await this.dataClient.items.get(
+            this.collectionId,
+            id,
+        )) as BackendFileItem | null;
+        const t1 = Date.now();
+
+        if (!item?.content) {
+            throw new Error(`File not found in data collection: v${this.version}/${relativePath} (id: ${id})`);
         }
 
-        const result = await this.dataClient.items
-            .query(this.collectionId)
-            .eq('path', relativePath)
-            .eq('version', this.version)
-            .limit(1)
-            .find();
-
-        if (result.items.length > 0) {
-            const item = result.items[0] as BackendFileItem;
-            const t1 = new Date().getTime();
-            this.writeToCache(relativePath, item.content);
-            const t2 = new Date().getTime();
-            console.log(`[WixDataArtifactStore] Fetched - query: v${this.version}/${relativePath}, wix data: ${t1-t0}, save: ${t2-t1}`);
-            return item.content;
-        }
-
-        throw new Error(`File not found in data collection: v${this.version}/${relativePath}`);
+        this.writeToCache(relativePath, item.content);
+        console.log(`[WixDataArtifactStore] Fetched v${this.version}/${relativePath} (${t1 - t0}ms)`);
+        return item.content;
     }
 
     private writeToCache(relativePath: string, content: string): void {

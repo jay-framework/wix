@@ -252,12 +252,6 @@ async function handler(request) {
         const match = matchRequest(manifest, url.pathname);
         if (!match) return new Response('Not Found', { status: 404 });
 
-        // Ensure lazy page files are on disk before rendering
-        const pagePath = match.instance.cachePath || match.instance.preRenderedPath;
-        if (artifacts.ensurePageFiles && pagePath) {
-            await artifacts.ensurePageFiles(pagePath);
-        }
-
         const cookies = parseCookies(request.headers.get('cookie') || '');
         return fetchPageRequest(match, manifest, url, artifacts, STATIC_BASE_URL, cookies);
     } catch (e) {
