@@ -9,11 +9,16 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import yaml from 'js-yaml';
+// @ts-ignore — no type declarations
+import { getService } from '@jay-framework/stack-server-runtime';
+import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
+import { items } from '@wix/data';
 import { DEFAULT_COLLECTION_ID } from './constants.js';
 
 interface SetupContext {
     configDir: string;
     projectRoot: string;
+    initError?: Error;
 }
 
 interface SetupResult {
@@ -23,6 +28,13 @@ interface SetupResult {
 }
 
 export async function setupWixDeploy(ctx: SetupContext): Promise<SetupResult> {
+    if (ctx.initError) {
+        return {
+            status: 'error',
+            message: `Service init failed: ${ctx.initError.message}`,
+        };
+    }
+
     const wixConfigPath = path.join(ctx.projectRoot, 'wix.config.json');
     const wixYamlPath = path.join(ctx.configDir, '.wix.yaml');
 
@@ -87,9 +99,29 @@ export async function setupWixDeploy(ctx: SetupContext): Promise<SetupResult> {
         }
     }
 
+    // Validate data collection exists
+    let collectionOk = false;
+    try {
+        const wixClient = getService(WIX_CLIENT_SERVICE);
+        if (wixClient) {
+            const dataClient = (wixClient as any).use({ items });
+            await dataClient.items
+                .query(DEFAULT_COLLECTION_ID)
+                .limit(1)
+                .find();
+            collectionOk = true;
+        }
+    } catch {
+        return {
+            status: 'needs-config',
+            configCreated,
+            message: `Data collection "${DEFAULT_COLLECTION_ID}" not found. Create it in the Wix dashboard with fields: path (text), content (text), fileType (text), sizeBytes (number), category (text), version (text)`,
+        };
+    }
+
     return {
         status: 'configured',
         configCreated,
-        message: `Deploy target: wix.config.json (appId: ${appId.slice(0, 8)}...). Data collection: ${DEFAULT_COLLECTION_ID}`,
+        message: `Deploy target: wix.config.json (appId: ${appId.slice(0, 8)}...). Collection: ${DEFAULT_COLLECTION_ID} ${collectionOk ? '✓' : ''}`,
     };
 }

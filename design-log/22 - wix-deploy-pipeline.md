@@ -195,18 +195,97 @@ Supports two modes:
 - **Local files** (default): `JAY_BACKEND_DIR` points at `build/v1/backend/`, uses `FilesystemArtifactStore`
 - **Wix data**: no `JAY_BACKEND_DIR`, uses `WixDataArtifactStore` — tests the full BaaS code path locally
 
-## Implementation Plan
+## Implementation Results (2026-06-04)
 
-### Phase 1: Quick Wins
-- Move `serve.mjs` generation to project root
-- Combine steps 2-4 into a single `wix-deploy/deploy` command
+### Phase 1: Unified Deploy — DONE
 
-### Phase 2: Setup Command
-- Create `wix-deploy/setup` command
-- Auto-create data collection
-- Guide API key creation
-- Generate `.wix.yaml`
+**Single `wix-deploy/deploy` command** replaces the 3-step sequence. Internally:
+1. Bundles `entry.mjs` (sequential — must complete before deploy)
+2. Uploads backend data to Wix data collection + deploys to BaaS+CDN (parallel)
 
-### Phase 3: Validation
-- `wix-stores` setup lifecycle: validate Stores app is installed
-- `wix-deploy` setup lifecycle: validate data collection exists
+CLI output is clean with prefixed progress from each parallel step:
+```
+[deploy] Bundling entry.mjs...
+[deploy] Bundled entry.mjs (2.5 MB) in 4.2s
+[deploy] Uploading...
+[deploy]   data | 25 files (0.1 MB)
+[deploy]   data | 25/25 files uploaded
+[deploy]   baas | 28 client + 4 server files (3.6 MB)
+[deploy]   baas | Creating deployment...
+[deploy]   baas | Uploading server files...
+[deploy]   baas | Registering + releasing...
+[deploy]   baas | Released → https://example.wix-site-host.com
+
+[deploy] Done in 17.8s (bundle 4.2s + deploy 13.6s)
+[deploy] Entry: 2.5 MB | Backend files: 25
+[deploy] URL: https://example.wix-site-host.com
+```
+
+Sub-commands (`build-entry`, `upload-backend`, `deploy-baas`) still exist for debugging.
+
+**`serve.mjs` moved to project root** — no longer in `dist/`, so BaaS won't upload it.
+
+**`wix.config.json` simplified** — only `appId` and `siteId`. No `outputDirectory` needed since we use `ctx.build.frontend` from the framework (version-aware) and don't use the Wix CLI for deployment.
+
+### Phase 2: Setup Hook — DONE
+
+**`wix-deploy` setup hook** registered in `plugin.yaml`, runs during `jay-stack-cli setup`:
+- Reads `appId` (= `clientId`) and `siteId` from `wix.config.json`
+- Updates `config/.wix.yaml` only if values are still placeholders — won't overwrite existing credentials
+- Validates API key is configured
+- Reports deploy target and data collection name
+
+Output:
+```
+📦 wix-deploy
+   ✅ Services verified
+   Deploy target: wix.config.json (appId: 85dad238...). Data collection: jay-backend-files
+```
+
+### Version Format Change
+
+Version changed from `number` to `string` (semver). All code updated:
+- `build-metadata.json`: `"version": "2.0.0"` (was `1`)
+- `makeItemId`: accepts `string` version
+- `WixDataArtifactStore`: `version: string`
+- Generated entry: `VERSION = '2.0.0'` (was `parseInt(...)`)
+- Data collection items keyed as `v2.0.0/path` in hash
+
+Framework also updated: `ctx.build.backend` resolves to `build/v2.0.0/backend` (was hardcoded `build/v1`).
+
+### Per-Deploy Version Bump — DONE
+
+The deploy command bumps the patch version in `build-metadata.json` before bundling:
+- Build produces `2.0.0` → first deploy bumps to `2.0.1`, second to `2.0.2`, etc.
+- The bumped version is baked into entry.mjs and used for data collection item keys
+- Running BaaS instances continue serving the previous version until cold-start with the new entry.mjs
+- Data collection holds items for both versions — no disruption during deploy
+
+### Setup: Collection Validation — DONE
+
+The `wix-deploy` setup hook now validates the data collection exists by querying it. If missing, reports the collection name and required fields. Uses the `WIX_CLIENT_SERVICE` from the global service registry (available after `wix-server-client` init).
+
+### Remaining Deviations
+
+**No `wix-deploy/serve` command** — `serve.mjs` is still generated as a side-effect of `build-entry`. Could be separated later but low priority.
+
+**Data collection creation not automated** — the setup hook validates the collection exists but doesn't auto-create it. Requires manual creation in the Wix dashboard.
+
+### Current Deploy Sequence
+
+```bash
+# One-time setup
+npm create @wix/new@latest init         # creates wix.config.json
+# manually: add API key to config/.wix.yaml
+# manually: create jay-backend-files collection
+jay-stack-cli setup                      # validates everything
+
+# Day-to-day
+npm run build:production                 # jay-stack build
+npm run deploy                           # jay-stack-cli run wix-deploy/deploy
+```
+
+### Validated On
+
+- `store-light` — deployed to https://store-ligh-cecae80c-yoav68.wix-site-host.com
+- `studio-store` — deployed successfully with version 2.0.0

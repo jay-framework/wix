@@ -149,10 +149,7 @@ export const deployBaas = makeCliCommand('deploy-baas')
             }),
         });
 
-        const frontendDir = path.resolve(
-            ctx.projectRoot,
-            wixConfig.site?.outputDirectory?.client || 'build/v1/frontend',
-        );
+        const frontendDir = ctx.build.frontend;
         const serverDir = distDir;
 
         const clientFiles = fs.existsSync(frontendDir) ? collectFiles(frontendDir) : [];

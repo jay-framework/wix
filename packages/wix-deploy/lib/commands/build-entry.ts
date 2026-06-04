@@ -83,7 +83,7 @@ function generateEntrySource(
     serverElements: Array<{ relativePath: string; absolutePath: string }>,
     collectionId: string,
     staticBaseUrl: string,
-    version: number,
+    version: string,
 ): string {
     const pluginImports = plugins.map(
         (p, i) => `import { init as pluginInit_${i} } from '${p.packageName}';`,
@@ -136,7 +136,7 @@ ${registryEntries.join('\n')}
 // Configuration
 const COLLECTION_ID = process.env.JAY_COLLECTION_ID || '${collectionId}';
 const STATIC_BASE_URL = process.env.STATIC_BASE_URL || '${staticBaseUrl}';
-const VERSION = parseInt(process.env.JAY_BUILD_VERSION || '${version}', 10);
+const VERSION = process.env.JAY_BUILD_VERSION || '${version}';
 const LOCAL_BACKEND_DIR = process.env.JAY_BACKEND_DIR || '';
 
 let artifacts;
@@ -354,10 +354,10 @@ export const buildEntry = makeCliCommand('build-entry')
 
         // Read version from build-metadata.json
         const metadataPath = path.join(buildDir, 'build-metadata.json');
-        let version = 1;
+        let version = '1.0.0';
         if (fs.existsSync(metadataPath)) {
             const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
-            version = metadata.version || 1;
+            version = String(metadata.version || '1.0.0');
         }
 
         const filteredPlugins = manifest.plugins.filter(

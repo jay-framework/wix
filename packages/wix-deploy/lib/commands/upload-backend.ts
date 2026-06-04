@@ -91,10 +91,10 @@ export const uploadBackend = makeCliCommand('upload-backend')
 
             // Read version from build-metadata.json
             const metadataPath = path.join(buildDir, 'build-metadata.json');
-            let version = 1;
+            let version = '1.0.0';
             if (fs.existsSync(metadataPath)) {
                 const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
-                version = metadata.version || 1;
+                version = String(metadata.version || '1.0.0');
             }
 
             if (dryRun) ctx.log('DRY RUN — no uploads');

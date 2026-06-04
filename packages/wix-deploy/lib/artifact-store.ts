@@ -7,7 +7,7 @@
  *
  * Data collection schema:
  *   _id:       string  — "{version}__{path}" (unique key)
- *   version:   number  — build version
+ *   version:   string  — build version (semver)
  *   path:      string  — relative file path within backend dir
  *   content:   string  — file content (text)
  *   fileType:  string  — extension (js, json)
@@ -35,7 +35,7 @@ export type { ArtifactStore, RouteManifest, CacheEntry, ServerElementModule };
 
 export interface BackendFileItem {
     _id: string;
-    version: number;
+    version: string;
     path: string;
     content: string;
     fileType: string;
@@ -43,7 +43,7 @@ export interface BackendFileItem {
     category: 'eager' | 'lazy';
 }
 
-export function makeItemId(version: number, relativePath: string): string {
+export function makeItemId(version: string, relativePath: string): string {
     return crypto.createHash('sha256').update(`v${version}/${relativePath}`).digest('hex').slice(0, 32);
 }
 
@@ -55,7 +55,7 @@ export interface WixDataArtifactStoreOptions {
     wixClient: WixClient;
     collectionId: string;
     cacheDir: string;
-    version: number;
+    version: string;
     moduleRegistry?: Record<string, any>;
 }
 
@@ -65,7 +65,7 @@ export interface WixDataArtifactStoreOptions {
 
 export class WixDataArtifactStore implements ArtifactStore {
     readonly collectionId: string;
-    readonly version: number;
+    readonly version: string;
     private readonly cacheDir: string;
     private readonly dataClient: ReturnType<WixClient['use']>;
     private readonly moduleRegistry: Record<string, any>;
