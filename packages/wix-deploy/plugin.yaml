@@ -1,5 +1,8 @@
 name: wix-deploy
 
+setup:
+  handler: setupWixDeploy
+
 commands:
   - name: deploy
     command: deploy.jay-command

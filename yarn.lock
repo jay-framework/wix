@@ -7103,6 +7103,7 @@ __metadata:
     "@jay-framework/jay-cli": "npm:^0.17.4"
     "@jay-framework/jay-stack-cli": "npm:^0.17.4"
     "@jay-framework/wix-cart": "workspace:^"
+    "@jay-framework/wix-deploy": "workspace:^"
     "@jay-framework/wix-dev-environment": "workspace:^"
     "@jay-framework/wix-server-client": "workspace:^"
     "@jay-framework/wix-stores": "workspace:^"
