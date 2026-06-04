@@ -97,9 +97,6 @@ export const uploadBackend = makeCliCommand('upload-backend')
                 version = metadata.version || 1;
             }
 
-            ctx.log(`Backend dir: ${buildDir}`);
-            ctx.log(`Collection: ${collectionId}`);
-            ctx.log(`Version: ${version}`);
             if (dryRun) ctx.log('DRY RUN — no uploads');
 
             if (!fs.existsSync(buildDir)) {
@@ -108,12 +105,9 @@ export const uploadBackend = makeCliCommand('upload-backend')
             }
 
             const entries = scanFileEntries(buildDir, '', fs, path);
-            const eager = entries.filter((f) => f.category === 'eager');
-            const lazy = entries.filter((f) => f.category === 'lazy');
             const totalSize = entries.reduce((sum, f) => sum + f.sizeBytes, 0);
 
-            ctx.log(`Found ${entries.length} files (${eager.length} eager, ${lazy.length} lazy)`);
-            ctx.log(`Total size: ${(totalSize / 1024 / 1024).toFixed(1)} MB`);
+            ctx.log(`${entries.length} files (${(totalSize / 1024 / 1024).toFixed(1)} MB)`);
 
             if (dryRun) {
                 for (const f of entries.slice(0, 20)) {
@@ -133,10 +127,10 @@ export const uploadBackend = makeCliCommand('upload-backend')
             });
 
             const batches = buildBatches(entries);
-            ctx.log(`Uploading in ${batches.length} batches`);
 
             let uploaded = 0;
             let errors = 0;
+            let lastReported = 0;
 
             for (let i = 0; i < batches.length; i++) {
                 const batch = batches[i];
@@ -149,12 +143,14 @@ export const uploadBackend = makeCliCommand('upload-backend')
                 const count = await store.writeFiles(files);
                 uploaded += count;
                 errors += batch.length - count;
-                ctx.log(
-                    `  Batch ${i + 1}/${batches.length}: ${count}/${batch.length} files (${uploaded}/${entries.length})`,
-                );
+
+                if (uploaded - lastReported >= 100 || i === batches.length - 1) {
+                    ctx.log(`${uploaded}/${entries.length} files uploaded`);
+                    lastReported = uploaded;
+                }
             }
 
-            ctx.log(`Done: ${uploaded} uploaded, ${errors} errors`);
+            if (errors > 0) ctx.log(`${errors} errors`);
             return { success: errors === 0, uploaded, errors, version };
         },
     );

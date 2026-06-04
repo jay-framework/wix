@@ -140,9 +140,6 @@ export const deployBaas = makeCliCommand('deploy-baas')
             ctx.log('Token refreshed');
         }
 
-        ctx.log(`App ID: ${appId}`);
-        ctx.log(`Site ID: ${siteId}`);
-
         const httpClient = createHttpClient({
             baseURL: 'https://manage.wix.com',
             getAppToken: async () => accessToken,
@@ -152,22 +149,18 @@ export const deployBaas = makeCliCommand('deploy-baas')
             }),
         });
 
-        // Collect files: client (statics for CDN) and server (backend for BaaS worker)
         const frontendDir = path.resolve(
             ctx.projectRoot,
             wixConfig.site?.outputDirectory?.client || 'build/v1/frontend',
         );
         const serverDir = distDir;
 
-        ctx.log(`Frontend dir: ${frontendDir}`);
-        ctx.log(`Server dir: ${serverDir}`);
-
         const clientFiles = fs.existsSync(frontendDir) ? collectFiles(frontendDir) : [];
         const serverFiles = collectFiles(serverDir);
         const files = [...clientFiles, ...serverFiles];
         const totalSize = files.reduce((sum, f) => sum + f.size, 0);
         ctx.log(
-            `Found ${clientFiles.length} client + ${serverFiles.length} server = ${files.length} files (${(totalSize / 1024 / 1024).toFixed(1)} MB)`,
+            `${clientFiles.length} client + ${serverFiles.length} server files (${(totalSize / 1024 / 1024).toFixed(1)} MB)`,
         );
 
         if (dryRun) {
@@ -177,8 +170,7 @@ export const deployBaas = makeCliCommand('deploy-baas')
             return { success: true, fileCount: files.length, totalSize };
         }
 
-        // Step 1: Create deployment — client files as statics
-        ctx.log(`Creating deployment for app ${appId}...`);
+        ctx.log('Creating deployment...');
         const staticFilesMetadata = clientFiles.map((f) => ({
             path: f.path,
             hash: f.hash,
@@ -197,22 +189,10 @@ export const deployBaas = makeCliCommand('deploy-baas')
         const uploadToken = deployData.uploadAuthToken;
         const uploadBuckets = deployData.uploadBuckets || [];
 
-        ctx.log(`Deployment ID: ${appDeployment?.id}`);
-        ctx.log(`Cloud provider: ${appDeployment?.cloudProviderOverride}`);
-        ctx.log(`Files to upload: ${uploadUrls.length}`);
-        ctx.log('Create deployment response fields:');
-        for (const [key, value] of Object.entries(appDeployment || {})) {
-            if (typeof value === 'string' || typeof value === 'number') {
-                ctx.log(`  ${key}: ${value}`);
-            }
-        }
-
-        // Step 2: Upload files
         if (uploadUrls.length > 0) {
             const isKubernetes = appDeployment?.cloudProviderOverride === 'KUBERNETES';
 
             if (isKubernetes) {
-                ctx.log('Uploading files (Kubernetes PUT)...');
                 let uploaded = 0;
                 for (const uploadInfo of uploadUrls) {
                     const file = clientFiles.find(
@@ -230,9 +210,8 @@ export const deployBaas = makeCliCommand('deploy-baas')
                         uploaded++;
                     }
                 }
-                ctx.log(`Uploaded ${uploaded}/${uploadUrls.length} files`);
+                ctx.log(`Uploaded ${uploaded} CDN files`);
             } else {
-                ctx.log('Uploading files (CloudFlare FormData)...');
                 const uploadUrl = uploadUrls[0].uploadUrl!;
                 const buckets =
                     uploadBuckets.length > 0
@@ -267,19 +246,11 @@ export const deployBaas = makeCliCommand('deploy-baas')
             }
         }
 
-        // Step 3: Complete deployment — server files as backend
-        // Paths must be relative (no leading /) — matching CLI's file.relativePath
-        ctx.log(`Completing deployment with ${serverFiles.length} server files...`);
+        ctx.log('Uploading server files...');
         const backendFiles = serverFiles.map((f) => ({
             path: f.path.startsWith('/') ? f.path.slice(1) : f.path,
             content: f.content.toString('base64'),
         }));
-        ctx.log(
-            `  Sample paths: ${backendFiles
-                .slice(0, 3)
-                .map((f) => f.path)
-                .join(', ')}`,
-        );
 
         const { data: completeData } = await httpClient.request(
             completeAppDeployment({
@@ -292,29 +263,18 @@ export const deployBaas = makeCliCommand('deploy-baas')
         const deploymentId = appDeployment?.id;
         const deploymentBaseUrl =
             completedDeployment.deploymentBaseUrl || appDeployment?.deploymentBaseUrl || '';
-        ctx.log('Deployment response:');
-        for (const [key, value] of Object.entries(completedDeployment)) {
-            if (typeof value === 'string' || typeof value === 'number') {
-                ctx.log(`  ${key}: ${value}`);
-            }
-        }
-        ctx.log(`Deployment uploaded. Base URL: ${deploymentBaseUrl}`);
 
-        // Step 4: Get latest app version
-        ctx.log('Getting latest app version...');
         let appVersion = 0;
         try {
             const { data: versionData } = await httpClient.request(
                 getLatestProductionVersion({ appId }),
             );
-            ctx.log(`latest production version: \n${JSON.stringify(versionData, null, 2)}`);
             appVersion = (versionData as any).appVersion?.version || 0;
         } catch {
-            ctx.log('  No existing version, using 0');
+            /* first deployment */
         }
 
-        // Step 5: Create components override (registers deployment with routing)
-        ctx.log('Registering deployment with routing...');
+        ctx.log('Registering + releasing...');
         const overrideId = crypto.randomUUID();
 
         await httpClient.request(
@@ -339,11 +299,7 @@ export const deployBaas = makeCliCommand('deploy-baas')
                 },
             }),
         );
-        ctx.log(`  Override ID: ${overrideId}`);
-        ctx.log(`  Preview URL: ${deploymentBaseUrl}`);
 
-        // Step 6: Release
-        ctx.log('Releasing...');
         const { data: releaseData } = await httpClient.request(
             release({
                 appId,
@@ -353,8 +309,7 @@ export const deployBaas = makeCliCommand('deploy-baas')
         );
 
         const releaseUrl = (releaseData as any).releaseBaseUrl || deploymentBaseUrl;
-        ctx.log('Deployment released!');
-        ctx.log(`  URL: ${releaseUrl}`);
+        ctx.log(`Released → ${releaseUrl}`);
 
         return { success: true, deploymentId, baseUrl: releaseUrl };
     });

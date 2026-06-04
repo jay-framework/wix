@@ -104,6 +104,21 @@ yarn build                            # jay-stack-cli build
 yarn deploy                           # jay-stack-cli run wix-deploy/deploy
 ```
 
+### P5: Two Credential Sets — By Design
+
+The two credential files serve different purposes and intentionally can point to different Wix sites:
+
+| File | Purpose | Used By | Key Fields |
+|------|---------|---------|------------|
+| `config/.wix.yaml` | **Backend services** — Wix SDK access for data collections, Stores API, CMS, etc. | `wix-server-client` (build + BaaS runtime), `upload-backend` | `apiKey`, `clientId` (= appId), `siteId` |
+| `wix.config.json` | **Deployment target** — which BaaS app + CDN to deploy to | `deploy-baas`, Wix CLI | `appId`, `siteId` |
+
+**Why they can differ:** A headless Wix architecture may deploy the BaaS worker to one site (the "app" site) while accessing backend services (Stores, data collections) on a different site (the "business" site). For example:
+- `wix.config.json` → the headless app site (BaaS + CDN hosting)
+- `config/.wix.yaml` → the business site (products, orders, CMS content)
+
+For simple deployments where everything is on one site, both files reference the same site ID and app ID (= client ID).
+
 ## Design
 
 ### Target Command Structure
