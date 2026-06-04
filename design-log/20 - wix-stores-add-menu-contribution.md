@@ -6,6 +6,20 @@
 
 **Out of scope:** wix-media ([#19](./19%20-%20wix-media-plugin.md)), wix-stores-v1 parity.
 
+### Generated category items (M19.2 — implemented)
+
+On `jay-stack agent-kit` (references handler), wix-stores writes:
+
+`<project>/agent-kit/aiditor/add-menu/wix-stores.generated.yaml`
+
+One item per visible category from the indexed tree (`agent-kit/references/wix-stores/categories.yaml`). Each item:
+
+- `category: Store`, `subCategory: Categories`
+- `id`: `wix-stores:category:{slug}` (deduped)
+- `prompt`: category ID, slug, product count, hierarchy, parent/root slugs, example URL from `config/.wix-stores.yaml`, binding hints for `product-search`, `category-list`, `related-products`, contract paths
+
+Static component items remain in `wix-stores.yaml` (setup). AIditor merges both files at read time.
+
 ## Release coordination
 
 Ship **`@jay-framework/wix-stores`** with **`@jay-framework/aiditor`** for M19.1 smoke. ui-kit ([#142](../../jay/design-log/142%20-%20ui-kit-add-menu-contribution.md)) independent.
@@ -18,7 +32,7 @@ AIditor reads `agent-kit/aiditor/add-menu/*.yaml` on plugin setup. Extend existi
 
 ### Output
 
-`<project>/agent-kit/aiditor/add-menu/wix-stores.yaml` — static only in M19.1. `wix-stores.generated.yaml` deferred (M19.2).
+`<project>/agent-kit/aiditor/add-menu/wix-stores.yaml` — static components on setup. **`wix-stores.generated.yaml`** — one item per indexed category on `jay-stack agent-kit` (M19.2).
 
 ### Items (M19.1)
 
