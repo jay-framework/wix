@@ -109,10 +109,12 @@ yarn deploy                           # jay-stack-cli run wix-deploy/deploy
 ### Target Command Structure
 
 ```
-wix-deploy/setup     — One-time project setup
+jay-stack-cli setup  — Runs all plugins' setup hooks, including wix-deploy's
 wix-deploy/deploy    — Build + upload + deploy (replaces steps 2-4)
 wix-deploy/serve     — Generate serve.mjs for local testing
 ```
+
+The framework already has a setup lifecycle (`_serverSetup` hook). The wix-deploy plugin registers its setup logic there — no separate CLI command needed. Running `jay-stack-cli setup` (or the first `jay-stack-cli dev`) triggers all plugins' setup hooks in order: `wix-server-client` validates credentials, then `wix-deploy` creates the data collection, etc.
 
 ### Deploy Command Internal Flow
 
@@ -152,24 +154,21 @@ This means:
 
 Q: Should the version be stored in `build-metadata.json` (updated by deploy) or tracked separately (e.g., in the data collection itself, or in a deploy-state file)?
 
-### Setup Command Flow
+### Setup Flow (via framework setup hook)
 
 ```
-jay-stack-cli run wix-deploy/setup
+jay-stack-cli setup  (triggers _serverSetup on all plugins)
   │
-  ├─ 1. Check wix.config.json exists
-  │     (if not: prompt to run npm create @wix/new init)
+  │  wix-server-client setup (runs first):
+  ├─ 1. Create config/.wix.yaml with placeholders if missing
+  ├─ 2. Validate API key is configured (not placeholder)
+  │     └─ If missing: log instructions to create one at https://manage.wix.com/...
   │
-  ├─ 2. Extract site ID + client ID (appId) from wix.config.json
-  │
-  ├─ 3. Prompt: "Create an API key at https://manage.wix.com/..."
-  │     (paste API key)
-  │
-  ├─ 4. Generate config/.wix.yaml (site ID + client ID from wix.config.json, API key from prompt)
-  │
-  ├─ 5. Validate: authenticate with Wix SDK
-  │
-  └─ 6. Create data collection "jay-backend-files" via Wix SDK
+  │  wix-deploy setup (runs after wix-server-client):
+  ├─ 3. Validate wix.config.json exists
+  │     └─ If missing: log instructions to run npm create @wix/new init
+  ├─ 4. Validate: authenticate with Wix SDK
+  └─ 5. Create data collection "jay-backend-files" via Wix SDK
         (if not already exists)
 ```
 
