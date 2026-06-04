@@ -1,0 +1,8 @@
+name: deploy
+description: Build entry.mjs, upload backend data, and deploy to Wix BaaS + CDN
+
+inputSchema:
+  collectionId?: string
+  staticBaseUrl?: string
+  excludePlugins?: string
+  dryRun?: boolean

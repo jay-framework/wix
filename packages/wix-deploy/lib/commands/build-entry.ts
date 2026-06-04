@@ -511,10 +511,10 @@ export const buildEntry = makeCliCommand('build-entry')
             );
         }
 
-        // Generate serve.mjs for local testing
-        const serveFile = path.join(entryDir, 'serve.mjs');
+        // Generate serve.mjs in project root (not dist/) to avoid BaaS uploading it
+        const serveFile = path.join(ctx.projectRoot, 'serve.mjs');
         fs.writeFileSync(serveFile, generateServeSource(ctx.build.frontend, buildDir));
-        ctx.log(`Generated ${serveFile} — run with: node dist/serve.mjs`);
+        ctx.log(`Generated ${serveFile} — run with: node serve.mjs`);
 
         return { success: true, outFile, sizeMB };
     });

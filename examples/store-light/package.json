@@ -18,10 +18,11 @@
     "build:server": "vite build --ssr src/entry-server.ts --outDir dist/server",
     "build:check-types": "tsc",
     "serve": "jay-stack-cli serve",
+    "deploy": "jay-stack-cli run wix-deploy/deploy --exclude-plugins aiditor",
     "deploy:build-entry": "jay-stack-cli run wix-deploy/build-entry --exclude-plugins aiditor,ui-kit",
     "deploy:upload-backend": "jay-stack-cli run wix-deploy/upload-backend",
     "deploy:deploy": "jay-stack-cli run wix-deploy/deploy-baas",
-    "deploy:serve": "node dist/serve.mjs",
+    "deploy:serve": "node serve.mjs",
     "test": ":",
     "preview": "cross-env NODE_ENV=production node server"
   },

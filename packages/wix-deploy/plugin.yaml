@@ -1,6 +1,8 @@
 name: wix-deploy
 
 commands:
+  - name: deploy
+    command: deploy.jay-command
   - name: build-entry
     command: build-entry.jay-command
   - name: upload-backend
