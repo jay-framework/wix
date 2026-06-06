@@ -101,7 +101,9 @@ export const deploy = makeCliCommand('deploy')
         ctx.log('');
         if (success) {
             ctx.log(`[deploy] Done in ${elapsed}s (bundle ${bundleTime}s + deploy ${deployTime}s)`);
-            ctx.log(`[deploy] Version: ${deployVersion} | Entry: ${buildResult.sizeMB} MB | Backend files: ${uploadResult.uploaded}`);
+            ctx.log(
+                `[deploy] Version: ${deployVersion} | Entry: ${buildResult.sizeMB} MB | Backend files: ${uploadResult.uploaded}`,
+            );
             if (deployResult.baseUrl) {
                 ctx.log(`[deploy] URL: ${deployResult.baseUrl}`);
             }

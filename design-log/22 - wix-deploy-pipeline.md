@@ -33,12 +33,12 @@ Step 4: npm run deploy:deploy
 
 ### What Goes Where
 
-| Target              | Content                                         | Uploaded By        | Credentials      |
-| ------------------- | ----------------------------------------------- | ------------------ | ----------------- |
-| Wix BaaS            | `entry.mjs` (2.5 MB bundled server code)        | Wix CLI (step 4)   | `wix.config.json` |
-| Wix CDN             | Frontend JS/CSS bundles                          | Wix CLI (step 4)   | `wix.config.json` |
-| Wix Data Collection | cache.json, page-parts.json, manifest            | Wix SDK (step 2)   | `config/.wix.yaml` |
-| (bundled in entry)  | Server elements, plugins, ssr-runtime            | esbuild (step 3)   | n/a               |
+| Target              | Content                                  | Uploaded By      | Credentials        |
+| ------------------- | ---------------------------------------- | ---------------- | ------------------ |
+| Wix BaaS            | `entry.mjs` (2.5 MB bundled server code) | Wix CLI (step 4) | `wix.config.json`  |
+| Wix CDN             | Frontend JS/CSS bundles                  | Wix CLI (step 4) | `wix.config.json`  |
+| Wix Data Collection | cache.json, page-parts.json, manifest    | Wix SDK (step 2) | `config/.wix.yaml` |
+| (bundled in entry)  | Server elements, plugins, ssr-runtime    | esbuild (step 3) | n/a                |
 
 ## Problem
 
@@ -108,12 +108,13 @@ yarn deploy                           # jay-stack-cli run wix-deploy/deploy
 
 The two credential files serve different purposes and intentionally can point to different Wix sites:
 
-| File | Purpose | Used By | Key Fields |
-|------|---------|---------|------------|
+| File               | Purpose                                                                           | Used By                                                      | Key Fields                               |
+| ------------------ | --------------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------- |
 | `config/.wix.yaml` | **Backend services** — Wix SDK access for data collections, Stores API, CMS, etc. | `wix-server-client` (build + BaaS runtime), `upload-backend` | `apiKey`, `clientId` (= appId), `siteId` |
-| `wix.config.json` | **Deployment target** — which BaaS app + CDN to deploy to | `deploy-baas`, Wix CLI | `appId`, `siteId` |
+| `wix.config.json`  | **Deployment target** — which BaaS app + CDN to deploy to                         | `deploy-baas`, Wix CLI                                       | `appId`, `siteId`                        |
 
 **Why they can differ:** A headless Wix architecture may deploy the BaaS worker to one site (the "app" site) while accessing backend services (Stores, data collections) on a different site (the "business" site). For example:
+
 - `wix.config.json` → the headless app site (BaaS + CDN hosting)
 - `config/.wix.yaml` → the business site (products, orders, CMS content)
 
@@ -163,6 +164,7 @@ The deploy command owns version incrementing. Currently `build-metadata.json` ha
 4. Deploys entry.mjs — new BaaS instances read version N+1 from the data collection
 
 This means:
+
 - Running instances serve version N until they cold-start with the new entry.mjs
 - Data collection has both version N and N+1 items — no disruption
 - `build` always produces version 1; `deploy` increments on each deploy
@@ -192,6 +194,7 @@ jay-stack-cli setup  (triggers _serverSetup on all plugins)
 Separate command (`wix-deploy/serve`) rather than a side-effect of deploy. Generates `serve.mjs` in the project root (not `dist/`) to avoid BaaS uploading it.
 
 Supports two modes:
+
 - **Local files** (default): `JAY_BACKEND_DIR` points at `build/v1/backend/`, uses `FilesystemArtifactStore`
 - **Wix data**: no `JAY_BACKEND_DIR`, uses `WixDataArtifactStore` — tests the full BaaS code path locally
 
@@ -200,10 +203,12 @@ Supports two modes:
 ### Phase 1: Unified Deploy — DONE
 
 **Single `wix-deploy/deploy` command** replaces the 3-step sequence. Internally:
+
 1. Bundles `entry.mjs` (sequential — must complete before deploy)
 2. Uploads backend data to Wix data collection + deploys to BaaS+CDN (parallel)
 
 CLI output is clean with prefixed progress from each parallel step:
+
 ```
 [deploy] Bundling entry.mjs...
 [deploy] Bundled entry.mjs (2.5 MB) in 4.2s
@@ -230,12 +235,14 @@ Sub-commands (`build-entry`, `upload-backend`, `deploy-baas`) still exist for de
 ### Phase 2: Setup Hook — DONE
 
 **`wix-deploy` setup hook** registered in `plugin.yaml`, runs during `jay-stack-cli setup`:
+
 - Reads `appId` (= `clientId`) and `siteId` from `wix.config.json`
 - Updates `config/.wix.yaml` only if values are still placeholders — won't overwrite existing credentials
 - Validates API key is configured
 - Reports deploy target and data collection name
 
 Output:
+
 ```
 📦 wix-deploy
    ✅ Services verified
@@ -245,6 +252,7 @@ Output:
 ### Version Format Change
 
 Version changed from `number` to `string` (semver). All code updated:
+
 - `build-metadata.json`: `"version": "2.0.0"` (was `1`)
 - `makeItemId`: accepts `string` version
 - `WixDataArtifactStore`: `version: string`
@@ -256,6 +264,7 @@ Framework also updated: `ctx.build.backend` resolves to `build/v2.0.0/backend` (
 ### Per-Deploy Version Bump — DONE
 
 The deploy command bumps the patch version in `build-metadata.json` before bundling:
+
 - Build produces `2.0.0` → first deploy bumps to `2.0.1`, second to `2.0.2`, etc.
 - The bumped version is baked into entry.mjs and used for data collection item keys
 - Running BaaS instances continue serving the previous version until cold-start with the new entry.mjs

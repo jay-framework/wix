@@ -44,7 +44,11 @@ export interface BackendFileItem {
 }
 
 export function makeItemId(version: string, relativePath: string): string {
-    return crypto.createHash('sha256').update(`v${version}/${relativePath}`).digest('hex').slice(0, 32);
+    return crypto
+        .createHash('sha256')
+        .update(`v${version}/${relativePath}`)
+        .digest('hex')
+        .slice(0, 32);
 }
 
 // ============================================================================
@@ -263,11 +267,15 @@ export class WixDataArtifactStore implements ArtifactStore {
         const t1 = Date.now();
 
         if (!item?.content) {
-            throw new Error(`File not found in data collection: v${this.version}/${relativePath} (id: ${id})`);
+            throw new Error(
+                `File not found in data collection: v${this.version}/${relativePath} (id: ${id})`,
+            );
         }
 
         this.writeToCache(relativePath, item.content);
-        console.log(`[WixDataArtifactStore] Fetched v${this.version}/${relativePath} (${t1 - t0}ms)`);
+        console.log(
+            `[WixDataArtifactStore] Fetched v${this.version}/${relativePath} (${t1 - t0}ms)`,
+        );
         return item.content;
     }
 

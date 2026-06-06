@@ -94,7 +94,8 @@ export async function setupWixDeploy(ctx: SetupContext): Promise<SetupResult> {
             return {
                 status: 'needs-config',
                 configCreated,
-                message: 'API key required — create one at https://manage.wix.com/ and add to config/.wix.yaml',
+                message:
+                    'API key required — create one at https://manage.wix.com/ and add to config/.wix.yaml',
             };
         }
     }
@@ -105,10 +106,7 @@ export async function setupWixDeploy(ctx: SetupContext): Promise<SetupResult> {
         const wixClient = getService(WIX_CLIENT_SERVICE);
         if (wixClient) {
             const dataClient = (wixClient as any).use({ items });
-            await dataClient.items
-                .query(DEFAULT_COLLECTION_ID)
-                .limit(1)
-                .find();
+            await dataClient.items.query(DEFAULT_COLLECTION_ID).limit(1).find();
             collectionOk = true;
         }
     } catch {
