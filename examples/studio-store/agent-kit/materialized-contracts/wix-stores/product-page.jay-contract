@@ -13,7 +13,7 @@ tags:
     phase: fast+interactive
     link: "@jay-framework/wix-stores/media-gallery"
 
-  - {tag: description, type: data, dataType: string, description: Product description}
+  - {tag: description, type: data, dataType: html-string, description: Product description}
   - {tag: brand, type: data, dataType: string, description: Brand name}
   - {tag: ribbon, type: data, dataType: string, description: "Ribbon text (e.g., \"New\", \"Sale\")"}
   - {tag: categorySlug, type: data, dataType: string, description: Slug of the product's main category}
@@ -74,7 +74,7 @@ tags:
     tags:
       - {tag: _id, type: data, dataType: string, description: Info section GUID}
       - {tag: title, type: data, dataType: string, description: Info section title}
-      - {tag: plainDescription, type: data, dataType: string, description: Info section description in HTML}
+      - {tag: plainDescription, type: data, dataType: html-string, description: Info section description in HTML}
 
   - tag: modifiers
     type: sub-contract

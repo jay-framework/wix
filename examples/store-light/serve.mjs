@@ -7,11 +7,12 @@ import { Readable } from 'node:stream';
 
 process.env.STATIC_BASE_URL = process.env.STATIC_BASE_URL || '/';
 process.env.JAY_BACKEND_DIR =
-  process.env.JAY_BACKEND_DIR || '/Users/yoav/work/jay/wix/examples/store-light/build/v1/backend';
+  process.env.JAY_BACKEND_DIR ||
+  '/Users/yoav/work/jay/wix/examples/store-light/build/v0.0.1/backend';
 const entry = await import('./entry.mjs');
 const handler = entry.default?.fetch || entry.fetch;
 const PORT = parseInt(process.env.PORT || '4000', 10);
-const FRONTEND_DIR = '/Users/yoav/work/jay/wix/examples/store-light/build/v1/frontend';
+const FRONTEND_DIR = '/Users/yoav/work/jay/wix/examples/store-light/build/v0.0.1/frontend';
 
 const MIME = {
   '.js': 'application/javascript',

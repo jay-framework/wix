@@ -47,6 +47,14 @@ plugins:
       - name: wix-data
         marker: WIX_DATA_CONTEXT
         description: Client-side access to Wix Data items API
+  - name: wix-deploy
+    path: ./../../packages/wix-deploy
+    contracts: []
+    commands:
+      - name: deploy
+      - name: build-entry
+      - name: upload-backend
+      - name: deploy-baas
   - name: wix-server-client
     path: ./../../packages/wix-server-client
     contracts: []
