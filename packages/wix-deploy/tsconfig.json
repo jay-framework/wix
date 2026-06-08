@@ -6,6 +6,7 @@
     "lib": ["ES2022"],
     "outDir": "./dist",
     "rootDir": "./lib",
+    "noEmit": true,
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
