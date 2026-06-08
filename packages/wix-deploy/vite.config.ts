@@ -28,10 +28,7 @@ export default defineConfig({
             formats: ['es'],
         },
         rollupOptions: {
-            external: [
-                ...publicDeps,
-                /^node:/,
-            ],
+            external: [...publicDeps, /^node:/],
         },
     },
     ssr: {
