@@ -14,6 +14,7 @@ import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
 
 import { provideWixCartService } from './services/wix-cart-service';
 import { provideWixCartContext, type WixCartInitData } from './contexts/wix-cart-context';
+import { loadWixCartConfig } from './config-loader';
 
 // Re-export types for consumers
 export type { WixCartInitData } from './contexts/wix-cart-context.js';
@@ -26,25 +27,24 @@ export const init = makeJayInit()
     .withServer(async (): Promise<WixCartInitData> => {
         console.log('[wix-cart] Initializing Wix Cart service...');
 
-        // Get the server-side Wix client (authenticated with API key)
         const wixClient = getService(WIX_CLIENT_SERVICE);
+        const config = loadWixCartConfig();
 
-        // Create and register the cart service
-        provideWixCartService(wixClient);
+        provideWixCartService(wixClient, { urls: config.urls });
 
         console.log('[wix-cart] Server initialization complete');
 
         return {
             enableClientCart: true,
+            thankYouUrl: config.urls.thankYou,
         };
     })
     .withClient(async (data: WixCartInitData) => {
         console.log('[wix-cart] Initializing client-side cart context...');
 
-        const { enableClientCart } = data;
+        const { enableClientCart, thankYouUrl } = data;
 
-        // Register the reactive Wix Cart context
-        const cartContext = provideWixCartContext();
+        const cartContext = provideWixCartContext(thankYouUrl);
 
         // Load initial cart indicator state, but do not wait for it
         if (enableClientCart) {
