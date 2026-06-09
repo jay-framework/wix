@@ -71,7 +71,25 @@ export async function setupWixStores(ctx: PluginSetupContext): Promise<PluginSet
         configCreated.push(`config/${CONFIG_FILE_NAME}`);
     }
 
-    const service = getService(WIX_STORES_SERVICE_MARKER);
+    const service = getService(WIX_STORES_SERVICE_MARKER) as WixStoresService;
+
+    // Validate Wix Stores V3 (Catalog V3) is accessible
+    try {
+        await service.products.searchProducts({});
+    } catch (e: any) {
+        const msg = e.message || '';
+        const hint =
+            msg.includes('404') || msg.includes('not found')
+                ? 'Wix Stores may not be installed on this site'
+                : msg.includes('403') || msg.includes('permission')
+                  ? 'API key may lack Wix Stores permissions'
+                  : 'This package requires the Stores Catalog V3 API — if using Catalog V1, use @jay-framework/wix-stores-v1 instead';
+        return {
+            status: 'error',
+            message: `Wix Stores V3 API check failed: ${hint}. (${msg})`,
+        };
+    }
+
     const message = `Wix Stores configured (product URL: ${service.urls.product})`;
 
     return {
