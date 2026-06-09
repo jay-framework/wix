@@ -443,3 +443,415 @@ URL format: https://static.wixstatic.com/mp3/{mediaId}
 | Upload as CLI command (not setup)      | Explicit, controlled, no accidental uploads        | Extra step in workflow                                   |
 | Exclude private files                  | Index only has usable media                        | Agent can't reference private media                      |
 | Upload UI component in separate plugin | Clean separation: tooling vs runtime               | Two packages to maintain                                 |
+
+---
+
+## Design Revision: Validation-Driven Media
+
+### Motivation
+
+The original design has components pre-formatting URLs with optimization parameters (e.g., `thumbnail_50x50` uses `formatWixMediaUrl(id, url, {w:50, h:50})`). This hides image optimization from the designer agent — the agent sees a `{thumbnail_50x50}` binding and has no control over sizing, quality, or format. It also means every desired size variant needs a dedicated contract tag, which doesn't scale.
+
+Jay Framework 0.18.4 introduces pluggable validation (DL#145). Instead of baking optimization into components, we:
+
+1. Components emit **raw base URLs** — `https://static.wixstatic.com/media/{id}`, no resize params
+2. The **designer agent** adds optimization params directly in templates — `{media.url}/v1/fill/w_400,h_300/file.webp`
+3. A **validator** catches when optimization is missing, pointing the agent to docs
+
+This gives the designer full control over image sizing per usage context (hero vs. thumbnail vs. card) without needing dedicated contract tags for each.
+
+### Dev-Only Plugin
+
+With the service removed and no runtime components, wix-media becomes a **dev-only plugin**:
+
+- Validator runs during `jay-stack validate`
+- MEDIA-INDEX.md generated during `jay-stack agent-kit`
+- Upload CLI is a manual dev workflow
+- Setup runs during `jay-stack setup`
+
+No `init.ts`, no client bundle, no production footprint. Listed in `devDependencies`.
+
+### Revised Plugin Structure
+
+```
+packages/wix-media/
+├── lib/
+│   ├── index.ts                    # Server exports (setup, commands, validator)
+│   ├── setup.ts                    # Setup handler (validation) + reference generation
+│   ├── validators/
+│   │   └── media-validator.ts      # Jay-HTML validator (DL#145)
+│   ├── services/
+│   │   └── wix-media-service.ts    # Internal Wix Media Manager API wrapper (used by commands)
+│   ├── commands/
+│   │   ├── upload-public.ts        # CLI command: upload public/ files to Wix
+│   │   └── rebuild-index.ts        # CLI command: rebuild media index
+│   └── index-generator.ts          # Generate MEDIA-INDEX.md
+├── agent-kit/
+│   └── designer/
+│       └── wix-media.md            # Designer docs: URL transformations reference
+├── plugin.yaml
+├── upload-public.jay-command
+├── rebuild-index.jay-command
+├── package.json
+├── tsconfig.json
+└── vite.config.ts
+```
+
+Removed from original: `init.ts`, `index.client.ts`, service marker exports.
+
+### Revised plugin.yaml
+
+```yaml
+name: wix-media
+
+validators:
+  - name: media-optimization
+    handler: validate
+    description: Validates Wix media URLs have optimization parameters
+
+commands:
+  - name: upload-public
+    command: upload-public.jay-command
+  - name: rebuild-index
+    command: rebuild-index.jay-command
+
+setup:
+  handler: setupWixMedia
+  references: generateWixMediaReferences
+  description: Validates Wix Media Manager access, generates agent-kit media index
+```
+
+No `services:` or `init:` sections.
+
+### Validator Design
+
+#### Implementation
+
+The validator exports `validate: JayHtmlValidatorFn` and uses framework utilities:
+
+- `walkElements`, `resolveBinding` from `@jay-framework/compiler-shared`
+- `parseTemplateParts` from `@jay-framework/compiler-jay-html`
+
+It walks all elements, inspecting `src` attributes on `<img>`, `<video>`, `<source>`, and `poster` on `<video>`.
+
+#### Rule A: Hardcoded wix URL without optimization
+
+```html
+<!-- ❌ ERROR -->
+<img src="https://static.wixstatic.com/media/abc123" />
+
+<!-- ✅ OK -->
+<img src="https://static.wixstatic.com/media/abc123/v1/fill/w_400,h_300/file.jpg" />
+```
+
+Detection: static template part contains `static.wixstatic.com/media/` but no `/v1/` following the media ID.
+
+Message: `"Wix media URL missing image optimization parameters. See agent-kit/wix-media.md for transformation reference."`
+
+#### Rule B: Binding to wix-image tag without optimization
+
+```html
+<!-- ❌ ERROR -->
+<img src="{mainMedia.url}" />
+
+<!-- ✅ OK -->
+<img src="{mainMedia.url}/v1/fill/w_400,h_300/file.jpg" />
+```
+
+Detection: `parseTemplateParts` splits the attribute value → resolve each binding via `resolveBinding` → check if the resolved tag has `meta.mediaType === 'wix-image'` → check whether the static part following the binding contains `/v1/`.
+
+Message: `"Image binding '{path}' produces a Wix media URL but no optimization parameters are applied. See agent-kit/wix-media.md for transformation reference."`
+
+#### Rule C: Local image reference
+
+```html
+<!-- ❌ ERROR -->
+<img src="/images/logo.png" />
+```
+
+Detection: fully static `src` starts with `/` and has an image file extension (jpg, jpeg, png, gif, webp, svg, bmp, ico).
+
+Message: `"Local image reference — upload to Wix Media Manager and use a Wix media URL with optimization parameters. See agent-kit/wix-media.md."`
+
+### Contract Tag Metadata
+
+To enable Rule B, contract tags that produce wix image URLs need `meta: {mediaType: wix-image}`. The validator uses `resolveBinding` to check this metadata at build time.
+
+Example change in `media.jay-contract`:
+
+```yaml
+# Before
+- {tag: url, type: data, dataType: string, description: Media Url}
+- {tag: thumbnail_50x50, type: data, dataType: string, description: Media Thumbnail Url}
+
+# After
+- {tag: url, type: data, dataType: string, description: Media Url, meta: {mediaType: wix-image}}
+# thumbnail_50x50 removed — designer controls sizing via URL params in template
+```
+
+#### Contracts to update
+
+| Package         | Contract          | Tags getting `meta: {mediaType: wix-image}` | Tags removed      |
+| --------------- | ----------------- | -------------------------------------------- | ------------------ |
+| wix-stores-v1   | media             | `url`                                        | `thumbnail_50x50`  |
+| wix-stores-v1   | product-card      | `mainMedia.url`, `thumbnail.url`             |                    |
+| wix-stores-v1   | category-page     | `media.mainMedia.url`, `media.items.url`, `media.items.thumbnail.url` | |
+| wix-stores-v1   | category-list     | `imageUrl`                                   |                    |
+| wix-stores      | media             | `url`                                        | `thumbnail_50x50`  |
+| wix-stores      | (mirror v1 where applicable) |                                  |                    |
+
+### Component Changes
+
+Components stop producing pre-optimized URLs. They still convert `wix://` protocol URLs to `https://static.wixstatic.com/media/{id}` base URLs (via `formatWixMediaUrl(id, url)` without resize params).
+
+| Package       | File                        | Change                                             |
+| ------------- | --------------------------- | -------------------------------------------------- |
+| wix-stores    | components/product-page.ts  | Remove resize params from `formatWixMediaUrl` calls, remove `thumbnail_50x50` from view state |
+| wix-stores    | utils/product-mapper.ts     | Remove `{w: 300, h: 300}` resize from `formatWixMediaUrl` call |
+| wix-stores-v1 | components/product-page.ts  | Remove `thumbnail_50x50` from view state           |
+| wix-cart      | contexts/cart-helpers.ts    | No change needed (already no resize)               |
+| wix-data      | components/collection-list.ts | No change needed (already no resize)             |
+
+### Example Template Changes
+
+Templates using `{media.thumbnail_50x50}` switch to `{media.url}` with optimization appended:
+
+```html
+<!-- Before -->
+<img src="{media.thumbnail_50x50}" alt="Product thumbnail" />
+
+<!-- After -->
+<img src="{media.url}/v1/fill/w_50,h_50/file.jpg" alt="Product thumbnail" />
+```
+
+All `<img src="{...url}">` bindings need optimization params — the validator catches missing ones.
+
+### Revised Trade-offs
+
+| Decision                                    | Benefit                                                    | Cost                                              |
+| ------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------- |
+| Validation-driven optimization              | Designer controls sizing per context; no tag proliferation  | Agent must learn URL transform syntax              |
+| Dev-only plugin                             | Zero production footprint; simpler deployment               | Plugin not available at runtime                    |
+| Contract tag metadata (`meta.mediaType`)    | Validator detects wix-image bindings at build time          | All image URL tags across packages need `meta`     |
+| Drop pre-optimized tags (`thumbnail_50x50`) | Fewer tags, designer picks dimensions                       | Breaking change for existing templates             |
+| Raw base URLs from components               | Single `url` tag serves all size needs                      | Templates are slightly more verbose                |
+
+### Revised Implementation Plan
+
+#### Phase 1: Validator + Dev-Only Conversion
+
+- Create `lib/validators/media-validator.ts` with Rules A, B, C
+- Update `plugin.yaml` — add `validators:`, remove `services:`
+- Delete `init.ts`, `index.client.ts`
+- Update `index.ts` — export validator, remove service marker
+- Simplify `vite.config.ts` — remove client build target
+- Update `package.json` — remove `./client` export, add compiler deps
+
+#### Phase 2: Contract Tag Metadata + Drop Tags
+
+- Add `meta: {mediaType: wix-image}` to image URL tags (see table above)
+- Remove `thumbnail_50x50` from media contracts
+- Regenerate `.jay-contract.d.ts` files
+
+#### Phase 3: Simplify Components
+
+- Remove resize params from `formatWixMediaUrl` calls
+- Remove `thumbnail_50x50` from view state construction
+- Keep base URL conversion (`wix://` → `static.wixstatic.com`)
+
+#### Phase 4: Update Examples
+
+- Replace `{media.thumbnail_50x50}` with `{media.url}/v1/fill/w_50,h_50/file.jpg`
+- Add optimization params to all `<img src="{...url}">` bindings
+- Move `@jay-framework/wix-media` to `devDependencies`
+- Run `jay-stack validate` to verify
+
+### Tests
+
+Unit tests in `packages/wix-media/test/validators/media-validator.test.ts`. Each test builds a `JayHtmlValidationContext` with a parsed HTML body (via `node-html-parser`'s `parse()`) and a contract with appropriate tags/meta, calls `validate()`, and asserts on findings.
+
+#### Shared test helpers
+
+```typescript
+import { parse } from 'node-html-parser';
+import { validate } from '../../lib/validators/media-validator.js';
+import type { JayHtmlValidationContext } from '@jay-framework/compiler-shared';
+
+function makeContext(
+  html: string,
+  contract?: JayHtmlValidationContext['contract'],
+  headlessImports?: JayHtmlValidationContext['headlessImports'],
+): JayHtmlValidationContext {
+  return {
+    body: parse(html),
+    filePath: 'test/page.jay-html',
+    projectRoot: '/test',
+    contract,
+    headlessImports: headlessImports ?? [],
+  };
+}
+
+// Contract with a wix-image url tag inside a sub-contract
+const mediaContract: JayHtmlValidationContext['contract'] = {
+  name: 'product-page',
+  tags: [
+    {
+      tag: 'mainMedia',
+      type: [4], // sub-contract
+      tags: [
+        { tag: 'url', type: [1], meta: { mediaType: 'wix-image' } },
+        { tag: 'altText', type: [1] },
+      ],
+    },
+    { tag: 'title', type: [1] },
+  ],
+};
+```
+
+#### Rule A: Hardcoded wix URL without optimization
+
+```typescript
+it('flags hardcoded wix URL without /v1/ optimization', async () => {
+  const ctx = makeContext(
+    '<img src="https://static.wixstatic.com/media/abc123" alt="photo" />',
+  );
+  const findings = await validate(ctx);
+  expect(findings).toEqual([
+    expect.objectContaining({
+      severity: 'error',
+      message: expect.stringContaining('optimization parameters'),
+      element: expect.stringContaining('img'),
+    }),
+  ]);
+});
+
+it('passes hardcoded wix URL with /v1/ optimization', async () => {
+  const ctx = makeContext(
+    '<img src="https://static.wixstatic.com/media/abc123/v1/fill/w_400,h_300/file.jpg" alt="photo" />',
+  );
+  const findings = await validate(ctx);
+  expect(findings).toEqual([]);
+});
+```
+
+#### Rule B: Binding to wix-image tag without optimization
+
+```typescript
+it('flags wix-image binding without optimization params in template', async () => {
+  const ctx = makeContext(
+    '<img src="{mainMedia.url}" alt="product" />',
+    mediaContract,
+  );
+  const findings = await validate(ctx);
+  expect(findings).toEqual([
+    expect.objectContaining({
+      severity: 'error',
+      message: expect.stringContaining('mainMedia.url'),
+    }),
+  ]);
+});
+
+it('passes wix-image binding with optimization params appended', async () => {
+  const ctx = makeContext(
+    '<img src="{mainMedia.url}/v1/fill/w_400,h_300/file.jpg" alt="product" />',
+    mediaContract,
+  );
+  const findings = await validate(ctx);
+  expect(findings).toEqual([]);
+});
+
+it('does not flag binding to non-wix-image tag', async () => {
+  const ctx = makeContext(
+    '<img src="{mainMedia.altText}" alt="product" />',
+    mediaContract,
+  );
+  const findings = await validate(ctx);
+  // altText has no meta.mediaType — not a wix image, no error
+  expect(findings).toEqual([]);
+});
+```
+
+#### Rule C: Local image reference
+
+```typescript
+it('flags local /public/ image path', async () => {
+  const ctx = makeContext(
+    '<img src="/images/logo.png" alt="logo" />',
+  );
+  const findings = await validate(ctx);
+  expect(findings).toEqual([
+    expect.objectContaining({
+      severity: 'error',
+      message: expect.stringContaining('Local image'),
+    }),
+  ]);
+});
+
+it('flags local image with various extensions', async () => {
+  const ctx = makeContext(
+    '<img src="/banner.webp" alt="banner" />',
+  );
+  const findings = await validate(ctx);
+  expect(findings).toHaveLength(1);
+});
+
+it('does not flag non-image local paths', async () => {
+  const ctx = makeContext(
+    '<a href="/about">About</a>',
+  );
+  const findings = await validate(ctx);
+  expect(findings).toEqual([]);
+});
+```
+
+#### Edge cases
+
+```typescript
+it('handles multiple errors in same file', async () => {
+  const ctx = makeContext(
+    `<div>
+      <img src="https://static.wixstatic.com/media/abc123" alt="a" />
+      <img src="/images/logo.png" alt="b" />
+      <img src="{mainMedia.url}" alt="c" />
+    </div>`,
+    mediaContract,
+  );
+  const findings = await validate(ctx);
+  expect(findings).toHaveLength(3);
+});
+
+it('checks video poster attribute', async () => {
+  const ctx = makeContext(
+    '<video poster="https://static.wixstatic.com/media/vid123" src="video.mp4"></video>',
+  );
+  const findings = await validate(ctx);
+  expect(findings).toEqual([
+    expect.objectContaining({
+      severity: 'error',
+      message: expect.stringContaining('optimization parameters'),
+    }),
+  ]);
+});
+
+it('returns no findings for fully optimized page', async () => {
+  const ctx = makeContext(
+    `<div>
+      <img src="{mainMedia.url}/v1/fill/w_800,h_600/file.webp" alt="hero" />
+      <img src="https://static.wixstatic.com/media/abc123/v1/fit/w_100,h_100/file.jpg" alt="thumb" />
+      <p>No images here</p>
+    </div>`,
+    mediaContract,
+  );
+  const findings = await validate(ctx);
+  expect(findings).toEqual([]);
+});
+```
+
+### Verification Criteria
+
+1. `packages/wix-media` builds (server only, no client)
+2. `packages/wix-stores-v1` and `packages/wix-stores` build with updated contracts
+3. All validator tests pass — rules A, B, C each have positive and negative cases
+4. `jay-stack validate` on examples flags unoptimized URLs, passes optimized ones
+5. wix-media is in `devDependencies` only — not in production bundle
+6. No `thumbnail_50x50` references remain in contracts or components
