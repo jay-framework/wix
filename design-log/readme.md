@@ -28,6 +28,7 @@ Design documentation for the Jay Framework Wix integration packages.
 | 20  | [Wix BaaS Deployment](./20%20-%20wix-baas-deployment.md)                                       | Draft         |
 | 21  | [BaaS Entry Framework Requirements](./21%20-%20baas-entry-framework-requirements.md)           | Draft         |
 | 22  | [Wix Deploy Pipeline](./22%20-%20wix-deploy-pipeline.md)                                       | Draft         |
+| 23  | [Wix Checkout Redirect](./23%20-%20wix-checkout-redirect.md)                                   | Draft         |
 
 ## Packages Covered
 
