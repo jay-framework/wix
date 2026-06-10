@@ -187,13 +187,13 @@
               <div style="position: relative; height: 100%;" forEach="productPage.mediaGallery.availableMedia" trackBy="mediaId">
                 <div id="424:444" data-figma-id="424:444" data-figma-type="variant-container" ref="selected" style="position: relative;width: 87.68368530273438px;height: 87.68368530273438px;background: transparent;border-radius: 0px;overflow: visible;box-sizing: border-box;">
                   <div if="media.mediaType == IMAGE && selected == selected">
-                    <img data-figma-id="424:544" src="{media.thumbnail_50x50}" alt="thumbnail" style="position: relative;width: 87.68368530273438px;height: 87.68368530273438px;border-radius: 10.67453670501709px;" />
+                    <img data-figma-id="424:544" src="{media.url}/v1/fill/w_50,h_50/file.jpg" alt="thumbnail" style="position: relative;width: 87.68368530273438px;height: 87.68368530273438px;border-radius: 10.67453670501709px;" />
                   </div>
                   <div if="media.mediaType == IMAGE && selected == notSelected">
-                    <img data-figma-id="424:540" src="{media.thumbnail_50x50}" alt="thumbnail" style="position: relative;width: 87.68368530273438px;height: 87.68368530273438px;border-radius: 10.67453670501709px;" />
+                    <img data-figma-id="424:540" src="{media.url}/v1/fill/w_50,h_50/file.jpg" alt="thumbnail" style="position: relative;width: 87.68368530273438px;height: 87.68368530273438px;border-radius: 10.67453670501709px;" />
                   </div>
                   <div if="media.mediaType == VIDEO && selected == selected">
-                    <img data-figma-id="424:530" src="{media.thumbnail_50x50}" alt="thumbnail" style="position: absolute;top: 0px;left: 0px;width: 87.68368530273438px;height: 87.68368530273438px;border-radius: 10.67453670501709px;" />
+                    <img data-figma-id="424:530" src="{media.url}/v1/fill/w_50,h_50/file.jpg" alt="thumbnail" style="position: absolute;top: 0px;left: 0px;width: 87.68368530273438px;height: 87.68368530273438px;border-radius: 10.67453670501709px;" />
                     <div data-figma-id="424:531" data-figma-type="frame" style="position: absolute;top: 27.448762893676758px;left: 27.44879913330078px;width: 33.54853820800781px;height: fit-content;background-image: linear-gradient(rgba(255, 255, 255, 0.30000001192092896), rgba(255, 255, 255, 0.30000001192092896));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-radius: 34.31100845336914px;overflow: visible;backdrop-filter: blur(2.287400722503662px);-webkit-backdrop-filter: blur(2.287400722503662px);display: flex;flex-direction: row;justify-content: flex-start;align-items: flex-start;gap: 7.624669075012207px;padding-left: 9.149602890014648px;padding-right: 9.149602890014648px;padding-top: 9.149602890014648px;padding-bottom: 9.149602890014648px;box-sizing: border-box;">
                       <!-- Frame 4 -->
                       <div data-figma-id="424:532" data-figma-type="frame" style="position: relative;width: 15.249337196350098px;height: 15.249337196350098px;background: transparent;border-radius: 0px;overflow: hidden;box-sizing: border-box;">
@@ -208,7 +208,7 @@
                     </div>
                   </div>
                   <div if="media.mediaType == VIDEO && selected == notSelected">
-                    <img data-figma-id="424:520" src="{media.thumbnail_50x50}" alt="thumbnail" style="position: absolute;top: 0px;left: 0px;width: 87.68368530273438px;height: 87.68368530273438px;border-radius: 10.67453670501709px;" />
+                    <img data-figma-id="424:520" src="{media.url}/v1/fill/w_50,h_50/file.jpg" alt="thumbnail" style="position: absolute;top: 0px;left: 0px;width: 87.68368530273438px;height: 87.68368530273438px;border-radius: 10.67453670501709px;" />
                     <div data-figma-id="424:521" data-figma-type="frame" style="position: absolute;top: 27.448762893676758px;left: 27.44879913330078px;width: 33.54853820800781px;height: fit-content;background-image: linear-gradient(rgba(255, 255, 255, 0.30000001192092896), rgba(255, 255, 255, 0.30000001192092896));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-radius: 34.31100845336914px;overflow: visible;backdrop-filter: blur(2.287400722503662px);-webkit-backdrop-filter: blur(2.287400722503662px);display: flex;flex-direction: row;justify-content: flex-start;align-items: flex-start;gap: 7.624669075012207px;padding-left: 9.149602890014648px;padding-right: 9.149602890014648px;padding-top: 9.149602890014648px;padding-bottom: 9.149602890014648px;box-sizing: border-box;">
                       <!-- Frame 4 -->
                       <div data-figma-id="424:522" data-figma-type="frame" style="position: relative;width: 15.249337196350098px;height: 15.249337196350098px;background: transparent;border-radius: 0px;overflow: hidden;box-sizing: border-box;">

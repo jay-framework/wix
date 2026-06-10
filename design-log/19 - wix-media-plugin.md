@@ -581,36 +581,36 @@ Example change in `media.jay-contract`:
 
 ```yaml
 # Before
-- {tag: url, type: data, dataType: string, description: Media Url}
-- {tag: thumbnail_50x50, type: data, dataType: string, description: Media Thumbnail Url}
+- { tag: url, type: data, dataType: string, description: Media Url }
+- { tag: thumbnail_50x50, type: data, dataType: string, description: Media Thumbnail Url }
 
 # After
-- {tag: url, type: data, dataType: string, description: Media Url, meta: {mediaType: wix-image}}
+- { tag: url, type: data, dataType: string, description: Media Url, meta: { mediaType: wix-image } }
 # thumbnail_50x50 removed — designer controls sizing via URL params in template
 ```
 
 #### Contracts to update
 
-| Package         | Contract          | Tags getting `meta: {mediaType: wix-image}` | Tags removed      |
-| --------------- | ----------------- | -------------------------------------------- | ------------------ |
-| wix-stores-v1   | media             | `url`                                        | `thumbnail_50x50`  |
-| wix-stores-v1   | product-card      | `mainMedia.url`, `thumbnail.url`             |                    |
-| wix-stores-v1   | category-page     | `media.mainMedia.url`, `media.items.url`, `media.items.thumbnail.url` | |
-| wix-stores-v1   | category-list     | `imageUrl`                                   |                    |
-| wix-stores      | media             | `url`                                        | `thumbnail_50x50`  |
-| wix-stores      | (mirror v1 where applicable) |                                  |                    |
+| Package       | Contract                     | Tags getting `meta: {mediaType: wix-image}`                           | Tags removed      |
+| ------------- | ---------------------------- | --------------------------------------------------------------------- | ----------------- |
+| wix-stores-v1 | media                        | `url`                                                                 | `thumbnail_50x50` |
+| wix-stores-v1 | product-card                 | `mainMedia.url`, `thumbnail.url`                                      |                   |
+| wix-stores-v1 | category-page                | `media.mainMedia.url`, `media.items.url`, `media.items.thumbnail.url` |                   |
+| wix-stores-v1 | category-list                | `imageUrl`                                                            |                   |
+| wix-stores    | media                        | `url`                                                                 | `thumbnail_50x50` |
+| wix-stores    | (mirror v1 where applicable) |                                                                       |                   |
 
 ### Component Changes
 
 Components stop producing pre-optimized URLs. They still convert `wix://` protocol URLs to `https://static.wixstatic.com/media/{id}` base URLs (via `formatWixMediaUrl(id, url)` without resize params).
 
-| Package       | File                        | Change                                             |
-| ------------- | --------------------------- | -------------------------------------------------- |
-| wix-stores    | components/product-page.ts  | Remove resize params from `formatWixMediaUrl` calls, remove `thumbnail_50x50` from view state |
-| wix-stores    | utils/product-mapper.ts     | Remove `{w: 300, h: 300}` resize from `formatWixMediaUrl` call |
-| wix-stores-v1 | components/product-page.ts  | Remove `thumbnail_50x50` from view state           |
-| wix-cart      | contexts/cart-helpers.ts    | No change needed (already no resize)               |
-| wix-data      | components/collection-list.ts | No change needed (already no resize)             |
+| Package       | File                          | Change                                                                                        |
+| ------------- | ----------------------------- | --------------------------------------------------------------------------------------------- |
+| wix-stores    | components/product-page.ts    | Remove resize params from `formatWixMediaUrl` calls, remove `thumbnail_50x50` from view state |
+| wix-stores    | utils/product-mapper.ts       | Remove `{w: 300, h: 300}` resize from `formatWixMediaUrl` call                                |
+| wix-stores-v1 | components/product-page.ts    | Remove `thumbnail_50x50` from view state                                                      |
+| wix-cart      | contexts/cart-helpers.ts      | No change needed (already no resize)                                                          |
+| wix-data      | components/collection-list.ts | No change needed (already no resize)                                                          |
 
 ### Example Template Changes
 
@@ -628,13 +628,13 @@ All `<img src="{...url}">` bindings need optimization params — the validator c
 
 ### Revised Trade-offs
 
-| Decision                                    | Benefit                                                    | Cost                                              |
-| ------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------- |
-| Validation-driven optimization              | Designer controls sizing per context; no tag proliferation  | Agent must learn URL transform syntax              |
-| Dev-only plugin                             | Zero production footprint; simpler deployment               | Plugin not available at runtime                    |
-| Contract tag metadata (`meta.mediaType`)    | Validator detects wix-image bindings at build time          | All image URL tags across packages need `meta`     |
-| Drop pre-optimized tags (`thumbnail_50x50`) | Fewer tags, designer picks dimensions                       | Breaking change for existing templates             |
-| Raw base URLs from components               | Single `url` tag serves all size needs                      | Templates are slightly more verbose                |
+| Decision                                    | Benefit                                                    | Cost                                           |
+| ------------------------------------------- | ---------------------------------------------------------- | ---------------------------------------------- |
+| Validation-driven optimization              | Designer controls sizing per context; no tag proliferation | Agent must learn URL transform syntax          |
+| Dev-only plugin                             | Zero production footprint; simpler deployment              | Plugin not available at runtime                |
+| Contract tag metadata (`meta.mediaType`)    | Validator detects wix-image bindings at build time         | All image URL tags across packages need `meta` |
+| Drop pre-optimized tags (`thumbnail_50x50`) | Fewer tags, designer picks dimensions                      | Breaking change for existing templates         |
+| Raw base URLs from components               | Single `url` tag serves all size needs                     | Templates are slightly more verbose            |
 
 ### Revised Implementation Plan
 
@@ -712,9 +712,7 @@ const mediaContract: JayHtmlValidationContext['contract'] = {
 
 ```typescript
 it('flags hardcoded wix URL without /v1/ optimization', async () => {
-  const ctx = makeContext(
-    '<img src="https://static.wixstatic.com/media/abc123" alt="photo" />',
-  );
+  const ctx = makeContext('<img src="https://static.wixstatic.com/media/abc123" alt="photo" />');
   const findings = await validate(ctx);
   expect(findings).toEqual([
     expect.objectContaining({
@@ -738,10 +736,7 @@ it('passes hardcoded wix URL with /v1/ optimization', async () => {
 
 ```typescript
 it('flags wix-image binding without optimization params in template', async () => {
-  const ctx = makeContext(
-    '<img src="{mainMedia.url}" alt="product" />',
-    mediaContract,
-  );
+  const ctx = makeContext('<img src="{mainMedia.url}" alt="product" />', mediaContract);
   const findings = await validate(ctx);
   expect(findings).toEqual([
     expect.objectContaining({
@@ -761,10 +756,7 @@ it('passes wix-image binding with optimization params appended', async () => {
 });
 
 it('does not flag binding to non-wix-image tag', async () => {
-  const ctx = makeContext(
-    '<img src="{mainMedia.altText}" alt="product" />',
-    mediaContract,
-  );
+  const ctx = makeContext('<img src="{mainMedia.altText}" alt="product" />', mediaContract);
   const findings = await validate(ctx);
   // altText has no meta.mediaType — not a wix image, no error
   expect(findings).toEqual([]);
@@ -775,9 +767,7 @@ it('does not flag binding to non-wix-image tag', async () => {
 
 ```typescript
 it('flags local /public/ image path', async () => {
-  const ctx = makeContext(
-    '<img src="/images/logo.png" alt="logo" />',
-  );
+  const ctx = makeContext('<img src="/images/logo.png" alt="logo" />');
   const findings = await validate(ctx);
   expect(findings).toEqual([
     expect.objectContaining({
@@ -788,17 +778,13 @@ it('flags local /public/ image path', async () => {
 });
 
 it('flags local image with various extensions', async () => {
-  const ctx = makeContext(
-    '<img src="/banner.webp" alt="banner" />',
-  );
+  const ctx = makeContext('<img src="/banner.webp" alt="banner" />');
   const findings = await validate(ctx);
   expect(findings).toHaveLength(1);
 });
 
 it('does not flag non-image local paths', async () => {
-  const ctx = makeContext(
-    '<a href="/about">About</a>',
-  );
+  const ctx = makeContext('<a href="/about">About</a>');
   const findings = await validate(ctx);
   expect(findings).toEqual([]);
 });
@@ -846,6 +832,58 @@ it('returns no findings for fully optimized page', async () => {
   expect(findings).toEqual([]);
 });
 ```
+
+### Framework Issue: Validator handler loading for npm packages
+
+**Problem:** `jay-stack-cli` loads validator handlers incorrectly for npm-published plugins. The validator loading code at `jay-stack-cli/dist/index.js:4277` resolves the handler as a file path relative to the plugin directory:
+
+```js
+// Current (broken for npm packages):
+const handlerPath = path.resolve(plugin.pluginPath, validatorDef.handler);
+const handlerModule = await import(handlerPath);
+validatorFn = handlerModule.validate;
+```
+
+With `handler: validate` in plugin.yaml and a plugin at `node_modules/@jay-framework/wix-media`, this resolves to `node_modules/@jay-framework/wix-media/validate` — which doesn't exist.
+
+**Expected:** Should match the `loadHandler` pattern used by setup/references handlers in `stack-server-runtime/dist/index.js:2956-2985`:
+
+```js
+// For npm packages (plugin.isLocal === false):
+const module = await import(plugin.packageName); // e.g. import('@jay-framework/wix-media')
+const validatorFn = module[validatorDef.handler]; // e.g. module.validate
+
+// For local plugins (plugin.isLocal === true):
+const handlerPath = path.resolve(plugin.pluginPath, validatorDef.handler);
+const module = await import(handlerPath);
+const validatorFn = module.validate;
+```
+
+**Impact:** Plugin validators declared in plugin.yaml with `handler: validate` (an exported function name) work for local plugins but silently fail for npm packages. The error is caught and reported as "Failed to load validator", but in practice the validator just doesn't run.
+
+**Fix location:** `jay-stack-cli`, in the `jay-stack validate` command's validator loading loop. Needs the same local-vs-npm branching that `loadHandler` in `stack-server-runtime` already implements.
+
+**Workaround:** Setting `handler: ./dist/index.js` (a relative file path) works but is fragile and inconsistent with how setup handlers are declared.
+
+### Framework Issue: Validation context doesn't resolve `link:` sub-contracts
+
+**Problem:** The validation context passed to plugin validators contains contracts with unresolved `link:` references. Sub-contract tags with `link: ./media-gallery` have NO `tags` array — only the `link` string. This means `resolveBinding()` and `walkElements()` can't traverse through linked sub-contracts to reach nested tags.
+
+**Example:** `product-page` contract has:
+
+```
+mediaGallery (link: ./media-gallery)
+  └→ selectedMedia (link: ./media)
+       └→ url (meta: {mediaType: wix-image})  ← validator can't reach this
+```
+
+Binding `{productPage.mediaGallery.selectedMedia.url}` — the validator resolves `mediaGallery` but finds `link: './media-gallery'` with no `tags`, so it stops. The `meta: {mediaType: wix-image}` on the `url` tag is invisible.
+
+**Where it works correctly:** The tag coverage analysis in `jay-stack validate` DOES resolve links (it reports all 55 tags including linked ones). The `resolveHeadlessInstances` function at `compiler-jay-html:29864-29876` also resolves links using `loadLinkedContract()`. Only the validation context construction skips link resolution.
+
+**Fix location:** `jay-stack-cli`, validation context construction at line 4310-4324. Before passing `parsed.contract` and `parsed.headlessImports[].contract` to validators, resolve all `link:` references inline using `loadLinkedContract()` — replacing `link:` with the linked contract's `tags`. The `importResolver` is available in the validation code path.
+
+**Impact:** Rule B (binding to wix-image tag) only works for contracts with inline `tags`. Contracts connected via `link:` (which is the common case for wix-stores media) are invisible to validators. Rules A and C (static URL / local image) work fine since they don't depend on contract resolution.
 
 ### Verification Criteria
 

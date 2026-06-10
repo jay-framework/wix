@@ -101,21 +101,18 @@ function mapMedia(product: Product): MediaGalleryViewState {
     const mediaItems = product.media?.items || [];
 
     const mainUrl = mainMedia?.image?.url || '';
-    const mainThumbnail = mainMedia?.thumbnail?.url || '';
     const mainMediaType = mainMedia?.mediaType === 'video' ? MediaType.VIDEO : MediaType.IMAGE;
 
     return {
         selectedMedia: {
             url: mainUrl,
             mediaType: mainMediaType,
-            thumbnail_50x50: mainThumbnail,
         },
         availableMedia: mediaItems.map((item, index) => ({
             mediaId: item._id || String(index),
             media: {
                 url: item.image?.url || '',
                 mediaType: item.mediaType === 'video' ? MediaType.VIDEO : MediaType.IMAGE,
-                thumbnail_50x50: item.thumbnail?.url || '',
             },
             selected: item._id === mainMedia?._id ? Selected.selected : Selected.notSelected,
         })),

@@ -436,9 +436,7 @@ export function mapProductToCard(
             mediaType: mapMediaType(mainMedia?.mediaType),
         },
         thumbnail: {
-            url: mainMedia
-                ? formatWixMediaUrl(mainMedia._id, mainMedia.url, { w: 300, h: 300 })
-                : '',
+            url: mainMedia ? formatWixMediaUrl(mainMedia._id, mainMedia.url) : '',
             altText: mainMedia?.altText || product.name || '',
             width: 300,
             height: 300,

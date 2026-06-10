@@ -42,6 +42,7 @@ tags:
         type: data
         dataType: string
         description: Category image URL
+        meta: {mediaType: wix-image}
         
       - tag: categoryLink
         type: interactive

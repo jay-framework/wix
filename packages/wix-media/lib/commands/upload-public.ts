@@ -1,5 +1,7 @@
 import { makeCliCommand, CONSOLE_CONTEXT } from '@jay-framework/fullstack-component';
-import { WIX_MEDIA_SERVICE_MARKER } from '../services/wix-media-service.js';
+import { getService } from '@jay-framework/stack-server-runtime';
+import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
+import { provideWixMediaService } from '../services/wix-media-service.js';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
@@ -93,8 +95,11 @@ function scanMediaFiles(dir: string, baseDir: string): string[] {
 }
 
 export const uploadPublic = makeCliCommand('upload-public')
-    .withServices(WIX_MEDIA_SERVICE_MARKER, CONSOLE_CONTEXT)
-    .withHandler(async (input: { folder?: string; dryRun?: boolean }, mediaService, console) => {
+    .withServices(CONSOLE_CONTEXT)
+    .withHandler(async (input: { folder?: string; dryRun?: boolean }, console) => {
+        const wixClient = getService(WIX_CLIENT_SERVICE);
+        const mediaService = provideWixMediaService(wixClient);
+
         const publicDir = console.publicFolder;
         const scanDir = input.folder ? path.join(publicDir, input.folder) : publicDir;
         const configDir = path.join(console.projectRoot, 'config');

@@ -7,8 +7,14 @@ import type {
     PluginReferencesResult,
 } from '@jay-framework/stack-server-runtime';
 import { getService } from '@jay-framework/stack-server-runtime';
-import { WIX_MEDIA_SERVICE_MARKER, type WixMediaService } from './services/wix-media-service.js';
+import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
+import { provideWixMediaService } from './services/wix-media-service.js';
 import { generateMediaIndex } from './index-generator.js';
+
+function createMediaService() {
+    const wixClient = getService(WIX_CLIENT_SERVICE);
+    return provideWixMediaService(wixClient);
+}
 
 export async function setupWixMedia(ctx: PluginSetupContext): Promise<PluginSetupResult> {
     if (ctx.initError) {
@@ -21,11 +27,13 @@ export async function setupWixMedia(ctx: PluginSetupContext): Promise<PluginSetu
     }
 
     try {
-        getService(WIX_MEDIA_SERVICE_MARKER);
+        createMediaService();
     } catch {
         return {
-            status: 'error',
-            message: 'WixMediaService not available. Check initialization.',
+            status: 'needs-config',
+            message:
+                'wix-media requires wix-server-client to be configured first. ' +
+                'Run: jay-stack setup wix-server-client',
         };
     }
 
@@ -42,23 +50,23 @@ export async function generateWixMediaReferences(
         throw new Error(`init failed: ${ctx.initError.message}`);
     }
 
-    let mediaService: WixMediaService;
+    let mediaService;
     try {
-        mediaService = getService(WIX_MEDIA_SERVICE_MARKER) as WixMediaService;
+        mediaService = createMediaService();
     } catch {
         throw new Error('WixMediaService not available. Run jay-stack setup first.');
     }
 
     fs.mkdirSync(ctx.referencesDir, { recursive: true });
 
-    const files = await mediaService.listPublicFiles();
+    const mediaFiles = await mediaService.listPublicFiles();
 
-    const mediaIndexContent = generateMediaIndex(files);
+    const mediaIndexContent = generateMediaIndex(mediaFiles);
     const mediaIndexPath = path.join(ctx.referencesDir, 'MEDIA-INDEX.md');
     fs.writeFileSync(mediaIndexPath, mediaIndexContent, 'utf-8');
 
     return {
         referencesCreated: [`agent-kit/references/${ctx.pluginName}/MEDIA-INDEX.md`],
-        message: `${files.length} media files indexed.`,
+        message: `${mediaFiles.length} media files indexed.`,
     };
 }

@@ -1,12 +1,17 @@
 import { makeCliCommand, CONSOLE_CONTEXT } from '@jay-framework/fullstack-component';
-import { WIX_MEDIA_SERVICE_MARKER } from '../services/wix-media-service.js';
+import { getService } from '@jay-framework/stack-server-runtime';
+import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
+import { provideWixMediaService } from '../services/wix-media-service.js';
 import { generateMediaIndex } from '../index-generator.js';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
 export const rebuildIndex = makeCliCommand('rebuild-index')
-    .withServices(WIX_MEDIA_SERVICE_MARKER, CONSOLE_CONTEXT)
-    .withHandler(async (input: {}, mediaService, console) => {
+    .withServices(CONSOLE_CONTEXT)
+    .withHandler(async (input: {}, console) => {
+        const wixClient = getService(WIX_CLIENT_SERVICE);
+        const mediaService = provideWixMediaService(wixClient);
+
         console.log('Fetching media from Wix Media Manager...');
         const files = await mediaService.listPublicFiles();
         console.log(`Found ${files.length} public media files.`);

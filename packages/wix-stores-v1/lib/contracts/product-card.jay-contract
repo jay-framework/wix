@@ -36,17 +36,18 @@ tags:
         type: data
         dataType: string
         description: Media URL
-        
+        meta: {mediaType: wix-image}
+
       - tag: altText
         type: data
         dataType: string
         description: Media alt text
-        
+
       - tag: mediaType
         type: data
         dataType: enum (IMAGE | VIDEO)
         description: Media type
-        
+
   - tag: thumbnail
     type: sub-contract
     description: Thumbnail image optimized for listings
@@ -55,17 +56,18 @@ tags:
         type: data
         dataType: string
         description: Thumbnail URL
-        
+        meta: {mediaType: wix-image}
+
       - tag: altText
         type: data
         dataType: string
         description: Thumbnail alt text
-        
+
       - tag: width
         type: data
         dataType: number
         description: Thumbnail width in pixels
-        
+
       - tag: height
         type: data
         dataType: number
