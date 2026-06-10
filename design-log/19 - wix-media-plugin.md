@@ -833,7 +833,7 @@ it('returns no findings for fully optimized page', async () => {
 });
 ```
 
-### Framework Issue: Validator handler loading for npm packages
+### Framework Issue: Validator handler loading for npm packages ✅ Fixed
 
 **Problem:** `jay-stack-cli` loads validator handlers incorrectly for npm-published plugins. The validator loading code at `jay-stack-cli/dist/index.js:4277` resolves the handler as a file path relative to the plugin directory:
 
@@ -865,7 +865,7 @@ const validatorFn = module.validate;
 
 **Workaround:** Setting `handler: ./dist/index.js` (a relative file path) works but is fragile and inconsistent with how setup handlers are declared.
 
-### Framework Issue: Validation context doesn't resolve `link:` sub-contracts
+### Framework Issue: Validation context doesn't resolve `link:` sub-contracts ✅ Fixed
 
 **Problem:** The validation context passed to plugin validators contains contracts with unresolved `link:` references. Sub-contract tags with `link: ./media-gallery` have NO `tags` array — only the `link` string. This means `resolveBinding()` and `walkElements()` can't traverse through linked sub-contracts to reach nested tags.
 
@@ -884,6 +884,38 @@ Binding `{productPage.mediaGallery.selectedMedia.url}` — the validator resolve
 **Fix location:** `jay-stack-cli`, validation context construction at line 4310-4324. Before passing `parsed.contract` and `parsed.headlessImports[].contract` to validators, resolve all `link:` references inline using `loadLinkedContract()` — replacing `link:` with the linked contract's `tags`. The `importResolver` is available in the validation code path.
 
 **Impact:** Rule B (binding to wix-image tag) only works for contracts with inline `tags`. Contracts connected via `link:` (which is the common case for wix-stores media) are invisible to validators. Rules A and C (static URL / local image) work fine since they don't depend on contract resolution.
+
+### Framework Issue: `walkElements` doesn't resolve headless-keyed `forEach` paths ✅ Fixed
+
+**Problem:** `walkElements` in `compiler-shared` handles `forEach` by calling `resolveTagPath(forEach, currentScope.tags)`. When the `forEach` value is headless-keyed (e.g., `forEach="productSearch.searchResults"`), it tries to find `productSearch` in the current scope — which is empty (no page contract). The forEach scope is never entered, so all bindings inside it (like `{thumbnail.url}`) are resolved against an empty scope. The validator can't detect `meta.mediaType` and silently skips them.
+
+**Where it works:** `walkElements` correctly handles `<jay:componentName>` elements by looking up the headless import's contract (line 1637-1647). But it does NOT apply the same headless-key lookup for `forEach` attributes (line 1649-1657).
+
+**Expected behavior:** When `resolveTagPath` fails on a `forEach` value, `walkElements` should check if the first segment matches a headless import key, then resolve the remaining path against that import's contract — exactly like it does for `<jay:...>` elements.
+
+**Fix location:** `compiler-shared`, `doWalk` function, forEach handling (~line 1649-1657). After `resolveTagPath` returns null, try headless key lookup:
+
+```js
+const forEach = el.getAttribute?.("forEach");
+if (forEach) {
+    let arrayTag = resolveTagPath(forEach, currentScope.tags);
+    // Headless-keyed forEach: "productSearch.searchResults"
+    if (!arrayTag) {
+        const segments = forEach.split(".");
+        const headless = ctx.headlessImports.find(
+            (h) => h.key === segments[0] && h.contract
+        );
+        if (headless?.contract) {
+            arrayTag = resolveTagPath(segments.slice(1).join("."), headless.contract.tags);
+        }
+    }
+    if (arrayTag?.tags) {
+        currentScope = { tags: arrayTag.tags, parent: currentScope };
+    }
+}
+```
+
+**Impact:** All plugin validators that rely on `walkElements` + `resolveBinding` inside `forEach` scopes are broken for headless-keyed paths. This affects any validator checking bindings inside product grids, search results, cart line items, etc.
 
 ### Verification Criteria
 
