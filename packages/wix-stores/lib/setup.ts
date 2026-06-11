@@ -19,10 +19,7 @@ import type {
 import { getService } from '@jay-framework/stack-server-runtime';
 import { WIX_STORES_SERVICE_MARKER, type WixStoresService } from './services/wix-stores-service';
 import type { DataExtensionSchema } from './utils/data-extension-schema';
-import {
-    buildCategoryAddMenuItems,
-    type CategoryTreeNode,
-} from './add-menu/category-items.js';
+import { buildCategoryAddMenuItems, type CategoryTreeNode } from './add-menu/category-items.js';
 import { loadWixStoresConfig } from './config-loader.js';
 
 const CONFIG_FILE_NAME = '.wix-stores.yaml';

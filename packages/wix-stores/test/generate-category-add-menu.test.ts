@@ -102,9 +102,7 @@ describe('buildCategoryAddMenuItems (Design Log #20 — generated categories)', 
 
         expect(polgat?.title).toEqual('Category — Polgat');
         expect(polgat?.prompt).toEqual(expect.stringMatching(/Category slug: polgat/));
-        expect(polgat?.prompt).toEqual(
-            expect.stringMatching(/parentCategory="polgat"/),
-        );
+        expect(polgat?.prompt).toEqual(expect.stringMatching(/parentCategory="polgat"/));
     });
 });
 

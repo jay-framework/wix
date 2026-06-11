@@ -6,6 +6,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "dev": "jay-stack-cli dev",
+    "setup": "jay-stack-cli setup",
     "agent-kit": "jay-stack-cli agent-kit",
     "validate": "jay-stack-cli validate",
     "clean": "rimraf dist && rimraf build && rimraf -g 'src/**/*.d.ts'",
@@ -40,6 +41,7 @@
   "devDependencies": {
     "@jay-framework/jay-cli": "^0.18.4",
     "@jay-framework/wix-dev-environment": "workspace:^",
+    "@jay-framework/wix-media": "workspace:^",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.0",
     "cross-env": "^7.0.3",

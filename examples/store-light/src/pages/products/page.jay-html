@@ -518,8 +518,13 @@
         <div class="products-grid-large">
           <article class="product-card {isAddingToCart ? is-adding}" forEach="productSearch.searchResults" trackBy="_id">
             <a href="{productUrl}" class="product-card-image">
-              <img 
-                src="{thumbnail.url}" 
+              <img
+                src="{thumbnail.url}/v1/fill/w_400,h_400/file.webp"
+                srcset="{thumbnail.url}/v1/fill/w_300,h_300/file.webp 300w,
+                        {thumbnail.url}/v1/fill/w_400,h_400/file.webp 400w,
+                        {thumbnail.url}/v1/fill/w_600,h_600/file.webp 600w,
+                        {thumbnail.url}/v1/fill/w_800,h_800/file.webp 800w"
+                sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, (max-width: 1200px) 33vw, 25vw"
                 alt="{thumbnail.altText}"
                 loading="lazy"
               />

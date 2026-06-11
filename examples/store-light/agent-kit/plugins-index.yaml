@@ -57,6 +57,13 @@ plugins:
         description: Category list listing the categories
         type: static
         path: ./../../packages/wix-stores/dist/contracts/category-list.jay-contract
+      - name: product-page
+        description: Full product detail page with variants, options, media gallery, and
+          add-to-cart. Use for individual product pages.
+        type: dynamic
+        path: ./agent-kit/materialized-contracts/wix-stores/product-page.jay-contract
+        metadata:
+          extendedFieldCount: 0
     actions:
       - name: searchProducts
         description: Search products in the Wix Store catalog using Catalog V3. Supports
@@ -85,3 +92,11 @@ plugins:
         marker: WIX_STORES_CONTEXT
         description: Client-side stores access with product variant resolution and
           delegated cart operations
+  - name: wix-media
+    path: ./../../packages/wix-media
+    contracts: []
+    commands:
+      - name: upload-public
+        description: Upload local public/ files to Wix Media Manager
+      - name: rebuild-index
+        description: Rebuild agent-kit media index from current Wix Media Manager state

@@ -77,11 +77,7 @@ function sanitizeIdSegment(slug: string, categoryId: string): string {
     return categoryId.slice(0, 8);
 }
 
-function uniqueCategoryItemId(
-    slug: string,
-    categoryId: string,
-    usedIds: Set<string>,
-): string {
+function uniqueCategoryItemId(slug: string, categoryId: string, usedIds: Set<string>): string {
     const base = sanitizeIdSegment(slug, categoryId);
     let id = `wix-stores:category:${base}`;
     let suffix = 2;
@@ -124,9 +120,7 @@ function resolveExampleCategoryUrl(
 function buildCategoryPrompt(config: WixStoresConfig, entry: FlatCategoryEntry): string {
     const { node, breadcrumbNames, breadcrumbSlugs, rootSlug, parentSlug } = entry;
     const hierarchyPath =
-        breadcrumbNames.length > 0
-            ? [...breadcrumbNames, node.name].join(' > ')
-            : node.name;
+        breadcrumbNames.length > 0 ? [...breadcrumbNames, node.name].join(' > ') : node.name;
 
     const lines = [
         `Scope this request to Wix Stores category "${node.name}".`,

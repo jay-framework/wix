@@ -520,7 +520,7 @@
                     
                     <a href="{productUrl}" class="item-image-link" ref="cartPage.lineItems.productLink">
                         <img class="item-image"
-                             src="{image.url}"
+                             src="{image.url}/v1/fill/w_120,h_120/file.webp"
                              alt="{image.altText}"
                              loading="lazy">
                     </a>

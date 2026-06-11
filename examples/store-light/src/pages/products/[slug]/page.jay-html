@@ -483,14 +483,14 @@
       <section class="gallery-section">
         <div class="gallery-container">
           <div class="main-image-wrapper">
-            <img src="{productPage.mediaGallery.selectedMedia.url}" alt="{productPage.productName}" />
+            <img src="{productPage.mediaGallery.selectedMedia.url}/v1/fill/w_800,h_600/file.webp" alt="{productPage.productName}" />
           </div>
           <div class="thumbnails-row">
             <div class="thumb-item {selected == selected ? selected}"
                  forEach="productPage.mediaGallery.availableMedia" 
                  trackBy="mediaId"
                  ref="productPage.mediaGallery.availableMedia.selected">
-              <img src="{media.thumbnail_50x50}" alt="Thumbnail" />
+              <img src="{media.url}/v1/fill/w_50,h_50/file.jpg" alt="Thumbnail" />
             </div>
           </div>
         </div>
@@ -634,7 +634,7 @@
           <div class="related-grid">
             <article class="product-card {isAddingToCart ? is-adding}" forEach="products" trackBy="_id">
               <a href="{productUrl}" class="product-card-image">
-                <img src="{thumbnail.url}" alt="{thumbnail.altText}" loading="lazy" />
+                <img src="{thumbnail.url}/v1/fill/w_300,h_300/file.webp" alt="{thumbnail.altText}" loading="lazy" />
                 <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
               </a>
               <div class="product-card-content">
