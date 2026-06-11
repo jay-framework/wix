@@ -20,7 +20,7 @@ Optional configuration file. Created automatically by `jay-stack-cli setup` if m
 ```yaml
 # Checkout callback URLs
 urls:
-  thankYou: "/thank-you"    # Where Wix redirects after successful checkout (default: /thank-you)
+  thankYou: '/thank-you' # Where Wix redirects after successful checkout (default: /thank-you)
 ```
 
 ## Headless Components
@@ -34,6 +34,7 @@ Full shopping cart with line item management and checkout.
 - **Interactive**: Line items (quantity, remove), coupon input, checkout button
 
 Key interactions:
+
 - `checkoutButton` — Creates a Wix checkout and redirects to hosted checkout
 - `continueShoppingLink` — Link back to products
 - `clearCartButton` — Remove all items
@@ -73,9 +74,9 @@ import { WIX_CART_SERVICE } from '@jay-framework/wix-cart';
 
 // Available in .withServices(WIX_CART_SERVICE)
 interface WixCartService {
-    cart: CurrentCartClient;       // @wix/ecom currentCart
-    redirects: RedirectsClient;    // @wix/redirects
-    urls: { thankYou: string };    // Configured URLs
+  cart: CurrentCartClient; // @wix/ecom currentCart
+  redirects: RedirectsClient; // @wix/redirects
+  urls: { thankYou: string }; // Configured URLs
 }
 ```
 
@@ -88,16 +89,20 @@ import { WIX_CART_CONTEXT } from '@jay-framework/wix-cart';
 
 // Available in useContext(WIX_CART_CONTEXT)
 interface WixCartContext {
-    cartIndicator: { itemCount: Getter<number>; hasItems: Getter<boolean> };
-    refreshCartIndicator(): Promise<void>;
-    getEstimatedCart(): Promise<CartState>;
-    addToCart(productId: string, quantity?: number, options?: AddToCartOptions): Promise<CartOperationResult>;
-    removeLineItems(lineItemIds: string[]): Promise<CartOperationResult>;
-    updateLineItemQuantity(lineItemId: string, quantity: number): Promise<CartOperationResult>;
-    clearCart(): Promise<void>;
-    applyCoupon(couponCode: string): Promise<CartOperationResult>;
-    removeCoupon(): Promise<CartOperationResult>;
-    checkout(): Promise<string>;    // Returns Wix checkout redirect URL
+  cartIndicator: { itemCount: Getter<number>; hasItems: Getter<boolean> };
+  refreshCartIndicator(): Promise<void>;
+  getEstimatedCart(): Promise<CartState>;
+  addToCart(
+    productId: string,
+    quantity?: number,
+    options?: AddToCartOptions,
+  ): Promise<CartOperationResult>;
+  removeLineItems(lineItemIds: string[]): Promise<CartOperationResult>;
+  updateLineItemQuantity(lineItemId: string, quantity: number): Promise<CartOperationResult>;
+  clearCart(): Promise<void>;
+  applyCoupon(couponCode: string): Promise<CartOperationResult>;
+  removeCoupon(): Promise<CartOperationResult>;
+  checkout(): Promise<string>; // Returns Wix checkout redirect URL
 }
 ```
 

@@ -237,12 +237,14 @@ The redirect session needs absolute URLs. The client passes `window.location.ori
 ### Phase 1: Checkout Redirect — DONE
 
 **Two-step checkout flow:**
+
 1. `cartClient.createCheckoutFromCurrentCart({})` → returns `checkoutId`
 2. `redirectsClient.createRedirectSession({ ecomCheckout: { checkoutId }, callbacks: { postFlowUrl } })` → returns redirect URL
 
 This was different from the original design which assumed `currentCart: true` could be passed directly to `createRedirectSession`. The Wix Redirects API requires an explicit `checkoutId`, so a checkout must be created first from the current cart.
 
 **Files changed:**
+
 - `lib/utils/redirects-client.ts` — new factory for `@wix/redirects` client
 - `lib/config-loader.ts` — reads `config/.wix-cart.yaml` for `urls.thankYou` (default `/thank-you`)
 - `lib/services/wix-cart-service-marker.ts` — `WixCartService` extended with `redirects` and `urls`
@@ -253,6 +255,7 @@ This was different from the original design which assumed `currentCart: true` co
 - `package.json` — added `@wix/redirects` dependency
 
 **Deviations from design:**
+
 - Checkout runs client-side (OAuth) not server-side (API key). The `createCheckoutFromCurrentCart` and `createRedirectSession` APIs work with OAuth, so no server action is needed. Simpler — no extra round-trip.
 - No `checkoutError` variant added to the contract yet. Errors are logged to console and `isCheckingOut` is reset to false.
 - No thank-you page template in examples yet (Phase 2).
