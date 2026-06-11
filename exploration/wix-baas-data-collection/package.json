@@ -1,0 +1,27 @@
+{
+  "name": "wix-baas-data-collection",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Exploration: Test storing Jay backend build files in Wix data collections for BaaS deployment",
+  "private": true,
+  "scripts": {
+    "upload": "node --loader ts-node/esm src/upload-backend.ts",
+    "fetch": "node --loader ts-node/esm src/fetch-page.ts",
+    "stats": "node --loader ts-node/esm src/stats.ts",
+    "clean": ":",
+    "build": ":",
+    "build:check-types": "tsc --noEmit",
+    "test": ":"
+  },
+  "dependencies": {
+    "@wix/data": "^1.0.433",
+    "@wix/sdk": "^1.21.5",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.5",
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

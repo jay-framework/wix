@@ -25,7 +25,10 @@ Design documentation for the Jay Framework Wix integration packages.
 | 17  | [Related Products](./17%20-%20related-products.md)                                             | Draft           |
 | 18  | [Wix Members Package](./18%20-%20wix-members-package.md)                                       | Draft           |
 | 19  | [Wix Media Plugin](./19%20-%20wix-media-plugin.md)                                             | Draft           |
-| 20  | [wix-stores Add Menu contribution](./20%20-%20wix-stores-add-menu-contribution.md)             | Execution-ready |
+| 20  | [Wix BaaS Deployment](./20%20-%20wix-baas-deployment.md)                                       | Draft           |
+| 21  | [BaaS Entry Framework Requirements](./21%20-%20baas-entry-framework-requirements.md)           | Draft           |
+| 22  | [Wix Deploy Pipeline](./22%20-%20wix-deploy-pipeline.md)                                       | Draft           |
+| 23  | [wix-stores Add Menu contribution](./20%20-%20wix-stores-add-menu-contribution.md)             | Execution-ready |
 
 ## Packages Covered
 

@@ -26,6 +26,14 @@ plugins:
         marker: WIX_CART_CONTEXT
         description: Client-side reactive cart state with add-to-cart, remove, quantity,
           coupon, and checkout operations
+  - name: wix-deploy
+    path: ./../../packages/wix-deploy
+    contracts: []
+    commands:
+      - name: deploy
+      - name: build-entry
+      - name: upload-backend
+      - name: deploy-baas
   - name: wix-server-client
     path: ./../../packages/wix-server-client
     contracts: []
