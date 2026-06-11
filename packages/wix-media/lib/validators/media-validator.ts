@@ -19,7 +19,9 @@ function checkStaticWixUrl(value: string): boolean {
 }
 
 function isLocalImagePath(value: string): boolean {
-    return value.startsWith('/') && IMAGE_EXTENSIONS_RE.test(value);
+    if (!IMAGE_EXTENSIONS_RE.test(value)) return false;
+    if (value.startsWith('http://') || value.startsWith('https://')) return false;
+    return true;
 }
 
 function resolveBindingWithHeadless(

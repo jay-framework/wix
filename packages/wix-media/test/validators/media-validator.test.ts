@@ -158,6 +158,12 @@ describe('media-validator', () => {
             expect(findings).toHaveLength(1);
         });
 
+        it('flags relative image path without leading slash', async () => {
+            const ctx = makeContext('<img src="photo.png" alt="photo" />');
+            const findings = await validate(ctx);
+            expect(findings).toHaveLength(1);
+        });
+
         it('does not flag non-image local paths', async () => {
             const ctx = makeContext('<a href="/about">About</a>');
             const findings = await validate(ctx);
