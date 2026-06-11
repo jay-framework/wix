@@ -50,7 +50,12 @@ The plugin requires `@jay-framework/wix-server-client` to be configured with Wix
 jay-stack setup wix-stores
 ```
 
-This creates `config/.wix-stores.yaml` and generates `agent-kit/references/wix-stores/categories.yaml` with the full category tree.
+This creates `config/.wix-stores.yaml` and writes static AIditor Add Menu component items to `agent-kit/aiditor/add-menu/wix-stores.yaml`.
+
+Run `jay-stack agent-kit` (or `yarn agent-kit`) to index the live category tree and refresh:
+
+- `agent-kit/references/wix-stores/categories.yaml` — full hierarchy for agent discovery
+- `agent-kit/aiditor/add-menu/wix-stores.generated.yaml` — one Add Menu item per category (Store → Categories)
 
 ### Config File (`config/.wix-stores.yaml`)
 
