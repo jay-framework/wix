@@ -30,8 +30,9 @@ export interface WixStoresConfig {
  * Load wix-stores config from config/.wix-stores.yaml.
  * Returns defaults when the config file doesn't exist.
  */
-export function loadWixStoresConfig(): WixStoresConfig {
-    const configPath = path.join(process.cwd(), 'config', '.wix-stores.yaml');
+export function loadWixStoresConfig(projectRoot?: string): WixStoresConfig {
+    const root = projectRoot ?? process.cwd();
+    const configPath = path.join(root, 'config', '.wix-stores.yaml');
 
     const defaults: WixStoresConfig = {
         urls: { product: '/products/{slug}', category: null },

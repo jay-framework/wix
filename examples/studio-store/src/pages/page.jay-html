@@ -1,0 +1,92 @@
+<html>
+  <head>
+    <script type="application/jay-data">
+      data:
+    </script>
+    <link rel="stylesheet" href="../styles/brutalist-theme.css" />
+    <style>
+      .home-page {
+        min-height: 100vh;
+      }
+
+      .hero {
+        padding: 120px var(--page-padding) 80px;
+        max-width: var(--container-max);
+        margin: 0 auto;
+      }
+
+      .hero-label {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: var(--text-muted);
+        margin-bottom: 24px;
+      }
+
+      .hero h1 {
+        font-family: var(--font-heading);
+        font-size: clamp(3rem, 8vw, 6rem);
+        font-weight: 700;
+        line-height: 1;
+        margin-bottom: 32px;
+        color: var(--text-primary);
+      }
+
+      .hero h1 span {
+        color: var(--accent);
+      }
+
+      .hero-description {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        max-width: 480px;
+        line-height: 1.6;
+        margin-bottom: 48px;
+      }
+
+      .hero-cta {
+        display: inline-block;
+        padding: 16px 40px;
+        background: var(--bg-inverse);
+        color: var(--text-inverse);
+        text-decoration: none;
+        font-family: var(--font-mono);
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        border: var(--border-width) solid var(--border);
+        transition: background 0.2s, color 0.2s;
+      }
+
+      .hero-cta:hover {
+        background: var(--accent);
+        color: var(--bg-inverse);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="home-page">
+      <header class="site-header">
+        <div class="header-inner">
+          <a href="/" class="site-logo">
+            STUDIO<span class="logo-dot"></span>
+          </a>
+          <nav class="site-nav">
+            <a href="/products">Products</a>
+            <a href="/cart">BAG</a>
+          </nav>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div class="hero-label">New Collection 2026</div>
+        <h1>Design<br/>meets <span>function</span></h1>
+        <p class="hero-description">
+          Curated products for those who appreciate bold design and uncompromising quality.
+        </p>
+        <a href="/products" class="hero-cta">Browse Collection</a>
+      </section>
+    </div>
+  </body>
+</html>

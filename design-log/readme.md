@@ -4,27 +4,31 @@ Design documentation for the Jay Framework Wix integration packages.
 
 ## Structure
 
-| #   | Title                                                                                          | Status        |
-| --- | ---------------------------------------------------------------------------------------------- | ------------- |
-| 01  | [Wix Packages Structure](./01%20-%20wix%20packages%20structure.md)                             | Documentation |
-| 02  | [Product Card Quick Options](./02%20-%20product%20card%20quick%20options.md)                   | Draft         |
-| 03  | [Category Pages](./03%20-%20category%20pages.md)                                               | Implemented   |
-| 04  | [Price Filter Enhancements](./04%20-%20price%20filter%20enhancements.md)                       | -             |
-| 05  | [Wix Data Plugin](./05%20-%20wix-data%20plugin.md)                                             | -             |
-| 06  | [Wix Stores V1 Package](./06%20-%20wix-stores-v1%20package.md)                                 | Implemented   |
-| 07  | [Wix Cart Shared Package](./07%20-%20wix-cart%20shared%20package.md)                           | -             |
-| 08  | [Wix Data List Slow/Fast Rendering](./08%20-%20wix-data%20list%20slow-fast%20rendering.md)     | Draft         |
-| 09  | [Wix Data List Field Mapping](./09%20-%20wix-data%20list%20field%20mapping.md)                 | Draft         |
-| 10  | [Category-Prefixed Product Routes](./10%20-%20category-prefixed-product-routes.md)             | Draft         |
-| 11  | [Category Deep-Linking & Header](./11%20-%20category-deep-linking-and-header.md)               | Draft         |
-| 12  | [Two-Option Quick Add](./12%20-%20two-option-quick-add.md)                                     | Draft         |
-| 13  | [Product Search Slow Phase Optimization](./13%20-%20product-search-slow-phase-optimization.md) | Draft         |
-| 14  | [Option-Based Product Filters](./14%20-%20option-based-product-filters.md)                     | Implemented   |
-| 15  | [Mini Cart Drawer](./15%20-%20mini-cart-drawer.md)                                             | Implemented   |
-| 16  | [Product Data Extension Fields](./16%20-%20product%20data%20extension%20fields.md)             | Draft         |
-| 17  | [Related Products](./17%20-%20related-products.md)                                             | Draft         |
-| 18  | [Wix Members Package](./18%20-%20wix-members-package.md)                                       | Draft         |
-| 19  | [Wix Media Plugin](./19%20-%20wix-media-plugin.md)                                             | Draft         |
+| #   | Title                                                                                          | Status          |
+| --- | ---------------------------------------------------------------------------------------------- | --------------- |
+| 01  | [Wix Packages Structure](./01%20-%20wix%20packages%20structure.md)                             | Documentation   |
+| 02  | [Product Card Quick Options](./02%20-%20product%20card%20quick%20options.md)                   | Draft           |
+| 03  | [Category Pages](./03%20-%20category%20pages.md)                                               | Implemented     |
+| 04  | [Price Filter Enhancements](./04%20-%20price%20filter%20enhancements.md)                       | -               |
+| 05  | [Wix Data Plugin](./05%20-%20wix-data%20plugin.md)                                             | -               |
+| 06  | [Wix Stores V1 Package](./06%20-%20wix-stores-v1%20package.md)                                 | Implemented     |
+| 07  | [Wix Cart Shared Package](./07%20-%20wix-cart%20shared%20package.md)                           | -               |
+| 08  | [Wix Data List Slow/Fast Rendering](./08%20-%20wix-data%20list%20slow-fast%20rendering.md)     | Draft           |
+| 09  | [Wix Data List Field Mapping](./09%20-%20wix-data%20list%20field%20mapping.md)                 | Draft           |
+| 10  | [Category-Prefixed Product Routes](./10%20-%20category-prefixed-product-routes.md)             | Draft           |
+| 11  | [Category Deep-Linking & Header](./11%20-%20category-deep-linking-and-header.md)               | Draft           |
+| 12  | [Two-Option Quick Add](./12%20-%20two-option-quick-add.md)                                     | Draft           |
+| 13  | [Product Search Slow Phase Optimization](./13%20-%20product-search-slow-phase-optimization.md) | Draft           |
+| 14  | [Option-Based Product Filters](./14%20-%20option-based-product-filters.md)                     | Implemented     |
+| 15  | [Mini Cart Drawer](./15%20-%20mini-cart-drawer.md)                                             | Implemented     |
+| 16  | [Product Data Extension Fields](./16%20-%20product%20data%20extension%20fields.md)             | Draft           |
+| 17  | [Related Products](./17%20-%20related-products.md)                                             | Draft           |
+| 18  | [Wix Members Package](./18%20-%20wix-members-package.md)                                       | Draft           |
+| 19  | [Wix Media Plugin](./19%20-%20wix-media-plugin.md)                                             | Draft           |
+| 20  | [Wix BaaS Deployment](./20%20-%20wix-baas-deployment.md)                                       | Draft           |
+| 21  | [BaaS Entry Framework Requirements](./21%20-%20baas-entry-framework-requirements.md)           | Draft           |
+| 22  | [Wix Deploy Pipeline](./22%20-%20wix-deploy-pipeline.md)                                       | Draft           |
+| 23  | [wix-stores Add Menu contribution](./20%20-%20wix-stores-add-menu-contribution.md)             | Execution-ready |
 
 ## Packages Covered
 

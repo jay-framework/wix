@@ -1,0 +1,26 @@
+{
+  "name": "wix-rest-api",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Exploration: Validate calling Wix APIs via REST using SDK auth",
+  "private": true,
+  "scripts": {
+    "server": "node --loader ts-node/esm src/test-server.ts",
+    "client": "vite",
+    "clean": ":",
+    "build": ":",
+    "build:check-types": "tsc --noEmit",
+    "test": ":"
+  },
+  "dependencies": {
+    "@wix/sdk": "^1.21.5",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.5",
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.0"
+  }
+}

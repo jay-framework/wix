@@ -1,0 +1,5 @@
+name: deploy-baas
+description: Deploy dist/ folder to Wix BaaS using the deployment API directly
+
+inputSchema:
+  dryRun?: boolean

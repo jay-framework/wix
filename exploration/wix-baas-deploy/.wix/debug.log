@@ -1,0 +1,71 @@
+----- CLI crash report at 2026-05-26T12:07:31.913Z
+Error Trace
+FailedCreatingAppDeployment: FailedCreatingAppDeployment
+    at BackendAsAServiceClient.createAppDeployment (/Users/yoav/.nvm/versions/node/v20.19.5/lib/node_modules/@wix/backend-as-a-service-client/src/backend-as-a-service-client.ts:127:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Proxy.wrapped (/Users/yoav/.nvm/versions/node/v20.19.5/lib/node_modules/@wix/cli-panorama/src/usePanoramaMethodLogger.ts:47:28)
+    at async <anonymous> (/Users/yoav/.nvm/versions/node/v20.19.5/lib/node_modules/@wix/cli-astro-commands/src/components/PreviewCommand/hooks/useDeployFiles.ts:53:9)
+caused by: Error: Request failed with status code 400
+    at createHttpError (/Users/yoav/.nvm/versions/node/v20.19.5/lib/node_modules/node_modules/@wix/http-client/src/error.ts:54:10)
+    at HttpClientNode.handleRequestError (/Users/yoav/.nvm/versions/node/v20.19.5/lib/node_modules/node_modules/@wix/http-client/src/http-client.ts:268:26)
+    at HttpClientNode.request (/Users/yoav/.nvm/versions/node/v20.19.5/lib/node_modules/node_modules/@wix/http-client/src/http-client.ts:105:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async RetryOperation._fn (/Users/yoav/.nvm/versions/node/v20.19.5/lib/node_modules/node_modules/p-retry/index.js:55:20)
+Error Info
+{}
+Request Info
+{
+  "request": {
+    "baseURL": "https://manage.wix.com",
+    "url": "/_api/wix-code-app-deployments/v1/app-projects/42dbb25c-dab0-4d8f-9c5c-1102f9b26e8d/app-deployments",
+    "method": "post",
+    "headers": {
+      "Accept": "application/json, text/plain, */*",
+      "Content-Type": "application/json",
+      "x-wix-bi-gateway": "environment=CLI-Headless,package-version=1.1.202,package-name=release",
+      "X-XSRF-TOKEN": "nocheck",
+      "Cookie": "XSRF-TOKEN=nocheck",
+      "User-Agent": "wix-cli",
+      "authorization": "OauthNG.JWS.eyJraWQiOiJZSEJzdUpwSCIsImFsZyI6IkhTMjU2In0.eyJkYXRhIjoie1wiaW5zdGFuY2VcIjp7XCJpbnN0YW5jZUlkXCI6XCI2Zjk1Y2VjOC0zZTk4LTQ4YjktYjRlNS0xZmI5MmZjZDk5NzNcIixcImFwcERlZklkXCI6XCI2Zjk1Y2VjOC0zZTk4LTQ4YjktYjRlNS0xZmI5MmZjZDk5NzNcIixcInNpZ25EYXRlXCI6XCIyMDI2LTA1LTI2VDEyOjA0OjQ1LjUxOVpcIixcInVpZFwiOlwiYzU2OWIzZDMtNGQ5Yi00MTk2LTgzY2EtYmI2OWY2ZDU2ODRkXCIsXCJwZXJtaXNzaW9uc1wiOlwiXCIsXCJkZW1vTW9kZVwiOmZhbHNlLFwic2l0ZU93bmVySWRcIjpcImM1NjliM2QzLTRkOWItNDE5Ni04M2NhLWJiNjlmNmQ1Njg0ZFwiLFwibWV0YVNpdGVJZFwiOlwiMjQ0MDU0MTEtMDA2ZC00Yjc3LTg1ZTQtNzU1N2FiNjQ1ZWI1XCIsXCJleHBpcmF0aW9uRGF0ZVwiOlwiMjAyNi0wNS0yNlQxNjowNDo0NS41MTlaXCIsXCJsb2dpbkFjY291bnRJZFwiOlwiYzU2OWIzZDMtNGQ5Yi00MTk2LTgzY2EtYmI2OWY2ZDU2ODRkXCIsXCJhb3JcIjp0cnVlLFwic2NkXCI6XCIyMDI2LTA1LTI2VDEyOjA0OjQyLjIyNFpcIixcImFjZFwiOlwiMjAxMy0wOC0wNVQwMjoxNTozN1pcIixcIndzXCI6dHJ1ZX19IiwiaWF0IjoxNzc5Nzk3MDg1LCJleHAiOjE3Nzk4MTE0ODV9.0MuEpcWccO4SjzPwffys3LsE2rpX_-_axdR1eSnmiog",
+      "Content-Length": 98
+    },
+    "data": "{\"appDeployment\":{\"appProjectId\":\"42dbb25c-dab0-4d8f-9c5c-1102f9b26e8d\",\"staticFilesMetadata\":[]}}"
+  },
+  "response": {
+    "message": "Request failed with status code 400",
+    "status": 400,
+    "headers": {
+      "date": "Tue, 26 May 2026 12:07:31 GMT",
+      "content-type": "application/json",
+      "content-length": "152",
+      "x-wix-responded-by": "wix.velo.backend.v1.app_deployment:CreateAppDeployment:com.wixpress.wixcode.wix-code-app-deployments",
+      "x-seen-by": "7U7NzZSqfMgd9YnjHLtUa7xkNjrXdwdgtu6E0yACibU=,Ua1iSBCTq7qSXjmRCGE1Nw/V2NQp7u+5PJvtU/2aS8FB2yE4bDWeCDprBG6e8EafrJrBWCuSLeKzFYX/VtW1uliB5QmpRe2J37zq9nDD6cs=,rXUceJIlvIg2Ftogbhjv0DtqMDe/cCSPFneD3QzTm5BEQfi00LSS7LJu7sdkoLsDoS2rBhyvXsAWCeQ5Azo3Tw==,r6yY0ta7bIKrqK70x072lRLUaNtD+RTBGSkoM1IfXC0=",
+      "x-wix-request-id": "1779797251.5341107902021336",
+      "set-cookie": [
+        "XSRF-TOKEN=1779797251|dmtgnG1E8ktk; Path=/; Domain=.wix.com; Secure; SameSite=None"
+      ],
+      "x-robots-tag": "noindex",
+      "server": "Pepyaka",
+      "x-content-type-options": "nosniff",
+      "strict-transport-security": "max-age=120 ; includeSubDomains",
+      "via": "1.1 google",
+      "glb-x-seen-by": "wMMTADooq5AJ3cFomJ/MuXOQWGce7NCZXKms1ErOpBs=",
+      "alt-svc": "h3=\":443\"; ma=2592000"
+    },
+    "data": {
+      "message": "Entry file entry.mjs not found",
+      "details": {
+        "applicationError": {
+          "code": "MISSING_ENTRY_FILE",
+          "description": "Entry file entry.mjs not found"
+        }
+      }
+    }
+  }
+}
+----- CLI crash report at 2026-05-26T12:07:54.323Z
+Error Trace
+BuildOutputMissing: BuildOutputMissing
+    at <anonymous> (/Users/yoav/.nvm/versions/node/v20.19.5/lib/node_modules/@wix/cli-astro-commands/src/components/PreviewCommand/hooks/useLoadBuildFiles.ts:45:13)
+Error Info
+{}

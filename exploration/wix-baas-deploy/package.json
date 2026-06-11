@@ -1,0 +1,20 @@
+{
+  "name": "wix-baas-deploy",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Exploration: Deploy a minimal fetch handler to Wix BaaS via Wix CLI",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:check-types": "tsc --noEmit",
+    "setup": "node scripts/setup-project.mjs",
+    "deploy": "node scripts/deploy.mjs",
+    "clean": ":",
+    "test": ":"
+  },
+  "devDependencies": {
+    "@wix/cli": "latest",
+    "esbuild": "^0.21.0",
+    "typescript": "^5.3.3"
+  }
+}

@@ -896,22 +896,20 @@ Binding `{productPage.mediaGallery.selectedMedia.url}` — the validator resolve
 **Fix location:** `compiler-shared`, `doWalk` function, forEach handling (~line 1649-1657). After `resolveTagPath` returns null, try headless key lookup:
 
 ```js
-const forEach = el.getAttribute?.("forEach");
+const forEach = el.getAttribute?.('forEach');
 if (forEach) {
-    let arrayTag = resolveTagPath(forEach, currentScope.tags);
-    // Headless-keyed forEach: "productSearch.searchResults"
-    if (!arrayTag) {
-        const segments = forEach.split(".");
-        const headless = ctx.headlessImports.find(
-            (h) => h.key === segments[0] && h.contract
-        );
-        if (headless?.contract) {
-            arrayTag = resolveTagPath(segments.slice(1).join("."), headless.contract.tags);
-        }
+  let arrayTag = resolveTagPath(forEach, currentScope.tags);
+  // Headless-keyed forEach: "productSearch.searchResults"
+  if (!arrayTag) {
+    const segments = forEach.split('.');
+    const headless = ctx.headlessImports.find((h) => h.key === segments[0] && h.contract);
+    if (headless?.contract) {
+      arrayTag = resolveTagPath(segments.slice(1).join('.'), headless.contract.tags);
     }
-    if (arrayTag?.tags) {
-        currentScope = { tags: arrayTag.tags, parent: currentScope };
-    }
+  }
+  if (arrayTag?.tags) {
+    currentScope = { tags: arrayTag.tags, parent: currentScope };
+  }
 }
 ```
 

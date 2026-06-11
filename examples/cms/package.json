@@ -17,6 +17,8 @@
     "build:production": "npm run build && jay-stack-cli build",
     "build:no-minify": "npm run build && jay-stack-cli build --no-minify",
     "serve": "jay-stack-cli serve",
+    "deploy": "jay-stack-cli run wix-deploy/deploy --exclude-plugins aiditor",
+    "deploy:serve": "node serve.mjs",
     "build:check-types": "tsc",
     "test": ":"
   },
@@ -24,6 +26,7 @@
     "@jay-framework/fullstack-component": "^0.18.4",
     "@jay-framework/jay-stack-cli": "^0.18.4",
     "@jay-framework/wix-data": "workspace:^",
+    "@jay-framework/wix-deploy": "workspace:^",
     "@jay-framework/wix-server-client": "workspace:^",
     "compression": "^1.7.5",
     "express": "^5.0.1",
