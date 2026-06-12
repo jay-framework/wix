@@ -401,7 +401,7 @@
 
       <!-- Hero - First Image Full Viewport -->
       <section class="hero-image-section">
-        <img src="{productPage.mediaGallery.selectedMedia.url}" alt="{productPage.productName}" />
+        <img src="{productPage.mediaGallery.selectedMedia.url}/v1/fill/w_1200,h_800/file.webp" alt="{productPage.productName}" />
         
         <div class="hero-overlay">
           <div class="hero-badges">
@@ -510,7 +510,7 @@
                forEach="productPage.mediaGallery.availableMedia" 
                trackBy="mediaId"
                ref="productPage.mediaGallery.availableMedia.selected">
-            <img src="{media.url}" loading="lazy" />
+            <img src="{media.url}/v1/fill/w_600,h_600/file.webp" loading="lazy" />
           </div>
         </div>
       </section>

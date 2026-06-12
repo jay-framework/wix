@@ -329,7 +329,7 @@
                  forEach="productPage.mediaGallery.availableMedia" 
                  trackBy="mediaId"
                  ref="productPage.mediaGallery.availableMedia.selected">
-              <img src="{media.thumbnail_50x50}" alt="Product thumbnail" />
+              <img src="{media.url}/v1/fill/w_50,h_50/file.jpg" alt="Product thumbnail" />
             </div>
           </div>
         </div>

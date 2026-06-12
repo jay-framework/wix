@@ -92,3 +92,11 @@ plugins:
         marker: WIX_STORES_CONTEXT
         description: Client-side stores access with product variant resolution and
           delegated cart operations
+  - name: wix-media
+    path: ./../../packages/wix-media
+    contracts: []
+    commands:
+      - name: upload-public
+        description: Upload local public/ files to Wix Media Manager
+      - name: rebuild-index
+        description: Rebuild agent-kit media index from current Wix Media Manager state

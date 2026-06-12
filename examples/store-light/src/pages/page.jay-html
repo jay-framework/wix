@@ -34,6 +34,7 @@
       <h1>Welcome to the Store</h1>
       <p>Browse our curated collection of products</p>
       <a href="/products">Shop Now</a>
+      <img src="https://static.wixstatic.com/media/c569b3_639ad5afc7444094a93050642772b330~mv2.png/v1/fill/w_1200,h_800/file.webp" alt="Welcome banner" />
     </div>
   </body>
 </html>

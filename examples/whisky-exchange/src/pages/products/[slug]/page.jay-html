@@ -48,7 +48,7 @@
         <div class="product-gallery-thumbs">
           <img forEach="p.mediaGallery.availableMedia" trackBy="mediaId"
                ref="selected"
-               src="{media.thumbnail_50x50}"
+               src="{media.url}/v1/fill/w_50,h_50/file.jpg"
                alt="Product thumbnail"
                class="product-gallery-thumb" />
         </div>

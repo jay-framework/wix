@@ -1,0 +1,6 @@
+name: upload-public
+description: Upload local public/ files to Wix Media Manager
+
+inputSchema:
+  folder?: string
+  dryRun?: boolean

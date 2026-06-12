@@ -2529,6 +2529,31 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@jay-framework/wix-media@workspace:^, @jay-framework/wix-media@workspace:packages/wix-media":
+  version: 0.0.0-use.local
+  resolution: "@jay-framework/wix-media@workspace:packages/wix-media"
+  dependencies:
+    "@jay-framework/compiler-jay-html": "npm:^0.18.4"
+    "@jay-framework/compiler-jay-stack": "npm:^0.18.4"
+    "@jay-framework/compiler-shared": "npm:^0.18.4"
+    "@jay-framework/component": "npm:^0.18.4"
+    "@jay-framework/fullstack-component": "npm:^0.18.4"
+    "@jay-framework/stack-server-runtime": "npm:^0.18.4"
+    "@jay-framework/vite-plugin": "npm:^0.18.4"
+    "@jay-framework/wix-server-client": "workspace:^"
+    "@jay-framework/wix-utils": "workspace:^"
+    "@types/node": "npm:^20.11.0"
+    "@wix/media": "npm:^1.0.247"
+    "@wix/sdk": "npm:^1.21.5"
+    node-html-parser: "npm:^6.1.0"
+    rimraf: "npm:^5.0.5"
+    tsup: "npm:^8.5.1"
+    typescript: "npm:^5.3.3"
+    vite: "npm:^5.0.11"
+    vitest: "npm:^1.2.0"
+  languageName: unknown
+  linkType: soft
+
 "@jay-framework/wix-server-client@workspace:^, @jay-framework/wix-server-client@workspace:packages/wix-server-client":
   version: 0.0.0-use.local
   resolution: "@jay-framework/wix-server-client@workspace:packages/wix-server-client"
@@ -2628,6 +2653,7 @@ __metadata:
     typescript: "npm:^5.3.3"
     vite: "npm:^5.0.11"
     vite-plugin-inspect: "npm:^0.8.1"
+    vitest: "npm:^1.2.0"
   languageName: unknown
   linkType: soft
 
@@ -4243,6 +4269,50 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@wix/auto_sdk_media_enterprise-media-categories@npm:1.0.36":
+  version: 1.0.36
+  resolution: "@wix/auto_sdk_media_enterprise-media-categories@npm:1.0.36"
+  dependencies:
+    "@wix/sdk-runtime": "npm:^1.0.12"
+    "@wix/sdk-types": "npm:^1.17.7"
+    zod: "npm:^4.3.6"
+  checksum: 10/3215fe4f5ef37d58f6261822d53015e0b111fa3a67fa6a9b34664ef767f3e32d9da83d6e66c3757e366065d84747a0b89cdfadc1751216509fe8637f591b791a
+  languageName: node
+  linkType: hard
+
+"@wix/auto_sdk_media_enterprise-media-items@npm:1.0.37":
+  version: 1.0.37
+  resolution: "@wix/auto_sdk_media_enterprise-media-items@npm:1.0.37"
+  dependencies:
+    "@wix/sdk-runtime": "npm:^1.0.12"
+    "@wix/sdk-types": "npm:^1.17.7"
+    zod: "npm:^4.3.6"
+  checksum: 10/21957adb178e356de6bcbf1c4c9a680f49be0055404f44919df7ef2eb23b170724138043ad5c2357889f034d1314f677fd4268c1a4f5c842f905f9d31318da85
+  languageName: node
+  linkType: hard
+
+"@wix/auto_sdk_media_files@npm:1.0.87":
+  version: 1.0.87
+  resolution: "@wix/auto_sdk_media_files@npm:1.0.87"
+  dependencies:
+    "@wix/sdk-runtime": "npm:^1.0.12"
+    "@wix/sdk-types": "npm:^1.17.7"
+    zod: "npm:^4.3.6"
+  checksum: 10/c557e9f8e5e9161dbb6e99eba6d499124b789836187e21b73cafdb1c3d316cb998f251c6ddd3b431a865b50386f189a9f557b3b056bd19054e62b576a5e88248
+  languageName: node
+  linkType: hard
+
+"@wix/auto_sdk_media_folders@npm:1.0.54":
+  version: 1.0.54
+  resolution: "@wix/auto_sdk_media_folders@npm:1.0.54"
+  dependencies:
+    "@wix/sdk-runtime": "npm:^1.0.12"
+    "@wix/sdk-types": "npm:^1.17.7"
+    zod: "npm:^4.3.6"
+  checksum: 10/20bfac2491c21737f049d02822031f9c73e61daa5b312478f409dd03bbc962dc47c6c8ec9142c8a093e751025251478c8937dd341bc1d925eac3cc86d4a80dd7
+  languageName: node
+  linkType: hard
+
 "@wix/auto_sdk_redirects_redirects@npm:1.0.37":
   version: 1.0.37
   resolution: "@wix/auto_sdk_redirects_redirects@npm:1.0.37"
@@ -4819,7 +4889,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wix/headless-media@npm:0.0.25":
+"@wix/headless-media@npm:0.0.25, @wix/headless-media@npm:^0.0.25":
   version: 0.0.25
   resolution: "@wix/headless-media@npm:0.0.25"
   dependencies:
@@ -4938,6 +5008,19 @@ __metadata:
     "@babel/runtime": "npm:^7.26.0"
     tslib: "npm:^2.8.1"
   checksum: 10/7b5d8e503ba0f0a4c2eea650266bc1c30bc47c16428957a15db338acc1337a53902ce55731e9e211c9d122f52638e084877a9046bb434360601a58e04cc476fc
+  languageName: node
+  linkType: hard
+
+"@wix/media@npm:^1.0.247":
+  version: 1.0.257
+  resolution: "@wix/media@npm:1.0.257"
+  dependencies:
+    "@wix/auto_sdk_media_enterprise-media-categories": "npm:1.0.36"
+    "@wix/auto_sdk_media_enterprise-media-items": "npm:1.0.37"
+    "@wix/auto_sdk_media_files": "npm:1.0.87"
+    "@wix/auto_sdk_media_folders": "npm:1.0.54"
+    "@wix/headless-media": "npm:^0.0.25"
+  checksum: 10/33fa4b082d6caaba22b232541aba7ea76206641f8b1ccb3efdf6f39dfa3bdbe8960720b5c735f59c327ecb16331e9140e78231025a7764041a6241f56ddf1f87
   languageName: node
   linkType: hard
 
@@ -7083,6 +7166,7 @@ __metadata:
     "@jay-framework/wix-cart": "workspace:^"
     "@jay-framework/wix-deploy": "workspace:^"
     "@jay-framework/wix-dev-environment": "workspace:^"
+    "@jay-framework/wix-media": "workspace:^"
     "@jay-framework/wix-server-client": "workspace:^"
     "@jay-framework/wix-stores": "workspace:^"
     "@types/express": "npm:^5.0.0"
@@ -8877,7 +8961,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-html-parser@npm:^6.1.12":
+"node-html-parser@npm:^6.1.0, node-html-parser@npm:^6.1.12":
   version: 6.1.13
   resolution: "node-html-parser@npm:6.1.13"
   dependencies:

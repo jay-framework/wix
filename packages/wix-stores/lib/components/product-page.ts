@@ -200,7 +200,7 @@ function mapMedia(media: Media | undefined): MediaGalleryViewState {
     const main = media?.main;
     if (!main) {
         return {
-            selectedMedia: { url: '', mediaType: MediaType.IMAGE, thumbnail_50x50: '' },
+            selectedMedia: { url: '', mediaType: MediaType.IMAGE },
             availableMedia: [],
         };
     }
@@ -209,7 +209,6 @@ function mapMedia(media: Media | undefined): MediaGalleryViewState {
         selectedMedia: {
             url: formatWixMediaUrl(main._id, main.url),
             mediaType: mainMediaType,
-            thumbnail_50x50: formatWixMediaUrl(main._id, main.url, { w: 50, h: 50 }),
         },
         availableMedia:
             media.itemsInfo?.items?.map((item) => ({
@@ -217,7 +216,6 @@ function mapMedia(media: Media | undefined): MediaGalleryViewState {
                 media: {
                     url: formatWixMediaUrl(item._id, item.url),
                     mediaType: item.mediaType === 'IMAGE' ? MediaType.IMAGE : MediaType.VIDEO,
-                    thumbnail_50x50: formatWixMediaUrl(item._id, item.url, { w: 50, h: 50 }),
                 },
                 selected: item._id === main._id ? Selected.selected : Selected.notSelected,
             })) ?? [],
