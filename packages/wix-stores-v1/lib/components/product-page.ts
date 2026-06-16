@@ -176,10 +176,11 @@ function mapVariants(product: Product): InteractiveVariant[] {
     }));
 }
 
-function mapSeoHeadTags(seoData: SeoSchema | undefined): HeadTag[] {
-    if (!seoData) return [];
-
-    const headTags: HeadTag[] = (seoData.tags || []).map((tag) => ({
+function mapSeoHeadTags(
+    product: { name?: string | null; description?: string | null },
+    seoData: SeoSchema | undefined,
+): HeadTag[] {
+    const headTags: HeadTag[] = (seoData?.tags || []).map((tag) => ({
         tag: tag.type || 'meta',
         attrs: Object.fromEntries(
             Object.entries(tag.props || {}).map(([key, value]) => [key, value as string]),
@@ -187,7 +188,21 @@ function mapSeoHeadTags(seoData: SeoSchema | undefined): HeadTag[] {
         children: tag.children || undefined,
     }));
 
-    const keywords = seoData.settings?.keywords;
+    if (!headTags.some((t) => t.tag === 'title') && product.name) {
+        headTags.push({ tag: 'title', children: product.name });
+    }
+
+    if (
+        !headTags.some((t) => t.tag === 'meta' && t.attrs?.name === 'description') &&
+        product.description
+    ) {
+        headTags.push({
+            tag: 'meta',
+            attrs: { name: 'description', content: product.description },
+        });
+    }
+
+    const keywords = seoData?.settings?.keywords;
     if (keywords?.length) {
         const terms = keywords.map((k) => k.term).filter(Boolean);
         if (terms.length) {
@@ -270,7 +285,7 @@ async function renderSlowlyChanging(
                     modifiers: [], // V1 doesn't have modifiers in same format
                     seoData: { tags: [], settings: { preventAutoRedirect: false, keywords: [] } },
                 },
-                headTags: mapSeoHeadTags(product.seoData),
+                headTags: mapSeoHeadTags(product, product.seoData),
                 carryForward: {
                     productId: product._id || '',
                     mediaGallery: mapMedia(product),
