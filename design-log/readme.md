@@ -30,6 +30,7 @@ Design documentation for the Jay Framework Wix integration packages.
 | 22  | [Wix Deploy Pipeline](./22%20-%20wix-deploy-pipeline.md)                                       | Draft           |
 | 23  | [Wix Checkout Redirect](./23%20-%20wix-checkout-redirect.md)                                   | Draft           |
 | 24  | [wix-stores Add Menu contribution](./20%20-%20wix-stores-add-menu-contribution.md)             | Execution-ready |
+| 25  | [Product Page Head Tags](./25%20-%20product-page-head-tags.md)                                 | Draft           |
 
 ## Packages Covered
 
