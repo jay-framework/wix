@@ -92,6 +92,12 @@ plugins:
         marker: WIX_STORES_CONTEXT
         description: Client-side stores access with product variant resolution and
           delegated cart operations
+  - name: a11y-validator
+    path: ./../../node_modules/@jay-framework/a11y-validator
+    contracts: []
+  - name: seo-validator
+    path: ./../../node_modules/@jay-framework/seo-validator
+    contracts: []
   - name: wix-media
     path: ./../../packages/wix-media
     contracts: []

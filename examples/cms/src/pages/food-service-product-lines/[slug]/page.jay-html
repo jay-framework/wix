@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{productLine.title} - Product Lines</title>
+  <meta name="description" content="{productLine.headerTitle}">
+  <link rel="canonical" href="/food-service-product-lines/{productLine.slug}"/>
   <script type="application/jay-headless"
           plugin="@jay-framework/wix-data"
           contract="item/food-service-product-lines-item"
@@ -211,7 +213,7 @@
   </style>
 </head>
 <body>
-  <div class="product-line-page">
+  <main class="product-line-page">
     <!-- Breadcrumbs -->
     <nav class="breadcrumbs">
       <span forEach="productLine.breadcrumbs" trackBy="slug">
@@ -223,10 +225,14 @@
 
     <!-- Hero Section -->
     <div class="product-line-hero">
-      <img 
-        class="hero-image" 
-        src="{productLine.coverImage.url}" 
+      <img
+        class="hero-image"
+        src="{productLine.coverImage.url}"
         alt="{productLine.coverImage.altText}"
+        width="{productLine.coverImage.width}"
+        height="{productLine.coverImage.height}"
+        loading="eager"
+        fetchpriority="high"
       />
       <div class="hero-overlay">
         <span class="hero-label" if="productLine.labelText">{productLine.labelText}</span>
@@ -283,6 +289,6 @@
     <a href="/food-service-product-lines" class="back-link">
       ← Back to all product lines
     </a>
-  </div>
+  </main>
 </body>
 </html>

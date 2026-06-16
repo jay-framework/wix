@@ -923,3 +923,61 @@ if (forEach) {
 4. `jay-stack validate` on examples flags unoptimized URLs, passes optimized ones
 5. wix-media is in `devDependencies` only — not in production bundle
 6. No `thumbnail_50x50` references remain in contracts or components
+
+---
+
+## Implementation Results
+
+### Rule D: Unencoded commas in `srcset` URLs
+
+**Problem discovered:** The HTML `srcset` attribute uses commas to separate image candidates per the spec. Wix media optimization parameters also use commas to separate values (`w_400,h_300`). When a Wix media URL appears inside `srcset`, the browser splits the URL at the parameter comma, breaking the image URL.
+
+**Example — broken:**
+
+```html
+<img
+  src="{url}/v1/fill/w_400,h_400/file.webp"
+  srcset="{url}/v1/fill/w_300,h_300/file.webp 300w, {url}/v1/fill/w_600,h_600/file.webp 600w"
+/>
+```
+
+The browser parses the srcset as four entries: `{url}/v1/fill/w_300`, `h_300/file.webp 300w`, `{url}/v1/fill/w_600`, `h_600/file.webp 600w` — all broken.
+
+**Fix — encode commas as `%2C` inside srcset URLs:**
+
+```html
+<img
+  src="{url}/v1/fill/w_400,h_400/file.webp"
+  srcset="{url}/v1/fill/w_300%2Ch_300/file.webp 300w, {url}/v1/fill/w_600%2Ch_600/file.webp 600w"
+/>
+```
+
+The browser decodes `%2C` back to `,` when fetching. The `src` attribute does not need encoding — only `srcset`.
+
+**Changes:**
+
+| File                                      | Change                                                                                                                                                                    |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `lib/validators/media-validator.ts`       | Added Rule D: detects unencoded commas in `/v1/` params inside `srcset` attributes. Regex: `/\/v1\/[^/]+\/[^/]*[a-z]_\d+,[a-z]_\d+/` matching patterns like `w_400,h_300` |
+| `test/validators/media-validator.test.ts` | Added 3 tests: flags unencoded commas in srcset, passes `%2C`-encoded srcset, does not flag commas in `src`                                                               |
+| `agent-kit/designer/wix-media.md`         | Updated Responsive Images section: all srcset examples use `%2C`, added explanation of why encoding is required                                                           |
+
+**Validator message:** `"Wix media URL in srcset has unencoded commas in parameters (e.g. w_400,h_300). The srcset attribute uses commas to separate image candidates, so commas inside URLs must be encoded as %2C (e.g. w_400%2Ch_300). See agent-kit/wix-media.md."`
+
+### Updated error message for Rule C
+
+Rule C's error message now includes the specific file path and the CLI command to upload:
+
+```
+Local image reference '/images/logo.png' — run `jay-stack-cli run wix-media/upload-public` to upload local images to Wix Media Manager, then use the Wix media URL with optimization parameters. See agent-kit/wix-media.md.
+```
+
+### Validation sweep across all examples
+
+Ran `yarn validate` on all 6 examples (cms, store-light, store, studio-store, whisky-exchange, whisky-store) and fixed all errors and warnings:
+
+- **Core errors:** Fixed data field mismatches (cms), ref type mismatches `<div>` → `<button>`/`<input>` (store, whisky-store)
+- **A11y errors:** Added `aria-label` to unlabeled inputs/selects/buttons, added missing `alt` attributes
+- **SEO warnings:** Added `<title>`, `<meta description>`, `<link canonical>`, `<main>` landmarks, fixed heading hierarchy, added `width`/`height`/`loading`/`fetchpriority` to images
+- **Wix-media errors:** Applied `/v1/fill/w_WW%2Ch_HH/file.webp` optimization to all Wix media URL bindings; uploaded local static images via `jay-stack-cli run wix-media/upload-public` and replaced local paths with Wix media URLs
+- **All 6 examples pass validation** (store has 0 errors after uploading local Figma-exported PNGs)

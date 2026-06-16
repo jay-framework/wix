@@ -4,6 +4,9 @@
   <script type="application/jay-headless" plugin="@jay-framework/wix-cart" contract="cart-indicator" key="cart"></script>
   <script type="application/jay-headless" plugin="@jay-framework/gemini-agent-plugin" contract="gemini-chat" key="ai"></script>
   <script type="application/jay-data">data:</script>
+  <title>{p.productName} - The Whisky Exchange</title>
+  <meta name="description" content="{p.productName} - Browse and buy from The Whisky Exchange." />
+  <link rel="canonical" href="/products/{p.slug}" />
   <link rel="stylesheet" href="../../../styles/theme.css" />
 </head>
 <body>
@@ -28,6 +31,7 @@
     </ul>
   </nav>
 
+  <main>
   <div class="container">
     <!-- Breadcrumbs -->
     <div class="breadcrumbs">
@@ -43,13 +47,14 @@
       <!-- Gallery -->
       <div class="product-gallery">
         <div class="product-gallery-main">
-          <img src="{p.mediaGallery.selectedMedia.url}" alt="Product image" />
+          <img src="{p.mediaGallery.selectedMedia.url}/v1/fill/w_800,h_800/file.webp" alt="{p.productName}" width="800" height="800" loading="eager" fetchpriority="high" />
         </div>
         <div class="product-gallery-thumbs">
           <img forEach="p.mediaGallery.availableMedia" trackBy="mediaId"
                ref="selected"
                src="{media.url}/v1/fill/w_50,h_50/file.jpg"
                alt="Product thumbnail"
+               width="50" height="50" loading="lazy"
                class="product-gallery-thumb" />
         </div>
       </div>
@@ -84,7 +89,7 @@
             <div class="product-option-label">{name}</div>
 
             <!-- Text choices as dropdown -->
-            <select if="optionRenderType===TEXT_CHOICES" ref="textChoice" class="select">
+            <select if="optionRenderType===TEXT_CHOICES" ref="textChoice" class="select" aria-label="{name}">
             </select>
 
             <!-- Color swatch choices -->
@@ -93,7 +98,8 @@
                       ref="choiceButton"
                       class="color-swatch"
                       style="background-color: {colorCode};"
-                      title="{name}">
+                      title="{name}"
+                      aria-label="{name}">
               </button>
             </div>
           </div>
@@ -103,7 +109,7 @@
         <div forEach="p.modifiers" trackBy="_id" class="product-option-group">
           <div class="product-option-label">{name}</div>
 
-          <select if="modifierType===TEXT_CHOICES" ref="textModifier" class="select">
+          <select if="modifierType===TEXT_CHOICES" ref="textModifier" class="select" aria-label="{name}">
           </select>
 
           <div if="modifierType===COLOR_SWATCH_CHOICES" class="product-option-choices">
@@ -111,12 +117,13 @@
                     ref="choiceButton"
                     class="color-swatch"
                     style="background-color: {colorCode};"
-                    title="{name}">
+                    title="{name}"
+                    aria-label="{name}">
             </button>
           </div>
 
           <div if="modifierType===FREE_TEXT">
-            <input ref="textInput" class="input" placeholder="Enter {name}" />
+            <input ref="textInput" class="input" placeholder="Enter {name}" aria-label="{name}" />
           </div>
         </div>
 
@@ -125,7 +132,7 @@
           <div class="product-option-label">Quantity</div>
           <div class="quantity-control">
             <button ref="p.quantity.decrementButton" class="quantity-btn">−</button>
-            <input ref="p.quantity.quantity" value="{p.quantity.quantity}" class="quantity-input" type="number" min="1" />
+            <input ref="p.quantity.quantity" value="{p.quantity.quantity}" class="quantity-input" type="number" min="1" aria-label="Quantity" />
             <button ref="p.quantity.incrementButton" class="quantity-btn">+</button>
           </div>
         </div>
@@ -154,6 +161,7 @@
       </div>
     </div>
   </div>
+  </main>
 
   <!-- Footer -->
   <footer class="site-footer">
@@ -224,7 +232,7 @@
       <!-- Input area (always visible) -->
       <div class="chat-input-container">
         <div class="chat-input-area">
-          <input ref="ai.messageInput" value="{ai.messageInput}" type="text" placeholder="Ask me about whisky..." />
+          <input ref="ai.messageInput" value="{ai.messageInput}" type="text" placeholder="Ask me about whisky..." aria-label="Chat message" />
           <button ref="ai.sendMessage" class="chat-send-btn">→</button>
         </div>
         <div if="ai.hasError" class="chat-error">{ai.errorMessage}</div>

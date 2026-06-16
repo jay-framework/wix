@@ -13,6 +13,9 @@
     <script type="application/jay-data">
       data:
     </script>
+    <title>{categoryPage.name} - Whisky Store</title>
+    <meta name="description" content="Browse {categoryPage.name} at Whisky Store. {categoryPage.numberOfProducts} products available." />
+    <link rel="canonical" href="/categories/{categoryPage.slug}" />
     <link rel="stylesheet" href="../../../styles/whisky-theme.css" />
     <style>
       /* Category page styles */
@@ -156,7 +159,7 @@
       </nav>
     </header>
 
-    <div class="category-page">
+    <main class="category-page">
       <!-- Breadcrumbs -->
       <nav class="breadcrumbs">
         <a href="/">Home</a>
@@ -172,7 +175,7 @@
 
       <!-- Category Hero Image (if has media) -->
       <div class="category-hero" if="categoryPage.hasImage">
-        <img src="{categoryPage.media.mainMedia.url}" alt="{categoryPage.media.mainMedia.altText}" />
+        <img src="{categoryPage.media.mainMedia.url}/v1/fill/w_1200,h_600/file.webp" alt="{categoryPage.media.mainMedia.altText}" width="1200" height="600" loading="eager" fetchpriority="high" />
       </div>
 
       <!-- Category Header -->
@@ -185,7 +188,7 @@
       <!-- Empty State -->
       <div class="empty-state" if="!categoryPage.hasProducts">
         <div class="empty-state-icon">🥃</div>
-        <h3 class="empty-state-title">No products found</h3>
+        <h2 class="empty-state-title">No products found</h2>
         <p class="empty-state-message">This category doesn't have any products yet.</p>
         <a href="/products" class="btn btn-primary">Browse All Products</a>
       </div>
@@ -197,7 +200,7 @@
                  forEach="categoryPage.products" 
                  trackBy="_id">
           <a href="{productUrl}" class="product-card-image">
-            <img src="{mainMedia.url}" alt="{mainMedia.altText}" loading="lazy" />
+            <img src="{mainMedia.url}/v1/fill/w_400,h_400/file.webp" alt="{mainMedia.altText}" loading="lazy" width="400" height="400" />
             <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
             <span class="badge badge-success stock-badge" if="inventory.availabilityStatus == IN_STOCK">
               In Stock
@@ -208,9 +211,9 @@
           </a>
           
           <div class="product-card-content">
-            <h3 class="product-card-name">
+            <h2 class="product-card-name">
               <a href="{productUrl}">{name}</a>
-            </h3>
+            </h2>
             <p class="product-card-meta" if="brand.name">{brand.name}</p>
 
             <div class="product-card-price">
@@ -260,7 +263,7 @@
                  forEach="categoryPage.loadedProducts" 
                  trackBy="_id">
           <a href="{productUrl}" class="product-card-image">
-            <img src="{thumbnail.url}" alt="{thumbnail.altText}" loading="lazy" />
+            <img src="{thumbnail.url}/v1/fill/w_400,h_400/file.webp" alt="{thumbnail.altText}" loading="lazy" width="400" height="400" />
             <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
             <span class="badge badge-success stock-badge" if="inventory.availabilityStatus == IN_STOCK">
               In Stock
@@ -271,9 +274,9 @@
           </a>
           
           <div class="product-card-content">
-            <h3 class="product-card-name">
+            <h2 class="product-card-name">
               <a href="{productUrl}">{name}</a>
-            </h3>
+            </h2>
             <p class="product-card-meta" if="brand.name">{brand.name}</p>
             
             <div class="product-rating">
@@ -349,7 +352,7 @@
           Load More Products
         </button>
       </div>
-    </div>
+    </main>
     </div>
   </body>
 </html>

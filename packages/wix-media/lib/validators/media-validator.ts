@@ -11,7 +11,10 @@ const WIXSTATIC_MEDIA_RE = /static\.wixstatic\.com\/media\//;
 const V1_TRANSFORM_RE = /\/v1\//;
 const IMAGE_EXTENSIONS_RE = /\.(jpe?g|png|gif|webp|svg|bmp|ico)$/i;
 
+const SRCSET_UNENCODED_COMMA_RE = /\/v1\/[^/]+\/[^/]*[a-z]_\d+,[a-z]_\d+/;
+
 const MEDIA_SRC_ATTRS = ['src', 'poster'];
+const MEDIA_SRCSET_ATTRS = ['srcset'];
 const MEDIA_ELEMENTS = new Set(['img', 'video', 'source']);
 
 function checkStaticWixUrl(value: string): boolean {
@@ -72,8 +75,7 @@ export const validate: JayHtmlValidatorFn = (ctx) => {
                 } else if (isLocalImagePath(staticValue)) {
                     findings.push({
                         severity: 'error',
-                        message:
-                            'Local image reference — upload to Wix Media Manager and use a Wix media URL with optimization parameters. See agent-kit/wix-media.md.',
+                        message: `Local image reference '${staticValue}' — run \`jay-stack-cli run wix-media/upload-public\` to upload local images to Wix Media Manager, then use the Wix media URL with optimization parameters. See agent-kit/wix-media.md.`,
                         element: `<${tagName}>`,
                         attribute: attr,
                     });
@@ -101,6 +103,26 @@ export const validate: JayHtmlValidatorFn = (ctx) => {
                         element: `<${tagName}>`,
                         attribute: attr,
                     });
+                }
+            }
+        }
+
+        for (const attr of MEDIA_SRCSET_ATTRS) {
+            const value = el.getAttribute(attr);
+            if (!value) continue;
+
+            const parts = parseTemplateParts(value);
+            for (const part of parts) {
+                if (part.kind !== 'static') continue;
+                if (SRCSET_UNENCODED_COMMA_RE.test(part.value)) {
+                    findings.push({
+                        severity: 'error',
+                        message:
+                            'Wix media URL in srcset has unencoded commas in parameters (e.g. w_400,h_300). The srcset attribute uses commas to separate image candidates, so commas inside URLs must be encoded as %2C (e.g. w_400%2Ch_300). See agent-kit/wix-media.md.',
+                        element: `<${tagName}>`,
+                        attribute: attr,
+                    });
+                    break;
                 }
             }
         }

@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{recipe.title} - Recipes</title>
+  <meta name="description" content="{recipe.shortDescription}">
+  <link rel="canonical" href="/recipes"/>
   <script type="application/jay-headless"
           plugin="@jay-framework/wix-data"
           contract="item/recipes-item"
@@ -171,7 +173,7 @@
   </style>
 </head>
 <body>
-  <div class="recipe-page">
+  <main class="recipe-page">
     <!-- Breadcrumbs -->
     <nav class="breadcrumbs">
       <span forEach="recipe.breadcrumbs" trackBy="slug">
@@ -197,10 +199,14 @@
     </header>
 
     <!-- Hero Image -->
-    <img 
-      class="recipe-hero-image" 
-      src="{recipe.image.url}" 
+    <img
+      class="recipe-hero-image"
+      src="{recipe.image.url}"
       alt="{recipe.image.altText}"
+      width="{recipe.image.width}"
+      height="{recipe.image.height}"
+      loading="eager"
+      fetchpriority="high"
       if="recipe.image.url"
     />
 
@@ -246,6 +252,6 @@
     <a href="/recipes" class="back-link">
       ← Back to all recipes
     </a>
-  </div>
+  </main>
 </body>
 </html>

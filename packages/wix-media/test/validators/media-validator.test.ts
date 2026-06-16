@@ -171,6 +171,51 @@ describe('media-validator', () => {
         });
     });
 
+    describe('Rule D: unencoded commas in srcset URLs', () => {
+        it('flags unencoded commas in srcset wix media params', async () => {
+            const ctx = makeContext(
+                `<img src="{mainMedia.url}/v1/fill/w_400,h_400/file.webp"
+                      srcset="{mainMedia.url}/v1/fill/w_300,h_300/file.webp 300w,
+                              {mainMedia.url}/v1/fill/w_600,h_600/file.webp 600w"
+                      alt="product" />`,
+                mediaContract,
+            );
+            const findings = await validate(ctx);
+            expect(findings).toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({
+                        severity: 'error',
+                        message: expect.stringContaining('%2C'),
+                        attribute: 'srcset',
+                    }),
+                ]),
+            );
+        });
+
+        it('passes srcset with encoded commas (%2C)', async () => {
+            const ctx = makeContext(
+                `<img src="{mainMedia.url}/v1/fill/w_400,h_400/file.webp"
+                      srcset="{mainMedia.url}/v1/fill/w_300%2Ch_300/file.webp 300w,
+                              {mainMedia.url}/v1/fill/w_600%2Ch_600/file.webp 600w"
+                      alt="product" />`,
+                mediaContract,
+            );
+            const findings = await validate(ctx);
+            const srcsetFindings = findings.filter((f) => f.attribute === 'srcset');
+            expect(srcsetFindings).toEqual([]);
+        });
+
+        it('does not flag commas in src attribute (only srcset)', async () => {
+            const ctx = makeContext(
+                '<img src="{mainMedia.url}/v1/fill/w_400,h_400/file.webp" alt="product" />',
+                mediaContract,
+            );
+            const findings = await validate(ctx);
+            const commaFindings = findings.filter((f) => f.message?.includes('%2C'));
+            expect(commaFindings).toEqual([]);
+        });
+    });
+
     describe('edge cases', () => {
         it('handles multiple errors in same file', async () => {
             const ctx = makeContext(

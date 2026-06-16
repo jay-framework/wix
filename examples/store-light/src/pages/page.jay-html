@@ -3,6 +3,9 @@
     <script type="application/jay-data">
       data:
     </script>
+    <title>Atelier - Curated Collection</title>
+    <meta name="description" content="Welcome to Atelier. Browse our curated collection of quality products crafted with intention." />
+    <link rel="canonical" href="/" />
     <link rel="stylesheet" href="../styles/atelier-theme.css" />
     <style>
       .hero {
@@ -30,11 +33,11 @@
     </style>
   </head>
   <body>
-    <div class="hero">
+    <main class="hero">
       <h1>Welcome to the Store</h1>
       <p>Browse our curated collection of products</p>
       <a href="/products">Shop Now</a>
-      <img src="https://static.wixstatic.com/media/c569b3_639ad5afc7444094a93050642772b330~mv2.png/v1/fill/w_1200,h_800/file.webp" alt="Welcome banner" />
-    </div>
+      <img src="https://static.wixstatic.com/media/c569b3_639ad5afc7444094a93050642772b330~mv2.png/v1/fill/w_1200,h_800/file.webp" alt="Welcome banner" width="1200" height="800" loading="eager" fetchpriority="high" />
+    </main>
   </body>
 </html>

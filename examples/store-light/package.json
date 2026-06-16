@@ -28,8 +28,8 @@
     "preview": "cross-env NODE_ENV=production node server"
   },
   "dependencies": {
-    "@jay-framework/fullstack-component": "^0.19.1",
-    "@jay-framework/jay-stack-cli": "^0.19.1",
+    "@jay-framework/fullstack-component": "^0.19.3",
+    "@jay-framework/jay-stack-cli": "^0.19.3",
     "@jay-framework/wix-cart": "workspace:^",
     "@jay-framework/wix-deploy": "workspace:^",
     "@jay-framework/wix-server-client": "workspace:^",
@@ -39,7 +39,9 @@
     "sirv": "^3.0.0"
   },
   "devDependencies": {
-    "@jay-framework/jay-cli": "^0.19.1",
+    "@jay-framework/a11y-validator": "^0.19.3",
+    "@jay-framework/jay-cli": "^0.19.3",
+    "@jay-framework/seo-validator": "^0.19.3",
     "@jay-framework/wix-dev-environment": "workspace:^",
     "@jay-framework/wix-media": "workspace:^",
     "@types/express": "^5.0.0",

@@ -13,6 +13,9 @@
     <script type="application/jay-data">
       data:
     </script>
+    <title>Store - Home</title>
+    <meta name="description" content="Welcome to Store. Browse our curated collection of premium products by category.">
+    <link rel="canonical" href="/">
     <link rel="stylesheet" href="../styles/store-theme.css" />
     <style>
       /* Home page styles */
@@ -179,6 +182,7 @@
     </style>
   </head>
   <body>
+    <main>
     <div class="home-page">
       <!-- Site Header with Cart -->
       <header class="site-header">
@@ -218,7 +222,7 @@
                    trackBy="_id">
             <a href="/categories/{slug}" class="category-card-link" ref="categoryList.categories.categoryLink">
               <div class="category-card-image">
-                <img src="{imageUrl}" alt="{name}" if="imageUrl" loading="lazy" />
+                <img src="{imageUrl}/v1/fill/w_400,h_300/file.webp" alt="{name}" if="imageUrl" width="280" height="180" loading="lazy" fetchpriority="high" />
                 <span class="placeholder-icon" if="!imageUrl">📦</span>
               </div>
               <div class="category-card-content">
@@ -238,5 +242,6 @@
         </div>
       </section>
     </div>
+    </main>
   </body>
 </html>

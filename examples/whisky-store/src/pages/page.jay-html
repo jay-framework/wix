@@ -13,6 +13,9 @@
     <script type="application/jay-data">
       data:
     </script>
+    <title>Whisky Store - Premium Spirits Collection</title>
+    <meta name="description" content="Browse our curated collection of premium whiskies, rums, gins, and spirits. Expert selections with price match guarantee and express delivery." />
+    <link rel="canonical" href="/" />
     <link rel="stylesheet" href="../styles/whisky-theme.css" />
     <style>
       /* ============================================================================
@@ -324,7 +327,7 @@
         <!-- Search Box -->
         <div class="header-search">
           <div class="header-search-box">
-            <input type="text" placeholder="Search..." />
+            <input type="text" placeholder="Search..." aria-label="Search products" />
             <button type="button">🔍</button>
           </div>
         </div>
@@ -352,6 +355,9 @@
         </ul>
       </nav>
     </header>
+
+    <main>
+    <h1 class="visually-hidden">Whisky Store - Premium Spirits Collection</h1>
 
     <!-- Trust/Benefits Bar -->
     <div class="trust-bar">
@@ -383,7 +389,7 @@
                  trackBy="_id">
           <a href="/categories/{slug}" class="category-card-link" ref="categoryList.categories.categoryLink">
             <div class="category-card-image">
-              <img src="{imageUrl}" alt="{name}" if="hasImage" loading="lazy" />
+              <img src="{imageUrl}/v1/fill/w_400,h_300/file.webp" alt="{name}" if="hasImage" loading="lazy" fetchpriority="high" width="400" height="300" />
               <span class="placeholder-icon" if="!hasImage">🥃</span>
             </div>
             <span class="category-card-label">{name}</span>
@@ -426,6 +432,7 @@
         <a href="/products" class="btn btn-primary">Browse All Products</a>
       </div>
     </section>
+    </main>
     </div>
   </body>
 </html>

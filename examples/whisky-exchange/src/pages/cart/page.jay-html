@@ -4,6 +4,9 @@
   <script type="application/jay-headless" plugin="@jay-framework/wix-cart" contract="cart-indicator" key="cart"></script>
   <script type="application/jay-headless" plugin="@jay-framework/gemini-agent-plugin" contract="gemini-chat" key="ai"></script>
   <script type="application/jay-data">data:</script>
+  <title>Your Basket - The Whisky Exchange</title>
+  <meta name="description" content="Review the items in your basket and proceed to checkout." />
+  <link rel="canonical" href="/cart" />
   <link rel="stylesheet" href="../../styles/theme.css" />
 </head>
 <body>
@@ -28,6 +31,7 @@
     </ul>
   </nav>
 
+  <main>
   <div class="container">
     <div class="breadcrumbs">
       <a href="/">Home</a>
@@ -64,7 +68,7 @@
             <!-- Product info -->
             <div class="cart-item-product">
               <div class="cart-item-image">
-                <a ref="productLink"><img src="{image.url}" alt="{image.altText}" /></a>
+                <a ref="productLink"><img src="{image.url}/v1/fill/w_100,h_100/file.webp" alt="{image.altText}" width="100" height="100" loading="lazy" fetchpriority="high" /></a>
               </div>
               <div>
                 <div class="cart-item-name"><a ref="productLink">{productName}</a></div>
@@ -78,7 +82,7 @@
             <div style="display:flex; justify-content:center;">
               <div class="quantity-control">
                 <button ref="decrementButton" class="quantity-btn">−</button>
-                <input ref="quantity" value="{quantity}" class="quantity-input" type="number" min="1" />
+                <input ref="quantity" value="{quantity}" class="quantity-input" type="number" min="1" aria-label="Quantity" />
                 <button ref="incrementButton" class="quantity-btn">+</button>
               </div>
             </div>
@@ -122,7 +126,7 @@
             <div if="!cartPage.coupon.hasAppliedCoupon">
               <div class="label" style="margin-bottom: 8px; font-size: 0.75rem;">Add promo code</div>
               <div class="coupon-form">
-                <input ref="cartPage.coupon.code" value="{cartPage.coupon.code}" type="text" placeholder="Enter code" />
+                <input ref="cartPage.coupon.code" value="{cartPage.coupon.code}" type="text" placeholder="Enter code" aria-label="Promo code" />
                 <button ref="cartPage.coupon.applyButton" class="btn btn-sm btn-outline">Apply</button>
               </div>
               <div if="cartPage.coupon.hasError" class="coupon-error">{cartPage.coupon.errorMessage}</div>
@@ -146,6 +150,8 @@
       </div>
     </div>
   </div>
+
+  </main>
 
   <!-- Footer -->
   <footer class="site-footer">
@@ -216,7 +222,7 @@
       <!-- Input area (always visible) -->
       <div class="chat-input-container">
         <div class="chat-input-area">
-          <input ref="ai.messageInput" value="{ai.messageInput}" type="text" placeholder="Ask me about whisky..." />
+          <input ref="ai.messageInput" value="{ai.messageInput}" type="text" placeholder="Ask me about whisky..." aria-label="Chat message" />
           <button ref="ai.sendMessage" class="chat-send-btn">→</button>
         </div>
         <div if="ai.hasError" class="chat-error">{ai.errorMessage}</div>

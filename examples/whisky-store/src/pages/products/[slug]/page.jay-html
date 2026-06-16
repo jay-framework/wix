@@ -13,6 +13,9 @@
     <script type="application/jay-data">
       data:
     </script>
+    <title>{productPage.productName} - Whisky Store</title>
+    <meta name="description" content="{productPage.productName} - Browse and buy premium spirits at Whisky Store." />
+    <link rel="canonical" href="/products/{productPage.slug}" />
     <link rel="stylesheet" href="../../../styles/whisky-theme.css" />
     <style>
       .product-page {
@@ -305,7 +308,7 @@
       </nav>
     </header>
 
-    <div class="product-page">
+    <main class="product-page">
       <!-- Back Link -->
       <a href="/products" class="back-link">
         ← Back to Products
@@ -322,14 +325,14 @@
         <!-- Gallery Section -->
         <div class="product-gallery">
           <div class="product-main-image">
-            <img src="{productPage.mediaGallery.selectedMedia.url}" alt="{productPage.productName}" />
+            <img src="{productPage.mediaGallery.selectedMedia.url}/v1/fill/w_800,h_800/file.webp" alt="{productPage.productName}" width="800" height="800" loading="eager" fetchpriority="high" />
           </div>
           <div class="product-thumbnails">
             <div class="product-thumbnail {selected == selected ? selected}"
                  forEach="productPage.mediaGallery.availableMedia" 
                  trackBy="mediaId"
                  ref="productPage.mediaGallery.availableMedia.selected">
-              <img src="{media.url}/v1/fill/w_50,h_50/file.jpg" alt="Product thumbnail" />
+              <img src="{media.url}/v1/fill/w_50,h_50/file.jpg" alt="Product thumbnail" width="50" height="50" loading="lazy" />
             </div>
           </div>
         </div>
@@ -347,25 +350,25 @@
             <div forEach="productPage.options" trackBy="_id">
               <!-- Variant Cards for Text Choices -->
               <div class="variant-cards" if="optionRenderType == TEXT_CHOICES">
-                <div class="variant-card {isSelected ? selected} {!inStock ? out-of-stock}"
-                     forEach="choices" 
+                <button class="variant-card {isSelected ? selected} {!inStock ? out-of-stock}"
+                     forEach="choices"
                      trackBy="choiceId"
                      ref="productPage.options.choices.choiceButton">
                   <span class="variant-card-name">{name}</span>
                   <span class="variant-card-stock" if="!inStock">(Out of stock)</span>
-                </div>
+                </button>
               </div>
 
               <!-- Color Swatch Choices -->
               <div class="variant-cards" if="optionRenderType == COLOR_SWATCH_CHOICES">
-                <div class="variant-card {isSelected ? selected} {!inStock ? out-of-stock}"
-                     forEach="choices" 
+                <button class="variant-card {isSelected ? selected} {!inStock ? out-of-stock}"
+                     forEach="choices"
                      trackBy="choiceId"
                      ref="productPage.options.choices.choiceButton">
                   <div class="color-swatch-circle" style="background-color: {colorCode};"></div>
                   <span class="variant-card-name">{name}</span>
                   <span class="variant-card-stock" if="!inStock">(Out of stock)</span>
-                </div>
+                </button>
               </div>
             </div>
           </div>
@@ -376,9 +379,10 @@
               <div class="option-label">{name}</div>
               
               <!-- Text Choices Dropdown -->
-              <select class="select" 
+              <select class="select"
                       if="modifierType == TEXT_CHOICES"
-                      ref="productPage.modifiers.textModifier">
+                      ref="productPage.modifiers.textModifier"
+                      aria-label="{name}">
                 <option forEach="choices" trackBy="choiceId" value="{choiceId}">{name}</option>
               </select>
 
@@ -386,20 +390,22 @@
               <div class="option-choices" if="modifierType == COLOR_SWATCH_CHOICES">
                 <button class="choice-btn color-swatch {isSelected ? selected}"
                         style="background-color: {colorCode}"
-                        forEach="choices" 
+                        forEach="choices"
                         trackBy="choiceId"
                         ref="choiceButton"
-                        title="{name}">
+                        title="{name}"
+                        aria-label="{name}">
                 </button>
               </div>
 
               <!-- Free Text Input -->
-              <input class="input" 
-                     type="text" 
+              <input class="input"
+                     type="text"
                      if="modifierType == FREE_TEXT"
                      ref="productPage.modifiers.textInput"
                      placeholder="Enter your custom text"
-                     maxlength="{textInputLength}" />
+                     maxlength="{textInputLength}"
+                     aria-label="{name}" />
             </div>
           </div>
 
@@ -407,11 +413,12 @@
           <div class="add-to-cart-row">
             <div class="quantity-inline">
               <button class="qty-btn" ref="productPage.quantity.decrementButton">−</button>
-              <input class="qty-value" 
-                     type="number" 
-                     value="{productPage.quantity.quantity}" 
+              <input class="qty-value"
+                     type="number"
+                     value="{productPage.quantity.quantity}"
                      ref="productPage.quantity.quantity"
-                     min="1" />
+                     min="1"
+                     aria-label="Quantity" />
               <button class="qty-btn" ref="productPage.quantity.incrementButton">+</button>
             </div>
             <button class="btn-add-cart" 
@@ -453,7 +460,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </main>
     </div>
   </body>
 </html>

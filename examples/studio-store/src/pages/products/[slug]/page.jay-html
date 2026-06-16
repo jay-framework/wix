@@ -13,6 +13,9 @@
     <script type="application/jay-data">
       data:
     </script>
+    <title>{productPage.productName} - Studio Store</title>
+    <meta name="description" content="View details and purchase {productPage.productName} from Studio Store." />
+    <link rel="canonical" href="/products/{productPage.slug}" />
     <link rel="stylesheet" href="../../../styles/brutalist-theme.css" />
     <style>
       /* =====================================================
@@ -525,6 +528,7 @@
         </div>
       </header>
 
+      <main>
       <div class="product-container">
         <!-- Breadcrumb -->
         <nav class="breadcrumb">
@@ -538,7 +542,12 @@
           <!-- Gallery -->
           <div class="product-gallery">
             <div class="product-main-image">
-              <img src="{productPage.mediaGallery.selectedMedia.url}" alt="{productPage.productName}" />
+              <img src="{productPage.mediaGallery.selectedMedia.url}/v1/fill/w_800,h_800/file.webp"
+                   alt="{productPage.productName}"
+                   width="800"
+                   height="800"
+                   loading="eager"
+                   fetchpriority="high" />
             </div>
             
             <div class="product-thumbnails">
@@ -546,7 +555,7 @@
                    forEach="productPage.mediaGallery.availableMedia" 
                    trackBy="mediaId"
                    ref="productPage.mediaGallery.availableMedia.selected">
-                <img src="{media.url}/v1/fill/w_50,h_50/file.jpg" alt="Thumbnail" />
+                <img src="{media.url}/v1/fill/w_50,h_50/file.jpg" alt="Thumbnail" width="80" height="100" loading="lazy" />
               </div>
             </div>
           </div>
@@ -601,9 +610,10 @@
                 <label class="option-label">{name}</label>
                 
                 <!-- Text Choices as Dropdown -->
-                <select class="select" 
+                <select class="select"
                         if="optionRenderType == TEXT_CHOICES"
-                        ref="productPage.options.textChoice">
+                        ref="productPage.options.textChoice"
+                        aria-label="{name}">
                   <option forEach="choices" trackBy="choiceId" value="{choiceId}">{name}</option>
                 </select>
 
@@ -611,10 +621,11 @@
                 <div class="option-choices" if="optionRenderType == COLOR_SWATCH_CHOICES">
                   <button class="choice-btn color-swatch {isSelected ? selected} {!inStock ? out-of-stock}"
                           style="background-color: {colorCode}"
-                          forEach="choices" 
+                          forEach="choices"
                           trackBy="choiceId"
                           ref="productPage.options.choices.choiceButton"
-                          title="{name}">
+                          title="{name}"
+                          aria-label="{name}">
                   </button>
                 </div>
               </div>
@@ -625,28 +636,31 @@
               <div class="option-group" forEach="productPage.modifiers" trackBy="_id">
                 <label class="option-label">{name}</label>
                 
-                <select class="select" 
+                <select class="select"
                         if="modifierType == TEXT_CHOICES"
-                        ref="productPage.modifiers.textModifier">
+                        ref="productPage.modifiers.textModifier"
+                        aria-label="{name}">
                   <option forEach="choices" trackBy="choiceId" value="{choiceId}">{name}</option>
                 </select>
 
                 <div class="option-choices" if="modifierType == COLOR_SWATCH_CHOICES">
                   <button class="choice-btn color-swatch {isSelected ? selected}"
                           style="background-color: {colorCode}"
-                          forEach="choices" 
+                          forEach="choices"
                           trackBy="choiceId"
                           ref="choiceButton"
-                          title="{name}">
+                          title="{name}"
+                          aria-label="{name}">
                   </button>
                 </div>
 
-                <input class="input" 
-                       type="text" 
+                <input class="input"
+                       type="text"
                        if="modifierType == FREE_TEXT"
                        ref="productPage.modifiers.textInput"
                        placeholder="ENTER CUSTOM TEXT"
-                       maxlength="{textInputLength}" />
+                       maxlength="{textInputLength}"
+                       aria-label="{name}" />
               </div>
             </div>
 
@@ -654,20 +668,21 @@
             <div class="quantity-section">
               <label class="option-label">QUANTITY</label>
               <div class="quantity-controls">
-                <button class="quantity-btn" ref="productPage.quantity.decrementButton">−</button>
-                <input class="quantity-input" 
-                       type="number" 
-                       value="{productPage.quantity.quantity}" 
+                <button class="quantity-btn" ref="productPage.quantity.decrementButton" aria-label="Decrease quantity">−</button>
+                <input class="quantity-input"
+                       type="number"
+                       value="{productPage.quantity.quantity}"
                        ref="productPage.quantity.quantity"
-                       min="1" />
-                <button class="quantity-btn" ref="productPage.quantity.incrementButton">+</button>
+                       min="1"
+                       aria-label="Quantity" />
+                <button class="quantity-btn" ref="productPage.quantity.incrementButton" aria-label="Increase quantity">+</button>
               </div>
             </div>
 
             <!-- Additional Info Sections -->
             <div class="info-sections" if="productPage.infoSections">
               <div class="info-section" forEach="productPage.infoSections" trackBy="_id">
-                <h4 class="info-section-title">{title}</h4>
+                <h2 class="info-section-title">{title}</h2>
                 <div class="info-section-content">{plainDescription}</div>
               </div>
             </div>
@@ -696,6 +711,7 @@
           </div>
         </div>
       </div>
+      </main>
     </div>
   </body>
 </html>

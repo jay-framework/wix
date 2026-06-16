@@ -13,6 +13,9 @@
     <script type="application/jay-data">
       data:
     </script>
+    <title>Products - Whisky Store</title>
+    <meta name="description" content="Browse and search our full collection of premium spirits. Filter by price and category, sort by relevance, price, or name." />
+    <link rel="canonical" href="/products" />
     <link rel="stylesheet" href="../../styles/whisky-theme.css" />
     <style>
       .search-page {
@@ -59,11 +62,12 @@
         
         <div class="header-search">
           <div class="header-search-box">
-            <input 
-              type="text" 
-              placeholder="Search our collection..." 
+            <input
+              type="text"
+              placeholder="Search our collection..."
               value="{productSearch.searchExpression}"
               ref="productSearch.searchExpression"
+              aria-label="Search products"
             />
             <button ref="productSearch.searchButton">🔍</button>
           </div>
@@ -91,7 +95,9 @@
       </nav>
     </header>
 
-    <div class="search-page">
+    <main class="search-page">
+      <h1 class="visually-hidden">Products</h1>
+
       <!-- Loading Overlay -->
       <div class="loading-overlay" if="productSearch.isSearching">
         <div class="loading-spinner"></div>
@@ -163,7 +169,7 @@
             <div class="results-controls">
               <div class="sort-control">
                 <label>Sort by</label>
-                <select class="select" ref="productSearch.sortBy.sortDropdown">
+                <select class="select" ref="productSearch.sortBy.sortDropdown" aria-label="Sort by">
                   <option value="relevance">Relevance</option>
                   <option value="newest">Newest First</option>
                   <option value="priceAsc">Price: Low to High</option>
@@ -178,7 +184,7 @@
           <!-- Empty State -->
           <div class="empty-state" if="!productSearch.hasResults">
             <div class="empty-state-icon">🔍</div>
-            <h3 class="empty-state-title">No Products Found</h3>
+            <h2 class="empty-state-title">No Products Found</h2>
             <p class="empty-state-message">{productSearch.emptyStateMessage}</p>
           </div>
 
@@ -186,10 +192,13 @@
           <div class="products-grid" if="productSearch.hasResults">
             <article class="product-card {isAddingToCart ? is-adding}" forEach="productSearch.searchResults" trackBy="_id">
               <a href="{productUrl}" class="product-card-image">
-                <img 
-                  src="{mainMedia.url}"
+                <img
+                  src="{mainMedia.url}/v1/fill/w_400,h_400/file.webp"
                   alt="{mainMedia.altText}"
                   loading="lazy"
+                  fetchpriority="high"
+                  width="400"
+                  height="400"
                 />
                 
                 <!-- Badges -->
@@ -203,9 +212,9 @@
               </a>
               
               <div class="product-card-content">
-                <h3 class="product-card-name">
+                <h2 class="product-card-name">
                   <a href="{productUrl}" ref="productSearch.searchResults.productLink">{name}</a>
-                </h3>
+                </h2>
                 <p class="product-card-meta" if="brand.name">{brand.name}</p>
 
                 <div class="product-card-price">
@@ -285,7 +294,7 @@
           </div>
         </section>
       </div>
-    </div>
+    </main>
     </div>
   </body>
 </html>

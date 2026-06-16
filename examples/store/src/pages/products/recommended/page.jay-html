@@ -13,6 +13,9 @@
     <script type="application/jay-data">
       data:
     </script>
+    <title>Recommended Products - Store</title>
+    <meta name="description" content="Our hand-selected recommended products. Quality, style, and value all in one place.">
+    <link rel="canonical" href="/products/recommended">
     <link rel="stylesheet" href="../../../styles/store-theme.css" />
     <style>
       .recommended-page {
@@ -177,6 +180,7 @@
     </style>
   </head>
   <body>
+    <main>
     <div class="recommended-page">
       <!-- Site Header -->
       <header class="site-header">
@@ -203,7 +207,7 @@
       <!-- Results Meta -->
       <div class="results-meta" if="productSearch.hasResults">
         <p>{productSearch.totalCount} recommended products</p>
-        <select class="select" ref="productSearch.sortBy.sortDropdown">
+        <select class="select" ref="productSearch.sortBy.sortDropdown" aria-label="Sort products by">
           <option value="relevance">Featured</option>
           <option value="newest">Newest First</option>
           <option value="priceAsc">Price: Low to High</option>
@@ -216,7 +220,7 @@
       <!-- Empty State -->
       <div class="empty-state" if="!productSearch.hasResults">
         <div class="empty-state-icon">✨</div>
-        <h3 class="empty-state-title">Coming Soon</h3>
+        <h2 class="empty-state-title">Coming Soon</h2>
         <p class="empty-state-message">We're curating our recommended collection. Check back soon!</p>
       </div>
 
@@ -225,9 +229,12 @@
         <article class="featured-card {isAddingToCart ? is-adding}" forEach="productSearch.searchResults" trackBy="_id">
           <a href="{productUrl}" class="featured-card-image">
             <img
-              src="{thumbnail.url}"
+              src="{thumbnail.url}/v1/fill/w_400,h_400/file.webp"
               alt="{thumbnail.altText}"
+              width="320"
+              height="240"
               loading="lazy"
+              fetchpriority="high"
             />
             <span class="badge badge-accent" if="hasRibbon">{ribbon.name}</span>
           </a>
@@ -307,5 +314,6 @@
         </span>
       </div>
     </div>
+    </main>
   </body>
 </html>

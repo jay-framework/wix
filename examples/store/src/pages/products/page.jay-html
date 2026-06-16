@@ -13,6 +13,9 @@
     <script type="application/jay-data">
       data:
     </script>
+    <title>Discover Products - Store</title>
+    <meta name="description" content="Explore our curated collection of products. Search, filter by price and category, and find what you need.">
+    <link rel="canonical" href="/products">
     <link rel="stylesheet" href="../../styles/store-theme.css" />
     <style>
       /* Page-specific layout */
@@ -115,6 +118,7 @@
     </style>
   </head>
   <body>
+    <main>
     <div class="search-page">
       <!-- Site Header with Cart -->
       <header class="site-header">
@@ -145,12 +149,13 @@
       <!-- Search Section -->
       <div class="search-section">
         <div class="search-box">
-          <input 
-            class="input input-lg" 
-            type="text" 
-            placeholder="Search for products..." 
+          <input
+            class="input input-lg"
+            type="text"
+            placeholder="Search for products..."
             value="{productSearch.searchExpression}"
             ref="productSearch.searchExpression"
+            aria-label="Search for products"
           />
           <button class="btn btn-ghost" ref="productSearch.clearSearchButton" title="Clear search">
             ✕
@@ -178,7 +183,7 @@
         <!-- Filters Sidebar -->
         <aside class="filters-sidebar">
           <div class="filters-header">
-            <h3 class="section-title" style="font-size: 18px;">Filters</h3>
+            <h2 class="section-title" style="font-size: 18px;">Filters</h2>
             <button class="btn btn-ghost btn-sm" ref="productSearch.filters.clearFilters">
               Clear All
             </button>
@@ -194,21 +199,23 @@
                 <span class="slider-value-max">${productSearch.filters.priceRange.maxPrice}</span>
               </div>
               <div class="slider-track">
-                <input 
-                  type="range" 
+                <input
+                  type="range"
                   class="slider-handle slider-min"
                   min="{productSearch.filters.priceRange.minBound}"
                   max="{productSearch.filters.priceRange.maxBound}"
                   value="{productSearch.filters.priceRange.minPrice}"
                   ref="productSearch.filters.priceRange.minPrice"
+                  aria-label="Minimum price"
                 />
-                <input 
-                  type="range" 
+                <input
+                  type="range"
                   class="slider-handle slider-max"
                   min="{productSearch.filters.priceRange.minBound}"
                   max="{productSearch.filters.priceRange.maxBound}"
                   value="{productSearch.filters.priceRange.maxPrice}"
                   ref="productSearch.filters.priceRange.maxPrice"
+                  aria-label="Maximum price"
                 />
               </div>
             </div>
@@ -255,7 +262,7 @@
             <p class="results-count">
               Showing <span>{productSearch.loadedCount}</span> of <span>{productSearch.totalCount}</span> products
             </p>
-            <select class="select" ref="productSearch.sortBy.sortDropdown">
+            <select class="select" ref="productSearch.sortBy.sortDropdown" aria-label="Sort products by">
               <option value="relevance">Most Relevant</option>
               <option value="newest">Newest First</option>
               <option value="priceAsc">Price: Low to High</option>
@@ -268,7 +275,7 @@
           <!-- Empty State -->
           <div class="empty-state" if="!productSearch.hasResults">
             <div class="empty-state-icon">🔍</div>
-            <h3 class="empty-state-title">No Products Found</h3>
+            <h2 class="empty-state-title">No Products Found</h2>
             <p class="empty-state-message">{productSearch.emptyStateMessage}</p>
           </div>
 
@@ -277,10 +284,13 @@
             <article class="product-card {isAddingToCart ? is-adding}" forEach="productSearch.searchResults" trackBy="_id">
               <div class="product-card-wrapper">
                 <a href="{productUrl}" class="product-card-image">
-                  <img 
-                    src="{thumbnail.url}" 
+                  <img
+                    src="{thumbnail.url}/v1/fill/w_400,h_400/file.webp"
                     alt="{thumbnail.altText}"
+                    width="280"
+                    height="280"
                     loading="lazy"
+                    fetchpriority="high"
                   />
                   
                   <!-- Badges -->
@@ -382,5 +392,6 @@
         </section>
       </div>
     </div>
+    </main>
   </body>
 </html>
