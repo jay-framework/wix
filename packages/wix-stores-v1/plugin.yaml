@@ -6,6 +6,9 @@ contracts:
     contract: product-page.jay-contract
     component: productPage
     description: Complete headless product page with server-side rendering (Catalog V1)
+    headTags:
+      - title
+      - meta:description
   - name: product-search
     contract: product-search.jay-contract
     component: productSearch
