@@ -551,7 +551,6 @@ async function renderFastChanging(
             productId: slowCarryForward.productId,
             variants: slowCarryForward.variants,
         },
-
     }));
 }
 

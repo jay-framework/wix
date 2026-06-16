@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft
+Implemented
 
 ## Background
 
@@ -22,22 +22,22 @@ Add `headTags` support to `wix-stores-v1/product-page` so that product pages aut
 
 ```typescript
 function mapSeoHeadTags(seoData: SeoSchema | undefined): HeadTag[] {
-    if (!seoData) return [];
-    const headTags: HeadTag[] = (seoData.tags || []).map((tag) => ({
-        tag: tag.type || 'meta',
-        attrs: Object.fromEntries(
-            Object.entries(tag.props || {}).map(([key, value]) => [key, value as string]),
-        ),
-        children: tag.children || undefined,
-    }));
-    const keywords = seoData.settings?.keywords;
-    if (keywords?.length) {
-        const terms = keywords.map((k) => k.term).filter(Boolean);
-        if (terms.length) {
-            headTags.push({ tag: 'meta', attrs: { name: 'keywords', content: terms.join(', ') } });
-        }
+  if (!seoData) return [];
+  const headTags: HeadTag[] = (seoData.tags || []).map((tag) => ({
+    tag: tag.type || 'meta',
+    attrs: Object.fromEntries(
+      Object.entries(tag.props || {}).map(([key, value]) => [key, value as string]),
+    ),
+    children: tag.children || undefined,
+  }));
+  const keywords = seoData.settings?.keywords;
+  if (keywords?.length) {
+    const terms = keywords.map((k) => k.term).filter(Boolean);
+    if (terms.length) {
+      headTags.push({ tag: 'meta', attrs: { name: 'keywords', content: terms.join(', ') } });
     }
-    return headTags;
+  }
+  return headTags;
 }
 
 // In slow phase:
@@ -47,6 +47,7 @@ return { viewState, carryForward, headTags: mapSeoHeadTags(seoData) };
 ### V1 API Compatibility
 
 The V1 `Product` type (`@wix/auto_sdk_stores_products`) has `seoData?: SeoSchema` with the same shape:
+
 - `tags[].type` — `'title'`, `'meta'`, `'link'`, `'script'`
 - `tags[].props` — `Record<string, any>` (e.g. `{ name: 'description', content: '...' }`)
 - `tags[].children` — inner text (e.g. for `<title>`)
@@ -79,7 +80,7 @@ In `packages/wix-stores-v1/lib/components/product-page.ts`:
 
 ## Trade-offs
 
-| Decision | Benefit | Cost |
-|----------|---------|------|
-| Reuse same mapping logic as wix-stores | Consistent behavior across packages | Duplicated code (small function, not worth abstracting) |
-| Return headTags from slow phase | SEO tags available at build time for SSG | Fast phase would replace them if it also returns headTags |
+| Decision                               | Benefit                                  | Cost                                                      |
+| -------------------------------------- | ---------------------------------------- | --------------------------------------------------------- |
+| Reuse same mapping logic as wix-stores | Consistent behavior across packages      | Duplicated code (small function, not worth abstracting)   |
+| Return headTags from slow phase        | SEO tags available at build time for SSG | Fast phase would replace them if it also returns headTags |
