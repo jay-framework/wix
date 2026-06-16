@@ -29,6 +29,10 @@ export interface FlatCategoryEntry {
     /** Root → … → parent slugs (excludes current). */
     breadcrumbSlugs: string[];
     rootSlug: string;
+    /** Display name of the tree root (same for root and all descendants). */
+    rootName: string;
+    /** True when the tree root has child categories (hierarchical branch). */
+    rootHasChildren: boolean;
     parentSlug: string | null;
 }
 
@@ -38,16 +42,22 @@ export function flattenCategoryTree(
     parentNames: string[] = [],
     parentSlugs: string[] = [],
     rootSlug: string | null = null,
+    rootName: string | null = null,
+    rootHasChildren: boolean | null = null,
 ): FlatCategoryEntry[] {
     const entries: FlatCategoryEntry[] = [];
 
     for (const node of roots) {
         const entryRootSlug = rootSlug ?? node.slug;
+        const entryRootName = rootName ?? node.name;
+        const entryRootHasChildren = rootHasChildren ?? node.children.length > 0;
         entries.push({
             node,
             breadcrumbNames: parentNames,
             breadcrumbSlugs: parentSlugs,
             rootSlug: entryRootSlug,
+            rootName: entryRootName,
+            rootHasChildren: entryRootHasChildren,
             parentSlug: parentSlugs.length > 0 ? parentSlugs[parentSlugs.length - 1]! : null,
         });
 
@@ -58,6 +68,8 @@ export function flattenCategoryTree(
                     [...parentNames, node.name],
                     [...parentSlugs, node.slug],
                     entryRootSlug,
+                    entryRootName,
+                    entryRootHasChildren,
                 ),
             );
         }
@@ -185,6 +197,13 @@ function buildCategoryPrompt(config: WixStoresConfig, entry: FlatCategoryEntry):
     return lines.join('\n');
 }
 
+function resolveCategorySubCategory(entry: FlatCategoryEntry): string {
+    if (entry.rootHasChildren) {
+        return entry.rootName;
+    }
+    return 'Categories';
+}
+
 /** Build Add Menu catalog items — one per visible category in the indexed tree. */
 export function buildCategoryAddMenuItems(
     roots: CategoryTreeNode[],
@@ -197,7 +216,7 @@ export function buildCategoryAddMenuItems(
         id: uniqueCategoryItemId(entry.node.slug, entry.node._id, usedIds),
         title: formatCategoryTitle(entry),
         category: 'Store',
-        subCategory: 'Categories',
+        subCategory: resolveCategorySubCategory(entry),
         pluginName: 'wix-stores',
         packageName: '@jay-framework/wix-stores',
         prompt: buildCategoryPrompt(config, entry),
