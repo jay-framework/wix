@@ -23,8 +23,8 @@
     "test": ":"
   },
   "dependencies": {
-    "@jay-framework/fullstack-component": "^0.19.5",
-    "@jay-framework/jay-stack-cli": "^0.19.5",
+    "@jay-framework/fullstack-component": "^0.19.6",
+    "@jay-framework/jay-stack-cli": "^0.19.6",
     "@jay-framework/wix-data": "workspace:^",
     "@jay-framework/wix-deploy": "workspace:^",
     "@jay-framework/wix-server-client": "workspace:^",
@@ -33,9 +33,9 @@
     "sirv": "^3.0.0"
   },
   "devDependencies": {
-    "@jay-framework/a11y-validator": "^0.19.5",
-    "@jay-framework/jay-cli": "^0.19.5",
-    "@jay-framework/seo-validator": "^0.19.5",
+    "@jay-framework/a11y-validator": "^0.19.6",
+    "@jay-framework/jay-cli": "^0.19.6",
+    "@jay-framework/seo-validator": "^0.19.6",
     "@jay-framework/wix-dev-environment": "workspace:^",
     "@jay-framework/wix-media": "workspace:^",
     "@types/express": "^5.0.0",

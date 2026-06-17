@@ -1,6 +1,6 @@
 {
   "name": "@jay-framework/wix-media",
-  "version": "0.19.5",
+  "version": "0.19.6",
   "type": "module",
   "description": "Wix Media Manager plugin for Jay Framework — media validation, index generation, and agent-kit references",
   "license": "Apache-2.0",
@@ -25,19 +25,19 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@jay-framework/compiler-jay-html": "^0.19.5",
-    "@jay-framework/compiler-shared": "^0.19.5",
-    "@jay-framework/component": "^0.19.5",
-    "@jay-framework/fullstack-component": "^0.19.5",
-    "@jay-framework/stack-server-runtime": "^0.19.5",
+    "@jay-framework/compiler-jay-html": "^0.19.6",
+    "@jay-framework/compiler-shared": "^0.19.6",
+    "@jay-framework/component": "^0.19.6",
+    "@jay-framework/fullstack-component": "^0.19.6",
+    "@jay-framework/stack-server-runtime": "^0.19.6",
     "@jay-framework/wix-server-client": "workspace:^",
     "@jay-framework/wix-utils": "workspace:^",
     "@wix/media": "^1.0.247",
     "@wix/sdk": "^1.21.5"
   },
   "devDependencies": {
-    "@jay-framework/compiler-jay-stack": "^0.19.5",
-    "@jay-framework/vite-plugin": "^0.19.5",
+    "@jay-framework/compiler-jay-stack": "^0.19.6",
+    "@jay-framework/vite-plugin": "^0.19.6",
     "@types/node": "^20.11.0",
     "node-html-parser": "^6.1.0",
     "rimraf": "^5.0.5",
