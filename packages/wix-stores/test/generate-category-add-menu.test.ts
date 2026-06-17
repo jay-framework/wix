@@ -45,7 +45,6 @@ describe('buildCategoryAddMenuItems (Design Log #20 — generated categories)', 
 
         for (const item of items) {
             expect(item.category).toBe('Store');
-            expect(item.subCategory).toBe('Categories');
             expect(item.pluginName).toBe('wix-stores');
             expect(item.packageName).toBe('@jay-framework/wix-stores');
 
@@ -57,6 +56,34 @@ describe('buildCategoryAddMenuItems (Design Log #20 — generated categories)', 
                 expect(item).not.toHaveProperty(field);
             }
         }
+    });
+
+    it('groups hierarchical categories under their root name as subCategory', () => {
+        const items = buildCategoryAddMenuItems(loadCategoryTreeFixture(), PREFIXED_URL_CONFIG);
+        const byId = Object.fromEntries(items.map((item) => [item.id, item]));
+
+        expect(byId['wix-stores:category:kitan']?.subCategory).toBe('Kitan');
+        expect(byId['wix-stores:category:bedroom']?.subCategory).toBe('Kitan');
+        expect(byId['wix-stores:category:bathroom']?.subCategory).toBe('Kitan');
+        expect(byId['wix-stores:category:towels']?.subCategory).toBe('Kitan');
+        expect(byId['wix-stores:category:polgat']?.subCategory).toBe('Polgat');
+        expect(byId['wix-stores:category:shoes']?.subCategory).toBe('Polgat');
+    });
+
+    it('uses Categories subCategory for flat top-level categories without children', () => {
+        const flatRoots: CategoryTreeNode[] = [
+            {
+                _id: 'sale-id',
+                name: 'Winter Sale',
+                slug: 'winter-sale',
+                productCount: 10,
+                children: [],
+            },
+        ];
+        const items = buildCategoryAddMenuItems(flatRoots, PREFIXED_URL_CONFIG);
+
+        expect(items).toHaveLength(1);
+        expect(items[0]?.subCategory).toBe('Categories');
     });
 
     it('includes full category facts and binding hints in prompt', () => {
@@ -124,6 +151,8 @@ describe('flattenCategoryTree', () => {
                 breadcrumbNames: ['Kitan', 'Bathroom'],
                 breadcrumbSlugs: ['kitan', 'bathroom'],
                 rootSlug: 'kitan',
+                rootName: 'Kitan',
+                rootHasChildren: true,
                 parentSlug: 'bathroom',
             }),
         );
