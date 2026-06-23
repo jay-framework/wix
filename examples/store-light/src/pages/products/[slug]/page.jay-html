@@ -12,7 +12,7 @@
     ></script>
     <script type="application/jay-headless"
             plugin="@jay-framework/wix-stores"
-            contract="related-products"
+            contract="category-products"
     ></script>
     <script type="application/jay-data">
       data:
@@ -637,7 +637,7 @@
       </section>
 
       <!-- Related Products -->
-      <jay:related-products productId="{productPage._id}" categorySlug="{productPage.categorySlug}" limit="4">
+      <jay:category-products productId="{productPage._id}" categorySlug="{productPage.categorySlug}" limit="4">
         <section class="related-section" if="hasProducts">
           <h2 class="section-title">More from {categoryName}</h2>
           <div class="related-grid">
@@ -674,7 +674,7 @@
             </article>
           </div>
         </section>
-      </jay:related-products>
+      </jay:category-products>
 
       <!-- Sticky Action Bar -->
       <div class="sticky-action-bar">

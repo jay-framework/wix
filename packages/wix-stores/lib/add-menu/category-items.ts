@@ -177,12 +177,12 @@ function buildCategoryPrompt(config: WixStoresConfig, entry: FlatCategoryEntry):
     }
 
     lines.push(
-        `  related-products — pass categorySlug="${node.slug}" alongside a productId when showing related items in this category`,
+        `  category-products — pass categorySlug="${node.slug}" to show products from this category; optionally pass productId to exclude a product`,
         '',
         'Contracts:',
         '  agent-kit/materialized-contracts/wix-stores/product-search.jay-contract',
         '  agent-kit/materialized-contracts/wix-stores/category-list.jay-contract',
-        '  agent-kit/materialized-contracts/wix-stores/related-products.jay-contract',
+        '  agent-kit/materialized-contracts/wix-stores/category-products.jay-contract',
         '',
         'Bind ViewState and refs per agent-kit/designer/INSTRUCTIONS.md.',
     );

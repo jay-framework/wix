@@ -6,12 +6,12 @@ import {
 } from '@jay-framework/fullstack-component';
 import { Props } from '@jay-framework/component';
 import {
-    RelatedProductsContract,
-    RelatedProductsFastViewState,
-    RelatedProductsInteractiveViewState,
-    RelatedProductsRefs,
-    RelatedProductsSlowViewState,
-} from '../contracts/related-products.jay-contract';
+    CategoryProductsContract,
+    CategoryProductsFastViewState,
+    CategoryProductsInteractiveViewState,
+    CategoryProductsRefs,
+    CategoryProductsSlowViewState,
+} from '../contracts/category-products.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
 import { searchProducts } from '../actions/stores-actions';
 import { WIX_STORES_CONTEXT, WixStoresContext } from '../contexts/wix-stores-context';
@@ -21,21 +21,21 @@ import { ProductCardViewState } from '../contracts/product-card.jay-contract';
 
 const DEFAULT_LIMIT = 4;
 
-export interface RelatedProductsProps {
-    productId: string;
+export interface CategoryProductsProps {
+    productId?: string;
     categorySlug?: string;
     limit?: number;
 }
 
-interface RelatedSlowCarryForward {
+interface SlowCarryForward {
     products: ProductCardViewState[];
 }
 
 async function renderSlowlyChanging(
-    props: PageProps & RelatedProductsProps,
+    props: PageProps & CategoryProductsProps,
     wixStores: WixStoresService,
 ) {
-    const Pipeline = RenderPipeline.for<RelatedProductsSlowViewState, RelatedSlowCarryForward>();
+    const Pipeline = RenderPipeline.for<CategoryProductsSlowViewState, SlowCarryForward>();
     const limit = props.limit ?? DEFAULT_LIMIT;
     const categorySlug = props.categorySlug;
 
@@ -97,11 +97,11 @@ async function renderSlowlyChanging(
 }
 
 async function renderFastChanging(
-    _props: PageProps & RelatedProductsProps,
-    slowCarryForward: RelatedSlowCarryForward,
+    _props: PageProps & CategoryProductsProps,
+    slowCarryForward: SlowCarryForward,
     _wixStores: WixStoresService,
 ) {
-    const Pipeline = RenderPipeline.for<RelatedProductsFastViewState, Record<string, never>>();
+    const Pipeline = RenderPipeline.for<CategoryProductsFastViewState, Record<string, never>>();
     const { products } = slowCarryForward;
 
     return Pipeline.ok({
@@ -110,10 +110,10 @@ async function renderFastChanging(
     }).toPhaseOutput((viewState) => ({ viewState, carryForward: {} }));
 }
 
-function RelatedProductsInteractive(
-    _props: Props<PageProps & RelatedProductsProps>,
-    refs: RelatedProductsRefs,
-    viewStateSignals: Signals<RelatedProductsFastViewState>,
+function CategoryProductsInteractive(
+    _props: Props<PageProps & CategoryProductsProps>,
+    refs: CategoryProductsRefs,
+    viewStateSignals: Signals<CategoryProductsFastViewState>,
     _fastCarryForward: Record<string, never>,
     storesContext: WixStoresContext,
 ) {
@@ -125,17 +125,17 @@ function RelatedProductsInteractive(
     setupCardInteractions(refs.products, { get: products, set: setProducts }, storesContext);
 
     return {
-        render: (): RelatedProductsInteractiveViewState => ({
+        render: (): CategoryProductsInteractiveViewState => ({
             products: products(),
             hasProducts: hasProducts(),
         }),
     };
 }
 
-export const relatedProducts = makeJayStackComponent<RelatedProductsContract>()
-    .withProps<PageProps & RelatedProductsProps>()
+export const categoryProducts = makeJayStackComponent<CategoryProductsContract>()
+    .withProps<PageProps & CategoryProductsProps>()
     .withServices(WIX_STORES_SERVICE_MARKER)
     .withContexts(WIX_STORES_CONTEXT)
     .withSlowlyRender(renderSlowlyChanging)
     .withFastRender(renderFastChanging)
-    .withInteractive(RelatedProductsInteractive);
+    .withInteractive(CategoryProductsInteractive);

@@ -17,7 +17,7 @@ const REQUIRED_ITEM_FIELDS = ['id', 'title', 'category', 'prompt'] as const;
 const EXPECTED_IDS = [
     'wix-stores:product-search',
     'wix-stores:product-page',
-    'wix-stores:related-products',
+    'wix-stores:category-products',
     'wix-stores:category-list',
 ] as const;
 

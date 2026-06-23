@@ -1,29 +1,29 @@
-name: related-products
-description: Related products grid showing products from the same category. Use on product pages alongside the product-page component.
+name: category-products
+description: Products from a specific category. Use for category product showcases, or as related products on a product page (pass productId to exclude the current product).
 props:
   - name: productId
     type: string
-    description: Product ID to exclude from results
+    description: Product ID to exclude from results (optional, use for related products)
   - name: categorySlug
     type: string
-    description: Category slug to filter related products by
+    description: Category slug to filter products by
   - name: limit
     type: number
-    description: Maximum number of related products to show (default 4)
+    description: Maximum number of products to show (default 4)
 tags:
   - tag: products
     type: sub-contract
     repeated: true
     trackBy: _id
     phase: fast+interactive
-    description: Related product cards
+    description: Product cards from the category
     link: ./product-card
 
   - tag: hasProducts
     type: variant
     dataType: boolean
     phase: fast+interactive
-    description: Whether there are related products to show
+    description: Whether there are products to show
 
   - tag: categoryName
     type: data

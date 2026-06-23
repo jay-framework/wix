@@ -17,7 +17,7 @@
     "./media.jay-contract": "./dist/contracts/media.jay-contract",
     "./media-gallery.jay-contract": "./dist/contracts/media-gallery.jay-contract",
     "./product-search.jay-contract": "./dist/contracts/product-search.jay-contract",
-    "./related-products.jay-contract": "./dist/contracts/related-products.jay-contract",
+    "./category-products.jay-contract": "./dist/contracts/category-products.jay-contract",
     "./category-list.jay-contract": "./dist/contracts/category-list.jay-contract",
     "./search-products.jay-action": "./dist/actions/search-products.jay-action",
     "./get-product-by-slug.jay-action": "./dist/actions/get-product-by-slug.jay-action",
