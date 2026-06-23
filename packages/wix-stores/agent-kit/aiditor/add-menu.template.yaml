@@ -5,7 +5,7 @@ items:
     subCategory: Components
     pluginName: wix-stores
     packageName: "@jay-framework/wix-stores"
-    thumbnail: thumbnails/wix-stores/product-search.png
+    thumbnail: thumbnails/wix-stores/product-search.svg
     prompt: |
       Use headless component @jay-framework/wix-stores / contract product-search.
       Read agent-kit/materialized-contracts/wix-stores/product-search.jay-contract.
@@ -18,7 +18,7 @@ items:
     subCategory: Components
     pluginName: wix-stores
     packageName: "@jay-framework/wix-stores"
-    thumbnail: thumbnails/wix-stores/product-page.png
+    thumbnail: thumbnails/wix-stores/product-page.svg
     prompt: |
       Use headless component @jay-framework/wix-stores / contract product-page.
       Read agent-kit/materialized-contracts/wix-stores/product-page.jay-contract.
@@ -31,7 +31,7 @@ items:
     subCategory: Components
     pluginName: wix-stores
     packageName: "@jay-framework/wix-stores"
-    thumbnail: thumbnails/wix-stores/related-products.png
+    thumbnail: thumbnails/wix-stores/related-products.svg
     prompt: |
       Use headless component @jay-framework/wix-stores / contract related-products.
       Read agent-kit/materialized-contracts/wix-stores/related-products.jay-contract.
@@ -45,7 +45,7 @@ items:
     subCategory: Components
     pluginName: wix-stores
     packageName: "@jay-framework/wix-stores"
-    thumbnail: thumbnails/wix-stores/category-list.png
+    thumbnail: thumbnails/wix-stores/category-list.svg
     prompt: |
       Use headless component @jay-framework/wix-stores / contract category-list.
       Read agent-kit/materialized-contracts/wix-stores/category-list.jay-contract.

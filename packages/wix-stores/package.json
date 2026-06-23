@@ -30,7 +30,7 @@
     "validate": "jay-stack-cli validate-plugin",
     "build:client": "vite build",
     "build:server": "vite build --ssr",
-    "build:copy-contract": "mkdir -p dist/contracts && cp lib/contracts/*.jay-contract* dist/contracts/ && mkdir -p dist/actions && cp lib/actions/*.jay-action dist/actions/ && mkdir -p dist/agent-kit/aiditor && cp agent-kit/aiditor/add-menu.template.yaml dist/agent-kit/aiditor/",
+    "build:copy-contract": "mkdir -p dist/contracts && cp lib/contracts/*.jay-contract* dist/contracts/ && mkdir -p dist/actions && cp lib/actions/*.jay-action dist/actions/ && mkdir -p dist/agent-kit/aiditor && cp agent-kit/aiditor/add-menu.template.yaml dist/agent-kit/aiditor/ && cp -R agent-kit/aiditor/thumbnails dist/agent-kit/aiditor/",
     "build:types": "tsup lib/index.ts --dts-only --format esm",
     "build:check-types": "tsc",
     "clean": "rimraf dist",

@@ -10,6 +10,8 @@ import { getService } from '@jay-framework/stack-server-runtime';
 import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
 import { provideWixMediaService } from './services/wix-media-service.js';
 import { generateMediaIndex } from './index-generator.js';
+import { buildMediaAddMenuItems } from './add-menu/media-items.js';
+import { writeGeneratedAddMenuCatalog } from './add-menu/write-add-menu-catalog.js';
 
 function createMediaService() {
     const wixClient = getService(WIX_CLIENT_SERVICE);
@@ -65,8 +67,14 @@ export async function generateWixMediaReferences(
     const mediaIndexPath = path.join(ctx.referencesDir, 'MEDIA-INDEX.md');
     fs.writeFileSync(mediaIndexPath, mediaIndexContent, 'utf-8');
 
+    const addMenuItems = buildMediaAddMenuItems(mediaFiles);
+    const addMenuGenerated = writeGeneratedAddMenuCatalog(ctx.projectRoot, addMenuItems);
+
     return {
-        referencesCreated: [`agent-kit/references/${ctx.pluginName}/MEDIA-INDEX.md`],
-        message: `${mediaFiles.length} media files indexed.`,
+        referencesCreated: [
+            `agent-kit/references/${ctx.pluginName}/MEDIA-INDEX.md`,
+            addMenuGenerated,
+        ],
+        message: `${mediaFiles.length} media files indexed; ${addMenuItems.length} Add Menu items.`,
     };
 }

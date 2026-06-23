@@ -20,19 +20,24 @@ import { getService } from '@jay-framework/stack-server-runtime';
 import { WIX_STORES_SERVICE_MARKER, type WixStoresService } from './services/wix-stores-service';
 import type { DataExtensionSchema } from './utils/data-extension-schema';
 import { buildCategoryAddMenuItems, type CategoryTreeNode } from './add-menu/category-items.js';
+import { copyAiditorAddMenuThumbnails } from './add-menu/copy-aiditor-thumbnails.js';
 import { loadWixStoresConfig } from './config-loader.js';
 
 const CONFIG_FILE_NAME = '.wix-stores.yaml';
 const ADD_MENU_OUTPUT_REL = 'agent-kit/aiditor/add-menu/wix-stores.yaml';
 const ADD_MENU_GENERATED_REL = 'agent-kit/aiditor/add-menu/wix-stores.generated.yaml';
 
-function resolveAddMenuTemplatePath(): string {
+function resolvePackageAgentKitPath(relativePath: string): string {
     const thisDir = path.dirname(fileURLToPath(import.meta.url));
-    const fromDist = path.join(thisDir, 'agent-kit/aiditor/add-menu.template.yaml');
+    const fromDist = path.join(thisDir, relativePath);
     if (fs.existsSync(fromDist)) {
         return fromDist;
     }
-    return path.join(thisDir, '..', 'agent-kit/aiditor/add-menu.template.yaml');
+    return path.join(thisDir, '..', relativePath);
+}
+
+function resolveAddMenuTemplatePath(): string {
+    return resolvePackageAgentKitPath('agent-kit/aiditor/add-menu.template.yaml');
 }
 
 /**
@@ -152,6 +157,9 @@ export async function setupWixStores(ctx: PluginSetupContext): Promise<PluginSet
     if (addMenuCreated) {
         configCreated.push(addMenuCreated);
     }
+    configCreated.push(
+        ...copyAiditorAddMenuThumbnails(ctx, resolvePackageAgentKitPath, 'wix-stores'),
+    );
 
     const message = `Wix Stores configured (product URL: ${service.urls.product})`;
 
