@@ -7,10 +7,8 @@ props:
 tags:
   - tag: product
     type: sub-contract
-    repeated: true
-    trackBy: _id
+    description: The product card
     phase: fast+interactive
-    description: The product card (single-element list for consistent card rendering)
     link: ./product-card
 
   - tag: hasProduct

@@ -13,10 +13,9 @@ import {
 } from '../contracts/product-spotlight.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
 import { WIX_STORES_CONTEXT, WixStoresContext } from '../contexts/wix-stores-context';
-import { setupCardInteractions } from '../utils/card-interactions.js';
 import { handleError } from '../utils/wix-error-handler';
 import { getProductBySlug } from '../actions/stores-actions.js';
-import { ProductCardViewState } from '../contracts/product-card.jay-contract';
+import { ProductCardViewState, QuickAddType } from '../contracts/product-card.jay-contract';
 
 export interface ProductSpotlightProps {
     slug: string;
@@ -29,28 +28,25 @@ async function renderFastChanging(
     const Pipeline = RenderPipeline.for<ProductSpotlightFastViewState, Record<string, never>>();
 
     if (!props.slug) {
-        return Pipeline.ok({ product: [], hasProduct: false }).toPhaseOutput((viewState) => ({
+        return Pipeline.ok({
+            product: {} as ProductCardViewState,
+            hasProduct: false,
+        }).toPhaseOutput((viewState) => ({
             viewState,
             carryForward: {},
         }));
     }
 
     return Pipeline.try(async () => {
-        const card = await getProductBySlug({ slug: props.slug });
-
-        if (!card) {
-            return [] as ProductCardViewState[];
-        }
-
-        return [card];
+        return await getProductBySlug({ slug: props.slug });
     })
         .recover((error) => {
             return handleError(error);
         })
-        .toPhaseOutput((product) => ({
+        .toPhaseOutput((card) => ({
             viewState: {
-                product,
-                hasProduct: product.length > 0,
+                product: card ?? ({} as ProductCardViewState),
+                hasProduct: card !== null,
             },
             carryForward: {},
         }));
@@ -68,7 +64,26 @@ function ProductSpotlightInteractive(
         hasProduct: [hasProduct],
     } = viewStateSignals;
 
-    setupCardInteractions(refs.product, { get: product, set: setProduct }, storesContext);
+    refs.product.addToCartButton?.onclick(async () => {
+        const p = product();
+        if (!p._id || p.quickAddType !== QuickAddType.SIMPLE) return;
+
+        setProduct({ ...p, isAddingToCart: true });
+        try {
+            await storesContext.addToCart(p._id, 1);
+        } catch (error) {
+            console.error('Failed to add to cart:', error);
+        } finally {
+            setProduct({ ...product(), isAddingToCart: false });
+        }
+    });
+
+    refs.product.viewOptionsButton?.onclick(() => {
+        const p = product();
+        if (p.productUrl) {
+            window.location.href = p.productUrl;
+        }
+    });
 
     return {
         render: (): ProductSpotlightInteractiveViewState => ({

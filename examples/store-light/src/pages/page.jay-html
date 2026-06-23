@@ -75,19 +75,17 @@
       <a href="/products" class="cta">Shop Now</a>
 
       <jay:product-spotlight slug="ceramic-flower-vase">
-        <div if="hasProduct">
-          <div class="spotlight-card" forEach="product" trackBy="_id" ref="product.cardContainer">
-            <a href="{productUrl}" ref="product.productLink">
-              <img src="{thumbnail.url}/v1/fill/w_400,h_400/file.webp" alt="{thumbnail.altText}" width="400" height="400" loading="eager" />
-            </a>
-            <div class="card-body">
-              <h2 class="card-name">
-                <a href="{productUrl}" ref="product.productLink">{name}</a>
-              </h2>
-              <div class="card-price">
-                <span>{price}</span>
-                <span class="original-price" if="hasDiscount">{strikethroughPrice}</span>
-              </div>
+        <div class="spotlight-card" if="hasProduct">
+          <a href="{product.productUrl}" ref="product.productLink">
+            <img src="{product.thumbnail.url}/v1/fill/w_400,h_400/file.webp" alt="{product.thumbnail.altText}" width="400" height="400" loading="eager" />
+          </a>
+          <div class="card-body">
+            <h2 class="card-name">
+              <a href="{product.productUrl}" ref="product.productLink">{product.name}</a>
+            </h2>
+            <div class="card-price">
+              <span>{product.price}</span>
+              <span class="original-price" if="product.hasDiscount">{product.strikethroughPrice}</span>
             </div>
           </div>
         </div>

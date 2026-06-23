@@ -21,12 +21,12 @@ items:
       Common headless bindings for this category:
         product-search — filter by category slug via jay-params, e.g. category="recommended-products"
         category-list — show top-level categories (no parentCategory), or children with parentCategory="recommended-products"
-        related-products — pass categorySlug="recommended-products" alongside a productId when showing related items in this category
+        category-products — pass categorySlug="recommended-products" to show products from this category; optionally pass productId to exclude a product
 
       Contracts:
         agent-kit/materialized-contracts/wix-stores/product-search.jay-contract
         agent-kit/materialized-contracts/wix-stores/category-list.jay-contract
-        agent-kit/materialized-contracts/wix-stores/related-products.jay-contract
+        agent-kit/materialized-contracts/wix-stores/category-products.jay-contract
 
       Bind ViewState and refs per agent-kit/designer/INSTRUCTIONS.md.
   - id: wix-stores:category:all-products
@@ -49,11 +49,11 @@ items:
       Common headless bindings for this category:
         product-search — filter by category slug via jay-params, e.g. category="all-products"
         category-list — show top-level categories (no parentCategory), or children with parentCategory="all-products"
-        related-products — pass categorySlug="all-products" alongside a productId when showing related items in this category
+        category-products — pass categorySlug="all-products" to show products from this category; optionally pass productId to exclude a product
 
       Contracts:
         agent-kit/materialized-contracts/wix-stores/product-search.jay-contract
         agent-kit/materialized-contracts/wix-stores/category-list.jay-contract
-        agent-kit/materialized-contracts/wix-stores/related-products.jay-contract
+        agent-kit/materialized-contracts/wix-stores/category-products.jay-contract
 
       Bind ViewState and refs per agent-kit/designer/INSTRUCTIONS.md.
