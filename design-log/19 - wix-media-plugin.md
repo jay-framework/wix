@@ -996,7 +996,7 @@ Ran `yarn validate` on all 6 examples (cms, store-light, store, studio-store, wh
 
 **Changes:**
 
-| File | Change |
-| --- | --- |
-| `lib/validators/media-validator.ts` | Added `WIDTH_PARAM_RE` (`/w_(\d+)/`), `SRCSET_MIN_WIDTH_THRESHOLD` (400), and Rule E check after the existing src/srcset loops |
+| File                                      | Change                                                                                                                                                                                                                             |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `lib/validators/media-validator.ts`       | Added `WIDTH_PARAM_RE` (`/w_(\d+)/`), `SRCSET_MIN_WIDTH_THRESHOLD` (400), and Rule E check after the existing src/srcset loops                                                                                                     |
 | `test/validators/media-validator.test.ts` | Added 6 tests: flags w_800, flags w_600 binding, passes with srcset, passes below threshold, skips video, flags at exactly 400. Updated 4 existing tests to filter by `severity === 'error'` so the new warning doesn't break them |

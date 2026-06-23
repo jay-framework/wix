@@ -1,5 +1,9 @@
 <html>
   <head>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="product-spotlight"
+    ></script>
     <script type="application/jay-data">
       data:
     </script>
@@ -22,7 +26,7 @@
         color: #666;
         margin-bottom: 32px;
       }
-      .hero a {
+      .hero a.cta {
         display: inline-block;
         padding: 12px 32px;
         background: #1a1a1a;
@@ -30,14 +34,64 @@
         text-decoration: none;
         font-size: 1rem;
       }
+      .spotlight-card {
+        max-width: 400px;
+        margin: 40px auto 0;
+        text-align: left;
+        background: white;
+        overflow: hidden;
+      }
+      .spotlight-card img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .spotlight-card .card-body {
+        padding: 20px;
+      }
+      .spotlight-card .card-name {
+        font-size: 1.2rem;
+        margin: 0 0 8px;
+      }
+      .spotlight-card .card-name a {
+        color: inherit;
+        text-decoration: none;
+      }
+      .spotlight-card .card-price {
+        font-size: 1rem;
+        color: #333;
+      }
+      .spotlight-card .original-price {
+        text-decoration: line-through;
+        color: #999;
+        margin-left: 8px;
+      }
     </style>
   </head>
   <body>
     <main class="hero">
       <h1>Welcome to the Store</h1>
       <p>Browse our curated collection of products</p>
-      <a href="/products">Shop Now</a>
-      <img src="https://static.wixstatic.com/media/c569b3_639ad5afc7444094a93050642772b330~mv2.png/v1/fill/w_1200,h_800/file.webp" alt="Welcome banner" width="1200" height="800" loading="eager" fetchpriority="high" />
+      <a href="/products" class="cta">Shop Now</a>
+
+      <jay:product-spotlight slug="ceramic-flower-vase">
+        <div if="hasProduct">
+          <div class="spotlight-card" forEach="product" trackBy="_id" ref="product.cardContainer">
+            <a href="{productUrl}" ref="product.productLink">
+              <img src="{thumbnail.url}/v1/fill/w_400,h_400/file.webp" alt="{thumbnail.altText}" width="400" height="400" loading="eager" />
+            </a>
+            <div class="card-body">
+              <h2 class="card-name">
+                <a href="{productUrl}" ref="product.productLink">{name}</a>
+              </h2>
+              <div class="card-price">
+                <span>{price}</span>
+                <span class="original-price" if="hasDiscount">{strikethroughPrice}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </jay:product-spotlight>
     </main>
   </body>
 </html>

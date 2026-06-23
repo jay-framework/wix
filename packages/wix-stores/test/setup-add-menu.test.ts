@@ -18,6 +18,7 @@ const EXPECTED_IDS = [
     'wix-stores:product-search',
     'wix-stores:product-page',
     'wix-stores:category-products',
+    'wix-stores:product-spotlight',
     'wix-stores:category-list',
 ] as const;
 
@@ -57,7 +58,7 @@ function assertAddMenuCatalogShape(catalog: unknown): void {
     expect(catalog).toEqual(expect.objectContaining({ items: expect.any(Array) }));
 
     const items = (catalog as { items: Record<string, unknown>[] }).items;
-    expect(items).toHaveLength(4);
+    expect(items).toHaveLength(5);
     expect(items.map((item) => item.id)).toEqual([...EXPECTED_IDS]);
 
     for (const item of items) {
@@ -87,7 +88,7 @@ describe('setupWixStores add-menu catalog (Design Log #20 W2)', () => {
         rmSync(projectRoot, { recursive: true, force: true });
     });
 
-    it('writes wix-stores.yaml with four catalog items matching expected fixture', async () => {
+    it('writes wix-stores.yaml with five catalog items matching expected fixture', async () => {
         const result = await setupWixStores(makeCtx(projectRoot));
 
         expect(result.status).toBe('configured');

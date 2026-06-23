@@ -214,10 +214,12 @@ contracts:
 The component was renamed from `related-products` to `category-products` to reflect that it's a general-purpose "products from a category" component, not limited to the "related products" use case on product pages.
 
 **Two use cases:**
+
 1. **Category product showcase** — show products from a category on any page (no `productId` needed)
 2. **Related products** — show products from the same category on a product page, pass `productId` to exclude the current product
 
 **What changed:**
+
 - Contract: `related-products.jay-contract` → `category-products.jay-contract`
 - Component export: `relatedProducts` → `categoryProducts`
 - Props type: `RelatedProductsProps` → `CategoryProductsProps`
