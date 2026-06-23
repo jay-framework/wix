@@ -981,3 +981,22 @@ Ran `yarn validate` on all 6 examples (cms, store-light, store, studio-store, wh
 - **SEO warnings:** Added `<title>`, `<meta description>`, `<link canonical>`, `<main>` landmarks, fixed heading hierarchy, added `width`/`height`/`loading`/`fetchpriority` to images
 - **Wix-media errors:** Applied `/v1/fill/w_WW%2Ch_HH/file.webp` optimization to all Wix media URL bindings; uploaded local static images via `jay-stack-cli run wix-media/upload-public` and replaced local paths with Wix media URLs
 - **All 6 examples pass validation** (store has 0 errors after uploading local Figma-exported PNGs)
+
+### Rule E: Missing srcset on responsive images
+
+**Problem:** Images ≥400px wide served without `srcset` force the browser to download the same large file regardless of viewport size, wasting bandwidth on mobile and smaller screens.
+
+**Detection:** For each `<img>` with a `src` containing `/v1/` transform parameters: extract the `w_` value from the static parts. If `w_` ≥ 400 and no `srcset` attribute is present → emit warning. Works for both fully static Wix URLs and binding+static combinations (e.g. `{url}/v1/fill/w_800,h_600/file.webp`).
+
+**Severity:** `warning` (not error) — the image still works without srcset, this is a performance optimization.
+
+**Does not flag:** images with `w_` < 400 (thumbnails/icons), images that already have `srcset`, `<video>`/`<source>` elements, images without `/v1/` transforms (caught by Rules A/B).
+
+**Message:** `"This image is ≥400px wide but has no srcset attribute. Add srcset with sizes for common breakpoints to serve appropriately sized images across devices. See agent-kit/wix-media.md for the responsive image pattern."`
+
+**Changes:**
+
+| File | Change |
+| --- | --- |
+| `lib/validators/media-validator.ts` | Added `WIDTH_PARAM_RE` (`/w_(\d+)/`), `SRCSET_MIN_WIDTH_THRESHOLD` (400), and Rule E check after the existing src/srcset loops |
+| `test/validators/media-validator.test.ts` | Added 6 tests: flags w_800, flags w_600 binding, passes with srcset, passes below threshold, skips video, flags at exactly 400. Updated 4 existing tests to filter by `severity === 'error'` so the new warning doesn't break them |

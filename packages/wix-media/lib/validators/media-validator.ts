@@ -12,6 +12,8 @@ const V1_TRANSFORM_RE = /\/v1\//;
 const IMAGE_EXTENSIONS_RE = /\.(jpe?g|png|gif|webp|svg|bmp|ico)$/i;
 
 const SRCSET_UNENCODED_COMMA_RE = /\/v1\/[^/]+\/[^/]*[a-z]_\d+,[a-z]_\d+/;
+const WIDTH_PARAM_RE = /w_(\d+)/;
+const SRCSET_MIN_WIDTH_THRESHOLD = 400;
 
 const MEDIA_SRC_ATTRS = ['src', 'poster'];
 const MEDIA_SRCSET_ATTRS = ['srcset'];
@@ -103,6 +105,29 @@ export const validate: JayHtmlValidatorFn = (ctx) => {
                         element: `<${tagName}>`,
                         attribute: attr,
                     });
+                }
+            }
+        }
+
+        if (tagName === 'img' && !el.getAttribute('srcset')) {
+            const srcValue = el.getAttribute('src');
+            if (srcValue) {
+                const srcParts = parseTemplateParts(srcValue);
+                const staticText = srcParts
+                    .filter((p) => p.kind === 'static')
+                    .map((p) => p.value)
+                    .join('');
+                if (V1_TRANSFORM_RE.test(staticText)) {
+                    const widthMatch = staticText.match(WIDTH_PARAM_RE);
+                    if (widthMatch && parseInt(widthMatch[1], 10) >= SRCSET_MIN_WIDTH_THRESHOLD) {
+                        findings.push({
+                            severity: 'warning',
+                            message:
+                                'This image is ≥400px wide but has no srcset attribute. Add srcset with sizes for common breakpoints to serve appropriately sized images across devices. See agent-kit/wix-media.md for the responsive image pattern.',
+                            element: '<img>',
+                            attribute: 'src',
+                        });
+                    }
                 }
             }
         }

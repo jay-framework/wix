@@ -80,7 +80,8 @@ describe('media-validator', () => {
                 '<img src="https://static.wixstatic.com/media/abc123/v1/fill/w_400,h_300/file.jpg" alt="photo" />',
             );
             const findings = await validate(ctx);
-            expect(findings).toEqual([]);
+            const errors = findings.filter((f) => f.severity === 'error');
+            expect(errors).toEqual([]);
         });
     });
 
@@ -102,7 +103,8 @@ describe('media-validator', () => {
                 mediaContract,
             );
             const findings = await validate(ctx);
-            expect(findings).toEqual([]);
+            const errors = findings.filter((f) => f.severity === 'error');
+            expect(errors).toEqual([]);
         });
 
         it('does not flag binding to non-wix-image tag', async () => {
@@ -136,7 +138,8 @@ describe('media-validator', () => {
                 headlessImports,
             );
             const findings = await validate(ctx);
-            expect(findings).toEqual([]);
+            const errors = findings.filter((f) => f.severity === 'error');
+            expect(errors).toEqual([]);
         });
     });
 
@@ -216,6 +219,80 @@ describe('media-validator', () => {
         });
     });
 
+    describe('Rule E: missing srcset on responsive images', () => {
+        it('flags img with w_800 and no srcset', async () => {
+            const ctx = makeContext(
+                '<img src="https://static.wixstatic.com/media/abc123/v1/fill/w_800,h_600/file.webp" alt="hero" />',
+            );
+            const findings = await validate(ctx);
+            expect(findings).toEqual([
+                expect.objectContaining({
+                    severity: 'warning',
+                    message: expect.stringContaining('srcset'),
+                    attribute: 'src',
+                }),
+            ]);
+        });
+
+        it('flags binding with w_600 and no srcset', async () => {
+            const ctx = makeContext(
+                '<img src="{mainMedia.url}/v1/fill/w_600,h_400/file.webp" alt="product" />',
+                mediaContract,
+            );
+            const findings = await validate(ctx);
+            const srcsetWarnings = findings.filter((f) => f.severity === 'warning');
+            expect(srcsetWarnings).toEqual([
+                expect.objectContaining({
+                    severity: 'warning',
+                    message: expect.stringContaining('srcset'),
+                }),
+            ]);
+        });
+
+        it('passes when srcset is present', async () => {
+            const ctx = makeContext(
+                `<img src="{mainMedia.url}/v1/fill/w_800,h_600/file.webp"
+                      srcset="{mainMedia.url}/v1/fill/w_400%2Ch_300/file.webp 400w,
+                              {mainMedia.url}/v1/fill/w_800%2Ch_600/file.webp 800w"
+                      alt="product" />`,
+                mediaContract,
+            );
+            const findings = await validate(ctx);
+            const srcsetWarnings = findings.filter((f) => f.severity === 'warning');
+            expect(srcsetWarnings).toEqual([]);
+        });
+
+        it('passes when w_ is below threshold', async () => {
+            const ctx = makeContext(
+                '<img src="https://static.wixstatic.com/media/abc123/v1/fill/w_100,h_100/file.jpg" alt="thumb" />',
+            );
+            const findings = await validate(ctx);
+            expect(findings).toEqual([]);
+        });
+
+        it('does not flag video elements', async () => {
+            const ctx = makeContext(
+                '<video poster="https://static.wixstatic.com/media/abc123/v1/fill/w_800,h_600/file.jpg" src="video.mp4"></video>',
+            );
+            const findings = await validate(ctx);
+            const srcsetWarnings = findings.filter((f) => f.severity === 'warning');
+            expect(srcsetWarnings).toEqual([]);
+        });
+
+        it('flags at exactly 400px width', async () => {
+            const ctx = makeContext(
+                '<img src="https://static.wixstatic.com/media/abc123/v1/fill/w_400,h_400/file.webp" alt="card" />',
+            );
+            const findings = await validate(ctx);
+            expect(findings).toEqual([
+                expect.objectContaining({
+                    severity: 'warning',
+                    message: expect.stringContaining('srcset'),
+                }),
+            ]);
+        });
+    });
+
     describe('edge cases', () => {
         it('handles multiple errors in same file', async () => {
             const ctx = makeContext(
@@ -246,7 +323,10 @@ describe('media-validator', () => {
         it('returns no findings for fully optimized page', async () => {
             const ctx = makeContext(
                 `<div>
-                    <img src="{mainMedia.url}/v1/fill/w_800,h_600/file.webp" alt="hero" />
+                    <img src="{mainMedia.url}/v1/fill/w_800,h_600/file.webp"
+                         srcset="{mainMedia.url}/v1/fill/w_400%2Ch_300/file.webp 400w,
+                                 {mainMedia.url}/v1/fill/w_800%2Ch_600/file.webp 800w"
+                         alt="hero" />
                     <img src="https://static.wixstatic.com/media/abc123/v1/fit/w_100,h_100/file.jpg" alt="thumb" />
                     <p>No images here</p>
                 </div>`,
