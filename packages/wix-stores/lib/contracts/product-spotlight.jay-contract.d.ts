@@ -6,14 +6,42 @@ export interface ProductSpotlightViewState {
   hasProduct: boolean
 }
 
-export type ProductSpotlightSlowViewState = {};
-
-export type ProductSpotlightFastViewState = Pick<ProductSpotlightViewState, 'hasProduct'> & {
-    product: ProductSpotlightViewState['product'];
+export type ProductSpotlightSlowViewState = Pick<ProductSpotlightViewState, 'hasProduct'> & {
+    product: Pick<ProductSpotlightViewState['product'], '_id' | 'name' | 'slug' | 'productUrl' | 'categoryPrefix' | 'hasDiscount' | 'hasRibbon' | 'productType' | 'quickAddType'> & {
+    mainMedia: ProductSpotlightViewState['product']['mainMedia'];
+    thumbnail: ProductSpotlightViewState['product']['thumbnail'];
+    inventory: ProductSpotlightViewState['product']['inventory'];
+    ribbon: ProductSpotlightViewState['product']['ribbon'];
+    brand: ProductSpotlightViewState['product']['brand'];
+    quickOption: Pick<ProductSpotlightViewState['product']['quickOption'], '_id' | 'name' | 'optionRenderType'> & {
+    choices: Array<Pick<ProductSpotlightViewState['product']['quickOption']['choices'][number], 'choiceId' | 'name' | 'choiceType' | 'colorCode'>>;
+};
+    secondQuickOption: Pick<ProductSpotlightViewState['product']['secondQuickOption'], '_id' | 'name' | 'optionRenderType'> & {
+    choices: Array<Pick<ProductSpotlightViewState['product']['secondQuickOption']['choices'][number], 'choiceId' | 'name' | 'choiceType' | 'colorCode'>>;
+};
+};
 };
 
-export type ProductSpotlightInteractiveViewState = Pick<ProductSpotlightViewState, 'hasProduct'> & {
-    product: ProductSpotlightViewState['product'];
+export type ProductSpotlightFastViewState = {
+    product: Pick<ProductSpotlightViewState['product'], 'price' | 'strikethroughPrice' | 'isAddingToCart'> & {
+    quickOption: {
+    choices: Array<Pick<ProductSpotlightViewState['product']['quickOption']['choices'][number], 'choiceId' | 'inStock' | 'isSelected'>>;
+};
+    secondQuickOption: {
+    choices: Array<Pick<ProductSpotlightViewState['product']['secondQuickOption']['choices'][number], 'choiceId' | 'inStock' | 'isSelected'>>;
+};
+};
+};
+
+export type ProductSpotlightInteractiveViewState = {
+    product: Pick<ProductSpotlightViewState['product'], 'price' | 'strikethroughPrice' | 'isAddingToCart'> & {
+    quickOption: {
+    choices: Array<Pick<ProductSpotlightViewState['product']['quickOption']['choices'][number], 'choiceId' | 'inStock' | 'isSelected'>>;
+};
+    secondQuickOption: {
+    choices: Array<Pick<ProductSpotlightViewState['product']['secondQuickOption']['choices'][number], 'choiceId' | 'inStock' | 'isSelected'>>;
+};
+};
 };
 
 

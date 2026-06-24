@@ -8,11 +8,9 @@ tags:
   - tag: product
     type: sub-contract
     description: The product card
-    phase: fast+interactive
     link: ./product-card
 
   - tag: hasProduct
     type: variant
     dataType: boolean
-    phase: fast+interactive
     description: Whether the product was found

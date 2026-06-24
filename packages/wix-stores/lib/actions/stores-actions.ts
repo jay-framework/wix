@@ -442,6 +442,7 @@ export const getProductBySlug = makeJayQuery('wixStores.getProductBySlug')
                 const fields = [
                     'MEDIA_ITEMS_INFO',
                     'VARIANT_OPTION_CHOICE_NAMES',
+                    'CURRENCY',
                     ...(needsCategoryInfo(wixStores) ? (['ALL_CATEGORIES_INFO'] as const) : []),
                 ] as const;
                 const result = await wixStores.products.getProductBySlug(slug, {

@@ -10,6 +10,7 @@ import {
     ProductSpotlightFastViewState,
     ProductSpotlightInteractiveViewState,
     ProductSpotlightRefs,
+    ProductSpotlightSlowViewState,
 } from '../contracts/product-spotlight.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service.js';
 import { WIX_STORES_CONTEXT, WixStoresContext } from '../contexts/wix-stores-context';
@@ -21,56 +22,129 @@ export interface ProductSpotlightProps {
     slug: string;
 }
 
-async function renderFastChanging(
+interface SpotlightCarryForward {
+    product: ProductCardViewState;
+}
+
+async function renderSlowlyChanging(
     props: PageProps & ProductSpotlightProps,
     _wixStores: WixStoresService,
 ) {
-    const Pipeline = RenderPipeline.for<ProductSpotlightFastViewState, Record<string, never>>();
-
-    if (!props.slug) {
-        return Pipeline.ok({
-            product: {} as ProductCardViewState,
-            hasProduct: false,
-        }).toPhaseOutput((viewState) => ({
-            viewState,
-            carryForward: {},
-        }));
-    }
+    const Pipeline = RenderPipeline.for<ProductSpotlightSlowViewState, SpotlightCarryForward>();
 
     return Pipeline.try(async () => {
-        return await getProductBySlug({ slug: props.slug });
+        if (!props.slug) {
+            throw new Error('No product slug provided');
+        }
+        const card = await getProductBySlug({ slug: props.slug });
+        if (!card) {
+            throw new Error(`Product not found: ${props.slug}`);
+        }
+        return card;
     })
         .recover((error) => {
             return handleError(error);
         })
-        .toPhaseOutput((card) => ({
-            viewState: {
-                product: card ?? ({} as ProductCardViewState),
-                hasProduct: card !== null,
+        .toPhaseOutput((product) => {
+            return {
+                viewState: {
+                    hasProduct: true,
+                    product: {
+                        _id: product._id,
+                        name: product.name,
+                        slug: product.slug,
+                        productUrl: product.productUrl,
+                        categoryPrefix: product.categoryPrefix,
+                        mainMedia: product.mainMedia,
+                        thumbnail: product.thumbnail,
+                        hasDiscount: product.hasDiscount,
+                        inventory: product.inventory,
+                        ribbon: product.ribbon,
+                        hasRibbon: product.hasRibbon,
+                        brand: product.brand,
+                        productType: product.productType,
+                        quickAddType: product.quickAddType,
+                        quickOption: {
+                            _id: product.quickOption?._id,
+                            name: product.quickOption?.name,
+                            optionRenderType: product.quickOption?.optionRenderType,
+                            choices: (product.quickOption?.choices ?? []).map((c) => ({
+                                choiceId: c.choiceId,
+                                name: c.name,
+                                choiceType: c.choiceType,
+                                colorCode: c.colorCode,
+                            })),
+                        },
+                        secondQuickOption: {
+                            _id: product.secondQuickOption?._id,
+                            name: product.secondQuickOption?.name,
+                            optionRenderType: product.secondQuickOption?.optionRenderType,
+                            choices: (product.secondQuickOption?.choices ?? []).map((c) => ({
+                                choiceId: c.choiceId,
+                                name: c.name,
+                                choiceType: c.choiceType,
+                                colorCode: c.colorCode,
+                            })),
+                        },
+                    },
+                },
+                carryForward: { product },
+            };
+        });
+}
+
+async function renderFastChanging(
+    _props: PageProps & ProductSpotlightProps,
+    carryForward: SpotlightCarryForward,
+    _wixStores: WixStoresService,
+) {
+    const Pipeline = RenderPipeline.for<ProductSpotlightFastViewState, SpotlightCarryForward>();
+    const { product } = carryForward;
+
+    return Pipeline.ok({
+        product: {
+            price: product.price,
+            strikethroughPrice: product.strikethroughPrice,
+            isAddingToCart: false,
+            quickOption: {
+                choices: (product.quickOption?.choices ?? []).map((c) => ({
+                    choiceId: c.choiceId,
+                    inStock: c.inStock,
+                    isSelected: c.isSelected,
+                })),
             },
-            carryForward: {},
-        }));
+            secondQuickOption: {
+                choices: (product.secondQuickOption?.choices ?? []).map((c) => ({
+                    choiceId: c.choiceId,
+                    inStock: c.inStock,
+                    isSelected: c.isSelected,
+                })),
+            },
+        },
+    }).toPhaseOutput((viewState) => {
+        return { viewState, carryForward: { product } };
+    });
 }
 
 function ProductSpotlightInteractive(
     _props: Props<PageProps & ProductSpotlightProps>,
     refs: ProductSpotlightRefs,
     viewStateSignals: Signals<ProductSpotlightFastViewState>,
-    _fastCarryForward: Record<string, never>,
+    fastCarryForward: SpotlightCarryForward,
     storesContext: WixStoresContext,
 ) {
     const {
         product: [product, setProduct],
-        hasProduct: [hasProduct],
     } = viewStateSignals;
 
-    refs.product.addToCartButton?.onclick(async () => {
-        const p = product();
-        if (!p._id || p.quickAddType !== QuickAddType.SIMPLE) return;
+    const fullProduct = fastCarryForward.product;
 
-        setProduct({ ...p, isAddingToCart: true });
+    refs.product.addToCartButton.onclick(async () => {
+        if (!fullProduct._id || fullProduct.quickAddType !== QuickAddType.SIMPLE) return;
+
+        setProduct({ ...product(), isAddingToCart: true });
         try {
-            await storesContext.addToCart(p._id, 1);
+            await storesContext.addToCart(fullProduct._id, 1);
         } catch (error) {
             console.error('Failed to add to cart:', error);
         } finally {
@@ -78,17 +152,15 @@ function ProductSpotlightInteractive(
         }
     });
 
-    refs.product.viewOptionsButton?.onclick(() => {
-        const p = product();
-        if (p.productUrl) {
-            window.location.href = p.productUrl;
+    refs.product.viewOptionsButton.onclick(() => {
+        if (fullProduct.productUrl) {
+            window.location.href = fullProduct.productUrl;
         }
     });
 
     return {
         render: (): ProductSpotlightInteractiveViewState => ({
             product: product(),
-            hasProduct: hasProduct(),
         }),
     };
 }
@@ -97,5 +169,6 @@ export const productSpotlight = makeJayStackComponent<ProductSpotlightContract>(
     .withProps<PageProps & ProductSpotlightProps>()
     .withServices(WIX_STORES_SERVICE_MARKER)
     .withContexts(WIX_STORES_CONTEXT)
+    .withSlowlyRender(renderSlowlyChanging)
     .withFastRender(renderFastChanging)
     .withInteractive(ProductSpotlightInteractive);
