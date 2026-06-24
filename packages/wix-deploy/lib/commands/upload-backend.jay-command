@@ -1,0 +1,6 @@
+name: upload-backend
+description: Upload backend build files to a Wix data collection for BaaS serving
+
+inputSchema:
+  collectionId?: string
+  dryRun?: boolean

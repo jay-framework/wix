@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Recipes</title>
+  <meta name="description" content="Discover delicious recipes to try at home with detailed instructions, ingredients, and preparation times.">
+  <link rel="canonical" href="/recipes"/>
   <script type="application/jay-headless"
           plugin="@jay-framework/wix-data"
           contract="list/recipes-list"
@@ -209,7 +211,7 @@
   </style>
 </head>
 <body>
-  <div class="recipes-page">
+  <main class="recipes-page">
     <!-- Breadcrumbs -->
     <nav class="breadcrumbs">
       <span forEach="recipes.breadcrumbs" trackBy="slug">
@@ -234,7 +236,7 @@
     <!-- Empty State -->
     <div class="empty-state" if="recipes.totalCount == 0">
       <div class="empty-state-icon">🍽️</div>
-      <h3>No recipes found</h3>
+      <h2>No recipes found</h2>
       <p>Check back soon for new recipes!</p>
     </div>
 
@@ -243,11 +245,14 @@
       <!-- Initial items (slow-rendered at build time) -->
       <article class="recipe-card" forEach="recipes.items" trackBy="_id">
         <a href="{url}" ref="recipes.items.itemLink">
-          <img 
-            class="recipe-image" 
-            src="{image.url}" 
+          <img
+            class="recipe-image"
+            src="{image.url}"
             alt="{image.altText}"
+            width="{image.width}"
+            height="{image.height}"
             loading="lazy"
+            fetchpriority="high"
           />
         </a>
         <div class="recipe-content">
@@ -269,10 +274,12 @@
       <!-- Dynamically loaded items (via "Load More") -->
       <article class="recipe-card" forEach="recipes.loadedItems" trackBy="_id">
         <a href="{url}" ref="recipes.loadedItems.itemLink">
-          <img 
-            class="recipe-image" 
-            src="{image.url}" 
+          <img
+            class="recipe-image"
+            src="{image.url}"
             alt="{image.altText}"
+            width="{image.width}"
+            height="{image.height}"
             loading="lazy"
           />
         </a>
@@ -307,6 +314,6 @@
         Load More Recipes
       </button>
     </div>
-  </div>
+  </main>
 </body>
 </html>

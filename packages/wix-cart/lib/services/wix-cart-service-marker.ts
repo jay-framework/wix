@@ -6,11 +6,14 @@
  */
 
 import { currentCart } from '@wix/ecom';
+import { redirects } from '@wix/redirects';
 import { createJayService } from '@jay-framework/fullstack-component';
 import { BuildDescriptors } from '@wix/sdk-types';
 
 export interface WixCartService {
     cart: BuildDescriptors<typeof currentCart, {}>;
+    redirects: BuildDescriptors<typeof redirects, {}>;
+    urls: { thankYou: string };
 }
 
 /**

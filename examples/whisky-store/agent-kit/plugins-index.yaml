@@ -26,6 +26,14 @@ plugins:
         marker: WIX_CART_CONTEXT
         description: Client-side reactive cart state with add-to-cart, remove, quantity,
           coupon, and checkout operations
+  - name: wix-deploy
+    path: ./../../packages/wix-deploy
+    contracts: []
+    commands:
+      - name: deploy
+      - name: build-entry
+      - name: upload-backend
+      - name: deploy-baas
   - name: wix-server-client
     path: ./../../packages/wix-server-client
     contracts: []
@@ -81,3 +89,17 @@ plugins:
         marker: WIX_STORES_V1_CONTEXT
         description: Client-side V1 stores access with collection pagination and
           delegated cart operations
+  - name: a11y-validator
+    path: ./../../node_modules/@jay-framework/a11y-validator
+    contracts: []
+  - name: seo-validator
+    path: ./../../node_modules/@jay-framework/seo-validator
+    contracts: []
+  - name: wix-media
+    path: ./../../packages/wix-media
+    contracts: []
+    commands:
+      - name: upload-public
+        description: Upload local public/ files to Wix Media Manager
+      - name: rebuild-index
+        description: Rebuild agent-kit media index from current Wix Media Manager state

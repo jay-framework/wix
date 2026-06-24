@@ -26,7 +26,8 @@ export type {
 // Export stores-specific headless components
 export * from './components/product-search';
 export * from './components/product-page';
-export * from './components/related-products';
+export * from './components/category-products';
+export * from './components/product-spotlight';
 // category-page removed — use product-search with prefix/category params instead
 export * from './components/category-list';
 

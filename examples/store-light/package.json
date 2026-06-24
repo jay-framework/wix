@@ -1,11 +1,12 @@
 {
   "name": "example-wix-shop-light",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "private": true,
   "license": "Apache-2.0",
   "scripts": {
     "dev": "jay-stack-cli dev",
+    "setup": "jay-stack-cli setup",
     "agent-kit": "jay-stack-cli agent-kit",
     "validate": "jay-stack-cli validate",
     "clean": "rimraf dist && rimraf build && rimraf -g 'src/**/*.d.ts'",
@@ -18,13 +19,19 @@
     "build:server": "vite build --ssr src/entry-server.ts --outDir dist/server",
     "build:check-types": "tsc",
     "serve": "jay-stack-cli serve",
+    "deploy": "jay-stack-cli run wix-deploy/deploy --exclude-plugins aiditor",
+    "deploy:build-entry": "jay-stack-cli run wix-deploy/build-entry --exclude-plugins aiditor,ui-kit",
+    "deploy:upload-backend": "jay-stack-cli run wix-deploy/upload-backend",
+    "deploy:deploy": "jay-stack-cli run wix-deploy/deploy-baas",
+    "deploy:serve": "node serve.mjs",
     "test": ":",
     "preview": "cross-env NODE_ENV=production node server"
   },
   "dependencies": {
-    "@jay-framework/fullstack-component": "^0.17.4",
-    "@jay-framework/jay-stack-cli": "^0.17.4",
+    "@jay-framework/fullstack-component": "^0.19.6",
+    "@jay-framework/jay-stack-cli": "^0.19.6",
     "@jay-framework/wix-cart": "workspace:^",
+    "@jay-framework/wix-deploy": "workspace:^",
     "@jay-framework/wix-server-client": "workspace:^",
     "@jay-framework/wix-stores": "workspace:^",
     "compression": "^1.7.5",
@@ -32,11 +39,15 @@
     "sirv": "^3.0.0"
   },
   "devDependencies": {
-    "@jay-framework/jay-cli": "^0.17.4",
+    "@jay-framework/a11y-validator": "^0.19.6",
+    "@jay-framework/jay-cli": "^0.19.6",
+    "@jay-framework/seo-validator": "^0.19.6",
     "@jay-framework/wix-dev-environment": "workspace:^",
+    "@jay-framework/wix-media": "workspace:^",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.0",
     "cross-env": "^7.0.3",
+    "rimraf": "^5.0.5",
     "typescript": "~5.7.2",
     "vite": "^6.0.1"
   }

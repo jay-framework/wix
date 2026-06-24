@@ -1,0 +1,95 @@
+<html>
+  <head>
+    <script type="application/jay-headless"
+            plugin="@jay-framework/wix-stores"
+            contract="product-spotlight"
+    ></script>
+    <script type="application/jay-data">
+      data:
+    </script>
+    <title>Atelier - Curated Collection</title>
+    <meta name="description" content="Welcome to Atelier. Browse our curated collection of quality products crafted with intention." />
+    <link rel="canonical" href="/" />
+    <link rel="stylesheet" href="../styles/atelier-theme.css" />
+    <style>
+      .hero {
+        text-align: center;
+        padding: 80px 20px;
+        background: #f8f7f5;
+      }
+      .hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 16px;
+      }
+      .hero p {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 32px;
+      }
+      .hero a.cta {
+        display: inline-block;
+        padding: 12px 32px;
+        background: #1a1a1a;
+        color: white;
+        text-decoration: none;
+        font-size: 1rem;
+      }
+      .spotlight-card {
+        max-width: 400px;
+        margin: 40px auto 0;
+        text-align: left;
+        background: white;
+        overflow: hidden;
+      }
+      .spotlight-card img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .spotlight-card .card-body {
+        padding: 20px;
+      }
+      .spotlight-card .card-name {
+        font-size: 1.2rem;
+        margin: 0 0 8px;
+      }
+      .spotlight-card .card-name a {
+        color: inherit;
+        text-decoration: none;
+      }
+      .spotlight-card .card-price {
+        font-size: 1rem;
+        color: #333;
+      }
+      .spotlight-card .original-price {
+        text-decoration: line-through;
+        color: #999;
+        margin-left: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="hero">
+      <h1>Welcome to the Store</h1>
+      <p>Browse our curated collection of products</p>
+      <a href="/products" class="cta">Shop Now</a>
+
+      <jay:product-spotlight slug="ceramic-flower-vase">
+        <div class="spotlight-card" if="hasProduct">
+          <a href="{product.productUrl}" ref="product.productLink">
+            <img src="{product.thumbnail.url}/v1/fill/w_400,h_400/file.webp" alt="{product.thumbnail.altText}" width="400" height="400" loading="eager" />
+          </a>
+          <div class="card-body">
+            <h2 class="card-name">
+              <a href="{product.productUrl}" ref="product.productLink">{product.name}</a>
+            </h2>
+            <div class="card-price">
+              <span>{product.price}</span>
+              <span class="original-price" if="product.hasDiscount">{product.strikethroughPrice}</span>
+            </div>
+          </div>
+        </div>
+      </jay:product-spotlight>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+name: wix-media
+
+validators:
+  - name: media-optimization
+    handler: validate
+    description: Validates Wix media URLs have optimization parameters
+
+commands:
+  - name: upload-public
+    command: upload-public.jay-command
+  - name: rebuild-index
+    command: rebuild-index.jay-command
+
+setup:
+  handler: setupWixMedia
+  references: generateWixMediaReferences
+  description: Validates Wix Media Manager access, generates agent-kit media index

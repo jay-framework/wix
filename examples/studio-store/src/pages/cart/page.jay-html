@@ -8,6 +8,9 @@
     <script type="application/jay-data">
       data:
     </script>
+    <title>Your Bag - Studio Store</title>
+    <meta name="description" content="Review and manage items in your shopping bag before checkout." />
+    <link rel="canonical" href="/cart" />
     <link rel="stylesheet" href="../../styles/brutalist-theme.css" />
     <style>
       /* =====================================================
@@ -547,6 +550,7 @@
         </div>
       </header>
 
+      <main>
       <div class="cart-container">
         <!-- Page Header -->
         <header class="cart-header">
@@ -589,9 +593,12 @@
               
               <a href="{productUrl}" class="item-image-link" ref="cartPage.lineItems.productLink">
                 <img class="item-image"
-                     src="{image.url}"
+                     src="{image.url}/v1/fill/w_100,h_100/file.webp"
                      alt="{image.altText}"
-                     loading="lazy">
+                     loading="lazy"
+                     fetchpriority="high"
+                     width="100"
+                     height="120">
               </a>
 
               <div class="item-info">
@@ -613,14 +620,15 @@
 
                 <div class="item-actions-row">
                   <div class="qty-controls">
-                    <button class="qty-btn" ref="cartPage.lineItems.decrementButton">−</button>
+                    <button class="qty-btn" ref="cartPage.lineItems.decrementButton" aria-label="Decrease quantity">−</button>
                     <input type="number"
                            class="qty-input"
                            ref="cartPage.lineItems.quantity"
                            value="{quantity}"
                            min="1"
-                           max="99">
-                    <button class="qty-btn" ref="cartPage.lineItems.incrementButton">+</button>
+                           max="99"
+                           aria-label="Item quantity">
+                    <button class="qty-btn" ref="cartPage.lineItems.incrementButton" aria-label="Increase quantity">+</button>
                   </div>
                   <button class="item-remove" ref="cartPage.lineItems.removeButton">
                     REMOVE
@@ -669,7 +677,8 @@
                      class="input"
                      ref="cartPage.coupon.code"
                      value="{cartPage.coupon.code}"
-                     placeholder="PROMO CODE">
+                     placeholder="PROMO CODE"
+                     aria-label="Promo code">
               <button class="btn btn-sm" ref="cartPage.coupon.applyButton">
                 APPLY
               </button>
@@ -683,6 +692,7 @@
           </div>
         </div>
       </div>
+      </main>
     </div>
   </body>
 </html>

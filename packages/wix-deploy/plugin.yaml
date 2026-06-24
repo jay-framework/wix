@@ -1,0 +1,14 @@
+name: wix-deploy
+
+setup:
+  handler: setupWixDeploy
+
+commands:
+  - name: deploy
+    command: deploy.jay-command
+  - name: build-entry
+    command: build-entry.jay-command
+  - name: upload-backend
+    command: upload-backend.jay-command
+  - name: deploy-baas
+    command: deploy-baas.jay-command

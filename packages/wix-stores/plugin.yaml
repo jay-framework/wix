@@ -7,10 +7,14 @@ contracts:
     component: productSearch
     description: Headless product search page
   # category-page removed — use product-search with prefix/category params instead
-  - name: related-products
-    contract: related-products.jay-contract
-    component: relatedProducts
-    description: Related products from the same category
+  - name: category-products
+    contract: category-products.jay-contract
+    component: categoryProducts
+    description: Products from a category — use for showcases or as related products (exclude current product via productId)
+  - name: product-spotlight
+    contract: product-spotlight.jay-contract
+    component: productSpotlight
+    description: A single product card by product ID — use to feature a product on any page
   - name: category-list
     contract: category-list.jay-contract
     component: categoryList
@@ -22,6 +26,9 @@ dynamic_contracts:
   - prefix: 'product-page'
     component: productPage
     generator: productPageContractGenerator
+    headTags:
+      - title
+      - meta:description
 
 # Server actions (named exports from main module)
 actions:

@@ -58,17 +58,18 @@ tags:
             type: data
             dataType: string
             description: Media URL
-            
+            meta: {mediaType: wix-image}
+
           - tag: altText
             type: data
             dataType: string
             description: Media alt text
-            
+
           - tag: mediaType
             type: data
             dataType: enum (IMAGE | VIDEO | AUDIO | DOCUMENT | ZIP)
             description: Media item type
-            
+
       - tag: items
         type: sub-contract
         repeated: true
@@ -79,27 +80,28 @@ tags:
             type: data
             dataType: string
             description: Media GUID
-            
+
           - tag: url
             type: data
             dataType: string
             description: Media URL
-            
+            meta: {mediaType: wix-image}
+
           - tag: altText
             type: data
             dataType: string
             description: Media alt text
-            
+
           - tag: title
             type: data
             dataType: string
             description: Media item title
-            
+
           - tag: mediaType
             type: data
             dataType: enum (IMAGE | VIDEO | AUDIO | DOCUMENT | ZIP)
             description: Media item type
-            
+
           - tag: thumbnail
             type: sub-contract
             description: Media thumbnail
@@ -108,6 +110,7 @@ tags:
                 type: data
                 dataType: string
                 description: Thumbnail URL
+                meta: {mediaType: wix-image}
                 
               - tag: width
                 type: data

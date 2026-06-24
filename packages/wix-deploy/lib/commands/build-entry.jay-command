@@ -1,0 +1,7 @@
+name: build-entry
+description: Build a BaaS-ready entry.mjs from Jay build output
+
+inputSchema:
+  collectionId?: string
+  staticBaseUrl?: string
+  excludePlugins?: string

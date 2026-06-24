@@ -298,11 +298,16 @@ function CartPageInteractive(
         }
     }
 
-    // Handle checkout
+    // Handle checkout — create redirect session and navigate to Wix hosted checkout
     async function handleCheckout() {
         setIsCheckingOut(true);
-        // For now, just redirect to check out page
-        window.location.href = '/checkout';
+        try {
+            const checkoutUrl = await cartContext.checkout();
+            window.location.href = checkoutUrl;
+        } catch (e) {
+            console.error('[wix-cart] Checkout redirect failed:', e);
+            setIsCheckingOut(false);
+        }
     }
 
     // Set up interactive refs - the effects system handles coordinates for repeaters

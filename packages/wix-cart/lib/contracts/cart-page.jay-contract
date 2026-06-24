@@ -74,6 +74,7 @@ tags:
             type: data
             dataType: string
             description: Image URL
+            meta: {mediaType: wix-image}
             
           - tag: altText
             type: data

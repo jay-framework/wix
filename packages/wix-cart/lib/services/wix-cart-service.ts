@@ -8,15 +8,25 @@
 import { WixClient } from '@wix/sdk';
 import { registerService } from '@jay-framework/stack-server-runtime';
 import { getCurrentCartClient } from '../utils/cart-client';
+import { getRedirectsClient } from '../utils/redirects-client';
 import { WIX_CART_SERVICE, WixCartService } from './wix-cart-service-marker';
+
+export interface WixCartServiceOptions {
+    urls?: { thankYou?: string };
+}
 
 /**
  * Creates, registers, and returns a Wix Cart service instance.
  * Called during server initialization.
  */
-export function provideWixCartService(wixClient: WixClient): WixCartService {
+export function provideWixCartService(
+    wixClient: WixClient,
+    options?: WixCartServiceOptions,
+): WixCartService {
     const service: WixCartService = {
         cart: getCurrentCartClient(wixClient),
+        redirects: getRedirectsClient(wixClient),
+        urls: { thankYou: options?.urls?.thankYou || '/thank-you' },
     };
 
     registerService(WIX_CART_SERVICE, service);

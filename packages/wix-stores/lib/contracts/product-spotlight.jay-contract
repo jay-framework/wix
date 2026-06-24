@@ -1,0 +1,16 @@
+name: product-spotlight
+description: A single product card by slug. Use to feature a specific product on any page (homepage, content pages, etc.).
+props:
+  - name: slug
+    type: string
+    description: Product slug to display
+tags:
+  - tag: product
+    type: sub-contract
+    description: The product card
+    link: ./product-card
+
+  - tag: hasProduct
+    type: variant
+    dataType: boolean
+    description: Whether the product was found
