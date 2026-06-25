@@ -85,13 +85,11 @@ Use `<jay:contract-name>` tags with props:
 
 Inside `<jay:...>`, bindings resolve to **that instance's** contract tags (not the parent).
 
-## Headfull Components
+## Headfull Full-Stack Components
 
-In Jay Stack, headfull components are full-stack. They must have a `.jay-contract` file and are created using `makeJayStackComponent` in their `.ts` file. They support server rendering (slow/fast/interactive phases) and must include a `contract` attribute in the import.
+Headfull components own their UI and can be made full-stack by adding a `contract` attribute.
 
-Each headfull component lives in its own subdirectory under `src/components/` with three files: `.ts`, `.jay-html`, and `.jay-contract`. The production build only discovers server-side component modules from `src/components/` and `src/plugins/`. Placing them inside page directories will work in dev mode but fail in production.
-
-> **Note:** In Jay (without Jay Stack), headfull components use `makeJayComponent` and do not require a contract. However, `makeJayComponent` components should not be used in Jay Stack because they do not support server rendering.
+Headfull FS components must be placed in `src/components/` — each component in its own subdirectory with `.ts`, `.jay-html`, and `.jay-contract` files. The production build only discovers server-side component modules from `src/components/` and `src/plugins/`. Placing them inside page directories will work in dev mode but fail in production.
 
 ### Import Declaration
 
@@ -99,7 +97,7 @@ Each headfull component lives in its own subdirectory under `src/components/` wi
 <head>
   <script
     type="application/jay-headfull"
-    src="../components/shared-header/shared-header"
+    src="../components/shared-header"
     names="SharedHeader"
     contract="../components/shared-header/shared-header.jay-contract"
   ></script>
@@ -108,19 +106,23 @@ Each headfull component lives in its own subdirectory under `src/components/` wi
 
 **Attributes:**
 
-- `src` — Path to the component file (must include the filename, not just the directory)
+- `src` — Path to the component module
 - `names` — Component name to import
-- `contract` — Path to the component's `.jay-contract` file (required in Jay Stack)
+- `contract` — Path to the contract file (makes the component full-stack with SSR)
 
 ### Usage
+
+Same as client-only headfull, with props:
 
 ```html
 <jay:SharedHeader logoUrl="/logo.png" />
 ```
 
-### Component Structure
+Without `contract`, the component is client-only. With `contract`, it participates in slow/fast/interactive phases and is server-side rendered. Use headfull full-stack components for reusable UI with fixed layout that needs SSR (headers, footers, sidebars).
 
-A headfull component has its own `.jay-html` file with the same structure as a page:
+### Headfull FS Component Structure
+
+A headfull FS component has its own `.jay-html` file with the same structure as a page:
 
 ```html
 <!-- components/header/header.jay-html -->
@@ -225,7 +227,7 @@ A homepage with key-based, instance-based, and headfull components:
     ></script>
     <script
       type="application/jay-headfull"
-      src="../components/shared-header/shared-header"
+      src="../components/shared-header"
       names="SharedHeader"
       contract="../components/shared-header/shared-header.jay-contract"
     ></script>

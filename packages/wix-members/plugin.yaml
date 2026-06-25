@@ -1,0 +1,25 @@
+name: wix-members
+
+contracts:
+  - name: login-indicator
+    contract: login-indicator.jay-contract
+    component: loginIndicator
+    description: Shows member auth state in site header, with login/register/logout buttons
+  - name: auth-callback
+    contract: auth-callback.jay-contract
+    component: authCallback
+    description: Handles OAuth callback after Wix-hosted login/register
+  - name: protected-page
+    contract: protected-page.jay-contract
+    component: protectedPage
+    description: Page-level login guard — redirects visitors to login page
+
+services:
+  - name: wix-members
+    marker: WIX_MEMBERS_SERVICE
+    description: Server-side member operations via Wix Members API
+
+contexts:
+  - name: wix-members
+    marker: WIX_MEMBERS_CONTEXT
+    description: Client-side member auth state, redirect login/register/logout operations
