@@ -28,11 +28,28 @@ URL format: `https://static.wixstatic.com/media/{mediaId}/v1/{mode}/{params}/fil
 - **crop** — extract a rectangle at specific coordinates
   `<img src="https://static.wixstatic.com/media/{mediaId}/v1/crop/x_100,y_50,w_800,h_600/file.jpg" alt="" />`
 
+#### Crop + Resize (chained transforms)
+
+Add a `/crop/` segment before `/fill/` (or `/fit/`) to first extract a region, then resize it:
+
+```
+/v1/crop/x_{x},y_{y},w_{cropW},h_{cropH}/fill/w_{outputW},h_{outputH}/file.ext
+```
+
+Example — crop a 2688×1278 region starting at (0, 514), then fill-resize to 1437×683:
+
+```html
+<img src="https://static.wixstatic.com/media/{mediaId}/v1/crop/x_0,y_514,w_2688,h_1278/fill/w_1437,h_683/file.jpg" alt="" />
+```
+
+The crop coordinates refer to the original image pixels. The fill/fit parameters set the final output size.
+
 #### Parameters
 
 - `w_{width}` — target width (1–5000 px)
 - `h_{height}` — target height (1–5000 px)
 - `x_{x},y_{y}` — crop start position (crop mode only)
+- `w_{width},h_{height}` — crop region size (crop mode / chained crop)
 - `q_{quality}` — JPEG quality (1–100)
 
 #### Output format (set via file extension)
