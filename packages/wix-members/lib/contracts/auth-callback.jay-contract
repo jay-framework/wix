@@ -1,0 +1,21 @@
+name: auth-callback
+description: Handles OAuth callback after Wix-hosted login/register. Place as keyed component on the callback page.
+
+tags:
+  - tag: isProcessing
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether the auth callback is being processed
+
+  - tag: hasError
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether the callback processing failed
+
+  - tag: errorMessage
+    type: data
+    dataType: string
+    phase: fast+interactive
+    description: Error message if callback processing failed

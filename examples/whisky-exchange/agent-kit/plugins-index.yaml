@@ -49,6 +49,31 @@ plugins:
       - name: build-entry
       - name: upload-backend
       - name: deploy-baas
+  - name: wix-members
+    path: ./../../packages/wix-members
+    contracts:
+      - name: login-indicator
+        description: Shows member auth state in site header, with login/register/logout
+          buttons
+        type: static
+        path: ./../../packages/wix-members/dist/contracts/login-indicator.jay-contract
+      - name: auth-callback
+        description: Handles OAuth callback after Wix-hosted login/register
+        type: static
+        path: ./../../packages/wix-members/dist/contracts/auth-callback.jay-contract
+      - name: protected-page
+        description: Page-level login guard — redirects visitors to login page
+        type: static
+        path: ./../../packages/wix-members/dist/contracts/protected-page.jay-contract
+    services:
+      - name: wix-members
+        marker: WIX_MEMBERS_SERVICE
+        description: Server-side member operations via Wix Members API
+    contexts:
+      - name: wix-members
+        marker: WIX_MEMBERS_CONTEXT
+        description: Client-side member auth state, redirect login/register/logout
+          operations
   - name: wix-server-client
     path: ./../../packages/wix-server-client
     contracts: []

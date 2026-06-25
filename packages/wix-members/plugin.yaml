@@ -4,15 +4,11 @@ contracts:
   - name: login-indicator
     contract: login-indicator.jay-contract
     component: loginIndicator
-    description: Shows member auth state in site header
-  - name: login-form
-    contract: login-form.jay-contract
-    component: loginForm
-    description: Email/password login form
-  - name: register-form
-    contract: register-form.jay-contract
-    component: registerForm
-    description: Member registration form
+    description: Shows member auth state in site header, with login/register/logout buttons
+  - name: auth-callback
+    contract: auth-callback.jay-contract
+    component: authCallback
+    description: Handles OAuth callback after Wix-hosted login/register
   - name: protected-page
     contract: protected-page.jay-contract
     component: protectedPage
@@ -26,4 +22,4 @@ services:
 contexts:
   - name: wix-members
     marker: WIX_MEMBERS_CONTEXT
-    description: Client-side member auth state, login/register/logout operations
+    description: Client-side member auth state, redirect login/register/logout operations

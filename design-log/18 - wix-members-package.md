@@ -792,6 +792,7 @@ Sends visitor to Wix-hosted login page. After auth, redirects to `postFlowUrl`. 
 Full OAuth 2.0 + PKCE flow. The visitor goes to a Wix-hosted login/register page, then returns to a callback URL with `code` and `state` query params. The app exchanges the code for member tokens.
 
 Flow:
+
 1. Generate PKCE data: `client.auth.generateOAuthData(callbackUrl)`
 2. Get Wix auth URL: `createRedirectSession({ auth: { authRequest: { clientId, redirectUri, codeChallenge, codeChallengeMethod: 'S256', responseMode: 'fragment', responseType: 'code', scope: 'offline_access', state } } })`
 3. Redirect visitor to `redirectSession.fullUrl`
@@ -804,6 +805,7 @@ Flow:
 ### What Changes
 
 **Removed:**
+
 - `login-form.jay-contract` — no custom login form needed
 - `register-form.jay-contract` — no custom register form needed
 - `loginForm` component — Wix handles the UI
@@ -813,6 +815,7 @@ Flow:
 - Password reset form — Wix handles it on their hosted page
 
 **Kept (unchanged):**
+
 - `login-indicator.jay-contract` — still shows auth state in header
 - `loginIndicator` component — still reads reactive signals from context
 - `protected-page.jay-contract` — still guards pages behind login
@@ -821,6 +824,7 @@ Flow:
 - Auth cookie mechanism — still needed for server-side protected page check
 
 **New:**
+
 - `auth-callback.jay-contract` — keyed component for the OAuth callback page
 - `authCallback` component — handles the callback URL, exchanges code for tokens
 - Context methods change: `redirectToLogin()`, `redirectToRegister()`, `handleAuthCallback()` replace `login()`, `register()`
@@ -864,6 +868,7 @@ tags:
 ```
 
 The component's interactive phase:
+
 1. Reads `code` and `state` from the URL (fragment or query)
 2. Retrieves stored PKCE data (oauthData) from sessionStorage
 3. Calls `client.auth.getMemberTokens(code, state, oauthData)`
@@ -936,13 +941,18 @@ Logout (unchanged):
 
 <!-- OAuth callback page (e.g. /auth/callback) -->
 <html>
-<head>
-  <script type="application/jay-headless" plugin="@jay-framework/wix-members" contract="auth-callback" key="authCallback"></script>
-</head>
-<body>
-  <div if="isProcessing">Completing login...</div>
-  <div if="hasError">{errorMessage}</div>
-</body>
+  <head>
+    <script
+      type="application/jay-headless"
+      plugin="@jay-framework/wix-members"
+      contract="auth-callback"
+      key="authCallback"
+    ></script>
+  </head>
+  <body>
+    <div if="isProcessing">Completing login...</div>
+    <div if="hasError">{errorMessage}</div>
+  </body>
 </html>
 ```
 
@@ -1031,18 +1041,21 @@ contexts:
 #### Phase 1: Package Scaffolding (done)
 
 #### Phase 2: Contracts
+
 - Rewrite `login-indicator.jay-contract` — add `loginButton`, `registerButton` refs
 - Remove `login-form.jay-contract` and `register-form.jay-contract`
 - Write `auth-callback.jay-contract` (new)
 - Keep `protected-page.jay-contract` (unchanged)
 
 #### Phase 3: Context
+
 - Rewrite `WixMembersContext` — replace `login()`/`register()` with `redirectToLogin()`/`redirectToRegister()`/`handleAuthCallback()`
 - Add PKCE/oauthData management (sessionStorage)
 - Add `@wix/redirects` SDK module usage for `createRedirectSession`
 - Keep auth cookie mechanism
 
 #### Phase 4: Components
+
 - Rewrite `loginIndicator` — wire `loginButton`/`registerButton` to context redirect methods
 - Remove `loginForm` and `registerForm` components
 - Write `authCallback` component (new) — handles URL parsing + token exchange
@@ -1054,8 +1067,8 @@ contexts:
 
 | Decision                          | Benefit                                                   | Cost                                           |
 | --------------------------------- | --------------------------------------------------------- | ---------------------------------------------- |
-| Redirect to Wix-hosted login      | No CAPTCHA, no error handling, no email verification code  | Users see Wix-branded pages, not custom UI      |
-| OAuth 2.0 + PKCE flow             | Industry standard, secure, no password handling            | More complex callback page, sessionStorage dep  |
-| Separate callback page            | Clean separation, works with any template                  | Requires a dedicated route (/auth/callback)     |
-| Keep protected-page component     | Template authors can guard any page without code           | Auth cookie must be set correctly               |
-| loginButton + registerButton refs | Template controls where login/register buttons appear      | Two refs instead of plain `<a>` links           |
+| Redirect to Wix-hosted login      | No CAPTCHA, no error handling, no email verification code | Users see Wix-branded pages, not custom UI     |
+| OAuth 2.0 + PKCE flow             | Industry standard, secure, no password handling           | More complex callback page, sessionStorage dep |
+| Separate callback page            | Clean separation, works with any template                 | Requires a dedicated route (/auth/callback)    |
+| Keep protected-page component     | Template authors can guard any page without code          | Auth cookie must be set correctly              |
+| loginButton + registerButton refs | Template controls where login/register buttons appear     | Two refs instead of plain `<a>` links          |

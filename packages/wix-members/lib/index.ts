@@ -6,15 +6,11 @@ export type {
     WixMembersContext,
     WixMembersInitData,
     ReactiveMemberIndicator,
-    LoginResult,
-    RegisterResult,
+    AuthCallbackResult,
 } from './contexts/wix-members-context';
 
-export { mapLoginState, mapErrorMessage } from './contexts/member-helpers';
-
 export { loginIndicator } from './components/login-indicator';
-export { loginForm } from './components/login-form';
-export { registerForm } from './components/register-form';
+export { authCallback } from './components/auth-callback';
 export { protectedPage } from './components/protected-page';
 
 export { AUTH_COOKIE_NAME, setAuthCookie } from './utils/auth-cookie';

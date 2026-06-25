@@ -39,6 +39,11 @@ function LoginIndicatorInteractive(
     _carryForward: LoginIndicatorFastCarryForward,
     membersContext: WixMembersContext,
 ) {
+    refs.loginButton?.onclick(async () => {
+        const url = await membersContext.redirectToLogin();
+        window.location.href = url;
+    });
+
     refs.logoutButton?.onclick(() => {
         membersContext.logout();
     });

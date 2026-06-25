@@ -16,11 +16,13 @@ export type LoginIndicatorInteractiveViewState = Pick<LoginIndicatorViewState, '
 
 
 export interface LoginIndicatorRefs {
+  loginButton: HTMLElementProxy<LoginIndicatorViewState, HTMLButtonElement>,
   logoutButton: HTMLElementProxy<LoginIndicatorViewState, HTMLButtonElement>
 }
 
 
 export interface LoginIndicatorRepeatedRefs {
+  loginButton: HTMLElementCollectionProxy<LoginIndicatorViewState, HTMLButtonElement>,
   logoutButton: HTMLElementCollectionProxy<LoginIndicatorViewState, HTMLButtonElement>
 }
 

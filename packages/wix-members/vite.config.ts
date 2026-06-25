@@ -34,6 +34,7 @@ export default defineConfig(({ isSsrBuild }) => ({
                 '@jay-framework/wix-server-client',
                 '@jay-framework/wix-server-client/client',
                 '@wix/sdk',
+                '@wix/redirects',
             ],
         },
     },

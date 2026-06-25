@@ -7,8 +7,7 @@ import {
 } from '@jay-framework/component';
 import { Getter } from '@jay-framework/reactive';
 import { Tokens } from '@wix/sdk';
-import { WIX_CLIENT_CONTEXT } from '@jay-framework/wix-server-client';
-import { mapLoginState, mapErrorMessage } from './member-helpers.js';
+import { WIX_CLIENT_CONTEXT, WixClientContext } from '@jay-framework/wix-server-client';
 import { setAuthCookie } from '../utils/auth-cookie.js';
 
 // ============================================================================
@@ -18,25 +17,29 @@ import { setAuthCookie } from '../utils/auth-cookie.js';
 // WixClient.auth is typed generically — these methods exist at runtime when
 // the client is created with OAuthStrategy (verified in exploration/wix-members-auth).
 interface OAuthAuth {
-    login(params: {
-        email: string;
-        password: string;
-        captchaTokens?: { invisibleRecaptchaToken?: string; recaptchaToken?: string };
-    }): Promise<any>;
-    register(params: {
-        email: string;
-        password: string;
-        profile?: { firstName?: string; lastName?: string };
-        captchaTokens?: { invisibleRecaptchaToken?: string; recaptchaToken?: string };
-    }): Promise<any>;
-    getMemberTokensForDirectLogin(sessionToken: string): Promise<Tokens>;
-    processVerification(params: { verificationCode: string }): Promise<any>;
+    generateOAuthData(redirectUri: string, originalUri?: string): OauthData;
+    getAuthUrl(
+        oauthData: OauthData,
+        opts?: { prompt?: 'login' | 'none'; responseMode?: 'fragment' | 'web_message' | 'query' },
+    ): Promise<{ authUrl: string }>;
+    getMemberTokens(code: string, state: string, oauthData: OauthData): Promise<Tokens>;
+    parseFromUrl(
+        url?: string,
+        responseMode?: 'query' | 'fragment',
+    ): { code: string; state: string; error?: string; errorDescription?: string };
     logout(originalUrl: string): Promise<{ logoutUrl: string }>;
     generateVisitorTokens(): Promise<Tokens>;
     setTokens(tokens: Tokens): void;
     getTokens(): Tokens;
     loggedIn(): boolean;
-    sendPasswordResetEmail(email: string, redirectUri: string): Promise<void>;
+}
+
+interface OauthData {
+    codeVerifier: string;
+    codeChallenge: string;
+    state: string;
+    originalUri: string;
+    redirectUri: string;
 }
 
 // ============================================================================
@@ -44,26 +47,7 @@ interface OAuthAuth {
 // ============================================================================
 
 export interface WixMembersInitData {
-    passwordResetRedirectUri?: string;
-}
-
-export interface LoginResult {
-    success: boolean;
-    state: string;
-    errorCode?: string;
-    errorMessage?: string;
-    requiresEmailVerification?: boolean;
-    stateToken?: string;
-}
-
-export interface RegisterResult {
-    success: boolean;
-    state: string;
-    errorCode?: string;
-    errorMessage?: string;
-    requiresEmailVerification?: boolean;
-    requiresOwnerApproval?: boolean;
-    stateToken?: string;
+    authCallbackUrl?: string;
 }
 
 export interface ReactiveMemberIndicator {
@@ -73,19 +57,18 @@ export interface ReactiveMemberIndicator {
     memberAvatar: Getter<string>;
 }
 
+export interface AuthCallbackResult {
+    success: boolean;
+    redirectTo: string;
+    error?: string;
+}
+
 export interface WixMembersContext {
     memberIndicator: ReactiveMemberIndicator;
 
-    login(email: string, password: string, captchaToken?: string): Promise<LoginResult>;
-    register(
-        email: string,
-        password: string,
-        profile?: { firstName?: string; lastName?: string },
-        captchaToken?: string,
-    ): Promise<RegisterResult>;
-    verifyEmail(verificationCode: string): Promise<LoginResult>;
+    redirectToLogin(callbackUrl?: string): Promise<string>;
+    handleAuthCallback(url?: string): Promise<AuthCallbackResult>;
     logout(): Promise<void>;
-    sendPasswordResetEmail(email: string): Promise<void>;
     refreshMemberState(): void;
 
     onLogin: EventEmitter<void, any>;
@@ -94,12 +77,14 @@ export interface WixMembersContext {
 
 export const WIX_MEMBERS_CONTEXT = createJayContext<WixMembersContext>('wix:members');
 
+const OAUTH_DATA_KEY = 'wix_members_oauth_data';
+
 // ============================================================================
 // Context Factory
 // ============================================================================
 
 export function provideWixMembersContext(initData: WixMembersInitData): WixMembersContext {
-    const wixClientContext = useGlobalContext(WIX_CLIENT_CONTEXT);
+    const wixClientContext: WixClientContext = useGlobalContext(WIX_CLIENT_CONTEXT);
     const wixClient = wixClientContext.client!;
     const auth = wixClient.auth as unknown as OAuthAuth;
 
@@ -121,80 +106,57 @@ export function provideWixMembersContext(initData: WixMembersInitData): WixMembe
             });
         }
 
-        async function exchangeSessionToken(sessionToken: string): Promise<void> {
-            const memberTokens = await auth.getMemberTokensForDirectLogin(sessionToken);
+        function getCallbackUrl(): string {
+            if (initData.authCallbackUrl) return initData.authCallbackUrl;
+            return window.location.origin + '/auth/callback';
+        }
+
+        async function redirectToLogin(callbackUrl?: string): Promise<string> {
+            const redirectUri = callbackUrl || getCallbackUrl();
+            const oauthData = auth.generateOAuthData(redirectUri, window.location.href);
+
+            sessionStorage.setItem(OAUTH_DATA_KEY, JSON.stringify(oauthData));
+
+            const { authUrl } = await auth.getAuthUrl(oauthData, {
+                prompt: 'login',
+                responseMode: 'query',
+            });
+
+            return authUrl;
+        }
+
+        async function handleAuthCallback(url?: string): Promise<AuthCallbackResult> {
+            const storedData = sessionStorage.getItem(OAUTH_DATA_KEY);
+            if (!storedData) {
+                return { success: false, redirectTo: '/', error: 'No OAuth data found' };
+            }
+
+            const oauthData: OauthData = JSON.parse(storedData);
+            sessionStorage.removeItem(OAUTH_DATA_KEY);
+
+            const { code, state, error, errorDescription } = auth.parseFromUrl(
+                url || window.location.href,
+                'query',
+            );
+
+            if (error) {
+                return {
+                    success: false,
+                    redirectTo: oauthData.originalUri || '/',
+                    error: errorDescription || error,
+                };
+            }
+
+            const memberTokens = await auth.getMemberTokens(code, state, oauthData);
             auth.setTokens(memberTokens);
             setAuthCookie('member');
             updateMemberSignals(true);
-        }
+            onLogin.emit();
 
-        async function login(
-            email: string,
-            password: string,
-            captchaToken?: string,
-        ): Promise<LoginResult> {
-            const captchaTokens = captchaToken
-                ? { invisibleRecaptchaToken: captchaToken }
-                : undefined;
-            const result = await auth.login({ email, password, captchaTokens });
-
-            const mapped = mapLoginState(result);
-
-            if (result.loginState === 'SUCCESS') {
-                await exchangeSessionToken(result.data.sessionToken);
-                onLogin.emit();
-            }
-
-            return mapped;
-        }
-
-        async function register(
-            email: string,
-            password: string,
-            profile?: { firstName?: string; lastName?: string },
-            captchaToken?: string,
-        ): Promise<RegisterResult> {
-            const captchaTokens = captchaToken
-                ? { invisibleRecaptchaToken: captchaToken }
-                : undefined;
-            const result = await auth.register({
-                email,
-                password,
-                profile,
-                captchaTokens,
-            });
-
-            const mapped: RegisterResult = {
-                success: result.loginState === 'SUCCESS',
-                state: result.loginState,
-                requiresEmailVerification: result.loginState === 'EMAIL_VERIFICATION_REQUIRED',
-                requiresOwnerApproval: result.loginState === 'OWNER_APPROVAL_REQUIRED',
-                stateToken: (result as any).data?.stateToken,
+            return {
+                success: true,
+                redirectTo: oauthData.originalUri || '/',
             };
-
-            if (result.loginState === 'FAILURE') {
-                mapped.errorCode = (result as any).errorCode;
-                mapped.errorMessage = mapErrorMessage((result as any).errorCode);
-            }
-
-            if (result.loginState === 'SUCCESS') {
-                await exchangeSessionToken(result.data.sessionToken);
-                onLogin.emit();
-            }
-
-            return mapped;
-        }
-
-        async function verifyEmail(verificationCode: string): Promise<LoginResult> {
-            const result = await auth.processVerification({ verificationCode });
-            const mapped = mapLoginState(result);
-
-            if (result.loginState === 'SUCCESS') {
-                await exchangeSessionToken(result.data.sessionToken);
-                onLogin.emit();
-            }
-
-            return mapped;
         }
 
         async function logout(): Promise<void> {
@@ -211,11 +173,6 @@ export function provideWixMembersContext(initData: WixMembersInitData): WixMembe
             onLogout.emit();
         }
 
-        async function sendPasswordResetEmail(email: string): Promise<void> {
-            const redirectUri = initData.passwordResetRedirectUri || window.location.href;
-            await auth.sendPasswordResetEmail(email, redirectUri);
-        }
-
         function refreshMemberState(): void {
             const loggedIn = auth.loggedIn();
             setAuthCookie(loggedIn ? 'member' : 'visitor');
@@ -229,11 +186,9 @@ export function provideWixMembersContext(initData: WixMembersInitData): WixMembe
                 memberName,
                 memberAvatar,
             },
-            login,
-            register,
-            verifyEmail,
+            redirectToLogin,
+            handleAuthCallback,
             logout,
-            sendPasswordResetEmail,
             refreshMemberState,
             onLogin,
             onLogout,

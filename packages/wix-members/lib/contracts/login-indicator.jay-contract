@@ -1,5 +1,5 @@
 name: login-indicator
-description: Shows member login state in site header/navigation
+description: Shows member login state in site header/navigation. Provides login/register/logout buttons that redirect to Wix-hosted auth pages.
 
 tags:
   - tag: isLoggedIn
@@ -26,7 +26,12 @@ tags:
     phase: fast+interactive
     description: Whether auth state is being resolved
 
+  - tag: loginButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Redirects to Wix-hosted login/register page
+
   - tag: logoutButton
     type: interactive
     elementType: HTMLButtonElement
-    description: Button to trigger logout
+    description: Triggers logout
