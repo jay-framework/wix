@@ -2,6 +2,7 @@
 <head>
   <script type="application/jay-headless" plugin="@jay-framework/wix-stores-v1" contract="category-list" key="catalog"></script>
   <script type="application/jay-headless" plugin="@jay-framework/wix-cart" contract="cart-indicator" key="cart"></script>
+  <script type="application/jay-headless" plugin="@jay-framework/wix-members" contract="login-indicator" key="auth"></script>
   <script type="application/jay-headless" plugin="@jay-framework/gemini-agent-plugin" contract="gemini-chat" key="ai"></script>
   <script type="application/jay-data">data:</script>
   <title>The Whisky Exchange - Fine Whiskies &amp; Spirits</title>
@@ -54,6 +55,12 @@
     <div class="header-top">
       <a href="/" class="site-logo">The Whisky<span>Exchange</span></a>
       <div class="header-actions">
+        <span if="auth.isLoading" class="auth-loading"></span>
+        <span if="!auth.isLoading&&auth.isLoggedIn" class="auth-member">
+          <span class="auth-name">{auth.memberName}</span>
+          <button ref="auth.logoutButton" class="btn btn-sm btn-outline">Log Out</button>
+        </span>
+        <button if="!auth.isLoading&&!auth.isLoggedIn" ref="auth.loginButton" class="btn btn-sm btn-outline">Log In</button>
         <a ref="cart.cartLink" href="/cart" class="cart-indicator">
           Cart
           <span if="cart.hasItems" class="cart-badge">{cart.itemCount}</span>

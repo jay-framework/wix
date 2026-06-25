@@ -29,6 +29,7 @@
     "@jay-framework/jay-stack-cli": "^0.19.6",
     "@jay-framework/wix-cart": "workspace:^",
     "@jay-framework/wix-deploy": "workspace:^",
+    "@jay-framework/wix-members": "workspace:^",
     "@jay-framework/wix-server-client": "workspace:^",
     "@jay-framework/wix-stores-v1": "workspace:^",
     "compression": "^1.7.5",

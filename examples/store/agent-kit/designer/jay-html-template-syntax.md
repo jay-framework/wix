@@ -165,7 +165,6 @@ Iterate over repeated sub-contracts:
 - `forEach` — the repeated tag name from the contract
 - `trackBy` — stable unique key for each item (must match contract's trackBy)
 - Inside the loop, bindings resolve to the **current item's** tags
-- **Do not combine `if` and `forEach` on the same element.** Use a wrapper: `<div if="..."><div forEach="...">...</div></div>`
 
 **Nested loops:**
 

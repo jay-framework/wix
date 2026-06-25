@@ -46,18 +46,8 @@ There is no standalone "interactive" phase. Any tag with `type: interactive` (re
 | [jay-html-styling.md](jay-html-styling.md)                 | Styling: inline, external, dynamic style bindings, class bindings                               |
 | [routing.md](routing.md)                                   | Directory-based routing: page structure, dynamic routes, route priority                         |
 | [contracts-and-plugins.md](contracts-and-plugins.md)       | Reading contracts, plugin.yaml, .jay-action files, and the materialized indexes                 |
-| [Contract Authoring Guide](../contracts/GUIDE.md)          | Writing contracts: syntax, page/component/linked contracts, examples                            |
-| [script-tags.md](script-tags.md)                           | Script tag policy: use page.ts for behavior, jay-script="allow" for third-party scripts         |
 | [cli-commands.md](cli-commands.md)                         | CLI commands: setup, validate, params, action, dev server                                       |
 | `../references/<plugin>/`                                  | Pre-generated discovery data: product catalogs, collection schemas (from `jay-stack agent-kit`) |
-
-## When to Use Headfull Components
-
-Use headfull full-stack components for **shared UI sections that should look the same across pages** — headers, navigation menus, footers, sidebars. These are placed in `src/components/` and imported into any page that needs them. This keeps the shared layout in one place: update the component once and every page reflects the change.
-
-If a section is **unique to a single page**, write it directly in the page's `.jay-html` — no component needed.
-
-See [jay-html-components.md](jay-html-components.md) for import syntax and component structure.
 
 ## Quick Start
 
@@ -131,9 +121,3 @@ Create `src/pages/page.jay-html`:
 jay-stack validate
 jay-stack dev
 ```
-
-## Plugin-Contributed Guides
-
-| File | Plugin | Description |
-| --- | --- | --- |
-| [wix-media.md](wix-media.md) | wix-media | How to use images, video, documents, and audio from Wix Media Manager in jay-html templates. |
