@@ -276,7 +276,7 @@ function generateServeSource(frontendDir: string, backendDir: string): string {
         '',
         'process.env.STATIC_BASE_URL = process.env.STATIC_BASE_URL || "/";',
         `process.env.JAY_BACKEND_DIR = process.env.JAY_BACKEND_DIR || "${backendDir}";`,
-        'const entry = await import("./entry.mjs");',
+        'const entry = await import("./dist/entry.mjs");',
         'const handler = entry.default?.fetch || entry.fetch;',
         'const PORT = parseInt(process.env.PORT || "4000", 10);',
         `const FRONTEND_DIR = "${frontendDir}";`,
