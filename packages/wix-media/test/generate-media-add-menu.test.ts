@@ -64,6 +64,28 @@ describe('buildMediaAddMenuItems', () => {
         expect(buildMediaAddMenuItems(files)[0]?.thumbnail).toBe(hero.url);
     });
 
+    it('sets stage-place interaction on visual media for drag-to-stage', () => {
+        const files = loadFixtureFiles();
+        const items = buildMediaAddMenuItems(files);
+        const heroFile = files[0]!;
+        const hero = items.find((item) => item.id === 'wix-media:hero-banner');
+        const logo = items.find((item) => item.id === 'wix-media:logo');
+        const video = items.find((item) => item.id === 'wix-media:promo-clip');
+
+        expect(hero?.interaction).toEqual({
+            mode: 'stage-place',
+            persistOnPage: true,
+            stagePromptTemplate: expect.stringMatching(/^Place this image at the marker location/),
+        });
+        expect(hero?.interaction?.stagePromptTemplate).toContain(heroFile.url);
+        expect(logo?.interaction?.mode).toBe('stage-place');
+        expect(video?.interaction).toEqual({
+            mode: 'stage-place',
+            persistOnPage: true,
+            stagePromptTemplate: expect.stringMatching(/^Place this video at the marker location/),
+        });
+    });
+
     it('sets thumbnail for SVG and vector assets classified as other', () => {
         const svgUrl = 'https://static.wixstatic.com/media/asset-1.svg';
         const svgFile = {

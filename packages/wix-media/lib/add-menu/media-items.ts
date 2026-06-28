@@ -4,6 +4,12 @@
 
 import type { MediaFileInfo } from '../services/wix-media-service.js';
 
+export interface MediaAddMenuInteraction {
+    mode: 'stage-place' | 'reference';
+    persistOnPage?: boolean;
+    stagePromptTemplate?: string;
+}
+
 export interface MediaAddMenuItem {
     id: string;
     title: string;
@@ -13,6 +19,7 @@ export interface MediaAddMenuItem {
     packageName: string;
     thumbnail?: string;
     prompt: string;
+    interaction?: MediaAddMenuInteraction;
 }
 
 const CATEGORY = 'Media';
@@ -77,6 +84,25 @@ export function thumbnailUrlForMedia(file: MediaFileInfo): string | undefined {
     return url;
 }
 
+function stagePlaceInteractionForMedia(file: MediaFileInfo): MediaAddMenuInteraction | undefined {
+    const mediaType = file.mediaType.toLowerCase();
+    if (mediaType === 'image' || mediaType === 'vector' || isPreviewableVisualMedia(file)) {
+        return {
+            mode: 'stage-place',
+            persistOnPage: true,
+            stagePromptTemplate: `Place this image at the marker location on the page.\nURL: ${file.url}`,
+        };
+    }
+    if (mediaType === 'video') {
+        return {
+            mode: 'stage-place',
+            persistOnPage: true,
+            stagePromptTemplate: `Place this video at the marker location on the page.\nURL: ${file.url}`,
+        };
+    }
+    return undefined;
+}
+
 function buildMediaPrompt(file: MediaFileInfo): string {
     const labels = file.labels.length > 0 ? `Labels: ${file.labels.join(', ')}\n` : '';
     const folderLine =
@@ -102,6 +128,8 @@ export function buildMediaAddMenuItems(files: MediaFileInfo[]): MediaAddMenuItem
 
     return files.map((file) => {
         const thumbnail = thumbnailUrlForMedia(file);
+        const interaction = stagePlaceInteractionForMedia(file);
+
         return {
             id: uniqueItemId(file.slug, file.id, usedIds),
             title: formatTitle(file),
@@ -110,6 +138,7 @@ export function buildMediaAddMenuItems(files: MediaFileInfo[]): MediaAddMenuItem
             pluginName: 'wix-media',
             packageName: '@jay-framework/wix-media',
             ...(thumbnail ? { thumbnail } : {}),
+            ...(interaction ? { interaction } : {}),
             prompt: buildMediaPrompt(file),
         };
     });
