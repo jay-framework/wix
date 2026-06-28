@@ -9,7 +9,8 @@ import { makeCliCommand, CONSOLE_CONTEXT } from '@jay-framework/fullstack-compon
 import type { ConsoleContext } from '@jay-framework/fullstack-component';
 import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
 import type { WixClientService } from '@jay-framework/wix-server-client';
-import { DEFAULT_COLLECTION_ID } from '../constants.js';
+import { DEFAULT_COLLECTION_ID, getDeployVersion } from '../constants.js';
+import type { BuildMetadata } from '../constants.js';
 import { WixDataArtifactStore } from '../artifact-store.js';
 
 interface UploadBackendInput {
@@ -17,13 +18,21 @@ interface UploadBackendInput {
     dryRun?: boolean;
 }
 
-const SKIP_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.jay-html']);
+const SKIP_EXTENSIONS = new Set([
+    '.js',
+    '.png',
+    '.jpg',
+    '.jpeg',
+    '.gif',
+    '.svg',
+    '.webp',
+    '.jay-html',
+]);
 const MAX_BATCH_BYTES = 400_000;
 
 function categorize(relativePath: string): 'eager' | 'lazy' {
     if (relativePath === 'route-manifest.json') return 'eager';
     if (relativePath === 'build-metadata.json') return 'eager';
-    if (relativePath.startsWith('server/')) return 'eager';
     return 'lazy';
 }
 
@@ -89,12 +98,11 @@ export const uploadBackend = makeCliCommand('upload-backend')
             const collectionId = input.collectionId || DEFAULT_COLLECTION_ID;
             const dryRun = input.dryRun || false;
 
-            // Read version from build-metadata.json
             const metadataPath = path.join(buildDir, 'build-metadata.json');
-            let version = '1.0.0';
+            let version = '0.0.0';
             if (fs.existsSync(metadataPath)) {
-                const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
-                version = String(metadata.version || '1.0.0');
+                const metadata: BuildMetadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+                version = getDeployVersion(metadata);
             }
 
             if (dryRun) ctx.log('DRY RUN — no uploads');

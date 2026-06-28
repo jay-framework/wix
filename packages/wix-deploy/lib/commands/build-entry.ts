@@ -8,7 +8,8 @@
 
 import { makeCliCommand, CONSOLE_CONTEXT } from '@jay-framework/fullstack-component';
 import type { ConsoleContext } from '@jay-framework/fullstack-component';
-import { DEFAULT_COLLECTION_ID, DEFAULT_CACHE_DIR } from '../constants.js';
+import { DEFAULT_COLLECTION_ID, DEFAULT_CACHE_DIR, getDeployVersion } from '../constants.js';
+import type { BuildMetadata } from '../constants.js';
 
 interface BuildEntryInput {
     collectionId?: string;
@@ -28,6 +29,24 @@ interface RouteManifest {
 }
 
 const DEFAULT_EXCLUDE_PLUGINS = ['aiditor', 'ui-kit', 'wix-deploy'];
+
+function scanPagePartsFiles(
+    dir: string,
+    fs: typeof import('node:fs'),
+    path: typeof import('node:path'),
+): string[] {
+    const results: string[] = [];
+    if (!fs.existsSync(dir)) return results;
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+            results.push(...scanPagePartsFiles(fullPath, fs, path));
+        } else if (entry.name === 'page-parts.json') {
+            results.push(fullPath);
+        }
+    }
+    return results;
+}
 
 function sortPluginsByDeps(plugins: Array<{ name: string; packageName: string }>) {
     const priorityPackages = ['@jay-framework/wix-server-client'];
@@ -187,11 +206,11 @@ ${actionsArray.join('\n')}
             wixClient: wixClientService,
             collectionId: COLLECTION_ID,
             version: VERSION,
+            distDir: entryDir,
             cacheDir: '${DEFAULT_CACHE_DIR}',
             moduleRegistry: MODULE_REGISTRY,
         });
-        console.log('[BaaS] Loading eager files...');
-        await artifacts.loadEagerFiles();
+        console.log('[BaaS] Artifact store ready (eager files from dist/, lazy from collection)');
     }
 
     initialized = true;
@@ -275,7 +294,7 @@ function generateServeSource(frontendDir: string, backendDir: string): string {
         'import { Readable } from "node:stream";',
         '',
         'process.env.STATIC_BASE_URL = process.env.STATIC_BASE_URL || "/";',
-        `process.env.JAY_BACKEND_DIR = process.env.JAY_BACKEND_DIR || "${backendDir}";`,
+        `process.env.JAY_BACKEND_DIR = process.env.JAY_BACKEND_DIR || "";`,
         'const entry = await import("./dist/entry.mjs");',
         'const handler = entry.default?.fetch || entry.fetch;',
         'const PORT = parseInt(process.env.PORT || "4000", 10);',
@@ -352,12 +371,11 @@ export const buildEntry = makeCliCommand('build-entry')
 
         const manifest: RouteManifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 
-        // Read version from build-metadata.json
         const metadataPath = path.join(buildDir, 'build-metadata.json');
-        let version = '1.0.0';
+        let version = '0.0.0';
         if (fs.existsSync(metadataPath)) {
-            const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
-            version = String(metadata.version || '1.0.0');
+            const metadata: BuildMetadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+            version = getDeployVersion(metadata);
         }
 
         const filteredPlugins = manifest.plugins.filter(
@@ -371,12 +389,36 @@ export const buildEntry = makeCliCommand('build-entry')
             .map((a) => a.packageName!)
             .filter((v, i, arr) => arr.indexOf(v) === i);
 
-        // Collect unique server element paths from routes
-        const seSet = new Set<string>();
+        // Collect all local JS modules that need to be bundled into entry.mjs:
+        // 1. serverElementPath from routes (SSR render functions)
+        // 2. serverModule from routes (project-level server modules)
+        // 3. local-source modulePath from page-parts.json (project components)
+        const localModuleSet = new Set<string>();
         for (const route of manifest.routes) {
-            if (route.serverElementPath) seSet.add(route.serverElementPath);
+            if (route.serverElementPath) localModuleSet.add(route.serverElementPath);
+            if (route.serverModule) localModuleSet.add(route.serverModule);
         }
-        const serverElements = [...seSet].map((rel) => ({
+
+        // Scan page-parts.json files for local modules
+        const pagePartsFiles = scanPagePartsFiles(buildDir, fs, path);
+        for (const ppFile of pagePartsFiles) {
+            try {
+                const config = JSON.parse(fs.readFileSync(ppFile, 'utf8'));
+                const collectLocal = (entries: any[]) => {
+                    for (const entry of entries) {
+                        if (entry.source === 'local' && entry.modulePath) {
+                            localModuleSet.add(entry.modulePath);
+                        }
+                    }
+                };
+                if (config.parts) collectLocal(config.parts);
+                if (config.instanceComponents) collectLocal(config.instanceComponents);
+            } catch {
+                /* skip unreadable page-parts files */
+            }
+        }
+
+        const serverElements = [...localModuleSet].map((rel) => ({
             relativePath: rel,
             absolutePath: path.join(buildDir, rel),
         }));
@@ -384,7 +426,7 @@ export const buildEntry = makeCliCommand('build-entry')
         ctx.log(`Version: ${version}`);
         ctx.log(`Plugins: ${plugins.map((p) => p.name).join(', ')}`);
         ctx.log(`Action packages: ${actionPackages.join(', ')}`);
-        ctx.log(`Server elements: ${serverElements.length} routes`);
+        ctx.log(`Local modules: ${serverElements.length} (${[...localModuleSet].join(', ')})`);
 
         const entrySource = generateEntrySource(
             plugins,
@@ -495,6 +537,15 @@ export const buildEntry = makeCliCommand('build-entry')
                 JSON.stringify(result.metafile),
             );
         }
+
+        // Copy eager JSON files to dist/ so entry.mjs is self-sufficient
+        for (const name of ['route-manifest.json', 'build-metadata.json']) {
+            const src = path.join(buildDir, name);
+            if (fs.existsSync(src)) {
+                fs.copyFileSync(src, path.join(entryDir, name));
+            }
+        }
+        ctx.log('Copied route-manifest.json + build-metadata.json to dist/');
 
         // Copy config/.wix.yaml to dist/ so wix-server-client can find it on BaaS
         // Also copy as wix.yaml (without dot) in case the CLI skips dotfiles

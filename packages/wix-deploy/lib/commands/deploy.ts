@@ -1,11 +1,12 @@
 /**
  * jay-stack run wix-deploy/deploy
  *
- * Single command that replaces the 3-step deploy sequence:
- *   1. Bump deploy version in build-metadata.json
- *   2. build-entry (bundle entry.mjs with new version)
- *   3. upload-backend (data collection) — parallel with step 4
- *   4. deploy-baas (BaaS + CDN) — parallel with step 3
+ * Single command that runs the deploy sequence:
+ *   1. build-entry (bundle entry.mjs)
+ *   2. upload-backend (data collection) — parallel with step 3
+ *   3. deploy-baas (BaaS + CDN) — parallel with step 2
+ *
+ * Version is derived from build-metadata.json: {version}-{sourceHash}
  */
 
 import { makeCliCommand, CONSOLE_CONTEXT } from '@jay-framework/fullstack-component';
@@ -15,6 +16,8 @@ import type { WixClientService } from '@jay-framework/wix-server-client';
 import { buildEntry } from './build-entry.js';
 import { uploadBackend } from './upload-backend.js';
 import { deployBaas } from './deploy-baas.js';
+import { getDeployVersion } from '../constants.js';
+import type { BuildMetadata } from '../constants.js';
 
 interface DeployInput {
     collectionId?: string;
@@ -31,15 +34,6 @@ function prefixCtx(ctx: ConsoleContext, prefix: string): ConsoleContext {
     return { ...ctx, log: (msg: string) => ctx.log(`[deploy]   ${prefix} ${msg}`), warn: () => {} };
 }
 
-function bumpPatch(version: string): string {
-    const parts = version.split('.');
-    if (parts.length === 3) {
-        parts[2] = String(parseInt(parts[2], 10) + 1);
-        return parts.join('.');
-    }
-    return version + '.1';
-}
-
 export const deploy = makeCliCommand('deploy')
     .withServices(WIX_CLIENT_SERVICE, CONSOLE_CONTEXT)
     .withHandler(async (input: DeployInput, wixClient: WixClientService, ctx: ConsoleContext) => {
@@ -48,18 +42,14 @@ export const deploy = makeCliCommand('deploy')
         const dryRun = input.dryRun || false;
         const t0 = Date.now();
 
-        // Bump deploy version so running instances aren't disturbed
         const metadataPath = path.join(ctx.build.backend, 'build-metadata.json');
         if (!fs.existsSync(metadataPath)) {
             ctx.error(`[deploy] build-metadata.json not found. Run build:production first.`);
             return { success: false };
         }
-        const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
-        const buildVersion = String(metadata.version || '1.0.0');
-        const deployVersion = bumpPatch(buildVersion);
-        metadata.version = deployVersion;
-        fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
-        ctx.log(`[deploy] Version: ${buildVersion} → ${deployVersion}`);
+        const metadata: BuildMetadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+        const deployVersion = getDeployVersion(metadata);
+        ctx.log(`[deploy] Version: ${deployVersion}`);
 
         ctx.log('[deploy] Bundling entry.mjs...');
         const buildResult = (await buildEntry.handler(
