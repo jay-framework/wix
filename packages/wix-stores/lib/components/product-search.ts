@@ -272,6 +272,9 @@ const EMPTY_CATEGORY_HEADER: CategoryHeaderOfProductSearchViewState = {
 /**
  * Look up a category by slug via the Wix API.
  */
+/**
+ * Find a category by slug, then load full details (DESCRIPTION, BREADCRUMBS_INFO).
+ */
 async function findCategoryBySlug(
     categoriesClient: WixStoresService['categories'],
     slug: string,
@@ -282,7 +285,9 @@ async function findCategoryBySlug(
         .eq('visible', true)
         .limit(1)
         .find();
-    return result.items?.[0] ?? null;
+    const cat = result.items?.[0];
+    if (!cat?._id) return null;
+    return loadCategoryDetails(categoriesClient, cat._id);
 }
 
 /**
@@ -311,9 +316,7 @@ async function buildCategoryHeader(
     category: Category,
     categoryUrlTemplate: string | null,
 ): Promise<CategoryHeaderOfProductSearchViewState> {
-    // Load full details
-    const details = await loadCategoryDetails(wixStoreService.categories, category._id);
-    const cat = details || category;
+    const cat = category;
 
     const imageUrl = cat.image ? formatWixMediaUrl('', cat.image) : '';
     const description = cat.description || '';
@@ -418,9 +421,8 @@ async function renderSlowlyChanging(
     const Pipeline = RenderPipeline.for<ProductSearchSlowViewState, SearchSlowCarryForward>();
 
     // `category` is always the active category slug (set by loadSearchParams).
-    // Falls back to defaultCategory config for header display only (no base filter).
+    // When absent (all-products route), use the system "All Products" category for header info.
     const categorySlug = props.category ?? null;
-    const defaultCategorySlug = wixStores.defaultCategory;
 
     let activeCategory: Category | null = null;
     let baseCategoryId: string | null = null;
@@ -428,8 +430,11 @@ async function renderSlowlyChanging(
     if (categorySlug) {
         activeCategory = await findCategoryBySlug(wixStores.categories, categorySlug);
         baseCategoryId = activeCategory?._id ?? null;
-    } else if (defaultCategorySlug) {
-        activeCategory = await findCategoryBySlug(wixStores.categories, defaultCategorySlug);
+    } else {
+        const allProductsCategoryId = await wixStores.getAllProductsCategoryId();
+        if (allProductsCategoryId) {
+            activeCategory = await loadCategoryDetails(wixStores.categories, allProductsCategoryId);
+        }
     }
 
     // Get category tree (lazily built, cached on service)
@@ -1131,14 +1136,18 @@ function ProductSearchInteractive(
  * Yields all visible categories so the framework can match them
  * against existing filesystem routes.
  *
- * Each category is yielded exactly once:
- * - Root categories (no parent): { prefix: slug }
- * - Child categories (has parent): { prefix: rootParentSlug, category: slug }
+ * Params yielded:
+ * - All products: {} (no category filter)
+ * - Root categories: { category: slug }
+ * - Child categories: { prefix: rootParentSlug, category: slug }
  */
 async function* loadSearchParams([wixStores]: [WixStoresService]): AsyncIterable<
     ProductSearchParams[]
 > {
     try {
+        // Get the "All Products" system category ID to suppress it from params
+        const allProductsCategoryId = await wixStores.getAllProductsCategoryId();
+
         // Load ALL categories by paginating through results
         const allCategories: Category[] = [];
         let result = await wixStores.categories
@@ -1169,6 +1178,7 @@ async function* loadSearchParams([wixStores]: [WixStoresService]): AsyncIterable
 
         for (const cat of allCategories) {
             if (!cat._id) continue;
+            if (cat._id === allProductsCategoryId) continue;
             const node: CatNode = {
                 slug: cat.slug || '',
                 itemCount: cat.itemCounter ?? 0,
@@ -1211,7 +1221,8 @@ async function* loadSearchParams([wixStores]: [WixStoresService]): AsyncIterable
         // DFS to collect params, skipping empty subtrees.
         // `category` is always the active category slug (used for filtering/header).
         // `prefix` is the root parent slug (only set for child categories, used for URL routing).
-        const params: ProductSearchParams[] = [];
+        // Empty params `{}` matches the "all products" route (no category filter).
+        const params: ProductSearchParams[] = [{}];
         function collectParams(node: CatNode, rootSlug: string | null) {
             if (!node.slug || node.itemCount === 0) return;
             if (rootSlug) {
