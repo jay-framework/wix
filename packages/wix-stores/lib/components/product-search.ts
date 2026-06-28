@@ -417,10 +417,9 @@ async function renderSlowlyChanging(
 ) {
     const Pipeline = RenderPipeline.for<ProductSearchSlowViewState, SearchSlowCarryForward>();
 
-    // Resolve the active category via fallback chain:
-    // 1. category param → 2. prefix param → 3. defaultCategory config
+    // `category` is always the active category slug (set by loadSearchParams).
+    // Falls back to defaultCategory config for header display only (no base filter).
     const categorySlug = props.category ?? null;
-    const prefixSlug = props.prefix ?? null;
     const defaultCategorySlug = wixStores.defaultCategory;
 
     let activeCategory: Category | null = null;
@@ -429,12 +428,8 @@ async function renderSlowlyChanging(
     if (categorySlug) {
         activeCategory = await findCategoryBySlug(wixStores.categories, categorySlug);
         baseCategoryId = activeCategory?._id ?? null;
-    } else if (prefixSlug) {
-        activeCategory = await findCategoryBySlug(wixStores.categories, prefixSlug);
-        baseCategoryId = activeCategory?._id ?? null;
     } else if (defaultCategorySlug) {
         activeCategory = await findCategoryBySlug(wixStores.categories, defaultCategorySlug);
-        // Don't set baseCategoryId for default — show all products
     }
 
     // Get category tree (lazily built, cached on service)
@@ -1213,14 +1208,16 @@ async function* loadSearchParams([wixStores]: [WixStoresService]): AsyncIterable
             sumItems(root);
         }
 
-        // DFS to collect params, skipping empty subtrees
+        // DFS to collect params, skipping empty subtrees.
+        // `category` is always the active category slug (used for filtering/header).
+        // `prefix` is the root parent slug (only set for child categories, used for URL routing).
         const params: ProductSearchParams[] = [];
         function collectParams(node: CatNode, rootSlug: string | null) {
             if (!node.slug || node.itemCount === 0) return;
             if (rootSlug) {
                 params.push({ prefix: rootSlug, category: node.slug });
             } else {
-                params.push({ prefix: node.slug });
+                params.push({ category: node.slug });
             }
             for (const child of node.children) {
                 collectParams(child, rootSlug ?? node.slug);
