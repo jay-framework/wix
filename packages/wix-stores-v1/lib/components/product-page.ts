@@ -19,6 +19,7 @@ import {
     Signals,
     SlowlyRenderResult,
     UrlParams,
+    type HeadTag,
 } from '@jay-framework/fullstack-component';
 import { createMemo, createSignal, Props } from '@jay-framework/component';
 import {
@@ -41,7 +42,7 @@ import { MediaGalleryViewState, Selected } from '../contracts/media-gallery.jay-
 import { MediaType } from '../contracts/media.jay-contract';
 import { JSONPatchOperation, patch, REPLACE } from '@jay-framework/json-patch';
 import { WIX_STORES_V1_CONTEXT, WixStoresV1Context } from '../contexts/wix-stores-v1-context';
-import { Product } from '@wix/auto_sdk_stores_products';
+import { Product, SeoSchema } from '@wix/auto_sdk_stores_products';
 
 /**
  * URL parameters for product page routes
@@ -175,6 +176,46 @@ function mapVariants(product: Product): InteractiveVariant[] {
     }));
 }
 
+function mapSeoHeadTags(
+    product: { name?: string | null; description?: string | null },
+    seoData: SeoSchema | undefined,
+): HeadTag[] {
+    const headTags: HeadTag[] = (seoData?.tags || []).map((tag) => ({
+        tag: tag.type || 'meta',
+        attrs: Object.fromEntries(
+            Object.entries(tag.props || {}).map(([key, value]) => [key, value as string]),
+        ),
+        children: tag.children || undefined,
+    }));
+
+    if (!headTags.some((t) => t.tag === 'title') && product.name) {
+        headTags.push({ tag: 'title', children: product.name });
+    }
+
+    if (
+        !headTags.some((t) => t.tag === 'meta' && t.attrs?.name === 'description') &&
+        product.description
+    ) {
+        headTags.push({
+            tag: 'meta',
+            attrs: { name: 'description', content: product.description },
+        });
+    }
+
+    const keywords = seoData?.settings?.keywords;
+    if (keywords?.length) {
+        const terms = keywords.map((k) => k.term).filter(Boolean);
+        if (terms.length) {
+            headTags.push({
+                tag: 'meta',
+                attrs: { name: 'keywords', content: terms.join(', ') },
+            });
+        }
+    }
+
+    return headTags;
+}
+
 // ============================================================================
 // Load Product Params for SSG
 // ============================================================================
@@ -244,6 +285,7 @@ async function renderSlowlyChanging(
                     modifiers: [], // V1 doesn't have modifiers in same format
                     seoData: { tags: [], settings: { preventAutoRedirect: false, keywords: [] } },
                 },
+                headTags: mapSeoHeadTags(product, product.seoData),
                 carryForward: {
                     productId: product._id || '',
                     mediaGallery: mapMedia(product),

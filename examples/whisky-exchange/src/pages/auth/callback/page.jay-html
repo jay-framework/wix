@@ -1,0 +1,31 @@
+<html>
+<head>
+  <script type="application/jay-headless" plugin="@jay-framework/wix-members" contract="auth-callback" key="authCallback"></script>
+  <script type="application/jay-data">data:</script>
+  <title>Completing Login - The Whisky Exchange</title>
+  <link rel="stylesheet" href="../../../styles/theme.css" />
+</head>
+<body>
+<div>
+  <header class="site-header">
+    <div class="header-top">
+      <a href="/" class="site-logo">The Whisky<span>Exchange</span></a>
+    </div>
+  </header>
+
+  <main>
+  <div class="container" style="text-align: center; padding: 120px 0;">
+    <div if="authCallback.isProcessing">
+      <h1 class="page-title">Completing Login...</h1>
+      <p style="color: var(--text-secondary);">Please wait while we verify your credentials.</p>
+    </div>
+    <div if="authCallback.hasError">
+      <h1 class="page-title">Login Failed</h1>
+      <p style="color: var(--text-secondary); margin-bottom: 24px;">{authCallback.errorMessage}</p>
+      <a href="/" class="btn btn-primary">Return Home</a>
+    </div>
+  </div>
+  </main>
+</div>
+</body>
+</html>

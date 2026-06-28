@@ -24,11 +24,12 @@
     "preview": "cross-env NODE_ENV=production node server"
   },
   "dependencies": {
-    "@jay-framework/fullstack-component": "^0.19.5",
-    "@jay-framework/gemini-agent-plugin": "^0.19.5",
-    "@jay-framework/jay-stack-cli": "^0.19.5",
+    "@jay-framework/fullstack-component": "^0.19.7",
+    "@jay-framework/gemini-agent-plugin": "^0.19.7",
+    "@jay-framework/jay-stack-cli": "^0.19.7",
     "@jay-framework/wix-cart": "workspace:^",
     "@jay-framework/wix-deploy": "workspace:^",
+    "@jay-framework/wix-members": "workspace:^",
     "@jay-framework/wix-server-client": "workspace:^",
     "@jay-framework/wix-stores-v1": "workspace:^",
     "compression": "^1.7.5",
@@ -36,9 +37,9 @@
     "sirv": "^3.0.0"
   },
   "devDependencies": {
-    "@jay-framework/a11y-validator": "^0.19.5",
-    "@jay-framework/jay-cli": "^0.19.5",
-    "@jay-framework/seo-validator": "^0.19.5",
+    "@jay-framework/a11y-validator": "^0.19.7",
+    "@jay-framework/jay-cli": "^0.19.7",
+    "@jay-framework/seo-validator": "^0.19.7",
     "@jay-framework/wix-dev-environment": "workspace:^",
     "@jay-framework/wix-media": "workspace:^",
     "@types/express": "^5.0.0",

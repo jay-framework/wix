@@ -258,11 +258,13 @@ packages/wix-members/
 │   ├── components/
 │   │   ├── login-indicator.ts            # Header login/logout indicator
 │   │   ├── login-form.ts                 # Login form component
-│   │   └── register-form.ts             # Registration form component
+│   │   ├── register-form.ts             # Registration form component
+│   │   └── protected-page.ts            # Page-level login guard (redirect)
 │   ├── contracts/
 │   │   ├── login-indicator.jay-contract  # Auth status display
 │   │   ├── login-form.jay-contract       # Login form
-│   │   └── register-form.jay-contract    # Registration form
+│   │   ├── register-form.jay-contract    # Registration form
+│   │   └── protected-page.jay-contract   # Login-required page guard
 │   └── utils/
 │       └── member-helpers.ts             # Token upgrade, member data mapping
 ├── plugin.yaml
@@ -448,6 +450,70 @@ tags:
     description: Whether registration completed successfully
 ```
 
+#### protected-page.jay-contract
+
+A headless component that protects an entire page behind login. The template author wraps the page content with this component — no code needed. The component's fast phase reads the visitor's tokens from a cookie, and if they are not a logged-in member, returns a 302 redirect to a configurable login page. If they are logged in, it renders normally with `Cache-Control: no-store`.
+
+This is the only way to protect a page, because templates cannot add code — they can only place headless components.
+
+```yaml
+name: protected-page
+description: Wraps page content to require member login. Redirects to login page if not authenticated.
+
+props:
+  - name: loginUrl
+    type: string
+    default: '/login'
+    description: URL to redirect to when visitor is not logged in
+
+tags:
+  - tag: isLoggedIn
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether the current visitor is a logged-in member
+```
+
+The contract is intentionally minimal. The component acts as a page-level guard, not a data provider.
+
+This is a **keyed component** — declared in the page `<head>` via `<script type="application/jay-headless">`, not a nested wrapper around content. The page content is authored normally; the component's fast phase controls whether the page renders or redirects.
+
+**How it works:**
+
+1. Fast phase reads `props.cookies` for the token cookie
+2. Parses the tokens and checks `refreshToken.role === 'member'`
+3. If not a member → `redirect3xx(302, props.loginUrl)`
+4. If a member → `phaseOutput({ isLoggedIn: true }, {}, { responseHeaders: { 'Cache-Control': 'no-store' } })`
+
+**Template usage:**
+
+```html
+<!-- Protected account page -->
+<html>
+  <head>
+    <script
+      type="application/jay-headless"
+      plugin="@jay-framework/wix-members"
+      contract="protected-page"
+      key="auth"
+    ></script>
+    <script type="application/jay-data">
+      data:
+          loginUrl: /login
+    </script>
+  </head>
+  <body>
+    <h1>My Account</h1>
+    <p>Welcome! This content is only visible to logged-in members.</p>
+  </body>
+</html>
+```
+
+The `isLoggedIn` tag is always `true` when the page renders (visitors get redirected), but it's available for the template to use if needed (e.g. `<div if="isLoggedIn">`). The interactive phase is a no-op — the guard runs server-side only.
+
+**Q: Does the component need a `memberId` or `memberName` tag?**
+A: Not in v1. If a protected page needs member data, it can also include the `login-indicator` component, which already provides name/avatar. Keeping the protected-page contract minimal avoids duplicating member data resolution. If we find pages commonly need member identity alongside the guard, we can add tags later.
+
 ### Context (Client-Side)
 
 Uses `WIX_CLIENT_CONTEXT` to access `client.auth.*` methods from OAuthStrategy.
@@ -597,6 +663,11 @@ contracts:
     component: registerForm
     description: Member registration form
 
+  - name: protected-page
+    contract: protected-page.jay-contract
+    component: protectedPage
+    description: Page-level login guard — redirects visitors to login page
+
 services:
   - name: wix-members
     marker: WIX_MEMBERS_SERVICE
@@ -651,7 +722,7 @@ contexts:
 
 ### Phase 2: Contracts
 
-- Write the three `.jay-contract` files
+- Write the four `.jay-contract` files (login-indicator, login-form, register-form, protected-page)
 - Generate TypeScript definitions
 
 ### Phase 3: Service + Context
@@ -666,6 +737,7 @@ contexts:
 - `loginIndicator` component (fast + interactive phases)
 - `loginForm` component (interactive only)
 - `registerForm` component (interactive only)
+- `protectedPage` component (fast phase only — reads cookie, redirects or renders with no-cache)
 
 ### Phase 5: Init + Integration
 
@@ -700,3 +772,303 @@ contexts:
 | Events for cross-plugin integration     | Loose coupling, wix-members doesn't know about cart   | Cart merge timing may be tricky         |
 | No password reset in v1                 | Simpler scope                                         | Users may expect it                     |
 | Contract-agnostic UI (no modal opinion) | Template designer chooses modal vs page               | Slightly more work for template authors |
+
+---
+
+## Design Revision: Redirect-Based Login/Register
+
+### Background
+
+After discussion with the Wix Members team, the recommended approach for login and register is to use Wix-hosted redirect pages instead of implementing custom email/password forms. This is the same pattern `wix-cart` uses for checkout (`createRedirectSession({ ecomCheckout: {...} })`).
+
+### Two Redirect Approaches in the SDK
+
+**1. Simple login redirect** — `createRedirectSession({ login: {} })`
+
+Sends visitor to Wix-hosted login page. After auth, redirects to `postFlowUrl`. Does not return OAuth tokens — just establishes a Wix session.
+
+**2. Full OAuth redirect** — `createRedirectSession({ auth: { authRequest: {...} } })`
+
+Full OAuth 2.0 + PKCE flow. The visitor goes to a Wix-hosted login/register page, then returns to a callback URL with `code` and `state` query params. The app exchanges the code for member tokens.
+
+Flow:
+
+1. Generate PKCE data: `client.auth.generateOAuthData(callbackUrl)`
+2. Get Wix auth URL: `createRedirectSession({ auth: { authRequest: { clientId, redirectUri, codeChallenge, codeChallengeMethod: 'S256', responseMode: 'fragment', responseType: 'code', scope: 'offline_access', state } } })`
+3. Redirect visitor to `redirectSession.fullUrl`
+4. Visitor authenticates on Wix-hosted page (Wix handles CAPTCHA, email verification, etc.)
+5. Wix redirects back to callback URL with `code` + `state`
+6. Parse response: `client.auth.parseFromUrl(url, 'fragment')`
+7. Exchange for tokens: `client.auth.getMemberTokens(code, state, oauthData)`
+8. Set tokens: `client.auth.setTokens(tokens)`
+
+### What Changes
+
+**Removed:**
+
+- `login-form.jay-contract` — no custom login form needed
+- `register-form.jay-contract` — no custom register form needed
+- `loginForm` component — Wix handles the UI
+- `registerForm` component — Wix handles the UI
+- CAPTCHA handling — Wix handles it
+- Error state management (invalidPassword, emailAlreadyExists, etc.) — Wix handles it
+- Password reset form — Wix handles it on their hosted page
+
+**Kept (unchanged):**
+
+- `login-indicator.jay-contract` — still shows auth state in header
+- `loginIndicator` component — still reads reactive signals from context
+- `protected-page.jay-contract` — still guards pages behind login
+- `protectedPage` component — still reads auth cookie in fast phase
+- `WIX_MEMBERS_SERVICE` / `WIX_MEMBERS_CONTEXT` — still needed
+- Auth cookie mechanism — still needed for server-side protected page check
+
+**New:**
+
+- `auth-callback.jay-contract` — keyed component for the OAuth callback page
+- `authCallback` component — handles the callback URL, exchanges code for tokens
+- Context methods change: `redirectToLogin()`, `redirectToRegister()`, `handleAuthCallback()` replace `login()`, `register()`
+
+### Revised Contracts
+
+#### login-indicator.jay-contract (unchanged)
+
+Same as before — `isLoggedIn`, `memberName`, `memberAvatar`, `isLoading`, `logoutButton`.
+
+#### protected-page.jay-contract (unchanged)
+
+Same as before — keyed component, `loginUrl` prop, `isLoggedIn` tag.
+
+#### auth-callback.jay-contract (new)
+
+Keyed component placed on the OAuth callback page. Handles the return from Wix-hosted login.
+
+```yaml
+name: auth-callback
+description: Handles OAuth callback after Wix-hosted login/register. Place as keyed component on the callback page.
+
+tags:
+  - tag: isProcessing
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether the auth callback is being processed
+
+  - tag: hasError
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether the callback processing failed
+
+  - tag: errorMessage
+    type: data
+    dataType: string
+    phase: fast+interactive
+    description: Error message if callback processing failed
+```
+
+The component's interactive phase:
+
+1. Reads `code` and `state` from the URL (fragment or query)
+2. Retrieves stored PKCE data (oauthData) from sessionStorage
+3. Calls `client.auth.getMemberTokens(code, state, oauthData)`
+4. Sets tokens + auth cookie
+5. Redirects to the original page (from `oauthData.originalUri`)
+
+### Revised Context
+
+```typescript
+interface WixMembersContext {
+  memberIndicator: ReactiveMemberIndicator;
+
+  // Redirect to Wix-hosted login page (generates PKCE, stores oauthData, returns redirect URL)
+  redirectToLogin(callbackUrl?: string): Promise<string>;
+
+  // Redirect to Wix-hosted register page (same flow, different prompt)
+  redirectToRegister(callbackUrl?: string): Promise<string>;
+
+  // Handle the OAuth callback (exchange code for tokens, set cookie)
+  handleAuthCallback(url?: string): Promise<{ success: boolean; redirectTo: string }>;
+
+  // Logout (unchanged — clear tokens, set visitor tokens)
+  logout(): Promise<void>;
+
+  // Check auth state from stored tokens (unchanged)
+  refreshMemberState(): void;
+
+  onLogin: EventEmitter<void>;
+  onLogout: EventEmitter<void>;
+}
+```
+
+### Revised Token Flow
+
+```
+Login/Register (redirect):
+1. Visitor clicks "Log In" or "Sign Up" in template
+2. Template calls context.redirectToLogin() or context.redirectToRegister()
+3. Context generates PKCE data, stores oauthData in sessionStorage
+4. Context calls createRedirectSession({ auth: { authRequest: {...} } })
+5. Returns redirect URL → template does window.location.href = url
+6. Visitor authenticates on Wix-hosted page
+7. Wix redirects to callback URL with code + state (fragment)
+8. Callback page has auth-callback keyed component
+9. Component calls context.handleAuthCallback()
+10. Context exchanges code for member tokens, sets cookie
+11. Redirects to original page
+
+Logout (unchanged):
+1. Call client.auth.logout(currentUrl)
+2. Generate fresh visitor tokens
+3. Clear auth cookie
+4. Emit onLogout event
+```
+
+### Revised Template Usage
+
+```html
+<!-- Login indicator in header (unchanged) -->
+<div jay-headless plugin="@jay-framework/wix-members" contract="login-indicator">
+  <div if="isLoading">...</div>
+  <div if="isLoggedIn">
+    <span>{memberName}</span>
+    <button ref="logoutButton">Log Out</button>
+  </div>
+  <div if="!isLoggedIn">
+    <button ref="loginButton">Log In</button>
+  </div>
+</div>
+
+<!-- OAuth callback page (e.g. /auth/callback) -->
+<html>
+  <head>
+    <script
+      type="application/jay-headless"
+      plugin="@jay-framework/wix-members"
+      contract="auth-callback"
+      key="authCallback"
+    ></script>
+  </head>
+  <body>
+    <div if="isProcessing">Completing login...</div>
+    <div if="hasError">{errorMessage}</div>
+  </body>
+</html>
+```
+
+Note: the login indicator needs a `loginButton` ref (interactive) to trigger the redirect. This replaces the plain `<a href="/login">` pattern from the original design. The component handles the redirect URL generation and navigation.
+
+Q: Should register be a separate button, or should Wix's hosted page handle the login-vs-register choice?
+A: The Wix-hosted page has both login and register options. A single `loginButton` ref is sufficient — it redirects to Wix where the visitor can choose. If the template wants a separate "Sign Up" button, add a `registerButton` ref that calls `redirectToRegister()`. The Wix page will pre-select the register tab.
+
+### Revised login-indicator.jay-contract
+
+```yaml
+name: login-indicator
+description: Shows member login state in site header/navigation
+
+tags:
+  - tag: isLoggedIn
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+
+  - tag: memberName
+    type: data
+    dataType: string
+    phase: fast+interactive
+
+  - tag: memberAvatar
+    type: data
+    dataType: string
+    phase: fast+interactive
+
+  - tag: isLoading
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+
+  - tag: loginButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Redirects to Wix-hosted login page
+
+  - tag: registerButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Redirects to Wix-hosted register page
+
+  - tag: logoutButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Triggers logout
+```
+
+### Revised plugin.yaml
+
+```yaml
+name: wix-members
+
+contracts:
+  - name: login-indicator
+    contract: login-indicator.jay-contract
+    component: loginIndicator
+    description: Shows member auth state in site header, with login/register/logout buttons
+
+  - name: auth-callback
+    contract: auth-callback.jay-contract
+    component: authCallback
+    description: Handles OAuth callback after Wix-hosted login/register
+
+  - name: protected-page
+    contract: protected-page.jay-contract
+    component: protectedPage
+    description: Page-level login guard — redirects visitors to login page
+
+services:
+  - name: wix-members
+    marker: WIX_MEMBERS_SERVICE
+    description: Server-side member operations via Wix Members API
+
+contexts:
+  - name: wix-members
+    marker: WIX_MEMBERS_CONTEXT
+    description: Client-side member auth state, redirect login/register/logout operations
+```
+
+### Revised Implementation Plan
+
+#### Phase 1: Package Scaffolding (done)
+
+#### Phase 2: Contracts
+
+- Rewrite `login-indicator.jay-contract` — add `loginButton`, `registerButton` refs
+- Remove `login-form.jay-contract` and `register-form.jay-contract`
+- Write `auth-callback.jay-contract` (new)
+- Keep `protected-page.jay-contract` (unchanged)
+
+#### Phase 3: Context
+
+- Rewrite `WixMembersContext` — replace `login()`/`register()` with `redirectToLogin()`/`redirectToRegister()`/`handleAuthCallback()`
+- Add PKCE/oauthData management (sessionStorage)
+- Add `@wix/redirects` SDK module usage for `createRedirectSession`
+- Keep auth cookie mechanism
+
+#### Phase 4: Components
+
+- Rewrite `loginIndicator` — wire `loginButton`/`registerButton` to context redirect methods
+- Remove `loginForm` and `registerForm` components
+- Write `authCallback` component (new) — handles URL parsing + token exchange
+- Keep `protectedPage` (unchanged)
+
+#### Phase 5-7: Same as before (init, agent-kit guide, example integration)
+
+### Trade-offs (Revised)
+
+| Decision                          | Benefit                                                   | Cost                                           |
+| --------------------------------- | --------------------------------------------------------- | ---------------------------------------------- |
+| Redirect to Wix-hosted login      | No CAPTCHA, no error handling, no email verification code | Users see Wix-branded pages, not custom UI     |
+| OAuth 2.0 + PKCE flow             | Industry standard, secure, no password handling           | More complex callback page, sessionStorage dep |
+| Separate callback page            | Clean separation, works with any template                 | Requires a dedicated route (/auth/callback)    |
+| Keep protected-page component     | Template authors can guard any page without code          | Auth cookie must be set correctly              |
+| loginButton + registerButton refs | Template controls where login/register buttons appear     | Two refs instead of plain `<a>` links          |

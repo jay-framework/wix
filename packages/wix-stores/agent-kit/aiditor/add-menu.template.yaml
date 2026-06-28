@@ -25,19 +25,33 @@ items:
       Script key: p
       Bind ViewState and refs per agent-kit/designer/INSTRUCTIONS.md.
 
-  - id: wix-stores:related-products
-    title: Related products
+  - id: wix-stores:category-products
+    title: Category products
     category: Store
     subCategory: Components
     pluginName: wix-stores
     packageName: "@jay-framework/wix-stores"
-    thumbnail: thumbnails/wix-stores/related-products.svg
+    thumbnail: thumbnails/wix-stores/category-products.svg
     prompt: |
-      Use headless component @jay-framework/wix-stores / contract related-products.
-      Read agent-kit/materialized-contracts/wix-stores/related-products.jay-contract.
+      Use headless component @jay-framework/wix-stores / contract category-products.
+      Read agent-kit/materialized-contracts/wix-stores/category-products.jay-contract.
       Script key: r
       Bind ViewState and refs per agent-kit/designer/INSTRUCTIONS.md.
-      Use alongside product-page; pass productId and categorySlug as instance props.
+      Pass categorySlug to show products from a category. Pass productId to exclude a product (e.g. on a product page).
+
+  - id: wix-stores:product-spotlight
+    title: Product spotlight
+    category: Store
+    subCategory: Components
+    pluginName: wix-stores
+    packageName: "@jay-framework/wix-stores"
+    thumbnail: thumbnails/wix-stores/product-spotlight.png
+    prompt: |
+      Use headless component @jay-framework/wix-stores / contract product-spotlight.
+      Read agent-kit/materialized-contracts/wix-stores/product-spotlight.jay-contract.
+      Script key: spotlight
+      Bind ViewState and refs per agent-kit/designer/INSTRUCTIONS.md.
+      Pass slug as a prop to specify which product to display.
 
   - id: wix-stores:category-list
     title: Category list

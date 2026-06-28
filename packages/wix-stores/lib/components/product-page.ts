@@ -164,11 +164,12 @@ function mapInfoSections(infoSections: InfoSection[]): Array<InfoSectionOfProduc
         uniqueName: infoSection.uniqueName || '',
     }));
 }
-/** Map Wix seoData to HeadTag[] for SSR head injection */
-function mapSeoHeadTags(seoData: SeoSchema | undefined): HeadTag[] {
-    if (!seoData) return [];
-
-    const headTags: HeadTag[] = (seoData.tags || []).map((tag) => ({
+/** Map Wix seoData + product info to HeadTag[] for SSR head injection */
+function mapSeoHeadTags(
+    product: { name?: string | null; plainDescription?: string | null },
+    seoData: SeoSchema | undefined,
+): HeadTag[] {
+    const headTags: HeadTag[] = (seoData?.tags || []).map((tag) => ({
         tag: tag.type || 'meta',
         attrs: Object.fromEntries(
             Object.entries(tag.props || {}).map(([key, value]) => [key, value as string]),
@@ -176,8 +177,21 @@ function mapSeoHeadTags(seoData: SeoSchema | undefined): HeadTag[] {
         children: tag.children || undefined,
     }));
 
-    // Add keywords meta tag from SEO settings
-    const keywords = seoData.settings?.keywords;
+    if (!headTags.some((t) => t.tag === 'title') && product.name) {
+        headTags.push({ tag: 'title', children: product.name });
+    }
+
+    if (
+        !headTags.some((t) => t.tag === 'meta' && t.attrs?.name === 'description') &&
+        product.plainDescription
+    ) {
+        headTags.push({
+            tag: 'meta',
+            attrs: { name: 'description', content: product.plainDescription },
+        });
+    }
+
+    const keywords = seoData?.settings?.keywords;
     if (keywords?.length) {
         const terms = keywords.map((k) => k.term).filter(Boolean);
         if (terms.length) {
@@ -453,7 +467,7 @@ async function renderSlowlyChanging(
                     modifiers: mapModifiersToSlowVS(modifiers),
                     extendedFields: mapExtendedFields(product),
                 },
-                headTags: mapSeoHeadTags(seoData),
+                headTags: mapSeoHeadTags({ name, plainDescription }, seoData),
                 carryForward: {
                     productId: _id,
                     mediaGallery: mapMedia(media),

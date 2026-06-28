@@ -1,0 +1,15 @@
+name: protected-page
+description: Page-level login guard. Redirects visitors to login page if not authenticated. Use as a keyed component in the page head.
+
+props:
+  - name: loginUrl
+    type: string
+    default: '/login'
+    description: URL to redirect to when visitor is not logged in
+
+tags:
+  - tag: isLoggedIn
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+    description: Whether the current visitor is a logged-in member (always true when page renders)
