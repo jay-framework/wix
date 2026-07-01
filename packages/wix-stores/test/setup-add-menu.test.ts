@@ -69,6 +69,13 @@ function assertAddMenuCatalogShape(catalog: unknown): void {
         for (const field of REJECTED_ITEM_FIELDS) {
             expect(item).not.toHaveProperty(field);
         }
+        if (item.subCategory === 'Components') {
+            expect(item).toEqual(
+                expect.objectContaining({
+                    interaction: expect.objectContaining({ mode: 'stage-place' }),
+                }),
+            );
+        }
     }
 }
 
@@ -92,7 +99,7 @@ describe('setupWixStores add-menu catalog (Design Log #20 W2)', () => {
         const result = await setupWixStores(makeCtx(projectRoot));
 
         expect(result.status).toBe('configured');
-        expect(result.configCreated).toEqual([ADD_MENU_OUTPUT_REL]);
+        expect(result.configCreated).toEqual(expect.arrayContaining([ADD_MENU_OUTPUT_REL]));
 
         const outputPath = join(projectRoot, ADD_MENU_OUTPUT_REL);
         expect(existsSync(outputPath)).toBe(true);
@@ -126,7 +133,7 @@ describe('setupWixStores add-menu catalog (Design Log #20 W2)', () => {
         const result = await setupWixStores(makeCtx(projectRoot));
 
         expect(result.status).toBe('configured');
-        expect(result.configCreated).toBeUndefined();
+        expect(result.configCreated ?? []).not.toContain(ADD_MENU_OUTPUT_REL);
 
         const written = loadYaml(readFileSync(join(addMenuDir, 'wix-stores.yaml'), 'utf-8'));
         expect(written).toEqual({ items: [] });
@@ -140,10 +147,26 @@ describe('setupWixStores add-menu catalog (Design Log #20 W2)', () => {
         const result = await setupWixStores(makeCtx(projectRoot, { force: true }));
 
         expect(result.status).toBe('configured');
-        expect(result.configCreated).toEqual([ADD_MENU_OUTPUT_REL]);
+        expect(result.configCreated).toEqual(expect.arrayContaining([ADD_MENU_OUTPUT_REL]));
 
         const written = loadYaml(readFileSync(join(addMenuDir, 'wix-stores.yaml'), 'utf-8'));
         assertAddMenuCatalogShape(written);
         expect(written).toEqual(loadExpectedCatalog());
+    });
+
+    it('copies Add Menu thumbnails into public/ on setup', async () => {
+        const result = await setupWixStores(makeCtx(projectRoot));
+
+        expect(result.status).toBe('configured');
+        expect(result.configCreated).toEqual(
+            expect.arrayContaining([
+                'public/aiditor-add-menu-thumbnails/wix-stores/product-page.svg',
+            ]),
+        );
+        expect(
+            existsSync(
+                join(projectRoot, 'public/aiditor-add-menu-thumbnails/wix-stores/product-page.svg'),
+            ),
+        ).toBe(true);
     });
 });

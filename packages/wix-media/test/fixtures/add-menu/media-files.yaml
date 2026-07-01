@@ -1,0 +1,30 @@
+files:
+  - id: hero-image-id-001
+    displayName: Hero Banner
+    slug: hero-banner
+    url: https://static.wixstatic.com/media/abc123~mv2.jpg
+    mediaType: image
+    width: 1920
+    height: 1080
+    labels:
+      - hero
+    folderId: folder-1
+    folderName: Marketing
+  - id: promo-video-id-002
+    displayName: Promo Clip
+    slug: promo-clip
+    url: https://video.wixstatic.com/video/xyz789.mp4
+    mediaType: video
+    labels: []
+    folderId: folder-1
+    folderName: Marketing
+  - id: logo-id-003
+    displayName: Logo
+    slug: logo
+    url: https://static.wixstatic.com/media/logo~mv2.png
+    mediaType: image
+    width: 400
+    height: 120
+    labels: []
+    folderId: media-root
+    folderName: Media Root
