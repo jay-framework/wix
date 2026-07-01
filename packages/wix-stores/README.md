@@ -64,9 +64,6 @@ Run `jay-stack agent-kit` (or `yarn agent-kit`) to index the live category tree 
 urls:
   product: '/products/{slug}' # default
   category: null # no category pages by default
-
-# Fallback category for pages without category context
-defaultCategory: 'all-products' # slug of the fallback category
 ```
 
 URL templates use three placeholders:
@@ -114,7 +111,6 @@ src/pages/products/
 urls:
   product: '/products/{prefix}/{category}/{slug}'
   category: '/products/{prefix}/{category}'
-defaultCategory: 'all-products'
 ```
 
 ```
@@ -154,12 +150,12 @@ src/pages/products/polgat/
 
 ### Setting Params for Static Routes
 
-Static route directories use `jay-params` to tell the component which prefix they represent:
+Static route directories use `jay-params` to tell the component which category they represent:
 
 ```html
-<!-- src/pages/products/polgat/page.jay-html -->
+<!-- src/pages/products/polgat/page.jay-html (root category) -->
 <script type="application/jay-params">
-  prefix: polgat
+  category: polgat
 </script>
 <script
   type="application/jay-headless"
@@ -171,11 +167,10 @@ Static route directories use `jay-params` to tell the component which prefix the
 
 ## Category Header
 
-The category header is always loaded. The component resolves category metadata using a fallback chain:
+The category header is always loaded. The component resolves category metadata:
 
-1. **`category` param** → load category
-2. **`prefix` param** → load root category
-3. **Neither** → load `defaultCategory` from config
+1. **`category` param** → load category (always the active category slug)
+2. **No `category`** → load the "All Products" system category via `getAllProductsCategory()` (header only, no base filter)
 
 If the resolved category is missing image, description, or SEO data, the component walks up the parent chain until it finds the data. Each field inherits independently.
 
