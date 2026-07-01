@@ -69,6 +69,13 @@ function assertAddMenuCatalogShape(catalog: unknown): void {
         for (const field of REJECTED_ITEM_FIELDS) {
             expect(item).not.toHaveProperty(field);
         }
+        if (item.subCategory === 'Components') {
+            expect(item).toEqual(
+                expect.objectContaining({
+                    interaction: expect.objectContaining({ mode: 'stage-place' }),
+                }),
+            );
+        }
     }
 }
 
