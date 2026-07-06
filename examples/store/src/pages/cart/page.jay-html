@@ -3,6 +3,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Cart - Store</title>
+    <meta name="description" content="Review your shopping cart, update quantities, and proceed to checkout.">
+    <link rel="canonical" href="/cart">
     <script type="application/jay-headless"
             plugin="@jay-framework/wix-cart"
             contract="cart-page"
@@ -335,6 +337,7 @@
     </style>
 </head>
 <body>
+    <main>
     <div class="cart-page">
         <!-- Site Header with Cart -->
         <header class="site-header">
@@ -396,9 +399,12 @@
                                      trackBy="lineItemId">
                                 <a href="{productUrl}" ref="cartPage.lineItems.productLink">
                                     <img class="cart-item-image"
-                                         src="{image.url}"
+                                         src="{image.url}/v1/fill/w_100,h_100/file.webp"
                                          alt="{image.altText}"
-                                         loading="lazy">
+                                         width="100"
+                                         height="100"
+                                         loading="lazy"
+                                         fetchpriority="high">
                                 </a>
 
                                 <div class="cart-item-details">
@@ -420,7 +426,8 @@
                                                ref="cartPage.lineItems.quantity"
                                                value="{quantity}"
                                                min="1"
-                                               max="99">
+                                               max="99"
+                                               aria-label="Item quantity">
                                         <button class="quantity-btn" ref="cartPage.lineItems.incrementButton">+</button>
                                     </div>
 
@@ -465,7 +472,8 @@
                                                class="input coupon-input"
                                                ref="cartPage.coupon.code"
                                                value="{cartPage.coupon.code}"
-                                               placeholder="Enter coupon code">
+                                               placeholder="Enter coupon code"
+                                               aria-label="Coupon code">
                                         <button class="btn btn-secondary" ref="cartPage.coupon.applyButton">
                                             Apply
                                         </button>
@@ -491,5 +499,6 @@
             </div>
         </div>
     </div>
+    </main>
 </body>
 </html>

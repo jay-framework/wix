@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CMS Example - Jay Framework</title>
+  <meta name="description" content="A demonstration of the Jay Framework's Wix Data plugin, showcasing dynamic content management with auto-generated contracts.">
+  <link rel="canonical" href="/"/>
   <script type="application/jay-data">
     data:
   </script>
@@ -111,7 +113,7 @@
   </style>
 </head>
 <body>
-  <div class="home-page">
+  <main class="home-page">
     <!-- Hero Section -->
     <header class="hero">
       <h1 class="hero-title">CMS Example</h1>
@@ -160,6 +162,6 @@
         and powered by <a href="https://wix.com" target="_blank">Wix Data</a>
       </p>
     </footer>
-  </div>
+  </main>
 </body>
 </html>

@@ -15,7 +15,9 @@
   <script type="application/jay-data">
     data:
   </script>
-  <title>[slug]</title>
+  <title>{productPage.productName} - FashionHub</title>
+  <meta name="description" content="Shop {productPage.productName} at FashionHub. View details, select options, and buy now.">
+  <link rel="canonical" href="/products/recommended/{productPage.slug}">
   <style>
     /* Basic reset */
     body { margin: 0; font-family: sans-serif; }
@@ -49,6 +51,7 @@
   </style>
 </head>
 <body>
+  <main>
   <div data-figma-id="424:366" data-figma-type="frame" style="position: absolute;top: 100px;left: 100px;width: 100%;height: 762.8425903320312px;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: column;justify-content: flex-start;align-items: flex-start;gap: 0px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
     <!-- Page -->
     <div data-figma-id="424:368" data-figma-type="frame" style="position: relative;width: 100%;height: fit-content;background-image: linear-gradient(rgba(255, 255, 255, 1), rgba(255, 255, 255, 1));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-radius: 0px;overflow: hidden;display: flex;flex-direction: column;justify-content: flex-start;align-items: center;gap: 30px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
@@ -128,7 +131,7 @@
           </div>
           <div data-figma-id="424:386" data-figma-type="frame" style="position: relative;width: fit-content;height: fit-content;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: row;justify-content: flex-start;align-items: center;gap: 10.67453670501709px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
             <!-- Frame 4 -->
-            <img data-figma-id="424:387" src="/images/424:387_FILL.png" alt="Rectangle 1" style="position: relative;width: 38.12334442138672px;height: 38.12334442138672px;border-radius: 19.06167221069336px;" />
+            <img data-figma-id="424:387" src="https://static.wixstatic.com/media/c569b3_dde411c17f0b43bb85924fb361eac7e3~mv2.png/v1/fill/w_38,h_38/file.png" alt="User avatar" width="38" height="38" loading="lazy" style="position: relative;width: 38.12334442138672px;height: 38.12334442138672px;border-radius: 19.06167221069336px;" />
             <div data-figma-id="424:388" data-figma-type="frame" style="position: relative;width: fit-content;height: fit-content;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: column;justify-content: flex-start;align-items: flex-start;gap: 5.337268352508545px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
               <!-- Frame 3 -->
               <div data-figma-id="424:389" style="position: relative;width: fit-content;height: fit-content;font-family: 'Inter', sans-serif;font-size: 9.149602890014648px;font-weight: 500;color: #c0c3c6;text-align: left;line-height: normal;display: flex; flex-direction: column;justify-content: flex-start;">
@@ -153,10 +156,10 @@
             <!-- Frame 40 -->
             <div id="424:408" data-figma-id="424:408" data-figma-type="variant-container" style="position: relative;width: 449.0811767578125px;height: 526.8599853515625px;background: transparent;border-radius: 0px;overflow: visible;box-sizing: border-box;">
               <div if="productPage.mediaGallery.selectedMedia.mediaType == IMAGE">
-                <img data-figma-id="424:549" src="{productPage.mediaGallery.selectedMedia.url}" alt="image" style="position: absolute;top: 0.0023193359375px;left: -0.000946044921875px;width: 447.57000732421875px;height: 526.8599853515625px;border-radius: 10.67453670501709px;" />
+                <img data-figma-id="424:549" src="{productPage.mediaGallery.selectedMedia.url}/v1/fill/w_800,h_800/file.webp" alt="{productPage.productName}" width="448" height="527" loading="eager" fetchpriority="high" style="position: absolute;top: 0.0023193359375px;left: -0.000946044921875px;width: 447.57000732421875px;height: 526.8599853515625px;border-radius: 10.67453670501709px;" />
               </div>
               <div if="productPage.mediaGallery.selectedMedia.mediaType == VIDEO">
-                <img data-figma-id="424:551" src="{productPage.mediaGallery.selectedMedia.url}" alt="coverImage" style="position: absolute;top: 0px;left: 0px;width: 447.57000732421875px;height: 526.8599853515625px;border-radius: 10.67453670501709px;" />
+                <img data-figma-id="424:551" src="{productPage.mediaGallery.selectedMedia.url}/v1/fill/w_800,h_800/file.webp" alt="{productPage.productName} video cover" width="448" height="527" loading="eager" style="position: absolute;top: 0px;left: 0px;width: 447.57000732421875px;height: 526.8599853515625px;border-radius: 10.67453670501709px;" />
                 <div data-figma-id="424:552" data-figma-type="frame" style="position: absolute;top: 219.07081604003906px;left: 179.08131408691406px;width: fit-content;height: fit-content;background-image: linear-gradient(rgba(255, 255, 255, 0.30000001192092896), rgba(255, 255, 255, 0.30000001192092896));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-radius: 34.31100845336914px;overflow: visible;backdrop-filter: blur(2.287400722503662px);-webkit-backdrop-filter: blur(2.287400722503662px);display: flex;flex-direction: row;justify-content: center;align-items: center;gap: 7.624669075012207px;padding-left: 9.149602890014648px;padding-right: 9.149602890014648px;padding-top: 9.149602890014648px;padding-bottom: 9.149602890014648px;box-sizing: border-box;">
                   <!-- Frame 4 -->
                   <div data-figma-id="424:553" data-figma-type="frame" style="position: relative;width: 75px;height: 75px;background: transparent;border-radius: 0px;overflow: hidden;box-sizing: border-box;">
@@ -187,13 +190,13 @@
               <div style="position: relative; height: 100%;" forEach="productPage.mediaGallery.availableMedia" trackBy="mediaId">
                 <div id="424:444" data-figma-id="424:444" data-figma-type="variant-container" ref="selected" style="position: relative;width: 87.68368530273438px;height: 87.68368530273438px;background: transparent;border-radius: 0px;overflow: visible;box-sizing: border-box;">
                   <div if="media.mediaType == IMAGE && selected == selected">
-                    <img data-figma-id="424:544" src="{media.thumbnail_50x50}" alt="thumbnail" style="position: relative;width: 87.68368530273438px;height: 87.68368530273438px;border-radius: 10.67453670501709px;" />
+                    <img data-figma-id="424:544" src="{media.url}/v1/fill/w_50,h_50/file.jpg" alt="thumbnail" loading="lazy" style="position: relative;width: 87.68368530273438px;height: 87.68368530273438px;border-radius: 10.67453670501709px;" />
                   </div>
                   <div if="media.mediaType == IMAGE && selected == notSelected">
-                    <img data-figma-id="424:540" src="{media.thumbnail_50x50}" alt="thumbnail" style="position: relative;width: 87.68368530273438px;height: 87.68368530273438px;border-radius: 10.67453670501709px;" />
+                    <img data-figma-id="424:540" src="{media.url}/v1/fill/w_50,h_50/file.jpg" alt="thumbnail" loading="lazy" style="position: relative;width: 87.68368530273438px;height: 87.68368530273438px;border-radius: 10.67453670501709px;" />
                   </div>
                   <div if="media.mediaType == VIDEO && selected == selected">
-                    <img data-figma-id="424:530" src="{media.thumbnail_50x50}" alt="thumbnail" style="position: absolute;top: 0px;left: 0px;width: 87.68368530273438px;height: 87.68368530273438px;border-radius: 10.67453670501709px;" />
+                    <img data-figma-id="424:530" src="{media.url}/v1/fill/w_50,h_50/file.jpg" alt="thumbnail" loading="lazy" style="position: absolute;top: 0px;left: 0px;width: 87.68368530273438px;height: 87.68368530273438px;border-radius: 10.67453670501709px;" />
                     <div data-figma-id="424:531" data-figma-type="frame" style="position: absolute;top: 27.448762893676758px;left: 27.44879913330078px;width: 33.54853820800781px;height: fit-content;background-image: linear-gradient(rgba(255, 255, 255, 0.30000001192092896), rgba(255, 255, 255, 0.30000001192092896));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-radius: 34.31100845336914px;overflow: visible;backdrop-filter: blur(2.287400722503662px);-webkit-backdrop-filter: blur(2.287400722503662px);display: flex;flex-direction: row;justify-content: flex-start;align-items: flex-start;gap: 7.624669075012207px;padding-left: 9.149602890014648px;padding-right: 9.149602890014648px;padding-top: 9.149602890014648px;padding-bottom: 9.149602890014648px;box-sizing: border-box;">
                       <!-- Frame 4 -->
                       <div data-figma-id="424:532" data-figma-type="frame" style="position: relative;width: 15.249337196350098px;height: 15.249337196350098px;background: transparent;border-radius: 0px;overflow: hidden;box-sizing: border-box;">
@@ -208,7 +211,7 @@
                     </div>
                   </div>
                   <div if="media.mediaType == VIDEO && selected == notSelected">
-                    <img data-figma-id="424:520" src="{media.thumbnail_50x50}" alt="thumbnail" style="position: absolute;top: 0px;left: 0px;width: 87.68368530273438px;height: 87.68368530273438px;border-radius: 10.67453670501709px;" />
+                    <img data-figma-id="424:520" src="{media.url}/v1/fill/w_50,h_50/file.jpg" alt="thumbnail" loading="lazy" style="position: absolute;top: 0px;left: 0px;width: 87.68368530273438px;height: 87.68368530273438px;border-radius: 10.67453670501709px;" />
                     <div data-figma-id="424:521" data-figma-type="frame" style="position: absolute;top: 27.448762893676758px;left: 27.44879913330078px;width: 33.54853820800781px;height: fit-content;background-image: linear-gradient(rgba(255, 255, 255, 0.30000001192092896), rgba(255, 255, 255, 0.30000001192092896));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-radius: 34.31100845336914px;overflow: visible;backdrop-filter: blur(2.287400722503662px);-webkit-backdrop-filter: blur(2.287400722503662px);display: flex;flex-direction: row;justify-content: flex-start;align-items: flex-start;gap: 7.624669075012207px;padding-left: 9.149602890014648px;padding-right: 9.149602890014648px;padding-top: 9.149602890014648px;padding-bottom: 9.149602890014648px;box-sizing: border-box;">
                       <!-- Frame 4 -->
                       <div data-figma-id="424:522" data-figma-type="frame" style="position: relative;width: 15.249337196350098px;height: 15.249337196350098px;background: transparent;border-radius: 0px;overflow: hidden;box-sizing: border-box;">
@@ -307,9 +310,9 @@
             <div data-figma-id="424:410" data-figma-type="frame" style="position: relative;width: fit-content;height: fit-content;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: column;justify-content: flex-start;align-items: flex-start;gap: 8.38713550567627px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
               <!-- Frame 10 -->
               <div data-figma-id="424:411" style="position: relative;width: fit-content;height: fit-content;font-family: 'Inter', sans-serif;font-size: 21.34907341003418px;font-weight: 600;color: #000000;text-align: left;line-height: normal;display: flex; flex-direction: column;justify-content: flex-start;">
-                <div style="font-family: 'Inter', sans-serif;font-size: 21.34907341003418px;font-weight: 600;color: #000000;text-align: left;line-height: normal;">
+                <h1 style="font-family: 'Inter', sans-serif;font-size: 21.34907341003418px;font-weight: 600;color: #000000;text-align: left;line-height: normal;margin: 0;">
                   {productPage.productName}
-                </div>
+                </h1>
               </div>
               <div data-figma-id="424:412" style="position: relative;width: fit-content;height: fit-content;font-family: 'Inter', sans-serif;font-size: 12.199470520019531px;font-weight: 400;color: #b9bbbf;text-align: left;line-height: normal;display: flex; flex-direction: column;justify-content: flex-start;">
                 <div style="font-family: 'Inter', sans-serif;font-size: 12.199470520019531px;font-weight: 400;color: #b9bbbf;text-align: left;line-height: normal;">
@@ -442,7 +445,7 @@
                     </div>
                     <div id="424:512" data-figma-id="424:512" data-figma-type="frame-repeater" style="position: relative;width: fit-content;height: fit-content;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: row;justify-content: center;align-items: center;gap: 9.149602890014648px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
                       <div style="position: relative; height: 100%;" forEach="choices" trackBy="choiceId">
-                        <div data-figma-id="521:204" data-figma-type="frame" style="position: relative;width: fit-content;height: fit-content;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: row;justify-content: flex-start;align-items: center;gap: 10px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;" ref="choiceButton">
+                        <button data-figma-id="521:204" data-figma-type="frame" style="position: relative;width: fit-content;height: fit-content;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: row;justify-content: flex-start;align-items: center;gap: 10px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;border: none;cursor: pointer;" ref="choiceButton" aria-label="{name}">
                           <!-- item -->
                           <div id="424:513" data-figma-id="424:513" data-figma-type="variant-container" style="position: relative;width: 48.797882080078125px;height: 48.797882080078125px;background: transparent;border-radius: 0px;overflow: visible;box-sizing: border-box;">
                             <div if="!isSelected">
@@ -464,7 +467,7 @@
                               </div>
                             </div>
                           </div>
-                        </div>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -479,7 +482,7 @@
                     </div>
                     <div id="424:504" data-figma-id="424:504" data-figma-type="frame-repeater" style="position: relative;width: fit-content;height: fit-content;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: row;justify-content: flex-start;align-items: flex-start;gap: 8.38713550567627px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
                       <div style="position: relative; height: 100%;" forEach="choices" trackBy="choiceId">
-                        <div data-figma-id="521:230" data-figma-type="frame" style="position: relative;width: 61.44880676269531px;height: fit-content;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: column;justify-content: flex-start;align-items: flex-start;gap: 10px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;" ref="choiceButton">
+                        <button data-figma-id="521:230" data-figma-type="frame" style="position: relative;width: 61.44880676269531px;height: fit-content;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: column;justify-content: flex-start;align-items: flex-start;gap: 10px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;border: none;cursor: pointer;" ref="choiceButton" aria-label="{name}">
                           <!-- item -->
                           <div id="424:505" data-figma-id="424:505" data-figma-type="variant-container" style="position: relative;width: 61.44880676269531px;height: 23.674537658691406px;background: transparent;border-radius: 0px;overflow: visible;box-sizing: border-box;">
                             <div if="!isSelected">
@@ -507,7 +510,7 @@
                               </div>
                             </div>
                           </div>
-                        </div>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -522,23 +525,19 @@
             <!-- Frame 13 -->
             <div data-figma-id="424:456" data-figma-type="frame" style="position: relative;width: 131px;height: 44.98554229736328px;background-image: linear-gradient(rgba(243, 243, 243, 1), rgba(243, 243, 243, 1));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-radius: 22.492773056030273px;overflow: visible;display: flex;flex-direction: row;justify-content: center;align-items: center;gap: 27px;padding-left: 16px;padding-right: 16px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
               <!-- Frame 11 -->
-              <div data-figma-id="424:460" ref="productPage.quantity.decrementButton" style="position: relative;width: 6.084268093109131px;height: auto;font-family: 'Inter', sans-serif;font-size: 13.724401473999023px;font-weight: 700;color: #a3a3a3;text-align: left;line-height: normal;display: flex; flex-direction: column;justify-content: flex-start;">
+              <button data-figma-id="424:460" ref="productPage.quantity.decrementButton" aria-label="Decrease quantity" style="position: relative;width: 6.084268093109131px;height: auto;font-family: 'Inter', sans-serif;font-size: 13.724401473999023px;font-weight: 700;color: #a3a3a3;text-align: left;line-height: normal;display: flex; flex-direction: column;justify-content: flex-start;background: none;border: none;cursor: pointer;">
                 <div style="font-family: 'Inter', sans-serif;font-size: 13.724401473999023px;font-weight: 700;color: #a3a3a3;text-align: left;line-height: normal;">
                   -
                 </div>
-              </div>
-              <div data-figma-id="424:458" ref="productPage.quantity.quantity" style="position: relative;width: 9.560994148254395px;height: auto;font-family: 'Inter', sans-serif;font-size: 16.77427101135254px;font-weight: 700;color: #3a4980;text-align: left;line-height: normal;display: flex; flex-direction: column;justify-content: flex-start;">
-                <div style="font-family: 'Inter', sans-serif;font-size: 16.77427101135254px;font-weight: 700;color: #3a4980;text-align: left;line-height: normal;">
-                  {productPage.quantity.quantity}
-                </div>
-              </div>
-              <div data-figma-id="424:459" ref="productPage.quantity.incrementButton" style="position: relative;width: 8.691811561584473px;height: auto;font-family: 'Inter', sans-serif;font-size: 13.724401473999023px;font-weight: 700;color: #3a4980;text-align: left;line-height: normal;display: flex; flex-direction: column;justify-content: flex-start;">
+              </button>
+              <input data-figma-id="424:458" ref="productPage.quantity.quantity" aria-label="Quantity" type="number" value="{productPage.quantity.quantity}" min="1" style="position: relative;width: 9.560994148254395px;height: auto;font-family: 'Inter', sans-serif;font-size: 16.77427101135254px;font-weight: 700;color: #3a4980;text-align: left;line-height: normal;background: none;border: none;" />
+              <button data-figma-id="424:459" ref="productPage.quantity.incrementButton" aria-label="Increase quantity" style="position: relative;width: 8.691811561584473px;height: auto;font-family: 'Inter', sans-serif;font-size: 13.724401473999023px;font-weight: 700;color: #3a4980;text-align: left;line-height: normal;display: flex; flex-direction: column;justify-content: flex-start;background: none;border: none;cursor: pointer;">
                 <div style="font-family: 'Inter', sans-serif;font-size: 13.724401473999023px;font-weight: 700;color: #3a4980;text-align: left;line-height: normal;">
                   +
                 </div>
-              </div>
+              </button>
             </div>
-            <div data-figma-id="424:461" data-figma-type="frame" style="position: relative;width: 100%;height: 45px;background-image: linear-gradient(rgba(58, 73, 128, 1), rgba(58, 73, 128, 1));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-radius: 22.492773056030273px;overflow: visible;display: flex;flex-direction: column;justify-content: center;align-items: center;gap: 10px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;" ref="productPage.buyNowButton">
+            <button data-figma-id="424:461" data-figma-type="frame" style="position: relative;width: 100%;height: 45px;background-image: linear-gradient(rgba(58, 73, 128, 1), rgba(58, 73, 128, 1));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-radius: 22.492773056030273px;overflow: visible;display: flex;flex-direction: column;justify-content: center;align-items: center;gap: 10px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;border: none;cursor: pointer;" ref="productPage.buyNowButton">
               <!-- buyButton -->
               <div data-figma-id="424:462" data-figma-type="frame" style="position: relative;width: fit-content;height: fit-content;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: row;justify-content: flex-start;align-items: center;gap: 7.624669075012207px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
                 <!-- Frame 27 -->
@@ -548,8 +547,8 @@
                   </div>
                 </div>
               </div>
-            </div>
-            <div data-figma-id="424:464" data-figma-type="frame" style="position: relative;width: 100%;height: 45px;background-image: linear-gradient(rgba(58, 73, 128, 1), rgba(58, 73, 128, 1));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-radius: 22.492773056030273px;overflow: visible;display: flex;flex-direction: column;justify-content: center;align-items: center;gap: 0px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;" ref="productPage.addToCartButton">
+            </button>
+            <button data-figma-id="424:464" data-figma-type="frame" style="position: relative;width: 100%;height: 45px;background-image: linear-gradient(rgba(58, 73, 128, 1), rgba(58, 73, 128, 1));background-size: 100% 100%;background-position: center;background-repeat: no-repeat;border-radius: 22.492773056030273px;overflow: visible;display: flex;flex-direction: column;justify-content: center;align-items: center;gap: 0px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;border: none;cursor: pointer;" ref="productPage.addToCartButton">
               <!-- add2cart -->
               <div data-figma-id="424:465" data-figma-type="frame" style="position: relative;width: fit-content;height: fit-content;background: transparent;border-radius: 0px;overflow: visible;display: flex;flex-direction: row;justify-content: center;align-items: center;gap: 3px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;box-sizing: border-box;">
                 <!-- Frame 27 -->
@@ -568,7 +567,7 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </button>
           </div>
           <div data-figma-id="424:469" data-figma-type="frame" style="position: relative;width: 100%;height: fit-content;background: transparent;border-color: rgb(228, 228, 228); border-width: 0.7624669075012207px; border-style: solid;border-radius: 10.67453670501709px;overflow: visible;display: flex;flex-direction: column;justify-content: flex-start;align-items: flex-start;gap: 16.011804580688477px;padding-left: 12.961936950683594px;padding-right: 12.961936950683594px;padding-top: 12.961936950683594px;padding-bottom: 12.961936950683594px;box-sizing: border-box;">
             <!-- Frame 31 -->
@@ -631,5 +630,6 @@
     </div>
   </div>
 
+  </main>
 </body>
 </html>

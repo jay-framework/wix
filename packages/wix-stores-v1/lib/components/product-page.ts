@@ -19,6 +19,7 @@ import {
     Signals,
     SlowlyRenderResult,
     UrlParams,
+    type HeadTag,
 } from '@jay-framework/fullstack-component';
 import { createMemo, createSignal, Props } from '@jay-framework/component';
 import {
@@ -102,21 +103,18 @@ function mapMedia(product: V1Product): MediaGalleryViewState {
     const mediaItems = product.media?.items || [];
 
     const mainUrl = mainMedia?.image?.url || '';
-    const mainThumbnail = mainMedia?.thumbnail?.url || '';
     const mainMediaType = mainMedia?.mediaType === 'video' ? MediaType.VIDEO : MediaType.IMAGE;
 
     return {
         selectedMedia: {
             url: mainUrl,
             mediaType: mainMediaType,
-            thumbnail_50x50: mainThumbnail,
         },
         availableMedia: mediaItems.map((item, index) => ({
             mediaId: item._id || String(index),
             media: {
                 url: item.image?.url || '',
                 mediaType: item.mediaType === 'video' ? MediaType.VIDEO : MediaType.IMAGE,
-                thumbnail_50x50: item.thumbnail?.url || '',
             },
             selected: item._id === mainMedia?._id ? Selected.selected : Selected.notSelected,
         })),
@@ -177,6 +175,46 @@ function mapVariants(product: V1Product): InteractiveVariant[] {
         choices: variant.choices || {},
         inventoryStatus: variant.stock?.inStock ? StockStatus.IN_STOCK : StockStatus.OUT_OF_STOCK,
     }));
+}
+
+function mapSeoHeadTags(
+    product: { name?: string | null; description?: string | null },
+    seoData: SeoSchema | undefined,
+): HeadTag[] {
+    const headTags: HeadTag[] = (seoData?.tags || []).map((tag) => ({
+        tag: tag.type || 'meta',
+        attrs: Object.fromEntries(
+            Object.entries(tag.props || {}).map(([key, value]) => [key, value as string]),
+        ),
+        children: tag.children || undefined,
+    }));
+
+    if (!headTags.some((t) => t.tag === 'title') && product.name) {
+        headTags.push({ tag: 'title', children: product.name });
+    }
+
+    if (
+        !headTags.some((t) => t.tag === 'meta' && t.attrs?.name === 'description') &&
+        product.description
+    ) {
+        headTags.push({
+            tag: 'meta',
+            attrs: { name: 'description', content: product.description },
+        });
+    }
+
+    const keywords = seoData?.settings?.keywords;
+    if (keywords?.length) {
+        const terms = keywords.map((k) => k.term).filter(Boolean);
+        if (terms.length) {
+            headTags.push({
+                tag: 'meta',
+                attrs: { name: 'keywords', content: terms.join(', ') },
+            });
+        }
+    }
+
+    return headTags;
 }
 
 // ============================================================================
@@ -254,6 +292,7 @@ async function renderSlowlyChanging(
                     modifiers: [], // V1 doesn't have modifiers in same format
                     seoData: { tags: [], settings: { preventAutoRedirect: false, keywords: [] } },
                 },
+                headTags: mapSeoHeadTags(product, product.seoData),
                 carryForward: {
                     productId: product._id || '',
                     mediaGallery: mapMedia(product),

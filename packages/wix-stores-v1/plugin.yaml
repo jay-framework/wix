@@ -6,6 +6,9 @@ contracts:
     contract: product-page.jay-contract
     component: productPage
     description: Complete headless product page with server-side rendering (Catalog V1)
+    headTags:
+      - title
+      - meta:description
   - name: product-search
     contract: product-search.jay-contract
     component: productSearch
@@ -37,5 +40,8 @@ contexts:
   - name: wix-stores-v1
     marker: WIX_STORES_V1_CONTEXT
     description: Client-side V1 stores access with collection pagination and delegated cart operations
+
+setup:
+  handler: setupWixStoresV1
 
 # Plugin initialization uses makeJayInit pattern in lib/init.ts

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="240" viewBox="0 0 320 240" fill="none">
+  <rect width="320" height="240" fill="#f4f7fb"/>
+  <rect x="16" y="16" width="288" height="28" rx="6" fill="#e2e8f0"/>
+  <rect x="16" y="56" width="120" height="12" rx="3" fill="#cbd5e1"/>
+  <rect x="16" y="76" width="88" height="10" rx="3" fill="#e2e8f0"/>
+  <rect x="16" y="104" width="136" height="120" rx="8" fill="#dbeafe" stroke="#93c5fd"/>
+  <rect x="168" y="104" width="136" height="16" rx="4" fill="#cbd5e1"/>
+  <rect x="168" y="128" width="96" height="10" rx="3" fill="#e2e8f0"/>
+  <rect x="168" y="148" width="72" height="10" rx="3" fill="#e2e8f0"/>
+  <rect x="168" y="180" width="88" height="28" rx="6" fill="#2563eb"/>
+  <text x="188" y="198" fill="#fff" font-family="system-ui,sans-serif" font-size="11">Add to cart</text>
+</svg>

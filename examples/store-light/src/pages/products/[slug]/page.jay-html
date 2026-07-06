@@ -12,11 +12,14 @@
     ></script>
     <script type="application/jay-headless"
             plugin="@jay-framework/wix-stores"
-            contract="related-products"
+            contract="category-products"
     ></script>
     <script type="application/jay-data">
       data:
     </script>
+    <title>{productPage.productName} - Atelier</title>
+    <meta name="description" content="Shop {productPage.productName} from Atelier. Quality craftsmanship, curated with intention." />
+    <link rel="canonical" href="/products/{slug}" />
     <link rel="stylesheet" href="../../../styles/atelier-theme.css" />
     <style>
       /* =====================================================
@@ -457,7 +460,7 @@
     </style>
   </head>
   <body>
-    <div class="product-view">
+    <main class="product-view">
       <!-- Site Header -->
       <header class="site-header">
         <a href="/products" class="site-logo">Atelier<span>.</span></a>
@@ -483,14 +486,14 @@
       <section class="gallery-section">
         <div class="gallery-container">
           <div class="main-image-wrapper">
-            <img src="{productPage.mediaGallery.selectedMedia.url}" alt="{productPage.productName}" />
+            <img src="{productPage.mediaGallery.selectedMedia.url}/v1/fill/w_800,h_600/file.webp" alt="{productPage.productName}" width="800" height="600" loading="eager" fetchpriority="high" />
           </div>
           <div class="thumbnails-row">
             <div class="thumb-item {selected == selected ? selected}"
                  forEach="productPage.mediaGallery.availableMedia" 
                  trackBy="mediaId"
                  ref="productPage.mediaGallery.availableMedia.selected">
-              <img src="{media.thumbnail_50x50}" alt="Thumbnail" />
+              <img src="{media.url}/v1/fill/w_50,h_50/file.jpg" alt="Product thumbnail" width="50" height="50" loading="lazy" />
             </div>
           </div>
         </div>
@@ -545,9 +548,10 @@
                 <div class="option-label">{name}</div>
                 
                 <!-- Text Choices as Dropdown -->
-                <select class="select" 
+                <select class="select"
                         if="optionRenderType == TEXT_CHOICES"
-                        ref="productPage.options.textChoice">
+                        ref="productPage.options.textChoice"
+                        aria-label="{name}">
                   <option forEach="choices" trackBy="choiceId" value="{choiceId}">{name}</option>
                 </select>
 
@@ -555,10 +559,11 @@
                 <div class="option-choices-row" if="optionRenderType == COLOR_SWATCH_CHOICES">
                   <button class="choice-btn color-swatch {isSelected ? selected} {!inStock ? out-of-stock}"
                           style="background-color: {colorCode}"
-                          forEach="choices" 
+                          forEach="choices"
                           trackBy="choiceId"
                           ref="productPage.options.choices.choiceButton"
-                          title="{name}">
+                          title="{name}"
+                          aria-label="{name}">
                   </button>
                 </div>
               </div>
@@ -572,28 +577,31 @@
               <div class="option-row" forEach="productPage.modifiers" trackBy="_id">
                 <div class="option-label">{name}</div>
                 
-                <select class="select" 
+                <select class="select"
                         if="modifierType == TEXT_CHOICES"
-                        ref="productPage.modifiers.textModifier">
+                        ref="productPage.modifiers.textModifier"
+                        aria-label="{name}">
                   <option forEach="choices" trackBy="choiceId" value="{choiceId}">{name}</option>
                 </select>
 
                 <div class="option-choices-row" if="modifierType == COLOR_SWATCH_CHOICES">
                   <button class="choice-btn color-swatch {isSelected ? selected}"
                           style="background-color: {colorCode}"
-                          forEach="choices" 
+                          forEach="choices"
                           trackBy="choiceId"
                           ref="choiceButton"
-                          title="{name}">
+                          title="{name}"
+                          aria-label="{name}">
                   </button>
                 </div>
 
-                <input class="input" 
-                       type="text" 
+                <input class="input"
+                       type="text"
                        if="modifierType == FREE_TEXT"
                        ref="productPage.modifiers.textInput"
                        placeholder="Enter your custom text"
-                       maxlength="{textInputLength}" />
+                       maxlength="{textInputLength}"
+                       aria-label="{name}" />
               </div>
             </div>
           </div>
@@ -604,11 +612,12 @@
             <div class="quantity-row">
               <div class="quantity-controls">
                 <button class="quantity-btn" ref="productPage.quantity.decrementButton">−</button>
-                <input class="quantity-input" 
-                       type="number" 
-                       value="{productPage.quantity.quantity}" 
+                <input class="quantity-input"
+                       type="number"
+                       value="{productPage.quantity.quantity}"
                        ref="productPage.quantity.quantity"
-                       min="1" />
+                       min="1"
+                       aria-label="Quantity" />
                 <button class="quantity-btn" ref="productPage.quantity.incrementButton">+</button>
               </div>
             </div>
@@ -628,13 +637,13 @@
       </section>
 
       <!-- Related Products -->
-      <jay:related-products productId="{productPage._id}" categorySlug="{productPage.categorySlug}" limit="4">
+      <jay:category-products productId="{productPage._id}" categorySlug="{productPage.categorySlug}" limit="4">
         <section class="related-section" if="hasProducts">
           <h2 class="section-title">More from {categoryName}</h2>
           <div class="related-grid">
             <article class="product-card {isAddingToCart ? is-adding}" forEach="products" trackBy="_id">
               <a href="{productUrl}" class="product-card-image">
-                <img src="{thumbnail.url}" alt="{thumbnail.altText}" loading="lazy" />
+                <img src="{thumbnail.url}/v1/fill/w_300,h_300/file.webp" alt="{thumbnail.altText}" width="300" height="300" loading="lazy" />
                 <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
               </a>
               <div class="product-card-content">
@@ -665,7 +674,7 @@
             </article>
           </div>
         </section>
-      </jay:related-products>
+      </jay:category-products>
 
       <!-- Sticky Action Bar -->
       <div class="sticky-action-bar">
@@ -688,6 +697,6 @@
           </div>
         </div>
       </div>
-    </div>
+    </main>
   </body>
 </html>

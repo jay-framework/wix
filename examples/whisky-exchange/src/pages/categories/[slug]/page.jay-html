@@ -2,8 +2,12 @@
 <head>
   <script type="application/jay-headless" plugin="@jay-framework/wix-stores-v1" contract="category-page" key="cat"></script>
   <script type="application/jay-headless" plugin="@jay-framework/wix-cart" contract="cart-indicator" key="cart"></script>
+  <script type="application/jay-headless" plugin="@jay-framework/wix-members" contract="login-indicator" key="auth"></script>
   <script type="application/jay-headless" plugin="@jay-framework/gemini-agent-plugin" contract="gemini-chat" key="ai"></script>
   <script type="application/jay-data">data:</script>
+  <title>{cat.name} - The Whisky Exchange</title>
+  <meta name="description" content="Browse {cat.name} whiskies at The Whisky Exchange. {cat.description}" />
+  <link rel="canonical" href="/categories/{cat.slug}" />
   <link rel="stylesheet" href="../../../styles/theme.css" />
 </head>
 <body>
@@ -13,6 +17,12 @@
     <div class="header-top">
       <a href="/" class="site-logo">The Whisky<span>Exchange</span></a>
       <div class="header-actions">
+        <span if="auth.isLoading" class="auth-loading"></span>
+        <span if="!auth.isLoading&&auth.isLoggedIn" class="auth-member">
+          <span class="auth-name">{auth.memberName}</span>
+          <button ref="auth.logoutButton" class="btn btn-sm btn-outline">Log Out</button>
+        </span>
+        <button if="!auth.isLoading&&!auth.isLoggedIn" ref="auth.loginButton" class="btn btn-sm btn-outline">Log In</button>
         <a ref="cart.cartLink" href="/cart" class="cart-indicator">
           Cart
           <span if="cart.hasItems" class="cart-badge">{cart.itemCount}</span>
@@ -28,6 +38,7 @@
     </ul>
   </nav>
 
+  <main>
   <div class="container">
     <!-- Breadcrumbs -->
     <div class="breadcrumbs">
@@ -43,7 +54,7 @@
     <!-- Category Hero -->
     <div class="category-hero {cat.hasImage ? has-image : no-image}">
       <div class="category-hero-image" if="cat.hasImage">
-        <img src="{cat.media.mainMedia.url}" alt="{cat.media.mainMedia.altText}" />
+        <img src="{cat.media.mainMedia.url}/v1/fill/w_1200,h_600/file.webp" alt="{cat.media.mainMedia.altText}" width="1200" height="600" loading="eager" fetchpriority="high" />
       </div>
       <div class="category-hero-content">
         <div class="page-subtitle">Scotch Whisky</div>
@@ -64,7 +75,7 @@
           <span class="badge badge-sale">{ribbon.name}</span>
         </div>
         <a href="{productUrl}" class="product-card-image">
-          <img src="{mainMedia.url}" alt="{mainMedia.altText}" />
+          <img src="{mainMedia.url}/v1/fill/w_400,h_400/file.webp" alt="{mainMedia.altText}" width="400" height="400" loading="lazy" />
         </a>
         <div class="product-card-content">
           <div class="product-card-brand">{brand.name}</div>
@@ -94,7 +105,7 @@
           <span class="badge badge-sale">{ribbon.name}</span>
         </div>
         <a href="{productUrl}" class="product-card-image">
-          <img src="{mainMedia.url}" alt="{mainMedia.altText}" />
+          <img src="{mainMedia.url}/v1/fill/w_400,h_400/file.webp" alt="{mainMedia.altText}" width="400" height="400" loading="lazy" />
         </a>
         <div class="product-card-content">
           <div class="product-card-brand">{brand.name}</div>
@@ -125,6 +136,7 @@
       <a href="/products" class="btn btn-primary">Browse All Whisky</a>
     </div>
   </div>
+  </main>
 
   <!-- Footer -->
   <footer class="site-footer">
@@ -195,7 +207,7 @@
       <!-- Input area (always visible) -->
       <div class="chat-input-container">
         <div class="chat-input-area">
-          <input ref="ai.messageInput" value="{ai.messageInput}" type="text" placeholder="Ask me about whisky..." />
+          <input ref="ai.messageInput" value="{ai.messageInput}" type="text" placeholder="Ask me about whisky..." aria-label="Chat message" />
           <button ref="ai.sendMessage" class="chat-send-btn">→</button>
         </div>
         <div if="ai.hasError" class="chat-error">{ai.errorMessage}</div>

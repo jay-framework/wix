@@ -29,6 +29,8 @@ export interface WixStoresService {
     getCustomizations(): Promise<Customization[]>;
     /** Get cached data extension schemas for products. Lazily loaded. */
     getDataExtensionSchemas(): Promise<DataExtensionSchema[]>;
+    /** Get the "All Products" system category ID. Lazily fetched and cached. */
+    getAllProductsCategoryId(): Promise<string | null>;
 }
 
 /**
@@ -54,6 +56,7 @@ export function provideWixStoresService(
     let cachedTree: CategoryTree | null = null;
     let cachedCustomizations: Customization[] | null = null;
     let cachedExtensionSchemas: DataExtensionSchema[] | null = null;
+    let cachedAllProductsCategoryId: string | null | undefined;
 
     const service: WixStoresService = {
         wixClient,
@@ -151,6 +154,18 @@ export function provideWixStoresService(
             }
 
             return cachedExtensionSchemas;
+        },
+
+        async getAllProductsCategoryId(): Promise<string | null> {
+            if (cachedAllProductsCategoryId !== undefined) return cachedAllProductsCategoryId;
+            try {
+                const result = await service.products.getAllProductsCategory();
+                cachedAllProductsCategoryId = result.categoryId ?? null;
+            } catch (error) {
+                console.error('[wix-stores] Failed to get All Products category:', error);
+                cachedAllProductsCategoryId = null;
+            }
+            return cachedAllProductsCategoryId;
         },
     };
 

@@ -22,4 +22,3 @@ The devops role handles the production lifecycle: building artifacts, configurin
 | [serving-modes.md](serving-modes.md)       | Self-hosted, CDN, BaaS (fetch handler), CLI flags          |
 | [fetch-handler.md](fetch-handler.md)       | Fetch handler, ArtifactStore interface, BaaS custom stores |
 | [invalidation.md](invalidation.md)         | Rebuild, renderer server, cleanup                          |
-| [wix-baas-deployment.md](wix-baas-deployment.md) | Step-by-step guide for deploying to Wix BaaS          |

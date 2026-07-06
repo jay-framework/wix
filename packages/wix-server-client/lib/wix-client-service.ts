@@ -1,4 +1,4 @@
-import { ApiKeyStrategy, createClient, WixClient } from '@wix/sdk';
+import { ApiKeyStrategy, createClient, WixClient, AppStrategy } from '@wix/sdk';
 import { WixConfig } from './config-loader';
 import { createJayService } from '@jay-framework/fullstack-component';
 import { registerService } from '@jay-framework/stack-server-runtime';
@@ -11,6 +11,10 @@ export const WIX_CLIENT_SERVICE = createJayService<WixClientService>('WixClientS
 
 export function provideWixClientService(config: WixConfig) {
     const instance = createClient({
+        // auth: AppStrategy({
+        //     appId: process.env.WIX_CLIENT_ID, // from wix.config,
+        //     appSecret: process.env.WIX_CLIENT_SECRET,
+        // }),
         auth: ApiKeyStrategy({
             apiKey: config.apiKey.apiKey,
             siteId: config.apiKey.siteId,

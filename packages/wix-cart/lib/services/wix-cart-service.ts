@@ -6,11 +6,12 @@
 
 import type { WixClient } from '@wix/sdk';
 import { registerService } from '@jay-framework/stack-server-runtime';
-import { WIX_CART_SERVICE, WixCartService } from './wix-cart-service-marker';
+import { WIX_CART_SERVICE, WixCartService } from './wix-cart-service-marker.js';
 
-/**
- * Creates, registers, and returns a Wix Cart service instance.
- */
+export interface WixCartServiceOptions {
+    urls?: { thankYou?: string };
+}
+
 export function provideWixCartService(wixClient: WixClient): WixCartService {
     const service: WixCartService = { wixClient };
     registerService(WIX_CART_SERVICE, service);

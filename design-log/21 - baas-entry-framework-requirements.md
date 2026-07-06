@@ -113,11 +113,57 @@ await registerActionsFromManifest(manifest.actions, backendDir);
 await registerActionsFromModules([{ module: wixStoresModule, name: 'wix-stores' }]);
 ```
 
-### R6: Page Parts Loading Without Filesystem
+### R6: Page Parts Module Registry
 
-`getPageParts` loads page-parts.json and resolves module paths from the filesystem.
+`getPageParts` calls `loadPagePartsFromConfig(configPath, buildDir)` which does `import(entry.modulePath)` for npm-source entries (e.g. `import('@jay-framework/wix-stores')`). This forces the BaaS entry to ship a full `node_modules/` tree alongside `entry.mjs` — 400+ MB of transitive Wix SDK dependencies — just so Node can resolve those dynamic imports at runtime. The modules are already bundled into `entry.mjs` by esbuild; the dynamic import loads them a second time from disk.
 
-**Requirement:** The `ArtifactStore` interface (R1) should handle this. `getPageParts` should use the artifact store to read page-parts.json and load modules, rather than using direct `import()` with filesystem paths.
+**Requirement:** `loadPagePartsFromConfig` (or `getPageParts`) should accept an optional module registry — a `Record<string, module>` keyed by package name. When provided, npm-source entries look up `entry.modulePath` in the registry instead of calling `import()`. Filesystem-based deployments continue to work unchanged (no registry → dynamic import as before).
+
+**Where to thread it:** The registry needs to reach `loadPagePartsFromConfig`. Options:
+
+- (a) Add `moduleRegistry` to the `ArtifactStore` interface — cleanest, since page-parts already uses `artifacts.getAssetPath()` and `artifacts.getBuildDir()`
+- (b) Pass it through `fetchPageRequest` → `getPageParts` → `loadPagePartsFromConfig` as an extra parameter
+- (c) Module-level `setModuleRegistry(registry)` function, called once at init — simplest change, matches how `registerActionsFromModules` works
+
+Option (c) is least disruptive — one new exported function, no interface changes.
+
+```typescript
+// New export from @jay-framework/production-server/serve
+export function setPagePartsModuleRegistry(registry: Record<string, Record<string, unknown>>): void;
+
+// Inside loadPagePartsFromConfig, the change is minimal:
+async function importModule(entry) {
+  if (entry.source === 'local') {
+    return import(path.join(buildDir, entry.modulePath));
+  }
+  if (moduleRegistry && moduleRegistry[entry.modulePath]) {
+    return moduleRegistry[entry.modulePath];
+  }
+  return import(entry.modulePath);
+}
+```
+
+**How entry.mjs uses it:**
+
+```typescript
+import { setPagePartsModuleRegistry } from '@jay-framework/production-server/serve';
+import * as wixStoresModule from '@jay-framework/wix-stores';
+import * as wixCartModule from '@jay-framework/wix-cart';
+
+// Called once during initialize(), before any requests
+setPagePartsModuleRegistry({
+  '@jay-framework/wix-stores': wixStoresModule,
+  '@jay-framework/wix-cart': wixCartModule,
+});
+```
+
+The entry builder already generates these `import * as pluginModule_N` statements and a `registryEntries` map — it just isn't wired up yet because this function doesn't exist.
+
+**Impact:** Eliminates the 400+ MB `dist/node_modules/` copy. The entry.mjs (~2.4 MB) becomes fully self-contained with its bundled modules.
+
+### R7: URL-Safe Frontend Asset Paths — IMPLEMENTED
+
+The build now uses URL-encoded brackets (`%5Bslug%5D`) in frontend output paths. CDNs decode these transparently. Manifest paths and actual files on disk match.
 
 ## How entry.mjs Would Look
 
@@ -284,9 +330,13 @@ await registerActionsFromModules([{ module: wixStoresModule, name: 'wix-stores' 
 
 `createJayFetchHandler` uses this when `actionModules` option is provided.
 
-### R6: Page Parts via ArtifactStore — DEFERRED
+### R6: Module Loading via ArtifactStore — IMPLEMENTED
 
-Page parts still use `getAssetPath()` + `getBuildDir()` for path resolution. Full abstraction deferred — esbuild bundling makes lazy loading unnecessary for initial BaaS support.
+Framework added `loadModule(modulePath: string, isLocal: boolean)` to the `ArtifactStore` interface. All module loading in `loadPagePartsFromConfig` and `loadServerElement` now goes through `artifacts.loadModule()` instead of direct `import()`.
+
+`FilesystemArtifactStore.loadModule` tries local filesystem first, falls back to `import()` for npm packages. `WixDataArtifactStore.loadModule` checks a pre-built module registry (bundled by esbuild), falling back to filesystem only for unregistered modules.
+
+This eliminated the need for node_modules in dist/ entirely — down from 426 MB to 0.
 
 ### What We Still Need to Build (wix side)
 

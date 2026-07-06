@@ -1,6 +1,8 @@
-# Contract Authoring Guide
+# Plugin Contract Guide
 
-Contracts (`.jay-contract` files) are the source of truth for a component's data shape. Define the contract before implementing the component.
+For the full contract syntax, decision tree, and examples, see the shared [Contract Authoring Guide](../contracts/GUIDE.md).
+
+This file covers plugin-specific contract concerns. Contracts (`.jay-contract` files) are the source of truth for a component's data shape. Define the contract before implementing the component.
 
 ## Basic Structure
 
@@ -189,6 +191,21 @@ Always include a `description` at the contract level explaining when to use this
 name: product-search
 description: Product listing with filters, sorting, and pagination. Use for search results and category pages.
 ```
+
+## Tag Metadata
+
+Tags can carry a `meta` field — a free-form key-value map for plugin validators. The framework ignores `meta`; only validators read it.
+
+```yaml
+- tag: heroImage
+  type: data
+  dataType: string
+  meta:
+    vendor: wix-image
+    defaultTransform: w_800,h_400,q_80
+```
+
+Use `meta` to attach semantic meaning that goes beyond the data type — e.g., marking a `string` tag as a URL that requires specific formatting. See [validation.md](validation.md) for writing validators that consume `meta`.
 
 ## Validation Rules
 

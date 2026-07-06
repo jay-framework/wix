@@ -1,13 +1,17 @@
 /**
  * WixDataArtifactStore — implements ArtifactStore for Wix BaaS deployments.
  *
- * Manages both reads (for serving) and writes (for upload/renderer) of
- * backend build artifacts in a Wix data collection. All items are versioned
- * so that a new version can be uploaded while the current version serves.
+ * Reads eager files (route-manifest.json, build-metadata.json) from the dist
+ * directory alongside entry.mjs. Fetches lazy JSON files (page-parts, cache
+ * data) from a Wix data collection on demand and caches them to disk.
+ * All JS modules are resolved from the bundled MODULE_REGISTRY — no disk
+ * loading of JS files.
+ *
+ * Also supports writes (for upload-backend) to the data collection.
  *
  * Data collection schema:
- *   _id:       string  — "{version}__{path}" (unique key)
- *   version:   number  — build version
+ *   _id:       string  — sha256("{version}/{path}") truncated to 32 chars
+ *   version:   string  — deploy version (e.g. "0.0.1-d849685dc3de")
  *   path:      string  — relative file path within backend dir
  *   content:   string  — file content (text)
  *   fileType:  string  — extension (js, json)
@@ -16,39 +20,18 @@
  */
 
 import type { WixClient } from '@wix/sdk';
+import type {
+    ArtifactStore,
+    RouteManifest,
+    CacheEntry,
+    ServerElementModule,
+} from '@jay-framework/production-server/serve';
 import { items } from '@wix/data';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 
-// ArtifactStore interface from @jay-framework/production-server (DL#143).
-export interface RouteManifest {
-    version: number;
-    buildTimestamp: string;
-    sourceHash: string;
-    projectRoot: string;
-    sharedManifest: Record<string, string>;
-    routes: any[];
-    actions: any[];
-    plugins: any[];
-}
-
-export interface PreRenderedEntry {
-    content: string;
-    slowViewState: object;
-    carryForward: object;
-}
-
-export interface ServerElementModule {
-    renderToStream: (vs: object, ctx: any) => void;
-}
-
-export interface ArtifactStore {
-    readManifest(): Promise<RouteManifest>;
-    readPreRenderedHtml(relativePath: string): Promise<PreRenderedEntry>;
-    loadServerElement(relativePath: string): Promise<ServerElementModule>;
-    getAssetPath(relativePath: string): string;
-    getBuildDir(): string;
-}
+export type { ArtifactStore, RouteManifest, CacheEntry, ServerElementModule };
 
 // ============================================================================
 // Data collection item schema
@@ -56,7 +39,7 @@ export interface ArtifactStore {
 
 export interface BackendFileItem {
     _id: string;
-    version: number;
+    version: string;
     path: string;
     content: string;
     fileType: string;
@@ -64,8 +47,12 @@ export interface BackendFileItem {
     category: 'eager' | 'lazy';
 }
 
-export function makeItemId(version: number, relativePath: string): string {
-    return `v${version}__${relativePath.replace(/[/\\]/g, '__')}`;
+export function makeItemId(version: string, relativePath: string): string {
+    return crypto
+        .createHash('sha256')
+        .update(`v${version}/${relativePath}`)
+        .digest('hex')
+        .slice(0, 32);
 }
 
 // ============================================================================
@@ -75,8 +62,12 @@ export function makeItemId(version: number, relativePath: string): string {
 export interface WixDataArtifactStoreOptions {
     wixClient: WixClient;
     collectionId: string;
+    version: string;
+    /** Directory containing entry.mjs and eager files (route-manifest.json, build-metadata.json). Required for reads. */
+    distDir?: string;
+    /** Directory for caching lazy files fetched from the data collection */
     cacheDir: string;
-    version: number;
+    moduleRegistry?: Record<string, any>;
 }
 
 // ============================================================================
@@ -85,18 +76,21 @@ export interface WixDataArtifactStoreOptions {
 
 export class WixDataArtifactStore implements ArtifactStore {
     readonly collectionId: string;
-    readonly version: number;
+    readonly version: string;
+    private readonly distDir: string | undefined;
     private readonly cacheDir: string;
     private readonly dataClient: ReturnType<WixClient['use']>;
+    private readonly moduleRegistry: Record<string, any>;
     private manifestCache?: RouteManifest;
-    private moduleCache = new Map<string, any>();
     private fetchPromises = new Map<string, Promise<string>>();
 
     constructor(options: WixDataArtifactStoreOptions) {
         this.collectionId = options.collectionId;
         this.version = options.version;
+        this.distDir = options.distDir;
         this.cacheDir = options.cacheDir;
         this.dataClient = options.wixClient.use({ items });
+        this.moduleRegistry = options.moduleRegistry || {};
         fs.mkdirSync(this.cacheDir, { recursive: true });
     }
 
@@ -111,29 +105,35 @@ export class WixDataArtifactStore implements ArtifactStore {
         return this.manifestCache!;
     }
 
-    async readPreRenderedHtml(relativePath: string): Promise<PreRenderedEntry> {
-        const cachePath = relativePath.replace(/\.jay-html$/, '.cache.json');
-        const cacheContent = await this.ensureFile(cachePath);
+    async readCacheData(relativePath: string): Promise<CacheEntry> {
+        const cacheContent = await this.ensureFile(relativePath);
         try {
             const cacheData = JSON.parse(cacheContent);
             return {
-                content: '',
                 slowViewState: cacheData.slowViewState || {},
                 carryForward: cacheData.carryForward || {},
             };
         } catch {
-            return { content: '', slowViewState: {}, carryForward: {} };
+            return { slowViewState: {}, carryForward: {} };
         }
     }
 
+    async readPagePartsConfig(relativePath: string): Promise<any> {
+        const content = await this.ensureFile(relativePath);
+        return JSON.parse(content);
+    }
+
     async loadServerElement(relativePath: string): Promise<ServerElementModule> {
-        const cached = this.moduleCache.get(relativePath);
-        if (cached) return cached;
-        await this.ensureFile(relativePath);
-        const fullPath = path.join(this.cacheDir, relativePath);
-        const mod = await import(/* @vite-ignore */ fullPath);
-        this.moduleCache.set(relativePath, mod);
-        return mod;
+        return this.loadModule(relativePath, true);
+    }
+
+    async loadModule(modulePath: string, _local?: boolean): Promise<any> {
+        if (this.moduleRegistry[modulePath]) {
+            return this.moduleRegistry[modulePath];
+        }
+        throw new Error(
+            `Module not found in registry: ${modulePath}. All JS modules must be bundled in entry.mjs.`,
+        );
     }
 
     getAssetPath(relativePath: string): string {
@@ -183,12 +183,6 @@ export class WixDataArtifactStore implements ArtifactStore {
     // Lazy page file loading
     // ========================================================================
 
-    /**
-     * Ensure the 3 files needed to render a page are on disk:
-     * 1. page-parts.json (per route, shared by all instances)
-     * 2. *.cache.json (per instance — slow view state + carry forward)
-     * 3. *.server-element.js (per instance — SSR render function)
-     */
     async ensurePageFiles(preRenderedPath: string): Promise<void> {
         const dir = path.dirname(preRenderedPath);
         const base = preRenderedPath.replace(/\.jay-html$/, '');
@@ -206,9 +200,6 @@ export class WixDataArtifactStore implements ArtifactStore {
     // Writes (for upload-backend and renderer)
     // ========================================================================
 
-    /**
-     * Write a single file to the data collection.
-     */
     async writeFile(
         relativePath: string,
         content: string,
@@ -227,10 +218,6 @@ export class WixDataArtifactStore implements ArtifactStore {
         await this.dataClient.items.save(this.collectionId, item);
     }
 
-    /**
-     * Write a batch of files to the data collection.
-     * Returns the number of successfully written files.
-     */
     async writeFiles(
         files: Array<{ path: string; content: string; category: 'eager' | 'lazy' }>,
     ): Promise<number> {
@@ -248,7 +235,6 @@ export class WixDataArtifactStore implements ArtifactStore {
             await this.dataClient.items.bulkSave(this.collectionId, dataItems);
             return dataItems.length;
         } catch {
-            // Fallback to individual saves
             let count = 0;
             for (const item of dataItems) {
                 try {
@@ -263,15 +249,25 @@ export class WixDataArtifactStore implements ArtifactStore {
     }
 
     // ========================================================================
-    // Internal: lazy file fetching
+    // Internal: file resolution
     // ========================================================================
 
     private async ensureFile(relativePath: string): Promise<string> {
-        const fullPath = path.join(this.cacheDir, relativePath);
-        if (fs.existsSync(fullPath)) {
-            return fs.readFileSync(fullPath, 'utf8');
+        // 1. Check dist dir (eager files bundled alongside entry.mjs)
+        if (this.distDir) {
+            const distPath = path.join(this.distDir, relativePath);
+            if (fs.existsSync(distPath)) {
+                return fs.readFileSync(distPath, 'utf8');
+            }
         }
 
+        // 2. Check cache dir (previously fetched lazy files)
+        const cachePath = path.join(this.cacheDir, relativePath);
+        if (fs.existsSync(cachePath)) {
+            return fs.readFileSync(cachePath, 'utf8');
+        }
+
+        // 3. Fetch from data collection
         const existing = this.fetchPromises.get(relativePath);
         if (existing) return existing;
 
@@ -285,8 +281,6 @@ export class WixDataArtifactStore implements ArtifactStore {
     }
 
     private async fetchFromCollection(relativePath: string): Promise<string> {
-        console.log(`[WixDataArtifactStore] Fetching: v${this.version}/${relativePath}`);
-
         const id = makeItemId(this.version, relativePath);
         try {
             const item = (await this.dataClient.items.get(
@@ -314,24 +308,21 @@ export class WixDataArtifactStore implements ArtifactStore {
             return item.content;
         }
 
-        throw new Error(`File not found in data collection: v${this.version}/${relativePath}`);
+        throw new Error(
+            `File not found in data collection: v${this.version}/${relativePath} (id: ${id})`,
+        );
     }
 
     private writeToCache(relativePath: string, content: string): void {
         const fullPath = path.join(this.cacheDir, relativePath);
         fs.mkdirSync(path.dirname(fullPath), { recursive: true });
 
-        // Rewrite page-parts.json modulePath entries from absolute build paths
-        // to package names that Node can resolve from the bundled entry.mjs
         if (relativePath.endsWith('page-parts.json')) {
             try {
                 const config = JSON.parse(content);
                 const rewriteParts = (parts: any[]) => {
                     for (const part of parts) {
                         if (part.modulePath && part.source === 'npm') {
-                            // Extract package dir name from absolute path and map to npm name
-                            // e.g. /Users/.../packages/wix-stores/dist/index.js → @jay-framework/wix-stores
-                            // e.g. /Users/.../node_modules/@jay-framework/wix-stores/dist/index.js → @jay-framework/wix-stores
                             const npmMatch = part.modulePath.match(/\/@jay-framework\/([^/]+)\//);
                             if (npmMatch) {
                                 part.modulePath = `@jay-framework/${npmMatch[1]}`;

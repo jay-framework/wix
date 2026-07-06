@@ -3,8 +3,8 @@ dist
 dist-secure
 build
 *.iml
-wix.config.json
 .wix
+wix.config.json
 /packages/compiler/compiler/lib/expressions/expression-parser.js
 examples/**/*.d.ts
 examples/**/lib/**/*.jay-html.ts

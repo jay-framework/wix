@@ -1,0 +1,31 @@
+categoryTree:
+  - _id: root-kitan-id
+    name: Kitan
+    slug: kitan
+    productCount: 0
+    children:
+      - _id: bedroom-id
+        name: Bedroom
+        slug: bedroom
+        productCount: 42
+        children: []
+      - _id: bathroom-id
+        name: Bathroom
+        slug: bathroom
+        productCount: 18
+        children:
+          - _id: towels-id
+            name: Towels
+            slug: towels
+            productCount: 12
+            children: []
+  - _id: polgat-root-id
+    name: Polgat
+    slug: polgat
+    productCount: 0
+    children:
+      - _id: shoes-id
+        name: Shoes
+        slug: shoes
+        productCount: 58
+        children: []

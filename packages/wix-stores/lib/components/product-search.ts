@@ -276,6 +276,9 @@ const EMPTY_CATEGORY_HEADER: CategoryHeaderOfProductSearchViewState = {
 /**
  * Look up a category by slug via the Wix API.
  */
+/**
+ * Find a category by slug, then load full details (DESCRIPTION, BREADCRUMBS_INFO).
+ */
 async function findCategoryBySlug(
     wixClient: WixStoresService['wixClient'],
     slug: string,
@@ -310,7 +313,6 @@ async function buildCategoryHeader(
     category: Category,
     categoryUrlTemplate: string | null,
 ): Promise<CategoryHeaderOfProductSearchViewState> {
-    // Load full details
     const details = await loadCategoryDetails(wixStoreService.wixClient, category._id);
     const cat = details || category;
 
@@ -413,8 +415,8 @@ async function renderSlowlyChanging(
 ) {
     const Pipeline = RenderPipeline.for<ProductSearchSlowViewState, SearchSlowCarryForward>();
 
-    // Resolve the active category via fallback chain:
-    // 1. category param → 2. prefix param → 3. defaultCategory config
+    // `category` is always the active category slug (set by loadSearchParams).
+    // When absent (all-products route), use the system "All Products" category for header info.
     const categorySlug = props.category ?? null;
     const prefixSlug = props.prefix ?? null;
     const defaultCategorySlug = wixStores.defaultCategory;
@@ -430,7 +432,6 @@ async function renderSlowlyChanging(
         baseCategoryId = activeCategory?._id ?? null;
     } else if (defaultCategorySlug) {
         activeCategory = await findCategoryBySlug(wixStores.wixClient, defaultCategorySlug);
-        // Don't set baseCategoryId for default — show all products
     }
 
     // Get category tree (lazily built, cached on service)
@@ -1126,14 +1127,18 @@ function ProductSearchInteractive(
  * Yields all visible categories so the framework can match them
  * against existing filesystem routes.
  *
- * Each category is yielded exactly once:
- * - Root categories (no parent): { prefix: slug }
- * - Child categories (has parent): { prefix: rootParentSlug, category: slug }
+ * Params yielded:
+ * - All products: {} (no category filter)
+ * - Root categories: { category: slug }
+ * - Child categories: { prefix: rootParentSlug, category: slug }
  */
 async function* loadSearchParams([wixStores]: [WixStoresService]): AsyncIterable<
     ProductSearchParams[]
 > {
     try {
+        // Get the "All Products" system category ID to suppress it from params
+        const allProductsCategoryId = await wixStores.getAllProductsCategoryId();
+
         // Load ALL categories by paginating through results
         const allCategories: Category[] = [];
         let offset = 0;
@@ -1161,6 +1166,7 @@ async function* loadSearchParams([wixStores]: [WixStoresService]): AsyncIterable
 
         for (const cat of allCategories) {
             if (!cat._id) continue;
+            if (cat._id === allProductsCategoryId) continue;
             const node: CatNode = {
                 slug: cat.slug || '',
                 itemCount: cat.itemCounter ?? 0,
@@ -1200,14 +1206,17 @@ async function* loadSearchParams([wixStores]: [WixStoresService]): AsyncIterable
             sumItems(root);
         }
 
-        // DFS to collect params, skipping empty subtrees
-        const params: ProductSearchParams[] = [];
+        // DFS to collect params, skipping empty subtrees.
+        // `category` is always the active category slug (used for filtering/header).
+        // `prefix` is the root parent slug (only set for child categories, used for URL routing).
+        // Empty params `{}` matches the "all products" route (no category filter).
+        const params: ProductSearchParams[] = [{}];
         function collectParams(node: CatNode, rootSlug: string | null) {
             if (!node.slug || node.itemCount === 0) return;
             if (rootSlug) {
                 params.push({ prefix: rootSlug, category: node.slug });
             } else {
-                params.push({ prefix: node.slug });
+                params.push({ category: node.slug });
             }
             for (const child of node.children) {
                 collectParams(child, rootSlug ?? node.slug);

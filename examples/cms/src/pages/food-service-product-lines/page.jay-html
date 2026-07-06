@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Product Lines - Food Service</title>
+  <meta name="description" content="Explore our food service product lines with detailed information and downloadable resources.">
+  <link rel="canonical" href="/food-service-product-lines"/>
   <script type="application/jay-headless"
           plugin="@jay-framework/wix-data"
           contract="list/food-service-product-lines-list"
@@ -68,33 +70,11 @@
       overflow: hidden;
       border: 1px solid var(--border);
       transition: transform 0.2s, box-shadow 0.2s;
-      position: relative;
     }
 
     .product-line-card:hover {
       transform: translateY(-4px);
       box-shadow: 0 12px 24px rgba(0,0,0,0.15);
-    }
-
-    .product-line-image {
-      width: 100%;
-      aspect-ratio: 16/10;
-      object-fit: cover;
-      background: var(--bg-secondary);
-    }
-
-    .product-line-label {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      background: var(--accent);
-      color: white;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
 
     .product-line-content {
@@ -114,12 +94,6 @@
 
     .product-line-title a:hover {
       color: var(--accent);
-    }
-
-    .product-line-header {
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      margin-bottom: 16px;
     }
 
     .product-line-cta {
@@ -223,7 +197,7 @@
   </style>
 </head>
 <body>
-  <div class="product-lines-page">
+  <main class="product-lines-page">
     <!-- Breadcrumbs -->
     <nav class="breadcrumbs">
       <span forEach="productLines.breadcrumbs" trackBy="slug">
@@ -248,7 +222,7 @@
     <!-- Empty State -->
     <div class="empty-state" if="productLines.totalCount == 0">
       <div class="empty-state-icon">📦</div>
-      <h3>No product lines found</h3>
+      <h2>No product lines found</h2>
       <p>Check back soon for new products!</p>
     </div>
 
@@ -256,20 +230,10 @@
     <div class="product-lines-grid" if="productLines.totalCount > 0">
       <!-- Initial items (slow-rendered at build time) -->
       <article class="product-line-card" forEach="productLines.items" trackBy="_id">
-        <a href="{url}" ref="productLines.items.itemLink">
-          <img 
-            class="product-line-image" 
-            src="{coverImage.url}" 
-            alt="{coverImage.altText}"
-            loading="lazy"
-          />
-        </a>
-        <span class="product-line-label" if="labelText">{labelText}</span>
         <div class="product-line-content">
           <h2 class="product-line-title">
             <a href="{url}" ref="productLines.items.itemLink">{title}</a>
           </h2>
-          <p class="product-line-header" if="headerTitle">{headerTitle}</p>
           <a href="{url}" class="product-line-cta" ref="productLines.items.itemLink">
             View Products →
           </a>
@@ -278,20 +242,10 @@
       
       <!-- Dynamically loaded items (via "Load More") -->
       <article class="product-line-card" forEach="productLines.loadedItems" trackBy="_id">
-        <a href="{url}" ref="productLines.loadedItems.itemLink">
-          <img 
-            class="product-line-image" 
-            src="{coverImage.url}" 
-            alt="{coverImage.altText}"
-            loading="lazy"
-          />
-        </a>
-        <span class="product-line-label" if="labelText">{labelText}</span>
         <div class="product-line-content">
           <h2 class="product-line-title">
             <a href="{url}" ref="productLines.loadedItems.itemLink">{title}</a>
           </h2>
-          <p class="product-line-header" if="headerTitle">{headerTitle}</p>
           <a href="{url}" class="product-line-cta" ref="productLines.loadedItems.itemLink">
             View Products →
           </a>
@@ -313,6 +267,6 @@
         Load More
       </button>
     </div>
-  </div>
+  </main>
 </body>
 </html>

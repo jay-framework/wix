@@ -564,3 +564,111 @@ Done: entry-v2.mjs (3.2 MB) — 711 input files
 | ---------------------------- | ------ | ------------------------------- |
 | Golf PoC (entry.mjs)         | 54 MB  | Everything inlined              |
 | wix-deploy v2 (entry-v2.mjs) | 3.2 MB | Code only, data from collection |
+| store-light v3 (entry.mjs)   | 2.5 MB | Fully bundled, module registry  |
+
+## Current State (2026-06-02)
+
+### Working End-to-End on Wix BaaS
+
+Deployed `store-light` example to Wix BaaS. Pages rendering successfully. The entry.mjs is **2.5 MB** with **0 bytes of node_modules** — everything is bundled.
+
+### Architecture: What Goes Where
+
+```
+┌──────────────────────────────────────────────────────────┐
+│ entry.mjs (2.5 MB) — uploaded to BaaS via Wix CLI        │
+│                                                          │
+│ Bundled by esbuild from generated source:                │
+│  ├── Framework serve code (production-server/serve)      │
+│  ├── Plugin code (wix-stores, wix-cart, wix-server-client)│
+│  ├── Plugin init modules (pre-imported)                  │
+│  ├── Action modules (pre-imported)                       │
+│  ├── Server element modules (route SSR render functions) │
+│  ├── ssr-runtime (escapeHtml, escapeAttr — inlined)      │
+│  ├── Wix SDK (@wix/sdk, @wix/stores, etc.)              │
+│  ├── WixDataArtifactStore (data collection client)       │
+│  └── MODULE_REGISTRY map (npm + server-element lookups)  │
+│                                                          │
+│ Zero dynamic import() of npm packages at runtime.        │
+│ Zero node_modules on disk.                               │
+└──────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────┐
+│ Wix Data Collection (jay-backend-files)                   │
+│                                                          │
+│ Eager (loaded on cold start):                            │
+│  ├── route-manifest.json                                 │
+│  └── build-metadata.json                                 │
+│                                                          │
+│ Lazy (fetched per-route on first request, cached in /tmp):│
+│  ├── page-parts.json (per route — which components)      │
+│  └── *.cache.json (per instance — slow view state data)  │
+│                                                          │
+│ NOT stored (bundled into entry.mjs instead):             │
+│  ├── route.server-element.js (SSR render functions)      │
+│  └── .jay-html files (empty, removed from build)         │
+└──────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────┐
+│ Wix CDN (static.parastorage.com)                         │
+│                                                          │
+│ Frontend assets uploaded by Wix CLI:                     │
+│  ├── shared/*.js (framework client runtime)              │
+│  ├── pages/**/*.js (route client bundles, hydrate scripts)│
+│  └── pages/**/*.css (route stylesheets)                  │
+└──────────────────────────────────────────────────────────┘
+```
+
+### How entry.mjs Avoids node_modules
+
+Three mechanisms eliminate all runtime filesystem module resolution:
+
+1. **Module registry for npm packages** — Plugin modules (`@jay-framework/wix-stores`, etc.) are statically imported by the generated entry source. esbuild bundles them. A `MODULE_REGISTRY` map keyed by package name lets `ArtifactStore.loadModule()` return the bundled module when page-parts resolution requests it.
+
+2. **Server elements bundled into entry** — Each route's `route.server-element.js` is statically imported by the entry source. esbuild bundles them along with their `@jay-framework/ssr-runtime` dependency. The same `MODULE_REGISTRY` maps relative paths (e.g., `pre-rendered/products/[slug]/route.server-element.js`) to the bundled module.
+
+3. **Framework `loadModule(path, isLocal)` on ArtifactStore** — The framework routes ALL module loading (both npm packages and local server elements) through `artifacts.loadModule()`. Our `WixDataArtifactStore` checks the registry first, falling back to filesystem only for modules not in the registry.
+
+### Build & Deploy Pipeline (store-light)
+
+```bash
+# 1. Build the project (generates build/v1/frontend + build/v1/backend)
+npm run build:production
+
+# 2. Upload backend data files to Wix data collection
+npm run deploy:upload-backend    # 27 files, 0.2 MB
+
+# 3. Bundle entry.mjs (plugins + server elements + framework)
+npm run deploy:build-entry       # 2.5 MB, 450 input files
+
+# 4. Deploy to BaaS
+wix preview                      # or: wix release
+```
+
+### Key Numbers (store-light, 15 page instances, 5 routes)
+
+| Metric                      | Value  |
+| --------------------------- | ------ |
+| entry.mjs                   | 2.5 MB |
+| Total dist/ size            | 2.8 MB |
+| Backend files in collection | 27     |
+| Backend data size           | 0.2 MB |
+| node_modules in dist        | 0      |
+| Server element routes       | 5      |
+| esbuild input files         | 450    |
+
+### Framework Changes That Made This Possible
+
+1. **One server-element per route** (not per instance) — Reduced from 400 files to ~5 for a typical site. Made it practical to bundle all server-elements into entry.mjs.
+
+2. **`cachePath` replaces `preRenderedPath`** — Instances now reference their `.cache.json` directly. Empty `.jay-html` files removed from build.
+
+3. **`ArtifactStore.loadModule(path, isLocal)`** — Framework routes all module loading through the artifact store. `FilesystemArtifactStore` does `import()` with filesystem fallback. Our `WixDataArtifactStore` checks a bundled module registry first.
+
+4. **`readCacheData` replaces `readPreRenderedHtml`** — Cleaner interface that reads cache data directly without the HTML content field.
+
+### Remaining Issues
+
+- **Frontend CDN URL**: `staticBaseUrl` needs to be set correctly for the Wix CDN path. Currently defaults to `/`.
+- **Cache invalidation**: No mechanism yet for the renderer to notify the BaaS instance when page data changes in the data collection.
+- **Cold start measurement**: Haven't measured cold start time on BaaS with the data collection fetch.

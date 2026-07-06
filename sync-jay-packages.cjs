@@ -90,6 +90,13 @@ function copyPackage(packageName, sourcePath) {
       copyDirSync(sourceDistPath, targetDistPath);
       console.log(`  ✓ Copied dist to ${targetDistPath}`);
 
+      // Copy plugin.yaml if it exists in the source package root
+      const sourcePluginYaml = path.join(sourcePath, 'plugin.yaml');
+      if (fs.existsSync(sourcePluginYaml)) {
+        fs.copyFileSync(sourcePluginYaml, path.join(targetPath, 'plugin.yaml'));
+        console.log(`  ✓ Copied plugin.yaml`);
+      }
+
       // Also copy agent-kit-template folder if it exists
       const sourceAgentKitPath = path.join(sourcePath, 'agent-kit-template');
       const targetAgentKitPath = path.join(targetPath, 'agent-kit-template');
@@ -177,6 +184,7 @@ function main() {
       path.join(SOURCE_REPO, 'packages', 'jay-stack-plugins', actualPackageName),
       path.join(SOURCE_REPO, 'packages', 'compiler', actualPackageName),
       path.join(SOURCE_REPO, 'packages', 'runtime', actualPackageName),
+      path.join(SOURCE_REPO, 'packages', 'plugins', actualPackageName),
       path.join(SOURCE_REPO, 'packages', actualPackageName),
     ];
 

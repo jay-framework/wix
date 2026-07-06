@@ -13,6 +13,9 @@
     <script type="application/jay-data">
       data:
     </script>
+    <title>All Products - Studio Store</title>
+    <meta name="description" content="Browse our curated collection of products, latest drops, and studio exclusives." />
+    <link rel="canonical" href="/products" />
     <link rel="stylesheet" href="../../styles/brutalist-theme.css" />
     <style>
       /* =====================================================
@@ -249,6 +252,7 @@
         <div class="loading-spinner"></div>
       </div>
 
+      <main>
       <!-- Hero Section -->
       <section class="page-hero">
         <h1 class="page-title">
@@ -274,12 +278,13 @@
       <!-- Search -->
       <div class="search-section">
         <div class="search-box">
-          <input 
-            class="input input-lg" 
-            type="text" 
-            placeholder="SEARCH PRODUCTS..." 
+          <input
+            class="input input-lg"
+            type="text"
+            placeholder="SEARCH PRODUCTS..."
             value="{productSearch.searchExpression}"
             ref="productSearch.searchExpression"
+            aria-label="Search products"
           />
           <button class="btn btn-ghost" ref="productSearch.clearSearchButton" title="Clear">
             X
@@ -307,7 +312,7 @@
         <!-- Filters Sidebar -->
         <aside class="filters-sidebar">
           <div class="filters-header">
-            <h3 class="section-title">FILTER</h3>
+            <h2 class="section-title">FILTER</h2>
             <button class="btn btn-ghost btn-sm" ref="productSearch.filters.clearFilters">
               RESET
             </button>
@@ -317,19 +322,21 @@
           <div class="filter-group">
             <label class="label">Price</label>
             <div class="price-inputs">
-              <input 
-                class="input" 
-                type="number" 
-                placeholder="MIN" 
+              <input
+                class="input"
+                type="number"
+                placeholder="MIN"
                 value="{productSearch.filters.priceRange.minPrice}"
                 ref="productSearch.filters.priceRange.minPrice"
+                aria-label="Minimum price"
               />
-              <input 
-                class="input" 
-                type="number" 
-                placeholder="MAX" 
+              <input
+                class="input"
+                type="number"
+                placeholder="MAX"
                 value="{productSearch.filters.priceRange.maxPrice}"
                 ref="productSearch.filters.priceRange.maxPrice"
+                aria-label="Maximum price"
               />
             </div>
           </div>
@@ -374,7 +381,7 @@
             <p class="results-count">
               <strong>{productSearch.loadedCount}</strong> OF <strong>{productSearch.totalCount}</strong> PRODUCTS
             </p>
-            <select class="select" ref="productSearch.sortBy.sortDropdown">
+            <select class="select" ref="productSearch.sortBy.sortDropdown" aria-label="Sort products by">
               <option value="relevance">FEATURED</option>
               <option value="newest">NEWEST</option>
               <option value="priceAsc">PRICE: LOW → HIGH</option>
@@ -387,7 +394,7 @@
           <!-- Empty State -->
           <div class="empty-state" if="!productSearch.hasResults">
             <div class="empty-state-icon">∅</div>
-            <h3 class="empty-state-title">NO RESULTS</h3>
+            <h2 class="empty-state-title">NO RESULTS</h2>
             <p class="empty-state-message">{productSearch.emptyStateMessage}</p>
           </div>
 
@@ -395,15 +402,18 @@
           <div class="products-grid-featured" if="productSearch.hasResults">
             <article class="product-card {isAddingToCart ? is-adding}" forEach="productSearch.searchResults" trackBy="_id">
               <a href="{productUrl}" class="product-card-image">
-                <img 
-                  src="{thumbnail.url}" 
+                <img
+                  src="{thumbnail.url}/v1/fill/w_400,h_400/file.webp"
                   alt="{thumbnail.altText}"
                   loading="lazy"
+                  fetchpriority="high"
+                  width="400"
+                  height="400"
                 />
                 
                 <!-- Hover Overlay -->
                 <div class="product-image-overlay">
-                  <h4 class="overlay-name">{name}</h4>
+                  <h3 class="overlay-name">{name}</h3>
                   <span class="overlay-price">{price}</span>
                 </div>
                 
@@ -418,9 +428,9 @@
               </a>
               <div class="product-card-content">
                 <p class="product-card-brand" if="brand.name">{brand.name}</p>
-                <h3 class="product-card-name">
+                <h2 class="product-card-name">
                   <a href="{productUrl}" ref="productSearch.searchResults.productLink">{name}</a>
-                </h3>
+                </h2>
                 <div class="product-card-price">
                   <span class="current-price">{price}</span>
                   <span class="original-price" if="hasDiscount">
@@ -499,6 +509,7 @@
           </div>
         </section>
       </div>
+      </main>
     </div>
   </body>
 </html>

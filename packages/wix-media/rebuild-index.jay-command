@@ -1,0 +1,2 @@
+name: rebuild-index
+description: Rebuild agent-kit media index from current Wix Media Manager state

@@ -56,5 +56,6 @@ export {
     type CollectionPageParams,
 } from './components/collection-page';
 
-// Export init
+// Export init + setup
 export { init } from './init.js';
+export { setupWixStoresV1 } from './setup.js';

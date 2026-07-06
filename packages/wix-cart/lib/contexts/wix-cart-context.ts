@@ -32,6 +32,7 @@ import {
     updateCurrentCart as updateCartApi,
     removeCouponFromCurrentCart as removeCouponApi,
 } from '../wix-apis/index.js';
+import { getRedirectsClient } from '../utils/redirects-client.js';
 import {
     CartState,
     estimateCurrentCartTotalsOrNull,
@@ -51,6 +52,8 @@ import {
 export interface WixCartInitData {
     /** Enable client-side cart operations */
     enableClientCart: boolean;
+    /** URL path for post-checkout redirect (default: /thank-you) */
+    thankYouUrl: string;
 }
 
 /** Wix Stores App ID for catalog references */
@@ -180,6 +183,12 @@ export interface WixCartContext {
      */
     removeCoupon(): Promise<CartOperationResult>;
 
+    /**
+     * Create a Wix checkout redirect session and return the URL.
+     * Redirects the user to Wix's hosted checkout page.
+     */
+    checkout(): Promise<string>;
+
     // ========================================================================
     // Events
     // ========================================================================
@@ -204,10 +213,12 @@ export const WIX_CART_CONTEXT = createJayContext<WixCartContext>('wix:cart');
  *
  * @returns The created context for immediate use (e.g., to call refreshCartIndicator)
  */
-export function provideWixCartContext(): WixCartContext {
+export function provideWixCartContext(thankYouUrl: string = '/thank-you'): WixCartContext {
     // Get the Wix client from wix-server-client plugin (injected)
     const wixClientContext = useGlobalContext(WIX_CLIENT_CONTEXT);
     const wixClient = wixClientContext.client;
+
+    const redirectsClient = getRedirectsClient(wixClient);
 
     // Create and register the reactive cart context
     const cartContext = registerReactiveGlobalContext(WIX_CART_CONTEXT, () => {
@@ -317,6 +328,21 @@ export function provideWixCartContext(): WixCartContext {
             return { cartState: mapCartToState(result.cart ?? null) };
         }
 
+        async function checkout(): Promise<string> {
+            const { checkoutId } = await cartClient.createCheckoutFromCurrentCart({});
+            if (!checkoutId) throw new Error('Failed to create checkout from cart');
+
+            const postFlowUrl = window.location.origin + thankYouUrl;
+            const { redirectSession } = await redirectsClient.createRedirectSession({
+                ecomCheckout: { checkoutId },
+                callbacks: { postFlowUrl },
+            });
+            if (!redirectSession?.fullUrl) {
+                throw new Error('Failed to create checkout redirect session');
+            }
+            return redirectSession.fullUrl;
+        }
+
         return {
             cartIndicator: {
                 itemCount,
@@ -330,6 +356,7 @@ export function provideWixCartContext(): WixCartContext {
             clearCart,
             applyCoupon,
             removeCoupon,
+            checkout,
             onItemAddedToCart,
         };
     });

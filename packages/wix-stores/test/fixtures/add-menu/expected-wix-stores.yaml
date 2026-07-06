@@ -1,0 +1,87 @@
+items:
+  - id: wix-stores:product-search
+    title: Product search
+    category: Store
+    subCategory: Components
+    pluginName: wix-stores
+    packageName: '@jay-framework/wix-stores'
+    thumbnail: thumbnails/wix-stores/product-search.svg
+    interaction:
+      mode: stage-place
+      stagePromptTemplate: |
+        Add a product search component at this marker location on the page.
+    prompt: |
+      Use headless component @jay-framework/wix-stores / contract product-search.
+      Read agent-kit/materialized-contracts/wix-stores/product-search.jay-contract.
+      Script key: search
+      Bind ViewState and refs per agent-kit/designer/INSTRUCTIONS.md.
+
+  - id: wix-stores:product-page
+    title: Product page
+    category: Store
+    subCategory: Components
+    pluginName: wix-stores
+    packageName: '@jay-framework/wix-stores'
+    thumbnail: thumbnails/wix-stores/product-page.svg
+    interaction:
+      mode: stage-place
+      stagePromptTemplate: |
+        Add a product page component at this marker location on the page.
+    prompt: |
+      Use headless component @jay-framework/wix-stores / contract product-page.
+      Read agent-kit/materialized-contracts/wix-stores/product-page.jay-contract.
+      Script key: p
+      Bind ViewState and refs per agent-kit/designer/INSTRUCTIONS.md.
+
+  - id: wix-stores:category-products
+    title: Category products
+    category: Store
+    subCategory: Components
+    pluginName: wix-stores
+    packageName: '@jay-framework/wix-stores'
+    thumbnail: thumbnails/wix-stores/category-products.svg
+    interaction:
+      mode: stage-place
+      stagePromptTemplate: |
+        Add a category products grid at this marker location on the page.
+    prompt: |
+      Use headless component @jay-framework/wix-stores / contract category-products.
+      Read agent-kit/materialized-contracts/wix-stores/category-products.jay-contract.
+      Script key: r
+      Bind ViewState and refs per agent-kit/designer/INSTRUCTIONS.md.
+      Pass categorySlug to show products from a category. Pass productId to exclude a product (e.g. on a product page).
+
+  - id: wix-stores:product-spotlight
+    title: Product spotlight
+    category: Store
+    subCategory: Components
+    pluginName: wix-stores
+    packageName: '@jay-framework/wix-stores'
+    thumbnail: thumbnails/wix-stores/product-spotlight.png
+    interaction:
+      mode: stage-place
+      stagePromptTemplate: |
+        Add a product spotlight at this marker location on the page.
+    prompt: |
+      Use headless component @jay-framework/wix-stores / contract product-spotlight.
+      Read agent-kit/materialized-contracts/wix-stores/product-spotlight.jay-contract.
+      Script key: spotlight
+      Bind ViewState and refs per agent-kit/designer/INSTRUCTIONS.md.
+      Pass slug as a prop to specify which product to display.
+
+  - id: wix-stores:category-list
+    title: Category list
+    category: Store
+    subCategory: Components
+    pluginName: wix-stores
+    packageName: '@jay-framework/wix-stores'
+    thumbnail: thumbnails/wix-stores/category-list.svg
+    interaction:
+      mode: stage-place
+      stagePromptTemplate: |
+        Add a category list at this marker location on the page.
+    prompt: |
+      Use headless component @jay-framework/wix-stores / contract category-list.
+      Read agent-kit/materialized-contracts/wix-stores/category-list.jay-contract.
+      Script key: categories
+      Bind ViewState and refs per agent-kit/designer/INSTRUCTIONS.md.

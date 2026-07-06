@@ -2,8 +2,12 @@
 <head>
   <script type="application/jay-headless" plugin="@jay-framework/wix-stores-v1" contract="product-search" key="search"></script>
   <script type="application/jay-headless" plugin="@jay-framework/wix-cart" contract="cart-indicator" key="cart"></script>
+  <script type="application/jay-headless" plugin="@jay-framework/wix-members" contract="login-indicator" key="auth"></script>
   <script type="application/jay-headless" plugin="@jay-framework/gemini-agent-plugin" contract="gemini-chat" key="ai"></script>
   <script type="application/jay-data">data:</script>
+  <title>All Whisky - The Whisky Exchange</title>
+  <meta name="description" content="Browse our full collection of whiskies. Search, filter by price and category, and find your perfect bottle." />
+  <link rel="canonical" href="/products" />
   <link rel="stylesheet" href="../../styles/theme.css" />
 </head>
 <body>
@@ -13,6 +17,12 @@
     <div class="header-top">
       <a href="/" class="site-logo">The Whisky<span>Exchange</span></a>
       <div class="header-actions">
+        <span if="auth.isLoading" class="auth-loading"></span>
+        <span if="!auth.isLoading&&auth.isLoggedIn" class="auth-member">
+          <span class="auth-name">{auth.memberName}</span>
+          <button ref="auth.logoutButton" class="btn btn-sm btn-outline">Log Out</button>
+        </span>
+        <button if="!auth.isLoading&&!auth.isLoggedIn" ref="auth.loginButton" class="btn btn-sm btn-outline">Log In</button>
         <a ref="cart.cartLink" href="/cart" class="cart-indicator">
           Cart
           <span if="cart.hasItems" class="cart-badge">{cart.itemCount}</span>
@@ -39,7 +49,7 @@
 
     <!-- Search bar -->
     <div class="search-bar">
-      <input ref="search.searchExpression" value="{search.searchExpression}" class="input" type="text" placeholder="Search for your perfect bottle..." />
+      <input ref="search.searchExpression" value="{search.searchExpression}" class="input" type="text" placeholder="Search for your perfect bottle..." aria-label="Search products" />
       <button ref="search.searchButton" class="btn btn-primary">Search</button>
       <button ref="search.clearSearchButton" class="btn btn-ghost">Clear</button>
     </div>
@@ -92,7 +102,7 @@
           </span>
           <div class="results-sort">
             <label>Sort by</label>
-            <select ref="search.sortBy.sortDropdown" class="select">
+            <select ref="search.sortBy.sortDropdown" class="select" aria-label="Sort by">
               <option value="relevance">Relevance</option>
               <option value="newest">Newest First</option>
               <option value="priceAsc">Price: Low to High</option>
@@ -115,7 +125,7 @@
               <span class="badge badge-sale">{ribbon.name}</span>
             </div>
             <a href="{productUrl}" class="product-card-image">
-              <img src="{mainMedia.url}" alt="{mainMedia.altText}" />
+              <img src="{mainMedia.url}/v1/fill/w_400,h_400/file.webp" alt="{mainMedia.altText}" width="400" height="400" loading="lazy" fetchpriority="high" />
             </a>
             <div class="product-card-content">
               <div class="product-card-brand">{brand.name}</div>
@@ -140,7 +150,7 @@
         <!-- Empty state -->
         <div if="search.hasSearched">
           <div if="!search.hasResults" style="text-align:center; padding: 60px 0;">
-            <h3 style="font-family: var(--font-serif); margin-bottom: 8px;">{search.emptyStateMessage}</h3>
+            <h2 style="font-family: var(--font-serif); margin-bottom: 8px;">{search.emptyStateMessage}</h2>
             <p style="color: var(--text-secondary);">Try a different search term or adjust your filters.</p>
           </div>
         </div>
@@ -222,7 +232,7 @@
       <!-- Input area (always visible) -->
       <div class="chat-input-container">
         <div class="chat-input-area">
-          <input ref="ai.messageInput" value="{ai.messageInput}" type="text" placeholder="Ask me about whisky..." />
+          <input ref="ai.messageInput" value="{ai.messageInput}" type="text" placeholder="Ask me about whisky..." aria-label="Chat message" />
           <button ref="ai.sendMessage" class="chat-send-btn">→</button>
         </div>
         <div if="ai.hasError" class="chat-error">{ai.errorMessage}</div>
