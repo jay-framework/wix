@@ -10,7 +10,7 @@ export async function getAllProductsCategory(
 ): Promise<GetAllProductsCategoryResponse> {
     return wixFetch<GetAllProductsCategoryResponse>(
         client,
-        '/categories/v1/categories/all-products-category',
+        '/stores/v3/all-products-category',
         { method: 'GET' },
     );
 }

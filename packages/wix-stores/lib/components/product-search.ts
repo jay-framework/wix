@@ -442,6 +442,8 @@ async function renderSlowlyChanging(
         ? await buildCategoryHeader(wixStores, activeCategory, wixStores.urls.category)
         : EMPTY_CATEGORY_HEADER;
 
+    const allProductsCategoryId = await wixStores.getAllProductsCategoryId();
+
     return Pipeline.try(async () => {
         const categoryFilter: Record<string, unknown> = { visible: true };
         if (baseCategoryId) {
@@ -461,8 +463,12 @@ async function renderSlowlyChanging(
             }),
         ]);
 
+        const categories = (categoriesResult.categories || []).filter(
+            (cat) => cat._id !== allProductsCategoryId,
+        );
+
         return {
-            categories: categoriesResult.categories || [],
+            categories,
             productsResult,
         };
     })
