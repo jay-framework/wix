@@ -8,9 +8,7 @@ interface GetAllProductsCategoryResponse {
 export async function getAllProductsCategory(
     client: WixClient,
 ): Promise<GetAllProductsCategoryResponse> {
-    return wixFetch<GetAllProductsCategoryResponse>(
-        client,
-        '/stores/v3/all-products-category',
-        { method: 'GET' },
-    );
+    return wixFetch<GetAllProductsCategoryResponse>(client, '/stores/v3/all-products-category', {
+        method: 'GET',
+    });
 }
