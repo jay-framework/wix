@@ -29,7 +29,10 @@ export async function queryCollections(
 ): Promise<QueryCollectionsV1Response> {
     const query: Record<string, unknown> = {};
     if (request?.filter) query.filter = JSON.stringify(request.filter);
-    if (request?.sort) query.sort = JSON.stringify(request.sort);
+    if (request?.sort) {
+        const v1Sort = request.sort.map((s) => ({ [s.fieldName]: (s.order || 'ASC').toLowerCase() }));
+        query.sort = JSON.stringify(v1Sort);
+    }
     if (request?.paging) query.paging = request.paging;
 
     const result = await wixFetch<QueryCollectionsV1Response>(
