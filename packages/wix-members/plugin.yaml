@@ -23,3 +23,6 @@ contexts:
   - name: wix-members
     marker: WIX_MEMBERS_CONTEXT
     description: Client-side member auth state, redirect login/register/logout operations
+
+setup:
+  handler: setupWixMembers

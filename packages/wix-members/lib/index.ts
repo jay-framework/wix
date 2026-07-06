@@ -16,3 +16,4 @@ export { protectedPage } from './components/protected-page';
 export { AUTH_COOKIE_NAME, setAuthCookie } from './utils/auth-cookie';
 
 export { init } from './init';
+export { setupWixMembers } from './setup';

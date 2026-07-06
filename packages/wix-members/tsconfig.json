@@ -1,6 +1,7 @@
 {
   "extends": "@jay-framework/wix-dev-environment/examples/tsconfig.json",
   "compilerOptions": {
-    "outDir": "dist"
+    "outDir": "dist",
+    "types": ["node"]
   }
 }
