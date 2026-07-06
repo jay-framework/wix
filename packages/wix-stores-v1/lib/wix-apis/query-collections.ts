@@ -1,5 +1,10 @@
 import type { WixClient } from '@wix/sdk';
-import { wixFetch, type WixFilter, type WixSort, type WixPaging } from '@jay-framework/wix-server-client';
+import {
+    wixFetch,
+    type WixFilter,
+    type WixSort,
+    type WixPaging,
+} from '@jay-framework/wix-server-client';
 import type { QueryCollectionsV1Response, V1Collection } from './types.js';
 
 export interface QueryCollectionsV1Request {
@@ -22,17 +27,18 @@ export async function queryCollections(
     client: WixClient,
     request?: QueryCollectionsV1Request,
 ): Promise<QueryCollectionsV1Response> {
+    const query: Record<string, unknown> = {};
+    if (request?.filter) query.filter = JSON.stringify(request.filter);
+    if (request?.sort) query.sort = JSON.stringify(request.sort);
+    if (request?.paging) query.paging = request.paging;
+
     const result = await wixFetch<QueryCollectionsV1Response>(
         client,
         '/stores/v1/collections/query',
         {
             method: 'POST',
             body: {
-                query: {
-                    filter: request?.filter,
-                    sort: request?.sort,
-                    paging: request?.paging,
-                },
+                query,
                 includeNumberOfProducts: request?.includeNumberOfProducts ?? true,
                 includeDescription: request?.includeDescription ?? true,
             },
