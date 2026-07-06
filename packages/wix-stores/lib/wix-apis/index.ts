@@ -14,5 +14,6 @@ export { queryInventory } from './query-inventory.js';
 export { listCustomizations } from './list-customizations.js';
 export { queryCustomizations } from './query-customizations.js';
 export { querySchemas } from './query-schemas.js';
+export { getAllProductsCategory } from './get-all-products-category.js';
 export { normalizeProduct, normalizeProducts } from './normalize-product.js';
 export type * from './types.js';

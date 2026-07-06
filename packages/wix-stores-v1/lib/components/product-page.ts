@@ -42,7 +42,7 @@ import { MediaGalleryViewState, Selected } from '../contracts/media-gallery.jay-
 import { MediaType } from '../contracts/media.jay-contract';
 import { JSONPatchOperation, patch, REPLACE } from '@jay-framework/json-patch';
 import { WIX_STORES_V1_CONTEXT, WixStoresV1Context } from '../contexts/wix-stores-v1-context';
-import type { V1Product } from '../wix-apis/types.js';
+import type { V1Product, V1SeoData } from '../wix-apis/types.js';
 import { queryProducts as queryProductsApi } from '../wix-apis/index.js';
 
 /**
@@ -179,7 +179,7 @@ function mapVariants(product: V1Product): InteractiveVariant[] {
 
 function mapSeoHeadTags(
     product: { name?: string | null; description?: string | null },
-    seoData: SeoSchema | undefined,
+    seoData: V1SeoData | undefined,
 ): HeadTag[] {
     const headTags: HeadTag[] = (seoData?.tags || []).map((tag) => ({
         tag: tag.type || 'meta',

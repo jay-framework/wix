@@ -31,8 +31,9 @@ import {
     updateCurrentCartLineItemQuantity as updateQuantityApi,
     updateCurrentCart as updateCartApi,
     removeCouponFromCurrentCart as removeCouponApi,
+    createCheckoutFromCurrentCart as createCheckoutApi,
+    createRedirectSession as createRedirectSessionApi,
 } from '../wix-apis/index.js';
-import { getRedirectsClient } from '../utils/redirects-client.js';
 import {
     CartState,
     estimateCurrentCartTotalsOrNull,
@@ -218,7 +219,7 @@ export function provideWixCartContext(thankYouUrl: string = '/thank-you'): WixCa
     const wixClientContext = useGlobalContext(WIX_CLIENT_CONTEXT);
     const wixClient = wixClientContext.client;
 
-    const redirectsClient = getRedirectsClient(wixClient);
+
 
     // Create and register the reactive cart context
     const cartContext = registerReactiveGlobalContext(WIX_CART_CONTEXT, () => {
@@ -329,11 +330,11 @@ export function provideWixCartContext(thankYouUrl: string = '/thank-you'): WixCa
         }
 
         async function checkout(): Promise<string> {
-            const { checkoutId } = await cartClient.createCheckoutFromCurrentCart({});
+            const { checkoutId } = await createCheckoutApi(wixClient);
             if (!checkoutId) throw new Error('Failed to create checkout from cart');
 
             const postFlowUrl = window.location.origin + thankYouUrl;
-            const { redirectSession } = await redirectsClient.createRedirectSession({
+            const { redirectSession } = await createRedirectSessionApi(wixClient, {
                 ecomCheckout: { checkoutId },
                 callbacks: { postFlowUrl },
             });

@@ -97,6 +97,10 @@ export interface V1InfoSection {
 
 export interface V1SeoData {
     tags?: Array<{ type?: string; props?: Record<string, string>; children?: string }>;
+    settings?: {
+        preventAutoRedirect?: boolean;
+        keywords?: Array<{ term?: string; isMain?: boolean }>;
+    };
 }
 
 // Collections

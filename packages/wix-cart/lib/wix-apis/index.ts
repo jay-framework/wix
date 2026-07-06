@@ -5,4 +5,6 @@ export { updateCurrentCartLineItemQuantity } from './update-line-item-quantity.j
 export { updateCurrentCart } from './update-current-cart.js';
 export { removeCouponFromCurrentCart } from './remove-coupon.js';
 export { estimateCurrentCartTotals } from './estimate-totals.js';
+export { createCheckoutFromCurrentCart } from './create-checkout.js';
+export { createRedirectSession } from './create-redirect-session.js';
 export type * from './types.js';

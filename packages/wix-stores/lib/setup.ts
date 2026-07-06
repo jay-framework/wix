@@ -137,9 +137,9 @@ export async function setupWixStores(ctx: PluginSetupContext): Promise<PluginSet
 
     const service = getService(WIX_STORES_SERVICE_MARKER) as WixStoresService;
 
-    // Validate Wix Stores V3 (Catalog V3) is accessible
     try {
-        await service.products.searchProducts({});
+        const { searchProducts: searchProductsApi } = await import('./wix-apis/search-products.js');
+        await searchProductsApi(service.wixClient, {});
     } catch (e: any) {
         const msg = e.message || '';
         const hint =

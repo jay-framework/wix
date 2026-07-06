@@ -13,6 +13,7 @@ import { type CategoryTree } from '../utils/product-mapper.js';
 import { queryCategories } from '../wix-apis/query-categories.js';
 import { queryCustomizations } from '../wix-apis/query-customizations.js';
 import { querySchemas } from '../wix-apis/query-schemas.js';
+import { getAllProductsCategory as getAllProductsCategoryApi } from '../wix-apis/get-all-products-category.js';
 import type { DataExtensionSchema } from '../utils/data-extension-schema.js';
 import type { Customization } from '../wix-apis/types.js';
 
@@ -159,7 +160,7 @@ export function provideWixStoresService(
         async getAllProductsCategoryId(): Promise<string | null> {
             if (cachedAllProductsCategoryId !== undefined) return cachedAllProductsCategoryId;
             try {
-                const result = await service.products.getAllProductsCategory();
+                const result = await getAllProductsCategoryApi(wixClient);
                 cachedAllProductsCategoryId = result.categoryId ?? null;
             } catch (error) {
                 console.error('[wix-stores] Failed to get All Products category:', error);
