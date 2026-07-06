@@ -259,7 +259,8 @@ export function provideWixCartContext(thankYouUrl: string = '/thank-you'): WixCa
             const catalogOptions: Record<string, unknown> = {};
             if (options?.variantId) catalogOptions.variantId = options.variantId;
             if (options?.modifiers) catalogOptions.options = options.modifiers;
-            if (options?.customTextFields) catalogOptions.customTextFields = options.customTextFields;
+            if (options?.customTextFields)
+                catalogOptions.customTextFields = options.customTextFields;
 
             const lineItem = {
                 catalogReference: {

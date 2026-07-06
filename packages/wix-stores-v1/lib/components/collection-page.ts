@@ -33,7 +33,10 @@ import { WIX_STORES_V1_CONTEXT, WixStoresV1Context } from '../contexts/wix-store
 import { mapProductToCard } from '../utils/product-mapper-v1';
 import { ProductCardViewState } from '../contracts/product-card.jay-contract';
 import { MediaType } from '../contracts/category-page.jay-contract';
-import { queryProducts as queryProductsApi, queryCollections as queryCollectionsApi } from '../wix-apis/index.js';
+import {
+    queryProducts as queryProductsApi,
+    queryCollections as queryCollectionsApi,
+} from '../wix-apis/index.js';
 
 /**
  * URL parameters for collection page routes
@@ -76,7 +79,9 @@ async function* loadCollectionParams([wixStores]: [WixStoresV1Service]): AsyncIt
 > {
     try {
         const result = await queryCollectionsApi(wixStores.wixClient);
-        yield (result.collections || []).filter((col) => col.slug).map((col) => ({ slug: col.slug! }));
+        yield (result.collections || [])
+            .filter((col) => col.slug)
+            .map((col) => ({ slug: col.slug! }));
     } catch (error) {
         console.error('[CollectionPage V1] Failed to load collection slugs:', error);
         yield [];
@@ -96,7 +101,9 @@ async function loadCollectionProducts(
         paging: { limit: PAGE_SIZE, offset },
     });
 
-    const products = (result.products || []).map((product) => mapProductToCard(product, '/products'));
+    const products = (result.products || []).map((product) =>
+        mapProductToCard(product, '/products'),
+    );
 
     return {
         products,

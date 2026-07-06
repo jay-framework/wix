@@ -30,7 +30,9 @@ export async function queryCollections(
     const query: Record<string, unknown> = {};
     if (request?.filter) query.filter = JSON.stringify(request.filter);
     if (request?.sort) {
-        const v1Sort = request.sort.map((s) => ({ [s.fieldName]: (s.order || 'ASC').toLowerCase() }));
+        const v1Sort = request.sort.map((s) => ({
+            [s.fieldName]: (s.order || 'ASC').toLowerCase(),
+        }));
         query.sort = JSON.stringify(v1Sort);
     }
     if (request?.paging) query.paging = request.paging;

@@ -156,9 +156,10 @@ function buildPriceFilter(
     }
     if (maxPrice !== undefined && maxPrice > 0) {
         const existing = priceFilter.price;
-        priceFilter.price = typeof existing === 'object' && existing !== null
-            ? { ...existing, $lte: maxPrice }
-            : { $lte: maxPrice };
+        priceFilter.price =
+            typeof existing === 'object' && existing !== null
+                ? { ...existing, $lte: maxPrice }
+                : { $lte: maxPrice };
     }
     if (Object.keys(priceFilter).length === 0) return baseFilter;
     if (Object.keys(baseFilter).length === 0) return priceFilter;
@@ -219,9 +220,18 @@ export const searchProducts = makeJayQuery('wixStoresV1.searchProducts')
                 const minBound = minPriceResult.products?.[0]?.price?.price ?? 0;
                 const maxBound = maxPriceResult.products?.[0]?.price?.price ?? 0;
 
-                const currency = products[0]?.price?.currency || minPriceResult.products?.[0]?.price?.currency;
+                const currency =
+                    products[0]?.price?.currency || minPriceResult.products?.[0]?.price?.currency;
                 const currencySymbol =
-                    currency === 'ILS' ? '₪' : currency === 'USD' ? '$' : currency === 'EUR' ? '€' : currency === 'GBP' ? '£' : '$';
+                    currency === 'ILS'
+                        ? '₪'
+                        : currency === 'USD'
+                          ? '$'
+                          : currency === 'EUR'
+                            ? '€'
+                            : currency === 'GBP'
+                              ? '£'
+                              : '$';
 
                 const ranges = generatePriceBuckets(minBound, maxBound, currencySymbol);
                 const totalCount = result.totalResults ?? products.length;
