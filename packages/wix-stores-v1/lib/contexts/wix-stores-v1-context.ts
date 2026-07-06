@@ -25,7 +25,11 @@ import {
     type CartState,
     type CartOperationResult as CartResult,
 } from '@jay-framework/wix-cart';
-import { getProduct as getProductApi, queryProducts as queryProductsApi, queryCollections as queryCollectionsApi } from '../wix-apis/index.js';
+import {
+    getProduct as getProductApi,
+    queryProducts as queryProductsApi,
+    queryCollections as queryCollectionsApi,
+} from '../wix-apis/index.js';
 import {
     mapProductToCard,
     CollectionViewState,
@@ -133,9 +137,7 @@ export function provideWixStoresV1Context(): WixStoresV1Context {
             let finalVariantId = variantId;
             let productSlug: string | undefined;
             try {
-                const productResult = await getProductApi(wixClient, productId, {
-                    includeMerchantSpecificData: true,
-                });
+                const productResult = await getProductApi(wixClient, productId);
                 const product = productResult.product;
                 productSlug = product?.slug;
                 if (!finalVariantId && product?.variants?.[0]) {

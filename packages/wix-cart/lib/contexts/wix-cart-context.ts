@@ -219,8 +219,6 @@ export function provideWixCartContext(thankYouUrl: string = '/thank-you'): WixCa
     const wixClientContext = useGlobalContext(WIX_CLIENT_CONTEXT);
     const wixClient = wixClientContext.client;
 
-
-
     // Create and register the reactive cart context
     const cartContext = registerReactiveGlobalContext(WIX_CART_CONTEXT, () => {
         // Reactive signals for cart indicator
@@ -258,15 +256,16 @@ export function provideWixCartContext(thankYouUrl: string = '/thank-you'): WixCa
         ): Promise<CartOperationResult> {
             console.log(`[WixCart] Adding to cart: ${productId} x ${quantity}`, options);
 
+            const catalogOptions: Record<string, unknown> = {};
+            if (options?.variantId) catalogOptions.variantId = options.variantId;
+            if (options?.modifiers) catalogOptions.options = options.modifiers;
+            if (options?.customTextFields) catalogOptions.customTextFields = options.customTextFields;
+
             const lineItem = {
                 catalogReference: {
                     catalogItemId: productId,
                     appId: WIX_STORES_APP_ID,
-                    options: {
-                        variantId: options?.variantId,
-                        options: options?.modifiers,
-                        customTextFields: options?.customTextFields,
-                    },
+                    ...(Object.keys(catalogOptions).length > 0 ? { options: catalogOptions } : {}),
                 },
                 quantity,
             };
