@@ -25,6 +25,8 @@ export function loadWixMembersConfig(projectRoot?: string): WixMembersConfig {
 
     return {
         authCallbackUrl:
-            typeof raw.authCallbackUrl === 'string' ? raw.authCallbackUrl : DEFAULTS.authCallbackUrl,
+            typeof raw.authCallbackUrl === 'string'
+                ? raw.authCallbackUrl
+                : DEFAULTS.authCallbackUrl,
     };
 }

@@ -8827,7 +8827,7 @@ items:
       Folder: Icons
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:zacca-logo-20-r-01-edited-png
+  - id: wix-media:zacca-logo-20-r-01-edited-png-2
     title: Icons — Zacca_Logo%20(R)-01_edited.png
     category: Media
     subCategory: Images
@@ -8844,7 +8844,7 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_efe55b72be864ed597b48677651ea90f~mv2.png
       Media id: 19cb78_efe55b72be864ed597b48677651ea90f~mv2.png
-      Slug: zacca-logo-20-r-01-edited-png
+      Slug: zacca-logo-20-r-01-edited-png-2
       Type: image · -
       Folder: Icons
       Labels: Font, Art
@@ -15601,7 +15601,7 @@ items:
       Folder: Logo
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:zacca-logo-20-r-01-edited-png-2
+  - id: wix-media:zacca-logo-20-r-01-edited-png
     title: Logo — Zacca_Logo%20(R)-01_edited.png
     category: Media
     subCategory: Images
@@ -15618,7 +15618,7 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_3226e4ff171946e3a2631af4aadac78c~mv2.png
       Media id: 19cb78_3226e4ff171946e3a2631af4aadac78c~mv2.png
-      Slug: zacca-logo-20-r-01-edited-png-2
+      Slug: zacca-logo-20-r-01-edited-png
       Type: image · -
       Folder: Logo
       Labels: Font, Electric blue
