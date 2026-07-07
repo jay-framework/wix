@@ -24,5 +24,10 @@ contexts:
     marker: WIX_MEMBERS_CONTEXT
     description: Client-side member auth state, redirect login/register/logout operations
 
+validators:
+  - name: auth-callback-page
+    handler: ./validators/auth-callback-validator
+    description: Checks that the auth callback page exists for the OAuth redirect flow
+
 setup:
   handler: setupWixMembers
