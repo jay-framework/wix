@@ -1072,3 +1072,17 @@ contexts:
 | Separate callback page            | Clean separation, works with any template                 | Requires a dedicated route (/auth/callback)    |
 | Keep protected-page component     | Template authors can guard any page without code          | Auth cookie must be set correctly              |
 | loginButton + registerButton refs | Template controls where login/register buttons appear     | Two refs instead of plain `<a>` links          |
+
+## Implementation Results
+
+### Config file and setup validation (2026-07-07)
+
+Added configuration and validation for the auth callback URL:
+
+- **`config-loader.ts`**: Loads `config/.wix-members.yaml` with `authCallbackUrl` field (default: `/auth/callback`). Follows the wix-stores config-loader pattern using `js-yaml`.
+- **`setup.ts`**: Generates the config file if missing, loads the configured `authCallbackUrl`, converts it to a filesystem path, and checks the page exists. Reports `needs-config` with guidance if the callback page is missing.
+- **`init.ts`**: Loads config and passes `authCallbackUrl` through `WixMembersInitData` to the client context.
+- **`contexts/wix-members-context.ts`**: `getCallbackUrl()` uses the config value. Relative paths (starting with `/`) get `window.location.origin` prepended. Absolute URLs (starting with `http`) are used as-is.
+- **Agent-kit guide**: Created `agent-kit/plugin/wix-members-setup.md` documenting setup steps, template examples for all three contracts, and the OAuth flow.
+
+Deviation from original design: The original design did not specify a config file — the callback URL was hardcoded as a default with an optional override via `WixMembersInitData`. This made it impossible to validate during `jay-stack setup` and easy to forget creating the callback page.

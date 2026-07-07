@@ -46,6 +46,7 @@
     "@jay-framework/stack-server-runtime": "^0.20.0",
     "@jay-framework/wix-server-client": "workspace:^",
     "@jay-framework/wix-utils": "workspace:^",
+    "js-yaml": "^4.1.0",
     "@wix/redirects": "^1.0.88",
     "@wix/sdk": "^1.21.5",
     "@wix/sdk-runtime": "^1.0.11"
