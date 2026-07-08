@@ -25,7 +25,11 @@ import {
     type CartState,
     type CartOperationResult as CartResult,
 } from '@jay-framework/wix-cart';
-import { getCollectionsClient, getProductsClient } from '../utils/wix-store-v1-api';
+import {
+    getProduct as getProductApi,
+    queryProducts as queryProductsApi,
+    queryCollections as queryCollectionsApi,
+} from '../wix-apis/index.js';
 import {
     mapProductToCard,
     CollectionViewState,
@@ -118,10 +122,6 @@ export function provideWixStoresV1Context(): WixStoresV1Context {
     // Get the cart context (provided by wix-cart plugin)
     const cartContext = useGlobalContext(WIX_CART_CONTEXT);
 
-    // Get V1-specific API clients
-    const productsClient = getProductsClient(wixClient);
-    const collectionsClient = getCollectionsClient(wixClient);
-
     const storesContext = registerReactiveGlobalContext(WIX_STORES_V1_CONTEXT, () => {
         // ====================================================================
         // Cart Operations - Delegate to WIX_CART_CONTEXT
@@ -134,11 +134,10 @@ export function provideWixStoresV1Context(): WixStoresV1Context {
         ): Promise<CartOperationResult> {
             console.log(`[WixStoresV1] Adding to cart: ${productId} x ${quantity}`);
 
-            // Always fetch product to get slug and resolve variant if needed
             let finalVariantId = variantId;
             let productSlug: string | undefined;
             try {
-                const productResult = await productsClient.getProduct(productId);
+                const productResult = await getProductApi(wixClient, productId);
                 const product = productResult.product;
                 productSlug = product?.slug;
                 if (!finalVariantId && product?.variants?.[0]) {
@@ -148,7 +147,6 @@ export function provideWixStoresV1Context(): WixStoresV1Context {
                 console.warn('[WixStoresV1] Could not fetch product:', err);
             }
 
-            // Delegate to cart context with resolved variant and slug
             return cartContext.addToCart(productId, quantity, {
                 variantId: finalVariantId,
                 productSlug,
@@ -159,22 +157,19 @@ export function provideWixStoresV1Context(): WixStoresV1Context {
         // V1-Specific Operations
         // ====================================================================
 
-        // V1 uses skip-based pagination for collections
         async function loadMoreCollectionProducts(
             collectionId: string,
             page: number,
             pageSize: number,
         ): Promise<{ products: ProductCardViewState[]; hasMore: boolean; totalProducts: number }> {
             try {
-                const result = await productsClient
-                    .queryProducts()
-                    .hasSome('collectionIds', [collectionId])
-                    .skip((page - 1) * pageSize)
-                    .limit(pageSize)
-                    .find();
+                const result = await queryProductsApi(wixClient, {
+                    filter: { 'collections.id': { $hasSome: [collectionId] } },
+                    paging: { limit: pageSize, offset: (page - 1) * pageSize },
+                });
 
-                const products = (result.items || []).map((p) => mapProductToCard(p));
-                const totalProducts = result.totalCount ?? products.length;
+                const products = (result.products || []).map((p) => mapProductToCard(p));
+                const totalProducts = result.totalResults ?? products.length;
                 const hasMore = page * pageSize < totalProducts;
 
                 return { products, hasMore, totalProducts };
@@ -186,8 +181,8 @@ export function provideWixStoresV1Context(): WixStoresV1Context {
 
         async function getCollections(): Promise<CollectionViewState[]> {
             try {
-                const result = await collectionsClient.queryCollections().find();
-                return (result.items || []).map((col) => mapCollectionToViewState(col));
+                const result = await queryCollectionsApi(wixClient);
+                return (result.collections || []).map((col) => mapCollectionToViewState(col));
             } catch (error) {
                 console.error('[WixStoresV1] Failed to load collections:', error);
                 return [];

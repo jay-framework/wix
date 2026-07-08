@@ -8,6 +8,7 @@ import {
     WIX_STORES_V1_SERVICE_MARKER,
     type WixStoresV1Service,
 } from './services/wix-stores-v1-service';
+import { queryProducts } from './wix-apis/index.js';
 
 interface PluginSetupContext {
     configDir: string;
@@ -38,9 +39,8 @@ export async function setupWixStoresV1(ctx: PluginSetupContext): Promise<PluginS
         };
     }
 
-    // Validate Wix Stores V1 (Catalog V1) is accessible
     try {
-        await service.products.queryProducts().limit(1).find();
+        await queryProducts(service.wixClient, { paging: { limit: 1 } });
     } catch (e: any) {
         const msg = e.message || '';
         const hint =

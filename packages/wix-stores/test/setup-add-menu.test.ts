@@ -24,13 +24,17 @@ const EXPECTED_IDS = [
 
 const ADD_MENU_OUTPUT_REL = 'agent-kit/aiditor/add-menu/wix-stores.yaml';
 
+vi.mock('@jay-framework/wix-server-client', () => ({
+    wixFetch: vi.fn().mockResolvedValue({}),
+}));
+
 vi.mock('@jay-framework/stack-server-runtime', async (importOriginal) => {
     const actual = await importOriginal<typeof import('@jay-framework/stack-server-runtime')>();
     return {
         ...actual,
         getService: vi.fn(() => ({
+            wixClient: {},
             urls: { product: '/products/{slug}' },
-            products: { searchProducts: vi.fn().mockResolvedValue({}) },
         })),
     };
 });

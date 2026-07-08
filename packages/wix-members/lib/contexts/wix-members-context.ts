@@ -107,8 +107,9 @@ export function provideWixMembersContext(initData: WixMembersInitData): WixMembe
         }
 
         function getCallbackUrl(): string {
-            if (initData.authCallbackUrl) return initData.authCallbackUrl;
-            return window.location.origin + '/auth/callback';
+            const url = initData.authCallbackUrl || '/auth/callback';
+            if (url.startsWith('http')) return url;
+            return window.location.origin + url;
         }
 
         async function redirectToLogin(callbackUrl?: string): Promise<string> {

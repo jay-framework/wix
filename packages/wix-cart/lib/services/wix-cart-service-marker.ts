@@ -5,15 +5,11 @@
  * so it can be safely imported by client code.
  */
 
-import { currentCart } from '@wix/ecom';
-import { redirects } from '@wix/redirects';
+import type { WixClient } from '@wix/sdk';
 import { createJayService } from '@jay-framework/fullstack-component';
-import { BuildDescriptors } from '@wix/sdk-types';
 
 export interface WixCartService {
-    cart: BuildDescriptors<typeof currentCart, {}>;
-    redirects: BuildDescriptors<typeof redirects, {}>;
-    urls: { thankYou: string };
+    wixClient: WixClient;
 }
 
 /**

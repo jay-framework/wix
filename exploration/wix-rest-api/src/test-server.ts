@@ -30,6 +30,13 @@ const client = createClient({
     modules: {},
 });
 
+function writeResult(name: string, data: any) {
+    const dir = path.join(process.cwd(), 'results');
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, `${name}.json`), JSON.stringify(data, null, 2));
+    console.log(`  → wrote results/${name}.json`);
+}
+
 async function testQueryProducts() {
     console.log('\n=== Test 1: Query Products ===');
 
@@ -42,12 +49,10 @@ async function testQueryProducts() {
         },
     });
 
+    writeResult('query-products', result);
     console.log(`Found ${result.products?.length} products`);
     for (const product of (result.products || []).slice(0, 3)) {
         console.log(`  - ${product.name} (${product.slug})`);
-        console.log(`    Price: ${product.priceData?.formatted?.price}`);
-        console.log(`    Media: ${product.media?.items?.[0]?.image?.url?.substring(0, 60)}...`);
-        console.log(`    Fields: ${Object.keys(product).join(', ')}`);
     }
 
     return result;
@@ -67,6 +72,7 @@ async function testQueryCategories() {
         },
     });
 
+    writeResult('query-categories', result);
     console.log(`Found ${result.categories?.length} categories`);
     for (const cat of (result.categories || []).slice(0, 5)) {
         console.log(`  - ${cat.name} (${cat.slug})`);
@@ -103,15 +109,82 @@ async function testProductBySlug() {
         },
     });
 
+    writeResult('get-product-by-slug', result);
     const product = result.products?.[0];
     if (product) {
         console.log(`Found: ${product.name}`);
-        console.log(`  ID: ${product._id}`);
-        console.log(`  Options: ${product.productOptions?.length || 0}`);
-        console.log(`  Variants: ${product.variants?.length || 0}`);
         console.log(`  Top-level fields: ${Object.keys(product).join(', ')}`);
     } else {
         console.log('Product not found');
+    }
+}
+
+async function testSearchWithAggregations() {
+    console.log('\n=== Test 5: Search Products with Aggregations ===');
+
+    // Try without aggregations first to see the base response shape
+    const resultNoAgg = await wixFetch<any>(client, '/stores/v3/products/search', {
+        method: 'POST',
+        body: {
+            search: {
+                cursorPaging: { limit: 2 },
+            },
+        },
+    });
+    writeResult('search-products-no-agg', resultNoAgg);
+    console.log('No-agg response keys:', Object.keys(resultNoAgg));
+
+    // Try with aggregations — same format as stores-actions.ts
+    const result = await wixFetch<any>(client, '/stores/v3/products/search', {
+        method: 'POST',
+        body: {
+            search: {
+                cursorPaging: { limit: 2 },
+                aggregations: [
+                    {
+                        fieldPath: 'slug',
+                        name: 'total-count',
+                        type: 'SCALAR',
+                        scalar: { type: 'COUNT_DISTINCT' },
+                    },
+                    {
+                        fieldPath: 'actualPriceRange.minValue.amount',
+                        name: 'min-price',
+                        type: 'SCALAR',
+                        scalar: { type: 'MIN' },
+                    },
+                    {
+                        fieldPath: 'actualPriceRange.minValue.amount',
+                        name: 'max-price',
+                        type: 'SCALAR',
+                        scalar: { type: 'MAX' },
+                    },
+                ],
+            },
+            fields: ['CURRENCY'],
+        },
+    });
+    writeResult('search-products', result);
+
+    writeResult('search-products', result);
+    console.log('Response keys:', Object.keys(result));
+    console.log('Products:', result.products?.length);
+
+    // Check paging shape
+    console.log('pagingMetadata:', JSON.stringify(result.pagingMetadata, null, 2));
+
+    // Check aggregation shape
+    console.log('aggregationData keys:', Object.keys(result.aggregationData || {}));
+    if (result.aggregationData?.results) {
+        console.log('aggregationData.results count:', result.aggregationData.results.length);
+        for (const agg of result.aggregationData.results) {
+            console.log(`  agg "${agg.name}":`, JSON.stringify(agg, null, 2));
+        }
+    } else {
+        console.log(
+            'aggregationData (full):',
+            JSON.stringify(result.aggregationData, null, 2)?.substring(0, 500),
+        );
     }
 }
 
@@ -123,6 +196,7 @@ async function main() {
     await testQueryCategories();
     await testGetCurrentCart();
     await testProductBySlug();
+    await testSearchWithAggregations();
 
     console.log('\n=== Done ===');
 }

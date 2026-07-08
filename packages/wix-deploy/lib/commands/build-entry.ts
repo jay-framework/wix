@@ -36,7 +36,6 @@ function scanPagePartsFiles(
     path: typeof import('node:path'),
 ): string[] {
     const results: string[] = [];
-    if (!fs.existsSync(dir)) return results;
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
         const fullPath = path.join(dir, entry.name);
         if (entry.isDirectory()) {
@@ -389,17 +388,12 @@ export const buildEntry = makeCliCommand('build-entry')
             .map((a) => a.packageName!)
             .filter((v, i, arr) => arr.indexOf(v) === i);
 
-        // Collect all local JS modules that need to be bundled into entry.mjs:
-        // 1. serverElementPath from routes (SSR render functions)
-        // 2. serverModule from routes (project-level server modules)
-        // 3. local-source modulePath from page-parts.json (project components)
         const localModuleSet = new Set<string>();
         for (const route of manifest.routes) {
             if (route.serverElementPath) localModuleSet.add(route.serverElementPath);
             if (route.serverModule) localModuleSet.add(route.serverModule);
         }
 
-        // Scan page-parts.json files for local modules
         const pagePartsFiles = scanPagePartsFiles(buildDir, fs, path);
         for (const ppFile of pagePartsFiles) {
             try {
@@ -456,6 +450,10 @@ export const buildEntry = makeCliCommand('build-entry')
             'vite',
             'lightningcss',
             'fsevents',
+            '@types/js-yaml',
+            '@wix/sdk-runtime',
+            'yaml',
+            'js-beautify',
         ];
         const stubFilter = new RegExp(
             '^(' + stubs.map((s) => s.replace(/[/.]/g, '\\$&')).join('|') + ')$',
@@ -562,7 +560,6 @@ export const buildEntry = makeCliCommand('build-entry')
             );
         }
 
-        // Generate serve.mjs in project root (not dist/) to avoid BaaS uploading it
         const serveFile = path.join(ctx.projectRoot, 'serve.mjs');
         fs.writeFileSync(serveFile, generateServeSource(ctx.build.frontend, buildDir));
         ctx.log(`Generated ${serveFile} — run with: node serve.mjs`);

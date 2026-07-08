@@ -3,7 +3,7 @@ import { resolve } from 'path';
 
 export default defineConfig({
     root: 'src',
-    server: { port: 3002, open: true },
+    server: { port: 3002, open: '/test-sdk-calls.html' },
     build: {
         outDir: '../dist',
         rollupOptions: {

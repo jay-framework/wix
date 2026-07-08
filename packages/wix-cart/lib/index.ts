@@ -5,11 +5,7 @@
  */
 
 // Export service
-export {
-    WIX_CART_SERVICE,
-    provideWixCartService,
-    getCurrentCartClient,
-} from './services/wix-cart-service';
+export { WIX_CART_SERVICE, provideWixCartService } from './services/wix-cart-service';
 export type { WixCartService } from './services/wix-cart-service';
 
 // Export context

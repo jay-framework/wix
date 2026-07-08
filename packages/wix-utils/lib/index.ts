@@ -6,6 +6,7 @@
 
 export {
     formatWixMediaUrl,
+    stripWixMediaResize,
     parseWixMediaUrl,
     parseWixImageUrl,
     parseWixVideoUrl,

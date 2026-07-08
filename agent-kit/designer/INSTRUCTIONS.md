@@ -11,7 +11,7 @@ Jay Stack is a full-stack framework where:
 - **jay-html** templates provide the UI that binds to contract data
 - **Rendering phases** determine when data is available (build-time, request-time, client-side)
 
-Your job is to create `.jay-html` pages that bind to the data and interactions defined by contracts.
+Your job is to create `.jay-html` pages that bind to the data and interactions defined by contracts. **All visible UI structure belongs in jay-html** — not in `page.ts` via `document.createElement`. Behavior and state live in `page.ts`; elements are reached through **refs** declared in the template.
 
 ## Rendering Phases
 
@@ -46,8 +46,18 @@ There is no standalone "interactive" phase. Any tag with `type: interactive` (re
 | [jay-html-styling.md](jay-html-styling.md)                 | Styling: inline, external, dynamic style bindings, class bindings                               |
 | [routing.md](routing.md)                                   | Directory-based routing: page structure, dynamic routes, route priority                         |
 | [contracts-and-plugins.md](contracts-and-plugins.md)       | Reading contracts, plugin.yaml, .jay-action files, and the materialized indexes                 |
+| [Contract Authoring Guide](../contracts/GUIDE.md)          | Writing contracts: syntax, page/component/linked contracts, examples                            |
+| [script-tags.md](script-tags.md)                           | Script tag policy: use page.ts for behavior, jay-script="allow" for third-party scripts         |
 | [cli-commands.md](cli-commands.md)                         | CLI commands: setup, validate, params, action, dev server                                       |
 | `../references/<plugin>/`                                  | Pre-generated discovery data: product catalogs, collection schemas (from `jay-stack agent-kit`) |
+
+## When to Use Headfull Components
+
+Use headfull full-stack components for **shared UI sections that should look the same across pages** — headers, navigation menus, footers, sidebars. These are placed in `src/components/` and imported into any page that needs them. This keeps the shared layout in one place: update the component once and every page reflects the change.
+
+If a section is **unique to a single page**, write it directly in the page's `.jay-html` — no component needed.
+
+See [jay-html-components.md](jay-html-components.md) for import syntax and component structure.
 
 ## Quick Start
 

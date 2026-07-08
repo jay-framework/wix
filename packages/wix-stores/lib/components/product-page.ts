@@ -23,18 +23,22 @@ import {
 } from '../contracts/product-page.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service';
 import { buildProductUrl, findRootCategorySlug } from '../utils/product-mapper';
-import {
+import type {
     ChoiceTypeWithLiterals,
     ConnectedModifier,
     ConnectedOption,
     InfoSection,
-    Media,
+    ProductMedia,
     MediaTypeWithLiterals,
     ModifierRenderTypeWithLiterals,
-    OptionChoice,
+    VariantChoice,
     SeoSchema,
     VariantsInfo,
-} from '@wix/auto_sdk_stores_products-v-3';
+} from '../wix-apis/types.js';
+import {
+    queryProducts as queryProductsApi,
+    getProductBySlug as getProductBySlugApi,
+} from '../wix-apis/index.js';
 import { MediaGalleryViewState, Selected } from '../contracts/media-gallery.jay-contract';
 import { MediaType } from '../contracts/media.jay-contract';
 import { ADD, JSONPatchOperation, patch, REPLACE } from '@jay-framework/json-patch';
@@ -76,7 +80,7 @@ interface InteractiveVariant {
     sku: string;
     price: string;
     strikethroughPrice: string;
-    choices: OptionChoice[];
+    choices: VariantChoice[];
     mediaId?: string;
     inventoryStatus: StockStatus;
 }
@@ -121,7 +125,7 @@ async function* loadProductParams([wixStores]: [WixStoresService]): AsyncIterabl
         // Load category tree when URL template uses {prefix} or {category}
         const tree = needsCategories ? await wixStores.getCategoryTree() : null;
 
-        let result = await wixStores.products.queryProducts({ fields: [...fields] }).find();
+        let result = await queryProductsApi(wixStores.wixClient, { fields: [...fields] });
 
         const mapProduct = (product: { slug?: string | null; mainCategoryId?: string | null }) => {
             const slug = product.slug ?? '';
@@ -141,11 +145,10 @@ async function* loadProductParams([wixStores]: [WixStoresService]): AsyncIterabl
             return params;
         };
 
-        yield result.items.map(mapProduct).filter((p): p is ProductPageParams => p !== null);
-        while (result.hasNext()) {
-            result = await result.next();
-            yield result.items.map(mapProduct).filter((p): p is ProductPageParams => p !== null);
-        }
+        yield (result.products || [])
+            .map(mapProduct)
+            .filter((p): p is ProductPageParams => p !== null);
+        // TODO: implement cursor pagination if needed for large catalogs
     } catch (error) {
         console.error('Failed to load product slugs:', error);
         yield [];
@@ -210,7 +213,7 @@ function mapMediaType(mediaType: MediaTypeWithLiterals): MediaType {
     else return MediaType.IMAGE;
 }
 
-function mapMedia(media: Media | undefined): MediaGalleryViewState {
+function mapMedia(media: ProductMedia | undefined): MediaGalleryViewState {
     const main = media?.main;
     if (!main) {
         return {
@@ -418,7 +421,8 @@ async function renderSlowlyChanging(
             ...(needsCategories ? (['ALL_CATEGORIES_INFO'] as const) : []),
         ] as const;
         const [response, tree] = await Promise.all([
-            wixStores.products.getProductBySlug(props.slug, {
+            getProductBySlugApi(wixStores.wixClient, props.slug, {
+                includeMerchantSpecificData: true,
                 fields: [...fields],
             }),
             wixStores.getCategoryTree(),

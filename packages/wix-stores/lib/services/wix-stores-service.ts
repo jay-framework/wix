@@ -1,35 +1,25 @@
 /**
  * Server-side Wix Stores Service
  *
- * Provides access to Wix Stores APIs on the server using API Key authentication.
- * Used with .withServices(WIX_STORES_SERVICE_MARKER) in component definitions.
+ * Provides the WixClient and URL templates for Wix Stores operations.
+ * API calls use functions from wix-apis/ with the client from this service.
  */
 
-import { WixClient } from '@wix/sdk';
-import {
-    getCategoriesClient,
-    getCustomizationsV3Client,
-    getInventoryClient,
-    getProductsV3Client,
-} from '../utils/wix-store-api';
+import { type WixClient } from '@wix/sdk';
 import { createJayService } from '@jay-framework/fullstack-component';
 import { registerService } from '@jay-framework/stack-server-runtime';
-import { type UrlTemplates } from '../config-loader';
-import { type CategoryTree } from '../utils/product-mapper';
-import { BuildDescriptors } from '@wix/sdk-types';
-import { customizationsV3, productsV3 } from '@wix/stores';
-import { categories } from '@wix/categories';
-import { inventoryItemsV3 } from '@wix/stores';
-import { currentCart } from '@wix/ecom';
-import { type Customization } from '@wix/auto_sdk_stores_customizations-v-3';
-import { schemas as dataExtensionSchemas } from '@wix/data-extension-schema';
-import type { DataExtensionSchema } from '../utils/data-extension-schema';
+import { type UrlTemplates } from '../config-loader.js';
+import { type CategoryTree } from '../utils/product-mapper.js';
+import { queryCategories } from '../wix-apis/query-categories.js';
+import { queryCustomizations } from '../wix-apis/query-customizations.js';
+import { querySchemas } from '../wix-apis/query-schemas.js';
+import { getAllProductsCategory as getAllProductsCategoryApi } from '../wix-apis/get-all-products-category.js';
+import type { DataExtensionSchema } from '../utils/data-extension-schema.js';
+import type { Customization } from '../wix-apis/types.js';
 
 export interface WixStoresService {
-    products: BuildDescriptors<typeof productsV3, {}>;
-    categories: BuildDescriptors<typeof categories, {}>;
-    inventory: BuildDescriptors<typeof inventoryItemsV3, {}>;
-    customizations: BuildDescriptors<typeof customizationsV3, {}>;
+    /** The authenticated Wix client (server-side, API key auth) */
+    wixClient: WixClient;
     /** URL templates for building canonical links */
     urls: UrlTemplates;
     /** Slug of the fallback category for pages without category context */
@@ -69,14 +59,8 @@ export function provideWixStoresService(
     let cachedExtensionSchemas: DataExtensionSchema[] | null = null;
     let cachedAllProductsCategoryId: string | null | undefined;
 
-    const categoriesClient = getCategoriesClient(wixClient);
-    const customizationsClient = getCustomizationsV3Client(wixClient);
-
     const service: WixStoresService = {
-        products: getProductsV3Client(wixClient),
-        categories: categoriesClient,
-        inventory: getInventoryClient(wixClient),
-        customizations: customizationsClient,
+        wixClient,
         urls: options?.urls ?? { product: '/products/{slug}', category: null },
         defaultCategory: options?.defaultCategory ?? null,
 
@@ -113,16 +97,16 @@ export function provideWixStoresService(
                     }
                 };
 
-                let result = await categoriesClient
-                    .queryCategories({ treeReference: { appNamespace: '@wix/stores' } })
-                    .eq('visible', true)
-                    .limit(100)
-                    .find();
-
-                processItems(result.items || []);
-                while (result.hasNext()) {
-                    result = await result.next();
-                    processItems(result.items || []);
+                let offset = 0;
+                let hasMore = true;
+                while (hasMore) {
+                    const result = await queryCategories(wixClient, {
+                        filter: { visible: true },
+                        paging: { limit: 100, offset },
+                    });
+                    processItems(result.categories || []);
+                    hasMore = (result.categories?.length || 0) === 100;
+                    offset += 100;
                 }
             } catch (error) {
                 console.error('[wix-stores] Failed to build category tree:', error);
@@ -136,13 +120,11 @@ export function provideWixStoresService(
             if (cachedCustomizations) return cachedCustomizations;
 
             try {
-                const result = await customizationsClient
-                    .queryCustomizations()
-                    .eq('customizationType', 'PRODUCT_OPTION')
-                    .limit(100)
-                    .find();
-
-                cachedCustomizations = result.items || [];
+                const result = await queryCustomizations(wixClient, {
+                    filter: { customizationType: 'PRODUCT_OPTION' },
+                    paging: { limit: 100 },
+                });
+                cachedCustomizations = result.customizations || [];
             } catch (error) {
                 console.error('[wix-stores] Failed to load customizations:', error);
                 cachedCustomizations = [];
@@ -155,10 +137,9 @@ export function provideWixStoresService(
             if (cachedExtensionSchemas) return cachedExtensionSchemas;
 
             try {
-                const client = wixClient.use(dataExtensionSchemas);
-                const result = await client.listDataExtensionSchemas(
-                    'wix.stores.catalog.v3.product',
-                );
+                const result = await querySchemas(wixClient, {
+                    filter: { namespace: 'wix.stores.catalog.v3.product' },
+                });
                 cachedExtensionSchemas =
                     (result?.dataExtensionSchemas as DataExtensionSchema[]) ?? [];
                 const fieldCount = cachedExtensionSchemas.reduce(
@@ -179,7 +160,7 @@ export function provideWixStoresService(
         async getAllProductsCategoryId(): Promise<string | null> {
             if (cachedAllProductsCategoryId !== undefined) return cachedAllProductsCategoryId;
             try {
-                const result = await service.products.getAllProductsCategory();
+                const result = await getAllProductsCategoryApi(wixClient);
                 cachedAllProductsCategoryId = result.categoryId ?? null;
             } catch (error) {
                 console.error('[wix-stores] Failed to get All Products category:', error);

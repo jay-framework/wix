@@ -45,3 +45,9 @@ A plugin provides headless components (data + interactions, no UI) that project 
 - **Data is immutable** — never mutate ViewState directly, use JSON Patch
 - **Phase-aware** — choose the right rendering phase for each piece of data
 - **Props for configuration, params for URLs** — props are passed by parent components, params come from route segments
+
+## Plugin-Contributed Guides
+
+| File | Plugin | Description |
+| --- | --- | --- |
+| [wix-members-setup.md](wix-members-setup.md) | wix-members |  |

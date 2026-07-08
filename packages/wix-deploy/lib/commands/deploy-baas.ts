@@ -260,6 +260,7 @@ export const deployBaas = makeCliCommand('deploy-baas')
         const deploymentId = appDeployment?.id;
         const deploymentBaseUrl =
             completedDeployment.deploymentBaseUrl || appDeployment?.deploymentBaseUrl || '';
+        ctx.log(`Deployment uploaded. Base URL: ${deploymentBaseUrl}`);
 
         let appVersion = 0;
         try {

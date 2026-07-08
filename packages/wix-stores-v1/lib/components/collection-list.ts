@@ -11,6 +11,7 @@ import {
     PageProps,
     RenderPipeline,
 } from '@jay-framework/fullstack-component';
+import { stripWixMediaResize } from '@jay-framework/wix-utils';
 import {
     CategoryListContract,
     CategoryListSlowViewState,
@@ -19,6 +20,7 @@ import {
     WIX_STORES_V1_SERVICE_MARKER,
     WixStoresV1Service,
 } from '../services/wix-stores-v1-service';
+import { queryCollections as queryCollectionsApi } from '../wix-apis/index.js';
 
 /**
  * Collection item for the list view
@@ -44,8 +46,8 @@ async function renderSlowlyChanging(props: PageProps, wixStores: WixStoresV1Serv
 
     return Pipeline.try(async () => {
         // Query all collections (V1 API)
-        const result = await wixStores.collections.queryCollections().find();
-        return result.items || [];
+        const result = await queryCollectionsApi(wixStores.wixClient);
+        return result.collections || [];
     })
         .recover((error) => {
             console.error('[CollectionList V1] Failed to load collections:', error);
@@ -53,7 +55,7 @@ async function renderSlowlyChanging(props: PageProps, wixStores: WixStoresV1Serv
         })
         .toPhaseOutput((collections) => {
             const collectionItems: CollectionItem[] = collections.map((col) => {
-                const imageUrl = col.media?.mainMedia?.image?.url || '';
+                const imageUrl = stripWixMediaResize(col.media?.mainMedia?.image?.url || '');
                 return {
                     _id: col._id || '',
                     name: col.name || '',

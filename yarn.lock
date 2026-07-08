@@ -2465,10 +2465,7 @@ __metadata:
     "@jay-framework/wix-dev-environment": "workspace:^"
     "@jay-framework/wix-server-client": "workspace:^"
     "@jay-framework/wix-utils": "workspace:^"
-    "@wix/ecom": "npm:^1.0.1996"
-    "@wix/redirects": "npm:^1.0.77"
     "@wix/sdk": "npm:^1.21.5"
-    "@wix/sdk-runtime": "npm:^1.0.11"
     nodemon: "npm:^3.0.3"
     rimraf: "npm:^5.0.5"
     tslib: "npm:^2.6.2"
@@ -2502,7 +2499,6 @@ __metadata:
     "@types/node": "npm:^20.11.0"
     "@wix/data": "npm:^1.0.433"
     "@wix/sdk": "npm:^1.21.5"
-    "@wix/sdk-runtime": "npm:^1.0.11"
     js-yaml: "npm:^4.1.0"
     nodemon: "npm:^3.0.3"
     rimraf: "npm:^5.0.5"
@@ -2556,6 +2552,7 @@ __metadata:
     "@jay-framework/compiler-shared": "npm:^0.20.0"
     "@jay-framework/component": "npm:^0.20.0"
     "@jay-framework/fullstack-component": "npm:^0.20.0"
+    "@jay-framework/jay-stack-cli": "npm:^0.20.0"
     "@jay-framework/stack-server-runtime": "npm:^0.20.0"
     "@jay-framework/vite-plugin": "npm:^0.20.0"
     "@jay-framework/wix-server-client": "workspace:^"
@@ -2584,6 +2581,7 @@ __metadata:
     "@jay-framework/component": "npm:^0.20.0"
     "@jay-framework/fullstack-component": "npm:^0.20.0"
     "@jay-framework/jay-cli": "npm:^0.20.0"
+    "@jay-framework/jay-stack-cli": "npm:^0.20.0"
     "@jay-framework/reactive": "npm:^0.20.0"
     "@jay-framework/runtime": "npm:^0.20.0"
     "@jay-framework/secure": "npm:^0.20.0"
@@ -2596,6 +2594,7 @@ __metadata:
     "@wix/redirects": "npm:^1.0.88"
     "@wix/sdk": "npm:^1.21.5"
     "@wix/sdk-runtime": "npm:^1.0.11"
+    js-yaml: "npm:^4.1.0"
     nodemon: "npm:^3.0.3"
     rimraf: "npm:^5.0.5"
     tslib: "npm:^2.6.2"
@@ -2626,7 +2625,6 @@ __metadata:
     "@types/js-yaml": "npm:^4.0.9"
     "@types/node": "npm:^20.11.0"
     "@wix/sdk": "npm:^1.21.5"
-    "@wix/sdk-runtime": "npm:^1.0.11"
     js-yaml: "npm:^4.1.0"
     nodemon: "npm:^3.0.3"
     rimraf: "npm:^5.0.5"
@@ -2659,8 +2657,6 @@ __metadata:
     "@jay-framework/wix-server-client": "workspace:^"
     "@jay-framework/wix-utils": "workspace:^"
     "@wix/sdk": "npm:^1.21.5"
-    "@wix/sdk-runtime": "npm:^1.0.11"
-    "@wix/stores": "npm:^1.0.742"
     nodemon: "npm:^3.0.3"
     rimraf: "npm:^5.0.5"
     tslib: "npm:^2.6.2"
@@ -2692,11 +2688,7 @@ __metadata:
     "@jay-framework/wix-cart": "workspace:^"
     "@jay-framework/wix-server-client": "workspace:^"
     "@jay-framework/wix-utils": "workspace:^"
-    "@wix/categories": "npm:^1.0.185"
-    "@wix/data-extension-schema": "npm:^1.0.221"
     "@wix/sdk": "npm:^1.21.5"
-    "@wix/sdk-runtime": "npm:^1.0.11"
-    "@wix/stores": "npm:^1.0.742"
     js-yaml: "npm:^4.1.0"
     nodemon: "npm:^3.0.3"
     rimraf: "npm:^5.0.5"
@@ -3578,17 +3570,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wix/auto_sdk_data-extension-schema_schemas@npm:1.0.202":
-  version: 1.0.202
-  resolution: "@wix/auto_sdk_data-extension-schema_schemas@npm:1.0.202"
-  dependencies:
-    "@wix/sdk-runtime": "npm:^1.0.12"
-    "@wix/sdk-types": "npm:^1.17.7"
-    zod: "npm:^4.3.6"
-  checksum: 10/7f9f3197da3be66ef879e0813a5772bab4809a49b8316d6e00d8fcc62914f5db35951e6f7e6d6e1f8f2931f55841a515d8ae0496f2bdd0b8e20d6ce380bc5013
-  languageName: node
-  linkType: hard
-
 "@wix/auto_sdk_data_backups@npm:1.0.49":
   version: 1.0.49
   resolution: "@wix/auto_sdk_data_backups@npm:1.0.49"
@@ -4375,17 +4356,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wix/auto_sdk_redirects_redirects@npm:1.0.44":
-  version: 1.0.44
-  resolution: "@wix/auto_sdk_redirects_redirects@npm:1.0.44"
-  dependencies:
-    "@wix/sdk-runtime": "npm:^1.0.12"
-    "@wix/sdk-types": "npm:^1.17.7"
-    zod: "npm:^4.3.6"
-  checksum: 10/1bde056ad5feb03d50cd83ce333819951e9c220d9c2383c24a973e53811ad49450a223b65ac0a80959202ca244c2b2c214bc933878847ad17ca34a9fc3ddebd2
-  languageName: node
-  linkType: hard
-
 "@wix/auto_sdk_redirects_redirects@npm:1.0.45":
   version: 1.0.45
   resolution: "@wix/auto_sdk_redirects_redirects@npm:1.0.45"
@@ -4631,15 +4601,6 @@ __metadata:
   dependencies:
     "@wix/auto_sdk_data-extension-schema_schemas": "npm:1.0.195"
   checksum: 10/1036c1e352f1523bcc5d2a37e4dbc81a71f05cdf0dc35d8acc5c7d4bdcc9bfdd6c6447c53e175a0c0ee551c306071ff27a79954b277ce5985ec04e8099743305
-  languageName: node
-  linkType: hard
-
-"@wix/data-extension-schema@npm:^1.0.221":
-  version: 1.0.221
-  resolution: "@wix/data-extension-schema@npm:1.0.221"
-  dependencies:
-    "@wix/auto_sdk_data-extension-schema_schemas": "npm:1.0.202"
-  checksum: 10/b778a05669cfa46a51c5c82ca9e22febbef43d6d8ec77827b16f2eb6221e25505f03892ecc2d76f6afe874473d57c3d198df6aa7b038895f4bea0d1725b16d25
   languageName: node
   linkType: hard
 
@@ -5253,15 +5214,6 @@ __metadata:
   dependencies:
     "@wix/auto_sdk_redirects_redirects": "npm:1.0.37"
   checksum: 10/29a12800485fbf5677b927ee3704d51fde47465e1f014b8daddbf39eb41375a0edf5440540ae2974a8b75e8b3d858024410af463c9351e0c7cf6382f86f0fc98
-  languageName: node
-  linkType: hard
-
-"@wix/redirects@npm:^1.0.77":
-  version: 1.0.116
-  resolution: "@wix/redirects@npm:1.0.116"
-  dependencies:
-    "@wix/auto_sdk_redirects_redirects": "npm:1.0.44"
-  checksum: 10/a725d149a3d05d25dc45018eba1a90ee8cc80da2ca5951ac3615431e75ee9af2708f1a15838c34f60ac4fb358d406c2f98a4c95065e60dab14ca2ba086fbec0d
   languageName: node
   linkType: hard
 
@@ -11323,7 +11275,10 @@ __metadata:
   dependencies:
     "@types/js-yaml": "npm:^4.0.5"
     "@types/node": "npm:^20.0.0"
+    "@wix/categories": "npm:^1.0.185"
+    "@wix/ecom": "npm:^1.0.1996"
     "@wix/sdk": "npm:^1.21.5"
+    "@wix/stores": "npm:^1.0.742"
     js-yaml: "npm:^4.1.0"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.3.3"

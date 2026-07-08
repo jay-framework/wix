@@ -30,7 +30,7 @@ export const init = makeJayInit()
         const wixClient = getService(WIX_CLIENT_SERVICE);
         const config = loadWixCartConfig();
 
-        provideWixCartService(wixClient, { urls: config.urls });
+        provideWixCartService(wixClient);
 
         console.log('[wix-cart] Server initialization complete');
 

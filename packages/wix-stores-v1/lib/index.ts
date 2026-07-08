@@ -43,7 +43,8 @@ export {
 export * from './actions/stores-v1-actions';
 
 // Export product mapper types
-export type { V1Collection, CollectionViewState } from './utils/product-mapper-v1';
+export type { CollectionViewState } from './utils/product-mapper-v1';
+export type { V1Collection } from './wix-apis/types';
 
 // Export stores-specific components
 export { productPage, type ProductPageParams } from './components/product-page';

@@ -48,7 +48,8 @@
     "@jay-framework/wix-utils": "workspace:^",
     "@wix/redirects": "^1.0.88",
     "@wix/sdk": "^1.21.5",
-    "@wix/sdk-runtime": "^1.0.11"
+    "@wix/sdk-runtime": "^1.0.11",
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",
@@ -56,6 +57,7 @@
     "@babel/preset-typescript": "^7.23.3",
     "@jay-framework/compiler-jay-stack": "^0.20.0",
     "@jay-framework/jay-cli": "^0.20.0",
+    "@jay-framework/jay-stack-cli": "^0.20.0",
     "@jay-framework/vite-plugin": "^0.20.0",
     "@jay-framework/wix-dev-environment": "workspace:^",
     "nodemon": "^3.0.3",

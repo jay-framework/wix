@@ -18,6 +18,7 @@ import type {
 } from '@jay-framework/stack-server-runtime';
 import { getService } from '@jay-framework/stack-server-runtime';
 import { WIX_STORES_SERVICE_MARKER, type WixStoresService } from './services/wix-stores-service';
+import { queryCategories as queryCategoriesApi } from './wix-apis/index.js';
 import type { DataExtensionSchema } from './utils/data-extension-schema';
 import { buildCategoryAddMenuItems, type CategoryTreeNode } from './add-menu/category-items.js';
 import { copyAiditorAddMenuThumbnails } from './add-menu/copy-aiditor-thumbnails.js';
@@ -136,9 +137,9 @@ export async function setupWixStores(ctx: PluginSetupContext): Promise<PluginSet
 
     const service = getService(WIX_STORES_SERVICE_MARKER) as WixStoresService;
 
-    // Validate Wix Stores V3 (Catalog V3) is accessible
     try {
-        await service.products.searchProducts({});
+        const { searchProducts: searchProductsApi } = await import('./wix-apis/search-products.js');
+        await searchProductsApi(service.wixClient, {});
     } catch (e: any) {
         const msg = e.message || '';
         const hint =
@@ -205,19 +206,16 @@ export async function generateWixStoresReferences(
         parentCategory?: { _id?: string };
     }> = [];
 
-    let result = await storesService.categories
-        .queryCategories({
-            treeReference: { appNamespace: '@wix/stores' },
-        })
-        .eq('visible', true)
-        .limit(100)
-        .find();
-
-    allCategories.push(...(result.items || []));
-
-    while (result.hasNext()) {
-        result = await result.next();
-        allCategories.push(...(result.items || []));
+    let offset = 0;
+    let hasMore = true;
+    while (hasMore) {
+        const result = await queryCategoriesApi(storesService.wixClient, {
+            filter: { visible: true },
+            paging: { limit: 100, offset },
+        });
+        allCategories.push(...(result.categories || []));
+        hasMore = (result.categories?.length || 0) === 100;
+        offset += 100;
     }
 
     // Build tree structure
@@ -270,7 +268,9 @@ export async function generateWixStoresReferences(
         const userFieldsSchema = extensionSchemas.find(
             (s: DataExtensionSchema) => s.namespace === '_user_fields',
         );
-        const properties = userFieldsSchema?.jsonSchema?.properties;
+        const properties = userFieldsSchema?.jsonSchema?.properties as
+            | Record<string, { type?: string }>
+            | undefined;
 
         if (properties && Object.keys(properties).length > 0) {
             extensionFieldCount = Object.keys(properties).length;
@@ -287,7 +287,7 @@ export async function generateWixStoresReferences(
                         fields: Object.fromEntries(
                             Object.entries(properties).map(([key, prop]) => [
                                 key,
-                                { type: (prop as any).type },
+                                { type: prop.type },
                             ]),
                         ),
                     },

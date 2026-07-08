@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "@jay-framework/compiler-jay-stack": "^0.20.0",
+    "@jay-framework/jay-stack-cli": "^0.20.0",
     "@jay-framework/vite-plugin": "^0.20.0",
     "@types/node": "^20.11.0",
     "node-html-parser": "^6.1.0",
