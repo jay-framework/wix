@@ -1,58 +1,2917 @@
 {
   "categories": [
     {
-      "id": "bc0990ba-e6c6-450c-94cc-a0c62543eb13",
+      "id": "001de78a-e707-4f05-8635-f9d0dbda0bb6",
       "revision": "1",
-      "createdDate": "2026-01-18T16:02:43.118Z",
-      "updatedDate": "2026-01-18T16:02:44.116Z",
-      "name": "Recommended Products",
-      "image": {
-        "id": "11062b_ed54849c357d4407b33d9a1aa5dd0e85~mv2.jpg",
-        "url": "https://static.wixstatic.com/media/11062b_ed54849c357d4407b33d9a1aa5dd0e85~mv2.jpg",
-        "height": 2250,
-        "width": 4000,
-        "filename": "AdobeStock_530508087-[Converted].jpg",
-        "sizeInBytes": "142009"
-      },
-      "itemCounter": 5,
+      "createdDate": "2026-02-10T09:38:05.809Z",
+      "updatedDate": "2026-03-04T17:02:02.739Z",
+      "name": "חורף 25 - 70% כיתן",
+      "itemCounter": 60,
       "visible": true,
       "parentCategory": {
-        "index": 2
+        "index": 54
       },
-      "slug": "recommended-products",
+      "slug": "חורף-25-70-כיתן",
       "treeReference": {
         "appNamespace": "@wix/stores"
       }
     },
     {
-      "id": "becc814c-0375-45e8-a826-cd0391f935ef",
-      "revision": "2",
-      "createdDate": "2025-11-16T16:20:37.969Z",
-      "updatedDate": "2025-11-16T16:20:41.376Z",
-      "name": "All Products",
-      "image": {
-        "id": "c569b3_7d0da3510f974ffd804d5ef38ea8b2a1~mv2.jpg",
-        "url": "https://static.wixstatic.com/media/c569b3_7d0da3510f974ffd804d5ef38ea8b2a1~mv2.jpg",
-        "height": 3652,
-        "width": 5000,
-        "filename": "22e53e_92b7db730eed47df94539a5ddc810fcf~mv2.jpg",
-        "sizeInBytes": "3401909"
-      },
-      "itemCounter": 12,
+      "id": "024a9fff-77de-4508-b82c-5fce24f74757",
+      "revision": "1",
+      "createdDate": "2025-12-30T11:46:53.177Z",
+      "updatedDate": "2026-01-28T07:21:40.610Z",
+      "name": "פולגת",
+      "itemCounter": 0,
       "visible": true,
       "parentCategory": {
+        "index": 5
+      },
+      "slug": "polgat",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "קולקציית אופנה וסטייל לגברים באיכות ללא פשרות - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "מבחר פריטי אופנה מבית פולגת, בעיצוב מוקפד ואיכות גבוהה, לפריטים משלימים וללבוש קלאסי במראה מהודר."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "028e73b3-0171-4ddb-a965-ebd8287e5977",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:44:48.618Z",
+      "updatedDate": "2026-05-14T13:14:54.441Z",
+      "name": "אינטימה > פיג'מות והלבשת פנאי > פיג'מות",
+      "itemCounter": 0,
+      "visible": true,
+      "parentCategory": {
+        "id": "b4ccc195-0b27-4075-868f-c31d6731216a",
+        "index": 2
+      },
+      "slug": "פיגמות-1",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "0339aba0-f62c-49a5-807f-fed9c4846c5c",
+      "revision": "1",
+      "createdDate": "2025-11-11T12:28:19.975Z",
+      "updatedDate": "2026-03-12T21:01:46.108Z",
+      "name": " מכנסיים קצרים",
+      "itemCounter": 44,
+      "visible": true,
+      "parentCategory": {
+        "id": "adbc4233-e804-446a-b319-c10ec7d25f01",
+        "index": 3
+      },
+      "slug": "bermuda",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "מכנסיים קצרים לגבר במבחר דגמים לרכישה - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "מכנסיים קצרים בעיצובים נוחים וקלילים, מתאימים לשגרה יומיומית ולעונות החמות, עם הזמנה נוחה אונליין."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "06f1fe78-2f42-4e1e-a457-7cedf2af4860",
+      "revision": "1",
+      "createdDate": "2025-11-11T11:14:57.635Z",
+      "updatedDate": "2026-03-12T21:01:55.470Z",
+      "name": "מגנים וריפודיות",
+      "itemCounter": 4,
+      "visible": true,
+      "parentCategory": {
+        "id": "88c521cc-049d-4375-8ad7-3c0c17670cf1",
+        "index": 6
+      },
+      "slug": "padding",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "מגנים וריפודיות לחדר השינה לקנייה אונליין - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "שמרו על המזרן שלכם לאורך שנים: גלו ריפודיות מזרן רכות ומגנים איכותיים המשלבים היגיינה מקסימלית עם שכבת נוחות מפנקת. השדרוג שכל מיטה צריכה מחכה לכם."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "078d24b9-3562-49f1-8f06-9237ab958759",
+      "revision": "1",
+      "createdDate": "2025-11-26T08:55:18.841Z",
+      "updatedDate": "2026-03-12T21:01:46.312Z",
+      "name": " כריות",
+      "itemCounter": 4,
+      "visible": true,
+      "parentCategory": {
+        "id": "88c521cc-049d-4375-8ad7-3c0c17670cf1",
+        "index": 4
+      },
+      "slug": "pillows",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "כריות שינה ונוי איכותיות לקנייה אונליין - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "שדרגו את הבית עם כריות נוי אבלון מעוצבות וכריות שינה רוזנה וגולד לתמיכה מקסימלית. כל פתרונות הנוחות והסטייל של כיתן מחכים לכם בעמוד אחד בואו להתחדש."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "0b1e09bb-20a0-4717-946d-20404c12c87c",
+      "revision": "1",
+      "createdDate": "2025-11-11T12:43:54.723Z",
+      "updatedDate": "2026-03-12T21:01:45.689Z",
+      "name": "סריגים וסוודרים",
+      "itemCounter": 117,
+      "visible": true,
+      "parentCategory": {
+        "id": "024a9fff-77de-4508-b82c-5fce24f74757",
+        "index": 11
+      },
+      "slug": "knitwearandsweaters",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "סריגים וסוודרים לגבר במבחר דגמים - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "השילוב המושלם בין חמימות לסטייל: סריגי ניקי מלאנג', קרדיגנים וקפוצ'ונים סרוגים מטנסל כותנה איכותית.  בואו להתחדש במראה המוקפד של HECHTER PARIS ו-MAX MORETTI."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "0c108e5f-75c7-4980-91bf-b92a6cac69bf",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:44:46.001Z",
+      "updatedDate": "2026-05-14T13:15:09.584Z",
+      "name": "אינטימה > הלבשה תחתונה > תחתוני מחזור",
+      "itemCounter": 0,
+      "visible": true,
+      "parentCategory": {
+        "id": "404dab8f-bbeb-4277-8b2f-509d90c4bc67",
+        "index": 2
+      },
+      "slug": "תחתוני-מחזור",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "0fc41b5a-a670-4883-9530-6d25fd0fa9e4",
+      "revision": "1",
+      "createdDate": "2025-11-12T08:20:48.506Z",
+      "updatedDate": "2026-03-12T21:01:49.041Z",
+      "name": "ROYAL SATEEN",
+      "itemCounter": 86,
+      "visible": true,
+      "parentCategory": {
+        "id": "eac4db24-04cc-4f36-86cf-c9da6e873421",
+        "index": 7
+      },
+      "slug": "royal-sateen-kit",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "קולקציית טקסטיל של ROYAL SATEEN להלבשת הבית - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "הכניסו את היוקרה של Royal Sateen לכל פינה בבית. ממגבות RS רכות וסופגות ועד ציפיות כותנה סאטן 'אנסטסיה' במגע משי. חוויית אירוח של 5 כוכבים אצלכם בחדר."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "15bb8d67-ecb6-4e9e-85ff-685ba5114fde",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:42:45.437Z",
+      "updatedDate": "2026-05-14T13:14:49.262Z",
+      "name": "אינטימה > סקסי",
+      "itemCounter": 0,
+      "visible": true,
+      "parentCategory": {
+        "id": "326abfb5-e0b3-4584-a37e-02ba7613de9d",
         "index": 1
       },
+      "slug": "סקסי",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "16559844-396a-4b4b-ad6a-3a3fbaf5c59d",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:43:42.132Z",
+      "updatedDate": "2026-05-14T13:15:32.319Z",
+      "name": "אינטימה > בגדי ים והלבשת חוף > בגדי ים",
+      "itemCounter": 0,
+      "visible": true,
+      "parentCategory": {
+        "id": "6ee21e83-f856-4fcf-bfb7-62a8a97fd5ca",
+        "index": 1
+      },
+      "slug": "בגדי-ים",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "16e222cf-13c7-486b-bbf7-780153df8e4b",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:45:11.262Z",
+      "updatedDate": "2026-05-14T13:15:11.983Z",
+      "name": "אינטימה > הלבשה תחתונה > תחתוני מחזור > ספיגה גבוהה",
+      "itemCounter": 1,
+      "visible": true,
+      "parentCategory": {
+        "id": "0c108e5f-75c7-4980-91bf-b92a6cac69bf",
+        "index": 2
+      },
+      "slug": "ספיגה-גבוהה",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "1c7350fd-64fc-4959-a902-8ab9da5e613d",
+      "revision": "1",
+      "createdDate": "2026-02-01T09:34:28.300Z",
+      "updatedDate": "2026-03-04T17:02:02.243Z",
+      "name": "קולקציית קיץ 26 בפולגת",
+      "itemCounter": 54,
+      "visible": true,
+      "parentCategory": {
+        "id": "024a9fff-77de-4508-b82c-5fce24f74757",
+        "index": 2
+      },
+      "slug": "winter-26-polgat",
+      "seoData": {
+        "tags": []
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "1f590ccb-4e0b-4845-b6bf-ae522c95a430",
+      "revision": "1",
+      "createdDate": "2025-11-11T13:24:45.559Z",
+      "updatedDate": "2026-03-12T21:01:55.536Z",
+      "name": "נעליים",
+      "itemCounter": 58,
+      "visible": true,
+      "parentCategory": {
+        "id": "024a9fff-77de-4508-b82c-5fce24f74757",
+        "index": 6
+      },
+      "slug": "shoes",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "נעלי עור אלגנטיות לגברים לרכישה אונליין - פולגת ",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "צעדו בסטייל עם נעלי הפרימיום של MAX MORETTI. גלו מגוון נעלי דרבי מעור, מוקסין זמש וסניקרס אלגנטיות המשלבות נוחות מקסימלית עם עיצוב מנצח לכל לוק."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "1ff17ddc-e95b-4d3b-a180-3ad56ef1b1bf",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:45:19.137Z",
+      "updatedDate": "2026-05-14T13:15:33.265Z",
+      "name": "אינטימה > בגדי ים והלבשת חוף > בגדי ים > בגד ים שלם",
+      "itemCounter": 1,
+      "visible": true,
+      "parentCategory": {
+        "id": "16559844-396a-4b4b-ad6a-3a3fbaf5c59d",
+        "index": 1
+      },
+      "slug": "בגד-ים-שלם",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "20981fa3-4f4d-468c-b78f-085fade6d76c",
+      "revision": "1",
+      "createdDate": "2026-02-03T10:19:37.814Z",
+      "updatedDate": "2026-03-04T17:02:10.809Z",
+      "name": "כיתן - קיץ 26",
+      "itemCounter": 14,
+      "visible": true,
+      "parentCategory": {
+        "index": 50
+      },
+      "slug": "summer-26-kit",
+      "seoData": {
+        "tags": []
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "20ee8ba0-235d-4605-aaf3-b74619d2f9f8",
+      "revision": "2",
+      "createdDate": "2025-11-09T10:53:51.682Z",
+      "updatedDate": "2026-04-09T12:04:32.658Z",
+      "name": "חדר ילדים",
+      "image": {
+        "id": "71f3b5_ee810c354b7140228426efbb23a11bf9~mv2.png",
+        "url": "https://static.wixstatic.com/media/71f3b5_ee810c354b7140228426efbb23a11bf9~mv2.png",
+        "height": 260,
+        "width": 620,
+        "filename": "Banner.png",
+        "sizeInBytes": "362760"
+      },
+      "itemCounter": 93,
+      "visible": true,
+      "parentCategory": {
+        "id": "eac4db24-04cc-4f36-86cf-c9da6e873421",
+        "index": 3
+      },
+      "slug": "kids",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "עיצוב וטקסטיל לחדר הילדים מצעים חלוקים וכרבוליות - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "צרו לילדים שלכם חלל עוטף ומלטף: מסדין כותנה 'נילי' לתינוק ועד חלוקי 'עננים' וכרבוליות 'לי' רכות. האיכות של כיתן דואגת לרגעים הכי מתוקים בבית."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "214cb6f0-a293-411d-837c-7723f6fde778",
+      "revision": "2",
+      "createdDate": "2026-03-05T11:10:59.316Z",
+      "updatedDate": "2026-05-14T13:15:34.739Z",
+      "name": "אינטימה > בגדי ים והלבשת חוף > בגדי ים > ביקיני",
+      "itemCounter": 0,
+      "visible": true,
+      "parentCategory": {
+        "id": "16559844-396a-4b4b-ad6a-3a3fbaf5c59d",
+        "index": 2
+      },
+      "slug": "אינטימה-בגדי-ים-והלבשת-חוף-בגדי-ים-ביקיני",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "253a199b-3245-47ac-b247-a96dbc011b05",
+      "revision": "1",
+      "createdDate": "2025-11-30T12:15:52.463Z",
+      "updatedDate": "2026-03-12T21:01:47.133Z",
+      "name": "שמיכות ",
+      "itemCounter": 53,
+      "visible": true,
+      "parentCategory": {
+        "id": "88c521cc-049d-4375-8ad7-3c0c17670cf1",
+        "index": 5
+      },
+      "slug": "blankets",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "שמיכות לחדר שינה לקנייה אונליין - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "מצאו את השמיכה המושלמת עבורכם: שמיכת פוך טבעי לתחושת יוקרה, או כרבוליות 'לי' ו'אנדי' למראה מעוצב בסלון ובחדר השינה. האיכות של כיתן מחכה לכם במרחק קליק."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "27628393-dacf-4e6d-b88a-27b3a52d9557",
+      "revision": "1",
+      "createdDate": "2025-12-10T10:18:34.097Z",
+      "updatedDate": "2026-03-12T21:01:53.852Z",
+      "name": "חולצות מכופתרות שרוול קצר",
+      "itemCounter": 129,
+      "visible": true,
+      "parentCategory": {
+        "id": "4e8c63c0-126b-4e82-bf94-64b70ee2c2c0",
+        "index": 2
+      },
+      "slug": "buttoned-short",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "חולצות מכופתרות שרוול קצר - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "להיראות במיטבכם גם בחום: חולצות שרוול קצר בטכנולוגיית Non-Iron של Hechter Paris ו-Max Moretti. מראה חלק, מוקפד ורענן לאורך כל היום ללא צורך בגיהוץ."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "2b468f47-6aa8-41a5-b3d7-fd177656a014",
+      "revision": "1",
+      "createdDate": "2024-12-08T13:00:35.826Z",
+      "updatedDate": "2026-03-16T10:08:22.646Z",
+      "name": "כל המוצרים",
+      "itemCounter": 2215,
+      "visible": true,
+      "parentCategory": {
+        "index": 3
+      },
       "slug": "all-products",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "כל המוצרים של כיתן ופולגת - Golf",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "השילוב המושלם בין אופנת גברים במיטבה לטקסטיל פרימיום לבית. האיכות של פולגת והרכות של כיתן נפגשים בעמוד אחד של פריטי פרימיום."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
       "treeReference": {
         "appNamespace": "@wix/stores"
       },
       "managingAppId": "215238eb-22a5-4c36-9e7b-e7c08025e04e"
+    },
+    {
+      "id": "2cad88d6-2e85-4830-a132-21594dea25cc",
+      "revision": "1",
+      "createdDate": "2026-02-18T09:41:22.838Z",
+      "updatedDate": "2026-03-04T17:02:07.622Z",
+      "name": "חולצות מכופתרות 2 ב-149.90  ש\"ח",
+      "itemCounter": 25,
+      "visible": true,
+      "parentCategory": {
+        "index": 60
+      },
+      "slug": "7990-polgat",
+      "seoData": {
+        "tags": []
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "2f286c00-543d-41c1-a313-464794da5ebc",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:43:47.669Z",
+      "updatedDate": "2026-05-14T13:15:38.366Z",
+      "name": "אינטימה > INTIMEN > גרבי גברים",
+      "itemCounter": 1,
+      "visible": true,
+      "parentCategory": {
+        "id": "8ebf99cb-2436-4b63-bb2c-e34da58b0525",
+        "index": 1
+      },
+      "slug": "גרבי-גברים",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "326abfb5-e0b3-4584-a37e-02ba7613de9d",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:42:39.773Z",
+      "updatedDate": "2026-05-14T13:14:30.327Z",
+      "name": "אינטימה",
+      "itemCounter": 1,
+      "visible": true,
+      "parentCategory": {
+        "index": 1
+      },
+      "slug": "אינטימה",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "359b38c6-d0c9-40c1-a351-910e8d36fe85",
+      "revision": "1",
+      "createdDate": "2026-02-16T13:23:56.182Z",
+      "updatedDate": "2026-03-04T17:02:03.366Z",
+      "name": "חורף 25 - 70% - כיתן",
+      "itemCounter": 46,
+      "visible": true,
+      "parentCategory": {
+        "index": 56
+      },
+      "slug": "חורף-25-70-כיתן-1",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "3864ce60-81fd-47cd-bb50-8d93fb281cd5",
+      "revision": "1",
+      "createdDate": "2026-02-10T10:04:33.003Z",
+      "updatedDate": "2026-03-04T17:02:06.761Z",
+      "name": "קיץ 26 - 30% - כיתן",
+      "itemCounter": 13,
+      "visible": true,
+      "parentCategory": {
+        "index": 55
+      },
+      "slug": "קיץ-26-30-כיתן",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "38a291bf-540a-432d-a46b-51cba130dc37",
+      "revision": "1",
+      "createdDate": "2025-12-24T11:56:13.913Z",
+      "updatedDate": "2026-03-12T21:06:28.958Z",
+      "name": "ג'קטים",
+      "itemCounter": 47,
+      "visible": true,
+      "parentCategory": {
+        "id": "e41b4b48-2880-4286-8d66-3981331e6715",
+        "index": 1
+      },
+      "slug": "suitsjacket",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "חליפות לגברים חליפות אלגנטיות - פולגת ",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "שדרגו את ההופעה עם ג'קטים מחויטים של MAX MORETTI ו-HECHTER PARIS. ג'קט חליפת טפלון רגולר פיט או פרימיום מודרן פיט למראה יוקרתי בואו להתחדש באתר."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "396f659b-fd33-4ab8-994d-e651c9448535",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:45:15.403Z",
+      "updatedDate": "2026-05-14T13:15:03.197Z",
+      "name": "אינטימה > הלבשה תחתונה > חזיות וברלטים > חזיית טי שירט",
+      "itemCounter": 1,
+      "visible": true,
+      "parentCategory": {
+        "id": "e3d28cf0-7685-4628-928a-3899147b4a7a",
+        "index": 2
+      },
+      "slug": "חזיית-טי-שירט",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "404dab8f-bbeb-4277-8b2f-509d90c4bc67",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:43:22.783Z",
+      "updatedDate": "2026-05-14T13:14:47.110Z",
+      "name": "אינטימה > הלבשה תחתונה",
+      "itemCounter": 0,
+      "visible": true,
+      "parentCategory": {
+        "id": "326abfb5-e0b3-4584-a37e-02ba7613de9d",
+        "index": 3
+      },
+      "slug": "הלבשה-תחתונה",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "40bcd778-a670-4737-8475-58c9d99fe39c",
+      "revision": "1",
+      "createdDate": "2025-11-11T11:21:58.402Z",
+      "updatedDate": "2026-03-12T21:01:55.612Z",
+      "name": "חלוקי רחצה",
+      "itemCounter": 7,
+      "visible": true,
+      "parentCategory": {
+        "id": "66f46c59-9416-409e-aa10-28160113b33d",
+        "index": 3
+      },
+      "slug": "robes",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "חלוקי רחצה איכותיים לקנייה אונליין - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "התעטפו ברכות: מחלוקי 'עננים' לקטנטנים ועד חלוקי מגבת COTTON איכותיים למבוגרים. גלו את קולקציית חלוקי הרחצה של כיתן לפינוק מושלם אחרי המקלחת."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "45c2b715-d501-41c3-841e-4a523a2c57f1",
+      "revision": "1",
+      "createdDate": "2025-12-23T09:14:38.543Z",
+      "updatedDate": "2026-03-12T21:01:51.286Z",
+      "name": "מכנסי חליפה",
+      "itemCounter": 65,
+      "visible": true,
+      "parentCategory": {
+        "id": "e41b4b48-2880-4286-8d66-3981331e6715",
+        "index": 2
+      },
+      "slug": "suitpants",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "מכנסי חליפה - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "השלימו את הלוק עם מכנסי חליפה יוקרתיים של HECHTER PARIS ו-MAX MORETTI. מדגמי פסטל חגיגיים ועד גזרות פרימיום מודרן פיט למראה יוקרתי ונוח."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "480080a4-6c86-4050-9fc0-d64ceab52415",
+      "revision": "1",
+      "createdDate": "2026-01-14T10:06:17.176Z",
+      "updatedDate": "2026-03-12T21:01:50.417Z",
+      "name": "שמיכות חורף",
+      "itemCounter": 20,
+      "visible": true,
+      "parentCategory": {
+        "id": "253a199b-3245-47ac-b247-a96dbc011b05",
+        "index": 1
+      },
+      "slug": "winterblanket",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "שמיכות חורף - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "התכרבלות מושלמת מתחילה כאן: משמיכת פוך טבעי ו-RS יוקרתית ועד כרבולית לי ושמיכת אנדי המלטפת. גלו את קולקציית שמיכות החורף של כיתן ללילה חם ומפנק."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "4b227c46-9973-4245-a11b-31d33b8c757b",
+      "revision": "1",
+      "createdDate": "2025-11-12T08:26:46.474Z",
+      "updatedDate": "2026-03-12T21:01:53.486Z",
+      "name": "RS חדר שינה",
+      "itemCounter": 77,
+      "visible": true,
+      "parentCategory": {
+        "id": "0fc41b5a-a670-4883-9530-6d25fd0fa9e4",
+        "index": 3
+      },
+      "slug": "royal-sateen-bedroom",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "ROYAL SATEEN - קולקציית מצעים מובחרת לחדר שינה כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "הפכו את חדר השינה לסוויטה מלכותית עם Royal Sateen. ממגבות RS רכות וסופגות ועד פריטי טקסטיל יוקרתיים בסטנדרט הגבוה ביותר. חוויית פינוק מושלמת מחכה לכם."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "4cece906-343f-470c-89fd-a12c0d87acc1",
+      "revision": "1",
+      "createdDate": "2026-01-20T13:29:25.066Z",
+      "updatedDate": "2026-03-04T17:02:06.067Z",
+      "name": "רב עונתי כיתן",
+      "itemCounter": 88,
+      "visible": true,
+      "parentCategory": {
+        "id": "eac4db24-04cc-4f36-86cf-c9da6e873421",
+        "index": 6
+      },
+      "slug": "ravkitan",
+      "seoData": {
+        "tags": [
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "לישון בטמפרטורה המושלמת בכל עונה. משמיכת פוך טבעי יוקרתית ועד פוך סינטטי כרמל הקלילה פריטים רב-עונתיים שמעניקים חמימות מלטפת ואווריריות."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "title",
+            "children": "קולקציית פריטים רב עונתיים - כיתן",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "4e70cc1d-8548-4564-b624-0898f78db7aa",
+      "revision": "2",
+      "createdDate": "2026-03-05T11:10:56.891Z",
+      "updatedDate": "2026-05-14T13:15:24.442Z",
+      "name": "אינטימה > אקססוריז > גרביים וגרביונים > גרבי ברך",
+      "itemCounter": 0,
+      "visible": true,
+      "parentCategory": {
+        "id": "56b47134-5650-4412-917e-6c04431e9fdc",
+        "index": 1
+      },
+      "slug": "אינטימה-אקססוריז-גרביים-וגרביונים-גרבי-ברך",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "4e8c63c0-126b-4e82-bf94-64b70ee2c2c0",
+      "revision": "1",
+      "createdDate": "2025-10-29T09:57:07.293Z",
+      "updatedDate": "2026-03-12T21:01:53.777Z",
+      "name": "חולצות מכופתרות",
+      "itemCounter": 373,
+      "visible": true,
+      "parentCategory": {
+        "id": "dae04d55-80fb-49cb-86ae-98dae0952cd0",
+        "index": 1
+      },
+      "slug": "button",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "חולצות מכופתרות לגברים שרוול ארוך - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "ממראה ה-Slim Fit המדויק ועד חולצות Travel ופלנל טוויל מעוצבות. מצאו את המכופתרת המושלמת מבית Hechter Paris ו-Max Moretti באיכות הגבוהה ביותר. הזמינו אונליין."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "534643e4-ea00-4233-abb1-ca740d797849",
+      "revision": "1",
+      "createdDate": "2026-01-11T09:06:27.013Z",
+      "updatedDate": "2026-03-04T17:02:06.184Z",
+      "name": "רב עונתי",
+      "itemCounter": 84,
+      "visible": true,
+      "parentCategory": {
+        "id": "024a9fff-77de-4508-b82c-5fce24f74757",
+        "index": 3
+      },
+      "slug": "polgat-rav",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "קולקציית פריטים רב עונתיים - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "הסטייל נמצא בפרטים הקטנים: מארנקי כרטיסים מעור משובח ועד מפיצי ריח במקלות בניחוח יוקרתי. המתנה המושלמת לעצמך או לאחרים מחכה לך עכשיו באתר."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "55283508-2b0e-4827-bb43-14974588d40e",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:45:14.411Z",
+      "updatedDate": "2026-05-14T13:15:04.967Z",
+      "name": "אינטימה > הלבשה תחתונה > חזיות וברלטים > גוזיות וברלטים",
+      "itemCounter": 1,
+      "visible": true,
+      "parentCategory": {
+        "id": "e3d28cf0-7685-4628-928a-3899147b4a7a",
+        "index": 1
+      },
+      "slug": "גוזיות-וברלטים",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "56411821-6ade-4048-88da-142ccc8d1272",
+      "revision": "1",
+      "createdDate": "2025-11-11T12:02:57.484Z",
+      "updatedDate": "2026-03-12T21:01:51.745Z",
+      "name": "שמיכות חדר ילדים כיתן",
+      "itemCounter": 2,
+      "visible": true,
+      "parentCategory": {
+        "id": "20ee8ba0-235d-4605-aaf3-b74619d2f9f8",
+        "index": 3
+      },
+      "slug": "kidsblankets",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "שמיכות חדר ילדים | כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "בעמוד זה תמצאו מגוון רחב של שמיכות חדר ילדים כיתן, כגון: עדיין אין כאן מוצרים..., מדיניות, חנות. לחצו כאן וצפו בכל שאר המוצרים בקטגוריה זו."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "56b47134-5650-4412-917e-6c04431e9fdc",
+      "revision": "2",
+      "createdDate": "2026-03-05T11:10:55.689Z",
+      "updatedDate": "2026-05-14T13:15:23.364Z",
+      "name": "אינטימה > אקססוריז > גרביים וגרביונים",
+      "itemCounter": 0,
+      "visible": true,
+      "parentCategory": {
+        "id": "d413eaeb-136e-4c8f-a7d7-d90c26d9c272",
+        "index": 4
+      },
+      "slug": "אינטימה-אקססוריז-גרביים-וגרביונים",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "5d0d6370-df2b-4293-bec7-b1cda2454ae1",
+      "revision": "1",
+      "createdDate": "2025-11-30T12:46:58.539Z",
+      "updatedDate": "2026-03-12T21:01:54.711Z",
+      "name": "שטיחי אמבט",
+      "itemCounter": 8,
+      "visible": true,
+      "parentCategory": {
+        "id": "66f46c59-9416-409e-aa10-28160113b33d",
+        "index": 1
+      },
+      "slug": "bath-mat",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "שטיחי אמבט לחדר רחצה לקנייה אונליין - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "הוסיפו נגיעה של צבע ורכות לחדר הרחצה עם שטיחי אמבט מעוצבים ומגבות רצפה איכותיות. שילוב מושלם של פונקציונליות ועיצוב מנצח מבית כיתן."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "61ce5a46-66cc-4412-bb0e-d8656c9ba996",
+      "revision": "1",
+      "createdDate": "2025-11-11T11:20:42.650Z",
+      "updatedDate": "2026-03-12T21:01:55.179Z",
+      "name": "חולצות טי שירט ",
+      "itemCounter": 100,
+      "visible": true,
+      "parentCategory": {
+        "id": "dae04d55-80fb-49cb-86ae-98dae0952cd0",
+        "index": 2
+      },
+      "slug": "t-shirts",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "חולצות טי שירט לגבר במבחר דגמים - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "שדרגו את הבייסיק עם טי-שירטס מבית MAX MORETTI ו-HECHTER PARIS. מכותנה ליקוויד ועד ז'קארד טנסל יוקרתי המראה המנצח ליומיום מחכה לכם באתר, בואו להתחדש."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "661bb786-4e8b-4da2-affc-4d1847a898d1",
+      "revision": "1",
+      "createdDate": "2025-12-07T12:43:26.514Z",
+      "updatedDate": "2026-03-12T21:01:49.313Z",
+      "name": "חולצות מכופתרות NON IRON",
+      "itemCounter": 168,
+      "visible": true,
+      "parentCategory": {
+        "id": "4e8c63c0-126b-4e82-bf94-64b70ee2c2c0",
+        "index": 3
+      },
+      "slug": "non-iron-button",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "חולצות אל קמט חולצות מכופתרות לגברים ללא גיהוץ - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "תשכחו ממגהץ עם חולצות מכופתרות NON IRON של MAX MORETTI למראה אלגנטי ומוקפד שנשאר חד לאורך כל היום. חולצות אל קמט בבד טוויל איכותי עכשיו בקולקציה חדשה."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "66f46c59-9416-409e-aa10-28160113b33d",
+      "revision": "1",
+      "createdDate": "2025-11-09T10:31:10.077Z",
+      "updatedDate": "2026-03-12T21:01:53.353Z",
+      "name": "חדר רחצה ",
+      "itemCounter": 54,
+      "visible": true,
+      "parentCategory": {
+        "id": "eac4db24-04cc-4f36-86cf-c9da6e873421",
+        "index": 1
+      },
+      "slug": "bathroom",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "טקסטיל לחדר רחצה - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "שדרגו את חדר הרחצה עם האיכות של כיתן: מגבות RS סופגות, סטי 3 מגבות ידיים 'רוסו' ומגבות רצפה מעוצבות. שילוב מושלם של סטייל ונוחות לכל יום."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "6ee21e83-f856-4fcf-bfb7-62a8a97fd5ca",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:43:31.935Z",
+      "updatedDate": "2026-05-14T13:14:43.147Z",
+      "name": "אינטימה > בגדי ים והלבשת חוף",
+      "itemCounter": 0,
+      "visible": true,
+      "parentCategory": {
+        "id": "326abfb5-e0b3-4584-a37e-02ba7613de9d",
+        "index": 5
+      },
+      "slug": "בגדי-ים-והלבשת-חוף",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "76e401c1-8a27-46e9-8f2e-4fe2af5902a9",
+      "revision": "1",
+      "createdDate": "2025-12-10T10:11:07.323Z",
+      "updatedDate": "2026-03-12T21:01:47.760Z",
+      "name": "חולצות מכופתרות שרוול ארוך",
+      "itemCounter": 238,
+      "visible": true,
+      "parentCategory": {
+        "id": "4e8c63c0-126b-4e82-bf94-64b70ee2c2c0",
+        "index": 1
+      },
+      "slug": "buttoned-long",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "חולצות מכופתרות שרוול ארוך - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "מהחולצה הלבנה הקלאסית ועד פלנל טוויל ודגמי TRAVEL יוקרתיים. גלו קולקציה של חולצות מכופתרות איכותיות בטכנולוגיית אל-קמט לסטייל אישי בלתי מתפשר."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "7e274d77-553e-4c91-8a35-e53d7293e58a",
+      "revision": "1",
+      "createdDate": "2025-11-12T12:08:42.735Z",
+      "updatedDate": "2026-03-12T21:01:53.272Z",
+      "name": " חולצות פולו",
+      "itemCounter": 123,
+      "visible": true,
+      "parentCategory": {
+        "id": "dae04d55-80fb-49cb-86ae-98dae0952cd0",
+        "index": 3
+      },
+      "slug": "poloshirts",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "חולצות פולו לגבר במבחר דגמים - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "המראה המושלם בין קז'ואל לאלגנט: חולצות פולו יוקרתיות של HECHTER PARIS ודגמי כותנה ליקוויד של MAX MORETTI. שילוב של נוחות וסטייל מנצח לכל שעות היום."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "817c2afd-9e6f-47e6-80c9-8145730d4d81",
+      "revision": "2",
+      "createdDate": "2026-03-05T11:10:58.312Z",
+      "updatedDate": "2026-05-14T13:15:26.390Z",
+      "name": "אינטימה > אקססוריז > גרביים וגרביונים > עקביות",
+      "itemCounter": 0,
+      "visible": true,
+      "parentCategory": {
+        "id": "56b47134-5650-4412-917e-6c04431e9fdc",
+        "index": 2
+      },
+      "slug": "אינטימה-אקססוריז-גרביים-וגרביונים-עקביות",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "81c880de-2c25-4bd2-b0bd-cde83c924c66",
+      "revision": "1",
+      "createdDate": "2025-11-30T11:34:54.768Z",
+      "updatedDate": "2026-03-12T21:06:29.147Z",
+      "name": "ספא",
+      "itemCounter": 14,
+      "visible": true,
+      "parentCategory": {
+        "id": "66f46c59-9416-409e-aa10-28160113b33d",
+        "index": 4
+      },
+      "slug": "spa",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "חלוקי רחצה וספא - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "חוויית הספא של כיתן: חלוקי COTTON יוקרתיים וחלוקי ילדים רכים במיוחד במגע של ענן. כל מה שצריך לרגע של רוגע ופינוק בבית מחכה לכם באתר. הזמינו אונליין."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "846ea488-93b7-4a7a-866a-5a51ad03e362",
+      "revision": "2",
+      "createdDate": "2025-11-06T12:14:16.986Z",
+      "updatedDate": "2026-05-14T13:15:40.450Z",
+      "name": "אינטימה > INTIMEN > אביזרים",
+      "itemCounter": 1,
+      "visible": true,
+      "parentCategory": {
+        "id": "8ebf99cb-2436-4b63-bb2c-e34da58b0525",
+        "index": 3
+      },
+      "slug": "אביזרים-7",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "8540bcf9-a7a6-4e0b-9666-b8872b6fe914",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:44:09.362Z",
+      "updatedDate": "2026-05-14T13:15:37.121Z",
+      "name": "אינטימה > INTIMEN > טי שירט וגופיות",
+      "itemCounter": 1,
+      "visible": true,
+      "parentCategory": {
+        "id": "8ebf99cb-2436-4b63-bb2c-e34da58b0525",
+        "index": 2
+      },
+      "slug": "טי-שירט-וגופיות",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "870b5318-137a-4f96-b47c-a5bed063aee5",
+      "revision": "1",
+      "createdDate": "2026-01-14T10:16:13.500Z",
+      "updatedDate": "2026-03-12T21:01:49.601Z",
+      "name": "שמיכות קיץ",
+      "itemCounter": 30,
+      "visible": true,
+      "parentCategory": {
+        "id": "253a199b-3245-47ac-b247-a96dbc011b05",
+        "index": 2
+      },
+      "slug": "summerblanket",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "שמיכות קיץ קלילות ומפנקות - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "מחפשים שמיכה קלה ואוורירית? בשביל זה יש את שמיכות הקיץ של כיתן: וונדי, רוזיטה ופוך סינטטי כרמל. פתרון הלינה המושלם לקיץ ישראלי נעים ומפנק מחכה לכם באתר."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "88c521cc-049d-4375-8ad7-3c0c17670cf1",
+      "revision": "2",
+      "createdDate": "2025-11-09T10:00:33.294Z",
+      "updatedDate": "2026-04-09T16:13:50.344Z",
+      "name": "חדר שינה",
+      "image": {
+        "id": "c5db73_9ed17637261c45ef97d54dd92c5711bf~mv2.png",
+        "url": "https://static.wixstatic.com/media/c5db73_9ed17637261c45ef97d54dd92c5711bf~mv2.png",
+        "height": 896,
+        "width": 1586,
+        "filename": "53162f6e1ceef30355f86e7b2a90bf5faf1ca185.png",
+        "sizeInBytes": "1308801"
+      },
+      "itemCounter": 331,
+      "visible": true,
+      "parentCategory": {
+        "id": "eac4db24-04cc-4f36-86cf-c9da6e873421",
+        "index": 2
+      },
+      "slug": "bedroom",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "טקסטיל לחדר השינה - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "שדרגו את חדר השינה עם האיכות של כיתן: מגע המשי של סדיני סאטן, הגמישות של הג'רסי והגנה מקסימלית עם ריפודית מזרן איכותית. סטייל ונוחות שנשארים לאורך שנים."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "8909b336-fb1c-4d41-9bb7-826b47fb21bf",
+      "revision": "1",
+      "createdDate": "2025-11-11T11:09:20.552Z",
+      "updatedDate": "2026-03-12T21:01:47.156Z",
+      "name": "מצעי תינוקות כיתן",
+      "itemCounter": 41,
+      "visible": true,
+      "parentCategory": {
+        "id": "20ee8ba0-235d-4605-aaf3-b74619d2f9f8",
+        "index": 4
+      },
+      "slug": "babies",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "מצעי תינוקות | כיתן ",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "בעמוד זה תמצאו מגוון רחב של מצעי תינוקות כיתן, כגון: סדין כותנה תינוק נילי, סט מצעי כותנה מיני בייבי, סט מצעי כותנה מיקי קולור. לחצו כאן וצפו בכל שאר המוצרים בקטגוריה זו."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "8d89dc93-8388-460e-a375-1d64fc6050f9",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:45:42.860Z",
+      "updatedDate": "2026-05-14T13:14:40.892Z",
+      "name": "אינטימה > OL ONLY",
+      "itemCounter": 1,
+      "visible": true,
+      "parentCategory": {
+        "id": "326abfb5-e0b3-4584-a37e-02ba7613de9d",
+        "index": 7
+      },
+      "slug": "ol-only",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "8e716fe8-85ea-4923-ad40-49cc66e8a930",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:44:07.515Z",
+      "updatedDate": "2026-05-14T13:14:52.120Z",
+      "name": "אינטימה > פיג'מות והלבשת פנאי > חלוקים וכותנות",
+      "itemCounter": 1,
+      "visible": true,
+      "parentCategory": {
+        "id": "b4ccc195-0b27-4075-868f-c31d6731216a",
+        "index": 1
+      },
+      "slug": "חלוקים-וכותנות",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "8ebf99cb-2436-4b63-bb2c-e34da58b0525",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:43:33.528Z",
+      "updatedDate": "2026-05-14T13:14:42.126Z",
+      "name": "אינטימה > INTIMEN",
+      "itemCounter": 0,
+      "visible": true,
+      "parentCategory": {
+        "id": "326abfb5-e0b3-4584-a37e-02ba7613de9d",
+        "index": 6
+      },
+      "slug": "intimen",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "8f13c3ae-4170-41bd-8953-11be83fc301f",
+      "revision": "1",
+      "createdDate": "2025-12-10T12:24:06.198Z",
+      "updatedDate": "2026-03-12T21:01:49.511Z",
+      "name": " מכנסיים ארוכים",
+      "itemCounter": 145,
+      "visible": true,
+      "parentCategory": {
+        "id": "adbc4233-e804-446a-b319-c10ec7d25f01",
+        "index": 2
+      },
+      "slug": "long-pants",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "מכנסיים ארוכים - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "חולמים על מכנסיים שלא מצריכים גיהוץ? גלו את דגמי ה-Non Iron וה-Easy Care של פולגת. מגוון מכנסי צ'ינו וחמש כיסים בטקסטורות שטופות למראה מוקפד ונוח. הזמינו אונליין."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "8fb4fed4-7183-42d2-8cb1-b1d9fd4e435e",
+      "revision": "1",
+      "createdDate": "2026-02-24T10:44:45.507Z",
+      "updatedDate": "2026-03-12T21:01:49.094Z",
+      "name": "40% הנחה בקניית 2 פריטים ומעלה - כיתן",
+      "itemCounter": 101,
+      "visible": true,
+      "parentCategory": {
+        "index": 61
+      },
+      "slug": "40for2",
+      "seoData": {
+        "tags": []
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "9864b74a-4141-46ab-983f-278774a3bfca",
+      "revision": "1",
+      "createdDate": "2025-12-23T11:57:25.832Z",
+      "updatedDate": "2026-03-12T21:01:48.025Z",
+      "name": "עניבות ופפיונים",
+      "itemCounter": 3,
+      "visible": true,
+      "parentCategory": {
+        "id": "aea4bbe0-63ef-45e4-8a7e-4e9ccae6f440",
+        "index": 3
+      },
+      "slug": "ties",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "עניבות ופפיונים - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "מעניבות משי יוקרתיות ועד פפיונים מעוצבים שדרגו את החליפה עם אביזרי פרימיום בטקסטורות מיוחדות."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "99424428-20cd-4f37-87d1-98009464268c",
+      "revision": "1",
+      "createdDate": "2025-11-30T11:33:33.083Z",
+      "updatedDate": "2026-03-12T21:01:49.153Z",
+      "name": "מצעי ג'רסי",
+      "itemCounter": 3,
+      "visible": true,
+      "parentCategory": {
+        "id": "88c521cc-049d-4375-8ad7-3c0c17670cf1",
+        "index": 3
+      },
+      "slug": "jersi-sheets",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "מצעי ג'רסי לחדר שינה לקנייה אונליין - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "מחפשים שינה רכה וגמישה? גלו את עולם הג'רסי של כיתן. סדינים, ציפיות וציפות מבד נושם ואיכותי שנשאר רך לאורך זמן. בואו להתחדש בסטייל ונוחות מקסימלית."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "9b6656f8-1a9e-4c90-bf4f-c73b63adea2c",
+      "revision": "1",
+      "createdDate": "2025-12-10T12:36:31.186Z",
+      "updatedDate": "2026-03-12T21:01:50.789Z",
+      "name": "Max Moretti",
+      "itemCounter": 639,
+      "visible": true,
+      "parentCategory": {
+        "id": "c773cb5f-6b16-4d5d-80ca-69606fd0b68c",
+        "index": 2
+      },
+      "slug": "max-moretti",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "MAX MORETTI - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "חולצות מכופתרות אל-קמט של Max Moretti: הפתרון המושלם למראה מוקפד מהבוקר ועד הערב. איכות ללא פשרות ונוחות מקסימלית בכל פריט. צפו בקולקציה המלאה והזמינו אונליין."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "9da4d7eb-aecd-4132-90c4-f98b5106892c",
+      "revision": "1",
+      "createdDate": "2025-12-23T11:53:18.103Z",
+      "updatedDate": "2026-03-12T21:01:51.828Z",
+      "name": "אקססוריז",
+      "itemCounter": 19,
+      "visible": true,
+      "parentCategory": {
+        "id": "aea4bbe0-63ef-45e4-8a7e-4e9ccae6f440",
+        "index": 4
+      },
+      "slug": "accessories-accessories",
+      "seoData": {
+        "tags": [
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "הטאץ' הסופי לכל לוק, מעבודה ועד אירוע: גלו את קולקציית האקססוריז של פולגת. חגורות איכותיות, עניבות מוקפדות ואביזרים שמעניקים מראה חד ומרשים ללא מאמץ."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "title",
+            "children": "אקססוריז לגבר: חגורות עור, עניבות ואביזרי פרימיום - פולגת",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "9dd122e3-2987-4e9e-a124-748691e6d3ee",
+      "revision": "1",
+      "createdDate": "2025-11-26T08:11:14.804Z",
+      "updatedDate": "2026-03-04T17:02:03.402Z",
+      "name": "Winter Collection 2025 - כיתן",
+      "itemCounter": 63,
+      "visible": true,
+      "parentCategory": {
+        "id": "eac4db24-04cc-4f36-86cf-c9da6e873421",
+        "index": 5
+      },
+      "slug": "winter-collection-2025",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "Winter Collection 2025 - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "החורף הזה נשארים במיטה גלו את קולקציית Winter 2025 של כיתן. מצעי פרימיום מלטפים, שמיכות מחממות וטקסטיל לבית בעיצובים מודריניים."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "a0357464-b08a-46e8-821e-8a436a10c121",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:45:47.202Z",
+      "updatedDate": "2026-05-14T13:14:57.365Z",
+      "name": "אינטימה > פיג'מות והלבשת פנאי > בייבידול",
+      "itemCounter": 1,
+      "visible": true,
+      "parentCategory": {
+        "id": "b4ccc195-0b27-4075-868f-c31d6731216a",
+        "index": 3
+      },
+      "slug": "בייבידול",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "a22f4f44-2316-4d8b-ad9d-f9ccd86ca9e4",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:43:37.942Z",
+      "updatedDate": "2026-05-14T13:15:19.551Z",
+      "name": "אינטימה > אקססוריז > אביזרי חזיות וחזה",
+      "itemCounter": 1,
+      "visible": true,
+      "parentCategory": {
+        "id": "d413eaeb-136e-4c8f-a7d7-d90c26d9c272",
+        "index": 2
+      },
+      "slug": "אביזרי-חזיות-וחזה",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "a7278190-52a2-48ac-999f-7a44598662c3",
+      "revision": "1",
+      "createdDate": "2025-11-30T12:55:10.747Z",
+      "updatedDate": "2026-03-12T21:01:48.977Z",
+      "name": "תינוקות",
+      "itemCounter": 41,
+      "visible": true,
+      "parentCategory": {
+        "id": "20ee8ba0-235d-4605-aaf3-b74619d2f9f8",
+        "index": 2
+      },
+      "slug": "babies-br",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "מצעי תינוקות לקנייה אונליין - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "עטפו את הקטנטנים באהבה: מסדין כותנה 'נילי' ועד סטי מצעים בעיצובי מיקי קולור ומיני בייבי. 100% כותנה רכה ומלטפת לשינה בטוחה ומתוקה בכל לילה."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "a7b373ef-7520-438e-8da7-0913ff70078f",
+      "revision": "1",
+      "createdDate": "2026-01-15T13:40:39.712Z",
+      "updatedDate": "2026-03-12T21:01:54.968Z",
+      "name": "חגורות",
+      "itemCounter": 16,
+      "visible": true,
+      "parentCategory": {
+        "id": "aea4bbe0-63ef-45e4-8a7e-4e9ccae6f440",
+        "index": 1
+      },
+      "slug": "belts",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "חגורות עור לגבר אביזרי פרימיום - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "גלו את קולקציית החגורות של פולגת: מחגורות עור קלאסיות ועד חגורות דו-צדדיות ורסטיליות. איכות ללא פשרות ועיצובים מנצחים שמתאימים למכנסי צ'ינו, ג'ינס או חליפה."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "a8390878-ea5b-4b39-bbb7-490719bf6361",
+      "revision": "1",
+      "createdDate": "2026-02-17T07:46:16.893Z",
+      "updatedDate": "2026-03-04T17:02:02.053Z",
+      "name": "רב עונתי + חורף 25",
+      "itemCounter": 79,
+      "visible": true,
+      "parentCategory": {
+        "index": 59
+      },
+      "slug": "rav-winter25-kit",
+      "seoData": {
+        "tags": []
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "aac925d4-57a4-48e2-a2f2-4e48901b8022",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:44:43.993Z",
+      "updatedDate": "2026-05-14T13:14:50.983Z",
+      "name": "אינטימה > סקסי > פיג'מות סקסיות",
+      "itemCounter": 1,
+      "visible": true,
+      "parentCategory": {
+        "id": "15bb8d67-ecb6-4e9e-85ff-685ba5114fde",
+        "index": 1
+      },
+      "slug": "פיגמות-סקסיות",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "ab2c3bd8-c1b9-4901-8106-9214893c30ad",
+      "revision": "2",
+      "createdDate": "2025-11-28T05:18:37.105Z",
+      "updatedDate": "2026-05-14T13:14:56.363Z",
+      "name": "אינטימה > פיג'מות והלבשת פנאי > פיג'מות > פיג'מות סאטן",
+      "itemCounter": 1,
+      "visible": true,
+      "parentCategory": {
+        "id": "028e73b3-0171-4ddb-a965-ebd8287e5977",
+        "index": 2
+      },
+      "slug": "אינטימה-פיגמות-והלבשת-פנאי-פיגמות-פיגמות-סאטן",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "abef3fef-8d23-4001-ad34-4571d1cb90e9",
+      "revision": "1",
+      "createdDate": "2025-12-30T09:08:06.618Z",
+      "updatedDate": "2026-03-04T17:02:05.546Z",
+      "name": "פולגת חורף 25",
+      "itemCounter": 83,
+      "visible": true,
+      "parentCategory": {
+        "id": "024a9fff-77de-4508-b82c-5fce24f74757",
+        "index": 4
+      },
+      "slug": "winter25",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "קולקציית חורף 25 - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "קולקציית חורף 25 מבית פולגת עם פריטי לבוש חורפיים בעיצובים עדכניים, בדים נעימים ושכבות נוחות לעונה הקרה, לרכישה אונליין."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "adbc4233-e804-446a-b319-c10ec7d25f01",
+      "revision": "1",
+      "createdDate": "2025-11-12T12:13:25.114Z",
+      "updatedDate": "2026-03-12T21:01:47.062Z",
+      "name": "מכנסיים וגי'נסים",
+      "itemCounter": 234,
+      "visible": true,
+      "parentCategory": {
+        "id": "024a9fff-77de-4508-b82c-5fce24f74757",
+        "index": 9
+      },
+      "slug": "pants",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "מכנסיים וג'ינסים בגזרות מוקפדות ובדים איכותיים - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "מבחר מכנסיים וג’ינסים מבית פולגת, בגזרות מוקפדות ובדים איכותיים, לשילוב נוחות ומראה מסודר לרכישה בדיגיטל."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "ae5351fb-8132-4543-af41-fe4e3d03e05b",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:43:36.379Z",
+      "updatedDate": "2026-05-14T13:15:17.535Z",
+      "name": "אינטימה > אקססוריז > אביזרי אופנה",
+      "itemCounter": 1,
+      "visible": true,
+      "parentCategory": {
+        "id": "d413eaeb-136e-4c8f-a7d7-d90c26d9c272",
+        "index": 1
+      },
+      "slug": "אביזרי-אופנה",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "aea4bbe0-63ef-45e4-8a7e-4e9ccae6f440",
+      "revision": "1",
+      "createdDate": "2025-11-11T10:26:06.956Z",
+      "updatedDate": "2026-03-12T21:01:53.553Z",
+      "name": "אביזרים",
+      "itemCounter": 148,
+      "visible": true,
+      "parentCategory": {
+        "id": "024a9fff-77de-4508-b82c-5fce24f74757",
+        "index": 5
+      },
+      "slug": "accessories",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "אביזרי לבוש, חגורות, עניבות ופפיונים - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "בעמוד זה תמצאו מגוון רחב של אביזרים, כגון: חגורה קלועה בשילוב עור, חגורת עור בייסיק 3.5 סמ, חגורת עור אבזם מתכת בגימור מט. לחצו כאן וצפו בכל שאר המוצרים בקטגוריה זו.\n"
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "b4ccc195-0b27-4075-868f-c31d6731216a",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:42:47.540Z",
+      "updatedDate": "2026-05-14T13:14:48.031Z",
+      "name": "אינטימה > פיג'מות והלבשת פנאי",
+      "itemCounter": 0,
+      "visible": true,
+      "parentCategory": {
+        "id": "326abfb5-e0b3-4584-a37e-02ba7613de9d",
+        "index": 2
+      },
+      "slug": "פיגמות-והלבשת-פנאי",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "c03b8220-5d3b-4fb1-9b66-79041bd33a5e",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:44:02.902Z",
+      "updatedDate": "2026-05-14T13:15:31.632Z",
+      "name": "אינטימה > אקססוריז > כפכפים ונעלי בית",
+      "itemCounter": 2,
+      "visible": true,
+      "parentCategory": {
+        "id": "d413eaeb-136e-4c8f-a7d7-d90c26d9c272",
+        "index": 4
+      },
+      "slug": "כפכפים-ונעלי-בית",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "c773cb5f-6b16-4d5d-80ca-69606fd0b68c",
+      "revision": "1",
+      "createdDate": "2025-11-11T10:41:02.463Z",
+      "updatedDate": "2026-03-12T21:01:51.217Z",
+      "name": "מותגים",
+      "itemCounter": 1068,
+      "visible": true,
+      "parentCategory": {
+        "id": "024a9fff-77de-4508-b82c-5fce24f74757",
+        "index": 8
+      },
+      "slug": "brands",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "מותגים נבחרים בעיצובים קלאסיים ועדכניים - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "מבחר רחב של פריטי אופנה ממותגים נבחרים, בעיצובים קלאסיים ועדכניים, מבדים איכותיים ונוחים ללבישה, לרכישה אונליין ."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "c8bbcf46-3206-4ce1-83b0-f795f53a5562",
+      "revision": "1",
+      "createdDate": "2025-11-11T10:59:02.255Z",
+      "updatedDate": "2026-03-12T21:01:52.125Z",
+      "name": "ילדים ונוער",
+      "itemCounter": 60,
+      "visible": true,
+      "parentCategory": {
+        "id": "20ee8ba0-235d-4605-aaf3-b74619d2f9f8",
+        "index": 5
+      },
+      "slug": "kidsandteen",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "מצעים לילדים ונוער לקנייה אונליין - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "מהסדינים של נילי ועד כרבולית לי המפנקת וכריות מיקי ליין – גלו עולם של נוחות וסטייל לחדר הילדים. האיכות של כיתן לכל גיל מחכה לכם כאן."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "ca904cd6-f667-49c6-a554-1a198fff6de8",
+      "revision": "1",
+      "createdDate": "2025-12-10T12:33:24.345Z",
+      "updatedDate": "2026-03-12T21:01:55.385Z",
+      "name": "Hechter Paris ",
+      "itemCounter": 350,
+      "visible": true,
+      "parentCategory": {
+        "id": "c773cb5f-6b16-4d5d-80ca-69606fd0b68c",
+        "index": 1
+      },
+      "slug": "hechter-paris",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "קולקציית Hechter Paris - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "מהחולצה המכופתרת הלבנה בגזרת Slim Fit ועד למארזי תחתוני פרימיום – גלו את הדיוק של Hechter Paris. סטייל מנצח ונוחות מקסימלית בכל פריט."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "caff7c79-0f59-4a01-8d1a-1c8dcbc5563a",
+      "revision": "2",
+      "createdDate": "2026-03-05T11:11:00.433Z",
+      "updatedDate": "2026-05-14T13:15:13.173Z",
+      "name": "אינטימה > הלבשה תחתונה > סטים",
+      "itemCounter": 0,
+      "visible": true,
+      "parentCategory": {
+        "id": "404dab8f-bbeb-4277-8b2f-509d90c4bc67",
+        "index": 3
+      },
+      "slug": "אינטימה-הלבשה-תחתונה-סטים",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "cd6eed2a-5cf8-494b-8fd2-3cbe9d435891",
+      "revision": "1",
+      "createdDate": "2025-11-12T08:40:47.988Z",
+      "updatedDate": "2026-03-12T21:01:46.172Z",
+      "name": "RS חדר רחצה",
+      "itemCounter": 9,
+      "visible": true,
+      "parentCategory": {
+        "id": "0fc41b5a-a670-4883-9530-6d25fd0fa9e4",
+        "index": 2
+      },
+      "slug": "royal-sateen-bathroom",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "קולקציית טקסטיל של ROYAL SATEEN לחדר רחצה - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "איכות פרימיום בחדר הרחצה: מגוון מגבות RS וסטים של זוג מגבות בעיצוב נקי ומגע מלטף. הפתרון המושלם למי שמחפש עמידות, רכות וספיגה מעולה לאורך זמן."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "ce6d82b7-7ab1-41e1-98d9-2036d7f5050a",
+      "revision": "1",
+      "createdDate": "2025-11-26T07:37:40.351Z",
+      "updatedDate": "2026-03-12T21:01:49.811Z",
+      "name": " מצעים",
+      "itemCounter": 208,
+      "visible": true,
+      "parentCategory": {
+        "id": "88c521cc-049d-4375-8ad7-3c0c17670cf1",
+        "index": 1
+      },
+      "slug": "sheets-kit",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "מצעים לחדר השינה לקנייה אונליין - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "לילה טוב מתחיל במצעים איכותיים. גלו מגוון רחב של סדיני כותנה באריגת סאטן, סדיני ג'רסי וסטים מעוצבים שפשוט אי אפשר להפסיק לגעת בהם."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "d413eaeb-136e-4c8f-a7d7-d90c26d9c272",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:43:30.004Z",
+      "updatedDate": "2026-05-14T13:14:46.094Z",
+      "name": "אינטימה > אקססוריז",
+      "itemCounter": 1,
+      "visible": true,
+      "parentCategory": {
+        "id": "326abfb5-e0b3-4584-a37e-02ba7613de9d",
+        "index": 4
+      },
+      "slug": "אקססוריז",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "d652aeec-39b4-47af-9d23-4dbcbc876cfe",
+      "revision": "1",
+      "createdDate": "2025-12-23T10:41:20.894Z",
+      "updatedDate": "2026-03-12T21:01:44.962Z",
+      "name": "הלבשה תחתונה",
+      "itemCounter": 16,
+      "visible": true,
+      "parentCategory": {
+        "id": "aea4bbe0-63ef-45e4-8a7e-4e9ccae6f440",
+        "index": 2
+      },
+      "slug": "underwear",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "הלבשה תחתונה לגברים - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "השילוב המושלם בין סטייל לנוחות: תחתוני בוקסר Modal וסליפ מבית HECHTER PARIS במארזי שלישיות משתלמים. היכנסו עכשיו וצפו במגוון ההלבשה התחתונה שפשוט נוח ללבוש."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "d6a9bc2a-a362-4a28-921f-2d5e8fc6522a",
+      "revision": "1",
+      "createdDate": "2025-12-01T08:27:30.858Z",
+      "updatedDate": "2026-03-12T21:01:47.828Z",
+      "name": " מגבות ",
+      "itemCounter": 24,
+      "visible": true,
+      "parentCategory": {
+        "id": "66f46c59-9416-409e-aa10-28160113b33d",
+        "index": 2
+      },
+      "slug": "towels",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "קולקציית מגבות פרימיום RS וסטים של רוסו - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "שדרגו את חדר הרחצה עם מגבות RS וסטים מעוצבים של רוסו. מגבות פרימיום סופגות ברמה הגבוהה ביותר, במגוון גדלים וצבעים לשימוש יומיומי וסטייל מושלם."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "d9fbe415-d745-4423-a341-8e6573eae611",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:44:49.443Z",
+      "updatedDate": "2026-05-14T13:14:55.305Z",
+      "name": "אינטימה > פיג'מות והלבשת פנאי > פיג'מות > פיג'מות כותנה",
+      "itemCounter": 1,
+      "visible": true,
+      "parentCategory": {
+        "id": "028e73b3-0171-4ddb-a965-ebd8287e5977",
+        "index": 1
+      },
+      "slug": "פיגמות-כותנה",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "dae04d55-80fb-49cb-86ae-98dae0952cd0",
+      "revision": "1",
+      "createdDate": "2025-12-21T11:22:10.354Z",
+      "updatedDate": "2026-03-12T21:01:47.910Z",
+      "name": " חולצות",
+      "itemCounter": 611,
+      "visible": true,
+      "parentCategory": {
+        "id": "024a9fff-77de-4508-b82c-5fce24f74757",
+        "index": 12
+      },
+      "slug": "shirts-all",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "חולצות לגבר במבחר דגמים לרכישה אונליין - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "ממראה מחויט ועד יומיומי: חולצות מכופתרות Slim Fit ופולו אלגנטי של HECHTER PARIS לצד טי-שירט לייקרה של MAX MORETTI. האיכות שחיפשתם מחכה לכם כאן."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "dea1c870-f186-44a3-bd91-218f01e0b51a",
+      "revision": "1",
+      "createdDate": "2025-10-29T10:15:31.829Z",
+      "updatedDate": "2026-03-12T21:01:45.234Z",
+      "name": " ג'ינסים ",
+      "itemCounter": 47,
+      "visible": true,
+      "parentCategory": {
+        "id": "adbc4233-e804-446a-b319-c10ec7d25f01",
+        "index": 1
+      },
+      "slug": "denim",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "ג'ינסים לגבר במבחר רחב של דגמים - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "מצאו את הגזרה המדויקת שלכם: מג'ינס בוטקאט וסטרייט 100% כותנה של HECHTER PARIS ועד ג'ינס סלים של MAX MORETTI. איכות וסטייל ללא פשרות."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "df5d8fe3-da09-4cda-9cbe-466617730c8f",
+      "revision": "1",
+      "createdDate": "2025-11-30T11:50:30.128Z",
+      "updatedDate": "2026-03-04T17:02:03.340Z",
+      "name": "פלנל",
+      "itemCounter": 16,
+      "visible": true,
+      "parentCategory": {
+        "id": "88c521cc-049d-4375-8ad7-3c0c17670cf1",
+        "index": 2
+      },
+      "slug": "flanel-kit",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "מצעי פלנל חדר שינה - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "כינו את המיטה לחורף עם מצעי כותנה פלנל רכים ומחממים. מעיצובי 'יוניקורן' ו'חללית' לקטנטנים ועד דגם 'ברק' הקלאסי חמימות מלטפת בכל לילה."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "e1a48ab0-789a-4d3c-a931-635989afc567",
+      "revision": "1",
+      "createdDate": "2025-11-11T12:29:24.838Z",
+      "updatedDate": "2026-03-12T21:01:46.394Z",
+      "name": "כריות שינה",
+      "itemCounter": 13,
+      "visible": true,
+      "parentCategory": {
+        "id": "078d24b9-3562-49f1-8f06-9237ab958759",
+        "index": 1
+      },
+      "slug": "pillow-sleep",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "כריות שינה איכותיות לחדר השינה לקנייה אונליין - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "הדרך לשינה עמוקה מתחילה בכרית הנכונה: מכרית ויסקו לתמיכה מושלמת ועד דגמי רוזנה וגולד המפנקים. גלו את קולקציית הכריות של כיתן ללילה שקט ובוקר רענן."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "e3d28cf0-7685-4628-928a-3899147b4a7a",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:43:45.882Z",
+      "updatedDate": "2026-05-14T13:15:01.611Z",
+      "name": "אינטימה > הלבשה תחתונה > חזיות וברלטים",
+      "itemCounter": 0,
+      "visible": true,
+      "parentCategory": {
+        "id": "404dab8f-bbeb-4277-8b2f-509d90c4bc67",
+        "index": 1
+      },
+      "slug": "חזיות-וברלטים",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "e41b4b48-2880-4286-8d66-3981331e6715",
+      "revision": "1",
+      "createdDate": "2025-11-11T13:29:52.816Z",
+      "updatedDate": "2026-03-12T21:01:53.999Z",
+      "name": "חליפות",
+      "itemCounter": 211,
+      "visible": true,
+      "parentCategory": {
+        "id": "024a9fff-77de-4508-b82c-5fce24f74757",
+        "index": 7
+      },
+      "slug": "suits",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "חליפות בעיצובים אלגנטיים וקלאסיים - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "מגוון רחב של חליפות בעיצובים אלגנטיים וקלאסיים, מבדים איכותיים ונוחים ללבישה לאירועים וליום-יום, עם חוויית קנייה אונליין נוחה."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "e41e7324-5d74-4f5a-8daa-8df4d4a9d2a8",
+      "revision": "1",
+      "createdDate": "2025-11-11T12:35:59.459Z",
+      "updatedDate": "2026-03-12T21:01:49.345Z",
+      "name": "מעילים וג'קטים",
+      "itemCounter": 66,
+      "visible": true,
+      "parentCategory": {
+        "id": "024a9fff-77de-4508-b82c-5fce24f74757",
+        "index": 10
+      },
+      "slug": "coat",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "מעילים וג'קטים - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "מחפשים מעיל מרופד אלגנטי או בלייזר מעוצב? גלו את השילוב בין נוחות ליוקרה: מעילי פרימיום וג'קטים עם שרוולים סרוגים למראה מודרני ומחמם."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "e8d32ffe-2021-4ef0-82eb-089a00f8caab",
+      "revision": "1",
+      "createdDate": "2026-02-03T07:57:46.447Z",
+      "updatedDate": "2026-03-04T17:02:07.661Z",
+      "name": "70% הנחה בקניית 2 פריטים ומעלה",
+      "itemCounter": -49,
+      "visible": true,
+      "parentCategory": {
+        "id": "024a9fff-77de-4508-b82c-5fce24f74757",
+        "index": 1
+      },
+      "slug": "70-off",
+      "seoData": {
+        "tags": []
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "e962b17d-c708-4b00-aa0a-4d249bcd2b01",
+      "revision": "1",
+      "createdDate": "2025-11-11T13:10:31.161Z",
+      "updatedDate": "2026-03-12T21:01:49.231Z",
+      "name": "פוטרים גברים",
+      "itemCounter": 25,
+      "visible": true,
+      "parentCategory": {
+        "id": "dae04d55-80fb-49cb-86ae-98dae0952cd0",
+        "index": 4
+      },
+      "slug": "mensweatshirts",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "פוטרים לגבר במבחר דגמים - פולגת",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "פוטרים של HECHTER PARIS: פתרון הסטייל המושלם לימים הקרירים. גלו את דגמי האייקוניק פולאובר והבומבר המעוצבים שיעניקו לכם מראה יוקרתי ונוחות ללא פשרות."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      },
+      "managingAppId": "56cb2382-2a48-4f61-bddb-4c60c6b7c694"
+    },
+    {
+      "id": "eac4db24-04cc-4f36-86cf-c9da6e873421",
+      "revision": "5",
+      "createdDate": "2025-09-02T13:48:49.710Z",
+      "updatedDate": "2026-04-09T16:15:11.352Z",
+      "name": "כיתן",
+      "image": {
+        "id": "f0bc86_9a7cb68886614dcfbca692bc6315bdb1~mv2.jpg",
+        "url": "https://static.wixstatic.com/media/f0bc86_9a7cb68886614dcfbca692bc6315bdb1~mv2.jpg",
+        "height": 2731,
+        "width": 4096,
+        "filename": "432147577fa312789832bdbcacd5cea027016918.jpg",
+        "sizeInBytes": "13070921"
+      },
+      "itemCounter": 436,
+      "visible": true,
+      "parentCategory": {
+        "index": 6
+      },
+      "slug": "kitan",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "מצעים, מגבות ומוצרי טקסטיל איכותיים נוספים לבית - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "האיכות של כיתן בכל פינה בבית: מסדיני ג'רסי מלטפים וריפודיות מזרן ועד מגבות רצפה יוקרתיות. גלו את עולם הטקסטיל שמשלב נוחות, סטייל ואיכות ללא פשרות."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "eeac6841-f25d-420c-81aa-570c39fc601d",
+      "revision": "1",
+      "createdDate": "2026-02-16T13:29:46.736Z",
+      "updatedDate": "2026-03-04T17:02:06.609Z",
+      "name": "קיץ 26 - 30% - כיתן",
+      "itemCounter": 21,
+      "visible": true,
+      "parentCategory": {
+        "index": 58
+      },
+      "slug": "קיץ-26-30-כיתן-1",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "f07d3f88-b255-43df-baad-3995e9a9426d",
+      "revision": "1",
+      "createdDate": "2025-12-01T12:25:45.730Z",
+      "updatedDate": "2026-03-12T21:01:51.449Z",
+      "name": "חדר רחצה",
+      "itemCounter": 5,
+      "visible": true,
+      "parentCategory": {
+        "id": "20ee8ba0-235d-4605-aaf3-b74619d2f9f8",
+        "index": 1
+      },
+      "slug": "kids-bathroom",
+      "seoData": {
+        "tags": [
+          {
+            "type": "title",
+            "children": "מוצרים לחדר רחצה ילדים לקנייה אונליין - כיתן",
+            "custom": false,
+            "disabled": false
+          },
+          {
+            "type": "meta",
+            "props": {
+              "name": "description",
+              "content": "מחלוק ילדים 'עננים' ועד מגבות תינוק נילי וסאן – שדרגו את זמן האמבטיה עם הטקסטיל האיכותי של כיתן. רכות מקסימלית בעיצובים מתוקים."
+            },
+            "children": "",
+            "custom": false,
+            "disabled": false
+          }
+        ]
+      },
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
+    },
+    {
+      "id": "faa6c3d6-de34-4e1b-9402-477cd8c9db85",
+      "revision": "2",
+      "createdDate": "2025-09-02T13:45:18.249Z",
+      "updatedDate": "2026-05-14T13:15:06.005Z",
+      "name": "אינטימה > הלבשה תחתונה > חזיות וברלטים > אביזרים משלימים",
+      "itemCounter": 2,
+      "visible": true,
+      "parentCategory": {
+        "id": "e3d28cf0-7685-4628-928a-3899147b4a7a",
+        "index": 3
+      },
+      "slug": "אביזרים-משלימים",
+      "treeReference": {
+        "appNamespace": "@wix/stores"
+      }
     }
   ],
   "pagingMetadata": {
-    "count": 2,
-    "cursors": {},
-    "hasNext": false
+    "count": 100,
+    "cursors": {
+      "next": "40df0e07b90666fe5a107bc909d04f26256d413e.Eo0BKooBCocBCgQkYW5kEn8yfQpdKlsKWQoEJGFuZBJRMk8KESoPCg0KB3Zpc2libGUSAiABCjoqOAo2Chp0cmVlUmVmZXJlbmNlLmFwcE5hbWVzcGFjZRIYKhYKFAoDJGVxEg0aC0B3aXgvc3RvcmVzChwqGgoYCgd2aXNpYmxlEg0qCwoJCgMkZXESAiABIiRmYWE2YzNkNi1kZTM0LTRlMWItOTQwMi00NzdjZDhjOWRiODU6AggB"
+    },
+    "hasNext": true
   }
 }

@@ -67,7 +67,7 @@ async function renderSlowlyChanging(
         const [categoryResult, searchResult] = await Promise.all([
             queryCategoriesApi(wixStores.wixClient, {
                 filter: { _id: categoryId },
-                paging: { limit: 1 },
+                cursorPaging: { limit: 1 },
             }).catch(() => null),
             searchProducts({
                 query: '',

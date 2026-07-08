@@ -285,7 +285,7 @@ async function findCategoryBySlug(
 ): Promise<Category | null> {
     const result = await queryCategoriesApi(wixClient, {
         filter: { slug, visible: true },
-        paging: { limit: 1 },
+        cursorPaging: { limit: 1 },
     });
     return result.categories?.[0] ?? null;
 }
@@ -316,7 +316,7 @@ async function buildCategoryHeader(
     const details = await loadCategoryDetails(wixStoreService.wixClient, category._id);
     const cat = details || category;
 
-    const imageUrl = cat.image ? formatWixMediaUrl('', cat.image) : '';
+    const imageUrl = cat.image?.url ? formatWixMediaUrl(cat.image.id || '', cat.image.url) : '';
     const description = cat.description || '';
 
     // Build breadcrumbs from BREADCRUMBS_INFO + current category
@@ -391,7 +391,9 @@ async function buildCategoryHeader(
                 header = { ...header, description: parent.description };
             }
             if (!header.imageUrl) {
-                const parentImage = parent.image ? formatWixMediaUrl('', parent.image) : '';
+                const parentImage = parent.image?.url
+                    ? formatWixMediaUrl(parent.image.id || '', parent.image.url)
+                    : '';
                 if (parentImage) {
                     header = { ...header, imageUrl: parentImage, hasImage: true };
                 }
@@ -1147,16 +1149,18 @@ async function* loadSearchParams([wixStores]: [WixStoresService]): AsyncIterable
 
         // Load ALL categories by paginating through results
         const allCategories: Category[] = [];
-        let offset = 0;
+        let cursor: string | undefined;
         let hasMore = true;
         while (hasMore) {
-            const result = await queryCategoriesApi(wixStores.wixClient, {
-                filter: { visible: true },
-                paging: { limit: 100, offset },
-            });
+            const result = await queryCategoriesApi(
+                wixStores.wixClient,
+                cursor
+                    ? { cursorPaging: { cursor } }
+                    : { filter: { visible: true }, cursorPaging: { limit: 100 } },
+            );
             allCategories.push(...(result.categories || []));
-            hasMore = (result.categories?.length || 0) === 100;
-            offset += 100;
+            cursor = result.pagingMetadata?.cursors?.next;
+            hasMore = !!cursor;
         }
 
         // Build category tree and compute transitive item counts

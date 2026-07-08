@@ -206,16 +206,18 @@ export async function generateWixStoresReferences(
         parentCategory?: { _id?: string };
     }> = [];
 
-    let offset = 0;
+    let cursor: string | undefined;
     let hasMore = true;
     while (hasMore) {
-        const result = await queryCategoriesApi(storesService.wixClient, {
-            filter: { visible: true },
-            paging: { limit: 100, offset },
-        });
+        const result = await queryCategoriesApi(
+            storesService.wixClient,
+            cursor
+                ? { cursorPaging: { cursor } }
+                : { filter: { visible: true }, cursorPaging: { limit: 100 } },
+        );
         allCategories.push(...(result.categories || []));
-        hasMore = (result.categories?.length || 0) === 100;
-        offset += 100;
+        cursor = result.pagingMetadata?.cursors?.next;
+        hasMore = !!cursor;
     }
 
     // Build tree structure

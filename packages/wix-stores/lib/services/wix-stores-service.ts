@@ -97,16 +97,18 @@ export function provideWixStoresService(
                     }
                 };
 
-                let offset = 0;
+                let cursor: string | undefined;
                 let hasMore = true;
                 while (hasMore) {
-                    const result = await queryCategories(wixClient, {
-                        filter: { visible: true },
-                        paging: { limit: 100, offset },
-                    });
+                    const result = await queryCategories(
+                        wixClient,
+                        cursor
+                            ? { cursorPaging: { cursor } }
+                            : { filter: { visible: true }, cursorPaging: { limit: 100 } },
+                    );
                     processItems(result.categories || []);
-                    hasMore = (result.categories?.length || 0) === 100;
-                    offset += 100;
+                    cursor = result.pagingMetadata?.cursors?.next;
+                    hasMore = !!cursor;
                 }
             } catch (error) {
                 console.error('[wix-stores] Failed to build category tree:', error);

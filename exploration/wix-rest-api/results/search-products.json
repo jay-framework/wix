@@ -1,201 +1,176 @@
 {
   "products": [
     {
-      "id": "af654225-662f-42e5-ac51-fbebc88f63ed",
-      "revision": "2",
-      "createdDate": "2025-01-26T11:03:34.791Z",
-      "updatedDate": "2026-01-18T16:02:44.217Z",
-      "numericId": "1737889414721000",
-      "name": "Ceramic Flower Vase",
-      "slug": "ceramic-flower-vase",
+      "id": "ae0d4b47-ee97-4fb8-a68c-f922a0a28c8c",
+      "revision": "1",
+      "createdDate": "2026-02-24T07:15:53.215Z",
+      "updatedDate": "2026-03-01T05:03:56.891Z",
+      "numericId": "1771917353076022",
+      "name": "HECHTER PARIS ג'קט חליפה תערובת פשתן בגזרת מודרן פיט",
+      "slug": "3338903",
       "visible": true,
       "visibleInPos": true,
       "media": {
         "main": {
-          "id": "22e53e_63dba6a8f31a4de7bfb453ed3d0a83dd~mv2.jpg",
+          "id": "cc336a_2af07c9bf6904cd08ce0c9369e61c768~mv2.jpg",
           "image": {
-            "id": "22e53e_63dba6a8f31a4de7bfb453ed3d0a83dd~mv2.jpg",
-            "url": "https://static.wixstatic.com/media/22e53e_63dba6a8f31a4de7bfb453ed3d0a83dd~mv2.jpg",
-            "height": 3000,
-            "width": 3000,
-            "filename": "Vase-Context (1).jpg",
-            "sizeInBytes": "4623923"
+            "id": "cc336a_2af07c9bf6904cd08ce0c9369e61c768~mv2.jpg",
+            "url": "https://static.wixstatic.com/media/cc336a_2af07c9bf6904cd08ce0c9369e61c768~mv2.jpg",
+            "height": 2000,
+            "width": 1500,
+            "filename": "3338903_106_a.jpg",
+            "sizeInBytes": "1952890"
           },
           "mediaType": "IMAGE",
-          "uploadId": "22e53e_63dba6a8f31a4de7bfb453ed3d0a83dd~mv2.jpg"
-        }
-      },
-      "options": [],
-      "modifiers": [],
-      "infoSections": [
-        {
-          "id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
-        },
-        {
-          "id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
-        },
-        {
-          "id": "57075b9e-ba33-401b-86bd-045d949c9283"
-        }
-      ],
-      "ribbon": {
-        "id": "6b64ba2b-aa72-4c41-9a82-62e6816fc42b",
-        "name": "Best Seller"
-      },
-      "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
-      "inventory": {
-        "availabilityStatus": "IN_STOCK",
-        "preorderStatus": "DISABLED",
-        "preorderAvailability": "NO_VARIANTS"
-      },
-      "productType": "PHYSICAL",
-      "physicalProperties": {
-        "pricePerUnit": {
-          "quantity": 10,
-          "measurementUnit": "G"
-        },
-        "pricePerUnitRange": {
-          "minValue": {
-            "value": "10.00",
-            "description": "10.00 ₪ / 10 g"
-          },
-          "maxValue": {
-            "value": "10.00",
-            "description": "10.00 ₪ / 10 g"
-          }
-        }
-      },
-      "handle": "Product_9d6f95b0-b08e-45d0-a4cc-dc276565d668",
-      "currency": "ILS",
-      "actualPriceRange": {
-        "minValue": {
-          "amount": "270.00",
-          "formattedAmount": "270.00 ₪"
-        },
-        "maxValue": {
-          "amount": "270.00",
-          "formattedAmount": "270.00 ₪"
-        }
-      },
-      "additionalRibbons": [],
-      "flattenOptions": [],
-      "flattenModifiers": [],
-      "variantSummary": {
-        "variantCount": 1
-      },
-      "entityEventSequence": "5"
-    },
-    {
-      "id": "fedfcb20-1ad2-405b-950b-e65112bb6222",
-      "revision": "2",
-      "createdDate": "2025-01-26T11:00:25.276Z",
-      "updatedDate": "2026-01-13T19:13:54.274Z",
-      "numericId": "1737889225263000",
-      "name": "Minimalist Tote Bag",
-      "slug": "minimalist-tote-bag",
-      "visible": true,
-      "visibleInPos": true,
-      "media": {
-        "main": {
-          "id": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg",
-          "image": {
-            "id": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg",
-            "url": "https://static.wixstatic.com/media/22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg",
-            "height": 4000,
-            "width": 4000,
-            "filename": "Totebag-Product (1).jpg",
-            "sizeInBytes": "5097048"
-          },
-          "mediaType": "IMAGE",
-          "uploadId": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg"
+          "uploadId": "cc336a_2af07c9bf6904cd08ce0c9369e61c768~mv2.jpg"
         }
       },
       "options": [
         {
-          "id": "1d926bdc-e161-4690-85c8-5e1dea5bde4c",
-          "name": "Color",
+          "id": "e2a1b326-9c2f-48ce-9d45-18bec16a3e9a",
+          "name": "צבע",
           "optionRenderType": "SWATCH_CHOICES",
           "choicesSettings": {
             "choices": [
               {
-                "choiceId": "1137f00f-c9b0-48bd-b8fd-78aa0d92e2b5",
+                "choiceId": "f999e7a4-0c02-4662-b30e-f053652e3ada",
                 "linkedMedia": [
                   {
-                    "id": "22e53e_403950cd77974f9887339264944d760e~mv2.jpg",
+                    "id": "cc336a_2af07c9bf6904cd08ce0c9369e61c768~mv2.jpg",
                     "image": {
-                      "id": "22e53e_403950cd77974f9887339264944d760e~mv2.jpg",
-                      "url": "https://static.wixstatic.com/media/22e53e_403950cd77974f9887339264944d760e~mv2.jpg",
-                      "height": 4000,
-                      "width": 4000,
-                      "filename": "Totebag-Product-White (1).jpg",
-                      "sizeInBytes": "4460132"
+                      "id": "cc336a_2af07c9bf6904cd08ce0c9369e61c768~mv2.jpg",
+                      "url": "https://static.wixstatic.com/media/cc336a_2af07c9bf6904cd08ce0c9369e61c768~mv2.jpg",
+                      "height": 2000,
+                      "width": 1500,
+                      "filename": "3338903_106_a.jpg",
+                      "sizeInBytes": "1952890"
                     },
                     "mediaType": "IMAGE",
-                    "uploadId": "22e53e_403950cd77974f9887339264944d760e~mv2.jpg"
-                  }
-                ],
-                "choiceType": "ONE_COLOR",
-                "key": "White",
-                "name": "White",
-                "inStock": true,
-                "visible": true,
-                "colorCode": "#FFFFFF"
-              },
-              {
-                "choiceId": "2c2ef949-2b83-48b7-8cb9-a588ad73547a",
-                "linkedMedia": [
-                  {
-                    "id": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg",
-                    "image": {
-                      "id": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg",
-                      "url": "https://static.wixstatic.com/media/22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg",
-                      "height": 4000,
-                      "width": 4000,
-                      "filename": "Totebag-Product (1).jpg",
-                      "sizeInBytes": "5097048"
-                    },
-                    "mediaType": "IMAGE",
-                    "uploadId": "22e53e_07a8336264e94f07843e4f6ec8224169~mv2.jpg"
+                    "uploadId": "cc336a_2af07c9bf6904cd08ce0c9369e61c768~mv2.jpg"
                   },
                   {
-                    "id": "22e53e_9a8e513558f2438eb8e6dd6c6d6cdbf5~mv2.jpg",
+                    "id": "cc336a_1bb382aeded94f3ca16061abc2525052~mv2.jpg",
                     "image": {
-                      "id": "22e53e_9a8e513558f2438eb8e6dd6c6d6cdbf5~mv2.jpg",
-                      "url": "https://static.wixstatic.com/media/22e53e_9a8e513558f2438eb8e6dd6c6d6cdbf5~mv2.jpg",
-                      "height": 3522,
-                      "width": 3522,
-                      "filename": "Tote-Bag-Context (1).jpg",
-                      "sizeInBytes": "3791403"
+                      "id": "cc336a_1bb382aeded94f3ca16061abc2525052~mv2.jpg",
+                      "url": "https://static.wixstatic.com/media/cc336a_1bb382aeded94f3ca16061abc2525052~mv2.jpg",
+                      "height": 2000,
+                      "width": 1500,
+                      "filename": "3338903_106_c.jpg",
+                      "sizeInBytes": "824169"
                     },
                     "mediaType": "IMAGE",
-                    "uploadId": "22e53e_9a8e513558f2438eb8e6dd6c6d6cdbf5~mv2.jpg"
+                    "uploadId": "cc336a_1bb382aeded94f3ca16061abc2525052~mv2.jpg"
+                  },
+                  {
+                    "id": "cc336a_08f23b4fee624e399e01fed99c1daa7b~mv2.jpg",
+                    "image": {
+                      "id": "cc336a_08f23b4fee624e399e01fed99c1daa7b~mv2.jpg",
+                      "url": "https://static.wixstatic.com/media/cc336a_08f23b4fee624e399e01fed99c1daa7b~mv2.jpg",
+                      "height": 2000,
+                      "width": 1500,
+                      "filename": "3338903_106_b.jpg",
+                      "sizeInBytes": "2356956"
+                    },
+                    "mediaType": "IMAGE",
+                    "uploadId": "cc336a_08f23b4fee624e399e01fed99c1daa7b~mv2.jpg"
+                  },
+                  {
+                    "id": "cc336a_cc5d367c84d24c4195f785abbbc1bc6c~mv2.jpg",
+                    "image": {
+                      "id": "cc336a_cc5d367c84d24c4195f785abbbc1bc6c~mv2.jpg",
+                      "url": "https://static.wixstatic.com/media/cc336a_cc5d367c84d24c4195f785abbbc1bc6c~mv2.jpg",
+                      "height": 2000,
+                      "width": 1500,
+                      "filename": "3338903_106_d.jpg",
+                      "sizeInBytes": "1357904"
+                    },
+                    "mediaType": "IMAGE",
+                    "uploadId": "cc336a_cc5d367c84d24c4195f785abbbc1bc6c~mv2.jpg"
                   }
                 ],
                 "choiceType": "ONE_COLOR",
-                "key": "Purple",
-                "name": "Purple",
+                "key": "ירוק",
+                "name": "ירוק",
                 "inStock": true,
                 "visible": true,
-                "colorCode": "#CAB4E6"
+                "colorCode": "#800080"
               }
             ]
           },
-          "key": "Color"
+          "key": "צבע"
+        },
+        {
+          "id": "4ae63f56-2125-472e-894f-990cea18ae07",
+          "name": "מידה",
+          "optionRenderType": "TEXT_CHOICES",
+          "choicesSettings": {
+            "choices": [
+              {
+                "choiceId": "ea6f7f1a-d76a-4156-bf07-d7bfd7c6e7ba",
+                "linkedMedia": [],
+                "choiceType": "CHOICE_TEXT",
+                "key": "48",
+                "name": "48",
+                "inStock": true,
+                "visible": true
+              },
+              {
+                "choiceId": "3b0df2b3-fba8-4126-bc81-e4431febb3b0",
+                "linkedMedia": [],
+                "choiceType": "CHOICE_TEXT",
+                "key": "50",
+                "name": "50",
+                "inStock": true,
+                "visible": true
+              },
+              {
+                "choiceId": "c3d8b723-e86a-4314-93ae-2c39333794fe",
+                "linkedMedia": [],
+                "choiceType": "CHOICE_TEXT",
+                "key": "52",
+                "name": "52",
+                "inStock": true,
+                "visible": true
+              },
+              {
+                "choiceId": "662931bc-08fd-424d-9145-5a49ec1e65c8",
+                "linkedMedia": [],
+                "choiceType": "CHOICE_TEXT",
+                "key": "54",
+                "name": "54",
+                "inStock": true,
+                "visible": true
+              },
+              {
+                "choiceId": "1073e6d7-efb3-4c72-adcd-a05636daefe9",
+                "linkedMedia": [],
+                "choiceType": "CHOICE_TEXT",
+                "key": "56",
+                "name": "56",
+                "inStock": true,
+                "visible": true
+              },
+              {
+                "choiceId": "850ca326-1211-4ab4-87d6-5bd13482e165",
+                "linkedMedia": [],
+                "choiceType": "CHOICE_TEXT",
+                "key": "58",
+                "name": "58",
+                "inStock": true,
+                "visible": true
+              }
+            ]
+          },
+          "key": "מידה"
         }
       ],
       "modifiers": [],
-      "infoSections": [
-        {
-          "id": "04553fd0-c1ff-4f97-9fa6-a3472ee03066"
-        },
-        {
-          "id": "86e6030b-e858-49b7-b1ea-628a17f7f91c"
-        },
-        {
-          "id": "57075b9e-ba33-401b-86bd-045d949c9283"
-        }
-      ],
-      "mainCategoryId": "becc814c-0375-45e8-a826-cd0391f935ef",
+      "brand": {
+        "id": "173f7610-bae6-4c1d-9617-6c1e7e7430cf",
+        "name": "HECHTER PARIS"
+      },
+      "infoSections": [],
+      "mainCategoryId": "c773cb5f-6b16-4d5d-80ca-69606fd0b68c",
       "inventory": {
         "availabilityStatus": "IN_STOCK",
         "preorderStatus": "DISABLED",
@@ -203,31 +178,306 @@
       },
       "productType": "PHYSICAL",
       "physicalProperties": {},
-      "handle": "Product_1515c6dc-51be-487d-b83c-73fb3639e7d6",
+      "handle": "3338903",
       "currency": "ILS",
       "actualPriceRange": {
         "minValue": {
-          "amount": "20.00",
-          "formattedAmount": "20.00 ₪"
+          "amount": "799.90",
+          "formattedAmount": "₪799.90"
         },
         "maxValue": {
-          "amount": "20.00",
-          "formattedAmount": "20.00 ₪"
+          "amount": "799.90",
+          "formattedAmount": "₪799.90"
         }
       },
       "additionalRibbons": [],
+      "extendedFields": {
+        "namespaces": {
+          "_user_fields": {
+            "embroidery": false,
+            "sizeContent": [],
+            "careInstructions": ["ניקוי יבש מקצועי מומלץ"],
+            "colorCodeMap": [
+              {
+                "code": "106",
+                "name": "ירוק"
+              }
+            ],
+            "hubMainCategory": "7fff3e23-fc0c-44cf-97e5-2e165cd3dab2",
+            "icons": [
+              {
+                "text": "המתנה המושלמת",
+                "mediaId": "a806fd_2ff87183a25c4bb0ab8e307b6fe84e91.svg"
+              },
+              {
+                "text": "השקעה חכמה",
+                "mediaId": "a806fd_624d55d74bfb4199ae2415dffd964148.svg"
+              }
+            ],
+            "componentType": "גוף המוצר",
+            "countryOfOrigin": "סין",
+            "labels": [null],
+            "sitePackaging": "קופסא",
+            "materialComposition": "68%כותנה, 30%פשתן, 2%ספנדקס",
+            "sizeGuide": true,
+            "searchKeyWords": "ג’קט חליפה גברים, ג’קט תערובת פשתן, חליפה גברים, חליפה מחויטת, ג’קט אלגנטי, ז’קט קז’ואל מחויט, חליפה קיץ, ז’קט נושם, ז’קט קליל, חליפה יומיומית, אופנת גברים אלגנטית, ז’קט לאירוע, ז’קט קלאסי, חליפה קלילה, ג’קט אוורירי",
+            "chain": "פולגת"
+          }
+        }
+      },
       "flattenOptions": [],
       "flattenModifiers": [],
       "variantSummary": {
-        "variantCount": 2
+        "variantCount": 6
       },
-      "entityEventSequence": "4"
+      "entityEventSequence": "1"
+    },
+    {
+      "id": "344944a1-99d6-4b57-80dc-c7e1c60927f2",
+      "revision": "1",
+      "createdDate": "2026-02-24T07:15:53.215Z",
+      "updatedDate": "2026-03-01T05:03:56.896Z",
+      "numericId": "1771917353076021",
+      "name": "MAX MORETTI ג'קט חליפה פשתן בגזרת רגולר פיט",
+      "slug": "3338902",
+      "visible": true,
+      "visibleInPos": true,
+      "media": {
+        "main": {
+          "id": "cc336a_b29526c9fcdc41bf9b70d3626584e85a~mv2.jpg",
+          "image": {
+            "id": "cc336a_b29526c9fcdc41bf9b70d3626584e85a~mv2.jpg",
+            "url": "https://static.wixstatic.com/media/cc336a_b29526c9fcdc41bf9b70d3626584e85a~mv2.jpg",
+            "height": 2000,
+            "width": 1500,
+            "filename": "3338902_112_a.jpg",
+            "sizeInBytes": "2653464"
+          },
+          "mediaType": "IMAGE",
+          "uploadId": "cc336a_b29526c9fcdc41bf9b70d3626584e85a~mv2.jpg"
+        }
+      },
+      "options": [
+        {
+          "id": "e2a1b326-9c2f-48ce-9d45-18bec16a3e9a",
+          "name": "צבע",
+          "optionRenderType": "SWATCH_CHOICES",
+          "choicesSettings": {
+            "choices": [
+              {
+                "choiceId": "1029a05c-080a-4c87-a34c-86821f44050f",
+                "linkedMedia": [
+                  {
+                    "id": "cc336a_b29526c9fcdc41bf9b70d3626584e85a~mv2.jpg",
+                    "image": {
+                      "id": "cc336a_b29526c9fcdc41bf9b70d3626584e85a~mv2.jpg",
+                      "url": "https://static.wixstatic.com/media/cc336a_b29526c9fcdc41bf9b70d3626584e85a~mv2.jpg",
+                      "height": 2000,
+                      "width": 1500,
+                      "filename": "3338902_112_a.jpg",
+                      "sizeInBytes": "2653464"
+                    },
+                    "mediaType": "IMAGE",
+                    "uploadId": "cc336a_b29526c9fcdc41bf9b70d3626584e85a~mv2.jpg"
+                  },
+                  {
+                    "id": "cc336a_84df9c0267f0454591e179deb0fc29fd~mv2.jpg",
+                    "image": {
+                      "id": "cc336a_84df9c0267f0454591e179deb0fc29fd~mv2.jpg",
+                      "url": "https://static.wixstatic.com/media/cc336a_84df9c0267f0454591e179deb0fc29fd~mv2.jpg",
+                      "height": 2000,
+                      "width": 1500,
+                      "filename": "3338902_112_b.jpg",
+                      "sizeInBytes": "988464"
+                    },
+                    "mediaType": "IMAGE",
+                    "uploadId": "cc336a_84df9c0267f0454591e179deb0fc29fd~mv2.jpg"
+                  },
+                  {
+                    "id": "cc336a_5ad3c1f0e68c49438b5d56ca6b4c8fd4~mv2.jpg",
+                    "image": {
+                      "id": "cc336a_5ad3c1f0e68c49438b5d56ca6b4c8fd4~mv2.jpg",
+                      "url": "https://static.wixstatic.com/media/cc336a_5ad3c1f0e68c49438b5d56ca6b4c8fd4~mv2.jpg",
+                      "height": 2000,
+                      "width": 1500,
+                      "filename": "3338902_112_c.jpg",
+                      "sizeInBytes": "1996834"
+                    },
+                    "mediaType": "IMAGE",
+                    "uploadId": "cc336a_5ad3c1f0e68c49438b5d56ca6b4c8fd4~mv2.jpg"
+                  },
+                  {
+                    "id": "cc336a_ae1666b9e2cd4d1ea9de63a80b34d392~mv2.jpg",
+                    "image": {
+                      "id": "cc336a_ae1666b9e2cd4d1ea9de63a80b34d392~mv2.jpg",
+                      "url": "https://static.wixstatic.com/media/cc336a_ae1666b9e2cd4d1ea9de63a80b34d392~mv2.jpg",
+                      "height": 2000,
+                      "width": 1500,
+                      "filename": "3338902_112_d.jpg",
+                      "sizeInBytes": "1568303"
+                    },
+                    "mediaType": "IMAGE",
+                    "uploadId": "cc336a_ae1666b9e2cd4d1ea9de63a80b34d392~mv2.jpg"
+                  }
+                ],
+                "choiceType": "ONE_COLOR",
+                "key": "נייבי",
+                "name": "נייבי",
+                "inStock": true,
+                "visible": true,
+                "colorCode": "#FFFFFF"
+              }
+            ]
+          },
+          "key": "צבע"
+        },
+        {
+          "id": "4ae63f56-2125-472e-894f-990cea18ae07",
+          "name": "מידה",
+          "optionRenderType": "TEXT_CHOICES",
+          "choicesSettings": {
+            "choices": [
+              {
+                "choiceId": "ea6f7f1a-d76a-4156-bf07-d7bfd7c6e7ba",
+                "linkedMedia": [],
+                "choiceType": "CHOICE_TEXT",
+                "key": "48",
+                "name": "48",
+                "inStock": true,
+                "visible": true
+              },
+              {
+                "choiceId": "3b0df2b3-fba8-4126-bc81-e4431febb3b0",
+                "linkedMedia": [],
+                "choiceType": "CHOICE_TEXT",
+                "key": "50",
+                "name": "50",
+                "inStock": true,
+                "visible": true
+              },
+              {
+                "choiceId": "c3d8b723-e86a-4314-93ae-2c39333794fe",
+                "linkedMedia": [],
+                "choiceType": "CHOICE_TEXT",
+                "key": "52",
+                "name": "52",
+                "inStock": true,
+                "visible": true
+              },
+              {
+                "choiceId": "662931bc-08fd-424d-9145-5a49ec1e65c8",
+                "linkedMedia": [],
+                "choiceType": "CHOICE_TEXT",
+                "key": "54",
+                "name": "54",
+                "inStock": true,
+                "visible": true
+              },
+              {
+                "choiceId": "1073e6d7-efb3-4c72-adcd-a05636daefe9",
+                "linkedMedia": [],
+                "choiceType": "CHOICE_TEXT",
+                "key": "56",
+                "name": "56",
+                "inStock": true,
+                "visible": true
+              },
+              {
+                "choiceId": "850ca326-1211-4ab4-87d6-5bd13482e165",
+                "linkedMedia": [],
+                "choiceType": "CHOICE_TEXT",
+                "key": "58",
+                "name": "58",
+                "inStock": true,
+                "visible": true
+              },
+              {
+                "choiceId": "aa7f5263-14f2-4428-9939-a301ad812440",
+                "linkedMedia": [],
+                "choiceType": "CHOICE_TEXT",
+                "key": "60",
+                "name": "60",
+                "inStock": true,
+                "visible": true
+              }
+            ]
+          },
+          "key": "מידה"
+        }
+      ],
+      "modifiers": [],
+      "brand": {
+        "id": "3b79df1b-9dbc-4801-8f1b-8c886e6a6b5a",
+        "name": "מקס מורטי"
+      },
+      "infoSections": [],
+      "mainCategoryId": "c773cb5f-6b16-4d5d-80ca-69606fd0b68c",
+      "inventory": {
+        "availabilityStatus": "IN_STOCK",
+        "preorderStatus": "DISABLED",
+        "preorderAvailability": "NO_VARIANTS"
+      },
+      "productType": "PHYSICAL",
+      "physicalProperties": {},
+      "handle": "3338902",
+      "currency": "ILS",
+      "actualPriceRange": {
+        "minValue": {
+          "amount": "999.90",
+          "formattedAmount": "₪999.90"
+        },
+        "maxValue": {
+          "amount": "999.90",
+          "formattedAmount": "₪999.90"
+        }
+      },
+      "additionalRibbons": [],
+      "extendedFields": {
+        "namespaces": {
+          "_user_fields": {
+            "embroidery": false,
+            "sizeContent": [],
+            "careInstructions": ["ניקוי יבש מקצועי מומלץ"],
+            "colorCodeMap": [
+              {
+                "code": "112",
+                "name": "נייבי"
+              }
+            ],
+            "hubMainCategory": "7fff3e23-fc0c-44cf-97e5-2e165cd3dab2",
+            "icons": [
+              {
+                "text": "המתנה המושלמת",
+                "mediaId": "a806fd_2ff87183a25c4bb0ab8e307b6fe84e91.svg"
+              },
+              {
+                "text": "השקעה חכמה",
+                "mediaId": "a806fd_624d55d74bfb4199ae2415dffd964148.svg"
+              }
+            ],
+            "componentType": "גוף המוצר",
+            "countryOfOrigin": "סין",
+            "labels": [null],
+            "sitePackaging": "קופסא",
+            "materialComposition": "100%פשתן",
+            "sizeGuide": true,
+            "searchKeyWords": "ג’קט חליפה גברים, ג’קט פשתן, חליפת פשתן, ז’קט מחויט, ג’קט אלגנטי, חליפה קז’ואל, חליפה קיץ, ז’קט נושם, ג’קט קליל, חליפה יומיומית, אופנת גברים אלגנטית, ז’קט לאירוע, ז’קט קלאסי, חליפה מחויטת, ג’קט אוורירי",
+            "chain": "פולגת"
+          }
+        }
+      },
+      "flattenOptions": [],
+      "flattenModifiers": [],
+      "variantSummary": {
+        "variantCount": 7
+      },
+      "entityEventSequence": "1"
     }
   ],
   "pagingMetadata": {
     "count": 2,
     "cursors": {
-      "next": "a16714cd44da54bf30eb7a25c8a7121bb2ae07d6.EhgKCW51bWVyaWNJZBABGgkRYB65d2eyGEMSCRoFGgMxLjAgARIqGiYaJGZlZGZjYjIwLTFhZDItNDA1Yi05NTBiLWU2NTExMmJiNjIyMiABUAJaJW5pbGUvd2l4LnN0b3Jlcy5jYXRhbG9nLnYzLnByb2R1Y3QtdjJiJgokNTEyZjE4NWMtNDU3OS00MmY3LTg3NTQtZWExOGE5MjFmNDg4agIIDA"
+      "next": "d432e2a65313a196f574817d0c7b24126ebd1c68.EhgKCW51bWVyaWNJZBABGgkR1BSboTIuGUMSCRoFGgMxLjAgARIqGiYaJDM0NDk0NGExLTk5ZDYtNGI1Ny04MGRjLWM3ZTFjNjA5MjdmMiABUAJaJW5pbGUvd2l4LnN0b3Jlcy5jYXRhbG9nLnYzLnByb2R1Y3QtdjJiJgokY2RkMGFhN2MtZTQ4Yy00YTNmLWEyMWMtMGRkMjMyNTQ1ODRjagMIyg4"
     },
     "hasNext": true
   },
@@ -239,7 +489,7 @@
         "fieldPath": "slug",
         "scalar": {
           "type": "COUNT_DISTINCT",
-          "value": 12
+          "value": 1866
         }
       },
       {
@@ -248,7 +498,7 @@
         "fieldPath": "actualPriceRange.minValue.amount",
         "scalar": {
           "type": "MIN",
-          "value": 20
+          "value": 5.9
         }
       },
       {
@@ -257,7 +507,7 @@
         "fieldPath": "actualPriceRange.minValue.amount",
         "scalar": {
           "type": "MAX",
-          "value": 690
+          "value": 2199.9
         }
       }
     ]

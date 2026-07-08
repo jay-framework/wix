@@ -188,15 +188,142 @@ async function testSearchWithAggregations() {
     }
 }
 
+async function testCategoriesPaging() {
+    console.log('\n=== Test: Categories query — offset paging (BROKEN) ===');
+
+    const page1 = await wixFetch<any>(client, '/categories/v1/categories/query', {
+        method: 'POST',
+        body: {
+            query: {
+                filter: { visible: true },
+                paging: { limit: 2, offset: 0 },
+            },
+            treeReference: { appNamespace: '@wix/stores' },
+        },
+    });
+    console.log(`Page 1: ${page1.categories?.length} categories`);
+    for (const c of page1.categories || []) console.log(`  - ${c.name} (${c.id})`);
+    console.log('pagingMetadata:', JSON.stringify(page1.pagingMetadata));
+
+    const page2 = await wixFetch<any>(client, '/categories/v1/categories/query', {
+        method: 'POST',
+        body: {
+            query: {
+                filter: { visible: true },
+                paging: { limit: 2, offset: 2 },
+            },
+            treeReference: { appNamespace: '@wix/stores' },
+        },
+    });
+    console.log(`Page 2: ${page2.categories?.length} categories`);
+    for (const c of page2.categories || []) console.log(`  - ${c.name} (${c.id})`);
+    console.log('pagingMetadata:', JSON.stringify(page2.pagingMetadata));
+
+    const page1Ids = (page1.categories || []).map((c: any) => c.id);
+    const page2Ids = (page2.categories || []).map((c: any) => c.id);
+    const overlap = page1Ids.filter((id: string) => page2Ids.includes(id));
+    console.log(`Overlap: ${overlap.length} (should be 0)`);
+    if (overlap.length > 0) {
+        console.error('PAGING IS BROKEN — same categories on both pages');
+    }
+}
+
+async function testCategoriesSearchPaging() {
+    console.log('\n=== Test: Categories SEARCH — cursor paging with filter ===');
+
+    // Page 1: filter + cursorPaging (no cursor)
+    const page1 = await wixFetch<any>(client, '/categories/v1/categories/search', {
+        method: 'POST',
+        body: {
+            search: {
+                filter: { visible: true },
+                cursorPaging: { limit: 2 },
+            },
+            treeReference: { appNamespace: '@wix/stores' },
+        },
+    });
+    console.log(`Page 1: ${page1.categories?.length} categories`);
+    for (const c of page1.categories || []) console.log(`  - ${c.name} (${c.id})`);
+    console.log('pagingMetadata:', JSON.stringify(page1.pagingMetadata));
+
+    const nextCursor = page1.pagingMetadata?.cursors?.next;
+    if (!nextCursor) {
+        console.log('No next cursor — only 1 page');
+        return;
+    }
+
+    // Page 2: cursor only (no filter — cursor encodes the query)
+    const page2 = await wixFetch<any>(client, '/categories/v1/categories/search', {
+        method: 'POST',
+        body: {
+            search: {
+                cursorPaging: { cursor: nextCursor },
+            },
+            treeReference: { appNamespace: '@wix/stores' },
+        },
+    });
+    console.log(`Page 2: ${page2.categories?.length} categories`);
+    for (const c of page2.categories || []) console.log(`  - ${c.name} (${c.id})`);
+
+    const page1Ids = (page1.categories || []).map((c: any) => c.id);
+    const page2Ids = (page2.categories || []).map((c: any) => c.id);
+    const overlap = page1Ids.filter((id: string) => page2Ids.includes(id));
+    console.log(`Overlap: ${overlap.length} (should be 0)`);
+    if (overlap.length === 0) console.log('SEARCH PAGING WORKS!');
+    else console.error('SEARCH PAGING BROKEN');
+}
+
+async function testCategoriesQueryCursorPaging() {
+    console.log('\n=== Test: Categories QUERY — cursor paging with filter ===');
+
+    // Page 1: filter + cursorPaging (no cursor)
+    const page1 = await wixFetch<any>(client, '/categories/v1/categories/query', {
+        method: 'POST',
+        body: {
+            query: {
+                filter: { visible: true },
+                cursorPaging: { limit: 2 },
+            },
+            treeReference: { appNamespace: '@wix/stores' },
+        },
+    });
+    console.log(`Page 1: ${page1.categories?.length} categories`);
+    for (const c of page1.categories || []) console.log(`  - ${c.name} (${c.id})`);
+    console.log('pagingMetadata:', JSON.stringify(page1.pagingMetadata));
+
+    const nextCursor = page1.pagingMetadata?.cursors?.next;
+    if (!nextCursor) {
+        console.log('No next cursor — only 1 page');
+        return;
+    }
+
+    // Page 2: cursor only (no filter)
+    const page2 = await wixFetch<any>(client, '/categories/v1/categories/query', {
+        method: 'POST',
+        body: {
+            query: {
+                cursorPaging: { cursor: nextCursor },
+            },
+            treeReference: { appNamespace: '@wix/stores' },
+        },
+    });
+    console.log(`Page 2: ${page2.categories?.length} categories`);
+    for (const c of page2.categories || []) console.log(`  - ${c.name} (${c.id})`);
+
+    const page1Ids = (page1.categories || []).map((c: any) => c.id);
+    const page2Ids = (page2.categories || []).map((c: any) => c.id);
+    const overlap = page1Ids.filter((id: string) => page2Ids.includes(id));
+    console.log(`Overlap: ${overlap.length} (should be 0)`);
+    if (overlap.length === 0) console.log('QUERY CURSOR PAGING WORKS!');
+    else console.error('QUERY CURSOR PAGING BROKEN');
+}
+
 async function main() {
     console.log('Wix REST API Exploration — Server Side (ApiKeyStrategy)');
     console.log('Using @wix/sdk for auth only, REST calls via fetch()');
 
-    await testQueryProducts();
-    await testQueryCategories();
-    await testGetCurrentCart();
-    await testProductBySlug();
-    await testSearchWithAggregations();
+    await testCategoriesQueryCursorPaging();
+    await testCategoriesSearchPaging();
 
     console.log('\n=== Done ===');
 }

@@ -3,14 +3,14 @@ import {
     wixFetch,
     type WixFilter,
     type WixSort,
-    type WixPaging,
+    type WixCursorPaging,
 } from '@jay-framework/wix-server-client';
 import type { Category, QueryCategoriesResponse } from './types.js';
 
 export interface QueryCategoriesRequest {
     filter?: WixFilter;
     sort?: WixSort[];
-    paging?: WixPaging;
+    cursorPaging?: WixCursorPaging;
     treeReference?: { appNamespace?: string };
 }
 
@@ -40,7 +40,7 @@ export async function queryCategories(
                 query: {
                     filter: options?.filter,
                     sort: options?.sort,
-                    paging: options?.paging,
+                    cursorPaging: options?.cursorPaging || { limit: 100 },
                 },
                 treeReference: options?.treeReference || { appNamespace: '@wix/stores' },
             },

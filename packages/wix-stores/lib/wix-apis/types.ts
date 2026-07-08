@@ -231,6 +231,15 @@ export interface CategoryMedia {
     items?: CategoryMediaItem[];
 }
 
+export interface CategoryImage {
+    id?: string;
+    url?: string;
+    height?: number;
+    width?: number;
+    altText?: string;
+    filename?: string;
+}
+
 export interface CategoryBreadcrumb {
     categoryId?: string;
     categoryName?: string;
@@ -245,7 +254,7 @@ export interface Category {
     visible?: boolean;
     numberOfProducts?: number;
     itemCounter?: number;
-    image?: string;
+    image?: CategoryImage;
     media?: CategoryMedia;
     parentCategory?: { _id?: string; name?: string; slug?: string };
     breadcrumbsInfo?: { breadcrumbs?: CategoryBreadcrumb[] };
@@ -254,7 +263,7 @@ export interface Category {
 
 export interface QueryCategoriesResponse {
     categories?: Category[];
-    metadata?: PagingMetadata;
+    pagingMetadata?: PagingMetadata;
 }
 
 export interface GetCategoryResponse {

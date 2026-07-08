@@ -38,7 +38,7 @@ interface CategoryItem {
 async function findCategoryBySlug(wixClient: WixStoresService['wixClient'], slug: string) {
     const result = await queryCategoriesApi(wixClient, {
         filter: { slug, visible: true },
-        paging: { limit: 1 },
+        cursorPaging: { limit: 1 },
     });
     return result.categories?.[0] ?? null;
 }
