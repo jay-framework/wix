@@ -27,6 +27,7 @@ import {
     ProductOptionsViewState,
 } from '../contracts/product-options.jay-contract';
 import type { V1Product, V1ProductOption, V1Variant, V1Collection } from '../wix-apis/types.js';
+import { stripWixMediaResize } from '@jay-framework/wix-utils';
 
 // ============================================================================
 // Helper Functions
@@ -174,14 +175,12 @@ export function mapProductToCard(
         slug,
         productUrl: slug ? `${productPagePath}/${slug}` : '',
         mainMedia: {
-            // V1 provides complete URLs
-            url: mainMedia?.image?.url || '',
+            url: stripWixMediaResize(mainMedia?.image?.url || ''),
             altText: mainMedia?.title || product.name || '',
             mediaType: mapMediaType(mainMedia?.mediaType),
         },
         thumbnail: {
-            // V1 provides complete thumbnail URLs
-            url: mainMedia?.thumbnail?.url || '',
+            url: stripWixMediaResize(mainMedia?.thumbnail?.url || ''),
             altText: mainMedia?.title || product.name || '',
             width: mainMedia?.thumbnail?.width || 300,
             height: mainMedia?.thumbnail?.height || 300,
@@ -237,7 +236,7 @@ export function mapCollectionToViewState(collection: V1Collection): CollectionVi
         name: collection.name || '',
         slug: collection.slug || '',
         description: collection.description || '',
-        imageUrl: collection.media?.mainMedia?.image?.url || '',
+        imageUrl: stripWixMediaResize(collection.media?.mainMedia?.image?.url || ''),
         productCount: collection.numberOfProducts || 0,
     };
 }

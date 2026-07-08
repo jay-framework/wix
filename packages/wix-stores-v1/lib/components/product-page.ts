@@ -44,6 +44,7 @@ import { JSONPatchOperation, patch, REPLACE } from '@jay-framework/json-patch';
 import { WIX_STORES_V1_CONTEXT, WixStoresV1Context } from '../contexts/wix-stores-v1-context';
 import type { V1Product, V1SeoData } from '../wix-apis/types.js';
 import { queryProducts as queryProductsApi } from '../wix-apis/index.js';
+import { stripWixMediaResize } from '@jay-framework/wix-utils';
 
 /**
  * URL parameters for product page routes
@@ -94,15 +95,11 @@ function mapInfoSections(
     }));
 }
 
-/**
- * Map V1 media to MediaGalleryViewState
- * V1 provides complete URLs, no need for Wix image URL formatting
- */
 function mapMedia(product: V1Product): MediaGalleryViewState {
     const mainMedia = product.media?.mainMedia;
     const mediaItems = product.media?.items || [];
 
-    const mainUrl = mainMedia?.image?.url || '';
+    const mainUrl = stripWixMediaResize(mainMedia?.image?.url || '');
     const mainMediaType = mainMedia?.mediaType === 'video' ? MediaType.VIDEO : MediaType.IMAGE;
 
     return {
@@ -113,7 +110,7 @@ function mapMedia(product: V1Product): MediaGalleryViewState {
         availableMedia: mediaItems.map((item, index) => ({
             mediaId: item._id || String(index),
             media: {
-                url: item.image?.url || '',
+                url: stripWixMediaResize(item.image?.url || ''),
                 mediaType: item.mediaType === 'video' ? MediaType.VIDEO : MediaType.IMAGE,
             },
             selected: item._id === mainMedia?._id ? Selected.selected : Selected.notSelected,

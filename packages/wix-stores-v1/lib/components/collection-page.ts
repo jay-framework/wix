@@ -37,6 +37,7 @@ import {
     queryProducts as queryProductsApi,
     queryCollections as queryCollectionsApi,
 } from '../wix-apis/index.js';
+import { stripWixMediaResize } from '@jay-framework/wix-utils';
 
 /**
  * URL parameters for collection page routes
@@ -124,7 +125,7 @@ function mapCollectionMedia(collection: {
         mainMedia: mainMedia?.image?.url
             ? {
                   _id: '',
-                  url: mainMedia.image.url,
+                  url: stripWixMediaResize(mainMedia.image.url),
                   altText: collection.name || '',
                   mediaType: MediaType.IMAGE,
               }

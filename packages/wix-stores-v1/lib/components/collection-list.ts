@@ -11,6 +11,7 @@ import {
     PageProps,
     RenderPipeline,
 } from '@jay-framework/fullstack-component';
+import { stripWixMediaResize } from '@jay-framework/wix-utils';
 import {
     CategoryListContract,
     CategoryListSlowViewState,
@@ -54,7 +55,7 @@ async function renderSlowlyChanging(props: PageProps, wixStores: WixStoresV1Serv
         })
         .toPhaseOutput((collections) => {
             const collectionItems: CollectionItem[] = collections.map((col) => {
-                const imageUrl = col.media?.mainMedia?.image?.url || '';
+                const imageUrl = stripWixMediaResize(col.media?.mainMedia?.image?.url || '');
                 return {
                     _id: col._id || '',
                     name: col.name || '',

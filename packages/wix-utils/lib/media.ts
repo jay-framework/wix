@@ -10,6 +10,15 @@
  * - wix:audio://v1/<id>/<name>
  */
 
+/**
+ * Strip /v1/... resize parameters from a Wix static media URL.
+ * REST APIs return URLs like https://static.wixstatic.com/media/<id>/v1/fit/w_2316,h_3474,q_90/file.jpg
+ * but templates need the bare URL so they can append their own resize params.
+ */
+export function stripWixMediaResize(url: string): string {
+    return url.replace(/\/v1\/(?:fit|fill|crop)\/[^/]+\/file\.\w+$/, '');
+}
+
 export type WixMediaType = 'image' | 'video' | 'document' | 'audio' | 'unknown';
 
 /**
@@ -112,9 +121,8 @@ export function formatWixMediaUrl(
         }
     }
 
-    // Return URL as-is if it's a valid http(s) URL
     if (url?.startsWith('http://') || url?.startsWith('https://')) {
-        return url;
+        return stripWixMediaResize(url) + resizeFragment;
     }
 
     // Fallback to constructing URL from ID
