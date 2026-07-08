@@ -16,7 +16,8 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "npm run clean && npm run build:server && npm run build:types",
+    "build": "npm run clean && npm run build:server && npm run build:types && npm run validate",
+    "validate": "jay-stack-cli validate-plugin",
     "build:server": "vite build --ssr",
     "build:types": "tsup lib/index.ts --dts-only --format esm",
     "build:check-types": "tsc",
