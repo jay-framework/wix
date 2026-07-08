@@ -26,7 +26,7 @@ contexts:
 
 validators:
   - name: auth-callback-page
-    handler: ./validators/auth-callback-validator
+    handler: validateAuthCallbackPage
     description: Checks that the auth callback page exists for the OAuth redirect flow
 
 setup:

@@ -3,12 +3,13 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { loadWixMembersConfig } from '../config-loader.js';
 
+const MEMBERS_CONTRACTS = new Set(['login-indicator', 'auth-callback', 'protected-page']);
 const checkedProjects = new Set<string>();
 
-export const validate: JayHtmlValidatorFn = (ctx) => {
+export const validateAuthCallbackPage: JayHtmlValidatorFn = (ctx) => {
     const findings: JayHtmlValidationFinding[] = [];
 
-    const usesMembers = ctx.headlessImports.some((imp) => imp.plugin === 'wix-members');
+    const usesMembers = ctx.headlessImports.some((imp) => MEMBERS_CONTRACTS.has(imp.contractName));
     if (!usesMembers) return findings;
 
     if (checkedProjects.has(ctx.projectRoot)) return findings;
