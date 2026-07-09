@@ -12,7 +12,7 @@ items:
         Add a product search component at this marker location on the page.
     prompt: |
       Use headless component @jay-framework/wix-stores / contract product-search.
-      Read agent-kit/materialized-contracts/wix-stores/product-search.jay-contract.
+      Read node_modules/@jay-framework/wix-stores/dist/contracts/product-search.jay-contract.
       Script key: search
       Bind ViewState and refs per agent-kit/designer/INSTRUCTIONS.md.
 
@@ -33,6 +33,27 @@ items:
       Script key: p
       Bind ViewState and refs per agent-kit/designer/INSTRUCTIONS.md.
 
+  - id: wix-stores:related-products
+    title: Related products
+    category: Store
+    subCategory: Components
+    pluginName: wix-stores
+    packageName: '@jay-framework/wix-stores'
+    thumbnail: thumbnails/wix-stores/related-products.svg
+    interaction:
+      mode: stage-place
+      stagePromptTemplate: |
+        Add a related products section at this marker location on the page.
+    prompt: |
+      "Related products" uses contract category-products (no separate related-products contract).
+      Read agent-kit/designer/related-products.md for the full recipe.
+      Read node_modules/@jay-framework/wix-stores/dist/contracts/category-products.jay-contract.
+      On a product page that already has product-page (key "p"):
+        1. Add headless import for category-products in <head> (no key attribute).
+        2. Place <jay:category-products productId="{p._id}" categorySlug="{p.categorySlug}" limit="4"> at the marker.
+        3. Inside the wrapper: forEach="products" with product-card fields; refs use products.* prefix.
+      Same-category siblings excluding the current product — not ML recommendations.
+
   - id: wix-stores:category-products
     title: Category products
     category: Store
@@ -46,10 +67,11 @@ items:
         Add a category products grid at this marker location on the page.
     prompt: |
       Use headless component @jay-framework/wix-stores / contract category-products.
-      Read agent-kit/materialized-contracts/wix-stores/category-products.jay-contract.
-      Script key: r
+      Read node_modules/@jay-framework/wix-stores/dist/contracts/category-products.jay-contract.
+      Instance pattern: declare import in <head> without key, then <jay:category-products categorySlug="...">.
+      Pass categorySlug to show products from a category. Pass productId to exclude a product.
+      On product pages for "related products", see agent-kit/designer/related-products.md instead.
       Bind ViewState and refs per agent-kit/designer/INSTRUCTIONS.md.
-      Pass categorySlug to show products from a category. Pass productId to exclude a product (e.g. on a product page).
 
   - id: wix-stores:product-spotlight
     title: Product spotlight
@@ -64,10 +86,10 @@ items:
         Add a product spotlight at this marker location on the page.
     prompt: |
       Use headless component @jay-framework/wix-stores / contract product-spotlight.
-      Read agent-kit/materialized-contracts/wix-stores/product-spotlight.jay-contract.
-      Script key: spotlight
-      Bind ViewState and refs per agent-kit/designer/INSTRUCTIONS.md.
+      Read node_modules/@jay-framework/wix-stores/dist/contracts/product-spotlight.jay-contract.
+      Instance pattern: declare import in <head> without key, then <jay:product-spotlight slug="...">.
       Pass slug as a prop to specify which product to display.
+      Bind ViewState and refs per agent-kit/designer/INSTRUCTIONS.md.
 
   - id: wix-stores:category-list
     title: Category list
@@ -82,6 +104,6 @@ items:
         Add a category list at this marker location on the page.
     prompt: |
       Use headless component @jay-framework/wix-stores / contract category-list.
-      Read agent-kit/materialized-contracts/wix-stores/category-list.jay-contract.
+      Read node_modules/@jay-framework/wix-stores/dist/contracts/category-list.jay-contract.
       Script key: categories
       Bind ViewState and refs per agent-kit/designer/INSTRUCTIONS.md.
