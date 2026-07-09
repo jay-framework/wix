@@ -17,6 +17,7 @@ const REQUIRED_ITEM_FIELDS = ['id', 'title', 'category', 'prompt'] as const;
 const EXPECTED_IDS = [
     'wix-stores:product-search',
     'wix-stores:product-page',
+    'wix-stores:related-products',
     'wix-stores:category-products',
     'wix-stores:product-spotlight',
     'wix-stores:category-list',
@@ -62,7 +63,7 @@ function assertAddMenuCatalogShape(catalog: unknown): void {
     expect(catalog).toEqual(expect.objectContaining({ items: expect.any(Array) }));
 
     const items = (catalog as { items: Record<string, unknown>[] }).items;
-    expect(items).toHaveLength(5);
+    expect(items).toHaveLength(6);
     expect(items.map((item) => item.id)).toEqual([...EXPECTED_IDS]);
 
     for (const item of items) {
@@ -99,7 +100,7 @@ describe('setupWixStores add-menu catalog (Design Log #20 W2)', () => {
         rmSync(projectRoot, { recursive: true, force: true });
     });
 
-    it('writes wix-stores.yaml with five catalog items matching expected fixture', async () => {
+    it('writes wix-stores.yaml with six catalog items matching expected fixture', async () => {
         const result = await setupWixStores(makeCtx(projectRoot));
 
         expect(result.status).toBe('configured');
@@ -165,6 +166,7 @@ describe('setupWixStores add-menu catalog (Design Log #20 W2)', () => {
         expect(result.configCreated).toEqual(
             expect.arrayContaining([
                 'public/aiditor-add-menu-thumbnails/wix-stores/product-page.svg',
+                'public/aiditor-add-menu-thumbnails/wix-stores/related-products.svg',
             ]),
         );
         expect(
@@ -172,5 +174,27 @@ describe('setupWixStores add-menu catalog (Design Log #20 W2)', () => {
                 join(projectRoot, 'public/aiditor-add-menu-thumbnails/wix-stores/product-page.svg'),
             ),
         ).toBe(true);
+    });
+
+    it('related-products designer guide ships in package agent-kit', () => {
+        const guidePath = join(import.meta.dirname, '../agent-kit/designer/related-products.md');
+        expect(existsSync(guidePath)).toBe(true);
+        const content = readFileSync(guidePath, 'utf-8');
+        expect(content).toMatch(/category-products/);
+        expect(content).toMatch(/jay:category-products/);
+    });
+
+    it('related-products add-menu item references designer guide', async () => {
+        await setupWixStores(makeCtx(projectRoot));
+
+        const written = loadYaml(
+            readFileSync(join(projectRoot, ADD_MENU_OUTPUT_REL), 'utf-8'),
+        ) as { items: { id: string; prompt: string }[] };
+        const related = written.items.find((item) => item.id === 'wix-stores:related-products');
+
+        expect(related?.prompt).toMatch(/agent-kit\/designer\/related-products\.md/);
+        expect(related?.prompt).toMatch(
+            /node_modules\/@jay-framework\/wix-stores\/dist\/contracts\/category-products\.jay-contract/,
+        );
     });
 });

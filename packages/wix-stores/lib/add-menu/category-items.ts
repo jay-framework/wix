@@ -4,6 +4,11 @@
 
 import type { WixStoresConfig } from '../config-loader.js';
 
+/** Static wix-stores contracts ship in node_modules — not materialized-contracts/. */
+export function wixStoresStaticContractPath(contractName: string): string {
+    return `node_modules/@jay-framework/wix-stores/dist/contracts/${contractName}.jay-contract`;
+}
+
 export interface CategoryTreeNode {
     _id: string;
     name: string;
@@ -180,9 +185,10 @@ function buildCategoryPrompt(config: WixStoresConfig, entry: FlatCategoryEntry):
         `  category-products — pass categorySlug="${node.slug}" to show products from this category; optionally pass productId to exclude a product`,
         '',
         'Contracts:',
-        '  agent-kit/materialized-contracts/wix-stores/product-search.jay-contract',
-        '  agent-kit/materialized-contracts/wix-stores/category-list.jay-contract',
-        '  agent-kit/materialized-contracts/wix-stores/category-products.jay-contract',
+        `  ${wixStoresStaticContractPath('product-search')}`,
+        `  ${wixStoresStaticContractPath('category-list')}`,
+        `  ${wixStoresStaticContractPath('category-products')}`,
+        '  Related products on a product page: agent-kit/designer/related-products.md',
         '',
         'Bind ViewState and refs per agent-kit/designer/INSTRUCTIONS.md.',
     );

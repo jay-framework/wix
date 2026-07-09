@@ -40,6 +40,12 @@ Supports three roles depending on route params:
 
 Lists all store categories for navigation.
 
+### Category Products (`category-products`)
+
+Product grid from a specific category. Props: `categorySlug`, optional `productId` (exclude one product), optional `limit` (default 4).
+
+**Related products on a product page:** bind `productId="{p._id}"` and `categorySlug="{p.categorySlug}"` from an existing `product-page` key. Same-category siblings — not machine-learning recommendations. See `agent-kit/designer/related-products.md` (copied to the project on `jay-stack agent-kit`) and Add Menu item `wix-stores:related-products`.
+
 ## Configuration
 
 ### Setup
@@ -50,12 +56,13 @@ The plugin requires `@jay-framework/wix-server-client` to be configured with Wix
 jay-stack setup wix-stores
 ```
 
-This creates `config/.wix-stores.yaml` and writes static AIditor Add Menu component items to `agent-kit/aiditor/add-menu/wix-stores.yaml`.
+This creates `config/.wix-stores.yaml` and writes static AIditor Add Menu component items to `agent-kit/aiditor/add-menu/wix-stores.yaml` (includes **Related products** — `wix-stores:related-products`).
 
 Run `jay-stack agent-kit` (or `yarn agent-kit`) to index the live category tree and refresh:
 
 - `agent-kit/references/wix-stores/categories.yaml` — full hierarchy for agent discovery
 - `agent-kit/aiditor/add-menu/wix-stores.generated.yaml` — one Add Menu item per category (Store → Categories)
+- `agent-kit/designer/related-products.md` — recipe for related products on product pages (from this package)
 
 ### Config File (`config/.wix-stores.yaml`)
 
