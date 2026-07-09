@@ -187,9 +187,9 @@ describe('setupWixStores add-menu catalog (Design Log #20 W2)', () => {
     it('related-products add-menu item references designer guide', async () => {
         await setupWixStores(makeCtx(projectRoot));
 
-        const written = loadYaml(
-            readFileSync(join(projectRoot, ADD_MENU_OUTPUT_REL), 'utf-8'),
-        ) as { items: { id: string; prompt: string }[] };
+        const written = loadYaml(readFileSync(join(projectRoot, ADD_MENU_OUTPUT_REL), 'utf-8')) as {
+            items: { id: string; prompt: string }[];
+        };
         const related = written.items.find((item) => item.id === 'wix-stores:related-products');
 
         expect(related?.prompt).toMatch(/agent-kit\/designer\/related-products\.md/);
