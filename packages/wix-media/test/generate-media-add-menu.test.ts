@@ -46,17 +46,18 @@ describe('buildMediaAddMenuItems', () => {
         }
     });
 
-    it('uses folderPath in Add Menu items and subCategory by media type', () => {
+    it('uses folderPath for navigation and omits subCategory', () => {
         const items = buildMediaAddMenuItems(loadFixtureFiles());
         const hero = items.find((item) => item.id === 'wix-media:hero-banner');
         const video = items.find((item) => item.id === 'wix-media:promo-clip');
         const logo = items.find((item) => item.id === 'wix-media:logo');
 
         expect(hero?.title).toBe('Hero Banner');
-        expect(hero?.subCategory).toBe('Images');
-        expect(hero?.folderPath).toEqual(['Site Files', 'Marketing']);
-        expect(video?.subCategory).toBe('Videos');
-        expect(video?.folderPath).toEqual(['Site Files', 'Marketing']);
+        expect(hero).not.toHaveProperty('subCategory');
+        expect(hero?.folderPath).toEqual(['Marketing']);
+        expect(video).not.toHaveProperty('subCategory');
+        expect(video?.folderPath).toEqual(['Marketing']);
+        expect(logo).not.toHaveProperty('subCategory');
         expect(logo?.folderPath).toBeUndefined();
     });
 
@@ -100,7 +101,7 @@ describe('buildMediaAddMenuItems', () => {
             labels: [],
             folderId: 'folder-1',
             folderName: 'Icons',
-            folderPath: ['Site Files', 'Icons'],
+            folderPath: ['Icons'],
         };
         expect(thumbnailUrlForMedia(svgFile)).toBe(svgUrl);
         expect(buildMediaAddMenuItems([svgFile])[0]?.thumbnail).toBe(svgUrl);
@@ -116,7 +117,7 @@ describe('buildMediaAddMenuItems', () => {
             labels: [],
             folderId: 'folder-1',
             folderName: 'Downloads',
-            folderPath: ['Site Files', 'Downloads'],
+            folderPath: ['Downloads'],
         };
         expect(thumbnailUrlForMedia(zipFile)).toBeUndefined();
         expect(buildMediaAddMenuItems([zipFile])[0]?.thumbnail).toBeUndefined();

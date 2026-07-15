@@ -7,11 +7,26 @@ export type WixMediaFolderRecord = {
     parentFolderId?: string | null;
 };
 
+/** Strip the Wix "Site Files" container — browse starts at its children. */
+function stripSiteFilesContainer(segments: string[]): string[] {
+    const path = [...segments];
+    while (path[0] === WIX_MEDIA_SITE_FILES_LABEL) {
+        path.shift();
+    }
+    return path;
+}
+
+/**
+ * Folder paths for Add Menu browse — relative to inside Site Files (no container segment).
+ * MEDIA_ROOT and direct children of a "Site Files" folder map to `[]`.
+ */
 export function buildMediaFolderPath(
     folderId: string,
     folderIndex: Map<string, WixMediaFolderRecord>,
 ): string[] {
-    if (!folderId || folderId === 'media-root') return [];
+    if (!folderId || folderId === 'media-root') {
+        return [];
+    }
 
     const segments: string[] = [];
     let currentFolderId: string | undefined = folderId;
@@ -31,6 +46,5 @@ export function buildMediaFolderPath(
         currentFolderId = parentFolderId;
     }
 
-    if (segments.length === 0) return [];
-    return [WIX_MEDIA_SITE_FILES_LABEL, ...segments];
+    return stripSiteFilesContainer(segments);
 }

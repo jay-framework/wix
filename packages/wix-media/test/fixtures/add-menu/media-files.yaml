@@ -11,7 +11,6 @@ files:
     folderId: folder-1
     folderName: Marketing
     folderPath:
-      - Site Files
       - Marketing
   - id: promo-video-id-002
     displayName: Promo Clip
@@ -22,7 +21,6 @@ files:
     folderId: folder-1
     folderName: Marketing
     folderPath:
-      - Site Files
       - Marketing
   - id: logo-id-003
     displayName: Logo

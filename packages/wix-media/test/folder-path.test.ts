@@ -13,24 +13,28 @@ function folderIndex(
 }
 
 describe('buildMediaFolderPath', () => {
-    it('returns empty path for media root files', () => {
-        expect(
-            buildMediaFolderPath('media-root', folderIndex({})),
-        ).toEqual([]);
+    it('maps media root files to browse root (inside Site Files)', () => {
+        expect(buildMediaFolderPath('media-root', folderIndex({}))).toEqual([]);
     });
 
-    it('builds Site Files prefix for nested folders', () => {
+    it('strips Site Files container folder from paths', () => {
+        const index = folderIndex({
+            'site-files': { name: 'Site Files', parentFolderId: 'media-root' },
+            'folder-1': { name: 'Marketing', parentFolderId: 'site-files' },
+        });
+
+        expect(buildMediaFolderPath('site-files', index)).toEqual([]);
+        expect(buildMediaFolderPath('folder-1', index)).toEqual(['Marketing']);
+    });
+
+    it('builds paths from first-level folders under media root', () => {
         const index = folderIndex({
             'folder-1': { name: 'Marketing', parentFolderId: 'media-root' },
             'folder-2': { name: 'Campaigns', parentFolderId: 'folder-1' },
         });
 
-        expect(buildMediaFolderPath('folder-1', index)).toEqual([
-            WIX_MEDIA_SITE_FILES_LABEL,
-            'Marketing',
-        ]);
+        expect(buildMediaFolderPath('folder-1', index)).toEqual(['Marketing']);
         expect(buildMediaFolderPath('folder-2', index)).toEqual([
-            WIX_MEDIA_SITE_FILES_LABEL,
             'Marketing',
             'Campaigns',
         ]);

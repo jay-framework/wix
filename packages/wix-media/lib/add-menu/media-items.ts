@@ -14,7 +14,6 @@ export interface MediaAddMenuItem {
     id: string;
     title: string;
     category: string;
-    subCategory: string;
     folderPath?: string[];
     pluginName: string;
     packageName: string;
@@ -24,21 +23,6 @@ export interface MediaAddMenuItem {
 }
 
 const CATEGORY = 'Media';
-
-function subCategoryForMediaType(mediaType: string): string {
-    switch (mediaType.toLowerCase()) {
-        case 'image':
-            return 'Images';
-        case 'video':
-            return 'Videos';
-        case 'audio':
-            return 'Audio';
-        case 'document':
-            return 'Documents';
-        default:
-            return 'Other';
-    }
-}
 
 function uniqueItemId(slug: string, mediaId: string, usedIds: Set<string>): string {
     const base = slug.trim() || mediaId.slice(0, 8);
@@ -135,7 +119,6 @@ export function buildMediaAddMenuItems(files: MediaFileInfo[]): MediaAddMenuItem
             id: uniqueItemId(file.slug, file.id, usedIds),
             title: formatTitle(file),
             category: CATEGORY,
-            subCategory: subCategoryForMediaType(file.mediaType),
             ...(file.folderPath.length > 0 ? { folderPath: [...file.folderPath] } : {}),
             pluginName: 'wix-media',
             packageName: '@jay-framework/wix-media',
