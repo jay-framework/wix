@@ -15,6 +15,7 @@ export interface MediaAddMenuItem {
     title: string;
     category: string;
     subCategory: string;
+    folderPath?: string[];
     pluginName: string;
     packageName: string;
     thumbnail?: string;
@@ -58,10 +59,6 @@ function formatDimensions(file: MediaFileInfo): string {
 }
 
 function formatTitle(file: MediaFileInfo): string {
-    const folder = file.folderName?.trim();
-    if (folder && folder !== 'Media Root' && folder !== 'Unknown') {
-        return `${folder} — ${file.displayName}`;
-    }
     return file.displayName;
 }
 
@@ -106,7 +103,11 @@ function stagePlaceInteractionForMedia(file: MediaFileInfo): MediaAddMenuInterac
 function buildMediaPrompt(file: MediaFileInfo): string {
     const labels = file.labels.length > 0 ? `Labels: ${file.labels.join(', ')}\n` : '';
     const folderLine =
-        file.folderName && file.folderName !== 'Unknown' ? `Folder: ${file.folderName}\n` : '';
+        file.folderPath.length > 0
+            ? `Folder: ${file.folderPath.join(' / ')}\n`
+            : file.folderName && file.folderName !== 'Unknown'
+              ? `Folder: ${file.folderName}\n`
+              : '';
 
     return [
         'Use this Wix Media Manager asset in jay-html (do not copy to public/):',
@@ -135,6 +136,7 @@ export function buildMediaAddMenuItems(files: MediaFileInfo[]): MediaAddMenuItem
             title: formatTitle(file),
             category: CATEGORY,
             subCategory: subCategoryForMediaType(file.mediaType),
+            ...(file.folderPath.length > 0 ? { folderPath: [...file.folderPath] } : {}),
             pluginName: 'wix-media',
             packageName: '@jay-framework/wix-media',
             ...(thumbnail ? { thumbnail } : {}),
