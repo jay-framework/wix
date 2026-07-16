@@ -1,5 +1,3 @@
-/** Design Log #34 — Wix Media Manager folder paths for Add Menu navigation. */
-
 export const WIX_MEDIA_SITE_FILES_LABEL = 'Site Files';
 
 export type WixMediaFolderRecord = {
