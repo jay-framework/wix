@@ -1,15 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import type { PluginSetupContext } from '@jay-framework/stack-server-runtime';
-
-const PUBLIC_THUMBNAIL_ROOT = path.join('public', 'aiditor-add-menu-thumbnails');
-
-/**
- * Copy bundled Add Menu thumbnails from the plugin package into the project
- * `public/aiditor-add-menu-thumbnails/<pluginName>/` for dev-server static hosting.
- */
 export function copyAiditorAddMenuThumbnails(
-    ctx: PluginSetupContext,
+    ctx: { projectRoot: string; force: boolean },
     resolvePackagePath: (relativePath: string) => string,
     pluginName: string,
 ): string[] {

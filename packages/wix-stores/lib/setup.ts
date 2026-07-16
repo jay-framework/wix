@@ -48,7 +48,7 @@ function resolveAddMenuTemplatePath(): string {
  * Q8 note: product-page prompt references agent-kit/materialized-contracts/wix-stores/product-page.jay-contract,
  * which is materialized by the existing wix-stores setup / agent-kit flow (not by this writer).
  */
-function writeAddMenuCatalog(ctx: PluginSetupContext): string | null {
+function writeAddMenuCatalog(ctx: { projectRoot: string; force: boolean }): string | null {
     const outputPath = path.join(ctx.projectRoot, ADD_MENU_OUTPUT_REL);
 
     if (fs.existsSync(outputPath) && !ctx.force) {
@@ -154,14 +154,6 @@ export async function setupWixStores(ctx: PluginSetupContext): Promise<PluginSet
         };
     }
 
-    const addMenuCreated = writeAddMenuCatalog(ctx);
-    if (addMenuCreated) {
-        configCreated.push(addMenuCreated);
-    }
-    configCreated.push(
-        ...copyAiditorAddMenuThumbnails(ctx, resolvePackageAgentKitPath, 'wix-stores'),
-    );
-
     const message = `Wix Stores configured (product URL: ${service.urls.product})`;
 
     return {
@@ -196,6 +188,16 @@ export async function generateWixStoresReferences(
     }
 
     fs.mkdirSync(ctx.referencesDir, { recursive: true });
+
+    const referencesCreated: string[] = [];
+
+    const addMenuStatic = writeAddMenuCatalog(ctx);
+    if (addMenuStatic) {
+        referencesCreated.push(addMenuStatic);
+    }
+    referencesCreated.push(
+        ...copyAiditorAddMenuThumbnails(ctx, resolvePackageAgentKitPath, 'wix-stores'),
+    );
 
     // Fetch all visible categories
     const allCategories: Array<{
@@ -302,10 +304,7 @@ export async function generateWixStoresReferences(
         console.error('[wix-stores] Failed to fetch data extension schemas:', error);
     }
 
-    const referencesCreated = [
-        `agent-kit/references/${ctx.pluginName}/categories.yaml`,
-        addMenuGenerated,
-    ];
+    referencesCreated.push(`agent-kit/references/${ctx.pluginName}/categories.yaml`, addMenuGenerated);
     if (extensionFieldCount > 0) {
         referencesCreated.push(`agent-kit/references/${ctx.pluginName}/data-extension-fields.yaml`);
     }

@@ -54,4 +54,4 @@ contexts:
 setup:
   handler: setupWixStores
   references: generateWixStoresReferences
-  description: Validate Wix Stores service; generate category tree reference
+  description: Validate Wix Stores service; generate category tree reference and Add Menu catalogs
