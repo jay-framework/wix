@@ -41,6 +41,7 @@ contexts:
     marker: WIX_STORES_V1_CONTEXT
     description: Client-side V1 stores access with collection pagination and delegated cart operations
 
-setup: setupWixStoresV1
+setup:
+  handler: setupWixStoresV1
 
 # Plugin initialization uses makeJayInit pattern in lib/init.ts

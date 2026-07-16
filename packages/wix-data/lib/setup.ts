@@ -11,8 +11,8 @@ import * as yaml from 'js-yaml';
 import type {
     PluginSetupContext,
     PluginSetupResult,
-    PluginAgentKitContext,
-    PluginAgentKitResult,
+    PluginReferencesContext,
+    PluginReferencesResult,
 } from '@jay-framework/stack-server-runtime';
 import { getService } from '@jay-framework/stack-server-runtime';
 import { WIX_DATA_SERVICE_MARKER, type WixDataService } from './services/wix-data-service';
@@ -68,9 +68,9 @@ export async function setupWixData(ctx: PluginSetupContext): Promise<PluginSetup
 // References handler (jay-stack agent-kit) — generate discovery data
 // ============================================================================
 
-export async function generateWixDataAgentKit(
-    ctx: PluginAgentKitContext,
-): Promise<PluginAgentKitResult> {
+export async function generateWixDataReferences(
+    ctx: PluginReferencesContext,
+): Promise<PluginReferencesResult> {
     // If plugin init failed, report the actual root cause
     if (ctx.initError) {
         throw new Error(`init failed: ${ctx.initError.message}`);
@@ -166,7 +166,7 @@ export async function generateWixDataAgentKit(
     );
 
     return {
-        agentKitCreated: [`agent-kit/references/${ctx.pluginName}/collections.yaml`],
+        referencesCreated: [`agent-kit/references/${ctx.pluginName}/collections.yaml`],
         message: `${collectionSummaries.length} collections (${collectionSummaries.filter((c) => c.visible).length} visible)`,
     };
 }

@@ -14,5 +14,6 @@ contexts:
     marker: WIX_CLIENT_CONTEXT
     description: Client-side OAuth authentication and token management
 
-setup: setupWixServerClient
-description: Configure Wix API credentials (API key, site ID, OAuth client ID)
+setup:
+  handler: setupWixServerClient
+  description: Configure Wix API credentials (API key, site ID, OAuth client ID)
