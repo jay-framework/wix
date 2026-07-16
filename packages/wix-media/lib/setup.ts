@@ -4,8 +4,8 @@ import type { WixClient } from '@wix/sdk';
 import type {
     PluginSetupContext,
     PluginSetupResult,
-    PluginAgentKitContext,
-    PluginAgentKitResult,
+    PluginReferencesContext,
+    PluginReferencesResult,
 } from '@jay-framework/stack-server-runtime';
 import { getService } from '@jay-framework/stack-server-runtime';
 import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
@@ -54,9 +54,9 @@ export async function setupWixMedia(ctx: PluginSetupContext): Promise<PluginSetu
     };
 }
 
-export async function generateWixMediaAgentKit(
-    ctx: PluginAgentKitContext,
-): Promise<PluginAgentKitResult> {
+export async function generateWixMediaReferences(
+    ctx: PluginReferencesContext,
+): Promise<PluginReferencesResult> {
     if (ctx.initError) {
         throw new Error(`init failed: ${ctx.initError.message}`);
     }
@@ -80,7 +80,7 @@ export async function generateWixMediaAgentKit(
     const addMenuGenerated = writeGeneratedAddMenuCatalog(ctx.projectRoot, addMenuItems);
 
     return {
-        agentKitCreated: [
+        referencesCreated: [
             `agent-kit/references/${ctx.pluginName}/MEDIA-INDEX.md`,
             addMenuGenerated,
         ],

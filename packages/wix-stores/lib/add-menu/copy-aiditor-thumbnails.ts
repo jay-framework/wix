@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import type { PluginAgentKitContext } from '@jay-framework/stack-server-runtime';
+import type { PluginSetupContext } from '@jay-framework/stack-server-runtime';
 
 const PUBLIC_THUMBNAIL_ROOT = path.join('public', 'aiditor-add-menu-thumbnails');
 
@@ -9,7 +9,7 @@ const PUBLIC_THUMBNAIL_ROOT = path.join('public', 'aiditor-add-menu-thumbnails')
  * `public/aiditor-add-menu-thumbnails/<pluginName>/` for dev-server static hosting.
  */
 export function copyAiditorAddMenuThumbnails(
-    ctx: PluginAgentKitContext,
+    ctx: PluginSetupContext,
     resolvePackagePath: (relativePath: string) => string,
     pluginName: string,
 ): string[] {

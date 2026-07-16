@@ -34,9 +34,10 @@ contexts:
     marker: WIX_DATA_CONTEXT
     description: Client-side access to Wix Data items API
 
-setup: setupWixData
-agentkit: generateWixDataAgentKit
-description: Validate CMS service; generate collection schema references
+setup:
+  handler: setupWixData
+  references: generateWixDataReferences
+  description: Validate CMS service; generate collection schema references
 
 # Server actions for querying data
 actions:

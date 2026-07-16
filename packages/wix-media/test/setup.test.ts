@@ -7,7 +7,10 @@ import type { PluginSetupContext } from '@jay-framework/stack-server-runtime';
 
 import { setupWixMedia } from '../lib/setup.js';
 
-function createSetupContext(services: Map<symbol, unknown>, initError?: Error): PluginSetupContext {
+function createSetupContext(
+    services: Map<symbol, unknown>,
+    initError?: Error,
+): PluginSetupContext {
     return {
         pluginName: 'wix-media',
         projectRoot: '/tmp/project',
@@ -21,7 +24,7 @@ function createSetupContext(services: Map<symbol, unknown>, initError?: Error): 
 function createMockWixClient(): WixClient {
     return {
         use: () => ({}),
-    } as unknown as WixClient;
+    } as WixClient;
 }
 
 describe('setupWixMedia', () => {
@@ -45,7 +48,9 @@ describe('setupWixMedia', () => {
     });
 
     it('reports needs-config when plugin init failed', async () => {
-        const result = await setupWixMedia(createSetupContext(new Map(), new Error('init failed')));
+        const result = await setupWixMedia(
+            createSetupContext(new Map(), new Error('init failed')),
+        );
 
         expect(result.status).toBe('needs-config');
         expect(result.message).toContain('wix-server-client');

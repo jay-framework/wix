@@ -78,12 +78,14 @@ describe('buildMediaAddMenuItems', () => {
 
         expect(hero?.interaction).toEqual({
             mode: 'stage-place',
+            persistOnPage: true,
             stagePromptTemplate: expect.stringMatching(/^Place this image at the marker location/),
         });
         expect(hero?.interaction?.stagePromptTemplate).toContain(heroFile.url);
         expect(logo?.interaction?.mode).toBe('stage-place');
         expect(video?.interaction).toEqual({
             mode: 'stage-place',
+            persistOnPage: true,
             stagePromptTemplate: expect.stringMatching(/^Place this video at the marker location/),
         });
     });

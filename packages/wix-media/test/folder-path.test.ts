@@ -34,6 +34,9 @@ describe('buildMediaFolderPath', () => {
         });
 
         expect(buildMediaFolderPath('folder-1', index)).toEqual(['Marketing']);
-        expect(buildMediaFolderPath('folder-2', index)).toEqual(['Marketing', 'Campaigns']);
+        expect(buildMediaFolderPath('folder-2', index)).toEqual([
+            'Marketing',
+            'Campaigns',
+        ]);
     });
 });
