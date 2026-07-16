@@ -1,7 +1,6 @@
 name: wix-deploy
 
-setup:
-  handler: setupWixDeploy
+setup: setupWixDeploy
 
 commands:
   - name: deploy

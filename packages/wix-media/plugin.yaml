@@ -11,7 +11,6 @@ commands:
   - name: rebuild-index
     command: rebuild-index.jay-command
 
-setup:
-  handler: setupWixMedia
-  references: generateWixMediaReferences
-  description: Validates Wix Media Manager access, generates agent-kit media index
+setup: setupWixMedia
+agentkit: generateWixMediaAgentKit
+description: Validates Wix Media Manager access, generates agent-kit media index

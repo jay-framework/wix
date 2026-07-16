@@ -6,7 +6,6 @@ import type { MediaFileInfo } from '../services/wix-media-service.js';
 
 export interface MediaAddMenuInteraction {
     mode: 'stage-place' | 'reference';
-    persistOnPage?: boolean;
     stagePromptTemplate?: string;
 }
 
@@ -70,14 +69,12 @@ function stagePlaceInteractionForMedia(file: MediaFileInfo): MediaAddMenuInterac
     if (mediaType === 'image' || mediaType === 'vector' || isPreviewableVisualMedia(file)) {
         return {
             mode: 'stage-place',
-            persistOnPage: true,
             stagePromptTemplate: `Place this image at the marker location on the page.\nURL: ${file.url}`,
         };
     }
     if (mediaType === 'video') {
         return {
             mode: 'stage-place',
-            persistOnPage: true,
             stagePromptTemplate: `Place this video at the marker location on the page.\nURL: ${file.url}`,
         };
     }

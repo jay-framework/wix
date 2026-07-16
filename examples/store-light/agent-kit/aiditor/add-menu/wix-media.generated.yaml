@@ -10,7 +10,6 @@ items:
     thumbnail: https://static.wixstatic.com/media/c569b3_7d0da3510f974ffd804d5ef38ea8b2a1~mv2.jpg
     interaction:
       mode: stage-place
-      persistOnPage: true
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
         URL: https://static.wixstatic.com/media/c569b3_7d0da3510f974ffd804d5ef38ea8b2a1~mv2.jpg
@@ -44,7 +43,6 @@ items:
     thumbnail: https://static.wixstatic.com/media/c569b3_dde411c17f0b43bb85924fb361eac7e3~mv2.png
     interaction:
       mode: stage-place
-      persistOnPage: true
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
         URL: https://static.wixstatic.com/media/c569b3_dde411c17f0b43bb85924fb361eac7e3~mv2.png
@@ -77,7 +75,6 @@ items:
     thumbnail: https://static.wixstatic.com/media/c569b3_875d1df7213245cd86d8cb4beb2578b5~mv2.png
     interaction:
       mode: stage-place
-      persistOnPage: true
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
         URL: https://static.wixstatic.com/media/c569b3_875d1df7213245cd86d8cb4beb2578b5~mv2.png
@@ -110,7 +107,6 @@ items:
     thumbnail: https://static.wixstatic.com/media/c569b3_639ad5afc7444094a93050642772b330~mv2.png
     interaction:
       mode: stage-place
-      persistOnPage: true
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
         URL: https://static.wixstatic.com/media/c569b3_639ad5afc7444094a93050642772b330~mv2.png
@@ -143,7 +139,6 @@ items:
     thumbnail: https://static.wixstatic.com/media/c569b3_90d9e8556e2c40f8be5e9a08147a95c8~mv2.png
     interaction:
       mode: stage-place
-      persistOnPage: true
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
         URL: https://static.wixstatic.com/media/c569b3_90d9e8556e2c40f8be5e9a08147a95c8~mv2.png
@@ -176,7 +171,6 @@ items:
     thumbnail: https://static.wixstatic.com/media/c569b3_e1cfd92c26c947488a1b20b8d01193e1~mv2.png
     interaction:
       mode: stage-place
-      persistOnPage: true
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
         URL: https://static.wixstatic.com/media/c569b3_e1cfd92c26c947488a1b20b8d01193e1~mv2.png
@@ -209,7 +203,6 @@ items:
     thumbnail: https://static.wixstatic.com/media/c569b3_8956f6cb226a475eaaf66022a211aee1~mv2.png
     interaction:
       mode: stage-place
-      persistOnPage: true
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
         URL: https://static.wixstatic.com/media/c569b3_8956f6cb226a475eaaf66022a211aee1~mv2.png
@@ -242,7 +235,6 @@ items:
     thumbnail: https://static.wixstatic.com/media/c569b3_82dd7ea69f574ea79997736ee1e69f92~mv2.png
     interaction:
       mode: stage-place
-      persistOnPage: true
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
         URL: https://static.wixstatic.com/media/c569b3_82dd7ea69f574ea79997736ee1e69f92~mv2.png
@@ -275,7 +267,6 @@ items:
     thumbnail: https://static.wixstatic.com/media/c569b3_e0c48ab61bdc4f7e92ddbf9e0f854682~mv2.png
     interaction:
       mode: stage-place
-      persistOnPage: true
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
         URL: https://static.wixstatic.com/media/c569b3_e0c48ab61bdc4f7e92ddbf9e0f854682~mv2.png
@@ -308,7 +299,6 @@ items:
     thumbnail: https://static.wixstatic.com/media/c569b3_2a6e0218c9a3461b84a564ca44c8ab1e~mv2.png
     interaction:
       mode: stage-place
-      persistOnPage: true
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
         URL: https://static.wixstatic.com/media/c569b3_2a6e0218c9a3461b84a564ca44c8ab1e~mv2.png
@@ -341,7 +331,6 @@ items:
     thumbnail: https://static.wixstatic.com/media/c569b3_121d5986d503453797ad3051e593c6ce~mv2.png
     interaction:
       mode: stage-place
-      persistOnPage: true
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
         URL: https://static.wixstatic.com/media/c569b3_121d5986d503453797ad3051e593c6ce~mv2.png
@@ -374,7 +363,6 @@ items:
     thumbnail: https://static.wixstatic.com/media/c569b3_94b9bcee5d934ca398862ca232efd10e~mv2.png
     interaction:
       mode: stage-place
-      persistOnPage: true
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
         URL: https://static.wixstatic.com/media/c569b3_94b9bcee5d934ca398862ca232efd10e~mv2.png
@@ -407,7 +395,6 @@ items:
     thumbnail: https://static.wixstatic.com/media/c569b3_a4e16aff923c490db21cf6ac04f36152~mv2.png
     interaction:
       mode: stage-place
-      persistOnPage: true
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
         URL: https://static.wixstatic.com/media/c569b3_a4e16aff923c490db21cf6ac04f36152~mv2.png
@@ -440,7 +427,6 @@ items:
     thumbnail: https://static.wixstatic.com/media/c569b3_b5f64b98c9414882a734a619d16b40b2~mv2.png
     interaction:
       mode: stage-place
-      persistOnPage: true
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
         URL: https://static.wixstatic.com/media/c569b3_b5f64b98c9414882a734a619d16b40b2~mv2.png
@@ -473,7 +459,6 @@ items:
     thumbnail: https://static.wixstatic.com/media/c569b3_b54789cbee264185ac1913f045226f0b~mv2.png
     interaction:
       mode: stage-place
-      persistOnPage: true
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
         URL: https://static.wixstatic.com/media/c569b3_b54789cbee264185ac1913f045226f0b~mv2.png
@@ -506,7 +491,6 @@ items:
     thumbnail: https://static.wixstatic.com/media/c569b3_68a5df69af994b60bfca5e16ac340433~mv2.png
     interaction:
       mode: stage-place
-      persistOnPage: true
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
         URL: https://static.wixstatic.com/media/c569b3_68a5df69af994b60bfca5e16ac340433~mv2.png
@@ -539,7 +523,6 @@ items:
     thumbnail: https://static.wixstatic.com/media/c569b3_d10fb12cbbab4291bcd6e4cde793ba04~mv2.png
     interaction:
       mode: stage-place
-      persistOnPage: true
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
         URL: https://static.wixstatic.com/media/c569b3_d10fb12cbbab4291bcd6e4cde793ba04~mv2.png
@@ -572,7 +555,6 @@ items:
     thumbnail: https://static.wixstatic.com/media/c569b3_58e53b14fdc14500a257c13678151a19~mv2.png
     interaction:
       mode: stage-place
-      persistOnPage: true
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
         URL: https://static.wixstatic.com/media/c569b3_58e53b14fdc14500a257c13678151a19~mv2.png

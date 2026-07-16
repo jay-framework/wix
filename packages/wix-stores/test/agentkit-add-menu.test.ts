@@ -5,8 +5,8 @@ import { tmpdir } from 'os';
 import { join } from 'path';
 import { load as loadYaml } from 'js-yaml';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { PluginSetupContext } from '@jay-framework/stack-server-runtime';
-import { setupWixStores } from '../lib/setup.js';
+import type { PluginAgentKitContext } from '@jay-framework/stack-server-runtime';
+import { generateWixStoresAgentKit } from '../lib/setup.js';
 
 // Canonical shape reference (no @jay-framework/aiditor import):
 // jay-aiditor/packages/aiditor/test/fixtures/add-menu/valid-item.yaml
@@ -29,6 +29,13 @@ vi.mock('@jay-framework/wix-server-client', () => ({
     wixFetch: vi.fn().mockResolvedValue({}),
 }));
 
+vi.mock('../lib/wix-apis/index.js', () => ({
+    queryCategories: vi.fn().mockResolvedValue({
+        categories: [],
+        pagingMetadata: { cursors: {} },
+    }),
+}));
+
 vi.mock('@jay-framework/stack-server-runtime', async (importOriginal) => {
     const actual = await importOriginal<typeof import('@jay-framework/stack-server-runtime')>();
     return {
@@ -36,18 +43,19 @@ vi.mock('@jay-framework/stack-server-runtime', async (importOriginal) => {
         getService: vi.fn(() => ({
             wixClient: {},
             urls: { product: '/products/{slug}' },
+            getDataExtensionSchemas: vi.fn().mockResolvedValue([]),
         })),
     };
 });
 
 function makeCtx(
     projectRoot: string,
-    overrides: Partial<PluginSetupContext> = {},
-): PluginSetupContext {
+    overrides: Partial<PluginAgentKitContext> = {},
+): PluginAgentKitContext {
     return {
         pluginName: 'wix-stores',
         projectRoot,
-        configDir: join(projectRoot, 'config'),
+        referencesDir: join(projectRoot, 'agent-kit/references/wix-stores'),
         services: new Map(),
         force: false,
         ...overrides,
@@ -84,11 +92,11 @@ function assertAddMenuCatalogShape(catalog: unknown): void {
     }
 }
 
-describe('setupWixStores add-menu catalog (Design Log #20 W2)', () => {
+describe('generateWixStoresAgentKit add-menu catalog (Design Log #20 W2)', () => {
     let projectRoot: string;
 
     beforeEach(() => {
-        projectRoot = mkdtempSync(join(tmpdir(), 'wix-stores-setup-'));
+        projectRoot = mkdtempSync(join(tmpdir(), 'wix-stores-agentkit-'));
         mkdirSync(join(projectRoot, 'config'), { recursive: true });
         writeFileSync(
             join(projectRoot, 'config/.wix-stores.yaml'),
@@ -101,10 +109,9 @@ describe('setupWixStores add-menu catalog (Design Log #20 W2)', () => {
     });
 
     it('writes wix-stores.yaml with six catalog items matching expected fixture', async () => {
-        const result = await setupWixStores(makeCtx(projectRoot));
+        const result = await generateWixStoresAgentKit(makeCtx(projectRoot));
 
-        expect(result.status).toBe('configured');
-        expect(result.configCreated).toEqual(expect.arrayContaining([ADD_MENU_OUTPUT_REL]));
+        expect(result.agentKitCreated).toEqual(expect.arrayContaining([ADD_MENU_OUTPUT_REL]));
 
         const outputPath = join(projectRoot, ADD_MENU_OUTPUT_REL);
         expect(existsSync(outputPath)).toBe(true);
@@ -115,7 +122,7 @@ describe('setupWixStores add-menu catalog (Design Log #20 W2)', () => {
     });
 
     it('product-page prompt references materialized contract path', async () => {
-        await setupWixStores(makeCtx(projectRoot));
+        await generateWixStoresAgentKit(makeCtx(projectRoot));
 
         const outputPath = join(projectRoot, ADD_MENU_OUTPUT_REL);
         const written = loadYaml(readFileSync(outputPath, 'utf-8')) as {
@@ -135,10 +142,9 @@ describe('setupWixStores add-menu catalog (Design Log #20 W2)', () => {
         mkdirSync(addMenuDir, { recursive: true });
         writeFileSync(join(addMenuDir, 'wix-stores.yaml'), 'items: []\n');
 
-        const result = await setupWixStores(makeCtx(projectRoot));
+        const result = await generateWixStoresAgentKit(makeCtx(projectRoot));
 
-        expect(result.status).toBe('configured');
-        expect(result.configCreated ?? []).not.toContain(ADD_MENU_OUTPUT_REL);
+        expect(result.agentKitCreated).not.toContain(ADD_MENU_OUTPUT_REL);
 
         const written = loadYaml(readFileSync(join(addMenuDir, 'wix-stores.yaml'), 'utf-8'));
         expect(written).toEqual({ items: [] });
@@ -149,21 +155,19 @@ describe('setupWixStores add-menu catalog (Design Log #20 W2)', () => {
         mkdirSync(addMenuDir, { recursive: true });
         writeFileSync(join(addMenuDir, 'wix-stores.yaml'), 'items: []\n');
 
-        const result = await setupWixStores(makeCtx(projectRoot, { force: true }));
+        const result = await generateWixStoresAgentKit(makeCtx(projectRoot, { force: true }));
 
-        expect(result.status).toBe('configured');
-        expect(result.configCreated).toEqual(expect.arrayContaining([ADD_MENU_OUTPUT_REL]));
+        expect(result.agentKitCreated).toEqual(expect.arrayContaining([ADD_MENU_OUTPUT_REL]));
 
         const written = loadYaml(readFileSync(join(addMenuDir, 'wix-stores.yaml'), 'utf-8'));
         assertAddMenuCatalogShape(written);
         expect(written).toEqual(loadExpectedCatalog());
     });
 
-    it('copies Add Menu thumbnails into public/ on setup', async () => {
-        const result = await setupWixStores(makeCtx(projectRoot));
+    it('copies Add Menu thumbnails into public/ on agent-kit', async () => {
+        const result = await generateWixStoresAgentKit(makeCtx(projectRoot));
 
-        expect(result.status).toBe('configured');
-        expect(result.configCreated).toEqual(
+        expect(result.agentKitCreated).toEqual(
             expect.arrayContaining([
                 'public/aiditor-add-menu-thumbnails/wix-stores/product-page.svg',
                 'public/aiditor-add-menu-thumbnails/wix-stores/related-products.svg',
@@ -185,7 +189,7 @@ describe('setupWixStores add-menu catalog (Design Log #20 W2)', () => {
     });
 
     it('related-products add-menu item references designer guide', async () => {
-        await setupWixStores(makeCtx(projectRoot));
+        await generateWixStoresAgentKit(makeCtx(projectRoot));
 
         const written = loadYaml(readFileSync(join(projectRoot, ADD_MENU_OUTPUT_REL), 'utf-8')) as {
             items: { id: string; prompt: string }[];
