@@ -120,4 +120,4 @@ To show products from a **specific** category on any page (homepage, landing pag
 
 ## AIditor Add Menu
 
-Attach **Related products** (`wix-stores:related-products`) when marking an area on a product page. The item prompt includes this recipe; `jay-stack setup wix-stores` writes the catalog to `agent-kit/aiditor/add-menu/wix-stores.yaml`.
+Attach **Related products** (`wix-stores:related-products`) when marking an area on a product page. The item prompt includes this recipe; `jay-stack agent-kit` writes the catalog to `agent-kit/aiditor/add-menu/wix-stores.yaml`.

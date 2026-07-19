@@ -13,8 +13,8 @@ import * as yaml from 'js-yaml';
 import type {
     PluginSetupContext,
     PluginSetupResult,
-    PluginReferencesContext,
-    PluginReferencesResult,
+    PluginAgentKitContext,
+    PluginAgentKitResult,
 } from '@jay-framework/stack-server-runtime';
 import { getService } from '@jay-framework/stack-server-runtime';
 import { WIX_STORES_SERVICE_MARKER, type WixStoresService } from './services/wix-stores-service';
@@ -48,7 +48,7 @@ function resolveAddMenuTemplatePath(): string {
  * Q8 note: product-page prompt references agent-kit/materialized-contracts/wix-stores/product-page.jay-contract,
  * which is materialized by the existing wix-stores setup / agent-kit flow (not by this writer).
  */
-function writeAddMenuCatalog(ctx: PluginSetupContext): string | null {
+function writeAddMenuCatalog(ctx: { projectRoot: string; force: boolean }): string | null {
     const outputPath = path.join(ctx.projectRoot, ADD_MENU_OUTPUT_REL);
 
     if (fs.existsSync(outputPath) && !ctx.force) {
@@ -154,14 +154,6 @@ export async function setupWixStores(ctx: PluginSetupContext): Promise<PluginSet
         };
     }
 
-    const addMenuCreated = writeAddMenuCatalog(ctx);
-    if (addMenuCreated) {
-        configCreated.push(addMenuCreated);
-    }
-    configCreated.push(
-        ...copyAiditorAddMenuThumbnails(ctx, resolvePackageAgentKitPath, 'wix-stores'),
-    );
-
     const message = `Wix Stores configured (product URL: ${service.urls.product})`;
 
     return {
@@ -181,9 +173,9 @@ interface CategoryNode extends CategoryTreeNode {}
  * Generate a YAML reference file with the full category tree.
  * Shows all categories with IDs, names, product counts, and parent-child hierarchy.
  */
-export async function generateWixStoresReferences(
-    ctx: PluginReferencesContext,
-): Promise<PluginReferencesResult> {
+export async function generateWixStoresAgentKit(
+    ctx: PluginAgentKitContext,
+): Promise<PluginAgentKitResult> {
     if (ctx.initError) {
         throw new Error(`init failed: ${ctx.initError.message}`);
     }
@@ -196,6 +188,16 @@ export async function generateWixStoresReferences(
     }
 
     fs.mkdirSync(ctx.referencesDir, { recursive: true });
+
+    const agentKitCreated: string[] = [];
+
+    const addMenuStatic = writeAddMenuCatalog(ctx);
+    if (addMenuStatic) {
+        agentKitCreated.push(addMenuStatic);
+    }
+    agentKitCreated.push(
+        ...copyAiditorAddMenuThumbnails(ctx, resolvePackageAgentKitPath, 'wix-stores'),
+    );
 
     // Fetch all visible categories
     const allCategories: Array<{
@@ -302,16 +304,16 @@ export async function generateWixStoresReferences(
         console.error('[wix-stores] Failed to fetch data extension schemas:', error);
     }
 
-    const referencesCreated = [
+    agentKitCreated.push(
         `agent-kit/references/${ctx.pluginName}/categories.yaml`,
         addMenuGenerated,
-    ];
+    );
     if (extensionFieldCount > 0) {
-        referencesCreated.push(`agent-kit/references/${ctx.pluginName}/data-extension-fields.yaml`);
+        agentKitCreated.push(`agent-kit/references/${ctx.pluginName}/data-extension-fields.yaml`);
     }
 
     return {
-        referencesCreated,
+        agentKitCreated,
         message: `${allCategories.length} categories (${roots.length} root), ${extensionFieldCount} extension fields`,
     };
 }
