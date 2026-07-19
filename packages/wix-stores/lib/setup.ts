@@ -304,7 +304,10 @@ export async function generateWixStoresReferences(
         console.error('[wix-stores] Failed to fetch data extension schemas:', error);
     }
 
-    referencesCreated.push(`agent-kit/references/${ctx.pluginName}/categories.yaml`, addMenuGenerated);
+    referencesCreated.push(
+        `agent-kit/references/${ctx.pluginName}/categories.yaml`,
+        addMenuGenerated,
+    );
     if (extensionFieldCount > 0) {
         referencesCreated.push(`agent-kit/references/${ctx.pluginName}/data-extension-fields.yaml`);
     }

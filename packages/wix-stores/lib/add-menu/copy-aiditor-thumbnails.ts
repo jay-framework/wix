@@ -1,5 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
+const PUBLIC_THUMBNAIL_ROOT = path.join('public', 'aiditor-add-menu-thumbnails');
+
 export function copyAiditorAddMenuThumbnails(
     ctx: { projectRoot: string; force: boolean },
     resolvePackagePath: (relativePath: string) => string,
