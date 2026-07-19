@@ -13,8 +13,8 @@ import * as yaml from 'js-yaml';
 import type {
     PluginSetupContext,
     PluginSetupResult,
-    PluginReferencesContext,
-    PluginReferencesResult,
+    PluginAgentKitContext,
+    PluginAgentKitResult,
 } from '@jay-framework/stack-server-runtime';
 import { getService } from '@jay-framework/stack-server-runtime';
 import { WIX_STORES_SERVICE_MARKER, type WixStoresService } from './services/wix-stores-service';
@@ -173,9 +173,9 @@ interface CategoryNode extends CategoryTreeNode {}
  * Generate a YAML reference file with the full category tree.
  * Shows all categories with IDs, names, product counts, and parent-child hierarchy.
  */
-export async function generateWixStoresReferences(
-    ctx: PluginReferencesContext,
-): Promise<PluginReferencesResult> {
+export async function generateWixStoresAgentKit(
+    ctx: PluginAgentKitContext,
+): Promise<PluginAgentKitResult> {
     if (ctx.initError) {
         throw new Error(`init failed: ${ctx.initError.message}`);
     }
@@ -189,13 +189,13 @@ export async function generateWixStoresReferences(
 
     fs.mkdirSync(ctx.referencesDir, { recursive: true });
 
-    const referencesCreated: string[] = [];
+    const agentKitCreated: string[] = [];
 
     const addMenuStatic = writeAddMenuCatalog(ctx);
     if (addMenuStatic) {
-        referencesCreated.push(addMenuStatic);
+        agentKitCreated.push(addMenuStatic);
     }
-    referencesCreated.push(
+    agentKitCreated.push(
         ...copyAiditorAddMenuThumbnails(ctx, resolvePackageAgentKitPath, 'wix-stores'),
     );
 
@@ -304,16 +304,16 @@ export async function generateWixStoresReferences(
         console.error('[wix-stores] Failed to fetch data extension schemas:', error);
     }
 
-    referencesCreated.push(
+    agentKitCreated.push(
         `agent-kit/references/${ctx.pluginName}/categories.yaml`,
         addMenuGenerated,
     );
     if (extensionFieldCount > 0) {
-        referencesCreated.push(`agent-kit/references/${ctx.pluginName}/data-extension-fields.yaml`);
+        agentKitCreated.push(`agent-kit/references/${ctx.pluginName}/data-extension-fields.yaml`);
     }
 
     return {
-        referencesCreated,
+        agentKitCreated,
         message: `${allCategories.length} categories (${roots.length} root), ${extensionFieldCount} extension fields`,
     };
 }
