@@ -12,7 +12,7 @@ import yaml from 'js-yaml';
 // @ts-ignore — no type declarations
 import { getService } from '@jay-framework/stack-server-runtime';
 import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
-import { items } from '@wix/data';
+import { items, collections } from '@wix/data';
 import { DEFAULT_COLLECTION_ID } from './constants.js';
 
 interface SetupContext {
@@ -100,21 +100,44 @@ export async function setupWixDeploy(ctx: SetupContext): Promise<SetupResult> {
         }
     }
 
-    // Validate data collection exists
+    // Validate data collection exists, create if missing
     let collectionOk = false;
-    try {
-        const wixClient = getService(WIX_CLIENT_SERVICE);
-        if (wixClient) {
-            const dataClient = (wixClient as any).use({ items });
+    const wixClient = getService(WIX_CLIENT_SERVICE);
+    if (wixClient) {
+        const dataClient = (wixClient as any).use({ items, collections });
+        try {
             await dataClient.items.query(DEFAULT_COLLECTION_ID).limit(1).find();
             collectionOk = true;
+        } catch {
+            try {
+                await dataClient.collections.createDataCollection({
+                    _id: DEFAULT_COLLECTION_ID,
+                    displayName: 'Jay Backend Files',
+                    fields: [
+                        { key: 'path', type: 'TEXT' },
+                        { key: 'content', type: 'TEXT' },
+                        { key: 'fileType', type: 'TEXT' },
+                        { key: 'sizeBytes', type: 'NUMBER' },
+                        { key: 'category', type: 'TEXT' },
+                        { key: 'version', type: 'TEXT' },
+                    ],
+                    permissions: {
+                        insert: 'ADMIN',
+                        update: 'ADMIN',
+                        remove: 'ADMIN',
+                        read: 'ADMIN',
+                    },
+                });
+                collectionOk = true;
+                configCreated.push('collection');
+            } catch (createErr) {
+                return {
+                    status: 'error',
+                    configCreated,
+                    message: `Failed to create data collection "${DEFAULT_COLLECTION_ID}": ${createErr instanceof Error ? createErr.message : createErr}`,
+                };
+            }
         }
-    } catch {
-        return {
-            status: 'needs-config',
-            configCreated,
-            message: `Data collection "${DEFAULT_COLLECTION_ID}" not found. Create it in the Wix dashboard with fields: path (text), content (text), fileType (text), sizeBytes (number), category (text), version (text)`,
-        };
     }
 
     return {
