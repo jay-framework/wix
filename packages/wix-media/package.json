@@ -12,7 +12,8 @@
   ],
   "exports": {
     ".": "./dist/index.js",
-    "./plugin.yaml": "./plugin.yaml"
+    "./plugin.yaml": "./plugin.yaml",
+    "./lib/pages/settings/page.jay-html": "./lib/pages/settings/page.jay-html"
   },
   "scripts": {
     "build": "npm run clean && npm run build:server && npm run build:types && npm run validate",

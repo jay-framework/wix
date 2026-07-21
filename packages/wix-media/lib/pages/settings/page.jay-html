@@ -1,0 +1,93 @@
+<html>
+  <head>
+    <script type="application/jay-data">
+data:
+    connectionMessage: string
+    connected: boolean
+    fileCount: number
+    statusMessage: string
+    </script>
+    <style>
+      .wix-media-settings {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 24px;
+        font-family: system-ui, sans-serif;
+        color: #162d3d;
+      }
+      .wix-media-settings h1 { margin: 0 0 8px; font-size: 20px; }
+      .wix-media-settings section {
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid #d8e0e6;
+      }
+      .wix-media-settings .status-card {
+        padding: 12px 14px;
+        border-radius: 8px;
+        background: #f4f7f9;
+        border: 1px solid #d8e0e6;
+        font-size: 13px;
+      }
+      .wix-media-settings .status-card.ok {
+        background: #edf8f0;
+        border-color: #b9dfc4;
+      }
+      .wix-media-settings .status-card.warn {
+        background: #fff8e8;
+        border-color: #efd9a2;
+      }
+      .wix-media-settings .actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
+      .wix-media-settings button {
+        padding: 8px 12px;
+        border: 1px solid #c5d0d8;
+        border-radius: 6px;
+        background: #fff;
+        cursor: pointer;
+      }
+      .wix-media-settings button.primary {
+        background: #116dff;
+        border-color: #116dff;
+        color: #fff;
+      }
+      .wix-media-settings .hint { font-size: 13px; color: #5a6f82; margin-top: 8px; }
+      .wix-media-settings code { font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <div class="wix-media-settings">
+      <h1>Media Manager</h1>
+      <p>Project-level media operations for Wix Media Manager. API keys and OAuth secrets stay in <code>config/.wix.yaml</code> — edit in your IDE.</p>
+
+      <section>
+        <h2>About</h2>
+        <p>Upload public assets with <code>jay-stack command wix-media/upload-public</code>, then rebuild the catalog so Add Menu and agent-kit references stay current.</p>
+        <p>See <code>agent-kit/references/wix-media/MEDIA-INDEX.md</code> after rebuild.</p>
+      </section>
+
+      <section>
+        <h2>Connection</h2>
+        <div class="{connected ? status-card ok : status-card warn}">
+          <div>{connectionMessage}</div>
+          <div if="connected">Indexed files: {fileCount}</div>
+        </div>
+        <div class="actions">
+          <button type="button" ref="refreshStatusBtn">Refresh status</button>
+        </div>
+      </section>
+
+      <section>
+        <h2>Catalog</h2>
+        <p class="hint">Writes <code>agent-kit/aiditor/add-menu/wix-media.generated.yaml</code> and refreshes MEDIA-INDEX.</p>
+        <div class="actions">
+          <button type="button" class="primary" ref="rebuildCatalogBtn">Rebuild media catalog</button>
+        </div>
+        <p class="hint" if="statusMessage">{statusMessage}</p>
+      </section>
+    </div>
+  </body>
+</html>
