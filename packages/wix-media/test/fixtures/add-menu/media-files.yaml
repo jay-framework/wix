@@ -10,6 +10,8 @@ files:
       - hero
     folderId: folder-1
     folderName: Marketing
+    folderPath:
+      - Marketing
   - id: promo-video-id-002
     displayName: Promo Clip
     slug: promo-clip
@@ -18,6 +20,8 @@ files:
     labels: []
     folderId: folder-1
     folderName: Marketing
+    folderPath:
+      - Marketing
   - id: logo-id-003
     displayName: Logo
     slug: logo
@@ -28,3 +32,4 @@ files:
     labels: []
     folderId: media-root
     folderName: Media Root
+    folderPath: []

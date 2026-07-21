@@ -1,10 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import type { WixClient } from '@wix/sdk';
 import type {
     PluginSetupContext,
     PluginSetupResult,
-    PluginReferencesContext,
-    PluginReferencesResult,
+    PluginAgentKitContext,
+    PluginAgentKitResult,
 } from '@jay-framework/stack-server-runtime';
 import { getService } from '@jay-framework/stack-server-runtime';
 import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
@@ -13,9 +14,17 @@ import { generateMediaIndex } from './index-generator.js';
 import { buildMediaAddMenuItems } from './add-menu/media-items.js';
 import { writeGeneratedAddMenuCatalog } from './add-menu/write-add-menu-catalog.js';
 
-function createMediaService() {
-    const wixClient = getService(WIX_CLIENT_SERVICE);
-    return provideWixMediaService(wixClient);
+function getWixClient(services: Map<symbol, unknown>): WixClient {
+    const fromContext = services.get(WIX_CLIENT_SERVICE as symbol);
+    if (fromContext !== undefined) {
+        return fromContext as WixClient;
+    }
+
+    return getService(WIX_CLIENT_SERVICE) as unknown as WixClient;
+}
+
+function createMediaService(services: Map<symbol, unknown>) {
+    return provideWixMediaService(getWixClient(services));
 }
 
 export async function setupWixMedia(ctx: PluginSetupContext): Promise<PluginSetupResult> {
@@ -29,7 +38,7 @@ export async function setupWixMedia(ctx: PluginSetupContext): Promise<PluginSetu
     }
 
     try {
-        createMediaService();
+        createMediaService(ctx.services);
     } catch {
         return {
             status: 'needs-config',
@@ -45,16 +54,16 @@ export async function setupWixMedia(ctx: PluginSetupContext): Promise<PluginSetu
     };
 }
 
-export async function generateWixMediaReferences(
-    ctx: PluginReferencesContext,
-): Promise<PluginReferencesResult> {
+export async function generateWixMediaAgentKit(
+    ctx: PluginAgentKitContext,
+): Promise<PluginAgentKitResult> {
     if (ctx.initError) {
         throw new Error(`init failed: ${ctx.initError.message}`);
     }
 
     let mediaService;
     try {
-        mediaService = createMediaService();
+        mediaService = createMediaService(ctx.services);
     } catch {
         throw new Error('WixMediaService not available. Run jay-stack setup first.');
     }
@@ -71,7 +80,7 @@ export async function generateWixMediaReferences(
     const addMenuGenerated = writeGeneratedAddMenuCatalog(ctx.projectRoot, addMenuItems);
 
     return {
-        referencesCreated: [
+        agentKitCreated: [
             `agent-kit/references/${ctx.pluginName}/MEDIA-INDEX.md`,
             addMenuGenerated,
         ],

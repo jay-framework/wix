@@ -1,3 +1,4 @@
+import { buildMediaFolderPath, type WixMediaFolderRecord } from '../add-menu/folder-path.js';
 import { WixClient } from '@wix/sdk';
 import { files, folders } from '@wix/media';
 import { createJayService } from '@jay-framework/fullstack-component';
@@ -18,6 +19,7 @@ export interface MediaFileInfo {
     labels: string[];
     folderId: string;
     folderName: string;
+    folderPath: string[];
 }
 
 export interface UploadUrlResult {
@@ -79,9 +81,11 @@ function extractDimensions(file: {
     return {};
 }
 
-async function fetchAllFolders(foldersClient: FoldersClient): Promise<Map<string, string>> {
-    const folderMap = new Map<string, string>();
-    folderMap.set('media-root', 'Media Root');
+async function fetchAllFolders(
+    foldersClient: FoldersClient,
+): Promise<Map<string, WixMediaFolderRecord>> {
+    const folderMap = new Map<string, WixMediaFolderRecord>();
+    folderMap.set('media-root', { name: 'Media Root', parentFolderId: null });
 
     let cursor: string | undefined | null;
     do {
@@ -91,7 +95,10 @@ async function fetchAllFolders(foldersClient: FoldersClient): Promise<Map<string
         });
         for (const folder of result.folders ?? []) {
             if (folder._id && folder.displayName) {
-                folderMap.set(folder._id, folder.displayName);
+                folderMap.set(folder._id, {
+                    name: folder.displayName,
+                    parentFolderId: folder.parentFolderId ?? null,
+                });
             }
         }
         cursor = result.nextCursor?.cursors?.next;
@@ -169,6 +176,9 @@ export function provideWixMediaService(wixClient: WixClient): WixMediaService {
 
             const items: MediaFileInfo[] = rawFiles.map((file) => {
                 const dims = extractDimensions(file);
+                const folderRecord = folderMap.get(file.folderId);
+                const folderName = folderRecord?.name ?? 'Unknown';
+                const folderPath = buildMediaFolderPath(file.folderId, folderMap);
                 return {
                     id: file.id,
                     displayName: file.displayName,
@@ -179,7 +189,8 @@ export function provideWixMediaService(wixClient: WixClient): WixMediaService {
                     height: dims.height,
                     labels: file.labels,
                     folderId: file.folderId,
-                    folderName: folderMap.get(file.folderId) ?? 'Unknown',
+                    folderName,
+                    folderPath,
                 };
             });
 

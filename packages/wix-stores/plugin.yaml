@@ -51,7 +51,6 @@ contexts:
     marker: WIX_STORES_CONTEXT
     description: Client-side stores access with product variant resolution and delegated cart operations
 
-setup:
-  handler: setupWixStores
-  references: generateWixStoresReferences
-  description: Validate Wix Stores service; generate category tree reference
+setup: setupWixStores
+agentkit: generateWixStoresAgentKit
+description: Validate Wix Stores service; generate category tree reference and Add Menu catalogs

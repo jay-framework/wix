@@ -29,5 +29,4 @@ validators:
     handler: validateAuthCallbackPage
     description: Checks that the auth callback page exists for the OAuth redirect flow
 
-setup:
-  handler: setupWixMembers
+setup: setupWixMembers

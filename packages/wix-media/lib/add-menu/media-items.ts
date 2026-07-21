@@ -6,7 +6,6 @@ import type { MediaFileInfo } from '../services/wix-media-service.js';
 
 export interface MediaAddMenuInteraction {
     mode: 'stage-place' | 'reference';
-    persistOnPage?: boolean;
     stagePromptTemplate?: string;
 }
 
@@ -14,7 +13,7 @@ export interface MediaAddMenuItem {
     id: string;
     title: string;
     category: string;
-    subCategory: string;
+    folderPath?: string[];
     pluginName: string;
     packageName: string;
     thumbnail?: string;
@@ -23,21 +22,6 @@ export interface MediaAddMenuItem {
 }
 
 const CATEGORY = 'Media';
-
-function subCategoryForMediaType(mediaType: string): string {
-    switch (mediaType.toLowerCase()) {
-        case 'image':
-            return 'Images';
-        case 'video':
-            return 'Videos';
-        case 'audio':
-            return 'Audio';
-        case 'document':
-            return 'Documents';
-        default:
-            return 'Other';
-    }
-}
 
 function uniqueItemId(slug: string, mediaId: string, usedIds: Set<string>): string {
     const base = slug.trim() || mediaId.slice(0, 8);
@@ -58,10 +42,6 @@ function formatDimensions(file: MediaFileInfo): string {
 }
 
 function formatTitle(file: MediaFileInfo): string {
-    const folder = file.folderName?.trim();
-    if (folder && folder !== 'Media Root' && folder !== 'Unknown') {
-        return `${folder} — ${file.displayName}`;
-    }
     return file.displayName;
 }
 
@@ -89,14 +69,12 @@ function stagePlaceInteractionForMedia(file: MediaFileInfo): MediaAddMenuInterac
     if (mediaType === 'image' || mediaType === 'vector' || isPreviewableVisualMedia(file)) {
         return {
             mode: 'stage-place',
-            persistOnPage: true,
             stagePromptTemplate: `Place this image at the marker location on the page.\nURL: ${file.url}`,
         };
     }
     if (mediaType === 'video') {
         return {
             mode: 'stage-place',
-            persistOnPage: true,
             stagePromptTemplate: `Place this video at the marker location on the page.\nURL: ${file.url}`,
         };
     }
@@ -106,7 +84,11 @@ function stagePlaceInteractionForMedia(file: MediaFileInfo): MediaAddMenuInterac
 function buildMediaPrompt(file: MediaFileInfo): string {
     const labels = file.labels.length > 0 ? `Labels: ${file.labels.join(', ')}\n` : '';
     const folderLine =
-        file.folderName && file.folderName !== 'Unknown' ? `Folder: ${file.folderName}\n` : '';
+        file.folderPath.length > 0
+            ? `Folder: ${file.folderPath.join(' / ')}\n`
+            : file.folderName && file.folderName !== 'Unknown'
+              ? `Folder: ${file.folderName}\n`
+              : '';
 
     return [
         'Use this Wix Media Manager asset in jay-html (do not copy to public/):',
@@ -134,7 +116,7 @@ export function buildMediaAddMenuItems(files: MediaFileInfo[]): MediaAddMenuItem
             id: uniqueItemId(file.slug, file.id, usedIds),
             title: formatTitle(file),
             category: CATEGORY,
-            subCategory: subCategoryForMediaType(file.mediaType),
+            ...(file.folderPath.length > 0 ? { folderPath: [...file.folderPath] } : {}),
             pluginName: 'wix-media',
             packageName: '@jay-framework/wix-media',
             ...(thumbnail ? { thumbnail } : {}),
