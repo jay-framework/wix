@@ -6,8 +6,6 @@ import type {
 import { walkElements } from '@jay-framework/compiler-shared';
 // @ts-ignore — no type declarations
 import { parseTemplateParts } from '@jay-framework/compiler-jay-html';
-import { createRequire } from 'node:module';
-
 const STATIC_ELEMENTS = new Set(['img', 'video', 'source', 'link']);
 const SRC_ATTRS = ['src', 'poster'];
 const HREF_ATTRS = ['href'];
@@ -19,23 +17,11 @@ function isLocalPath(value: string): boolean {
     return true;
 }
 
-function hasWixMedia(projectRoot: string): boolean {
-    try {
-        const require = createRequire(projectRoot + '/package.json');
-        require.resolve('@jay-framework/wix-media');
-        return true;
-    } catch {
-        return false;
-    }
-}
-
 function suggestRenamed(filePath: string): string {
     return filePath.replace(/ /g, '-');
 }
 
 export const validate: JayHtmlValidatorFn = (ctx) => {
-    if (hasWixMedia(ctx.projectRoot)) return [];
-
     const findings: JayHtmlValidationFinding[] = [];
 
     walkElements(ctx.body, ctx, (el: any, _scope: DataScope) => {

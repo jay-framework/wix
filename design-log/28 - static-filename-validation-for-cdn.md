@@ -26,7 +26,7 @@ Add a jay-html validator to `wix-deploy` that flags local image paths containing
 1. Walk `<img>`, `<video>`, `<source>` elements for `src` attributes, and `<link>` elements for `href`
 2. For fully static values (no bindings): check if it's a local path (not `http://`, `https://`, or a data URL)
 3. If the path contains a space → report an error
-4. Skip entirely if `@jay-framework/wix-media` is installed — those images will be served from Wix Media Manager, not the CDN
+4. No special check for wix-media needed — images uploaded to Wix Media Manager have `wixstatic.com` URLs (not local paths) and naturally won't be flagged
 
 ### Error message
 
@@ -35,23 +35,6 @@ Static file path '/Jay Logo 2.png' contains spaces — Wix CDN replaces spaces w
 hyphens, breaking the reference. Rename the file to '/Jay-Logo-2.png' and update all
 references in jay-html files.
 ```
-
-### wix-media detection
-
-Check if `@jay-framework/wix-media` resolves from `ctx.projectRoot`:
-
-```typescript
-function hasWixMedia(projectRoot: string): boolean {
-    try {
-        require.resolve('@jay-framework/wix-media', { paths: [projectRoot] });
-        return true;
-    } catch {
-        return false;
-    }
-}
-```
-
-This makes the validator a no-op when wix-media handles image delivery.
 
 ### Scope
 
@@ -75,8 +58,7 @@ Also checks `<link href="...">` for favicons and other static assets with spaces
 
 ## Verification Criteria
 
-1. `npm run validate` in a project without wix-media flags images with spaces in their paths
-2. `npm run validate` in a project with wix-media produces no findings from this validator
+1. `npm run validate` flags local image paths with spaces
 3. Images without spaces are not flagged
 4. Dynamic bindings are not flagged
 5. External URLs (`https://...`) are not flagged
