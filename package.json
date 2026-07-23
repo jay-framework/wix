@@ -41,6 +41,7 @@
     ]
   },
   "devDependencies": {
+    "@inquirer/prompts": "^8.5.2",
     "@jay-framework/jay-stack-cli": "^0.22.0",
     "commander": "^14.0.0",
     "esbuild": "^0.20.0",
