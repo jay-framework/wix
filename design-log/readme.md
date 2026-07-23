@@ -33,6 +33,7 @@ Design documentation for the Jay Framework Wix integration packages.
 | 25  | [Product Page Head Tags](./25%20-%20product-page-head-tags.md)                                 | Implemented     |
 | 26  | [Granular Wix SDK Imports](./26%20-%20granular-wix-sdk-imports.md)                             | Draft           |
 | 27  | [Interactive Setup for Wix Plugins](./27%20-%20interactive-setup-for-wix-plugins.md)           | Draft           |
+| 28  | [Static Filename Validation for CDN](./28%20-%20static-filename-validation-for-cdn.md)         | Draft           |
 
 ## Packages Covered
 

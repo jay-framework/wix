@@ -2514,7 +2514,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@jay-framework/wix-deploy@workspace:packages/wix-deploy"
   dependencies:
+    "@jay-framework/compiler-jay-html": "npm:^0.22.0"
+    "@jay-framework/compiler-shared": "npm:^0.22.0"
     "@jay-framework/fullstack-component": "npm:^0.22.0"
+    "@jay-framework/jay-stack-cli": "npm:^0.22.0"
     "@jay-framework/production-server": "npm:^0.22.0"
     "@jay-framework/stack-server-runtime": "npm:^0.22.0"
     "@jay-framework/wix-server-client": "workspace:^"
