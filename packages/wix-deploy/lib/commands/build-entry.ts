@@ -504,6 +504,7 @@ export const buildEntry = makeCliCommand('build-entry')
             minify: false,
             treeShaking: true,
             logLevel: 'warning',
+            logOverride: { 'import-is-undefined': 'silent' },
             metafile: true,
         });
 
