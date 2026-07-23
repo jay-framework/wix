@@ -59,6 +59,6 @@ Also checks `<link href="...">` for favicons and other static assets with spaces
 ## Verification Criteria
 
 1. `npm run validate` flags local image paths with spaces
-3. Images without spaces are not flagged
-4. Dynamic bindings are not flagged
-5. External URLs (`https://...`) are not flagged
+2. Images without spaces are not flagged
+3. Dynamic bindings are not flagged
+4. External URLs (`https://...`) are not flagged

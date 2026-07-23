@@ -58,10 +58,10 @@ Once credentials are established (human has logged in and provided API key), all
 
 Each prompt uses a stable `key` so that agent-mode answers files can supply values:
 
-| Plugin | Key | Type | Human-only |
-|--------|-----|------|------------|
-| wix-server-client | `wix-api-key` | input | No (agent can supply via answers file) |
-| wix-members | `create-auth-callback` | confirm | No |
+| Plugin            | Key                    | Type    | Human-only                             |
+| ----------------- | ---------------------- | ------- | -------------------------------------- |
+| wix-server-client | `wix-api-key`          | input   | No (agent can supply via answers file) |
+| wix-members       | `create-auth-callback` | confirm | No                                     |
 
 The Wix CLI login and site connection steps are **not prompts** — they are shell commands that require a TTY. These steps have no `key` because they cannot be answered via an answers file.
 
@@ -82,87 +82,98 @@ The `wix-server-client` plugin's setup handler owns the Wix credential flow. Thi
 
 ```typescript
 export async function setupWixServerClient(ctx: PluginSetupContext): Promise<PluginSetupResult> {
-    const configPath = path.join(ctx.configDir, '.wix.yaml');
+  const configPath = path.join(ctx.configDir, '.wix.yaml');
 
-    // Already configured with real values?
-    if (fs.existsSync(configPath)) {
-        const config = yaml.load(fs.readFileSync(configPath, 'utf-8')) as any;
-        const apiKey = config?.apiKeyStrategy?.apiKey || '';
-        const siteId = config?.apiKeyStrategy?.siteId || '';
-        if (apiKey && !apiKey.startsWith('<') && siteId && !siteId.startsWith('<')) {
-            if (ctx.initError) {
-                return { status: 'error', message: `Credentials invalid: ${ctx.initError.message}` };
-            }
-            return { status: 'configured', message: `Wix client connected (site: ${siteId.substring(0, 8)}...)` };
-        }
+  // Already configured with real values?
+  if (fs.existsSync(configPath)) {
+    const config = yaml.load(fs.readFileSync(configPath, 'utf-8')) as any;
+    const apiKey = config?.apiKeyStrategy?.apiKey || '';
+    const siteId = config?.apiKeyStrategy?.siteId || '';
+    if (apiKey && !apiKey.startsWith('<') && siteId && !siteId.startsWith('<')) {
+      if (ctx.initError) {
+        return { status: 'error', message: `Credentials invalid: ${ctx.initError.message}` };
+      }
+      return {
+        status: 'configured',
+        message: `Wix client connected (site: ${siteId.substring(0, 8)}...)`,
+      };
     }
+  }
 
-    // Wix login and site connection require a human at a TTY
-    if (!ctx.interactive) {
-        if (!fs.existsSync(configPath)) {
-            fs.mkdirSync(ctx.configDir, { recursive: true });
-            fs.writeFileSync(configPath, CONFIG_TEMPLATE, 'utf-8');
-        }
-        return {
-            status: 'needs-config',
-            configCreated: !fs.existsSync(configPath) ? ['config/.wix.yaml'] : undefined,
-            message: 'Wix login requires interactive mode. Run: jay-stack-cli setup --interactive',
-        };
+  // Wix login and site connection require a human at a TTY
+  if (!ctx.interactive) {
+    if (!fs.existsSync(configPath)) {
+      fs.mkdirSync(ctx.configDir, { recursive: true });
+      fs.writeFileSync(configPath, CONFIG_TEMPLATE, 'utf-8');
     }
+    return {
+      status: 'needs-config',
+      configCreated: !fs.existsSync(configPath) ? ['config/.wix.yaml'] : undefined,
+      message: 'Wix login requires interactive mode. Run: jay-stack-cli setup --interactive',
+    };
+  }
 
-    // Interactive (human): full credential flow
-    // 1. Wix CLI login
-    try {
-        execSync('npx @wix/cli whoami', { cwd: ctx.projectRoot, stdio: 'pipe' });
-    } catch {
-        execSync('npx @wix/cli login', { cwd: ctx.projectRoot, stdio: 'inherit' });
+  // Interactive (human): full credential flow
+  // 1. Wix CLI login
+  try {
+    execSync('npx @wix/cli whoami', { cwd: ctx.projectRoot, stdio: 'pipe' });
+  } catch {
+    execSync('npx @wix/cli login', { cwd: ctx.projectRoot, stdio: 'inherit' });
+  }
+
+  // 2. Connect to site
+  const wixConfigPath = path.join(ctx.projectRoot, 'wix.config.json');
+  if (!fs.existsSync(wixConfigPath)) {
+    execSync('npm create @wix/new@latest init', { cwd: ctx.projectRoot, stdio: 'inherit' });
+  }
+
+  if (!fs.existsSync(wixConfigPath)) {
+    return { status: 'needs-config', message: 'wix.config.json not created — run setup again' };
+  }
+
+  // 3. Read site credentials
+  const wixConfig = JSON.parse(fs.readFileSync(wixConfigPath, 'utf-8'));
+  const siteId = wixConfig.siteId || '';
+  const appId = wixConfig.appId || '';
+
+  if (!siteId || !appId) {
+    return { status: 'needs-config', message: 'Missing siteId or appId in wix.config.json' };
+  }
+
+  // 4. Prompt for API key (works in both modes via key)
+  const apiKey = await ctx.prompt.input({
+    key: 'wix-api-key',
+    message: 'Wix API Key (create at https://manage.wix.com/account/api-keys):',
+    validate: (v) => v.trim().length > 0 || 'API key is required',
+  });
+
+  // 5. Write credentials
+  fs.mkdirSync(ctx.configDir, { recursive: true });
+  fs.writeFileSync(
+    configPath,
+    yaml.dump({
+      apiKeyStrategy: { apiKey: apiKey.trim(), siteId },
+      oauthStrategy: { clientId: appId },
+    }),
+    'utf-8',
+  );
+
+  // 6. Update .gitignore
+  const gitignorePath = path.join(ctx.projectRoot, '.gitignore');
+  const entries = ['config/.wix.yaml', 'wix.config.json'];
+  if (fs.existsSync(gitignorePath)) {
+    let content = fs.readFileSync(gitignorePath, 'utf-8');
+    for (const entry of entries) {
+      if (!content.includes(entry)) content += `\n${entry}`;
     }
+    fs.writeFileSync(gitignorePath, content.trimEnd() + '\n', 'utf-8');
+  }
 
-    // 2. Connect to site
-    const wixConfigPath = path.join(ctx.projectRoot, 'wix.config.json');
-    if (!fs.existsSync(wixConfigPath)) {
-        execSync('npm create @wix/new@latest init', { cwd: ctx.projectRoot, stdio: 'inherit' });
-    }
-
-    if (!fs.existsSync(wixConfigPath)) {
-        return { status: 'needs-config', message: 'wix.config.json not created — run setup again' };
-    }
-
-    // 3. Read site credentials
-    const wixConfig = JSON.parse(fs.readFileSync(wixConfigPath, 'utf-8'));
-    const siteId = wixConfig.siteId || '';
-    const appId = wixConfig.appId || '';
-
-    if (!siteId || !appId) {
-        return { status: 'needs-config', message: 'Missing siteId or appId in wix.config.json' };
-    }
-
-    // 4. Prompt for API key (works in both modes via key)
-    const apiKey = await ctx.prompt.input({
-        key: 'wix-api-key',
-        message: 'Wix API Key (create at https://manage.wix.com/account/api-keys):',
-        validate: (v) => (v.trim().length > 0) || 'API key is required',
-    });
-
-    // 5. Write credentials
-    fs.mkdirSync(ctx.configDir, { recursive: true });
-    fs.writeFileSync(configPath, yaml.dump({
-        apiKeyStrategy: { apiKey: apiKey.trim(), siteId },
-        oauthStrategy: { clientId: appId },
-    }), 'utf-8');
-
-    // 6. Update .gitignore
-    const gitignorePath = path.join(ctx.projectRoot, '.gitignore');
-    const entries = ['config/.wix.yaml', 'wix.config.json'];
-    if (fs.existsSync(gitignorePath)) {
-        let content = fs.readFileSync(gitignorePath, 'utf-8');
-        for (const entry of entries) {
-            if (!content.includes(entry)) content += `\n${entry}`;
-        }
-        fs.writeFileSync(gitignorePath, content.trimEnd() + '\n', 'utf-8');
-    }
-
-    return { status: 'configured', configCreated: ['config/.wix.yaml'], message: `Wix client connected (site: ${siteId.substring(0, 8)}...)` };
+  return {
+    status: 'configured',
+    configCreated: ['config/.wix.yaml'],
+    message: `Wix client connected (site: ${siteId.substring(0, 8)}...)`,
+  };
 }
 ```
 
@@ -171,6 +182,7 @@ export async function setupWixServerClient(ctx: PluginSetupContext): Promise<Plu
 Already auto-fills `clientId`/`siteId` from `wix.config.json` and auto-creates the `jay-backend-files` data collection if missing. No user prompts needed — once wix-server-client has credentials, everything is automated. Works in both human and agent mode.
 
 **Sequence:**
+
 1. Check `wix.config.json` exists → `needs-config` if missing
 2. Auto-fill `clientId`/`siteId` in `.wix.yaml` from `wix.config.json`
 3. Check API key configured → `needs-config` if placeholder (wix-server-client handles the prompt)
@@ -192,53 +204,62 @@ The auth callback page template currently lives in `create-jay/templates/auth-ca
 
 ```typescript
 export async function setupWixMembers(ctx: PluginSetupContext): Promise<PluginSetupResult> {
-    if (ctx.initError) {
-        return { status: 'error', message: `Service init failed: ${ctx.initError.message}` };
+  if (ctx.initError) {
+    return { status: 'error', message: `Service init failed: ${ctx.initError.message}` };
+  }
+
+  // Create config if missing (current behavior)
+  const configPath = path.join(ctx.configDir, CONFIG_FILE_NAME);
+  const configCreated: string[] = [];
+  if (!fs.existsSync(configPath)) {
+    fs.mkdirSync(ctx.configDir, { recursive: true });
+    fs.writeFileSync(configPath, CONFIG_TEMPLATE, 'utf-8');
+    configCreated.push(`config/${CONFIG_FILE_NAME}`);
+  }
+
+  const config = loadWixMembersConfig(ctx.projectRoot);
+  const callbackUrl = config.authCallbackUrl;
+
+  // External callback — no page needed
+  if (!callbackUrl.startsWith('/')) {
+    return { status: 'configured', configCreated, message: `External callback: ${callbackUrl}` };
+  }
+
+  // Check if callback page exists
+  const routeSegments = callbackUrl.replace(/^\//, '').split('/');
+  const expectedPath = `src/pages/${routeSegments.join('/')}/page.jay-html`;
+  const fullPath = path.join(ctx.projectRoot, expectedPath);
+
+  if (!fs.existsSync(fullPath)) {
+    const create = await ctx.prompt.confirm({
+      key: 'create-auth-callback',
+      message: `Create auth callback page at ${expectedPath}?`,
+      default: true,
+    });
+    if (create) {
+      fs.mkdirSync(path.dirname(fullPath), { recursive: true });
+      fs.writeFileSync(fullPath, AUTH_CALLBACK_TEMPLATE, 'utf-8');
+    } else {
+      return {
+        status: 'needs-config',
+        configCreated,
+        message: `Auth callback page missing: ${expectedPath}`,
+      };
     }
+  }
 
-    // Create config if missing (current behavior)
-    const configPath = path.join(ctx.configDir, CONFIG_FILE_NAME);
-    const configCreated: string[] = [];
-    if (!fs.existsSync(configPath)) {
-        fs.mkdirSync(ctx.configDir, { recursive: true });
-        fs.writeFileSync(configPath, CONFIG_TEMPLATE, 'utf-8');
-        configCreated.push(`config/${CONFIG_FILE_NAME}`);
-    }
-
-    const config = loadWixMembersConfig(ctx.projectRoot);
-    const callbackUrl = config.authCallbackUrl;
-
-    // External callback — no page needed
-    if (!callbackUrl.startsWith('/')) {
-        return { status: 'configured', configCreated, message: `External callback: ${callbackUrl}` };
-    }
-
-    // Check if callback page exists
-    const routeSegments = callbackUrl.replace(/^\//, '').split('/');
-    const expectedPath = `src/pages/${routeSegments.join('/')}/page.jay-html`;
-    const fullPath = path.join(ctx.projectRoot, expectedPath);
-
-    if (!fs.existsSync(fullPath)) {
-        const create = await ctx.prompt.confirm({
-            key: 'create-auth-callback',
-            message: `Create auth callback page at ${expectedPath}?`,
-            default: true,
-        });
-        if (create) {
-            fs.mkdirSync(path.dirname(fullPath), { recursive: true });
-            fs.writeFileSync(fullPath, AUTH_CALLBACK_TEMPLATE, 'utf-8');
-        } else {
-            return { status: 'needs-config', configCreated, message: `Auth callback page missing: ${expectedPath}` };
-        }
-    }
-
-    return { status: 'configured', configCreated, message: `Wix Members configured (callback: ${callbackUrl})` };
+  return {
+    status: 'configured',
+    configCreated,
+    message: `Wix Members configured (callback: ${callbackUrl})`,
+  };
 }
 ```
 
 ### 4. wix-stores, wix-stores-v1, wix-data, wix-media — No interactive changes
 
 These plugins validate API access and generate references. No user prompts needed. Work in both human and agent mode:
+
 - Check wix-server-client is configured (via `ctx.initError`)
 - Validate API access (query products/collections/media)
 - Return `configured` or `error`

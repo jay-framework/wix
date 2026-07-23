@@ -107,8 +107,7 @@ export async function setupWixServerClient(ctx: PluginSetupContext): Promise<Plu
     if (!ctx.interactive) {
         return {
             status: 'needs-config',
-            message:
-                'Wix login requires interactive mode. Run: jay-stack-cli setup --interactive',
+            message: 'Wix login requires interactive mode. Run: jay-stack-cli setup --interactive',
         };
     }
 
