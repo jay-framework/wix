@@ -10,16 +10,17 @@ export interface WixClientService {
 export const WIX_CLIENT_SERVICE = createJayService<WixClientService>('WixClientService');
 
 export function provideWixClientService(config: WixConfig) {
-    const instance = createClient({
-        // auth: AppStrategy({
-        //     appId: process.env.WIX_CLIENT_ID, // from wix.config,
-        //     appSecret: process.env.WIX_CLIENT_SECRET,
-        // }),
-        auth: ApiKeyStrategy({
-            apiKey: config.apiKey.apiKey,
-            siteId: config.apiKey.siteId,
-        }),
-        modules: {},
-    });
+    const auth =
+        config.auth.kind === 'apiKey'
+            ? ApiKeyStrategy({
+                  apiKey: config.auth.apiKey.apiKey,
+                  siteId: config.auth.apiKey.siteId,
+              })
+            : AppStrategy({
+                  appId: config.auth.app.appId,
+                  appSecret: config.auth.app.appSecret,
+              });
+
+    const instance = createClient({ auth, modules: {} });
     registerService(WIX_CLIENT_SERVICE, instance);
 }
