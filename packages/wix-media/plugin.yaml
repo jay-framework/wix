@@ -19,16 +19,9 @@ setup: setupWixMedia
 agentkit: generateWixMediaAgentKit
 description: Validates Wix Media Manager access, generates agent-kit media index
 
-aiditor:
-  settings:
-    label: Media Manager
-    route: /wix-media/settings
-    requires:
-      - plugin: wix-server-client
-        status: configured
-
 routes:
   - path: /wix-media/settings
     jayHtml: ./lib/pages/settings/page.jay-html
     component: mediaSettingsPage
     description: Wix Media Manager project settings — connection health and catalog rebuild
+    devOnly: true
