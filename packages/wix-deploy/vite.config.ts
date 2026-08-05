@@ -3,6 +3,8 @@ import { defineConfig } from 'vite';
 
 // Packages that consumers install from public npm — kept as external imports
 const publicDeps = [
+    '@jay-framework/compiler-jay-html',
+    '@jay-framework/compiler-shared',
     '@jay-framework/fullstack-component',
     '@jay-framework/production-server',
     '@jay-framework/production-server/serve',

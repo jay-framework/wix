@@ -2,6 +2,11 @@ name: wix-deploy
 
 setup: setupWixDeploy
 
+validators:
+  - name: static-filenames
+    handler: validate
+    description: Checks that static file paths have no spaces (Wix CDN replaces spaces with hyphens)
+
 commands:
   - name: deploy
     command: deploy.jay-command

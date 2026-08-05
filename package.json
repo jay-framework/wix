@@ -26,12 +26,11 @@
     "version:packages:minor": "wsrun -p '@jay-framework/*' -s -e --report --prefix version minor --deferred && yarn version apply --all",
     "version:packages:major": "wsrun -p '@jay-framework/*' -s -e --report --prefix version major --deferred && yarn version apply --all",
     "set-version": "node scripts/set-version.js",
-    "publish": "node scripts/publish.js",
-    "publish:interactive": "yarn workspaces foreach -p --no-private exec \"yarn npm publish --access public\"",
-    "publish:manual": "yarn workspaces foreach -A -p --no-private exec \"yarn npm publish --access public --otp ${NPM_OTP}\"",
+    "publish": "node scripts/publish-staged.mjs",
+    "publish:legacy": "node scripts/publish.js",
     "_install": "NPQ_PKG_MGR=yarn npx npq install"
   },
-  "packageManager": "yarn@4.12.0",
+  "packageManager": "yarn@4.17.1",
   "workspaces": {
     "packages": [
       "dev-environment",
@@ -41,7 +40,8 @@
     ]
   },
   "devDependencies": {
-    "@jay-framework/jay-stack-cli": "^0.21.0",
+    "@inquirer/prompts": "^8.5.2",
+    "@jay-framework/jay-stack-cli": "^0.22.2",
     "commander": "^14.0.0",
     "esbuild": "^0.20.0",
     "prettier": "^3.2.4",

@@ -71,6 +71,20 @@ Use `<jay:contract-name>` tags with props:
 </jay:product-widget>
 ```
 
+**With bindings from page data** (props from keyed components or page ViewState):
+
+```html
+<!-- p is a keyed headless component providing product data -->
+<jay:category-products categorySlug="{p.categorySlug}" limit="4">
+  <div class="product-card">
+    <h3>{name}</h3>
+    <span>{price}</span>
+  </div>
+</jay:category-products>
+```
+
+Use `{path}` syntax to bind props to values from the page's ViewState. The binding is resolved at render time — works with both slow and fast phase data.
+
 **With forEach** (dynamic props from parent data):
 
 ```html
@@ -84,6 +98,34 @@ Use `<jay:contract-name>` tags with props:
 ```
 
 Inside `<jay:...>`, bindings resolve to **that instance's** contract tags (not the parent).
+
+### Prop binding summary
+
+| Syntax                            | Resolves to          | Example                   |
+| --------------------------------- | -------------------- | ------------------------- |
+| `prop="literal"`                  | Literal string value | `productId="prod-1"`      |
+| `prop="{field}"`                  | Page ViewState field | `slug="{p.categorySlug}"` |
+| `prop="{field}"` (inside forEach) | ForEach item field   | `productId="{_id}"`       |
+
+### Prop phase constraints
+
+Contract props can declare a `phase` (defaults to `slow`). The binding source must be available at that phase:
+
+- A **slow** prop (default) must bind to a literal, a route param, or a slow-phase tag
+- A **fast** prop can also bind to fast-phase tags
+
+If a slow prop binds to a fast-phase field, `jay-stack validate` flags an error — the component's slow render would receive an empty value.
+
+```yaml
+# In the component's contract:
+props:
+  - name: categorySlug
+    type: string
+    phase: slow # Must be available at build time
+  - name: filter
+    type: string
+    phase: fast # Only needs to be available at request time
+```
 
 ## Headfull Components
 
