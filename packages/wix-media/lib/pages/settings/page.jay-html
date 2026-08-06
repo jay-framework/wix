@@ -6,16 +6,41 @@ data:
     connected: boolean
     fileCount: number
     statusMessage: string
+    statusTone: string
+    showStatusMessage: boolean
+    indexedTotalItems: number
+    indexMissing: boolean
+    browseFolderLabel: string
+    browseFolders:
+      - rowKey: string
+        name: string
+        childCountLabel: string
+        folderPathJson: string
+    browseFiles:
+      - rowKey: string
+        title: string
+        showThumbnail: boolean
+        thumbnail: string
+        mediaType: string
+    browseBreadcrumbs:
+      - rowKey: string
+        label: string
+        folderPathJson: string
+    showBrowseFolders: boolean
+    showBrowseFiles: boolean
+    showBrowseEmpty: boolean
+    newFolderName: string
     </script>
     <style>
       .wix-media-settings {
-        max-width: 720px;
+        max-width: 920px;
         margin: 0 auto;
         padding: 24px;
         font-family: system-ui, sans-serif;
         color: #162d3d;
       }
       .wix-media-settings h1 { margin: 0 0 8px; font-size: 20px; }
+      .wix-media-settings h2 { margin: 0 0 10px; font-size: 15px; }
       .wix-media-settings section {
         margin-top: 20px;
         padding-top: 16px;
@@ -36,17 +61,55 @@ data:
         background: #fff8e8;
         border-color: #efd9a2;
       }
+      .wix-media-settings .status-card.error {
+        background: #fff1f0;
+        border-color: #f5b5b0;
+      }
+      .wix-media-settings .status-card.info {
+        background: #f4f7f9;
+        border-color: #d8e0e6;
+      }
+      .wix-media-settings .operation-status {
+        margin: 16px 0 0;
+        padding: 12px 14px;
+        border-radius: 8px;
+        border: 1px solid #d8e0e6;
+        font-size: 13px;
+        white-space: pre-wrap;
+      }
+      .wix-media-settings .operation-status.success {
+        background: #edf8f0;
+        border-color: #b9dfc4;
+      }
+      .wix-media-settings .operation-status.warning {
+        background: #fff8e8;
+        border-color: #efd9a2;
+      }
+      .wix-media-settings .operation-status.error {
+        background: #fff1f0;
+        border-color: #f5b5b0;
+      }
+      .wix-media-settings .operation-status.info {
+        background: #f4f7f9;
+        border-color: #d8e0e6;
+      }
       .wix-media-settings .actions {
         display: flex;
         gap: 8px;
         flex-wrap: wrap;
         margin-top: 12px;
+        align-items: center;
       }
-      .wix-media-settings button {
+      .wix-media-settings button,
+      .wix-media-settings input[type="text"],
+      .wix-media-settings input[type="file"] {
         padding: 8px 12px;
         border: 1px solid #c5d0d8;
         border-radius: 6px;
         background: #fff;
+        font-size: 13px;
+      }
+      .wix-media-settings button {
         cursor: pointer;
       }
       .wix-media-settings button.primary {
@@ -56,6 +119,85 @@ data:
       }
       .wix-media-settings .hint { font-size: 13px; color: #5a6f82; margin-top: 8px; }
       .wix-media-settings code { font-size: 12px; }
+      .wix-media-settings .browse-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: baseline;
+        margin-bottom: 10px;
+      }
+      .wix-media-settings .breadcrumbs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+      .wix-media-settings .breadcrumb-btn,
+      .wix-media-settings .folder-btn {
+        background: #f4f7f9;
+        border: 1px solid #d8e0e6;
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 12px;
+      }
+      .wix-media-settings .folder-list,
+      .wix-media-settings .file-grid {
+        display: grid;
+        gap: 8px;
+      }
+      .wix-media-settings .folder-list {
+        margin-bottom: 12px;
+      }
+      .wix-media-settings .folder-btn {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        text-align: left;
+        border-radius: 8px;
+        padding: 10px 12px;
+      }
+      .wix-media-settings .file-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      }
+      .wix-media-settings .file-card {
+        border: 1px solid #d8e0e6;
+        border-radius: 8px;
+        padding: 8px;
+        background: #fff;
+        font-size: 12px;
+      }
+      .wix-media-settings .file-thumb {
+        width: 100%;
+        height: 88px;
+        object-fit: cover;
+        border-radius: 6px;
+        background: #f4f7f9;
+        margin-bottom: 6px;
+      }
+      .wix-media-settings .file-thumb.placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #5a6f82;
+      }
+      .wix-media-settings .file-title {
+        font-weight: 600;
+        word-break: break-word;
+      }
+      .wix-media-settings .file-type {
+        color: #5a6f82;
+        margin-top: 4px;
+      }
+      .wix-media-settings .inline-form {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .wix-media-settings .inline-form input[type="text"] {
+        min-width: 220px;
+        flex: 1;
+      }
     </style>
   </head>
   <body>
@@ -63,17 +205,15 @@ data:
       <h1>Media Manager</h1>
       <p>Project-level media operations for Wix Media Manager. API keys and OAuth secrets stay in <code>config/.wix.yaml</code> — edit in your IDE.</p>
 
-      <section>
-        <h2>About</h2>
-        <p>Upload public assets with <code>jay-stack command wix-media/upload-public</code>, then rebuild the catalog so Add Menu and agent-kit references stay current.</p>
-        <p>See <code>agent-kit/references/wix-media/MEDIA-INDEX.md</code> after rebuild.</p>
-      </section>
+      <div class="operation-status {statusTone}" if="showStatusMessage">{statusMessage}</div>
 
       <section>
         <h2>Connection</h2>
-        <div class="{connected ? status-card ok : status-card warn}">
+        <div class="status-card {connected ? ok : warn}">
           <div>{connectionMessage}</div>
-          <div if="connected">Indexed files: {fileCount}</div>
+          <div if="connected">Remote public files: {fileCount}</div>
+          <div if="indexMissing">No local index yet — rebuild the catalog after connecting.</div>
+          <div if="!indexMissing">Indexed items in this project: {indexedTotalItems}</div>
         </div>
         <div class="actions">
           <button type="button" ref="refreshStatusBtn">Refresh status</button>
@@ -81,12 +221,54 @@ data:
       </section>
 
       <section>
+        <div class="browse-header">
+          <h2>Indexed media</h2>
+          <span class="hint">{browseFolderLabel}</span>
+        </div>
+        <p class="hint">Browse the offline index generated for Add Menu and agent-kit. Rebuild after remote changes.</p>
+        <div class="breadcrumbs" ref="browseBreadcrumbsList">
+          <button type="button" class="breadcrumb-btn" forEach="browseBreadcrumbs" trackBy="rowKey" data-folder-path-json="{folderPathJson}">{label}</button>
+        </div>
+        <div class="folder-list" ref="browseFoldersList" if="showBrowseFolders">
+          <button type="button" class="folder-btn" forEach="browseFolders" trackBy="rowKey" data-folder-path-json="{folderPathJson}">
+            <span>{name}</span>
+            <span>{childCountLabel}</span>
+          </button>
+        </div>
+        <div class="file-grid" if="showBrowseFiles">
+          <div class="file-card" forEach="browseFiles" trackBy="rowKey">
+            <img class="file-thumb" src="{thumbnail}" alt="{title}" if="showThumbnail" />
+            <div class="file-thumb placeholder" if="!showThumbnail">{mediaType}</div>
+            <div class="file-title">{title}</div>
+            <div class="file-type">{mediaType}</div>
+          </div>
+        </div>
+        <p class="hint" if="showBrowseEmpty">No indexed items in this folder yet.</p>
+      </section>
+
+      <section>
         <h2>Catalog</h2>
-        <p class="hint">Writes <code>agent-kit/aiditor/add-menu/wix-media.generated.yaml</code> and refreshes MEDIA-INDEX.</p>
+        <p class="hint">Rebuild fetches the latest public media from Wix and rewrites <code>agent-kit/aiditor/add-menu/wix-media.generated.yaml</code> plus <code>MEDIA-INDEX.md</code>.</p>
         <div class="actions">
           <button type="button" class="primary" ref="rebuildCatalogBtn">Rebuild media catalog</button>
         </div>
-        <p class="hint" if="statusMessage">{statusMessage}</p>
+      </section>
+
+      <section>
+        <h2>Create folder</h2>
+        <p class="hint">Creates the folder in Wix, then updates the local index for this folder only. You can upload into the new folder immediately.</p>
+        <div class="inline-form">
+          <input type="text" ref="newFolderNameInput" value="{newFolderName}" placeholder="New folder name" />
+          <button type="button" class="primary" ref="createFolderBtn">Create in current folder</button>
+        </div>
+      </section>
+
+      <section>
+        <h2>Upload image</h2>
+        <p class="hint">Uploads to Wix in the current folder, then adds only this file to the local index.</p>
+        <div class="actions">
+          <input type="file" ref="uploadFileInput" accept="image/*,video/*,audio/*,.pdf,.svg" />
+        </div>
       </section>
     </div>
   </body>

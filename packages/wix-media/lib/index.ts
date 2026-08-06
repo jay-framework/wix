@@ -14,5 +14,11 @@ export { setupWixMedia, generateWixMediaAgentKit } from './setup.js';
 export { rebuildIndex } from './commands/rebuild-index.js';
 export { uploadPublic } from './commands/upload-public.js';
 
-export { getMediaSettingsStatus, rebuildMediaCatalog } from './settings-actions.js';
+export {
+    getMediaSettingsStatus,
+    rebuildMediaCatalog,
+    listIndexedMediaBrowse,
+    createMediaFolder,
+    uploadMediaFile,
+} from './settings-actions.js';
 export { mediaSettingsPage } from './pages/settings/page.js';
