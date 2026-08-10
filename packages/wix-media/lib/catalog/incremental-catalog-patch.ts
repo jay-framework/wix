@@ -105,7 +105,8 @@ export function registerEmptyFolderInCatalog(
         (candidate) => folderPathKey(candidate) === folderPathKey(normalizedPath),
     );
     const hasIndexedFiles = document.items.some(
-        (item) => folderPathKey(normalizeFolderPath(item.folderPath)) === folderPathKey(normalizedPath),
+        (item) =>
+            folderPathKey(normalizeFolderPath(item.folderPath)) === folderPathKey(normalizedPath),
     );
 
     if (!alreadyListed && !hasIndexedFiles) {

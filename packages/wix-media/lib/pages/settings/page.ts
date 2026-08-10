@@ -74,10 +74,7 @@ function notifyAddMenuChanged(): void {
     window.parent.postMessage({ type: 'aiditor:addMenuCatalogChanged' }, window.location.origin);
 }
 
-function toneForOperationResult(
-    success: boolean,
-    steps: MediaOperationStepResult[],
-): StatusTone {
+function toneForOperationResult(success: boolean, steps: MediaOperationStepResult[]): StatusTone {
     if (success) return 'success';
     const remoteFailed = steps.some((step) => step.id === 'wix-remote' && step.status === 'failed');
     return remoteFailed ? 'error' : 'warning';
@@ -186,9 +183,7 @@ function settingsPageConstructor(
         setShowStatusMessage(true);
         try {
             const result = await rebuildMediaCatalog({});
-            setStatusMessage(
-                `Catalog rebuilt (${result.itemCount} items → ${result.outputRel}).`,
-            );
+            setStatusMessage(`Catalog rebuilt (${result.itemCount} items → ${result.outputRel}).`);
             setStatusTone('success');
             await refreshStatus();
             await loadBrowse(browseFolderPath());
@@ -275,7 +270,9 @@ function settingsPageConstructor(
                 await refreshStatus();
                 await loadBrowse(browseFolderPath());
                 notifyAddMenuChanged();
-            } else if (result.steps.some((step) => step.id === 'wix-remote' && step.status === 'success')) {
+            } else if (
+                result.steps.some((step) => step.id === 'wix-remote' && step.status === 'success')
+            ) {
                 await refreshStatus();
             }
         } catch (error) {

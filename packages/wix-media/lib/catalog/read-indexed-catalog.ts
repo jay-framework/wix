@@ -141,8 +141,7 @@ export function browseIndexedMediaCatalog(
             return {
                 rowKey: `${folderPathKey(normalizedPath)}/${name}`,
                 name,
-                childCountLabel:
-                    count === 0 ? 'empty' : `${count} item${count === 1 ? '' : 's'}`,
+                childCountLabel: count === 0 ? 'empty' : `${count} item${count === 1 ? '' : 's'}`,
                 folderPathJson: JSON.stringify(childPath),
             };
         });

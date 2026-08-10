@@ -77,7 +77,10 @@ describe('incremental catalog patch', () => {
         );
         expect(catalogYaml).toEqual(expect.stringContaining('Launch Banner'));
 
-        const campaignBrowse = browseIndexedMediaCatalog(projectRoot, ['Marketing', 'New Campaign']);
+        const campaignBrowse = browseIndexedMediaCatalog(projectRoot, [
+            'Marketing',
+            'New Campaign',
+        ]);
         expect(campaignBrowse.files.map((file) => file.title)).toEqual(['Launch Banner']);
     });
 });

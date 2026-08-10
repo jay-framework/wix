@@ -4,7 +4,10 @@ import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
 import type { WixClient } from '@wix/sdk';
 
 import { browseIndexedMediaCatalog } from './catalog/read-indexed-catalog.js';
-import { registerEmptyFolderInCatalog, appendMediaFileToCatalog } from './catalog/incremental-catalog-patch.js';
+import {
+    registerEmptyFolderInCatalog,
+    appendMediaFileToCatalog,
+} from './catalog/incremental-catalog-patch.js';
 import { refreshMediaProjectCatalog } from './catalog/refresh-media-project-catalog.js';
 import type {
     MediaFileUploadResult,
