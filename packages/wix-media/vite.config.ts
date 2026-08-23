@@ -8,15 +8,17 @@ const jayOptions: JayRollupConfig = {
     outputDir: 'build',
 };
 
-export default defineConfig({
+export default defineConfig(({ isSsrBuild }) => ({
     plugins: [...jayStackCompiler(jayOptions)],
     build: {
         minify: false,
         target: 'es2020',
-        ssr: true,
+        ssr: isSsrBuild,
         emptyOutDir: false,
         lib: {
-            entry: { index: resolve(__dirname, 'lib/index.ts') },
+            entry: isSsrBuild
+                ? { index: resolve(__dirname, 'lib/index.ts') }
+                : { 'index.client': resolve(__dirname, 'lib/index.client.ts') },
             formats: ['es'],
         },
         rollupOptions: {
@@ -25,6 +27,7 @@ export default defineConfig({
                 '@jay-framework/compiler-jay-html',
                 '@jay-framework/component',
                 '@jay-framework/fullstack-component',
+                '@jay-framework/stack-client-runtime',
                 '@jay-framework/stack-server-runtime',
                 '@jay-framework/wix-server-client',
                 '@jay-framework/wix-server-client/client',
@@ -37,4 +40,4 @@ export default defineConfig({
     test: {
         globals: true,
     },
-});
+}));

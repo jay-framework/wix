@@ -13,6 +13,7 @@ import { provideWixMediaService } from './services/wix-media-service.js';
 import { generateMediaIndex } from './index-generator.js';
 import { buildMediaAddMenuItems } from './add-menu/media-items.js';
 import { writeGeneratedAddMenuCatalog } from './add-menu/write-add-menu-catalog.js';
+import { materializeWixMediaAiditorSettings } from './aiditor/write-settings-contribution.js';
 
 function getWixClient(services: Map<symbol, unknown>): WixClient {
     const fromContext = services.get(WIX_CLIENT_SERVICE as symbol);
@@ -79,11 +80,18 @@ export async function generateWixMediaAgentKit(
     const addMenuItems = buildMediaAddMenuItems(mediaFiles);
     const addMenuGenerated = writeGeneratedAddMenuCatalog(ctx.projectRoot, addMenuItems);
 
+    const settingsGenerated = materializeWixMediaAiditorSettings(ctx.projectRoot, ctx.force);
+
+    const agentKitCreated = [
+        `agent-kit/references/${ctx.pluginName}/MEDIA-INDEX.md`,
+        addMenuGenerated,
+    ];
+    if (settingsGenerated) {
+        agentKitCreated.push(settingsGenerated);
+    }
+
     return {
-        agentKitCreated: [
-            `agent-kit/references/${ctx.pluginName}/MEDIA-INDEX.md`,
-            addMenuGenerated,
-        ],
+        agentKitCreated,
         message: `${mediaFiles.length} media files indexed; ${addMenuItems.length} Add Menu items.`,
     };
 }
