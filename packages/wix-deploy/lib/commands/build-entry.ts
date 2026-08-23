@@ -28,7 +28,7 @@ interface RouteManifest {
     routes: any[];
 }
 
-const DEFAULT_EXCLUDE_PLUGINS = ['aiditor', 'ui-kit', 'wix-deploy'];
+const DEFAULT_EXCLUDE_PLUGINS = ['aiditor', 'wix-deploy'];
 
 function scanPagePartsFiles(
     dir: string,

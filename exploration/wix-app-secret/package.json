@@ -1,0 +1,8 @@
+{
+  "name": "wix-app-secret-exploration",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "get-secret": "node scripts/get-app-secret.mjs"
+  }
+}

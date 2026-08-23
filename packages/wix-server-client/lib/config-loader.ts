@@ -2,29 +2,71 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
 
-/**
- * Configuration for API Key authentication (server-side)
- */
 export interface ApiKeyConfig {
     apiKey: string;
     siteId: string;
 }
 
-/**
- * Configuration for OAuth authentication (client-side)
- */
+export interface AppConfig {
+    appId: string;
+    appSecret: string;
+}
+
 export interface OAuthConfig {
     clientId: string;
 }
 
-/**
- * Full Wix configuration
- */
+export type ServerAuthConfig =
+    | { kind: 'apiKey'; apiKey: ApiKeyConfig }
+    | { kind: 'app'; app: AppConfig };
+
 export interface WixConfig {
-    /** API Key strategy for server-side auth (required) */
-    apiKey: ApiKeyConfig;
-    /** OAuth strategy for client-side auth (optional) */
+    auth: ServerAuthConfig;
     oauth: OAuthConfig;
+}
+
+function requireNonEmptyString(value: unknown, label: string): string {
+    if (!value || typeof value !== 'string' || value.trim() === '') {
+        throw new Error(`Config validation failed: "${label}" must be a non-empty string`);
+    }
+    return value;
+}
+
+function parseServerAuth(config: Record<string, Record<string, string>>): ServerAuthConfig {
+    const hasApiKey = !!config.apiKeyStrategy;
+    const hasApp = !!config.appStrategy;
+
+    if (hasApiKey && hasApp) {
+        throw new Error(
+            'Config validation failed: provide either "apiKeyStrategy" or "appStrategy", not both',
+        );
+    }
+
+    if (!hasApiKey && !hasApp) {
+        throw new Error(
+            'Config validation failed: either "apiKeyStrategy" or "appStrategy" section is required',
+        );
+    }
+
+    if (hasApiKey) {
+        const strategy = config.apiKeyStrategy;
+        return {
+            kind: 'apiKey',
+            apiKey: {
+                apiKey: requireNonEmptyString(strategy.apiKey, 'apiKeyStrategy.apiKey'),
+                siteId: requireNonEmptyString(strategy.siteId, 'apiKeyStrategy.siteId'),
+            },
+        };
+    }
+
+    const strategy = config.appStrategy;
+    return {
+        kind: 'app',
+        app: {
+            appId: requireNonEmptyString(strategy.appId, 'appStrategy.appId'),
+            appSecret: requireNonEmptyString(strategy.appSecret, 'appStrategy.appSecret'),
+        },
+    };
 }
 
 export function loadConfig(): WixConfig {
@@ -40,36 +82,11 @@ export function loadConfig(): WixConfig {
     const fileContents = fs.readFileSync(configPath, 'utf8');
     const config = yaml.load(fileContents) as any;
 
-    // Validate the config structure
     if (!config) {
         throw new Error('Config file is empty or invalid');
     }
 
-    if (!config.apiKeyStrategy) {
-        throw new Error('Config validation failed: "apiKeyStrategy" section is required');
-    }
-
-    const strategy = config.apiKeyStrategy;
-
-    if (!strategy.apiKey) {
-        throw new Error('Config validation failed: "apiKeyStrategy.apiKey" is required');
-    }
-
-    if (typeof strategy.apiKey !== 'string' || strategy.apiKey.trim() === '') {
-        throw new Error(
-            'Config validation failed: "apiKeyStrategy.apiKey" must be a non-empty string',
-        );
-    }
-
-    if (!strategy.siteId) {
-        throw new Error('Config validation failed: "apiKeyStrategy.siteId" is required');
-    }
-
-    if (typeof strategy.siteId !== 'string' || strategy.siteId.trim() === '') {
-        throw new Error(
-            'Config validation failed: "apiKeyStrategy.siteId" must be a non-empty string',
-        );
-    }
+    const auth = parseServerAuth(config);
 
     if (!config.oauthStrategy) {
         throw new Error('Config validation failed: "oauthStrategy" section is required');
@@ -83,10 +100,7 @@ export function loadConfig(): WixConfig {
     }
 
     return {
-        apiKey: {
-            apiKey: strategy.apiKey,
-            siteId: strategy.siteId,
-        },
+        auth,
         oauth: {
             clientId: oauth.clientId,
         },
