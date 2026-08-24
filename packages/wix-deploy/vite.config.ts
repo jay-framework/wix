@@ -34,8 +34,6 @@ export default defineConfig({
         },
     },
     ssr: {
-        // Bundle everything except public deps — catches all transitive deps
-        // of @wix/ambassador-*, @wix/http-client, etc.
         noExternal: true,
         external: publicDeps,
     },

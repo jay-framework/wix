@@ -1,7 +1,7 @@
 /**
  * jay-stack run wix-deploy/deploy-baas
  *
- * Deploys the dist/ folder to Wix BaaS using ambassador SDK packages.
+ * Deploys the dist/ folder to Wix BaaS using direct REST API calls.
  * Uploads ALL files including node_modules/.
  *
  * Reads appId from wix.config.json and auth from ~/.wix/auth/.
@@ -9,14 +9,14 @@
 
 import { makeCliCommand, CONSOLE_CONTEXT } from '@jay-framework/fullstack-component';
 import type { ConsoleContext } from '@jay-framework/fullstack-component';
-import { createHttpClient } from '@wix/http-client';
 import {
+    createWixManageClient,
     createAppDeployment,
     completeAppDeployment,
-} from '@wix/ambassador-velo-backend-v1-app-deployment/http';
-import { createComponentsOverride } from '@wix/ambassador-devcenter-components-overrides-v1-components-override/http';
-import { getLatestProductionVersion } from '@wix/ambassador-devcenter-apps-v1-app-version/http';
-import { release } from '@wix/ambassador-ctp-gradual-rollout-v1-baas-release/http';
+    getLatestProductionVersion,
+    createComponentsOverride,
+    releaseBaas,
+} from '../wix-manage-api.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -140,14 +140,7 @@ export const deployBaas = makeCliCommand('deploy-baas')
             ctx.log('Token refreshed');
         }
 
-        const httpClient = createHttpClient({
-            baseURL: 'https://manage.wix.com',
-            getAppToken: async () => accessToken,
-            createHeaders: () => ({
-                'X-XSRF-TOKEN': 'nocheck',
-                Cookie: 'XSRF-TOKEN=nocheck',
-            }),
-        });
+        const manageClient = createWixManageClient(accessToken);
 
         const frontendDir = ctx.build.frontend;
         const serverDir = distDir;
@@ -175,11 +168,7 @@ export const deployBaas = makeCliCommand('deploy-baas')
             size: f.size,
         }));
 
-        const { data: deployData } = await httpClient.request(
-            createAppDeployment({
-                appDeployment: { appProjectId: appId, staticFilesMetadata },
-            }),
-        );
+        const deployData = await createAppDeployment(manageClient, appId, staticFilesMetadata);
 
         const appDeployment = deployData.appDeployment;
         const uploadUrls = deployData.staticFilesUploadUrls || [];
@@ -249,11 +238,12 @@ export const deployBaas = makeCliCommand('deploy-baas')
             content: f.content.toString('base64'),
         }));
 
-        const { data: completeData } = await httpClient.request(
-            completeAppDeployment({
-                appDeployment: { ...appDeployment, files: backendFiles },
-                staticsCompletionToken: uploadToken,
-            } as any),
+        const completeData = await completeAppDeployment(
+            manageClient,
+            appId,
+            appDeployment,
+            backendFiles,
+            uploadToken,
         );
 
         const completedDeployment = completeData.appDeployment || {};
@@ -264,10 +254,7 @@ export const deployBaas = makeCliCommand('deploy-baas')
 
         let appVersion = 0;
         try {
-            const { data: versionData } = await httpClient.request(
-                getLatestProductionVersion({ appId }),
-            );
-            appVersion = (versionData as any).appVersion?.version || 0;
+            appVersion = await getLatestProductionVersion(manageClient, appId);
         } catch {
             /* first deployment */
         }
@@ -275,38 +262,27 @@ export const deployBaas = makeCliCommand('deploy-baas')
         ctx.log('Registering + releasing...');
         const overrideId = crypto.randomUUID();
 
-        await httpClient.request(
-            createComponentsOverride({
-                componentsOverride: {
-                    appId,
-                    appVersion,
-                    externalId: appId,
-                    id: overrideId,
-                    modifiedComponents: [
-                        {
-                            componentId: BACKEND_WORKER_COMPONENT_ID,
-                            type: 'BACKEND_WORKER',
-                            data: {
-                                backendWorker: {
-                                    deploymentId,
-                                    deploymentUrl: deploymentBaseUrl,
-                                },
-                            },
+        await createComponentsOverride(manageClient, {
+            appId,
+            appVersion,
+            externalId: appId,
+            id: overrideId,
+            modifiedComponents: [
+                {
+                    componentId: BACKEND_WORKER_COMPONENT_ID,
+                    type: 'BACKEND_WORKER',
+                    data: {
+                        backendWorker: {
+                            deploymentId,
+                            deploymentUrl: deploymentBaseUrl,
                         },
-                    ] as any,
+                    },
                 },
-            }),
-        );
+            ],
+        });
 
-        const { data: releaseData } = await httpClient.request(
-            release({
-                appId,
-                componentOverrideId: overrideId,
-                createMinorVersion: true,
-            } as any),
-        );
-
-        const releaseUrl = (releaseData as any).releaseBaseUrl || deploymentBaseUrl;
+        const releaseData = await releaseBaas(manageClient, appId, overrideId);
+        const releaseUrl = releaseData.releaseBaseUrl || deploymentBaseUrl;
         ctx.log(`Released → ${releaseUrl}`);
 
         return { success: true, deploymentId, baseUrl: releaseUrl };
