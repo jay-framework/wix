@@ -26,9 +26,7 @@
     "version:packages:minor": "wsrun -p '@jay-framework/*' -s -e --report --prefix version minor --deferred && yarn version apply --all",
     "version:packages:major": "wsrun -p '@jay-framework/*' -s -e --report --prefix version major --deferred && yarn version apply --all",
     "set-version": "node scripts/set-version.js",
-    "publish": "node scripts/publish-staged.mjs",
-    "publish:legacy": "node scripts/publish.js",
-    "_install": "NPQ_PKG_MGR=yarn npx npq install"
+    "publish": "node scripts/publish.cjs"
   },
   "packageManager": "yarn@4.17.1",
   "workspaces": {
@@ -41,7 +39,7 @@
   },
   "devDependencies": {
     "@inquirer/prompts": "^8.5.2",
-    "@jay-framework/jay-stack-cli": "^0.22.2",
+    "@jay-framework/jay-stack-cli": "^0.23.1",
     "commander": "^14.0.0",
     "esbuild": "^0.20.0",
     "prettier": "^3.2.4",
