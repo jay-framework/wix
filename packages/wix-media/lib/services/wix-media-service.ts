@@ -1,6 +1,8 @@
 import { buildMediaFolderPath, type WixMediaFolderRecord } from '../add-menu/folder-path.js';
+import { folderPathKey } from '../catalog/folder-path-keys.js';
 import { WixClient } from '@wix/sdk';
 import { files, folders } from '@wix/media';
+import * as fs from 'node:fs';
 import { createJayService } from '@jay-framework/fullstack-component';
 import { registerService } from '@jay-framework/stack-server-runtime';
 import type { BuildDescriptors } from '@wix/sdk-types';
@@ -29,6 +31,18 @@ export interface UploadUrlResult {
 export interface WixMediaService {
     listPublicFiles(): Promise<MediaFileInfo[]>;
     generateUploadUrl(mimeType: string, fileName: string): Promise<UploadUrlResult>;
+    resolveFolderIdByPath(folderPath: string[]): Promise<string>;
+    createFolder(displayName: string, parentFolderPath: string[]): Promise<{ folderId: string }>;
+    uploadPublicFile(params: {
+        fileName: string;
+        mimeType: string;
+        filePath: string;
+        parentFolderPath: string[];
+    }): Promise<void>;
+    findPublicFileInParentFolder(
+        parentFolderPath: string[],
+        displayName: string,
+    ): Promise<MediaFileInfo | null>;
 }
 
 export const WIX_MEDIA_SERVICE_MARKER = createJayService<WixMediaService>('Wix Media Service');
@@ -156,6 +170,66 @@ async function fetchAllPublicFiles(filesClient: FilesClient): Promise<
     return allFiles;
 }
 
+function fileParentFolderId(parentFolderId: string | undefined | null): string {
+    return parentFolderId ?? 'media-root';
+}
+
+function fileMatchesParentFolder(
+    fileParentFolderIdValue: string | undefined | null,
+    expectedParentFolderId: string,
+): boolean {
+    return fileParentFolderId(fileParentFolderIdValue) === expectedParentFolderId;
+}
+
+function mapRawFileToMediaFileInfo(
+    file: {
+        id: string;
+        displayName: string;
+        url: string;
+        mediaType: string;
+        labels: string[];
+        folderId: string;
+        media?: any;
+    },
+    folderMap: Map<string, WixMediaFolderRecord>,
+): MediaFileInfo {
+    const dims = extractDimensions(file);
+    const folderRecord = folderMap.get(file.folderId);
+    const folderName = folderRecord?.name ?? 'Unknown';
+    const folderPath = buildMediaFolderPath(file.folderId, folderMap);
+    return {
+        id: file.id,
+        displayName: file.displayName,
+        slug: toSlug(file.displayName),
+        url: file.url,
+        mediaType: file.mediaType,
+        width: dims.width,
+        height: dims.height,
+        labels: file.labels,
+        folderId: file.folderId,
+        folderName,
+        folderPath,
+    };
+}
+function resolveFolderIdByPathFromIndex(
+    folderPath: string[],
+    folderMap: Map<string, WixMediaFolderRecord>,
+): string {
+    const normalizedPath = folderPath;
+    if (normalizedPath.length === 0) {
+        return 'media-root';
+    }
+
+    for (const [folderId] of folderMap) {
+        const pathSegments = buildMediaFolderPath(folderId, folderMap);
+        if (folderPathKey(pathSegments) === folderPathKey(normalizedPath)) {
+            return folderId;
+        }
+    }
+
+    throw new Error(`Folder not found in Wix Media Manager: ${normalizedPath.join(' / ')}`);
+}
+
 export function provideWixMediaService(wixClient: WixClient): WixMediaService {
     const filesClient = getFilesClient(wixClient);
     const foldersClient = getFoldersClient(wixClient);
@@ -174,25 +248,9 @@ export function provideWixMediaService(wixClient: WixClient): WixMediaService {
                 fetchAllPublicFiles(filesClient),
             ]);
 
-            const items: MediaFileInfo[] = rawFiles.map((file) => {
-                const dims = extractDimensions(file);
-                const folderRecord = folderMap.get(file.folderId);
-                const folderName = folderRecord?.name ?? 'Unknown';
-                const folderPath = buildMediaFolderPath(file.folderId, folderMap);
-                return {
-                    id: file.id,
-                    displayName: file.displayName,
-                    slug: toSlug(file.displayName),
-                    url: file.url,
-                    mediaType: file.mediaType,
-                    width: dims.width,
-                    height: dims.height,
-                    labels: file.labels,
-                    folderId: file.folderId,
-                    folderName,
-                    folderPath,
-                };
-            });
+            const items: MediaFileInfo[] = rawFiles.map((file) =>
+                mapRawFileToMediaFileInfo(file, folderMap),
+            );
 
             deduplicateSlugs(items);
 
@@ -203,6 +261,96 @@ export function provideWixMediaService(wixClient: WixClient): WixMediaService {
             });
 
             return items;
+        },
+
+        async resolveFolderIdByPath(folderPath: string[]): Promise<string> {
+            const folderMap = await fetchAllFolders(foldersClient);
+            return resolveFolderIdByPathFromIndex(folderPath, folderMap);
+        },
+
+        async createFolder(
+            displayName: string,
+            parentFolderPath: string[],
+        ): Promise<{ folderId: string }> {
+            const trimmedName = displayName.trim();
+            if (!trimmedName) {
+                throw new Error('Folder name is required.');
+            }
+
+            const parentFolderId = await this.resolveFolderIdByPath(parentFolderPath);
+            const result = await foldersClient.createFolder(trimmedName, {
+                parentFolderId,
+            });
+            const folderId = result.folder?._id;
+            if (!folderId) {
+                throw new Error('Wix Media Manager did not return a folder id.');
+            }
+            return { folderId };
+        },
+
+        async uploadPublicFile(params: {
+            fileName: string;
+            mimeType: string;
+            filePath: string;
+            parentFolderPath: string[];
+        }): Promise<void> {
+            const parentFolderId = await this.resolveFolderIdByPath(params.parentFolderPath);
+            const { uploadUrl } = await filesClient.generateFileUploadUrl(params.mimeType, {
+                fileName: params.fileName,
+                parentFolderId,
+            });
+            if (!uploadUrl) {
+                throw new Error('Wix Media Manager did not return an upload URL.');
+            }
+
+            const fileBuffer = fs.readFileSync(params.filePath);
+            const response = await fetch(uploadUrl, {
+                method: 'PUT',
+                headers: { 'Content-Type': params.mimeType },
+                body: fileBuffer,
+            });
+            if (!response.ok) {
+                throw new Error(`Upload failed with status ${response.status}.`);
+            }
+        },
+
+        async findPublicFileInParentFolder(
+            parentFolderPath: string[],
+            displayName: string,
+        ): Promise<MediaFileInfo | null> {
+            const folderMap = await fetchAllFolders(foldersClient);
+            const parentFolderId = resolveFolderIdByPathFromIndex(parentFolderPath, folderMap);
+
+            let cursor: string | undefined | null;
+            do {
+                const result = await filesClient.searchFiles({
+                    rootFolder: 'MEDIA_ROOT',
+                    private: false,
+                    paging: cursor ? { cursor, limit: 100 } : { limit: 100 },
+                    sort: { fieldName: 'displayName', order: 'ASC' },
+                });
+
+                for (const file of result.files ?? []) {
+                    if (file.state !== 'OK' || !file._id) continue;
+                    if (!fileMatchesParentFolder(file.parentFolderId, parentFolderId)) continue;
+                    if (file.displayName !== displayName) continue;
+
+                    const rawFile = {
+                        id: file._id,
+                        displayName: file.displayName ?? file._id,
+                        url: file.url ?? '',
+                        mediaType: (file.mediaType ?? 'UNKNOWN').toLowerCase(),
+                        labels: file.labels ?? [],
+                        folderId: fileParentFolderId(file.parentFolderId),
+                        media: file.media,
+                    };
+                    return mapRawFileToMediaFileInfo(rawFile, folderMap);
+                }
+
+                cursor = result.nextCursor?.cursors?.next;
+            } while (cursor);
+
+            return null;
         },
     };
 

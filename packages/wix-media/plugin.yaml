@@ -11,6 +11,20 @@ commands:
   - name: rebuild-index
     command: rebuild-index.jay-command
 
+actions:
+  - getMediaSettingsStatus
+  - listIndexedMediaBrowse
+  - rebuildMediaCatalog
+  - createMediaFolder
+  - uploadMediaFile
+
 setup: setupWixMedia
 agentkit: generateWixMediaAgentKit
 description: Validates Wix Media Manager access, generates agent-kit media index
+
+routes:
+  - path: /wix-media/settings
+    jayHtml: ./dist/pages/settings/page.jay-html
+    component: mediaSettingsPage
+    description: Wix Media Manager project settings — connection health and catalog rebuild
+    devOnly: true

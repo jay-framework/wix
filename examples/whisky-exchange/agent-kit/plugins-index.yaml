@@ -138,6 +138,10 @@ plugins:
   - name: wix-media
     path: ./../../packages/wix-media
     contracts: []
+    routes:
+      - path: /wix-media/settings
+        description: Wix Media Manager project settings — connection health and catalog
+          rebuild
     commands:
       - name: upload-public
         description: Upload local public/ files to Wix Media Manager

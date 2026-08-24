@@ -3,7 +3,9 @@ export {
     loadConfig,
     type WixConfig,
     type ApiKeyConfig,
+    type AppConfig,
     type OAuthConfig,
+    type ServerAuthConfig,
 } from './config-loader.js';
 
 export { WIX_CLIENT_SERVICE, type WixClientService } from './wix-client-service.js';

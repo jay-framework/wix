@@ -1,11 +1,10 @@
 /**
  * Setup handler for wix-server-client plugin.
  *
- * Owns the full Wix credential flow:
- * - Interactive (human) mode: Wix CLI login, site connection, API key prompt
- * - Non-interactive (agent) mode: returns needs-config directing to --interactive
- *
- * Once configured, validates credentials in both modes.
+ * Automates the full Wix credential flow:
+ * 1. Wix CLI login + site connection (creates wix.config.json with appId)
+ * 2. Fetches appSecret from Dev Center API automatically
+ * 3. Writes .wix.yaml with appStrategy — no manual credential entry needed
  */
 
 import { execSync } from 'node:child_process';
@@ -18,32 +17,45 @@ const CONFIG_FILE_NAME = '.wix.yaml';
 
 const GITIGNORE_ENTRIES = ['config/.wix.yaml', 'wix.config.json'];
 
-function hasValidCredentials(configPath: string): {
-    valid: boolean;
-    apiKey: string;
-    siteId: string;
-    clientId: string;
-} {
+type CredentialCheck =
+    | { valid: false }
+    | { valid: true; strategy: 'apiKey'; siteId: string }
+    | { valid: true; strategy: 'app'; appId: string };
+
+function hasValidCredentials(configPath: string): CredentialCheck {
     if (!fs.existsSync(configPath)) {
-        return { valid: false, apiKey: '', siteId: '', clientId: '' };
+        return { valid: false };
     }
 
     try {
         const content = fs.readFileSync(configPath, 'utf-8');
         const config = yaml.load(content) as Record<string, Record<string, string>> | null;
-        if (!config) return { valid: false, apiKey: '', siteId: '', clientId: '' };
+        if (!config) return { valid: false };
 
-        const apiKey = config.apiKeyStrategy?.apiKey || '';
-        const siteId = config.apiKeyStrategy?.siteId || '';
         const clientId = config.oauthStrategy?.clientId || '';
+        if (!clientId || clientId.startsWith('<')) return { valid: false };
 
-        const hasPlaceholders =
-            apiKey.startsWith('<') || siteId.startsWith('<') || clientId.startsWith('<');
-        const valid = !hasPlaceholders && !!apiKey && !!siteId;
+        if (config.apiKeyStrategy) {
+            const apiKey = config.apiKeyStrategy.apiKey || '';
+            const siteId = config.apiKeyStrategy.siteId || '';
+            if (!apiKey || !siteId || apiKey.startsWith('<') || siteId.startsWith('<')) {
+                return { valid: false };
+            }
+            return { valid: true, strategy: 'apiKey', siteId };
+        }
 
-        return { valid, apiKey, siteId, clientId };
+        if (config.appStrategy) {
+            const appId = config.appStrategy.appId || '';
+            const appSecret = config.appStrategy.appSecret || '';
+            if (!appId || !appSecret || appId.startsWith('<') || appSecret.startsWith('<')) {
+                return { valid: false };
+            }
+            return { valid: true, strategy: 'app', appId };
+        }
+
+        return { valid: false };
     } catch {
-        return { valid: false, apiKey: '', siteId: '', clientId: '' };
+        return { valid: false };
     }
 }
 
@@ -60,10 +72,23 @@ function ensureGitignore(projectRoot: string): void {
 
 function ensureWixLogin(projectRoot: string): void {
     try {
-        execSync('npx @wix/cli whoami', { cwd: projectRoot, stdio: 'pipe' });
+        execSync('npx @wix/cli@latest whoami', { cwd: projectRoot, stdio: 'pipe' });
     } catch {
-        execSync('npx @wix/cli login', { cwd: projectRoot, stdio: 'inherit' });
+        execSync('npx @wix/cli@latest login', { cwd: projectRoot, stdio: 'inherit' });
     }
+}
+
+function getWixToken(projectRoot: string): string {
+    const token = execSync('npx @wix/cli@latest token', {
+        cwd: projectRoot,
+        encoding: 'utf-8',
+        stdio: ['pipe', 'pipe', 'pipe'],
+    }).trim();
+
+    if (!token) {
+        throw new Error('Empty token from wix cli. Are you logged in?');
+    }
+    return token;
 }
 
 function ensureWixSiteConnection(projectRoot: string): void {
@@ -85,10 +110,39 @@ function readWixConfig(projectRoot: string): { appId: string; siteId: string } |
     }
 }
 
+async function fetchAppSecret(
+    token: string,
+    appId: string,
+): Promise<{ appSecret: string; webhookPublicKey: string }> {
+    const url = `https://manage.wix.com/apps-service/v1/apps/${appId}?withSecrets=true`;
+    const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+            Authorization: token,
+            'X-XSRF-TOKEN': 'nocheck',
+            Cookie: 'XSRF-TOKEN=nocheck',
+        },
+    });
+
+    if (!response.ok) {
+        const body = await response.text();
+        throw new Error(`Dev Center API failed (${response.status}): ${body}`);
+    }
+
+    const data = (await response.json()) as {
+        app?: { appSecrets?: { appSecret: string; webhookPublicKey: string } };
+    };
+
+    if (!data.app?.appSecrets?.appSecret) {
+        throw new Error('Dev Center response did not include appSecret');
+    }
+
+    return data.app.appSecrets;
+}
+
 export async function setupWixServerClient(ctx: PluginSetupContext): Promise<PluginSetupResult> {
     const configPath = path.join(ctx.configDir, CONFIG_FILE_NAME);
 
-    // Already configured with real values — validate connection
     const creds = hasValidCredentials(configPath);
     if (creds.valid) {
         if (ctx.initError) {
@@ -97,13 +151,17 @@ export async function setupWixServerClient(ctx: PluginSetupContext): Promise<Plu
                 message: `Credentials invalid or connection failed: ${ctx.initError.message}`,
             };
         }
+        const summary =
+            creds.strategy === 'apiKey'
+                ? `site: ${creds.siteId.substring(0, 8)}...`
+                : `app: ${creds.appId.substring(0, 8)}...`;
         return {
             status: 'configured',
-            message: `Wix client connected (site: ${creds.siteId.substring(0, 8)}...)`,
+            message: `Wix client connected (${summary})`,
         };
     }
 
-    // Wix login and site connection require a human at a TTY
+    // Wix login requires a TTY for the browser-based OAuth flow
     if (!ctx.interactive) {
         return {
             status: 'needs-config',
@@ -111,7 +169,6 @@ export async function setupWixServerClient(ctx: PluginSetupContext): Promise<Plu
         };
     }
 
-    // Interactive (human): full credential flow
     ensureWixLogin(ctx.projectRoot);
     ensureWixSiteConnection(ctx.projectRoot);
 
@@ -123,27 +180,22 @@ export async function setupWixServerClient(ctx: PluginSetupContext): Promise<Plu
         };
     }
 
-    const apiKey = await ctx.prompt.input({
-        key: 'wix-api-key',
-        message: 'Wix API Key (create at https://manage.wix.com/account/api-keys):',
-        validate: (v) => v.trim().length > 0 || 'API key is required',
-    });
+    const token = getWixToken(ctx.projectRoot);
+    const { appSecret } = await fetchAppSecret(token, wixConfig.appId);
+
+    const configData = {
+        appStrategy: { appId: wixConfig.appId, appSecret },
+        oauthStrategy: { clientId: wixConfig.appId },
+    };
 
     fs.mkdirSync(ctx.configDir, { recursive: true });
-    fs.writeFileSync(
-        configPath,
-        yaml.dump({
-            apiKeyStrategy: { apiKey: apiKey.trim(), siteId: wixConfig.siteId },
-            oauthStrategy: { clientId: wixConfig.appId },
-        }),
-        'utf-8',
-    );
+    fs.writeFileSync(configPath, yaml.dump(configData), 'utf-8');
 
     ensureGitignore(ctx.projectRoot);
 
     return {
         status: 'configured',
         configCreated: [`config/${CONFIG_FILE_NAME}`],
-        message: `Wix client connected (site: ${wixConfig.siteId.substring(0, 8)}...)`,
+        message: `Wix client connected (app: ${wixConfig.appId.substring(0, 8)}...)`,
     };
 }
