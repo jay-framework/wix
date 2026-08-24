@@ -1,0 +1,18 @@
+name: listSlots
+description: List available booking time slots for a service within the configured window.
+
+inputSchema:
+  serviceId: string
+  serviceType: enum(APPOINTMENT | CLASS)
+  timezone?: string
+  windowDays?: number
+
+outputSchema:
+  slots:
+    - id: string
+      localStartDate: string
+      localEndDate: string
+      label: string
+      scheduleId?: string
+      eventId?: string
+      serviceType: enum(APPOINTMENT | CLASS)

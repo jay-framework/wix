@@ -1,0 +1,71 @@
+{
+  "name": "@jay-framework/wix-bookings",
+  "version": "0.22.2",
+  "type": "module",
+  "description": "Wix Bookings package for Jay Framework — browse services, pick slots, submit participant details, complete checkout",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "plugin.yaml",
+    "agent-kit"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/index.client.d.ts",
+      "default": "./dist/index.client.js"
+    },
+    "./plugin.yaml": "./plugin.yaml",
+    "./booking-flow.jay-contract": "./dist/contracts/booking-flow.jay-contract",
+    "./list-services.jay-action": "./dist/actions/list-services.jay-action",
+    "./list-slots.jay-action": "./dist/actions/list-slots.jay-action",
+    "./create-booking.jay-action": "./dist/actions/create-booking.jay-action"
+  },
+  "scripts": {
+    "build": "npm run clean && npm run definitions && npm run build:client && npm run build:server && npm run build:copy-contract && npm run build:types && npm run validate",
+    "definitions": "jay-cli definitions lib",
+    "validate": "jay-stack-cli validate-plugin",
+    "build:client": "vite build",
+    "build:server": "vite build --ssr",
+    "build:copy-contract": "mkdir -p dist/contracts && cp lib/contracts/*.jay-contract* dist/contracts/ && mkdir -p dist/actions && cp lib/actions/*.jay-action dist/actions/",
+    "build:types": "tsup lib/index.ts lib/index.client.ts --dts-only --format esm",
+    "build:check-types": "tsc",
+    "clean": "rimraf dist",
+    "confirm": "npm run clean && npm run build && npm run test",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@jay-framework/component": "^0.22.2",
+    "@jay-framework/fullstack-component": "^0.22.2",
+    "@jay-framework/reactive": "^0.22.2",
+    "@jay-framework/runtime": "^0.22.2",
+    "@jay-framework/secure": "^0.22.2",
+    "@jay-framework/stack-client-runtime": "^0.22.2",
+    "@jay-framework/stack-server-runtime": "^0.22.2",
+    "@jay-framework/wix-forms": "^0.22.2",
+    "@jay-framework/wix-server-client": "^0.22.2",
+    "@wix/sdk": "^1.21.5",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.7",
+    "@babel/preset-env": "^7.23.8",
+    "@babel/preset-typescript": "^7.23.3",
+    "@jay-framework/compiler-jay-stack": "^0.22.2",
+    "@jay-framework/jay-cli": "^0.22.2",
+    "@jay-framework/jay-stack-cli": "^0.22.2",
+    "@jay-framework/vite-plugin": "^0.22.2",
+    "@jay-framework/wix-dev-environment": "workspace:^",
+    "nodemon": "^3.0.3",
+    "rimraf": "^5.0.5",
+    "tslib": "^2.6.2",
+    "tsup": "^8.5.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11",
+    "vitest": "^1.2.0"
+  }
+}

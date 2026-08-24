@@ -1,0 +1,19 @@
+name: createBooking
+description: Create a booking and complete free checkout or return a paid checkout redirect URL.
+
+inputSchema:
+  serviceId: string
+  serviceType: enum(APPOINTMENT | CLASS)
+  slot:
+    localStartDate: string
+    localEndDate: string
+    scheduleId?: string
+    eventId?: string
+  formValues: object
+  timezone: string
+  siteOrigin: string
+  paymentPreference?: enum(ONLINE | OFFLINE)
+
+outputSchema:
+  outcome: enum(confirmed | redirect)
+  redirectUrl?: string

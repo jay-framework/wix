@@ -1,0 +1,14 @@
+name: listServices
+description: List visible Wix Bookings services for the configured booking app.
+
+inputSchema: {}
+
+outputSchema:
+  services:
+    - id: string
+      name: string
+      type: enum(APPOINTMENT | CLASS)
+      description: string
+      priceLabel: string
+      durationLabel: string
+      formId?: string
