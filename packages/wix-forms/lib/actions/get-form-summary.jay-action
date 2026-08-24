@@ -1,0 +1,12 @@
+name: getFormSummary
+description: Load flat form field summaries for booking participant forms or other integrations.
+
+inputSchema:
+  formId?: string
+
+outputSchema:
+  fields:
+    - target: string
+      label: string
+      type: enum(STRING | EMAIL | PHONE | NUMBER | URL)
+      required: boolean
