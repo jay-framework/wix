@@ -2,14 +2,8 @@ import type { WixClient } from '@wix/sdk';
 import { WixApiError } from '@jay-framework/wix-server-client';
 import { registerService } from '@jay-framework/stack-server-runtime';
 import type { WixBookingsConfig } from '../config-loader.js';
-import type {
-    BookingServiceView,
-    BookingSlotView,
-} from '../types.js';
-import {
-    WIX_BOOKINGS_SERVICE,
-    type WixBookingsService,
-} from './wix-bookings-service-marker.js';
+import type { BookingServiceView, BookingSlotView } from '../types.js';
+import { WIX_BOOKINGS_SERVICE, type WixBookingsService } from './wix-bookings-service-marker.js';
 import {
     localDateStr,
     mapAppointmentSlot,

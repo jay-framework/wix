@@ -18,10 +18,10 @@ Bind `<jay:contact-form>` with plugin `@jay-framework/wix-forms` / contract `con
 
 ## Common errors
 
-| Symptom | Fix |
-|---------|-----|
-| 403 on form schema or submit | Add **Wix Forms** permission to API key |
+| Symptom                      | Fix                                                    |
+| ---------------------------- | ------------------------------------------------------ |
+| 403 on form schema or submit | Add **Wix Forms** permission to API key                |
 | "Contact form ID is missing" | Set `defaultContactFormId` in `config/.wix-forms.yaml` |
-| Form loads but no fields | Form has no supported input fields in Wix schema |
+| Form loads but no fields     | Form has no supported input fields in Wix schema       |
 
 See also `agent-kit/plugin/wix-forms-setup.md` for full setup guide.

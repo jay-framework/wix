@@ -14,10 +14,7 @@ const FALLBACK_SUMMARY_FIELDS: FormFieldSummaryView[] = [
 ];
 
 function readFieldOptions(field: RawFormField): FormFieldOptionView[] {
-    const rawOptions =
-        field.view?.options ??
-        field.inputOptions?.stringOptions?.options ??
-        [];
+    const rawOptions = field.view?.options ?? field.inputOptions?.stringOptions?.options ?? [];
     return rawOptions
         .map((option) => ({
             value: option.value ?? option.label ?? '',
@@ -83,8 +80,7 @@ export function projectFormSummaryFields(
         .filter((field) => !field.deleted)
         .filter(
             (field) =>
-                field.type &&
-                ['STRING', 'EMAIL', 'PHONE', 'NUMBER', 'URL'].includes(field.type),
+                field.type && ['STRING', 'EMAIL', 'PHONE', 'NUMBER', 'URL'].includes(field.type),
         )
         .map((field) => ({
             target: field.target ?? field.id ?? '',
@@ -97,10 +93,7 @@ export function projectFormSummaryFields(
     return projected.length ? projected : FALLBACK_SUMMARY_FIELDS;
 }
 
-export function validateContactField(
-    field: ContactFormFieldView,
-    value: string,
-): string {
+export function validateContactField(field: ContactFormFieldView, value: string): string {
     const trimmed = (value ?? '').trim();
     if (field.required && !trimmed) {
         return `${field.label} is required.`;
@@ -145,8 +138,7 @@ export function parseSubmissionFieldErrors(responseBody: string): Record<string,
         for (const violation of violations) {
             for (const fieldError of violation.data?.errors ?? []) {
                 if (fieldError.errorPath && !fieldErrors[fieldError.errorPath]) {
-                    fieldErrors[fieldError.errorPath] =
-                        fieldError.errorMessage ?? 'Invalid value';
+                    fieldErrors[fieldError.errorPath] = fieldError.errorMessage ?? 'Invalid value';
                 }
             }
         }

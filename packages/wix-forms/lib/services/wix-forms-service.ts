@@ -9,10 +9,7 @@ import {
     projectContactFormFields,
     projectFormSummaryFields,
 } from '../utils/project-form-fields.js';
-import {
-    WIX_FORMS_SERVICE,
-    type WixFormsService,
-} from './wix-forms-service-marker.js';
+import { WIX_FORMS_SERVICE, type WixFormsService } from './wix-forms-service-marker.js';
 
 export function provideWixFormsService(
     wixClient: WixClient,
@@ -22,7 +19,9 @@ export function provideWixFormsService(
         async getContactFormFields(formId) {
             const resolvedFormId = formId || config.defaultContactFormId;
             if (!resolvedFormId) {
-                throw new Error('Contact form ID is missing. Set defaultContactFormId in config/.wix-forms.yaml.');
+                throw new Error(
+                    'Contact form ID is missing. Set defaultContactFormId in config/.wix-forms.yaml.',
+                );
             }
             const { form } = await getFormSchema(wixClient, resolvedFormId);
             if (!form) {
@@ -50,7 +49,9 @@ export function provideWixFormsService(
         async createSubmission(formId, values) {
             const resolvedFormId = formId || config.defaultContactFormId;
             if (!resolvedFormId) {
-                throw new Error('Contact form ID is missing. Set defaultContactFormId in config/.wix-forms.yaml.');
+                throw new Error(
+                    'Contact form ID is missing. Set defaultContactFormId in config/.wix-forms.yaml.',
+                );
             }
             try {
                 await createFormSubmission(wixClient, resolvedFormId, values);

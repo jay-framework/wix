@@ -1,5 +1,10 @@
 import { createJayService } from '@jay-framework/fullstack-component';
-import type { BookingServiceView, BookingSlotView, CreateBookingOutcome, BookingServiceType } from '../types.js';
+import type {
+    BookingServiceView,
+    BookingSlotView,
+    CreateBookingOutcome,
+    BookingServiceType,
+} from '../types.js';
 
 export interface WixBookingsService {
     listServices(): Promise<BookingServiceView[]>;

@@ -15,7 +15,12 @@ import {
     WIX_BOOKINGS_SERVICE,
     type WixBookingsService,
 } from '../services/wix-bookings-service-marker.js';
-import type { BookingFormFieldView, BookingServiceType, BookingServiceView, BookingSlotView } from '../types.js';
+import type {
+    BookingFormFieldView,
+    BookingServiceType,
+    BookingServiceView,
+    BookingSlotView,
+} from '../types.js';
 import { createBooking, listSlots } from '../actions/bookings-actions.js';
 import { getFormSummary } from '@jay-framework/wix-forms';
 
@@ -34,9 +39,13 @@ function toBookingService(service: ServiceOfBookingFlowViewState): BookingServic
 async function renderSlowlyChanging(_props: object, bookings: WixBookingsService) {
     try {
         const services = await bookings.listServices();
-        return phaseOutput<BookingFlowSlowViewState, BookingFlowCarryForward>({ services }, { services });
+        return phaseOutput<BookingFlowSlowViewState, BookingFlowCarryForward>(
+            { services },
+            { services },
+        );
     } catch (error) {
-        const rawMessage = error instanceof Error ? error.message : 'Could not load booking services.';
+        const rawMessage =
+            error instanceof Error ? error.message : 'Could not load booking services.';
         const message = rawMessage.includes('403')
             ? 'Bookings API access denied. Add Wix Bookings permission to your API key in the Wix dashboard.'
             : rawMessage || 'Could not load booking services.';
@@ -48,10 +57,7 @@ async function renderSlowlyChanging(_props: object, bookings: WixBookingsService
     }
 }
 
-async function renderFastChanging(
-    _props: object,
-    carryForward: BookingFlowCarryForward,
-) {
+async function renderFastChanging(_props: object, carryForward: BookingFlowCarryForward) {
     const Pipeline = RenderPipeline.for<BookingFlowFastViewState, BookingFlowCarryForward>();
     return Pipeline.ok(null).toPhaseOutput(() => ({
         viewState: {
@@ -224,7 +230,8 @@ function BookingFlowInteractive(
             setShowForm(false);
             setSelectedSlot(null);
         } catch (error) {
-            const rawMessage = error instanceof Error ? error.message : 'Booking failed. Please try again.';
+            const rawMessage =
+                error instanceof Error ? error.message : 'Booking failed. Please try again.';
             let message = rawMessage;
             if (rawMessage.includes('/ecom/v2/carts') && rawMessage.includes('403')) {
                 message =

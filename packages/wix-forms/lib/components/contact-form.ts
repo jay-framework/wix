@@ -14,16 +14,10 @@ import type {
     FieldOfContactFormViewState,
     OptionOfContactFormViewState,
 } from '../contracts/contact-form.jay-contract.js';
-import {
-    WIX_FORMS_SERVICE,
-    type WixFormsService,
-} from '../services/wix-forms-service-marker.js';
+import { WIX_FORMS_SERVICE, type WixFormsService } from '../services/wix-forms-service-marker.js';
 import type { ContactFormFieldView, FormFieldErrorView } from '../types.js';
 import { submitForm } from '../actions/forms-actions.js';
-import {
-    parseSubmissionFieldErrors,
-    validateContactField,
-} from '../utils/project-form-fields.js';
+import { parseSubmissionFieldErrors, validateContactField } from '../utils/project-form-fields.js';
 
 export interface ContactFormProps {
     formId?: string;
@@ -63,10 +57,7 @@ function toContractFields(fields: ContactFormFieldView[]): FieldOfContactFormVie
     }));
 }
 
-async function renderSlowlyChanging(
-    props: ContactFormProps,
-    forms: WixFormsService,
-) {
+async function renderSlowlyChanging(props: ContactFormProps, forms: WixFormsService) {
     try {
         const fields = await forms.getContactFormFields(props.formId ?? '');
         const formId = props.formId ?? '';
@@ -90,17 +81,18 @@ async function renderSlowlyChanging(
     }
 }
 
-async function renderFastChanging(
-    props: ContactFormProps,
-    carryForward: ContactFormCarryForward,
-) {
+async function renderFastChanging(props: ContactFormProps, carryForward: ContactFormCarryForward) {
     const Pipeline = RenderPipeline.for<ContactFormFastViewState, ContactFormCarryForward>();
     return Pipeline.ok(null).toPhaseOutput(() => ({
         viewState: {
             fields: toContractFields(carryForward.fields),
             options: carryForward.options,
             isLoading: carryForward.fields.length === 0 && !carryForward.loadError,
-            loadError: carryForward.loadError ?? (carryForward.fields.length ? '' : 'Could not load the form. Please try again later.'),
+            loadError:
+                carryForward.loadError ??
+                (carryForward.fields.length
+                    ? ''
+                    : 'Could not load the form. Please try again later.'),
             isSubmitting: false,
             statusMessage: '',
             fieldErrors: [],
@@ -194,7 +186,8 @@ function ContactFormInteractive(
         setIsSubmitting(true);
         try {
             await submitForm({
-                formId: carryForward.formId || (typeof props.formId === 'string' ? props.formId : ''),
+                formId:
+                    carryForward.formId || (typeof props.formId === 'string' ? props.formId : ''),
                 values,
             });
             setStatusMessage("Message sent! We'll be in touch soon.");
@@ -229,7 +222,9 @@ function ContactFormInteractive(
             isLoading: carryForward.fields.length === 0 && !carryForward.loadError,
             loadError:
                 carryForward.loadError ??
-                (carryForward.fields.length ? '' : 'Could not load the form. Please try again later.'),
+                (carryForward.fields.length
+                    ? ''
+                    : 'Could not load the form. Please try again later.'),
             isSubmitting: isSubmitting(),
             statusMessage: statusMessage(),
             fieldErrors: fieldErrors(),

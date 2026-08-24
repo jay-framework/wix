@@ -10,8 +10,4 @@ export {
     WIX_FORMS_SERVICE,
     type WixFormsService,
 } from './services/wix-forms-service.js';
-export type {
-    ContactFormFieldView,
-    FormFieldSummaryView,
-    FormFieldErrorView,
-} from './types.js';
+export type { ContactFormFieldView, FormFieldSummaryView, FormFieldErrorView } from './types.js';
