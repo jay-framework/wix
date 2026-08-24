@@ -28,7 +28,15 @@ interface RouteManifest {
     routes: any[];
 }
 
-const DEFAULT_EXCLUDE_PLUGINS = ['aiditor', 'ui-kit', 'wix-deploy'];
+const DEFAULT_EXCLUDE_PLUGINS = [
+    'aiditor',
+    'ui-kit',
+    'wix-deploy',
+    // Build-time validators — use compiler APIs stubbed out of the BaaS bundle
+    'wix-media',
+    'seo-validator',
+    'a11y-validator',
+];
 
 function scanPagePartsFiles(
     dir: string,
