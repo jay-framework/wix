@@ -254,27 +254,15 @@ export async function generateMyAgentKit(
 | Generate data from live services (product catalogs, CMS schemas)     | `agentkit` | Needs services initialized; refreshed on each agent-kit run |
 | Validate credentials / API keys                                      | `setup`    | Part of initial project configuration                       |
 | Write AIditor add-menu from project-specific data (DESIGN.md tokens) | `agentkit` | Data comes from project files at agent-kit time             |
+| Materialize AIditor Project settings tab discovery                   | `agentkit` | Copy/generate `agent-kit/aiditor/settings/<plugin>.yaml`    |
 
 ## AIditor Add-Menu Items
 
-The agent-kit handler writes to `agent-kit/aiditor/add-menu/<plugin-name>.yaml`. The AIditor discovers and loads all YAML files in this directory.
+See [add-menu-guide.md](add-menu-guide.md) for the complete add-menu item schema, interaction modes, browse sizes, presentation formats, and TypeScript types.
 
-Each item:
+## AIditor Project Settings
 
-```yaml
-items:
-  - id: my-plugin:feature-name # unique ID
-    title: Feature Name # shown in the add menu
-    category: My Plugin # grouping
-    subCategory: Components # sub-grouping
-    pluginName: my-plugin # optional: plugin attribution
-    packageName: '@my-org/my-plugin' # optional: npm package name
-    prompt: | # instructions for the AI agent
-      Use headless component @my-org/my-plugin / contract feature-name.
-      Read agent-kit/designer/feature-name.md for usage guide.
-```
-
-See `agent-kit/plugin/aiditor-add-menu.md` (installed by `jay-stack setup aiditor`) for the full contributor guide.
+See [aiditor-settings-guide.md](aiditor-settings-guide.md) for the full checklist: `settings.template.yaml` in the package, walk-up path resolution from bundled `dist/`, `devOnly` route in `plugin.yaml`, and settings page responsibilities (actions, postMessage, no secrets in forms).
 
 ## Exporting Handlers
 

@@ -5,6 +5,7 @@
 The `wix-server-client` package currently only supports `ApiKeyStrategy` for server-side authentication. The Wix SDK also provides `AppStrategy`, designed for Wix Apps that authenticate using an appId/appSecret pair. There's already a commented-out `AppStrategy` usage in `wix-client-service.ts`.
 
 The `@wix/sdk` `AppStrategy` accepts:
+
 - `appId` (required)
 - `appSecret` (optional)
 - `publicKey` (optional)
@@ -22,59 +23,62 @@ Make the server-side auth strategy configurable: the config can provide **either
 ### Config YAML
 
 Current:
+
 ```yaml
 apiKeyStrategy:
-  apiKey: "IST.xxx"
-  siteId: "abc-123"
+  apiKey: 'IST.xxx'
+  siteId: 'abc-123'
 
 oauthStrategy:
-  clientId: "def-456"
+  clientId: 'def-456'
 ```
 
 New (option A — apiKey, unchanged):
+
 ```yaml
 apiKeyStrategy:
-  apiKey: "IST.xxx"
-  siteId: "abc-123"
+  apiKey: 'IST.xxx'
+  siteId: 'abc-123'
 
 oauthStrategy:
-  clientId: "def-456"
+  clientId: 'def-456'
 ```
 
 New (option B — appStrategy):
+
 ```yaml
 appStrategy:
-  appId: "my-app-id"
-  appSecret: "my-app-secret"
+  appId: 'my-app-id'
+  appSecret: 'my-app-secret'
 
 oauthStrategy:
-  clientId: "def-456"
+  clientId: 'def-456'
 ```
 
 ### Config Types
 
 ```typescript
 export interface ApiKeyConfig {
-    apiKey: string;
-    siteId: string;
+  apiKey: string;
+  siteId: string;
 }
 
 export interface AppConfig {
-    appId: string;
-    appSecret: string;
+  appId: string;
+  appSecret: string;
 }
 
 export interface OAuthConfig {
-    clientId: string;
+  clientId: string;
 }
 
 export type ServerAuthConfig =
-    | { kind: 'apiKey'; apiKey: ApiKeyConfig }
-    | { kind: 'app'; app: AppConfig };
+  | { kind: 'apiKey'; apiKey: ApiKeyConfig }
+  | { kind: 'app'; app: AppConfig };
 
 export interface WixConfig {
-    auth: ServerAuthConfig;
-    oauth: OAuthConfig;
+  auth: ServerAuthConfig;
+  oauth: OAuthConfig;
 }
 ```
 
@@ -88,18 +92,19 @@ export interface WixConfig {
 
 ```typescript
 export function provideWixClientService(config: WixConfig) {
-    const auth = config.auth.kind === 'apiKey'
-        ? ApiKeyStrategy({
-              apiKey: config.auth.apiKey.apiKey,
-              siteId: config.auth.apiKey.siteId,
-          })
-        : AppStrategy({
-              appId: config.auth.app.appId,
-              appSecret: config.auth.app.appSecret,
-          });
+  const auth =
+    config.auth.kind === 'apiKey'
+      ? ApiKeyStrategy({
+          apiKey: config.auth.apiKey.apiKey,
+          siteId: config.auth.apiKey.siteId,
+        })
+      : AppStrategy({
+          appId: config.auth.app.appId,
+          appSecret: config.auth.app.appSecret,
+        });
 
-    const instance = createClient({ auth, modules: {} });
-    registerService(WIX_CLIENT_SERVICE, instance);
+  const instance = createClient({ auth, modules: {} });
+  registerService(WIX_CLIENT_SERVICE, instance);
 }
 ```
 
@@ -155,6 +160,7 @@ export function provideWixClientService(config: WixConfig) {
 Prerequisites: user runs `npx @wix/cli@latest login` (already part of setup) and `npx @wix/cli@latest init` (creates `wix.config.json` with `appId`).
 
 Steps:
+
 1. `npx @wix/cli@latest token` → get access token
 2. `GET https://manage.wix.com/apps-service/v1/apps/{appId}?withSecrets=true` with headers:
    - `Authorization: {token}`

@@ -106,10 +106,6 @@
         animation: spin 1s linear infinite;
       }
 
-      @keyframes spin {
-        to { transform: rotate(360deg); }
-      }
-
       @media (max-width: 1024px) {
         .main-content {
           grid-template-columns: 1fr;

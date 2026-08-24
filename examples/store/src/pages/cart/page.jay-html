@@ -326,10 +326,6 @@
             animation: spin 1s linear infinite;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
         .cart-item.updating .quantity-controls {
             opacity: 0.5;
             pointer-events: none;
