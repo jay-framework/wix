@@ -3,6 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "clean": ":",
+    "build": ":",
+    "test": ":",
     "get-secret": "node scripts/get-app-secret.mjs"
   }
 }
