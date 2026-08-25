@@ -26,6 +26,12 @@ import type {
 import { createBooking, listSlots } from '../actions/bookings-actions.js';
 import { getFormSummary, validateFormSummaryField } from '@jay-framework/wix-forms';
 
+const DEFAULT_PARTICIPANT_FIELDS: BookingFormFieldView[] = [
+    { target: 'first_name', label: 'First Name', type: 'STRING', required: true },
+    { target: 'last_name', label: 'Last Name', type: 'STRING', required: true },
+    { target: 'email', label: 'Email', type: 'EMAIL', required: true },
+];
+
 interface BookingFlowCarryForward {
     services: BookingServiceView[];
     servicesError?: string;
@@ -177,6 +183,11 @@ function BookingFlowInteractive(
         setFormFields([]);
 
         try {
+            if (!service.formId) {
+                setFormFields(DEFAULT_PARTICIPANT_FIELDS);
+                return;
+            }
+
             const result = await getFormSummary({ formId: service.formId });
             setFormFields(
                 result.fields.map((field) => ({
