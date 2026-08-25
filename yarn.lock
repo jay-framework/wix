@@ -2682,8 +2682,8 @@ __metadata:
     "@jay-framework/stack-server-runtime": "npm:^0.23.1"
     "@jay-framework/vite-plugin": "npm:^0.23.1"
     "@jay-framework/wix-dev-environment": "workspace:^"
-    "@jay-framework/wix-forms": "workspace:^"
-    "@jay-framework/wix-server-client": "workspace:^"
+    "@jay-framework/wix-forms": "npm:^0.23.1"
+    "@jay-framework/wix-server-client": "npm:^0.23.1"
     "@wix/sdk": "npm:^1.21.5"
     js-yaml: "npm:^4.1.0"
     nodemon: "npm:^3.0.3"
@@ -2797,7 +2797,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jay-framework/wix-forms@workspace:^, @jay-framework/wix-forms@workspace:packages/wix-forms":
+"@jay-framework/wix-forms@npm:^0.23.1, @jay-framework/wix-forms@workspace:packages/wix-forms":
   version: 0.0.0-use.local
   resolution: "@jay-framework/wix-forms@workspace:packages/wix-forms"
   dependencies:
@@ -2816,7 +2816,7 @@ __metadata:
     "@jay-framework/stack-server-runtime": "npm:^0.23.1"
     "@jay-framework/vite-plugin": "npm:^0.23.1"
     "@jay-framework/wix-dev-environment": "workspace:^"
-    "@jay-framework/wix-server-client": "workspace:^"
+    "@jay-framework/wix-server-client": "npm:^0.23.1"
     "@wix/sdk": "npm:^1.21.5"
     js-yaml: "npm:^4.1.0"
     nodemon: "npm:^3.0.3"
@@ -2891,7 +2891,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jay-framework/wix-server-client@workspace:^, @jay-framework/wix-server-client@workspace:packages/wix-server-client":
+"@jay-framework/wix-server-client@npm:^0.23.1, @jay-framework/wix-server-client@workspace:^, @jay-framework/wix-server-client@workspace:packages/wix-server-client":
   version: 0.0.0-use.local
   resolution: "@jay-framework/wix-server-client@workspace:packages/wix-server-client"
   dependencies:
