@@ -1,6 +1,6 @@
 {
   "name": "@jay-framework/wix-deploy",
-  "version": "0.23.1",
+  "version": "0.24.0",
   "type": "module",
   "description": "Wix BaaS deployment adapter for Jay Framework — WixDataArtifactStore and entry builder",
   "license": "Apache-2.0",
@@ -27,11 +27,11 @@
     "test": ":"
   },
   "dependencies": {
-    "@jay-framework/compiler-jay-html": "^0.23.1",
-    "@jay-framework/compiler-shared": "^0.23.1",
-    "@jay-framework/fullstack-component": "^0.23.1",
-    "@jay-framework/production-server": "^0.23.1",
-    "@jay-framework/stack-server-runtime": "^0.23.1",
+    "@jay-framework/compiler-jay-html": "^0.24.0",
+    "@jay-framework/compiler-shared": "^0.24.0",
+    "@jay-framework/fullstack-component": "^0.24.0",
+    "@jay-framework/production-server": "^0.24.0",
+    "@jay-framework/stack-server-runtime": "^0.24.0",
     "@jay-framework/wix-server-client": "workspace:^",
     "@wix/data": "^1.0.433",
     "@wix/sdk": "^1.21.5",
@@ -39,7 +39,7 @@
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
-    "@jay-framework/jay-stack-cli": "^0.23.1",
+    "@jay-framework/jay-stack-cli": "^0.24.0",
     "tsup": "^8.0.0",
     "typescript": "^5.3.3",
     "vite": "^5.0.0"
