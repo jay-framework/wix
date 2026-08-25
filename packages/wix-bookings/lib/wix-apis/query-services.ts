@@ -29,8 +29,9 @@ export async function queryBookingServices(
 ): Promise<RawBookingService[]> {
     const allServices: RawBookingService[] = [];
     let offset = 0;
+    let hasMorePages = true;
 
-    while (true) {
+    while (hasMorePages) {
         const result = await wixFetch<QueryServicesResponse>(client, '/bookings/v2/services/query', {
             method: 'POST',
             body: {
@@ -45,10 +46,10 @@ export async function queryBookingServices(
         const batch = result.services ?? [];
         allServices.push(...batch);
 
-        if (batch.length < SERVICES_PAGE_SIZE) {
-            break;
+        hasMorePages = batch.length >= SERVICES_PAGE_SIZE;
+        if (hasMorePages) {
+            offset += SERVICES_PAGE_SIZE;
         }
-        offset += SERVICES_PAGE_SIZE;
     }
 
     return allServices;

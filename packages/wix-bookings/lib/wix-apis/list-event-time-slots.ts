@@ -32,8 +32,9 @@ export async function listEventTimeSlots(
     const allSlots: EventTimeSlot[] = [];
     const maxSlots = options?.maxSlots;
     let cursor: string | undefined;
+    let hasMorePages = true;
 
-    while (true) {
+    while (hasMorePages) {
         const result = await wixFetch<ListEventTimeSlotsResponse>(
             client,
             '/_api/service-availability/v2/time-slots/event',
@@ -58,9 +59,7 @@ export async function listEventTimeSlots(
         }
 
         cursor = result.pagingMetadata?.cursors?.next;
-        if (!cursor || result.pagingMetadata?.hasNext === false) {
-            break;
-        }
+        hasMorePages = !!cursor && result.pagingMetadata?.hasNext !== false;
     }
 
     return allSlots;
