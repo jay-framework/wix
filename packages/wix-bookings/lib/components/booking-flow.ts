@@ -6,10 +6,12 @@ import {
 } from '@jay-framework/fullstack-component';
 import { createSignal, Props } from '@jay-framework/component';
 import type {
+    BookingFlowContract,
     BookingFlowFastViewState,
     BookingFlowRefs,
     BookingFlowSlowViewState,
     ServiceOfBookingFlowViewState,
+    SlotOfBookingFlowViewState,
 } from '../contracts/booking-flow.jay-contract.js';
 import {
     WIX_BOOKINGS_SERVICE,
@@ -33,6 +35,17 @@ function toBookingService(service: ServiceOfBookingFlowViewState): BookingServic
     return {
         ...service,
         type: service.type as BookingServiceType,
+    };
+}
+
+function toContractSlot(slot: BookingSlotView): SlotOfBookingFlowViewState {
+    return {
+        id: slot.id,
+        label: slot.label,
+        localStartDate: slot.localStartDate,
+        localEndDate: slot.localEndDate,
+        scheduleId: slot.scheduleId ?? '',
+        eventId: slot.eventId ?? '',
     };
 }
 
@@ -95,9 +108,8 @@ function BookingFlowInteractive(
 ) {
     const [services] = viewStateSignals.services;
     const [showServices, setShowServices] = createSignal(true);
-    const [showNoServices] = createSignal(
-        _carryForward.services.length === 0 && !_carryForward.servicesError,
-    );
+    const showNoServices =
+        _carryForward.services.length === 0 && !_carryForward.servicesError;
     const servicesError = _carryForward.servicesError ?? '';
     const [hasSlots, setHasSlots] = createSignal(false);
     const [showSlots, setShowSlots] = createSignal(false);
@@ -311,11 +323,11 @@ function BookingFlowInteractive(
             servicesLoading: false,
             servicesError,
             showServices: showServices(),
-            showNoServices: showNoServices(),
+            showNoServices,
             showSlots: showSlots(),
             showForm: showForm(),
             selectedServiceName: selectedServiceName(),
-            slots: slots(),
+            slots: slots().map(toContractSlot),
             slotsLoading: slotsLoading(),
             slotsMessage: slotsMessage(),
             hasSlots: hasSlots(),
@@ -328,7 +340,7 @@ function BookingFlowInteractive(
     };
 }
 
-export const bookingFlow = makeJayStackComponent()
+export const bookingFlow = makeJayStackComponent<BookingFlowContract>()
     .withProps()
     .withServices(WIX_BOOKINGS_SERVICE)
     .withSlowlyRender(renderSlowlyChanging)

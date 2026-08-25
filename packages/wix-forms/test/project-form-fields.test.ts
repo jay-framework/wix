@@ -101,14 +101,9 @@ describe('projectFormSummaryFields', () => {
         ]);
     });
 
-    it('should return fallback fields when input is empty', () => {
-        const result = projectFormSummaryFields([]);
-
-        expect(result).toEqual([
-            { target: 'first_name', label: 'First Name', type: 'STRING', required: true },
-            { target: 'last_name', label: 'Last Name', type: 'STRING', required: true },
-            { target: 'email', label: 'Email', type: 'EMAIL', required: true },
-        ]);
+    it('should return an empty array when input has no usable fields', () => {
+        expect(projectFormSummaryFields([])).toEqual([]);
+        expect(projectFormSummaryFields(undefined)).toEqual([]);
     });
 });
 

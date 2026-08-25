@@ -72,4 +72,31 @@ describe('listAvailabilityTimeSlots', () => {
         expect(mockWixFetch).toHaveBeenCalledTimes(1);
         expect(slots).toHaveLength(1);
     });
+
+    it('should stop fetching once maxSlots is reached', async () => {
+        mockWixFetch
+            .mockResolvedValueOnce({
+                timeSlots: Array.from({ length: 100 }, (_, index) => ({
+                    scheduleId: 'sched-1',
+                    localStartDate: `2026-08-20T${String(10 + index).padStart(2, '0')}:00:00`,
+                    localEndDate: `2026-08-20T${String(10 + index).padStart(2, '0')}:30:00`,
+                })),
+                pagingMetadata: { cursors: { next: 'page-2' }, hasNext: true },
+            })
+            .mockResolvedValueOnce({
+                timeSlots: [
+                    {
+                        scheduleId: 'sched-1',
+                        localStartDate: '2026-08-21T10:00:00',
+                        localEndDate: '2026-08-21T10:30:00',
+                    },
+                ],
+                pagingMetadata: { cursors: {}, hasNext: false },
+            });
+
+        const slots = await listAvailabilityTimeSlots(mockClient, baseInput, { maxSlots: 100 });
+
+        expect(mockWixFetch).toHaveBeenCalledTimes(1);
+        expect(slots).toHaveLength(100);
+    });
 });

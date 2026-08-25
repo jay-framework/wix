@@ -1,5 +1,6 @@
 import type { WixClient } from '@wix/sdk';
 import { wixFetch } from '@jay-framework/wix-server-client';
+import { SERVICES_PAGE_SIZE } from '../constants.js';
 
 export interface RawBookingService {
     _id?: string;
@@ -26,17 +27,31 @@ export async function queryBookingServices(
     client: WixClient,
     bookingAppId: string,
 ): Promise<RawBookingService[]> {
-    const result = await wixFetch<QueryServicesResponse>(client, '/bookings/v2/services/query', {
-        method: 'POST',
-        body: {
-            query: {
-                filter: { appId: bookingAppId },
-                paging: { limit: 100 },
+    const allServices: RawBookingService[] = [];
+    let offset = 0;
+
+    while (true) {
+        const result = await wixFetch<QueryServicesResponse>(client, '/bookings/v2/services/query', {
+            method: 'POST',
+            body: {
+                query: {
+                    filter: { appId: bookingAppId },
+                    paging: { limit: SERVICES_PAGE_SIZE, offset },
+                },
+                conditionalFields: ['STAFF_MEMBER_DETAILS'],
             },
-            conditionalFields: ['STAFF_MEMBER_DETAILS'],
-        },
-    });
-    return result.services ?? [];
+        });
+
+        const batch = result.services ?? [];
+        allServices.push(...batch);
+
+        if (batch.length < SERVICES_PAGE_SIZE) {
+            break;
+        }
+        offset += SERVICES_PAGE_SIZE;
+    }
+
+    return allServices;
 }
 
 export async function getBookingServiceById(

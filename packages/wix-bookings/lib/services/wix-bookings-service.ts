@@ -2,10 +2,11 @@ import type { WixClient } from '@wix/sdk';
 import { WixApiError } from '@jay-framework/wix-server-client';
 import { registerService } from '@jay-framework/stack-server-runtime';
 import type { WixBookingsConfig } from '../config-loader.js';
+import { MAX_SLOTS_PER_QUERY } from '../constants.js';
 import type { BookingServiceView, BookingSlotView } from '../types.js';
 import { WIX_BOOKINGS_SERVICE, type WixBookingsService } from './wix-bookings-service-marker.js';
 import {
-    localDateStr,
+    localDateStrInTimeZone,
     mapAppointmentSlot,
     mapClassSlot,
     mapService,
@@ -62,30 +63,39 @@ export function provideWixBookingsService(
 
         async listSlots({ serviceId, serviceType, timezone, windowDays }) {
             const now = new Date();
-            const from = localDateStr(now);
+            const tz = timezone ?? 'UTC';
+            const from = localDateStrInTimeZone(now, tz);
             const days = windowDays ?? config.slotWindowDays;
             const to = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
-            const toStr = localDateStr(to);
-            const tz = timezone ?? 'UTC';
+            const toStr = localDateStrInTimeZone(to, tz);
+            const slotQueryOptions = { maxSlots: MAX_SLOTS_PER_QUERY };
 
             if (serviceType === 'APPOINTMENT') {
-                const timeSlots = await listAvailabilityTimeSlots(wixClient, {
-                    serviceId,
-                    fromLocalDate: from,
-                    toLocalDate: toStr,
-                    timeZone: tz,
-                });
+                const timeSlots = await listAvailabilityTimeSlots(
+                    wixClient,
+                    {
+                        serviceId,
+                        fromLocalDate: from,
+                        toLocalDate: toStr,
+                        timeZone: tz,
+                    },
+                    slotQueryOptions,
+                );
                 return timeSlots
                     .map((slot) => mapAppointmentSlot(slot))
                     .filter((slot): slot is BookingSlotView => slot !== null);
             }
 
-            const timeSlots = await listEventTimeSlots(wixClient, {
-                serviceIds: [serviceId],
-                fromLocalDate: from,
-                toLocalDate: toStr,
-                timeZone: tz,
-            });
+            const timeSlots = await listEventTimeSlots(
+                wixClient,
+                {
+                    serviceIds: [serviceId],
+                    fromLocalDate: from,
+                    toLocalDate: toStr,
+                    timeZone: tz,
+                },
+                slotQueryOptions,
+            );
             return timeSlots
                 .map((slot) => mapClassSlot(slot))
                 .filter((slot): slot is BookingSlotView => slot !== null);

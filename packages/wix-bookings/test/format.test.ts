@@ -7,6 +7,7 @@ import {
     formatPrice,
     formatSlotLabel,
     localDateStr,
+    localDateStrInTimeZone,
     mapAppointmentSlot,
     mapClassSlot,
     mapService,
@@ -161,6 +162,14 @@ describe('localDateStr', () => {
     it('should format date as local ISO-like string', () => {
         const date = new Date(2026, 7, 20, 9, 5, 3);
         expect(localDateStr(date)).toBe('2026-08-20T09:05:03');
+    });
+});
+
+describe('localDateStrInTimeZone', () => {
+    it('should format the instant in the requested timezone, not server local time', () => {
+        const instant = new Date('2026-08-25T22:30:00.000Z');
+        expect(localDateStrInTimeZone(instant, 'Asia/Jerusalem')).toBe('2026-08-26T01:30:00');
+        expect(localDateStrInTimeZone(instant, 'UTC')).toBe('2026-08-25T22:30:00');
     });
 });
 

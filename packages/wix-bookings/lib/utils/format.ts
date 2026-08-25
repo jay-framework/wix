@@ -105,8 +105,31 @@ export function mapClassSlot(slot: {
 }
 
 export function localDateStr(date: Date): string {
-    const pad = (n: number) => String(n).padStart(2, '0');
+    const pad = (number: number) => String(number).padStart(2, '0');
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
+
+/**
+ * Format a Date as a local ISO-like string in the given IANA timezone.
+ * Used for Wix availability APIs that expect fromLocalDate/toLocalDate in the user's timezone.
+ */
+export function localDateStrInTimeZone(date: Date, timeZone: string): string {
+    const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+    }).formatToParts(date);
+
+    const read = (type: Intl.DateTimeFormatPartTypes) =>
+        parts.find((part) => part.type === type)?.value ?? '00';
+    const hour = read('hour') === '24' ? '00' : read('hour');
+
+    return `${read('year')}-${read('month')}-${read('day')}T${hour}:${read('minute')}:${read('second')}`;
 }
 
 export function paymentPreferenceFromService(service: RawService): 'ONLINE' | 'OFFLINE' {

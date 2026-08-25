@@ -7,12 +7,6 @@ import type {
     FormFieldSummaryView,
 } from '../types.js';
 
-const FALLBACK_SUMMARY_FIELDS: FormFieldSummaryView[] = [
-    { target: 'first_name', label: 'First Name', type: 'STRING', required: true },
-    { target: 'last_name', label: 'Last Name', type: 'STRING', required: true },
-    { target: 'email', label: 'Email', type: 'EMAIL', required: true },
-];
-
 function readFieldOptions(field: RawFormField): FormFieldOptionView[] {
     const rawOptions = field.view?.options ?? field.inputOptions?.stringOptions?.options ?? [];
     return rawOptions
@@ -90,7 +84,7 @@ export function projectFormSummaryFields(
         }))
         .filter((field) => field.target);
 
-    return projected.length ? projected : FALLBACK_SUMMARY_FIELDS;
+    return projected;
 }
 
 export function validateFormSummaryField(field: FormFieldSummaryView, value: string): string {

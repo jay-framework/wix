@@ -27,8 +27,10 @@ export async function listEventTimeSlots(
         toLocalDate: string;
         timeZone: string;
     },
+    options?: { maxSlots?: number },
 ): Promise<EventTimeSlot[]> {
     const allSlots: EventTimeSlot[] = [];
+    const maxSlots = options?.maxSlots;
     let cursor: string | undefined;
 
     while (true) {
@@ -50,6 +52,10 @@ export async function listEventTimeSlots(
             },
         );
         allSlots.push(...(result.timeSlots ?? []));
+
+        if (maxSlots !== undefined && allSlots.length >= maxSlots) {
+            return allSlots.slice(0, maxSlots);
+        }
 
         cursor = result.pagingMetadata?.cursors?.next;
         if (!cursor || result.pagingMetadata?.hasNext === false) {

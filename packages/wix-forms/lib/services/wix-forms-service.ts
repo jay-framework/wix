@@ -35,10 +35,16 @@ export function provideWixFormsService(
 
         async getFormSummaryFields(formId) {
             if (!formId) {
-                return projectFormSummaryFields(undefined);
+                throw new Error(
+                    'Form ID is missing. This booking service has no participant form configured in Wix.',
+                );
             }
             const { formSummary } = await getFormSummary(wixClient, formId);
-            return projectFormSummaryFields(formSummary?.fields);
+            const fields = projectFormSummaryFields(formSummary?.fields);
+            if (!fields.length) {
+                throw new Error('Could not load participant form fields from Wix.');
+            }
+            return fields;
         },
 
         async createSubmission(formId, values) {
