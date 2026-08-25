@@ -2647,6 +2647,39 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jay-framework/wix-bookings@workspace:packages/wix-bookings":
+  version: 0.0.0-use.local
+  resolution: "@jay-framework/wix-bookings@workspace:packages/wix-bookings"
+  dependencies:
+    "@babel/core": "npm:^7.23.7"
+    "@babel/preset-env": "npm:^7.23.8"
+    "@babel/preset-typescript": "npm:^7.23.3"
+    "@jay-framework/compiler-jay-stack": "npm:^0.23.1"
+    "@jay-framework/component": "npm:^0.23.1"
+    "@jay-framework/fullstack-component": "npm:^0.23.1"
+    "@jay-framework/jay-cli": "npm:^0.23.1"
+    "@jay-framework/jay-stack-cli": "npm:^0.23.1"
+    "@jay-framework/reactive": "npm:^0.23.1"
+    "@jay-framework/runtime": "npm:^0.23.1"
+    "@jay-framework/secure": "npm:^0.23.1"
+    "@jay-framework/stack-client-runtime": "npm:^0.23.1"
+    "@jay-framework/stack-server-runtime": "npm:^0.23.1"
+    "@jay-framework/vite-plugin": "npm:^0.23.1"
+    "@jay-framework/wix-dev-environment": "workspace:^"
+    "@jay-framework/wix-forms": "npm:^0.23.1"
+    "@jay-framework/wix-server-client": "npm:^0.23.1"
+    "@wix/sdk": "npm:^1.21.5"
+    js-yaml: "npm:^4.1.0"
+    nodemon: "npm:^3.0.3"
+    rimraf: "npm:^5.0.5"
+    tslib: "npm:^2.6.2"
+    tsup: "npm:^8.5.1"
+    typescript: "npm:^5.3.3"
+    vite: "npm:^5.0.11"
+    vitest: "npm:^1.2.0"
+  languageName: unknown
+  linkType: soft
+
 "@jay-framework/wix-cart@workspace:^, @jay-framework/wix-cart@workspace:packages/wix-cart":
   version: 0.0.0-use.local
   resolution: "@jay-framework/wix-cart@workspace:packages/wix-cart"
@@ -2743,6 +2776,38 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@jay-framework/wix-forms@npm:^0.23.1, @jay-framework/wix-forms@workspace:packages/wix-forms":
+  version: 0.0.0-use.local
+  resolution: "@jay-framework/wix-forms@workspace:packages/wix-forms"
+  dependencies:
+    "@babel/core": "npm:^7.23.7"
+    "@babel/preset-env": "npm:^7.23.8"
+    "@babel/preset-typescript": "npm:^7.23.3"
+    "@jay-framework/compiler-jay-stack": "npm:^0.23.1"
+    "@jay-framework/component": "npm:^0.23.1"
+    "@jay-framework/fullstack-component": "npm:^0.23.1"
+    "@jay-framework/jay-cli": "npm:^0.23.1"
+    "@jay-framework/jay-stack-cli": "npm:^0.23.1"
+    "@jay-framework/reactive": "npm:^0.23.1"
+    "@jay-framework/runtime": "npm:^0.23.1"
+    "@jay-framework/secure": "npm:^0.23.1"
+    "@jay-framework/stack-client-runtime": "npm:^0.23.1"
+    "@jay-framework/stack-server-runtime": "npm:^0.23.1"
+    "@jay-framework/vite-plugin": "npm:^0.23.1"
+    "@jay-framework/wix-dev-environment": "workspace:^"
+    "@jay-framework/wix-server-client": "npm:^0.23.1"
+    "@wix/sdk": "npm:^1.21.5"
+    js-yaml: "npm:^4.1.0"
+    nodemon: "npm:^3.0.3"
+    rimraf: "npm:^5.0.5"
+    tslib: "npm:^2.6.2"
+    tsup: "npm:^8.5.1"
+    typescript: "npm:^5.3.3"
+    vite: "npm:^5.0.11"
+    vitest: "npm:^1.2.0"
+  languageName: unknown
+  linkType: soft
+
 "@jay-framework/wix-media@workspace:^, @jay-framework/wix-media@workspace:packages/wix-media":
   version: 0.0.0-use.local
   resolution: "@jay-framework/wix-media@workspace:packages/wix-media"
@@ -2805,7 +2870,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jay-framework/wix-server-client@workspace:^, @jay-framework/wix-server-client@workspace:packages/wix-server-client":
+"@jay-framework/wix-server-client@npm:^0.23.1, @jay-framework/wix-server-client@workspace:^, @jay-framework/wix-server-client@workspace:packages/wix-server-client":
   version: 0.0.0-use.local
   resolution: "@jay-framework/wix-server-client@workspace:packages/wix-server-client"
   dependencies:

@@ -27,7 +27,7 @@ export const init = makeJayInit()
         console.log('[wix-members] Initializing client-side members context...');
 
         const membersContext = provideWixMembersContext(data);
-        membersContext.refreshMemberState();
+        await membersContext.refreshMemberState();
 
         console.log('[wix-members] Client initialization complete');
     });

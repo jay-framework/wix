@@ -35,6 +35,7 @@ Design documentation for the Jay Framework Wix integration packages.
 | 27  | [Interactive Setup for Wix Plugins](./27%20-%20interactive-setup-for-wix-plugins.md)           | Draft           |
 | 28  | [Static Filename Validation for CDN](./28%20-%20static-filename-validation-for-cdn.md)         | Draft           |
 | 29  | [App Strategy Support](./29%20-%20app-strategy-support.md)                                     | Draft           |
+| 30  | [BaaS Deploy Operations](./30%20-%20baas%20deploy%20operations.md)                             | Implemented     |
 
 ## Packages Covered
 

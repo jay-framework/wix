@@ -28,7 +28,15 @@ interface RouteManifest {
     routes: any[];
 }
 
-const DEFAULT_EXCLUDE_PLUGINS = ['aiditor', 'wix-deploy'];
+const DEFAULT_EXCLUDE_PLUGINS = [
+    'aiditor',
+    'ui-kit',
+    'wix-deploy',
+    // Build-time validators — use compiler APIs stubbed out of the BaaS bundle
+    'wix-media',
+    'seo-validator',
+    'a11y-validator',
+];
 
 function scanPagePartsFiles(
     dir: string,
@@ -45,6 +53,53 @@ function scanPagePartsFiles(
         }
     }
     return results;
+}
+
+/** Copy all config/*.yaml into dist/config/, with non-dot aliases for BaaS (dotfiles may be skipped on upload). */
+function copyPluginConfigsToDist(
+    projectRoot: string,
+    distConfigDir: string,
+    fs: typeof import('node:fs'),
+    path: typeof import('node:path'),
+    log: (message: string) => void,
+): string[] {
+    const configSrcDir = path.join(projectRoot, 'config');
+    if (!fs.existsSync(configSrcDir)) {
+        return [];
+    }
+
+    fs.mkdirSync(distConfigDir, { recursive: true });
+    const copied: string[] = [];
+
+    for (const entry of fs.readdirSync(configSrcDir)) {
+        if (!entry.endsWith('.yaml') && !entry.endsWith('.yml')) {
+            continue;
+        }
+        const srcPath = path.join(configSrcDir, entry);
+        if (!fs.statSync(srcPath).isFile()) {
+            continue;
+        }
+
+        fs.copyFileSync(srcPath, path.join(distConfigDir, entry));
+        copied.push(entry);
+
+        if (entry.startsWith('.')) {
+            const plainName = entry.slice(1);
+            fs.copyFileSync(srcPath, path.join(distConfigDir, plainName));
+            copied.push(plainName);
+        } else if (!fs.existsSync(path.join(configSrcDir, `.${entry}`))) {
+            fs.copyFileSync(srcPath, path.join(distConfigDir, `.${entry}`));
+            copied.push(`.${entry}`);
+        }
+    }
+
+    if (copied.length > 0) {
+        log(`Copied plugin config files to dist/config/: ${[...new Set(copied)].join(', ')}`);
+    } else {
+        log('No config/*.yaml files found to copy');
+    }
+
+    return copied;
 }
 
 function sortPluginsByDeps(plugins: Array<{ name: string; packageName: string }>) {
@@ -169,14 +224,21 @@ async function initialize() {
     }
     console.log('[BaaS] CWD:', process.cwd());
 
-    // BaaS skips dotfiles during upload — copy wix.yaml to .wix.yaml if needed
+    // BaaS may skip dotfiles during upload — restore dot-prefixed config from plain aliases
     const fs = await import('node:fs');
     const configDir = process.cwd() + '/config';
-    const dotYaml = configDir + '/.wix.yaml';
-    const plainYaml = configDir + '/wix.yaml';
-    if (!fs.existsSync(dotYaml) && fs.existsSync(plainYaml)) {
-        fs.copyFileSync(plainYaml, dotYaml);
-        console.log('[BaaS] Copied config/wix.yaml to config/.wix.yaml');
+    if (fs.existsSync(configDir)) {
+        for (const name of fs.readdirSync(configDir)) {
+            if (name.startsWith('.') || (!name.endsWith('.yaml') && !name.endsWith('.yml'))) {
+                continue;
+            }
+            const plainPath = configDir + '/' + name;
+            const dotPath = configDir + '/.' + name;
+            if (!fs.existsSync(dotPath)) {
+                fs.copyFileSync(plainPath, dotPath);
+                console.log('[BaaS] Copied config/' + name + ' to config/.' + name);
+            }
+        }
     }
 
     // Initialize plugins first — wix-server-client reads config/.wix.yaml and creates WixClient
@@ -547,16 +609,13 @@ export const buildEntry = makeCliCommand('build-entry')
         }
         ctx.log('Copied route-manifest.json + build-metadata.json to dist/');
 
-        // Copy config/.wix.yaml to dist/ so wix-server-client can find it on BaaS
-        // Also copy as wix.yaml (without dot) in case the CLI skips dotfiles
+        // Copy all plugin config YAML files to dist/ (wix-server-client, wix-forms, wix-bookings, etc.)
+        const distConfigDir = path.join(entryDir, 'config');
+        copyPluginConfigsToDist(ctx.projectRoot, distConfigDir, fs, path, (message) =>
+            ctx.log(message),
+        );
         const wixConfigSrc = path.join(ctx.projectRoot, 'config', '.wix.yaml');
-        if (fs.existsSync(wixConfigSrc)) {
-            const configDir = path.join(entryDir, 'config');
-            fs.mkdirSync(configDir, { recursive: true });
-            fs.copyFileSync(wixConfigSrc, path.join(configDir, '.wix.yaml'));
-            fs.copyFileSync(wixConfigSrc, path.join(configDir, 'wix.yaml'));
-            ctx.log(`Copied config/.wix.yaml to dist/config/`);
-        } else {
+        if (!fs.existsSync(wixConfigSrc)) {
             ctx.warn(
                 `config/.wix.yaml not found — wix-server-client init will fail on BaaS unless WIX_API_KEY env vars are set`,
             );

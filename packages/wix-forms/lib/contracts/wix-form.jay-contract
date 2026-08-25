@@ -1,0 +1,72 @@
+name: wix-form
+description: Renders a Wix Form by ID with dynamic fields and submission handling.
+
+props:
+  - name: formId
+    type: string
+    description: Wix Forms form GUID (falls back to config defaultFormId when empty)
+
+tags:
+  - tag: fields
+    type: sub-contract
+    repeated: true
+    trackBy: target
+    phase: fast+interactive
+    description: Rendered form fields
+    tags:
+      - { tag: target, type: data, dataType: string }
+      - { tag: label, type: data, dataType: string }
+      - { tag: inputType, type: data, dataType: string }
+      - { tag: isTextarea, type: variant, dataType: boolean }
+      - { tag: required, type: data, dataType: boolean }
+      - { tag: placeholder, type: data, dataType: string }
+      - { tag: hasOptions, type: variant, dataType: boolean }
+      - { tag: formInputs, type: interactive, elementType: HTMLInputElement, description: Text-like input }
+      - { tag: formTextareas, type: interactive, elementType: HTMLTextAreaElement, description: Multiline input }
+      - { tag: formSelects, type: interactive, elementType: HTMLSelectElement, description: Select input }
+
+  - tag: options
+    type: sub-contract
+    repeated: true
+    trackBy: id
+    phase: fast+interactive
+    description: Select options for fields that have choices
+    tags:
+      - { tag: id, type: data, dataType: string }
+      - { tag: fieldTarget, type: data, dataType: string }
+      - { tag: value, type: data, dataType: string }
+      - { tag: label, type: data, dataType: string }
+
+  - tag: isLoading
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+
+  - tag: loadError
+    type: data
+    dataType: string
+    phase: fast+interactive
+
+  - tag: isSubmitting
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+
+  - tag: statusMessage
+    type: data
+    dataType: string
+    phase: fast+interactive
+
+  - tag: fieldErrors
+    type: sub-contract
+    repeated: true
+    trackBy: target
+    phase: fast+interactive
+    tags:
+      - { tag: target, type: data, dataType: string }
+      - { tag: errorMessage, type: data, dataType: string }
+
+  - tag: submitButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Submit the form

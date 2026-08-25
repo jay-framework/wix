@@ -1,0 +1,23 @@
+name: wix-bookings
+# No module field for NPM packages - uses package main export by default
+
+contracts:
+  - name: booking-flow
+    contract: booking-flow.jay-contract
+    component: bookingFlow
+    description: Full booking flow (service list, slot picker, form, checkout)
+
+services:
+  - name: wix-bookings
+    marker: WIX_BOOKINGS_SERVICE
+    description: Server-side Bookings + ecom v2 checkout APIs
+
+actions:
+  - name: listServices
+    action: list-services.jay-action
+  - name: listSlots
+    action: list-slots.jay-action
+  - name: createBooking
+    action: create-booking.jay-action
+
+setup: setupWixBookings

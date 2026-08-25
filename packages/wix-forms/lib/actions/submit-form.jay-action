@@ -1,0 +1,9 @@
+name: submitForm
+description: Submit a Wix Form with field values keyed by target.
+
+inputSchema:
+  formId?: string
+  values: object
+
+outputSchema:
+  success: boolean

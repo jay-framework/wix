@@ -1,0 +1,125 @@
+name: booking-flow
+description: Browse Wix Bookings services, select a slot, submit participant details, and complete checkout.
+
+tags:
+  - tag: services
+    type: sub-contract
+    repeated: true
+    trackBy: id
+    phase: fast+interactive
+    description: Available services
+    tags:
+      - { tag: id, type: data, dataType: string }
+      - { tag: name, type: data, dataType: string }
+      - { tag: description, type: data, dataType: string }
+      - { tag: type, type: data, dataType: string }
+      - { tag: durationLabel, type: data, dataType: string }
+      - { tag: priceLabel, type: data, dataType: string }
+      - { tag: formId, type: data, dataType: string }
+      - { tag: serviceButtons, type: interactive, elementType: HTMLButtonElement, description: Select a service }
+
+  - tag: servicesLoading
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+
+  - tag: showNoServices
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+
+  - tag: hasSlots
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+
+  - tag: servicesError
+    type: data
+    dataType: string
+    phase: fast+interactive
+
+  - tag: showServices
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+
+  - tag: showSlots
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+
+  - tag: showForm
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+
+  - tag: selectedServiceName
+    type: data
+    dataType: string
+    phase: fast+interactive
+
+  - tag: slots
+    type: sub-contract
+    repeated: true
+    trackBy: id
+    phase: fast+interactive
+    tags:
+      - { tag: id, type: data, dataType: string }
+      - { tag: label, type: data, dataType: string }
+      - { tag: localStartDate, type: data, dataType: string }
+      - { tag: localEndDate, type: data, dataType: string }
+      - { tag: scheduleId, type: data, dataType: string }
+      - { tag: eventId, type: data, dataType: string }
+      - { tag: slotButtons, type: interactive, elementType: HTMLButtonElement, description: Select a time slot }
+
+  - tag: slotsLoading
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+
+  - tag: slotsMessage
+    type: data
+    dataType: string
+    phase: fast+interactive
+
+  - tag: formFields
+    type: sub-contract
+    repeated: true
+    trackBy: target
+    phase: fast+interactive
+    tags:
+      - { tag: target, type: data, dataType: string }
+      - { tag: label, type: data, dataType: string }
+      - { tag: type, type: data, dataType: string }
+      - { tag: required, type: data, dataType: boolean }
+      - { tag: formInputs, type: interactive, elementType: HTMLInputElement, description: Participant form field }
+
+  - tag: formLoading
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+
+  - tag: isBooking
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+
+  - tag: bookingStatus
+    type: data
+    dataType: string
+    phase: fast+interactive
+
+  - tag: bookingError
+    type: data
+    dataType: string
+    phase: fast+interactive
+
+  - tag: bookButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Confirm booking
+
+  - tag: backButton
+    type: interactive
+    elementType: HTMLButtonElement
+    description: Back to service list
