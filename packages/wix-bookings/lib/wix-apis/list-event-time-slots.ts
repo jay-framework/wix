@@ -1,14 +1,22 @@
 import type { WixClient } from '@wix/sdk';
 import { wixFetch } from '@jay-framework/wix-server-client';
 
+const EVENT_SLOTS_PAGE_SIZE = 100;
+
 export interface EventTimeSlot {
     localStartDate?: string;
     localEndDate?: string;
     eventInfo?: { eventId?: string };
 }
 
+interface CursorPagingMetadata {
+    cursors?: { next?: string };
+    hasNext?: boolean;
+}
+
 export interface ListEventTimeSlotsResponse {
     timeSlots?: EventTimeSlot[];
+    pagingMetadata?: CursorPagingMetadata;
 }
 
 export async function listEventTimeSlots(
@@ -20,19 +28,34 @@ export async function listEventTimeSlots(
         timeZone: string;
     },
 ): Promise<EventTimeSlot[]> {
-    const result = await wixFetch<ListEventTimeSlotsResponse>(
-        client,
-        '/_api/service-availability/v2/time-slots/event',
-        {
-            method: 'POST',
-            body: {
-                serviceIds: input.serviceIds,
-                fromLocalDate: input.fromLocalDate,
-                toLocalDate: input.toLocalDate,
-                timeZone: input.timeZone,
-                includeNonBookable: false,
+    const allSlots: EventTimeSlot[] = [];
+    let cursor: string | undefined;
+
+    while (true) {
+        const result = await wixFetch<ListEventTimeSlotsResponse>(
+            client,
+            '/_api/service-availability/v2/time-slots/event',
+            {
+                method: 'POST',
+                body: {
+                    serviceIds: input.serviceIds,
+                    fromLocalDate: input.fromLocalDate,
+                    toLocalDate: input.toLocalDate,
+                    timeZone: input.timeZone,
+                    includeNonBookable: false,
+                    cursorPaging: cursor
+                        ? { cursor, limit: EVENT_SLOTS_PAGE_SIZE }
+                        : { limit: EVENT_SLOTS_PAGE_SIZE },
+                },
             },
-        },
-    );
-    return result.timeSlots ?? [];
+        );
+        allSlots.push(...(result.timeSlots ?? []));
+
+        cursor = result.pagingMetadata?.cursors?.next;
+        if (!cursor || result.pagingMetadata?.hasNext === false) {
+            break;
+        }
+    }
+
+    return allSlots;
 }

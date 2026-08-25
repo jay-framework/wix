@@ -6,6 +6,7 @@ import {
     projectContactFormFields,
     projectFormSummaryFields,
     validateContactField,
+    validateFormSummaryField,
 } from '../lib/utils/project-form-fields.js';
 import type { ContactFormFieldView } from '../lib/types.js';
 
@@ -108,6 +109,47 @@ describe('projectFormSummaryFields', () => {
             { target: 'last_name', label: 'Last Name', type: 'STRING', required: true },
             { target: 'email', label: 'Email', type: 'EMAIL', required: true },
         ]);
+    });
+});
+
+describe('validateFormSummaryField', () => {
+    it('should require non-empty values for required summary fields', () => {
+        expect(
+            validateFormSummaryField(
+                {
+                    target: 'first_name',
+                    label: 'First Name',
+                    type: 'STRING',
+                    required: true,
+                },
+                '',
+            ),
+        ).toBe('First Name is required.');
+    });
+
+    it('should validate email summary fields', () => {
+        expect(
+            validateFormSummaryField(
+                {
+                    target: 'email',
+                    label: 'Email',
+                    type: 'EMAIL',
+                    required: true,
+                },
+                'not-an-email',
+            ),
+        ).toBe('Please enter a valid email address.');
+        expect(
+            validateFormSummaryField(
+                {
+                    target: 'email',
+                    label: 'Email',
+                    type: 'EMAIL',
+                    required: true,
+                },
+                'user@example.com',
+            ),
+        ).toBe('');
     });
 });
 

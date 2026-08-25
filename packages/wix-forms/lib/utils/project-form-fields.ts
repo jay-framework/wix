@@ -93,6 +93,29 @@ export function projectFormSummaryFields(
     return projected.length ? projected : FALLBACK_SUMMARY_FIELDS;
 }
 
+export function validateFormSummaryField(field: FormFieldSummaryView, value: string): string {
+    const trimmed = (value ?? '').trim();
+    if (field.required && !trimmed) {
+        return `${field.label} is required.`;
+    }
+    if (!trimmed) {
+        return '';
+    }
+    if (field.type === 'EMAIL' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+        return 'Please enter a valid email address.';
+    }
+    if (field.type === 'URL' && !/^https?:\/\/.+/.test(trimmed)) {
+        return 'Please enter a valid URL.';
+    }
+    if (field.type === 'PHONE' && !/^[+()\-\s\d]{7,}$/.test(trimmed)) {
+        return 'Please enter a valid phone number.';
+    }
+    if (field.type === 'NUMBER' && !/^-?\d+(\.\d+)?$/.test(trimmed)) {
+        return 'Please enter a valid number.';
+    }
+    return '';
+}
+
 export function validateContactField(field: ContactFormFieldView, value: string): string {
     const trimmed = (value ?? '').trim();
     if (field.required && !trimmed) {
@@ -116,8 +139,14 @@ export function validateContactField(field: ContactFormFieldView, value: string)
     if (field.inputType === 'tel' && !/^[+()\-\s\d]{7,}$/.test(trimmed)) {
         return 'Please enter a valid phone number.';
     }
-    if (field.pattern && !new RegExp(field.pattern).test(trimmed)) {
-        return `${field.label} is not in the expected format.`;
+    if (field.pattern) {
+        try {
+            if (!new RegExp(field.pattern).test(trimmed)) {
+                return `${field.label} is not in the expected format.`;
+            }
+        } catch {
+            return '';
+        }
     }
     return '';
 }

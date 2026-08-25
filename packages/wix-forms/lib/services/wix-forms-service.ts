@@ -1,5 +1,4 @@
 import type { WixClient } from '@wix/sdk';
-import { WixApiError } from '@jay-framework/wix-server-client';
 import { registerService } from '@jay-framework/stack-server-runtime';
 import type { WixFormsConfig } from '../config-loader.js';
 import { createFormSubmission } from '../wix-apis/create-submission.js';
@@ -38,12 +37,8 @@ export function provideWixFormsService(
             if (!formId) {
                 return projectFormSummaryFields(undefined);
             }
-            try {
-                const { formSummary } = await getFormSummary(wixClient, formId);
-                return projectFormSummaryFields(formSummary?.fields);
-            } catch {
-                return projectFormSummaryFields(undefined);
-            }
+            const { formSummary } = await getFormSummary(wixClient, formId);
+            return projectFormSummaryFields(formSummary?.fields);
         },
 
         async createSubmission(formId, values) {
@@ -53,14 +48,7 @@ export function provideWixFormsService(
                     'Contact form ID is missing. Set defaultContactFormId in config/.wix-forms.yaml.',
                 );
             }
-            try {
-                await createFormSubmission(wixClient, resolvedFormId, values);
-            } catch (error) {
-                if (error instanceof WixApiError) {
-                    throw error;
-                }
-                throw error;
-            }
+            await createFormSubmission(wixClient, resolvedFormId, values);
         },
     };
 

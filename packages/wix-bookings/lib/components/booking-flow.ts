@@ -4,7 +4,7 @@ import {
     RenderPipeline,
     type Signals,
 } from '@jay-framework/fullstack-component';
-import { createEffect, createSignal, Props } from '@jay-framework/component';
+import { createSignal, Props } from '@jay-framework/component';
 import type {
     BookingFlowFastViewState,
     BookingFlowRefs,
@@ -22,7 +22,7 @@ import type {
     BookingSlotView,
 } from '../types.js';
 import { createBooking, listSlots } from '../actions/bookings-actions.js';
-import { getFormSummary } from '@jay-framework/wix-forms';
+import { getFormSummary, validateFormSummaryField } from '@jay-framework/wix-forms';
 
 interface BookingFlowCarryForward {
     services: BookingServiceView[];
@@ -64,7 +64,8 @@ async function renderFastChanging(_props: object, carryForward: BookingFlowCarry
             services: carryForward.services,
             servicesLoading: false,
             servicesError: carryForward.servicesError ?? '',
-            showNoServices: carryForward.services.length === 0,
+            showNoServices:
+                carryForward.services.length === 0 && !carryForward.servicesError,
             hasSlots: false,
             showServices: true,
             showSlots: false,
@@ -93,9 +94,11 @@ function BookingFlowInteractive(
     _carryForward: BookingFlowCarryForward,
 ) {
     const [services] = viewStateSignals.services;
-    const [servicesLoading] = viewStateSignals.servicesLoading;
     const [showServices, setShowServices] = createSignal(true);
-    const [showNoServices, setShowNoServices] = createSignal(false);
+    const [showNoServices] = createSignal(
+        _carryForward.services.length === 0 && !_carryForward.servicesError,
+    );
+    const servicesError = _carryForward.servicesError ?? '';
     const [hasSlots, setHasSlots] = createSignal(false);
     const [showSlots, setShowSlots] = createSignal(false);
     const [showForm, setShowForm] = createSignal(false);
@@ -171,8 +174,13 @@ function BookingFlowInteractive(
                     required: field.required,
                 })),
             );
-        } catch {
-            setFormFields([]);
+        } catch (error) {
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'Could not load participant form fields.';
+            setBookingError(message);
+            setShowForm(false);
         } finally {
             setFormLoading(false);
         }
@@ -201,12 +209,22 @@ function BookingFlowInteractive(
             return;
         }
 
-        setIsBooking(true);
         setBookingError('');
         setBookingStatus('');
 
+        const formValues = await readFormValues();
+        const fields = formFields();
+        for (const field of fields) {
+            const validationError = validateFormSummaryField(field, formValues[field.target] ?? '');
+            if (validationError) {
+                setBookingError(validationError);
+                return;
+            }
+        }
+
+        setIsBooking(true);
+
         try {
-            const formValues = await readFormValues();
             const result = await createBooking({
                 serviceId: service.id,
                 serviceType: service.type,
@@ -263,10 +281,6 @@ function BookingFlowInteractive(
         setFormFields([]);
     }
 
-    createEffect(() => {
-        setShowNoServices(!servicesLoading() && services().length === 0);
-    });
-
     refs.services?.serviceButtons?.onclick(({ coordinate }) => {
         const serviceId = coordinate[0] as string;
         const service = services().find((entry) => entry.id === serviceId);
@@ -294,8 +308,8 @@ function BookingFlowInteractive(
     return {
         render: () => ({
             services: services(),
-            servicesLoading: servicesLoading(),
-            servicesError: _carryForward.servicesError ?? '',
+            servicesLoading: false,
+            servicesError,
             showServices: showServices(),
             showNoServices: showNoServices(),
             showSlots: showSlots(),

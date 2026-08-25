@@ -2,6 +2,7 @@
 
 import { describe, expect, it } from 'vitest';
 import {
+    createSlotId,
     formatDurationMinutes,
     formatPrice,
     formatSlotLabel,
@@ -69,8 +70,16 @@ describe('formatDurationMinutes', () => {
     });
 });
 
+describe('createSlotId', () => {
+    it('should combine resource id and start time into a unique slot id', () => {
+        expect(createSlotId('sched-1', '2026-08-20T10:00:00')).toBe(
+            'sched-1:2026-08-20T10:00:00',
+        );
+    });
+});
+
 describe('mapAppointmentSlot', () => {
-    it('should map appointment slot with schedule ID', () => {
+    it('should map appointment slot with composite schedule and start time id', () => {
         const result = mapAppointmentSlot({
             scheduleId: 'sched-1',
             localStartDate: '2026-08-20T10:00:00',
@@ -78,7 +87,7 @@ describe('mapAppointmentSlot', () => {
         });
 
         expect(result).toMatchObject({
-            id: 'sched-1',
+            id: 'sched-1:2026-08-20T10:00:00',
             scheduleId: 'sched-1',
             serviceType: 'APPOINTMENT',
             localStartDate: '2026-08-20T10:00:00',
@@ -87,13 +96,30 @@ describe('mapAppointmentSlot', () => {
         expect(result?.label).toBeTruthy();
     });
 
+    it('should assign unique ids when multiple slots share the same schedule', () => {
+        const morning = mapAppointmentSlot({
+            scheduleId: 'sched-1',
+            localStartDate: '2026-08-20T10:00:00',
+            localEndDate: '2026-08-20T10:30:00',
+        });
+        const afternoon = mapAppointmentSlot({
+            scheduleId: 'sched-1',
+            localStartDate: '2026-08-20T14:00:00',
+            localEndDate: '2026-08-20T14:30:00',
+        });
+
+        expect(morning?.id).not.toBe(afternoon?.id);
+        expect(morning?.id).toBe('sched-1:2026-08-20T10:00:00');
+        expect(afternoon?.id).toBe('sched-1:2026-08-20T14:00:00');
+    });
+
     it('should return null when required fields are missing', () => {
         expect(mapAppointmentSlot({ scheduleId: 'sched-1' })).toBeNull();
     });
 });
 
 describe('mapClassSlot', () => {
-    it('should map class slot with event ID', () => {
+    it('should map class slot with composite event and start time id', () => {
         const result = mapClassSlot({
             eventInfo: { eventId: 'event-1' },
             localStartDate: '2026-08-20T14:00:00',
@@ -101,10 +127,25 @@ describe('mapClassSlot', () => {
         });
 
         expect(result).toMatchObject({
-            id: 'event-1',
+            id: 'event-1:2026-08-20T14:00:00',
             eventId: 'event-1',
             serviceType: 'CLASS',
         });
+    });
+
+    it('should assign unique ids for recurring classes with the same event id', () => {
+        const firstSession = mapClassSlot({
+            eventInfo: { eventId: 'event-1' },
+            localStartDate: '2026-08-20T14:00:00',
+            localEndDate: '2026-08-20T15:00:00',
+        });
+        const secondSession = mapClassSlot({
+            eventInfo: { eventId: 'event-1' },
+            localStartDate: '2026-08-27T14:00:00',
+            localEndDate: '2026-08-27T15:00:00',
+        });
+
+        expect(firstSession?.id).not.toBe(secondSession?.id);
     });
 });
 

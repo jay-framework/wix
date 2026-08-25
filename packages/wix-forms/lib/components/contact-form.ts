@@ -61,12 +61,13 @@ async function renderSlowlyChanging(props: ContactFormProps, forms: WixFormsServ
     try {
         const fields = await forms.getContactFormFields(props.formId ?? '');
         const formId = props.formId ?? '';
+        const options = flattenOptions(fields);
         return phaseOutput<ContactFormSlowViewState, ContactFormCarryForward>(
             {
                 fields: toContractFields(fields),
-                options: flattenOptions(fields),
+                options,
             },
-            { formId, fields, options: flattenOptions(fields) },
+            { formId, fields, options },
         );
     } catch (error) {
         const rawMessage = error instanceof Error ? error.message : 'Could not load the form.';

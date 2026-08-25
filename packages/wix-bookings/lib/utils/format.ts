@@ -52,6 +52,10 @@ export function mapService(raw: RawService): BookingServiceView {
     };
 }
 
+export function createSlotId(resourceId: string, localStartDate: string): string {
+    return `${resourceId}:${localStartDate}`;
+}
+
 export function formatSlotLabel(localStartDate: string): string {
     const date = new Date(localStartDate);
     return date.toLocaleString([], {
@@ -72,7 +76,7 @@ export function mapAppointmentSlot(slot: {
         return null;
     }
     return {
-        id: slot.scheduleId,
+        id: createSlotId(slot.scheduleId, slot.localStartDate),
         localStartDate: slot.localStartDate,
         localEndDate: slot.localEndDate,
         label: formatSlotLabel(slot.localStartDate),
@@ -91,7 +95,7 @@ export function mapClassSlot(slot: {
         return null;
     }
     return {
-        id: eventId,
+        id: createSlotId(eventId, slot.localStartDate),
         localStartDate: slot.localStartDate,
         localEndDate: slot.localEndDate,
         label: formatSlotLabel(slot.localStartDate),
