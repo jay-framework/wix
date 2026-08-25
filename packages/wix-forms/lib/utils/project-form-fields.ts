@@ -1,10 +1,10 @@
 import type { RawFormField } from '../wix-apis/get-form.js';
 import type { FormSummaryField } from '../wix-apis/get-form-summary.js';
 import type {
-    ContactFormFieldView,
     FormFieldInputType,
     FormFieldOptionView,
     FormFieldSummaryView,
+    FormFieldView,
 } from '../types.js';
 
 function readFieldOptions(field: RawFormField): FormFieldOptionView[] {
@@ -35,10 +35,10 @@ function readInputType(field: RawFormField, target: string): FormFieldInputType 
     return 'text';
 }
 
-export function projectContactFormFields(rawForm: {
+export function projectFormFields(rawForm: {
     fields?: RawFormField[];
     formFields?: RawFormField[];
-}): ContactFormFieldView[] {
+}): FormFieldView[] {
     const rawFields = rawForm.fields ?? rawForm.formFields ?? [];
     return rawFields
         .filter((field) => field.target && !field.hidden)
@@ -110,7 +110,7 @@ export function validateFormSummaryField(field: FormFieldSummaryView, value: str
     return '';
 }
 
-export function validateContactField(field: ContactFormFieldView, value: string): string {
+export function validateFormField(field: FormFieldView, value: string): string {
     const trimmed = (value ?? '').trim();
     if (field.required && !trimmed) {
         return `${field.label} is required.`;

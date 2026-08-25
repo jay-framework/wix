@@ -7,8 +7,8 @@ const CONFIG_FILE = '.wix-forms.yaml';
 
 const CONFIG_TEMPLATE = `# Wix Forms Configuration
 #
-# Default contact form on the home page (Wix Dashboard → Forms)
-defaultContactFormId: ""
+# Default form when no formId prop is passed (Wix Dashboard → Forms)
+defaultFormId: ""
 `;
 
 export async function setupWixForms(ctx: PluginSetupContext): Promise<PluginSetupResult> {
@@ -31,18 +31,18 @@ export async function setupWixForms(ctx: PluginSetupContext): Promise<PluginSetu
     }
 
     const config = loadWixFormsConfig(ctx.projectRoot);
-    if (!config.defaultContactFormId) {
+    if (!config.defaultFormId) {
         return {
             status: 'needs-config',
             configCreated,
-            message: `Set defaultContactFormId in config/${CONFIG_FILE}`,
+            message: `Set defaultFormId in config/${CONFIG_FILE}`,
         };
     }
 
     return {
         status: 'configured',
         configCreated,
-        message: `Wix Forms configured (default form: ${config.defaultContactFormId})`,
+        message: `Wix Forms configured (default form: ${config.defaultFormId})`,
     };
 }
 

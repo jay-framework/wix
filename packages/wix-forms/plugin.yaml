@@ -2,10 +2,10 @@ name: wix-forms
 # No module field for NPM packages - uses package main export by default
 
 contracts:
-  - name: contact-form
-    contract: contact-form.jay-contract
-    component: contactForm
-    description: Dynamic contact form loaded from Wix Forms by form ID
+  - name: wix-form
+    contract: wix-form.jay-contract
+    component: wixForm
+    description: Dynamic form loaded from Wix Forms by form ID
 
 services:
   - name: wix-forms

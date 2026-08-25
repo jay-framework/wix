@@ -1,8 +1,8 @@
 import { createJayService } from '@jay-framework/fullstack-component';
-import type { ContactFormFieldView, FormFieldSummaryView } from '../types.js';
+import type { FormFieldSummaryView, FormFieldView } from '../types.js';
 
 export interface WixFormsService {
-    getContactFormFields(formId: string): Promise<ContactFormFieldView[]>;
+    getFormFields(formId: string): Promise<FormFieldView[]>;
     getFormSummaryFields(formId?: string): Promise<FormFieldSummaryView[]>;
     createSubmission(formId: string, values: Record<string, string>): Promise<void>;
 }

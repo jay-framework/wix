@@ -7,31 +7,31 @@ import {
 import { createSignal, Props } from '@jay-framework/component';
 import { WixApiError } from '@jay-framework/wix-server-client';
 import type {
-    ContactFormContract,
-    ContactFormFastViewState,
-    ContactFormRefs,
-    ContactFormSlowViewState,
-    FieldOfContactFormViewState,
-    OptionOfContactFormViewState,
-} from '../contracts/contact-form.jay-contract.js';
+    FieldOfWixFormViewState,
+    OptionOfWixFormViewState,
+    WixFormContract,
+    WixFormFastViewState,
+    WixFormRefs,
+    WixFormSlowViewState,
+} from '../contracts/wix-form.jay-contract.js';
 import { WIX_FORMS_SERVICE, type WixFormsService } from '../services/wix-forms-service-marker.js';
-import type { ContactFormFieldView, FormFieldErrorView } from '../types.js';
+import type { FormFieldErrorView, FormFieldView } from '../types.js';
 import { submitForm } from '../actions/forms-actions.js';
-import { parseSubmissionFieldErrors, validateContactField } from '../utils/project-form-fields.js';
+import { parseSubmissionFieldErrors, validateFormField } from '../utils/project-form-fields.js';
 
-export interface ContactFormProps {
+export interface WixFormProps {
     formId?: string;
 }
 
-interface ContactFormCarryForward {
+interface WixFormCarryForward {
     formId: string;
-    fields: ContactFormFieldView[];
-    options: OptionOfContactFormViewState[];
+    fields: FormFieldView[];
+    options: OptionOfWixFormViewState[];
     loadError?: string;
 }
 
-function flattenOptions(fields: ContactFormFieldView[]): OptionOfContactFormViewState[] {
-    const options: OptionOfContactFormViewState[] = [];
+function flattenOptions(fields: FormFieldView[]): OptionOfWixFormViewState[] {
+    const options: OptionOfWixFormViewState[] = [];
     for (const field of fields) {
         for (const option of field.options) {
             options.push({
@@ -45,7 +45,7 @@ function flattenOptions(fields: ContactFormFieldView[]): OptionOfContactFormView
     return options;
 }
 
-function toContractFields(fields: ContactFormFieldView[]): FieldOfContactFormViewState[] {
+function toContractFields(fields: FormFieldView[]): FieldOfWixFormViewState[] {
     return fields.map((field) => ({
         target: field.target,
         label: field.label,
@@ -57,12 +57,12 @@ function toContractFields(fields: ContactFormFieldView[]): FieldOfContactFormVie
     }));
 }
 
-async function renderSlowlyChanging(props: ContactFormProps, forms: WixFormsService) {
+async function renderSlowlyChanging(props: WixFormProps, forms: WixFormsService) {
     try {
-        const fields = await forms.getContactFormFields(props.formId ?? '');
+        const fields = await forms.getFormFields(props.formId ?? '');
         const formId = props.formId ?? '';
         const options = flattenOptions(fields);
-        return phaseOutput<ContactFormSlowViewState, ContactFormCarryForward>(
+        return phaseOutput<WixFormSlowViewState, WixFormCarryForward>(
             {
                 fields: toContractFields(fields),
                 options,
@@ -74,16 +74,16 @@ async function renderSlowlyChanging(props: ContactFormProps, forms: WixFormsServ
         const message = rawMessage.includes('403')
             ? 'Forms API access denied. Add Wix Forms permission to your API key in the Wix dashboard.'
             : rawMessage || 'Could not load the form. Please try again later.';
-        console.error('[contact-form] getContactFormFields failed:', error);
-        return phaseOutput<ContactFormSlowViewState, ContactFormCarryForward>(
+        console.error('[wix-form] getFormFields failed:', error);
+        return phaseOutput<WixFormSlowViewState, WixFormCarryForward>(
             { fields: [], options: [] },
             { formId: props.formId ?? '', fields: [], options: [], loadError: message },
         );
     }
 }
 
-async function renderFastChanging(props: ContactFormProps, carryForward: ContactFormCarryForward) {
-    const Pipeline = RenderPipeline.for<ContactFormFastViewState, ContactFormCarryForward>();
+async function renderFastChanging(props: WixFormProps, carryForward: WixFormCarryForward) {
+    const Pipeline = RenderPipeline.for<WixFormFastViewState, WixFormCarryForward>();
     return Pipeline.ok(null).toPhaseOutput(() => ({
         viewState: {
             fields: toContractFields(carryForward.fields),
@@ -106,11 +106,11 @@ async function renderFastChanging(props: ContactFormProps, carryForward: Contact
     }));
 }
 
-function ContactFormInteractive(
-    props: Props<ContactFormProps>,
-    refs: ContactFormRefs,
-    viewStateSignals: Signals<ContactFormFastViewState>,
-    carryForward: ContactFormCarryForward,
+function WixFormInteractive(
+    props: Props<WixFormProps>,
+    refs: WixFormRefs,
+    viewStateSignals: Signals<WixFormFastViewState>,
+    carryForward: WixFormCarryForward,
 ) {
     const [isSubmitting, setIsSubmitting] = createSignal(false);
     const [statusMessage, setStatusMessage] = createSignal('');
@@ -174,7 +174,7 @@ function ContactFormInteractive(
         const values = await readFormValues();
         const clientErrors: FormFieldErrorView[] = [];
         for (const field of carryForward.fields) {
-            const errorMessage = validateContactField(field, values[field.target] ?? '');
+            const errorMessage = validateFormField(field, values[field.target] ?? '');
             if (errorMessage) {
                 clientErrors.push({ target: field.target, errorMessage });
             }
@@ -191,7 +191,7 @@ function ContactFormInteractive(
                     carryForward.formId || (typeof props.formId === 'string' ? props.formId : ''),
                 values,
             });
-            setStatusMessage("Message sent! We'll be in touch soon.");
+            setStatusMessage('Form submitted successfully.');
             await clearFormValues();
         } catch (error) {
             if (error instanceof WixApiError) {
@@ -233,9 +233,9 @@ function ContactFormInteractive(
     };
 }
 
-export const contactForm = makeJayStackComponent<ContactFormContract>()
-    .withProps<ContactFormProps>()
+export const wixForm = makeJayStackComponent<WixFormContract>()
+    .withProps<WixFormProps>()
     .withServices(WIX_FORMS_SERVICE)
     .withSlowlyRender(renderSlowlyChanging)
     .withFastRender(renderFastChanging)
-    .withInteractive(ContactFormInteractive);
+    .withInteractive(WixFormInteractive);

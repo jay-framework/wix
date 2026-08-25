@@ -3,16 +3,16 @@
 import { describe, expect, it } from 'vitest';
 import {
     parseSubmissionFieldErrors,
-    projectContactFormFields,
+    projectFormFields,
     projectFormSummaryFields,
-    validateContactField,
+    validateFormField,
     validateFormSummaryField,
 } from '../lib/utils/project-form-fields.js';
-import type { ContactFormFieldView } from '../lib/types.js';
+import type { FormFieldView } from '../lib/types.js';
 
-describe('projectContactFormFields', () => {
-    it('should project raw form fields into contact form views', () => {
-        const result = projectContactFormFields({
+describe('projectFormFields', () => {
+    it('should project raw form fields into form field views', () => {
+        const result = projectFormFields({
             fields: [
                 {
                     target: 'email',
@@ -60,7 +60,7 @@ describe('projectContactFormFields', () => {
     });
 
     it('should map select fields from options', () => {
-        const result = projectContactFormFields({
+        const result = projectFormFields({
             fields: [
                 {
                     target: 'topic',
@@ -148,8 +148,8 @@ describe('validateFormSummaryField', () => {
     });
 });
 
-describe('validateContactField', () => {
-    const emailField: ContactFormFieldView = {
+describe('validateFormField', () => {
+    const emailField: FormFieldView = {
         target: 'email',
         label: 'Email',
         inputType: 'email',
@@ -159,14 +159,14 @@ describe('validateContactField', () => {
     };
 
     it('should require non-empty values for required fields', () => {
-        expect(validateContactField(emailField, '')).toBe('Email is required.');
+        expect(validateFormField(emailField, '')).toBe('Email is required.');
     });
 
     it('should validate email format', () => {
-        expect(validateContactField(emailField, 'not-an-email')).toBe(
+        expect(validateFormField(emailField, 'not-an-email')).toBe(
             'Please enter a valid email address.',
         );
-        expect(validateContactField(emailField, 'user@example.com')).toBe('');
+        expect(validateFormField(emailField, 'user@example.com')).toBe('');
     });
 });
 

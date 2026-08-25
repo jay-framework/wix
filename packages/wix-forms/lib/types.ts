@@ -5,7 +5,7 @@ export interface FormFieldOptionView {
     label: string;
 }
 
-export interface ContactFormFieldView {
+export interface FormFieldView {
     target: string;
     label: string;
     inputType: FormFieldInputType;

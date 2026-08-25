@@ -4,10 +4,7 @@ import type { WixFormsConfig } from '../config-loader.js';
 import { createFormSubmission } from '../wix-apis/create-submission.js';
 import { getFormSchema } from '../wix-apis/get-form.js';
 import { getFormSummary } from '../wix-apis/get-form-summary.js';
-import {
-    projectContactFormFields,
-    projectFormSummaryFields,
-} from '../utils/project-form-fields.js';
+import { projectFormFields, projectFormSummaryFields } from '../utils/project-form-fields.js';
 import { WIX_FORMS_SERVICE, type WixFormsService } from './wix-forms-service-marker.js';
 
 export function provideWixFormsService(
@@ -15,18 +12,18 @@ export function provideWixFormsService(
     config: WixFormsConfig,
 ): WixFormsService {
     const service: WixFormsService = {
-        async getContactFormFields(formId) {
-            const resolvedFormId = formId || config.defaultContactFormId;
+        async getFormFields(formId) {
+            const resolvedFormId = formId || config.defaultFormId;
             if (!resolvedFormId) {
                 throw new Error(
-                    'Contact form ID is missing. Set defaultContactFormId in config/.wix-forms.yaml.',
+                    'Form ID is missing. Set defaultFormId in config/.wix-forms.yaml.',
                 );
             }
             const { form } = await getFormSchema(wixClient, resolvedFormId);
             if (!form) {
                 throw new Error('Form schema missing from Wix response');
             }
-            const fields = projectContactFormFields(form);
+            const fields = projectFormFields(form);
             if (!fields.length) {
                 throw new Error('Form has no usable input fields');
             }
@@ -48,10 +45,10 @@ export function provideWixFormsService(
         },
 
         async createSubmission(formId, values) {
-            const resolvedFormId = formId || config.defaultContactFormId;
+            const resolvedFormId = formId || config.defaultFormId;
             if (!resolvedFormId) {
                 throw new Error(
-                    'Contact form ID is missing. Set defaultContactFormId in config/.wix-forms.yaml.',
+                    'Form ID is missing. Set defaultFormId in config/.wix-forms.yaml.',
                 );
             }
             await createFormSubmission(wixClient, resolvedFormId, values);

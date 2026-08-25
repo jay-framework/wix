@@ -1,10 +1,10 @@
-name: contact-form
+name: wix-form
 description: Renders a Wix Form by ID with dynamic fields and submission handling.
 
 props:
   - name: formId
     type: string
-    description: Wix Forms form GUID (falls back to config defaultContactFormId when empty)
+    description: Wix Forms form GUID (falls back to config defaultFormId when empty)
 
 tags:
   - tag: fields
@@ -69,4 +69,4 @@ tags:
   - tag: submitButton
     type: interactive
     elementType: HTMLButtonElement
-    description: Submit the contact form
+    description: Submit the form

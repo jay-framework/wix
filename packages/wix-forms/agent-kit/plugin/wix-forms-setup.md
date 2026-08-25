@@ -1,10 +1,10 @@
-Wix Forms plugin setup — contact form and shared getFormSummary action.
+Wix Forms plugin setup — dynamic forms and shared getFormSummary action.
 
 ## What wix-forms provides
 
 One headless contract and two server actions:
 
-- **contact-form** — dynamic contact form loaded from Wix Forms by form ID
+- **wix-form** — dynamic form loaded from Wix Forms by form ID
 - **getFormSummary** — returns participant field schema for other plugins (e.g. wix-bookings)
 - **submitForm** — submits form values to Wix Forms
 
@@ -19,10 +19,10 @@ One headless contract and two server actions:
 Running `jay-stack setup wix-forms` creates `config/.wix-forms.yaml` if it doesn't exist:
 
 ```yaml
-defaultContactFormId: ""
+defaultFormId: ""
 ```
 
-Set `defaultContactFormId` to the form ID from **Wix Dashboard → Forms**.
+Set `defaultFormId` to the form ID from **Wix Dashboard → Forms**.
 
 ### 3. API key permissions
 
@@ -31,31 +31,31 @@ In [Wix API Keys Manager](https://manage.wix.com/account/api-keys), enable **Wix
 | Symptom | Fix |
 |---------|-----|
 | 403 on form schema or submit | Add **Wix Forms** permission to API key |
-| "Contact form ID is missing" | Set `defaultContactFormId` in `config/.wix-forms.yaml` |
+| "Form ID is missing" | Set `defaultFormId` in `config/.wix-forms.yaml` |
 | Form loads but no fields | Form has no supported input fields in Wix schema |
 
-### 4. Home page contact form
+### 4. Page form
 
-Add to your home page or contact section:
+Add to any page that needs a Wix form:
 
 ```html
 <script type="application/jay-headless"
   plugin="@jay-framework/wix-forms"
-  contract="contact-form"
+  contract="wix-form"
   key="contact">
 </script>
 
-<jay:contact-form>
+<jay:wix-form>
   <form if="contact.fields.length">
   </form>
-</jay:contact-form>
+</jay:wix-form>
 ```
 
 The component loads the form schema from Wix, renders fields dynamically, validates input, and submits via `submitForm`.
 
 ## Cross-plugin use: getFormSummary
 
-`wix-bookings` loads participant fields via `getFormSummary` — it does **not** use the contact-form UI on `/book`.
+`wix-bookings` loads participant fields via `getFormSummary` — it does **not** use the `wix-form` UI on `/book`.
 
 ```typescript
 import { getFormSummary } from '@jay-framework/wix-forms';
@@ -69,4 +69,4 @@ Flow: user selects a booking service → `getFormSummary({ formId: service.formI
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `defaultContactFormId` | string | Yes | Wix Forms form ID for the home page contact form |
+| `defaultFormId` | string | Yes | Wix Forms form ID used when no `formId` prop is passed |

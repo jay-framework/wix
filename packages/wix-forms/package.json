@@ -2,7 +2,7 @@
   "name": "@jay-framework/wix-forms",
   "version": "0.23.1",
   "type": "module",
-  "description": "Wix Forms package for Jay Framework — dynamic form schemas, contact forms, and getFormSummary for cross-plugin use",
+  "description": "Wix Forms package for Jay Framework — dynamic form schemas, form rendering, and getFormSummary for cross-plugin use",
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "files": [
@@ -20,7 +20,7 @@
       "default": "./dist/index.client.js"
     },
     "./plugin.yaml": "./plugin.yaml",
-    "./contact-form.jay-contract": "./dist/contracts/contact-form.jay-contract",
+    "./wix-form.jay-contract": "./dist/contracts/wix-form.jay-contract",
     "./get-form-summary.jay-action": "./dist/actions/get-form-summary.jay-action",
     "./submit-form.jay-action": "./dist/actions/submit-form.jay-action"
   },

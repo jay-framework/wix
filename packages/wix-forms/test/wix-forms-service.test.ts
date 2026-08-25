@@ -22,7 +22,7 @@ describe('WixFormsService.getFormSummaryFields', () => {
     });
 
     it('should throw when formId is missing', async () => {
-        const service = provideWixFormsService(mockClient, { defaultContactFormId: '' });
+        const service = provideWixFormsService(mockClient, { defaultFormId: '' });
 
         await expect(service.getFormSummaryFields('')).rejects.toThrow(
             'This booking service has no participant form configured in Wix.',
@@ -32,7 +32,7 @@ describe('WixFormsService.getFormSummaryFields', () => {
 
     it('should throw when Wix returns no usable fields', async () => {
         mockGetFormSummary.mockResolvedValueOnce({ formSummary: { fields: [] } });
-        const service = provideWixFormsService(mockClient, { defaultContactFormId: '' });
+        const service = provideWixFormsService(mockClient, { defaultFormId: '' });
 
         await expect(service.getFormSummaryFields('form-1')).rejects.toThrow(
             'Could not load participant form fields from Wix.',
@@ -47,7 +47,7 @@ describe('WixFormsService.getFormSummaryFields', () => {
                 ],
             },
         });
-        const service = provideWixFormsService(mockClient, { defaultContactFormId: '' });
+        const service = provideWixFormsService(mockClient, { defaultFormId: '' });
 
         await expect(service.getFormSummaryFields('form-1')).resolves.toEqual([
             { target: 'email', label: 'Email', type: 'EMAIL', required: true },
