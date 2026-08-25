@@ -9,6 +9,7 @@ import { Getter } from '@jay-framework/reactive';
 import { Tokens } from '@wix/sdk';
 import { WIX_CLIENT_CONTEXT, WixClientContext } from '@jay-framework/wix-server-client';
 import { setAuthCookie } from '../utils/auth-cookie.js';
+import { loadMemberProfile } from '../utils/member-profile.js';
 
 // ============================================================================
 // OAuthStrategy Auth Type
@@ -69,7 +70,7 @@ export interface WixMembersContext {
     redirectToLogin(callbackUrl?: string): Promise<string>;
     handleAuthCallback(url?: string): Promise<AuthCallbackResult>;
     logout(): Promise<void>;
-    refreshMemberState(): void;
+    refreshMemberState(): Promise<void>;
 
     onLogin: EventEmitter<void, any>;
     onLogout: EventEmitter<void, any>;
@@ -151,7 +152,7 @@ export function provideWixMembersContext(initData: WixMembersInitData): WixMembe
             const memberTokens = await auth.getMemberTokens(code, state, oauthData);
             auth.setTokens(memberTokens);
             setAuthCookie('member');
-            updateMemberSignals(true);
+            await refreshMemberState();
             onLogin.emit();
 
             return {
@@ -170,14 +171,22 @@ export function provideWixMembersContext(initData: WixMembersInitData): WixMembe
             const visitorTokens = await auth.generateVisitorTokens();
             auth.setTokens(visitorTokens);
             setAuthCookie('visitor');
-            updateMemberSignals(false);
+            await refreshMemberState();
             onLogout.emit();
         }
 
-        function refreshMemberState(): void {
+        async function refreshMemberState(): Promise<void> {
             const loggedIn = auth.loggedIn();
-            setAuthCookie(loggedIn ? 'member' : 'visitor');
-            updateMemberSignals(loggedIn);
+            if (!loggedIn) {
+                setAuthCookie('visitor');
+                updateMemberSignals(false);
+                return;
+            }
+
+            setAuthCookie('member');
+            setIsLoading(true);
+            const profile = await loadMemberProfile(wixClient);
+            updateMemberSignals(true, profile.name, profile.avatar);
         }
 
         return {
