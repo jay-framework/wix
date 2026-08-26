@@ -38,10 +38,7 @@ function createProject(options: {
     fs.writeFileSync(path.join(tempDir, 'package.json'), JSON.stringify({ dependencies }, null, 2));
 
     if (options.includeFormsConfig) {
-        fs.writeFileSync(
-            path.join(configDir, '.wix-forms.yaml'),
-            'defaultFormId: form-123\n',
-        );
+        fs.writeFileSync(path.join(configDir, '.wix-forms.yaml'), 'defaultFormId: form-123\n');
     }
 
     fs.writeFileSync(

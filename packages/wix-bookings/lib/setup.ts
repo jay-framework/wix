@@ -31,9 +31,11 @@ function projectIncludesWixForms(projectRoot: string): boolean {
         optionalDependencies?: Record<string, string>;
     };
 
-    return [packageJson.dependencies, packageJson.devDependencies, packageJson.optionalDependencies].some(
-        (section) => section !== undefined && WIX_FORMS_PACKAGE in section,
-    );
+    return [
+        packageJson.dependencies,
+        packageJson.devDependencies,
+        packageJson.optionalDependencies,
+    ].some((section) => section !== undefined && WIX_FORMS_PACKAGE in section);
 }
 
 function resolveWixFormsSetupIssue(ctx: PluginSetupContext): string | undefined {
