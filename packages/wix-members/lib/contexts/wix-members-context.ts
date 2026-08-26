@@ -185,7 +185,7 @@ export function provideWixMembersContext(initData: WixMembersInitData): WixMembe
 
             setAuthCookie('member');
             setIsLoading(true);
-            const profile = await loadMemberProfile(wixClient);
+            const profile = await loadMemberProfile(wixClient, loggedIn);
             updateMemberSignals(true, profile.name, profile.avatar);
         }
 

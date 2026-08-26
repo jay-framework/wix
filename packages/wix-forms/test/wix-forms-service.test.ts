@@ -42,9 +42,7 @@ describe('WixFormsService.getFormSummaryFields', () => {
     it('should return projected fields when Wix returns a valid summary', async () => {
         mockGetFormSummary.mockResolvedValueOnce({
             formSummary: {
-                fields: [
-                    { target: 'email', label: 'Email', type: 'EMAIL', required: true },
-                ],
+                fields: [{ target: 'email', label: 'Email', type: 'EMAIL', required: true }],
             },
         });
         const service = provideWixFormsService(mockClient, { defaultFormId: '' });

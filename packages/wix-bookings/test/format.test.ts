@@ -73,9 +73,7 @@ describe('formatDurationMinutes', () => {
 
 describe('createSlotId', () => {
     it('should combine resource id and start time into a unique slot id', () => {
-        expect(createSlotId('sched-1', '2026-08-20T10:00:00')).toBe(
-            'sched-1:2026-08-20T10:00:00',
-        );
+        expect(createSlotId('sched-1', '2026-08-20T10:00:00')).toBe('sched-1:2026-08-20T10:00:00');
     });
 });
 
