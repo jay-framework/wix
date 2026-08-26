@@ -41,8 +41,11 @@ export function formatMemberDisplayName(member: WixMember | null | undefined): s
     return 'Member';
 }
 
-export async function loadMemberProfile(wixClient: WixClient): Promise<MemberProfileView> {
-    if (!wixClient.auth.loggedIn()) {
+export async function loadMemberProfile(
+    wixClient: WixClient,
+    isLoggedIn: boolean,
+): Promise<MemberProfileView> {
+    if (!isLoggedIn) {
         return { name: '', avatar: '' };
     }
 
