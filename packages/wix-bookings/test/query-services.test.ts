@@ -22,11 +22,9 @@ describe('queryBookingServices', () => {
             _id: `svc-${index}`,
             name: `Service ${index}`,
         }));
-        mockWixFetch
-            .mockResolvedValueOnce({ services: firstPage })
-            .mockResolvedValueOnce({
-                services: [{ _id: 'svc-100', name: 'Service 100' }],
-            });
+        mockWixFetch.mockResolvedValueOnce({ services: firstPage }).mockResolvedValueOnce({
+            services: [{ _id: 'svc-100', name: 'Service 100' }],
+        });
 
         const services = await queryBookingServices(mockClient, 'app-1');
 

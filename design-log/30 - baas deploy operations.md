@@ -43,10 +43,10 @@ Wix Velo (Backend as a Service) permissions apply to the **headless application*
 
 ### Required permissions
 
-| Permission | Purpose |
-|------------|---------|
-| `VELO.APP_PROJECT_READ` | Read app project metadata before deployment |
-| `VELO.APP_DEPLOYMENT_CREATE` | Create and release deployments |
+| Permission                   | Purpose                                     |
+| ---------------------------- | ------------------------------------------- |
+| `VELO.APP_PROJECT_READ`      | Read app project metadata before deployment |
+| `VELO.APP_DEPLOYMENT_CREATE` | Create and release deployments              |
 
 ### Fix
 
@@ -92,11 +92,11 @@ Build-time-only packages listed in `dependencies` (not `devDependencies`) are di
 
 Common offenders:
 
-| Package | Role |
-|---------|------|
-| `@jay-framework/wix-media` | jay-html media validation |
-| `@jay-framework/seo-validator` | SEO validation |
-| `@jay-framework/a11y-validator` | Accessibility validation |
+| Package                         | Role                      |
+| ------------------------------- | ------------------------- |
+| `@jay-framework/wix-media`      | jay-html media validation |
+| `@jay-framework/seo-validator`  | SEO validation            |
+| `@jay-framework/a11y-validator` | Accessibility validation  |
 
 ### Fix
 
@@ -129,9 +129,9 @@ npm run deploy
 
 ## Credential model (quick reference)
 
-| File | Used for | Key fields |
-|------|----------|------------|
-| `wix.config.json` | Deploy target (BaaS + CDN) | `appId`, `siteId` |
+| File               | Used for                       | Key fields                     |
+| ------------------ | ------------------------------ | ------------------------------ |
+| `wix.config.json`  | Deploy target (BaaS + CDN)     | `appId`, `siteId`              |
 | `config/.wix.yaml` | Runtime Wix SDK (build + BaaS) | `apiKey`, `clientId`, `siteId` |
 
 Headless setups may use different sites for deploy vs data/API access. Simple setups use one site for both.
@@ -165,11 +165,11 @@ node serve.mjs
 
 ## Trade-offs
 
-| Decision | Rationale |
-|----------|-----------|
+| Decision                                                  | Rationale                                                                                                         |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | Document Wix ops in wix repo, build artifacts in jay repo | Permissions and bundle composition are Wix deploy concerns; `page-parts.json` staleness is framework (Jay DL#174) |
-| Agent-kit troubleshooting over design log for agents | Agents need symptom → fix tables; design log captures why |
-| Unified `deploy` command | Reduces manual steps (DL#22) |
+| Agent-kit troubleshooting over design log for agents      | Agents need symptom → fix tables; design log captures why                                                         |
+| Unified `deploy` command                                  | Reduces manual steps (DL#22)                                                                                      |
 
 ## Verification Criteria
 

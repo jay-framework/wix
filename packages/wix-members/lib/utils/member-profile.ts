@@ -28,7 +28,9 @@ export function formatMemberDisplayName(member: WixMember | null | undefined): s
     }
 
     const profile = member.profile;
-    const fullName = [profile?.firstName?.trim(), profile?.lastName?.trim()].filter(Boolean).join(' ');
+    const fullName = [profile?.firstName?.trim(), profile?.lastName?.trim()]
+        .filter(Boolean)
+        .join(' ');
     if (fullName) {
         return fullName;
     }

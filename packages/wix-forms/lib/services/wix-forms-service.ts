@@ -15,9 +15,7 @@ export function provideWixFormsService(
         async getFormFields(formId) {
             const resolvedFormId = formId || config.defaultFormId;
             if (!resolvedFormId) {
-                throw new Error(
-                    'Form ID is missing. Set defaultFormId in config/.wix-forms.yaml.',
-                );
+                throw new Error('Form ID is missing. Set defaultFormId in config/.wix-forms.yaml.');
             }
             const { form } = await getFormSchema(wixClient, resolvedFormId);
             if (!form) {
@@ -47,9 +45,7 @@ export function provideWixFormsService(
         async createSubmission(formId, values) {
             const resolvedFormId = formId || config.defaultFormId;
             if (!resolvedFormId) {
-                throw new Error(
-                    'Form ID is missing. Set defaultFormId in config/.wix-forms.yaml.',
-                );
+                throw new Error('Form ID is missing. Set defaultFormId in config/.wix-forms.yaml.');
             }
             await createFormSubmission(wixClient, resolvedFormId, values);
         },

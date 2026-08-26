@@ -32,16 +32,20 @@ export async function queryBookingServices(
     let hasMorePages = true;
 
     while (hasMorePages) {
-        const result = await wixFetch<QueryServicesResponse>(client, '/bookings/v2/services/query', {
-            method: 'POST',
-            body: {
-                query: {
-                    filter: { appId: bookingAppId },
-                    paging: { limit: SERVICES_PAGE_SIZE, offset },
+        const result = await wixFetch<QueryServicesResponse>(
+            client,
+            '/bookings/v2/services/query',
+            {
+                method: 'POST',
+                body: {
+                    query: {
+                        filter: { appId: bookingAppId },
+                        paging: { limit: SERVICES_PAGE_SIZE, offset },
+                    },
+                    conditionalFields: ['STAFF_MEMBER_DETAILS'],
                 },
-                conditionalFields: ['STAFF_MEMBER_DETAILS'],
             },
-        });
+        );
 
         const batch = result.services ?? [];
         allServices.push(...batch);
