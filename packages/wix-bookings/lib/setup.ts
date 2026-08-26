@@ -1,11 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import type { PluginSetupContext, PluginSetupResult } from '@jay-framework/stack-server-runtime';
-import { hasService } from '@jay-framework/stack-server-runtime';
-import { WIX_FORMS_SERVICE } from '@jay-framework/wix-forms';
 import { loadWixBookingsConfig } from './config-loader.js';
 
 const CONFIG_FILE = '.wix-bookings.yaml';
+const WIX_FORMS_PACKAGE = '@jay-framework/wix-forms';
+const WIX_FORMS_CONFIG_FILE = '.wix-forms.yaml';
 
 const CONFIG_TEMPLATE = `# Wix Bookings Configuration
 #
@@ -19,6 +19,42 @@ slotWindowDays: 14
 postCheckoutUrl: "/book"
 `;
 
+function projectIncludesWixForms(projectRoot: string): boolean {
+    const packageJsonPath = path.join(projectRoot, 'package.json');
+    if (!fs.existsSync(packageJsonPath)) {
+        return false;
+    }
+
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8')) as {
+        dependencies?: Record<string, string>;
+        devDependencies?: Record<string, string>;
+        optionalDependencies?: Record<string, string>;
+    };
+
+    return [packageJson.dependencies, packageJson.devDependencies, packageJson.optionalDependencies].some(
+        (section) => section !== undefined && WIX_FORMS_PACKAGE in section,
+    );
+}
+
+function resolveWixFormsSetupIssue(ctx: PluginSetupContext): string | undefined {
+    if (!projectIncludesWixForms(ctx.projectRoot)) {
+        return (
+            'wix-bookings requires @jay-framework/wix-forms in package.json. ' +
+            'Add the dependency and run: jay-stack setup wix-forms'
+        );
+    }
+
+    const formsConfigPath = path.join(ctx.configDir, WIX_FORMS_CONFIG_FILE);
+    if (!fs.existsSync(formsConfigPath)) {
+        return (
+            'wix-bookings requires wix-forms configuration at config/.wix-forms.yaml. ' +
+            'Run: jay-stack setup wix-forms'
+        );
+    }
+
+    return undefined;
+}
+
 export async function setupWixBookings(ctx: PluginSetupContext): Promise<PluginSetupResult> {
     if (ctx.initError) {
         return {
@@ -27,11 +63,11 @@ export async function setupWixBookings(ctx: PluginSetupContext): Promise<PluginS
         };
     }
 
-    if (!hasService(WIX_FORMS_SERVICE)) {
+    const formsSetupIssue = resolveWixFormsSetupIssue(ctx);
+    if (formsSetupIssue) {
         return {
             status: 'error',
-            message:
-                'wix-bookings requires the wix-forms plugin. Add wix-forms to your project plugins and run setup before wix-bookings.',
+            message: formsSetupIssue,
         };
     }
 
