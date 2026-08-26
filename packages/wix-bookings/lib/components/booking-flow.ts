@@ -83,8 +83,7 @@ async function renderFastChanging(_props: object, carryForward: BookingFlowCarry
             services: carryForward.services,
             servicesLoading: false,
             servicesError: carryForward.servicesError ?? '',
-            showNoServices:
-                carryForward.services.length === 0 && !carryForward.servicesError,
+            showNoServices: carryForward.services.length === 0 && !carryForward.servicesError,
             hasSlots: false,
             showServices: true,
             showSlots: false,
@@ -114,8 +113,7 @@ function BookingFlowInteractive(
 ) {
     const [services] = viewStateSignals.services;
     const [showServices, setShowServices] = createSignal(true);
-    const showNoServices =
-        _carryForward.services.length === 0 && !_carryForward.servicesError;
+    const showNoServices = _carryForward.services.length === 0 && !_carryForward.servicesError;
     const servicesError = _carryForward.servicesError ?? '';
     const [hasSlots, setHasSlots] = createSignal(false);
     const [showSlots, setShowSlots] = createSignal(false);
@@ -199,9 +197,7 @@ function BookingFlowInteractive(
             );
         } catch (error) {
             const message =
-                error instanceof Error
-                    ? error.message
-                    : 'Could not load participant form fields.';
+                error instanceof Error ? error.message : 'Could not load participant form fields.';
             setBookingError(message);
             setShowForm(false);
         } finally {
