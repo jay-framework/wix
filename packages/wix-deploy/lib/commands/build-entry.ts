@@ -30,7 +30,6 @@ interface RouteManifest {
 
 const DEFAULT_EXCLUDE_PLUGINS = [
     'aiditor',
-    'ui-kit',
     'wix-deploy',
     // Build-time validators — use compiler APIs stubbed out of the BaaS bundle
     'wix-media',
