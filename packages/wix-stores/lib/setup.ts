@@ -19,6 +19,7 @@ import type {
 import { getService } from '@jay-framework/stack-server-runtime';
 import { WIX_STORES_SERVICE_MARKER, type WixStoresService } from './services/wix-stores-service';
 import { queryCategories as queryCategoriesApi } from './wix-apis/index.js';
+import { searchProducts as searchProductsApi } from './wix-apis/search-products.js';
 import type { DataExtensionSchema } from './utils/data-extension-schema';
 import { buildCategoryAddMenuItems, type CategoryTreeNode } from './add-menu/category-items.js';
 import { copyAiditorAddMenuThumbnails } from './add-menu/copy-aiditor-thumbnails.js';
@@ -138,7 +139,6 @@ export async function setupWixStores(ctx: PluginSetupContext): Promise<PluginSet
     const service = getService(WIX_STORES_SERVICE_MARKER) as WixStoresService;
 
     try {
-        const { searchProducts: searchProductsApi } = await import('./wix-apis/search-products.js');
         await searchProductsApi(service.wixClient, {});
     } catch (e: any) {
         const msg = e.message || '';
