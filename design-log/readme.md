@@ -36,12 +36,17 @@ Design documentation for the Jay Framework Wix integration packages.
 | 28  | [Static Filename Validation for CDN](./28%20-%20static-filename-validation-for-cdn.md)         | Draft           |
 | 29  | [App Strategy Support](./29%20-%20app-strategy-support.md)                                     | Draft           |
 | 30  | [BaaS Deploy Operations](./30%20-%20baas%20deploy%20operations.md)                             | Implemented     |
+| 31  | [Wix Forms Materialized Contracts](./31%20-%20wix-forms-materialized-contracts.md)             | Draft           |
+| 32  | [wix-forms Add Menu contribution](./32%20-%20wix-forms-add-menu-contribution.md)             | Draft           |
+| 33  | [wix-bookings Add Menu contribution](./33%20-%20wix-bookings-add-menu-contribution.md)       | Draft           |
 
 ## Packages Covered
 
 - `@jay-framework/wix-server-client` - Base Wix SDK client and authentication
 - `@jay-framework/wix-stores` - E-commerce components (products, cart, checkout)
 - `@jay-framework/wix-data` - Wix Data collections integration
+- `@jay-framework/wix-forms` - Wix Forms headless components
+- `@jay-framework/wix-bookings` - Wix Bookings flow
 
 ## Design Log Methodology
 
