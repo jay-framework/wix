@@ -577,7 +577,7 @@ export const buildEntry = makeCliCommand('build-entry')
         let patched = fs.readFileSync(outFile, 'utf8');
         let patchCount = 0;
         for (const mod of runtimeStubs) {
-            const pattern = new RegExp(`(\\w+)\\("${mod}"\\)`, 'g');
+            const pattern = new RegExp(`[\\w$]+\\("${mod}"\\)`, 'g');
             const before = patched;
             patched = patched.replace(pattern, '({})');
             if (patched !== before) patchCount++;
