@@ -363,6 +363,7 @@ function generateServeSource(frontendDir: string, backendDir: string): string {
         '    ".css": "text/css", ".html": "text/html", ".json": "application/json",',
         '    ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml",',
         '    ".woff2": "font/woff2", ".woff": "font/woff",',
+        '    ".xml": "application/xml", ".txt": "text/plain",',
         '};',
         '',
         'function serveStatic(pathname, res) {',
