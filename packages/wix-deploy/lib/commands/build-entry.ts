@@ -197,6 +197,7 @@ import {
 import { parseCookies, getService } from '@jay-framework/stack-server-runtime';
 import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
 import { WixDataArtifactStore } from '@jay-framework/wix-deploy/artifact-store';
+import { createWixPagesManifest } from '@jay-framework/wix-deploy/wix-pages-manifest';
 
 // Module registry — npm packages + server elements (all bundled by esbuild)
 const MODULE_REGISTRY = {
@@ -326,6 +327,12 @@ async function handler(request) {
         if (isActionRequest(url.pathname)) return fetchActionRequest(request);
 
         const manifest = await artifacts.readManifest();
+        if (url.pathname === '/_wix/pages.json') {
+            return new Response(JSON.stringify(createWixPagesManifest(manifest)), {
+                headers: { 'Content-Type': 'application/json' },
+            });
+        }
+
         const match = matchRequest(manifest, url.pathname);
         if (!match) return new Response('Not Found', { status: 404 });
 
@@ -546,6 +553,14 @@ export const buildEntry = makeCliCommand('build-entry')
                 build.onResolve({ filter: /^@jay-framework\/wix-deploy\/artifact-store$/ }, () => {
                     return { path: require.resolve('@jay-framework/wix-deploy/artifact-store') };
                 });
+                build.onResolve(
+                    { filter: /^@jay-framework\/wix-deploy\/wix-pages-manifest$/ },
+                    () => {
+                        return {
+                            path: require.resolve('@jay-framework/wix-deploy/wix-pages-manifest'),
+                        };
+                    },
+                );
             },
         };
 
