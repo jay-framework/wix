@@ -90,6 +90,14 @@ describe('createWixPagesManifest', () => {
                     ],
                     instances: [{ params: { parts: '2026/september' } }],
                 },
+                {
+                    pattern: '/guides/[...parts]',
+                    segments: [
+                        { type: 'static', value: 'guides' },
+                        { type: 'catchAll', value: 'parts' },
+                    ],
+                    instances: [{ params: { parts: 'api/routing' } }],
+                },
             ],
         });
 
@@ -97,6 +105,7 @@ describe('createWixPagesManifest', () => {
             { path: '/blog', static: true },
             { path: '/blog/news', static: true },
             { path: '/archive/2026/september', static: true },
+            { path: '/guides/api/routing', static: true },
         ]);
     });
 });
