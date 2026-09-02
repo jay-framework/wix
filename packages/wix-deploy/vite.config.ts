@@ -26,6 +26,7 @@ export default defineConfig({
             entry: {
                 index: resolve(__dirname, 'lib/index.ts'),
                 'artifact-store': resolve(__dirname, 'lib/artifact-store.ts'),
+                'wix-pages-manifest': resolve(__dirname, 'lib/wix-pages-manifest.ts'),
             },
             formats: ['es'],
         },
