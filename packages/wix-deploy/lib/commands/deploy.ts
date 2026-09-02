@@ -16,6 +16,7 @@ import type { WixClientService } from '@jay-framework/wix-server-client';
 import { buildEntry } from './build-entry.js';
 import { uploadBackend } from './upload-backend.js';
 import { deployBaas } from './deploy-baas.js';
+import { syncTxtFiles } from './sync-txt-files.js';
 import { getDeployVersion } from '../constants.js';
 import type { BuildMetadata } from '../constants.js';
 
@@ -70,7 +71,7 @@ export const deploy = makeCliCommand('deploy')
         ctx.log('[deploy] Uploading...');
         const t1 = Date.now();
 
-        const [uploadResult, deployResult] = (await Promise.all([
+        const [uploadResult, deployResult, txtResult] = (await Promise.all([
             uploadBackend.handler(
                 { collectionId: input.collectionId, dryRun },
                 wixClient,
@@ -79,10 +80,17 @@ export const deploy = makeCliCommand('deploy')
             dryRun
                 ? { success: true, baseUrl: '(dry run)' }
                 : deployBaas.handler({ dryRun }, prefixCtx(ctx, 'baas |')),
-        ])) as [any, any];
+            dryRun
+                ? { success: true }
+                : syncTxtFiles.handler({}, wixClient, prefixCtx(ctx, 'txt  |')),
+        ])) as [any, any, any];
 
         if (!uploadResult?.success) ctx.error('[deploy] Backend data upload failed');
         if (!deployResult?.success) ctx.error('[deploy] BaaS deployment failed');
+        if (!txtResult?.success) {
+            ctx.warn('[deploy] Some txt files failed to sync (non-fatal):');
+            for (const error of txtResult?.errors ?? []) ctx.warn(`[deploy]   txt  | ${error}`);
+        }
 
         const success = !!(uploadResult?.success && deployResult?.success);
         const elapsed = ((Date.now() - t0) / 1000).toFixed(1);

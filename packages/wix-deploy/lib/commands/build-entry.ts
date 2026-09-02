@@ -288,6 +288,49 @@ function errorPage(title, err, path) {
     return new Response(html, { status: 500, headers: { 'Content-Type': 'text/html' } });
 }
 
+// Build a concrete URL from a route pattern + instance params (mirrors framework generate-sitemap.ts)
+function buildUrl(pattern, params) {
+    return (
+        pattern
+            .replace(/\\[\\[(\\w+)\\]\\]/g, (_, n) => params[n] || '')
+            .replace(/\\[\\.\\.\\.(\\w+)\\]/g, (_, n) => params[n] || '')
+            .replace(/\\[(\\w+)\\]/g, (_, n) => params[n] || '')
+            .replace(/\\/\\/+/g, '/')
+            .replace(/\\/$/, '') || '/'
+    );
+}
+
+// Serve the Wix page inventory (/_wix/pages.json) — Wix reads this to build /sitemap.xml.
+// Streamed to handle large page counts. All pages are static (Jay resolves params itself).
+function streamPagesJson(manifest) {
+    const enc = new TextEncoder();
+    const stream = new ReadableStream({
+        start(controller) {
+            controller.enqueue(enc.encode('['));
+            let first = true;
+            const emit = (path) => {
+                const entry = { path, srcFilePath: path, static: true };
+                controller.enqueue(enc.encode((first ? '' : ',') + JSON.stringify(entry)));
+                first = false;
+            };
+            for (const route of manifest.routes) {
+                if (route.devOnly || route.noIndex) continue;
+                if (!route.instances || route.instances.length === 0) {
+                    const hasDynamic = route.segments.some((s) => s.type !== 'static');
+                    if (!hasDynamic) emit(route.pattern === '/' ? '/' : route.pattern);
+                    continue;
+                }
+                for (const instance of route.instances) {
+                    emit(buildUrl(route.pattern, instance.params));
+                }
+            }
+            controller.enqueue(enc.encode(']'));
+            controller.close();
+        },
+    });
+    return new Response(stream, { headers: { 'Content-Type': 'application/json' } });
+}
+
 async function handler(request) {
     const url = new URL(request.url);
 
@@ -326,6 +369,10 @@ async function handler(request) {
         if (isActionRequest(url.pathname)) return fetchActionRequest(request);
 
         const manifest = await artifacts.readManifest();
+
+        // Wix reads this page inventory to build /sitemap.xml
+        if (url.pathname === '/_wix/pages.json') return streamPagesJson(manifest);
+
         const match = matchRequest(manifest, url.pathname);
         if (!match) return new Response('Not Found', { status: 404 });
 
