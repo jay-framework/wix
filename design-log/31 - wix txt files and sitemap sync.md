@@ -30,11 +30,11 @@ For the sitemap specifically, Wix does **not** consume a `sitemap.xml` from the 
 
 Wix provides REST APIs under `promote-seo-txt-file-server/v2` to manage these files:
 
-| File | Endpoint | Permission |
-|------|----------|------------|
-| robots.txt | `PUT /promote-seo-txt-file-server/v2/robots` | `SCOPE.PROMOTE.MANAGE-SEO` |
-| ads.txt | `PUT /promote-seo-txt-file-server/v2/ads` | `SCOPE.DC-PROMOTE.MANAGE-ADS-TXT` |
-| llms.txt | `PUT /promote-seo-txt-file-server/v2/llms` | `SCOPE.PROMOTE.MANAGE-SEO` |
+| File       | Endpoint                                     | Permission                        |
+| ---------- | -------------------------------------------- | --------------------------------- |
+| robots.txt | `PUT /promote-seo-txt-file-server/v2/robots` | `SCOPE.PROMOTE.MANAGE-SEO`        |
+| ads.txt    | `PUT /promote-seo-txt-file-server/v2/ads`    | `SCOPE.DC-PROMOTE.MANAGE-ADS-TXT` |
+| llms.txt   | `PUT /promote-seo-txt-file-server/v2/llms`   | `SCOPE.PROMOTE.MANAGE-SEO`        |
 
 All three share the same shape:
 
@@ -55,6 +55,7 @@ Setting `default: true` (without `content`) restores Wix's auto-generated conten
 Retrieved via the TXT File Server GET APIs:
 
 **robots.txt** (`default: true`, `subdomain: "www"`):
+
 ```
 User-agent: *
 Allow: /
@@ -148,11 +149,11 @@ During `wix-deploy/deploy`, after the BaaS deployment and backend upload complet
 
 #### Source files
 
-| Wix file | Project source | Fallback |
-|----------|---------------|----------|
+| Wix file   | Project source      | Fallback                                                              |
+| ---------- | ------------------- | --------------------------------------------------------------------- |
 | robots.txt | `public/robots.txt` | Leave Wix default (already includes bot blocking + sitemap directive) |
-| ads.txt | `public/ads.txt` | Leave Wix default (empty) |
-| llms.txt | `public/llms.txt` | Leave Wix default (empty) |
+| ads.txt    | `public/ads.txt`    | Leave Wix default (empty)                                             |
+| llms.txt   | `public/llms.txt`   | Leave Wix default (empty)                                             |
 
 Read each file from the project's `public/` directory. If the file exists, `PUT` its content to the corresponding Wix API. If it doesn't exist, leave Wix's default in place — the Wix-generated `robots.txt` is already reasonable (allows all, blocks nuisance bots, references the sitemap), and the user may have configured any of these files via the Wix dashboard.
 
@@ -166,8 +167,8 @@ Add a route check in the generated entry's `handler()` (in `build-entry.ts`'s `g
 
 ```js
 if (url.pathname === '/_wix/pages.json') {
-    const manifest = await artifacts.readManifest();
-    return streamPagesJson(manifest);
+  const manifest = await artifacts.readManifest();
+  return streamPagesJson(manifest);
 }
 ```
 
@@ -177,43 +178,43 @@ Page inventories can be large (thousands of pages). Stream the JSON array instea
 
 ```js
 function buildUrl(pattern, params) {
-    return (
-        pattern
-            .replace(/\[\[(\w+)\]\]/g, (_, n) => params[n] || '')
-            .replace(/\[\.\.\.(\w+)\]/g, (_, n) => params[n] || '')
-            .replace(/\[(\w+)\]/g, (_, n) => params[n] || '')
-            .replace(/\/\/+/g, '/')
-            .replace(/\/$/, '') || '/'
-    );
+  return (
+    pattern
+      .replace(/\[\[(\w+)\]\]/g, (_, n) => params[n] || '')
+      .replace(/\[\.\.\.(\w+)\]/g, (_, n) => params[n] || '')
+      .replace(/\[(\w+)\]/g, (_, n) => params[n] || '')
+      .replace(/\/\/+/g, '/')
+      .replace(/\/$/, '') || '/'
+  );
 }
 
 function streamPagesJson(manifest) {
-    const enc = new TextEncoder();
-    const stream = new ReadableStream({
-        start(controller) {
-            controller.enqueue(enc.encode('['));
-            let first = true;
-            const emit = (path) => {
-                const entry = { path, srcFilePath: path, static: true };
-                controller.enqueue(enc.encode((first ? '' : ',') + JSON.stringify(entry)));
-                first = false;
-            };
-            for (const route of manifest.routes) {
-                if (route.devOnly || route.noIndex) continue;
-                if (route.instances.length === 0) {
-                    const hasDynamic = route.segments.some((s) => s.type !== 'static');
-                    if (!hasDynamic) emit(route.pattern === '/' ? '/' : route.pattern);
-                    continue;
-                }
-                for (const instance of route.instances) {
-                    emit(buildUrl(route.pattern, instance.params));
-                }
-            }
-            controller.enqueue(enc.encode(']'));
-            controller.close();
-        },
-    });
-    return new Response(stream, { headers: { 'Content-Type': 'application/json' } });
+  const enc = new TextEncoder();
+  const stream = new ReadableStream({
+    start(controller) {
+      controller.enqueue(enc.encode('['));
+      let first = true;
+      const emit = (path) => {
+        const entry = { path, srcFilePath: path, static: true };
+        controller.enqueue(enc.encode((first ? '' : ',') + JSON.stringify(entry)));
+        first = false;
+      };
+      for (const route of manifest.routes) {
+        if (route.devOnly || route.noIndex) continue;
+        if (route.instances.length === 0) {
+          const hasDynamic = route.segments.some((s) => s.type !== 'static');
+          if (!hasDynamic) emit(route.pattern === '/' ? '/' : route.pattern);
+          continue;
+        }
+        for (const instance of route.instances) {
+          emit(buildUrl(route.pattern, instance.params));
+        }
+      }
+      controller.enqueue(enc.encode(']'));
+      controller.close();
+    },
+  });
+  return new Response(stream, { headers: { 'Content-Type': 'application/json' } });
 }
 ```
 
@@ -236,18 +237,19 @@ The `_wix/pages.json` handler is part of the entry bundle (step 1), so it deploy
 
 ```typescript
 interface TxtFileSyncResult {
-  synced: string[];   // files that were uploaded
-  skipped: string[];  // files not found in public/
-  errors: string[];   // files that failed to sync
+  synced: string[]; // files that were uploaded
+  skipped: string[]; // files not found in public/
+  errors: string[]; // files that failed to sync
 }
 
 async function syncTxtFiles(
   projectRoot: string,
   wixClient: WixClientService,
-): Promise<TxtFileSyncResult>
+): Promise<TxtFileSyncResult>;
 ```
 
 For each file type:
+
 1. Check if `public/<filename>` exists
 2. If yes, read content and call the Wix API
 3. Log result
