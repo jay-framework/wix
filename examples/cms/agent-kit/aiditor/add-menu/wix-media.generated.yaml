@@ -103,16 +103,16 @@ items:
       - Backgrounds
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/19cb78_702adf1063f34e918a667c55abc8c2b0~mv2.jpg
+    thumbnail: https://static.wixstatic.com/media/19cb78_7fb582bb86374b9fa2e061d8a297f379~mv2.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/19cb78_702adf1063f34e918a667c55abc8c2b0~mv2.jpg
+        URL: https://static.wixstatic.com/media/19cb78_7fb582bb86374b9fa2e061d8a297f379~mv2.jpg
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://static.wixstatic.com/media/19cb78_702adf1063f34e918a667c55abc8c2b0~mv2.jpg
-      Media id: 19cb78_702adf1063f34e918a667c55abc8c2b0~mv2.jpg
+      URL: https://static.wixstatic.com/media/19cb78_7fb582bb86374b9fa2e061d8a297f379~mv2.jpg
+      Media id: 19cb78_7fb582bb86374b9fa2e061d8a297f379~mv2.jpg
       Slug: beefbacon-devanco-v4-jpg
       Type: image · -
       Folder: Images / Backgrounds
@@ -126,16 +126,16 @@ items:
       - Backgrounds
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/19cb78_7fb582bb86374b9fa2e061d8a297f379~mv2.jpg
+    thumbnail: https://static.wixstatic.com/media/19cb78_702adf1063f34e918a667c55abc8c2b0~mv2.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/19cb78_7fb582bb86374b9fa2e061d8a297f379~mv2.jpg
+        URL: https://static.wixstatic.com/media/19cb78_702adf1063f34e918a667c55abc8c2b0~mv2.jpg
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://static.wixstatic.com/media/19cb78_7fb582bb86374b9fa2e061d8a297f379~mv2.jpg
-      Media id: 19cb78_7fb582bb86374b9fa2e061d8a297f379~mv2.jpg
+      URL: https://static.wixstatic.com/media/19cb78_702adf1063f34e918a667c55abc8c2b0~mv2.jpg
+      Media id: 19cb78_702adf1063f34e918a667c55abc8c2b0~mv2.jpg
       Slug: beefbacon-devanco-v4-jpg-2
       Type: image · -
       Folder: Images / Backgrounds
@@ -6668,39 +6668,6 @@ items:
 
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
   - id: wix-media:halal-delimeats-hero-png
-    title: Halal_DeliMeats_Hero.png
-    category: Media
-    folderPath:
-      - Halal Campaign
-    pluginName: wix-media
-    packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/19cb78_fbc827a587814ad7926c87649da850c1~mv2.png
-    interaction:
-      mode: stage-place
-      stagePromptTemplate: |-
-        Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/19cb78_fbc827a587814ad7926c87649da850c1~mv2.png
-    prompt: >-
-      Use this Wix Media Manager asset in jay-html (do not copy to public/):
-
-      URL: https://static.wixstatic.com/media/19cb78_fbc827a587814ad7926c87649da850c1~mv2.png
-
-      Media id: 19cb78_fbc827a587814ad7926c87649da850c1~mv2.png
-
-      Slug: halal-delimeats-hero-png
-
-      Type: image · -
-
-      Folder: Halal Campaign
-
-      Labels: mouth-watering, club sandwich, sandwiches, traditionally vietnamese, tradition, web banner, mediterranean
-      cuisine, menu item, traditionally, mouthwatering, subculture, meatless, traditions, open sandwich, meat joint,
-      ready-to-eat, cheap gourmet, meat substitute, sale banner, advertisement
-
-      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
-
-      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:halal-delimeats-hero-png-2
     title: Halal_DeliMeats_HERO.png
     category: Media
     folderPath:
@@ -6720,7 +6687,7 @@ items:
 
       Media id: 19cb78_059dd24f7d214f138898212caef214cf~mv2.png
 
-      Slug: halal-delimeats-hero-png-2
+      Slug: halal-delimeats-hero-png
 
       Type: image · -
 
@@ -6733,40 +6700,40 @@ items:
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
 
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:halal-gyro-hero-png
-    title: Halal_Gyro_HERO.png
+  - id: wix-media:halal-delimeats-hero-png-2
+    title: Halal_DeliMeats_Hero.png
     category: Media
     folderPath:
       - Halal Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/19cb78_c6e8b852fc164f80b7491eb60a70df70~mv2.png
+    thumbnail: https://static.wixstatic.com/media/19cb78_fbc827a587814ad7926c87649da850c1~mv2.png
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/19cb78_c6e8b852fc164f80b7491eb60a70df70~mv2.png
+        URL: https://static.wixstatic.com/media/19cb78_fbc827a587814ad7926c87649da850c1~mv2.png
     prompt: >-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
 
-      URL: https://static.wixstatic.com/media/19cb78_c6e8b852fc164f80b7491eb60a70df70~mv2.png
+      URL: https://static.wixstatic.com/media/19cb78_fbc827a587814ad7926c87649da850c1~mv2.png
 
-      Media id: 19cb78_c6e8b852fc164f80b7491eb60a70df70~mv2.png
+      Media id: 19cb78_fbc827a587814ad7926c87649da850c1~mv2.png
 
-      Slug: halal-gyro-hero-png
+      Slug: halal-delimeats-hero-png-2
 
       Type: image · -
 
       Folder: Halal Campaign
 
-      Labels: meat and alternatives, mediterranean cuisine, microwaveable food, high-quality ingredients, national
-      cuisine, convenience food, natural food, digestive health, web banner, culinary blog, dietary fiber, mexican
-      cuisine, meat substitute, placemat, flat bread, clean your hands, food blog, raw food, animal protein, lean meat
+      Labels: mouth-watering, club sandwich, sandwiches, traditionally vietnamese, tradition, web banner, mediterranean
+      cuisine, menu item, traditionally, mouthwatering, subculture, meatless, traditions, open sandwich, meat joint,
+      ready-to-eat, cheap gourmet, meat substitute, sale banner, advertisement
 
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
 
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:halal-gyro-hero-png-2
+  - id: wix-media:halal-gyro-hero-png
     title: Halal_Gyro_HERO.png
     category: Media
     folderPath:
@@ -6786,7 +6753,7 @@ items:
 
       Media id: afc7a8_e2267a95eaaa44dda2763f1a6f8b9df7~mv2.png
 
-      Slug: halal-gyro-hero-png-2
+      Slug: halal-gyro-hero-png
 
       Type: image · -
 
@@ -6795,6 +6762,39 @@ items:
       Labels: certified, certify, chili's, high-quality ingredients, web banner, certification, premium, mexican
       cuisine, shawarma, taco, advertisement, tortillas, tacos, ad design, limited offer, burrito, behance social icon,
       graduatecollectionportfolio_2516, club promotion, signature dishes
+
+      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
+
+      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
+  - id: wix-media:halal-gyro-hero-png-2
+    title: Halal_Gyro_HERO.png
+    category: Media
+    folderPath:
+      - Halal Campaign
+    pluginName: wix-media
+    packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_c6e8b852fc164f80b7491eb60a70df70~mv2.png
+    interaction:
+      mode: stage-place
+      stagePromptTemplate: |-
+        Place this image at the marker location on the page.
+        URL: https://static.wixstatic.com/media/19cb78_c6e8b852fc164f80b7491eb60a70df70~mv2.png
+    prompt: >-
+      Use this Wix Media Manager asset in jay-html (do not copy to public/):
+
+      URL: https://static.wixstatic.com/media/19cb78_c6e8b852fc164f80b7491eb60a70df70~mv2.png
+
+      Media id: 19cb78_c6e8b852fc164f80b7491eb60a70df70~mv2.png
+
+      Slug: halal-gyro-hero-png-2
+
+      Type: image · -
+
+      Folder: Halal Campaign
+
+      Labels: meat and alternatives, mediterranean cuisine, microwaveable food, high-quality ingredients, national
+      cuisine, convenience food, natural food, digestive health, web banner, culinary blog, dietary fiber, mexican
+      cuisine, meat substitute, placemat, flat bread, clean your hands, food blog, raw food, animal protein, lean meat
 
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
 
@@ -7621,31 +7621,6 @@ items:
       - Headshots
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/19cb78_1e3f8ebc049c4e8297d7294d698bd477~mv2.jpg
-    interaction:
-      mode: stage-place
-      stagePromptTemplate: |-
-        Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/19cb78_1e3f8ebc049c4e8297d7294d698bd477~mv2.jpg
-    prompt: |-
-      Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://static.wixstatic.com/media/19cb78_1e3f8ebc049c4e8297d7294d698bd477~mv2.jpg
-      Media id: 19cb78_1e3f8ebc049c4e8297d7294d698bd477~mv2.jpg
-      Slug: eloy-garcia
-      Type: image · -
-      Folder: Images / People / Headshots
-      Labels: Smile, Beard, Sleeve, Audio equipment, Mesh, Jacket, Eyewear, Facial hair, Flash photography, Space
-      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
-      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:eloy-garcia-2
-    title: Eloy Garcia
-    category: Media
-    folderPath:
-      - Images
-      - People
-      - Headshots
-    pluginName: wix-media
-    packageName: '@jay-framework/wix-media'
     thumbnail: https://static.wixstatic.com/media/19cb78_ebc06f4d79b64736ae3ede0d9fd4d28c~mv2.jpg
     interaction:
       mode: stage-place
@@ -7656,13 +7631,13 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_ebc06f4d79b64736ae3ede0d9fd4d28c~mv2.jpg
       Media id: 19cb78_ebc06f4d79b64736ae3ede0d9fd4d28c~mv2.jpg
-      Slug: eloy-garcia-2
+      Slug: eloy-garcia
       Type: image · -
       Folder: Images / People / Headshots
       Labels: Outerwear, Sleeve, Beard, Grey, Collar, Jacket, Flash photography, Audio equipment, Mesh, Street fashion
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:eloy-garcia-2-2
+  - id: wix-media:eloy-garcia-2
     title: Eloy Garcia
     category: Media
     folderPath:
@@ -7685,6 +7660,31 @@ items:
       Type: image · -
       Folder: Images / People / Headshots
       Labels: Flash photography, Textile, Sleeve, Grey, Jacket, Eyewear, Cool, Fun, Audio equipment, Beard
+      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
+      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
+  - id: wix-media:eloy-garcia-2-2
+    title: Eloy Garcia
+    category: Media
+    folderPath:
+      - Images
+      - People
+      - Headshots
+    pluginName: wix-media
+    packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_1e3f8ebc049c4e8297d7294d698bd477~mv2.jpg
+    interaction:
+      mode: stage-place
+      stagePromptTemplate: |-
+        Place this image at the marker location on the page.
+        URL: https://static.wixstatic.com/media/19cb78_1e3f8ebc049c4e8297d7294d698bd477~mv2.jpg
+    prompt: |-
+      Use this Wix Media Manager asset in jay-html (do not copy to public/):
+      URL: https://static.wixstatic.com/media/19cb78_1e3f8ebc049c4e8297d7294d698bd477~mv2.jpg
+      Media id: 19cb78_1e3f8ebc049c4e8297d7294d698bd477~mv2.jpg
+      Slug: eloy-garcia-2
+      Type: image · -
+      Folder: Images / People / Headshots
+      Labels: Smile, Beard, Sleeve, Audio equipment, Mesh, Jacket, Eyewear, Facial hair, Flash photography, Space
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
   - id: wix-media:evan-bartzis
@@ -9381,7 +9381,7 @@ items:
       Folder: Icons
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:zacca-logo-20-r-01-edited-png
+  - id: wix-media:zacca-logo-20-r-01-edited-png-2
     title: Zacca_Logo%20(R)-01_edited.png
     category: Media
     folderPath:
@@ -9398,7 +9398,7 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_efe55b72be864ed597b48677651ea90f~mv2.png
       Media id: 19cb78_efe55b72be864ed597b48677651ea90f~mv2.png
-      Slug: zacca-logo-20-r-01-edited-png
+      Slug: zacca-logo-20-r-01-edited-png-2
       Type: image · -
       Folder: Icons
       Labels: Font, Art
@@ -9437,7 +9437,7 @@ items:
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
 
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:external-file-edited-png-2
+  - id: wix-media:external-file-edited-png
     title: external-file_edited.png
     category: Media
     folderPath:
@@ -9457,7 +9457,7 @@ items:
 
       Media id: 725c6a_00e19ab742124d2fa85788981d485556~mv2.png
 
-      Slug: external-file-edited-png-2
+      Slug: external-file-edited-png
 
       Type: image · -
 
@@ -14163,18 +14163,18 @@ items:
       - Jewels Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/afc7a8_21c42ecc9fa14184b8e183776ed5b699~mv2.jpg
+    thumbnail: https://static.wixstatic.com/media/afc7a8_938acd8363a345b08f83eb957603cad1~mv2.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/afc7a8_21c42ecc9fa14184b8e183776ed5b699~mv2.jpg
+        URL: https://static.wixstatic.com/media/afc7a8_938acd8363a345b08f83eb957603cad1~mv2.jpg
     prompt: >-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
 
-      URL: https://static.wixstatic.com/media/afc7a8_21c42ecc9fa14184b8e183776ed5b699~mv2.jpg
+      URL: https://static.wixstatic.com/media/afc7a8_938acd8363a345b08f83eb957603cad1~mv2.jpg
 
-      Media id: afc7a8_21c42ecc9fa14184b8e183776ed5b699~mv2.jpg
+      Media id: afc7a8_938acd8363a345b08f83eb957603cad1~mv2.jpg
 
       Slug: bgb-image-jpg
 
@@ -14196,18 +14196,18 @@ items:
       - Jewels Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/afc7a8_938acd8363a345b08f83eb957603cad1~mv2.jpg
+    thumbnail: https://static.wixstatic.com/media/afc7a8_21c42ecc9fa14184b8e183776ed5b699~mv2.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/afc7a8_938acd8363a345b08f83eb957603cad1~mv2.jpg
+        URL: https://static.wixstatic.com/media/afc7a8_21c42ecc9fa14184b8e183776ed5b699~mv2.jpg
     prompt: >-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
 
-      URL: https://static.wixstatic.com/media/afc7a8_938acd8363a345b08f83eb957603cad1~mv2.jpg
+      URL: https://static.wixstatic.com/media/afc7a8_21c42ecc9fa14184b8e183776ed5b699~mv2.jpg
 
-      Media id: afc7a8_938acd8363a345b08f83eb957603cad1~mv2.jpg
+      Media id: afc7a8_21c42ecc9fa14184b8e183776ed5b699~mv2.jpg
 
       Slug: bgb-image-jpg-2
 
@@ -14229,18 +14229,18 @@ items:
       - Jewels Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/afc7a8_d9ef9a42ede647b887ec4bfae3450660~mv2.png
+    thumbnail: https://static.wixstatic.com/media/afc7a8_3cb02c92e66d417f9bcb07bc530943b8~mv2.png
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/afc7a8_d9ef9a42ede647b887ec4bfae3450660~mv2.png
+        URL: https://static.wixstatic.com/media/afc7a8_3cb02c92e66d417f9bcb07bc530943b8~mv2.png
     prompt: >-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
 
-      URL: https://static.wixstatic.com/media/afc7a8_d9ef9a42ede647b887ec4bfae3450660~mv2.png
+      URL: https://static.wixstatic.com/media/afc7a8_3cb02c92e66d417f9bcb07bc530943b8~mv2.png
 
-      Media id: afc7a8_d9ef9a42ede647b887ec4bfae3450660~mv2.png
+      Media id: afc7a8_3cb02c92e66d417f9bcb07bc530943b8~mv2.png
 
       Slug: bgb-png
 
@@ -14262,18 +14262,18 @@ items:
       - Jewels Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/afc7a8_3cb02c92e66d417f9bcb07bc530943b8~mv2.png
+    thumbnail: https://static.wixstatic.com/media/afc7a8_d9ef9a42ede647b887ec4bfae3450660~mv2.png
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/afc7a8_3cb02c92e66d417f9bcb07bc530943b8~mv2.png
+        URL: https://static.wixstatic.com/media/afc7a8_d9ef9a42ede647b887ec4bfae3450660~mv2.png
     prompt: >-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
 
-      URL: https://static.wixstatic.com/media/afc7a8_3cb02c92e66d417f9bcb07bc530943b8~mv2.png
+      URL: https://static.wixstatic.com/media/afc7a8_d9ef9a42ede647b887ec4bfae3450660~mv2.png
 
-      Media id: afc7a8_3cb02c92e66d417f9bcb07bc530943b8~mv2.png
+      Media id: afc7a8_d9ef9a42ede647b887ec4bfae3450660~mv2.png
 
       Slug: bgb-png-2
 
@@ -14353,7 +14353,7 @@ items:
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
 
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:box3-med-png-2
+  - id: wix-media:box3-med-png
     title: Box3_med.png
     category: Media
     folderPath:
@@ -14373,7 +14373,7 @@ items:
 
       Media id: afc7a8_7e0e0460cbd0414aa21cf2324f25fda8~mv2.png
 
-      Slug: box3-med-png-2
+      Slug: box3-med-png
 
       Type: image · -
 
@@ -16006,7 +16006,7 @@ items:
       Labels: Rectangle, Font, Electric blue
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:logo-edited-png
+  - id: wix-media:logo-edited-png-2
     title: logo_edited.png
     category: Media
     folderPath:
@@ -16024,7 +16024,7 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_4deb11a25ced4b678a62def40f32f414~mv2.png
       Media id: 19cb78_4deb11a25ced4b678a62def40f32f414~mv2.png
-      Slug: logo-edited-png
+      Slug: logo-edited-png-2
       Type: image · -
       Folder: Images / Logo
       Labels: Font, Electric blue
@@ -16062,16 +16062,16 @@ items:
       - Logo
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/19cb78_8f21e58d444f44249248128ca56ca6e8~mv2.png
+    thumbnail: https://static.wixstatic.com/media/19cb78_b4f99abd90654503bcacc89506aa70eb~mv2.png
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/19cb78_8f21e58d444f44249248128ca56ca6e8~mv2.png
+        URL: https://static.wixstatic.com/media/19cb78_b4f99abd90654503bcacc89506aa70eb~mv2.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://static.wixstatic.com/media/19cb78_8f21e58d444f44249248128ca56ca6e8~mv2.png
-      Media id: 19cb78_8f21e58d444f44249248128ca56ca6e8~mv2.png
+      URL: https://static.wixstatic.com/media/19cb78_b4f99abd90654503bcacc89506aa70eb~mv2.png
+      Media id: 19cb78_b4f99abd90654503bcacc89506aa70eb~mv2.png
       Slug: logo-w-blue-tagline-png
       Type: image · -
       Folder: Images / Logo
@@ -16086,16 +16086,16 @@ items:
       - Logo
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/19cb78_b4f99abd90654503bcacc89506aa70eb~mv2.png
+    thumbnail: https://static.wixstatic.com/media/19cb78_8f21e58d444f44249248128ca56ca6e8~mv2.png
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/19cb78_b4f99abd90654503bcacc89506aa70eb~mv2.png
+        URL: https://static.wixstatic.com/media/19cb78_8f21e58d444f44249248128ca56ca6e8~mv2.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://static.wixstatic.com/media/19cb78_b4f99abd90654503bcacc89506aa70eb~mv2.png
-      Media id: 19cb78_b4f99abd90654503bcacc89506aa70eb~mv2.png
+      URL: https://static.wixstatic.com/media/19cb78_8f21e58d444f44249248128ca56ca6e8~mv2.png
+      Media id: 19cb78_8f21e58d444f44249248128ca56ca6e8~mv2.png
       Slug: logo-w-blue-tagline-png-2
       Type: image · -
       Folder: Images / Logo
@@ -16103,30 +16103,6 @@ items:
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
   - id: wix-media:logo-w-white-tagline-01-png
-    title: Logo w. White Tagline-01.png
-    category: Media
-    folderPath:
-      - Images
-      - Logo
-    pluginName: wix-media
-    packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/19cb78_fd1b4aebc49e45609f02912bdbf914f2~mv2.png
-    interaction:
-      mode: stage-place
-      stagePromptTemplate: |-
-        Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/19cb78_fd1b4aebc49e45609f02912bdbf914f2~mv2.png
-    prompt: |-
-      Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://static.wixstatic.com/media/19cb78_fd1b4aebc49e45609f02912bdbf914f2~mv2.png
-      Media id: 19cb78_fd1b4aebc49e45609f02912bdbf914f2~mv2.png
-      Slug: logo-w-white-tagline-01-png
-      Type: image · -
-      Folder: Images / Logo
-      Labels: Rectangle, Font, Circle
-      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
-      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:logo-w-white-tagline-01-png-2-2
     title: Logo w. White Tagline-01.png
     category: Media
     folderPath:
@@ -16144,9 +16120,33 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_756a68fb7f704eedae6f5e83cd45aab4~mv2.png
       Media id: 19cb78_756a68fb7f704eedae6f5e83cd45aab4~mv2.png
+      Slug: logo-w-white-tagline-01-png
+      Type: image · -
+      Folder: Images / Logo
+      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
+      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
+  - id: wix-media:logo-w-white-tagline-01-png-2-2
+    title: Logo w. White Tagline-01.png
+    category: Media
+    folderPath:
+      - Images
+      - Logo
+    pluginName: wix-media
+    packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_fd1b4aebc49e45609f02912bdbf914f2~mv2.png
+    interaction:
+      mode: stage-place
+      stagePromptTemplate: |-
+        Place this image at the marker location on the page.
+        URL: https://static.wixstatic.com/media/19cb78_fd1b4aebc49e45609f02912bdbf914f2~mv2.png
+    prompt: |-
+      Use this Wix Media Manager asset in jay-html (do not copy to public/):
+      URL: https://static.wixstatic.com/media/19cb78_fd1b4aebc49e45609f02912bdbf914f2~mv2.png
+      Media id: 19cb78_fd1b4aebc49e45609f02912bdbf914f2~mv2.png
       Slug: logo-w-white-tagline-01-png-2
       Type: image · -
       Folder: Images / Logo
+      Labels: Rectangle, Font, Circle
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
   - id: wix-media:logo-w-white-tagline-01-png-2-3
@@ -16434,7 +16434,7 @@ items:
       Folder: Images / Logo
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:zacca-logo-20-r-01-edited-png-2
+  - id: wix-media:zacca-logo-20-r-01-edited-png
     title: Zacca_Logo%20(R)-01_edited.png
     category: Media
     folderPath:
@@ -16452,7 +16452,7 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_3226e4ff171946e3a2631af4aadac78c~mv2.png
       Media id: 19cb78_3226e4ff171946e3a2631af4aadac78c~mv2.png
-      Slug: zacca-logo-20-r-01-edited-png-2
+      Slug: zacca-logo-20-r-01-edited-png
       Type: image · -
       Folder: Images / Logo
       Labels: Font, Electric blue
@@ -16729,7 +16729,7 @@ items:
       Labels: Head, Collar
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:box2-med-png
+  - id: wix-media:box2-med-png-2
     title: Box2_Med.png
     category: Media
     pluginName: wix-media
@@ -16747,7 +16747,7 @@ items:
 
       Media id: 19cb78_a3affd18330e42b8b6448dd0d7e34b51~mv2.png
 
-      Slug: box2-med-png
+      Slug: box2-med-png-2
 
       Type: image · -
 
@@ -17217,6 +17217,86 @@ items:
     category: Media
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_d4e6e0cfa00e45b092c3b698966faec2~mv2.jpg
+    interaction:
+      mode: stage-place
+      stagePromptTemplate: |-
+        Place this image at the marker location on the page.
+        URL: https://static.wixstatic.com/media/19cb78_d4e6e0cfa00e45b092c3b698966faec2~mv2.jpg
+    prompt: |-
+      Use this Wix Media Manager asset in jay-html (do not copy to public/):
+      URL: https://static.wixstatic.com/media/19cb78_d4e6e0cfa00e45b092c3b698966faec2~mv2.jpg
+      Media id: 19cb78_d4e6e0cfa00e45b092c3b698966faec2~mv2.jpg
+      Slug: external-file-edited-jpg
+      Type: image · -
+      Folder: Media Root
+      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
+      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
+  - id: wix-media:external-file-edited-jpg-2
+    title: external-file_edited.jpg
+    category: Media
+    pluginName: wix-media
+    packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_32afe1627e284cd2a4ddf9f38ed26383~mv2.jpg
+    interaction:
+      mode: stage-place
+      stagePromptTemplate: |-
+        Place this image at the marker location on the page.
+        URL: https://static.wixstatic.com/media/19cb78_32afe1627e284cd2a4ddf9f38ed26383~mv2.jpg
+    prompt: |-
+      Use this Wix Media Manager asset in jay-html (do not copy to public/):
+      URL: https://static.wixstatic.com/media/19cb78_32afe1627e284cd2a4ddf9f38ed26383~mv2.jpg
+      Media id: 19cb78_32afe1627e284cd2a4ddf9f38ed26383~mv2.jpg
+      Slug: external-file-edited-jpg-2
+      Type: image · -
+      Folder: Media Root
+      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
+      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
+  - id: wix-media:external-file-edited-jpg-2-2
+    title: external-file_edited.jpg
+    category: Media
+    pluginName: wix-media
+    packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_2aa7e821278b451fa2d45dcec5f33af7~mv2.jpg
+    interaction:
+      mode: stage-place
+      stagePromptTemplate: |-
+        Place this image at the marker location on the page.
+        URL: https://static.wixstatic.com/media/19cb78_2aa7e821278b451fa2d45dcec5f33af7~mv2.jpg
+    prompt: |-
+      Use this Wix Media Manager asset in jay-html (do not copy to public/):
+      URL: https://static.wixstatic.com/media/19cb78_2aa7e821278b451fa2d45dcec5f33af7~mv2.jpg
+      Media id: 19cb78_2aa7e821278b451fa2d45dcec5f33af7~mv2.jpg
+      Slug: external-file-edited-jpg-2
+      Type: image · -
+      Folder: Media Root
+      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
+      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
+  - id: wix-media:external-file-edited-jpg-2-3
+    title: external-file_edited.jpg
+    category: Media
+    pluginName: wix-media
+    packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_ac48dcc9d69d4be7b6ffb3c48da7c9e7~mv2.jpg
+    interaction:
+      mode: stage-place
+      stagePromptTemplate: |-
+        Place this image at the marker location on the page.
+        URL: https://static.wixstatic.com/media/19cb78_ac48dcc9d69d4be7b6ffb3c48da7c9e7~mv2.jpg
+    prompt: |-
+      Use this Wix Media Manager asset in jay-html (do not copy to public/):
+      URL: https://static.wixstatic.com/media/19cb78_ac48dcc9d69d4be7b6ffb3c48da7c9e7~mv2.jpg
+      Media id: 19cb78_ac48dcc9d69d4be7b6ffb3c48da7c9e7~mv2.jpg
+      Slug: external-file-edited-jpg-2
+      Type: image · -
+      Folder: Media Root
+      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
+      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
+  - id: wix-media:external-file-edited-jpg-2-4
+    title: external-file_edited.jpg
+    category: Media
+    pluginName: wix-media
+    packageName: '@jay-framework/wix-media'
     thumbnail: https://static.wixstatic.com/media/19cb78_54a4bafefc2e42afb5cdb574a7981a23~mv2.jpg
     interaction:
       mode: stage-place
@@ -17227,12 +17307,12 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_54a4bafefc2e42afb5cdb574a7981a23~mv2.jpg
       Media id: 19cb78_54a4bafefc2e42afb5cdb574a7981a23~mv2.jpg
-      Slug: external-file-edited-jpg
+      Slug: external-file-edited-jpg-2
       Type: image · -
       Folder: Media Root
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:external-file-edited-jpg-2
+  - id: wix-media:external-file-edited-jpg-2-5
     title: external-file_edited.jpg
     category: Media
     pluginName: wix-media
@@ -17252,7 +17332,7 @@ items:
       Folder: Media Root
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:external-file-edited-jpg-2-2
+  - id: wix-media:external-file-edited-jpg-2-6
     title: external-file_edited.jpg
     category: Media
     pluginName: wix-media
@@ -17272,7 +17352,7 @@ items:
       Folder: Media Root
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:external-file-edited-jpg-2-3
+  - id: wix-media:external-file-edited-jpg-2-7
     title: external-file_edited.jpg
     category: Media
     pluginName: wix-media
@@ -17303,7 +17383,7 @@ items:
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
 
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:external-file-edited-jpg-2-4
+  - id: wix-media:external-file-edited-jpg-2-8
     title: external-file_edited.jpg
     category: Media
     pluginName: wix-media
@@ -17323,7 +17403,7 @@ items:
       Folder: Media Root
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:external-file-edited-jpg-2-5
+  - id: wix-media:external-file-edited-jpg-2-9
     title: external-file_edited.jpg
     category: Media
     pluginName: wix-media
@@ -17343,87 +17423,7 @@ items:
       Folder: Media Root
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:external-file-edited-jpg-2-6
-    title: external-file_edited.jpg
-    category: Media
-    pluginName: wix-media
-    packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/19cb78_d4e6e0cfa00e45b092c3b698966faec2~mv2.jpg
-    interaction:
-      mode: stage-place
-      stagePromptTemplate: |-
-        Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/19cb78_d4e6e0cfa00e45b092c3b698966faec2~mv2.jpg
-    prompt: |-
-      Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://static.wixstatic.com/media/19cb78_d4e6e0cfa00e45b092c3b698966faec2~mv2.jpg
-      Media id: 19cb78_d4e6e0cfa00e45b092c3b698966faec2~mv2.jpg
-      Slug: external-file-edited-jpg-2
-      Type: image · -
-      Folder: Media Root
-      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
-      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:external-file-edited-jpg-2-7
-    title: external-file_edited.jpg
-    category: Media
-    pluginName: wix-media
-    packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/19cb78_32afe1627e284cd2a4ddf9f38ed26383~mv2.jpg
-    interaction:
-      mode: stage-place
-      stagePromptTemplate: |-
-        Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/19cb78_32afe1627e284cd2a4ddf9f38ed26383~mv2.jpg
-    prompt: |-
-      Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://static.wixstatic.com/media/19cb78_32afe1627e284cd2a4ddf9f38ed26383~mv2.jpg
-      Media id: 19cb78_32afe1627e284cd2a4ddf9f38ed26383~mv2.jpg
-      Slug: external-file-edited-jpg-2
-      Type: image · -
-      Folder: Media Root
-      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
-      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:external-file-edited-jpg-2-8
-    title: external-file_edited.jpg
-    category: Media
-    pluginName: wix-media
-    packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/19cb78_2aa7e821278b451fa2d45dcec5f33af7~mv2.jpg
-    interaction:
-      mode: stage-place
-      stagePromptTemplate: |-
-        Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/19cb78_2aa7e821278b451fa2d45dcec5f33af7~mv2.jpg
-    prompt: |-
-      Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://static.wixstatic.com/media/19cb78_2aa7e821278b451fa2d45dcec5f33af7~mv2.jpg
-      Media id: 19cb78_2aa7e821278b451fa2d45dcec5f33af7~mv2.jpg
-      Slug: external-file-edited-jpg-2
-      Type: image · -
-      Folder: Media Root
-      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
-      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:external-file-edited-jpg-2-9
-    title: external-file_edited.jpg
-    category: Media
-    pluginName: wix-media
-    packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/19cb78_ac48dcc9d69d4be7b6ffb3c48da7c9e7~mv2.jpg
-    interaction:
-      mode: stage-place
-      stagePromptTemplate: |-
-        Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/19cb78_ac48dcc9d69d4be7b6ffb3c48da7c9e7~mv2.jpg
-    prompt: |-
-      Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://static.wixstatic.com/media/19cb78_ac48dcc9d69d4be7b6ffb3c48da7c9e7~mv2.jpg
-      Media id: 19cb78_ac48dcc9d69d4be7b6ffb3c48da7c9e7~mv2.jpg
-      Slug: external-file-edited-jpg-2
-      Type: image · -
-      Folder: Media Root
-      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
-      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:external-file-edited-png
+  - id: wix-media:external-file-edited-png-2
     title: external-file_edited.png
     category: Media
     pluginName: wix-media
@@ -17438,7 +17438,7 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_d9689238093d4b80811dbfcb5bb23ce8~mv2.png
       Media id: 19cb78_d9689238093d4b80811dbfcb5bb23ce8~mv2.png
-      Slug: external-file-edited-png
+      Slug: external-file-edited-png-2
       Type: image · -
       Folder: Media Root
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
@@ -17663,7 +17663,7 @@ items:
       Labels: Font
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:logo-edited-png-2
+  - id: wix-media:logo-edited-png
     title: logo_edited.png
     category: Media
     pluginName: wix-media
@@ -17678,7 +17678,7 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_53469bc1343746dea8bd6675f6f7ac43~mv2.png
       Media id: 19cb78_53469bc1343746dea8bd6675f6f7ac43~mv2.png
-      Slug: logo-edited-png-2
+      Slug: logo-edited-png
       Type: image · -
       Folder: Media Root
       Labels: Font
@@ -18227,6 +18227,39 @@ items:
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
 
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
+  - id: wix-media:box2-med-jpg
+    title: Box2_Med.jpg
+    category: Media
+    folderPath:
+      - Meijers Campaign
+    pluginName: wix-media
+    packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_f2977d79a0cc44a2925076d07f689132~mv2.jpg
+    interaction:
+      mode: stage-place
+      stagePromptTemplate: |-
+        Place this image at the marker location on the page.
+        URL: https://static.wixstatic.com/media/19cb78_f2977d79a0cc44a2925076d07f689132~mv2.jpg
+    prompt: >-
+      Use this Wix Media Manager asset in jay-html (do not copy to public/):
+
+      URL: https://static.wixstatic.com/media/19cb78_f2977d79a0cc44a2925076d07f689132~mv2.jpg
+
+      Media id: 19cb78_f2977d79a0cc44a2925076d07f689132~mv2.jpg
+
+      Slug: box2-med-jpg
+
+      Type: image · -
+
+      Folder: Meijers Campaign
+
+      Labels: food packaging, pre-packaged food, chicken meat, chicken breast, chicken tikka, animal protein, meat and
+      alternatives, food product, food box, packaging, chicken tandoori, convenience food, microwaveable food, food
+      service industry, product branding, vegetarian food, meatless, meat product, meat substitute, animal food
+
+      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
+
+      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
   - id: wix-media:box2-med-jpg-2
     title: Box2_Med.jpg
     category: Media
@@ -18260,40 +18293,7 @@ items:
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
 
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:box2-med-jpg-2-2
-    title: Box2_Med.jpg
-    category: Media
-    folderPath:
-      - Meijers Campaign
-    pluginName: wix-media
-    packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/19cb78_f2977d79a0cc44a2925076d07f689132~mv2.jpg
-    interaction:
-      mode: stage-place
-      stagePromptTemplate: |-
-        Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/19cb78_f2977d79a0cc44a2925076d07f689132~mv2.jpg
-    prompt: >-
-      Use this Wix Media Manager asset in jay-html (do not copy to public/):
-
-      URL: https://static.wixstatic.com/media/19cb78_f2977d79a0cc44a2925076d07f689132~mv2.jpg
-
-      Media id: 19cb78_f2977d79a0cc44a2925076d07f689132~mv2.jpg
-
-      Slug: box2-med-jpg-2
-
-      Type: image · -
-
-      Folder: Meijers Campaign
-
-      Labels: food packaging, pre-packaged food, chicken meat, chicken breast, chicken tikka, animal protein, meat and
-      alternatives, food product, food box, packaging, chicken tandoori, convenience food, microwaveable food, food
-      service industry, product branding, vegetarian food, meatless, meat product, meat substitute, animal food
-
-      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
-
-      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:box2-med-png-2
+  - id: wix-media:box2-med-png
     title: Box2_Med.png
     category: Media
     folderPath:
@@ -18313,7 +18313,7 @@ items:
 
       Media id: 19cb78_b9930e015698401a8d690105dd1c8ec5~mv2.png
 
-      Slug: box2-med-png-2
+      Slug: box2-med-png
 
       Type: image · -
 
@@ -18326,7 +18326,7 @@ items:
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
 
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:box3-med-jpg
+  - id: wix-media:box3-med-jpg-2
     title: Box3_med.jpg
     category: Media
     folderPath:
@@ -18346,7 +18346,7 @@ items:
 
       Media id: 19cb78_ebd145acc17647a1a1a0ff52c88ad3fb~mv2.jpg
 
-      Slug: box3-med-jpg
+      Slug: box3-med-jpg-2
 
       Type: image · -
 
@@ -18359,7 +18359,7 @@ items:
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
 
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:box3-med-png
+  - id: wix-media:box3-med-png-2
     title: Box3_med.png
     category: Media
     folderPath:
@@ -18379,7 +18379,7 @@ items:
 
       Media id: 19cb78_84e1bd83674a446e925a567dcff04c74~mv2.png
 
-      Slug: box3-med-png
+      Slug: box3-med-png-2
 
       Type: image · -
 
@@ -18487,39 +18487,6 @@ items:
       - Meijers Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/19cb78_d616a935dcd544549937fcef9aec9133~mv2.png
-    interaction:
-      mode: stage-place
-      stagePromptTemplate: |-
-        Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/19cb78_d616a935dcd544549937fcef9aec9133~mv2.png
-    prompt: >-
-      Use this Wix Media Manager asset in jay-html (do not copy to public/):
-
-      URL: https://static.wixstatic.com/media/19cb78_d616a935dcd544549937fcef9aec9133~mv2.png
-
-      Media id: 19cb78_d616a935dcd544549937fcef9aec9133~mv2.png
-
-      Slug: cab-beef-kit-1-png-2
-
-      Type: image · -
-
-      Folder: Meijers Campaign
-
-      Labels: barbecue beef, jerked beef, beef cattle, dried beef, beef, beef burgers, beef jerky, beefburger, japanese
-      beef, meat product, dried steak, roast beef, ground beef, pre-packaged food, meat substitute, food packaging, beef
-      stew, beef biltong, hamburger steak, dog food
-
-      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
-
-      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:cab-beef-kit-1-png-2-2
-    title: CAB Beef Kit 1.png
-    category: Media
-    folderPath:
-      - Meijers Campaign
-    pluginName: wix-media
-    packageName: '@jay-framework/wix-media'
     thumbnail: https://static.wixstatic.com/media/19cb78_2ef2a55ea21f4d67b7b230285ccd7362~mv2.png
     interaction:
       mode: stage-place
@@ -18542,6 +18509,39 @@ items:
       Labels: barbecue beef, jerked beef, beef cattle, beef, dried beef, beef burgers, beef jerky, beefburger, dried
       steak, japanese beef, roast beef, meat product, pre-packaged food, ground beef, beef biltong, food packaging, meat
       substitute, hamburger steak, beef stew, dog food
+
+      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
+
+      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
+  - id: wix-media:cab-beef-kit-1-png-2-2
+    title: CAB Beef Kit 1.png
+    category: Media
+    folderPath:
+      - Meijers Campaign
+    pluginName: wix-media
+    packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_d616a935dcd544549937fcef9aec9133~mv2.png
+    interaction:
+      mode: stage-place
+      stagePromptTemplate: |-
+        Place this image at the marker location on the page.
+        URL: https://static.wixstatic.com/media/19cb78_d616a935dcd544549937fcef9aec9133~mv2.png
+    prompt: >-
+      Use this Wix Media Manager asset in jay-html (do not copy to public/):
+
+      URL: https://static.wixstatic.com/media/19cb78_d616a935dcd544549937fcef9aec9133~mv2.png
+
+      Media id: 19cb78_d616a935dcd544549937fcef9aec9133~mv2.png
+
+      Slug: cab-beef-kit-1-png-2
+
+      Type: image · -
+
+      Folder: Meijers Campaign
+
+      Labels: barbecue beef, jerked beef, beef cattle, dried beef, beef, beef burgers, beef jerky, beefburger, japanese
+      beef, meat product, dried steak, roast beef, ground beef, pre-packaged food, meat substitute, food packaging, beef
+      stew, beef biltong, hamburger steak, dog food
 
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
 
@@ -18855,11 +18855,11 @@ items:
       mode: stage-place
       stagePromptTemplate: |-
         Place this video at the marker location on the page.
-        URL: https://video.wixstatic.com/video/19cb78_0d175b0221f14c3fb310f1c4294c4f72/file
+        URL: https://video.wixstatic.com/video/19cb78_a2b87ead0deb481580f2de8ad28b592e/file
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://video.wixstatic.com/video/19cb78_0d175b0221f14c3fb310f1c4294c4f72/file
-      Media id: 19cb78_0d175b0221f14c3fb310f1c4294c4f72
+      URL: https://video.wixstatic.com/video/19cb78_a2b87ead0deb481580f2de8ad28b592e/file
+      Media id: 19cb78_a2b87ead0deb481580f2de8ad28b592e
       Slug: gyros-mp4
       Type: video · -
       Folder: Meijers Campaign
@@ -18876,39 +18876,17 @@ items:
       mode: stage-place
       stagePromptTemplate: |-
         Place this video at the marker location on the page.
-        URL: https://video.wixstatic.com/video/19cb78_a2b87ead0deb481580f2de8ad28b592e/file
+        URL: https://video.wixstatic.com/video/19cb78_0d175b0221f14c3fb310f1c4294c4f72/file
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://video.wixstatic.com/video/19cb78_a2b87ead0deb481580f2de8ad28b592e/file
-      Media id: 19cb78_a2b87ead0deb481580f2de8ad28b592e
+      URL: https://video.wixstatic.com/video/19cb78_0d175b0221f14c3fb310f1c4294c4f72/file
+      Media id: 19cb78_0d175b0221f14c3fb310f1c4294c4f72
       Slug: gyros-mp4-2
       Type: video · -
       Folder: Meijers Campaign
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
   - id: wix-media:gyrosandwich-outline-svg
-    title: GyroSandwich-Outline.svg
-    category: Media
-    folderPath:
-      - Meijers Campaign
-    pluginName: wix-media
-    packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/shapes/19cb78_0c39de720eb14187a4df6f7cf6bdc325.svg
-    interaction:
-      mode: stage-place
-      stagePromptTemplate: |-
-        Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/shapes/19cb78_0c39de720eb14187a4df6f7cf6bdc325.svg
-    prompt: |-
-      Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://static.wixstatic.com/shapes/19cb78_0c39de720eb14187a4df6f7cf6bdc325.svg
-      Media id: 19cb78_0c39de720eb14187a4df6f7cf6bdc325.svg
-      Slug: gyrosandwich-outline-svg
-      Type: vector · -
-      Folder: Meijers Campaign
-      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
-      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:gyrosandwich-outline-svg-2
     title: GyroSandwich-Outline.svg
     category: Media
     folderPath:
@@ -18925,6 +18903,28 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/shapes/19cb78_65a08ab2e77745b4a73edb3a2465faa5.svg
       Media id: 19cb78_65a08ab2e77745b4a73edb3a2465faa5.svg
+      Slug: gyrosandwich-outline-svg
+      Type: vector · -
+      Folder: Meijers Campaign
+      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
+      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
+  - id: wix-media:gyrosandwich-outline-svg-2
+    title: GyroSandwich-Outline.svg
+    category: Media
+    folderPath:
+      - Meijers Campaign
+    pluginName: wix-media
+    packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/shapes/19cb78_0c39de720eb14187a4df6f7cf6bdc325.svg
+    interaction:
+      mode: stage-place
+      stagePromptTemplate: |-
+        Place this image at the marker location on the page.
+        URL: https://static.wixstatic.com/shapes/19cb78_0c39de720eb14187a4df6f7cf6bdc325.svg
+    prompt: |-
+      Use this Wix Media Manager asset in jay-html (do not copy to public/):
+      URL: https://static.wixstatic.com/shapes/19cb78_0c39de720eb14187a4df6f7cf6bdc325.svg
+      Media id: 19cb78_0c39de720eb14187a4df6f7cf6bdc325.svg
       Slug: gyrosandwich-outline-svg-2
       Type: vector · -
       Folder: Meijers Campaign
@@ -19071,11 +19071,11 @@ items:
       mode: stage-place
       stagePromptTemplate: |-
         Place this video at the marker location on the page.
-        URL: https://video.wixstatic.com/video/19cb78_f2b2b6dceb2543dba3db5af6994d08d5/file
+        URL: https://video.wixstatic.com/video/19cb78_32c982abb7894437a4a2c26de0a411c2/file
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://video.wixstatic.com/video/19cb78_f2b2b6dceb2543dba3db5af6994d08d5/file
-      Media id: 19cb78_f2b2b6dceb2543dba3db5af6994d08d5
+      URL: https://video.wixstatic.com/video/19cb78_32c982abb7894437a4a2c26de0a411c2/file
+      Media id: 19cb78_32c982abb7894437a4a2c26de0a411c2
       Slug: marathon-chicken-patties-mp4
       Type: video · -
       Folder: Meijers Campaign
@@ -19092,11 +19092,11 @@ items:
       mode: stage-place
       stagePromptTemplate: |-
         Place this video at the marker location on the page.
-        URL: https://video.wixstatic.com/video/19cb78_32c982abb7894437a4a2c26de0a411c2/file
+        URL: https://video.wixstatic.com/video/19cb78_f2b2b6dceb2543dba3db5af6994d08d5/file
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://video.wixstatic.com/video/19cb78_32c982abb7894437a4a2c26de0a411c2/file
-      Media id: 19cb78_32c982abb7894437a4a2c26de0a411c2
+      URL: https://video.wixstatic.com/video/19cb78_f2b2b6dceb2543dba3db5af6994d08d5/file
+      Media id: 19cb78_f2b2b6dceb2543dba3db5af6994d08d5
       Slug: marathon-chicken-patties-mp4-2
       Type: video · -
       Folder: Meijers Campaign
@@ -22114,7 +22114,7 @@ items:
       Labels: Food, Ingredient, Recipe, Cuisine, Rectangle, Dish, Staple food, Hamburger, Bun, Fast food
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:box2-med-jpg
+  - id: wix-media:box2-med-jpg-2-2
     title: Box2_Med.jpg
     category: Media
     folderPath:
@@ -22132,7 +22132,7 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_93a9fb3780604aa4a8110af88b233b75~mv2.jpg
       Media id: 19cb78_93a9fb3780604aa4a8110af88b233b75~mv2.jpg
-      Slug: box2-med-jpg
+      Slug: box2-med-jpg-2
       Type: image · -
       Folder: Images / Retail Images
       Labels: Food, Ingredient, Bun, Recipe, Sandwich, Fast food, Rectangle, Hamburger, Baked goods, Staple food
@@ -22186,7 +22186,7 @@ items:
       Labels: Food, Ingredient, Tableware, Bun, Recipe, Staple food, Sandwich, Natural foods, Dish, Cuisine
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:box3-med-jpg-2
+  - id: wix-media:box3-med-jpg
     title: Box3_med.jpg
     category: Media
     folderPath:
@@ -22204,7 +22204,7 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_6624ad76771f4b45b676db1602f4fc33~mv2.jpg
       Media id: 19cb78_6624ad76771f4b45b676db1602f4fc33~mv2.jpg
-      Slug: box3-med-jpg-2
+      Slug: box3-med-jpg
       Type: image · -
       Folder: Images / Retail Images
       Labels: Food, Ingredient, Bun, Recipe, Sandwich, Staple food, Leaf vegetable, Natural foods, Fast food, Hamburger
