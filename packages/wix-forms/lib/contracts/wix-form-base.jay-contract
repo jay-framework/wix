@@ -1,10 +1,10 @@
-name: wix-form
-description: Renders a Wix Form by ID with dynamic fields and submission handling.
+name: wix-form-base
+description: Base Wix form contract — materialized per form at setup with fieldCatalog rows.
 
 props:
   - name: formId
     type: string
-    description: Wix Forms form GUID (falls back to config defaultFormId when empty)
+    description: Wix Forms form GUID (optional — resolved from materialized contract when omitted)
 
 tags:
   - tag: fields
@@ -70,3 +70,16 @@ tags:
     type: interactive
     elementType: HTMLButtonElement
     description: Submit the form
+
+  - tag: fieldCatalog
+    type: sub-contract
+    repeated: true
+    trackBy: target
+    phase: slow
+    description: Materialized field targets for validate and agent discovery
+    tags:
+      - { tag: target, type: data, dataType: string }
+      - { tag: label, type: data, dataType: string }
+      - { tag: inputType, type: data, dataType: string }
+      - { tag: required, type: data, dataType: boolean }
+      - { tag: hasOptions, type: variant, dataType: boolean }

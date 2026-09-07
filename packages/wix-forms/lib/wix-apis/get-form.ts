@@ -31,6 +31,10 @@ export interface RawFormField {
 export interface GetFormResponse {
     form?: {
         id?: string;
+        name?: string;
+        properties?: {
+            name?: string;
+        };
         fields?: RawFormField[];
         formFields?: RawFormField[];
     };

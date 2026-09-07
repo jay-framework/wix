@@ -37,8 +37,8 @@ Design documentation for the Jay Framework Wix integration packages.
 | 29  | [App Strategy Support](./29%20-%20app-strategy-support.md)                                     | Draft           |
 | 30  | [BaaS Deploy Operations](./30%20-%20baas%20deploy%20operations.md)                             | Implemented     |
 | 31  | [Wix TXT Files and Sitemap Sync](./31%20-%20wix%20txt%20files%20and%20sitemap%20sync.md)       | Implemented     |
-| 32  | [Wix Forms Materialized Contracts](./32%20-%20wix-forms-materialized-contracts.md)             | Approved        |
-| 33  | [wix-forms Add Menu contribution](./33%20-%20wix-forms-add-menu-contribution.md)             | Draft           |
+| 32  | [Wix Forms Materialized Contracts](./32%20-%20wix-forms-materialized-contracts.md)             | Implemented (auto-fetch) |
+| 33  | [wix-forms Add Menu contribution](./33%20-%20wix-forms-add-menu-contribution.md)             | Implemented     |
 | 34  | [wix-bookings Add Menu contribution](./34%20-%20wix-bookings-add-menu-contribution.md)       | Draft           |
 
 ## Packages Covered

@@ -7,31 +7,36 @@ import {
 import { createSignal, Props } from '@jay-framework/component';
 import { WixApiError } from '@jay-framework/wix-server-client';
 import type {
-    FieldOfWixFormViewState,
-    OptionOfWixFormViewState,
-    WixFormContract,
-    WixFormFastViewState,
-    WixFormRefs,
-    WixFormSlowViewState,
-} from '../contracts/wix-form.jay-contract.js';
+    FieldCatalogOfWixFormBaseViewState,
+    FieldOfWixFormBaseViewState,
+    OptionOfWixFormBaseViewState,
+    WixFormBaseContract,
+    WixFormBaseFastViewState,
+    WixFormBaseRefs,
+    WixFormBaseSlowViewState,
+} from '../contracts/wix-form-base.jay-contract.js';
 import { WIX_FORMS_SERVICE, type WixFormsService } from '../services/wix-forms-service-marker.js';
 import type { FormFieldErrorView, FormFieldView } from '../types.js';
 import { submitForm } from '../actions/forms-actions.js';
 import { parseSubmissionFieldErrors, validateFormField } from '../utils/project-form-fields.js';
+import { toFieldCatalogRows } from '../utils/field-catalog.js';
+import { isFormOnSite, resolveFormId } from '../utils/resolve-form-id.js';
 
 export interface WixFormProps {
     formId?: string;
+    contractName?: string;
 }
 
 interface WixFormCarryForward {
     formId: string;
     fields: FormFieldView[];
-    options: OptionOfWixFormViewState[];
+    options: OptionOfWixFormBaseViewState[];
+    fieldCatalog: FieldCatalogOfWixFormBaseViewState[];
     loadError?: string;
 }
 
-function flattenOptions(fields: FormFieldView[]): OptionOfWixFormViewState[] {
-    const options: OptionOfWixFormViewState[] = [];
+function flattenOptions(fields: FormFieldView[]): OptionOfWixFormBaseViewState[] {
+    const options: OptionOfWixFormBaseViewState[] = [];
     for (const field of fields) {
         for (const option of field.options) {
             options.push({
@@ -45,7 +50,7 @@ function flattenOptions(fields: FormFieldView[]): OptionOfWixFormViewState[] {
     return options;
 }
 
-function toContractFields(fields: FormFieldView[]): FieldOfWixFormViewState[] {
+function toContractFields(fields: FormFieldView[]): FieldOfWixFormBaseViewState[] {
     return fields.map((field) => ({
         target: field.target,
         label: field.label,
@@ -57,17 +62,39 @@ function toContractFields(fields: FormFieldView[]): FieldOfWixFormViewState[] {
     }));
 }
 
+function warnIfFormNotOnSite(forms: WixFormsService, formId: string): void {
+    if (!formId) {
+        return;
+    }
+    if (!isFormOnSite(forms, formId)) {
+        console.warn(
+            `[wix-form] formId "${formId}" is not in the site forms catalog. Re-run jay-stack agent-kit.`,
+        );
+    }
+}
+
 async function renderSlowlyChanging(props: WixFormProps, forms: WixFormsService) {
+    let formId: string;
     try {
-        const fields = await forms.getFormFields(props.formId ?? '');
-        const formId = props.formId ?? '';
-        const options = flattenOptions(fields);
-        return phaseOutput<WixFormSlowViewState, WixFormCarryForward>(
-            {
-                fields: toContractFields(fields),
-                options,
-            },
-            { formId, fields, options },
+        formId = await resolveFormId(forms, {
+            formIdProp: props.formId,
+            contractName: props.contractName,
+        });
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'Could not resolve form.';
+        return phaseOutput<WixFormBaseSlowViewState, WixFormCarryForward>(
+            { fieldCatalog: [] },
+            { formId: '', fields: [], options: [], fieldCatalog: [], loadError: message },
+        );
+    }
+    warnIfFormNotOnSite(forms, formId);
+
+    try {
+        const fields = await forms.getFormFields(formId);
+        const fieldCatalog = toFieldCatalogRows(fields);
+        return phaseOutput<WixFormBaseSlowViewState, WixFormCarryForward>(
+            { fieldCatalog },
+            { formId, fields, options: flattenOptions(fields), fieldCatalog },
         );
     } catch (error) {
         const rawMessage = error instanceof Error ? error.message : 'Could not load the form.';
@@ -75,15 +102,15 @@ async function renderSlowlyChanging(props: WixFormProps, forms: WixFormsService)
             ? 'Forms API access denied. Add Wix Forms permission to your API key in the Wix dashboard.'
             : rawMessage || 'Could not load the form. Please try again later.';
         console.error('[wix-form] getFormFields failed:', error);
-        return phaseOutput<WixFormSlowViewState, WixFormCarryForward>(
-            { fields: [], options: [] },
-            { formId: props.formId ?? '', fields: [], options: [], loadError: message },
+        return phaseOutput<WixFormBaseSlowViewState, WixFormCarryForward>(
+            { fieldCatalog: [] },
+            { formId, fields: [], options: [], fieldCatalog: [], loadError: message },
         );
     }
 }
 
 async function renderFastChanging(props: WixFormProps, carryForward: WixFormCarryForward) {
-    const Pipeline = RenderPipeline.for<WixFormFastViewState, WixFormCarryForward>();
+    const Pipeline = RenderPipeline.for<WixFormBaseFastViewState, WixFormCarryForward>();
     return Pipeline.ok(null).toPhaseOutput(() => ({
         viewState: {
             fields: toContractFields(carryForward.fields),
@@ -102,14 +129,15 @@ async function renderFastChanging(props: WixFormProps, carryForward: WixFormCarr
             formId: carryForward.formId || props.formId || '',
             fields: carryForward.fields,
             options: carryForward.options,
+            fieldCatalog: carryForward.fieldCatalog,
         },
     }));
 }
 
 function WixFormInteractive(
     props: Props<WixFormProps>,
-    refs: WixFormRefs,
-    viewStateSignals: Signals<WixFormFastViewState>,
+    refs: WixFormBaseRefs,
+    viewStateSignals: Signals<WixFormBaseFastViewState>,
     carryForward: WixFormCarryForward,
 ) {
     const [isSubmitting, setIsSubmitting] = createSignal(false);
@@ -233,7 +261,7 @@ function WixFormInteractive(
     };
 }
 
-export const wixForm = makeJayStackComponent<WixFormContract>()
+export const wixForm = makeJayStackComponent<WixFormBaseContract>()
     .withProps<WixFormProps>()
     .withServices(WIX_FORMS_SERVICE)
     .withSlowlyRender(renderSlowlyChanging)

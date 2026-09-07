@@ -1,23 +1,30 @@
 import type { WixClient } from '@wix/sdk';
 import { registerService } from '@jay-framework/stack-server-runtime';
-import type { WixFormsConfig } from '../config-loader.js';
+import type { WixFormsSiteCatalog } from '../site-forms-catalog.js';
 import { createFormSubmission } from '../wix-apis/create-submission.js';
 import { getFormSchema } from '../wix-apis/get-form.js';
 import { getFormSummary } from '../wix-apis/get-form-summary.js';
+import { findSiteFormByFormId } from '../site-forms-catalog.js';
 import { projectFormFields, projectFormSummaryFields } from '../utils/project-form-fields.js';
 import { WIX_FORMS_SERVICE, type WixFormsService } from './wix-forms-service-marker.js';
 
 export function provideWixFormsService(
     wixClient: WixClient,
-    config: WixFormsConfig,
+    catalog: WixFormsSiteCatalog,
 ): WixFormsService {
     const service: WixFormsService = {
+        catalog,
+
         async getFormFields(formId) {
-            const resolvedFormId = formId || config.defaultFormId;
-            if (!resolvedFormId) {
-                throw new Error('Form ID is missing. Set defaultFormId in config/.wix-forms.yaml.');
+            if (!formId) {
+                throw new Error(
+                    'Form ID is missing. Bind contract="form/<name>" or pass formId prop — forms are resolved from the site catalog.',
+                );
             }
-            const { form } = await getFormSchema(wixClient, resolvedFormId);
+            if (!findSiteFormByFormId(catalog, formId)) {
+                throw new Error(`Form "${formId}" was not found in the site forms catalog. Re-run jay-stack agent-kit.`);
+            }
+            const { form } = await getFormSchema(wixClient, formId);
             if (!form) {
                 throw new Error('Form schema missing from Wix response');
             }
@@ -26,6 +33,18 @@ export function provideWixFormsService(
                 throw new Error('Form has no usable input fields');
             }
             return fields;
+        },
+
+        async getFormDisplayName(formId) {
+            if (!formId) {
+                return undefined;
+            }
+            const cached = findSiteFormByFormId(catalog, formId);
+            if (cached) {
+                return cached.title;
+            }
+            const { form } = await getFormSchema(wixClient, formId);
+            return form?.properties?.name?.trim() || form?.name?.trim() || undefined;
         },
 
         async getFormSummaryFields(formId) {
@@ -43,11 +62,10 @@ export function provideWixFormsService(
         },
 
         async createSubmission(formId, values) {
-            const resolvedFormId = formId || config.defaultFormId;
-            if (!resolvedFormId) {
-                throw new Error('Form ID is missing. Set defaultFormId in config/.wix-forms.yaml.');
+            if (!formId) {
+                throw new Error('Form ID is missing. Bind a materialized form contract or pass formId prop.');
             }
-            await createFormSubmission(wixClient, resolvedFormId, values);
+            await createFormSubmission(wixClient, formId, values);
         },
     };
 

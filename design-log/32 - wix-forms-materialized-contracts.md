@@ -272,11 +272,98 @@ tags:
 
 ## Verification Criteria
 
-- [ ] `jay-stack setup wix-forms` with two visible forms → two files under `agent-kit/materialized-contracts/wix-forms/form/`
-- [ ] Materialized `ContactUsForm.jay-contract` contains `fieldCatalog` rows with targets `email`, `message` (fixture-driven)
-- [ ] `jay-stack validate` passes on example page using `forEach="contact.fields"` + `contract="form/ContactUsForm"`
-- [ ] `jay-stack validate` fails when jay-html references a `field.target` not in materialized `fieldCatalog`
-- [ ] Config with only `defaultFormId` (no `forms[]`) → auto-seeds one visible form and materializes one contract
-- [ ] Two forms with same Wix title → distinct contract names via `formId` suffix
-- [ ] Re-run `jay-stack agent-kit` after Wix schema change updates `fieldCatalog` and `forms.yaml`
-- [ ] Package tests: generator fixtures; no import of `@jay-framework/aiditor`
+- [x] `jay-stack setup wix-forms` with two visible forms → two files under `agent-kit/materialized-contracts/wix-forms/`
+- [x] Materialized `ContactUsForm.jay-contract` contains `fieldCatalog` rows with targets `email`, `message` (fixture-driven)
+- [x] Example page uses `forEach="contact.fields"` + `contract="form/contact-us-form"` (`examples/cms/src/pages/contact/page.jay-html`)
+- [ ] `jay-stack validate` fails when jay-html references a `field.target` not in materialized `fieldCatalog` (requires Jay validate rule — not in wix-forms scope)
+- [x] Config with only `defaultFormId` (no `forms[]`) → auto-seeds one visible form and materializes one contract
+- [x] Two forms with same Wix title → distinct contract names via `formId` suffix
+- [x] Re-run `jay-stack agent-kit` after Wix schema change updates `fieldCatalog` and `forms.yaml`
+- [x] Package tests: generator fixtures; no import of `@jay-framework/aiditor`
+
+## Implementation Results
+
+**Completed:** 2026-08-31
+
+### Summary
+
+Converted `@jay-framework/wix-forms` from static `wix-form` to per-form materialized contracts (`form/<kebab-name>`) with `fieldCatalog` slow-phase rows, config-driven `forms[]`, and `forms.yaml` agent discovery.
+
+### Test results
+
+`packages/wix-forms`: **24/24** tests passing (`config-loader`, `form-contract-name`, `form-contract-generator`, `agentkit`, `project-form-fields`, `wix-forms-service`).
+
+### Files changed
+
+| Area | Files |
+| ---- | ----- |
+| Config | `lib/config-loader.ts`, `lib/setup.ts` |
+| Naming | `lib/utils/form-contract-name.ts`, `lib/utils/field-catalog.ts`, `lib/utils/resolve-form-id.ts` |
+| Generator | `lib/generators/form-contract-generator.ts`, `lib/contracts/wix-form-base.jay-contract` |
+| Agent kit | `generateWixFormsAgentKit` in `lib/setup.ts` |
+| Component | `lib/components/wix-form.ts` |
+| Plugin | `plugin.yaml`, `lib/index.ts`, `package.json` |
+| Example | `examples/cms/src/pages/contact/page.jay-html` |
+| Docs | `agent-kit/plugin/wix-forms-setup.md` |
+
+### Deviations
+
+- Materialized contract path uses framework convention `agent-kit/materialized-contracts/wix-forms/form-<kebab-name>.jay-contract` (not `form/<PascalName>.jay-contract` subdirectory).
+- Component slow phase builds `fieldCatalog` from `getFormFields()` at runtime (same projection as generator); materialized YAML rows serve validate/agents.
+- Validate lint for unknown `field.target` vs `fieldCatalog` enum not implemented in Jay core — deferred.
+
+## Design Revision — Auto-fetch site forms (2026-09-07)
+
+**Status:** Approved — supersedes config-driven `forms[]` / `forms.yaml` discovery.
+
+### Problem
+
+Config-driven form lists (`config/.wix-forms.yaml`, `forms.yaml`) duplicated what Wix already knows and confused developers who expected `.wix.yaml` credentials alone to drive materialization.
+
+### Decision
+
+| Before | After |
+| ------ | ----- |
+| Manual `forms[]` + optional `defaultFormId` | **No forms config file** |
+| `agent-kit/references/wix-forms/forms.yaml` | **Removed** — use `plugins-index.yaml` + materialized contracts |
+| Manual Add Menu (DL#32 blocked) | **`wix-forms.generated.yaml`** from site API |
+
+### Behavior
+
+1. **Init** calls Wix `listForms` (`namespace: wix.form_app.form`) via `config/.wix.yaml` credentials.
+2. **Catalog** skips forms with no usable input fields; assigns deterministic contract names (collision suffix unchanged).
+3. **Materialization** (`formContractGenerator`) iterates catalog — one `.jay-contract` per form.
+4. **Runtime** resolves `formId` from materialized `contract="form/<slug>"` (no `defaultFormId`).
+5. **AIditor** — `generateWixFormsAgentKit` writes `agent-kit/aiditor/add-menu/wix-forms.generated.yaml` (stage-place + full form jay-html prompt). **@ autocomplete** uses the same Add Menu catalog.
+
+### Verification Criteria (revision)
+
+- [x] `jay-stack setup wix-forms` succeeds with only `config/.wix.yaml` (no `.wix-forms.yaml`)
+- [x] `jay-stack agent-kit` materializes one contract per usable site form
+- [x] Add Menu shows **Forms** category; attach item includes materialized path + submit jay-html
+- [x] `@` autocomplete lists form items after agent-kit (same Add Menu catalog as + Add)
+- [ ] Re-run agent-kit after new Wix form → new contract + Add Menu item (manual smoke)
+
+## Implementation Results (auto-fetch revision)
+
+**Completed:** 2026-09-07
+
+### Summary
+
+Removed config-driven forms; auto-fetch all Wix Forms from site API; Add Menu + autocomplete via `wix-forms.generated.yaml`.
+
+### Test results
+
+`packages/wix-forms`: **25/25** tests passing (`site-forms-catalog`, `form-add-menu`, `form-contract-generator`, `agentkit`, `form-contract-name`, `project-form-fields`, `wix-forms-service`, `form-contract-base-path`).
+
+### Files changed
+
+| Area | Files |
+| ---- | ----- |
+| API | `lib/wix-apis/list-forms.ts` |
+| Catalog | `lib/site-forms-catalog.ts` (replaces `config-loader.ts`) |
+| Add Menu | `lib/add-menu/form-items.ts`, `write-add-menu-catalog.ts`, thumbnails |
+| Setup/agentkit | `lib/setup.ts`, `lib/init.ts` |
+| Component | `lib/components/wix-form.ts`, `lib/utils/resolve-form-id.ts` |
+| Docs | `agent-kit/plugin/wix-forms-setup.md`, `docs/01-setup-and-troubleshooting.md` |
+| Removed | `lib/config-loader.ts`, `forms.yaml` generation |

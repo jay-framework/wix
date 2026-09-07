@@ -1,54 +1,58 @@
 // @vitest-environment node
 
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { provideWixFormsService } from '../lib/services/wix-forms-service.js';
 
-vi.mock('@jay-framework/stack-server-runtime', () => ({
-    registerService: vi.fn(),
+const mockGetFormSummary = vi.fn();
+
+vi.mock('../lib/wix-apis/get-form.js', () => ({
+    getFormSchema: vi.fn(),
 }));
 
 vi.mock('../lib/wix-apis/get-form-summary.js', () => ({
-    getFormSummary: vi.fn(),
+    getFormSummary: (...args: unknown[]) => mockGetFormSummary(...args),
 }));
 
-import { getFormSummary } from '../lib/wix-apis/get-form-summary.js';
-import { provideWixFormsService } from '../lib/services/wix-forms-service.js';
-
-const mockGetFormSummary = vi.mocked(getFormSummary);
-const mockClient = {} as Parameters<typeof provideWixFormsService>[0];
-
 describe('WixFormsService.getFormSummaryFields', () => {
-    beforeEach(() => {
-        mockGetFormSummary.mockReset();
-    });
-
-    it('should throw when formId is missing', async () => {
-        const service = provideWixFormsService(mockClient, { defaultFormId: '' });
+    it('should reject empty formId', async () => {
+        const service = provideWixFormsService({} as never, { forms: [] });
 
         await expect(service.getFormSummaryFields('')).rejects.toThrow(
-            'This booking service has no participant form configured in Wix.',
+            'Form ID is missing. This booking service has no participant form configured in Wix.',
         );
-        expect(mockGetFormSummary).not.toHaveBeenCalled();
     });
 
-    it('should throw when Wix returns no usable fields', async () => {
+    it('should reject when Wix returns no fields', async () => {
         mockGetFormSummary.mockResolvedValueOnce({ formSummary: { fields: [] } });
-        const service = provideWixFormsService(mockClient, { defaultFormId: '' });
+        const service = provideWixFormsService({} as never, { forms: [] });
 
         await expect(service.getFormSummaryFields('form-1')).rejects.toThrow(
             'Could not load participant form fields from Wix.',
         );
     });
 
-    it('should return projected fields when Wix returns a valid summary', async () => {
+    it('should return projected summary fields', async () => {
         mockGetFormSummary.mockResolvedValueOnce({
             formSummary: {
-                fields: [{ target: 'email', label: 'Email', type: 'EMAIL', required: true }],
+                fields: [
+                    {
+                        target: 'first_name',
+                        label: 'First name',
+                        type: 'STRING',
+                        required: true,
+                    },
+                ],
             },
         });
-        const service = provideWixFormsService(mockClient, { defaultFormId: '' });
+        const service = provideWixFormsService({} as never, { forms: [] });
 
         await expect(service.getFormSummaryFields('form-1')).resolves.toEqual([
-            { target: 'email', label: 'Email', type: 'EMAIL', required: true },
+            {
+                target: 'first_name',
+                label: 'First name',
+                type: 'STRING',
+                required: true,
+            },
         ]);
     });
 });

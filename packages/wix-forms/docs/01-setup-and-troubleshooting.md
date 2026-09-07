@@ -1,29 +1,41 @@
-# Wix Forms plugin — setup and troubleshooting
+# Wix Forms — setup and troubleshooting
 
 **Package:** `@jay-framework/wix-forms`
 
-## Setup
+## Quick setup
 
-1. Run `jay-stack setup wix-forms`.
-2. Set `defaultFormId` in `config/.wix-forms.yaml` (Wix Dashboard → Forms → form ID).
-3. Enable **Wix Forms** on your API key (Dashboard → [API Keys](https://manage.wix.com/account/api-keys)).
+1. Configure `config/.wix.yaml` (Wix site + API key with **Wix Forms** permission).
+2. Run `jay-stack setup wix-server-client` then `jay-stack setup wix-forms`.
+3. Run `jay-stack agent-kit` — materializes contracts and AIditor Add Menu items.
 
-## Rendering a form
+No `config/.wix-forms.yaml` — forms are **auto-fetched** from the Wix API.
 
-Bind `<jay:wix-form>` with plugin `@jay-framework/wix-forms` / contract `wix-form`.
+## Page binding
 
-Pass `formId` to load a specific form, or omit it to use `defaultFormId` from config.
+Use a materialized contract from `agent-kit/plugins-index.yaml` or pick a form from AIditor **+ Add** / **@**:
 
-## Bookings integration
+```html
+<script type="application/jay-headless"
+  plugin="@jay-framework/wix-forms"
+  contract="form/your-form-slug"
+  key="myform">
+</script>
+```
 
-`wix-bookings` loads participant fields via `getFormSummary` from this plugin (no `wix-form` UI on booking pages).
+Omit `formId` when using `contract="form/..."` — the plugin resolves the Wix form GUID from the site catalog.
 
-## Common errors
+## Bookings
 
-| Symptom                      | Fix                                              |
-| ---------------------------- | ------------------------------------------------ |
-| 403 on form schema or submit | Add **Wix Forms** permission to API key          |
-| "Form ID is missing"         | Set `defaultFormId` in `config/.wix-forms.yaml`  |
-| Form loads but no fields     | Form has no supported input fields in Wix schema |
+`wix-bookings` loads participant fields via `getFormSummary` from this plugin (no form UI on booking pages).
 
-See also `agent-kit/plugin/wix-forms-setup.md` for full setup guide.
+## Troubleshooting
+
+| Symptom                      | Fix                                                                 |
+| ---------------------------- | ------------------------------------------------------------------- |
+| Setup: no forms found        | Add forms in Wix dashboard; enable Wix Forms on API key             |
+| 403 on load/submit           | Add **Wix Forms** permission to API key                             |
+| Unknown contract             | Run `jay-stack agent-kit`                                         |
+| Form missing from Add Menu   | Form has no usable fields in Wix; check form editor               |
+| Contract not in autocomplete | Re-run `agent-kit`; confirm `wix-forms.generated.yaml` exists   |
+
+See `agent-kit/plugin/wix-forms-setup.md` for full guide.

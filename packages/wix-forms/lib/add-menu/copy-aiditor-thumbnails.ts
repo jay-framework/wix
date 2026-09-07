@@ -1,0 +1,33 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
+const PUBLIC_THUMBNAIL_ROOT = path.join('public', 'aiditor-add-menu-thumbnails');
+
+export function copyAiditorAddMenuThumbnails(
+    ctx: { projectRoot: string; force: boolean },
+    resolvePackagePath: (relativePath: string) => string,
+    pluginName: string,
+): string[] {
+    const sourceDir = resolvePackagePath(path.join('agent-kit', 'aiditor', 'thumbnails', pluginName));
+    if (!fs.existsSync(sourceDir)) {
+        return [];
+    }
+
+    const destDir = path.join(ctx.projectRoot, PUBLIC_THUMBNAIL_ROOT, pluginName);
+    const created: string[] = [];
+
+    fs.mkdirSync(destDir, { recursive: true });
+    for (const entry of fs.readdirSync(sourceDir, { withFileTypes: true })) {
+        if (!entry.isFile()) {
+            continue;
+        }
+        const sourcePath = path.join(sourceDir, entry.name);
+        const destPath = path.join(destDir, entry.name);
+        if (!fs.existsSync(destPath) || ctx.force) {
+            fs.copyFileSync(sourcePath, destPath);
+            created.push(path.posix.join(PUBLIC_THUMBNAIL_ROOT, pluginName, entry.name));
+        }
+    }
+
+    return created;
+}

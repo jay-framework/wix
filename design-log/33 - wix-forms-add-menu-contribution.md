@@ -2,96 +2,76 @@
 
 ## Status
 
-**Draft — architect scoping (2026-08-31)**
+**Approved — execution-ready (2026-09-07)** — auto-fetch revision aligned with [DL#32](./32%20-%20wix-forms-materialized-contracts.md).
 
-**Depends on:** [DL#32](./32%20-%20wix-forms-materialized-contracts.md) (materialized contract paths). **Parent:** [jay-aiditor #19](../../jay-aiditor/design-log/19%20-%20aiditor-add-menu.md). **Settings pattern:** [jay-aiditor #33](../../jay-aiditor/design-log/33%20-%20aiditor-plugin-settings-tabs.md).
+**Depends on:** [DL#32](./32%20-%20wix-forms-materialized-contracts.md) (materialized contract paths).
 
 ## Background
 
-wix-stores contributes Add Menu via `agent-kit/aiditor/add-menu/wix-stores.yaml` (static components) + `wix-stores.generated.yaml` (per-category items). wix-forms has no Add Menu contributor today; users cannot attach form context from AIditor Add Page or Change Request.
+AIditor **+ Add** and **@ autocomplete** consume `agent-kit/aiditor/add-menu/*.yaml`. wix-forms must contribute one **stage-place** item per site form with a prompt that includes materialized contract path and working form jay-html (fields + submit).
 
-Forms are **site-specific** and **plural** — prompts must name the form id, materialized contract path, and script key.
+Forms are discovered from the **Wix API** at init — no manual config.
 
 ## Problem
 
 1. No Add Menu entries for Wix Forms — agent does not receive form binding instructions.
 2. Per-form items need **materialized contract paths** (DL#32), not `node_modules/.../wix-form.jay-contract`.
-3. Optional **Project settings tab** — picking which forms to materialize is easier in UI than hand-editing `forms[]` in yaml (aligns with #33; defer if config-only is enough for v1).
+3. Optional **Project settings tab** — picking which forms to materialize is easier in UI than hand-editing config (defer if API-driven discovery is enough for v1).
 
 ## Questions and Answers
 
 **Q: Static template item for generic `wix-form`?**
-**A:** **No** after DL#32 — only **generated** items per configured visible form. No static `wix-forms.yaml` in v1 unless we need a single “Forms setup help” reference item (out of scope).
+**A:** **No** after DL#32 — only **generated** items per site form. No static `wix-forms.yaml` in v1 unless we need a single “Forms setup help” reference item (out of scope).
 
 **Q: Generated file name?**
 **A:** `agent-kit/aiditor/add-menu/wix-forms.generated.yaml` — never overwrite hand-authored yaml.
 
 **Q: Item shape per form?**
-**A:**
+**A:** See generated catalog table below.
+
+## Design
+
+### Generated catalog
+
+**File:** `agent-kit/aiditor/add-menu/wix-forms.generated.yaml` (never hand-edited)
 
 | Field | Value |
 | ----- | ----- |
 | `id` | `wix-forms:form:{formId}` |
 | `category` | `Forms` |
-| `subCategory` | `Components` (or form title if single subCategory is too flat) |
-| `title` | Form display name from Wix or config override |
+| `subCategory` | `Site forms` |
+| `title` | Wix form display name |
 | `interaction.mode` | `stage-place` |
-| `prompt` | formId, materialized contract path, suggested script key, submitForm action hint |
-
-**Q: Project settings tab in v1?**
-**A:** **Recommended but optional for v1.** Minimum: config yaml + setup message. **v1.5:** `agent-kit/aiditor/settings/wix-forms.yaml` + devOnly route — checklist (API key permissions), link to Wix Dashboard → Forms, read-only list of configured forms, CTA to re-run agent-kit. **No secrets in browser** (#33).
-
-**Q: Cross-repo tests?**
-**A:** Same as wix-stores DL#20 — shape tests in wix repo only; canonical fixture `jay-aiditor/.../add-menu/valid-item.yaml` copied into test helper.
-
-## Design
-
-### Setup (`setupWixForms`)
-
-- After config valid: no static add-menu write in setup (generated only).
-- Existing: create `config/.wix-forms.yaml` template.
+| `prompt` | formId, materialized contract path, script key, full jay-html snippet |
 
 ### agentkit handler
 
-1. Ensure DL#32 materialization ran (forms + contracts exist).
-2. For each visible form in config, fetch title/summary from Wix (or cache from `forms.yaml`).
-3. Write `wix-forms.generated.yaml` with one item per form.
-4. Prompt template includes:
-   - `Read agent-kit/materialized-contracts/wix-forms/form/<Name>Form.jay-contract`
-   - `formId: {formId}` prop on `<jay:...>` or headless script
-   - `submitForm` / field binding notes
+1. Read site catalog from `WixFormsService` (populated at init from Wix API).
+2. Write `wix-forms.generated.yaml` via `buildFormAddMenuItems`.
+3. Copy thumbnail `agent-kit/aiditor/thumbnails/wix-forms/form.svg` → `public/aiditor-add-menu-thumbnails/wix-forms/`.
 
-### Settings tab (optional v1.5)
+Prompt template includes:
 
-- `settings.template.yaml` → materialize `agent-kit/aiditor/settings/wix-forms.yaml`
-- Route: `/wix-forms/settings` (`devOnly: true`)
-- Iframe: onboarding copy, permission checklist, “Re-run agent-kit” postMessage (`aiditor:addMenuCatalogChanged`)
+- `Read agent-kit/materialized-contracts/wix-forms/form-<slug>.jay-contract`
+- `formId: {formId}` prop on headless script
+- `submitForm` / field binding notes
 
-### Blast radius
+### AIditor autocomplete
 
-| Package | Change |
-| ------- | ------ |
-| wix-forms | agentkit handler, optional settings route + page |
-| jay-aiditor | None required — consumes yaml like other plugins |
-| examples | Dogfood: install wix-forms, run agent-kit, verify Add Menu |
-
-## Implementation Plan
-
-| ID | Task | Priority |
-| -- | ---- | -------- |
-| F1 | agentkit: write `wix-forms.generated.yaml` | P0 |
-| F2 | Tests: yaml shape + prompt contains materialized path | P0 |
-| F3 | Settings tab + route (optional) | P1 |
-| F4 | Thumbnails per form (generic svg fallback) | P2 |
-
-## Trade-offs
-
-- **Generated-only catalog** — simpler than static+generated split; empty until forms configured.
-- **Defer settings UI** — ships faster; power users edit yaml.
+No separate reference file. **@ mentions** use the same Add Menu catalog as **+ Add** (`listAddMenuItems` in aiditor).
 
 ## Verification Criteria
 
-- [ ] Project with wix-forms configured → Add Menu shows **Forms** category with one item per visible form
-- [ ] Attach item → agent prompt includes materialized contract path + formId
-- [ ] Uninstalled wix-forms → items hidden (AIditor package.json filter)
-- [ ] Re-run agent-kit after adding form in config → new item appears without manual yaml edit
+- [x] Project with wix-forms + agent-kit → Add Menu **Forms** category with one item per site form
+- [x] Item prompt includes materialized contract path + forEach fields jay-html + submitButton ref
+- [x] `interaction.mode: stage-place` for marker placement
+- [ ] Dogfood: attach form item in AIditor → agent receives full binding instructions
+- [ ] Re-run agent-kit after new Wix form → new Add Menu item without manual yaml edit
+
+## Implementation Results
+
+**Completed:** 2026-09-07 (with DL#32 auto-fetch revision)
+
+- `lib/add-menu/form-items.ts` — prompt builder with full form UI snippet
+- `generateWixFormsAgentKit` writes generated catalog + copies thumbnails
+- Tests: `test/form-add-menu.test.ts`, `test/agentkit.test.ts`
