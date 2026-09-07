@@ -19,6 +19,7 @@
       "types": "./dist/index.client.d.ts",
       "default": "./dist/index.client.js"
     },
+    "./tools": "./dist/tools.js",
     "./plugin.yaml": "./plugin.yaml",
     "./wix-form.jay-contract": "./dist/contracts/wix-form.jay-contract",
     "./get-form-summary.jay-action": "./dist/actions/get-form-summary.jay-action",
@@ -31,7 +32,7 @@
     "build:client": "vite build",
     "build:server": "vite build --ssr",
     "build:copy-contract": "mkdir -p dist/contracts && cp lib/contracts/*.jay-contract* dist/contracts/ && mkdir -p dist/actions && cp lib/actions/*.jay-action dist/actions/",
-    "build:types": "tsup lib/index.ts lib/index.client.ts --dts-only --format esm",
+    "build:types": "tsup lib/index.ts lib/index.client.ts lib/tools.ts --dts-only --format esm",
     "build:check-types": "tsc",
     "clean": "rimraf dist",
     "confirm": "npm run clean && npm run build && npm run test",

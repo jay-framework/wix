@@ -1,8 +1,6 @@
+// Serve entry (DL#179): compiler-free. The artifact store runs at serve time (BaaS request path).
 export { WixDataArtifactStore } from './artifact-store.js';
 export type { WixDataArtifactStoreOptions } from './artifact-store.js';
-export { buildEntry } from './commands/build-entry.js';
-export { uploadBackend } from './commands/upload-backend.js';
-export { deployBaas } from './commands/deploy-baas.js';
-export { deploy } from './commands/deploy.js';
-export { setupWixDeploy } from './setup.js';
-export { validate } from './validators/static-filename-validator.js';
+
+// Tools-time handlers (setup, validator, commands) are moved to ./tools (DL#179) — they pull in the
+// compiler / esbuild and must not enter the serve bundle.

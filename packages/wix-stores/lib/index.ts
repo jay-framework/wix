@@ -66,8 +66,8 @@ export * from './actions/stores-actions';
 // Export init
 export { init } from './init.js';
 
-// Export setup handler (Design Log #87, #10)
-export { setupWixStores, generateWixStoresAgentKit } from './setup.js';
+// setup + agent-kit handlers (setupWixStores/generateWixStoresAgentKit) are tools-time — moved to
+// ./tools (DL#179).
 
 // Export contract generators (Design Log #16)
 export { generator as productPageContractGenerator } from './generators/product-page-contract-generator';

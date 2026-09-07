@@ -56,6 +56,6 @@ export {
     type CollectionPageParams,
 } from './components/collection-page';
 
-// Export init + setup
+// Export init
 export { init } from './init.js';
-export { setupWixStoresV1 } from './setup.js';
+// setup handler (setupWixStoresV1) is tools-time — moved to ./tools (DL#179).

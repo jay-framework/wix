@@ -12,11 +12,16 @@ commands:
     command: rebuild-index.jay-command
 
 actions:
-  - getMediaSettingsStatus
-  - listIndexedMediaBrowse
-  - rebuildMediaCatalog
-  - createMediaFolder
-  - uploadMediaFile
+  - name: getMediaSettingsStatus
+    devOnly: true
+  - name: listIndexedMediaBrowse
+    devOnly: true
+  - name: rebuildMediaCatalog
+    devOnly: true
+  - name: createMediaFolder
+    devOnly: true
+  - name: uploadMediaFile
+    devOnly: true
 
 setup: setupWixMedia
 agentkit: generateWixMediaAgentKit

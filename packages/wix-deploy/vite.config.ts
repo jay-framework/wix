@@ -26,11 +26,12 @@ export default defineConfig({
             entry: {
                 index: resolve(__dirname, 'lib/index.ts'),
                 'artifact-store': resolve(__dirname, 'lib/artifact-store.ts'),
+                tools: resolve(__dirname, 'lib/tools.ts'),
             },
             formats: ['es'],
         },
         rollupOptions: {
-            external: [...publicDeps, /^node:/],
+            external: [...publicDeps, /^@jay-framework\/compiler-/, /^node:/],
         },
     },
     ssr: {

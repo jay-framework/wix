@@ -2,7 +2,7 @@
  * Server entry — setup, service registration, and re-exports for tooling.
  */
 export { init } from './init.js';
-export { setupWixBookings, setup } from './setup.js';
+// setup handler (setupWixBookings/setup) is tools-time — moved to ./tools (DL#179).
 export { bookingFlow } from './components/booking-flow.js';
 export { listServices, listSlots, createBooking } from './actions/bookings-actions.js';
 export {

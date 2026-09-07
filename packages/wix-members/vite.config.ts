@@ -17,12 +17,16 @@ export default defineConfig(({ isSsrBuild }) => ({
         emptyOutDir: false,
         lib: {
             entry: isSsrBuild
-                ? { index: resolve(__dirname, 'lib/index.ts') }
+                ? {
+                      index: resolve(__dirname, 'lib/index.ts'),
+                      tools: resolve(__dirname, 'lib/tools.ts'),
+                  }
                 : { 'index.client': resolve(__dirname, 'lib/index.client.ts') },
             formats: ['es'],
         },
         rollupOptions: {
             external: [
+                /^@jay-framework\/compiler-/,
                 '@jay-framework/component',
                 '@jay-framework/fullstack-component',
                 '@jay-framework/stack-client-runtime',

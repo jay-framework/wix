@@ -77,8 +77,8 @@ export {
 // Export init
 export { init } from './init';
 
-// Export setup and references handlers (Design Log #87)
-export { setupWixData, generateWixDataAgentKit } from './setup';
+// setup + agent-kit handlers (setupWixData/generateWixDataAgentKit) are tools-time — moved to
+// ./tools (DL#179).
 
 // Export contract generators (for dynamic contract materialization)
 export { generator as itemContractGenerator } from './generators/item-contract-generator';

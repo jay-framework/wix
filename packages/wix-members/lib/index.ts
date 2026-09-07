@@ -18,7 +18,7 @@ export { AUTH_COOKIE_NAME, setAuthCookie } from './utils/auth-cookie';
 export { loadWixMembersConfig } from './config-loader';
 export type { WixMembersConfig } from './config-loader';
 
-export { validateAuthCallbackPage } from './validators/auth-callback-validator';
+// validator (validateAuthCallbackPage) + setup handler (setupWixMembers) are tools-time — moved to
+// ./tools (DL#179).
 
 export { init } from './init';
-export { setupWixMembers } from './setup';

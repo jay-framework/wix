@@ -4,15 +4,14 @@
             plugin="@jay-framework/wix-stores"
             contract="product-page"
             key="productPage"
-    ></script>
+    >
+      slug: ceramic-flower-vase
+    </script>
     <script type="application/jay-headless"
             plugin="@jay-framework/wix-cart"
             contract="cart-indicator"
             key="cartIndicator"
     ></script>
-      <script type="application/jay-params">
-          slug: ceramic-flower-vase
-      </script>
     <script type="application/jay-data">
       data:
     </script>

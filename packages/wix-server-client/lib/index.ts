@@ -16,8 +16,7 @@ export { WIX_CLIENT_CONTEXT, type WixClientContext } from './wix-client-context.
 // Export init
 export { init } from './init.js';
 
-// Export setup handler (Design Log #87)
-export { setupWixServerClient } from './setup.js';
+// setup handler (setupWixServerClient) is tools-time — moved to ./tools (DL#179).
 
 // Export REST API helper (Design Log #22)
 export {
