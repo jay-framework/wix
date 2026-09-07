@@ -1,4 +1,4 @@
-# Design Log #31 — Wix Forms materialized contracts
+# Design Log #32 — Wix Forms materialized contracts
 
 ## Status
 
@@ -12,7 +12,7 @@ Parent patterns: [wix-data #05](./05%20-%20wix-data%20plugin.md) (dynamic contra
 
 That works for a single contact form but breaks agent and designer workflows:
 
-- **AIditor Add Menu** needs per-form prompts with stable contract paths and field targets (see [wix #32](./32%20-%20wix-forms-add-menu-contribution.md)).
+- **AIditor Add Menu** needs per-form prompts with stable contract paths and field targets (see [wix #33](./33%20-%20wix-forms-add-menu-contribution.md)).
 - **Jay validate** cannot lint bindings against field targets that only exist at runtime.
 - **wix-bookings** already uses `getFormSummary` per service `formId` — forms are inherently plural on a site.
 
@@ -147,7 +147,7 @@ forms:
 
 - Write `forms.yaml` (schema above).
 - Trigger contract materialization (shared with setup path).
-- **Do not** write Add Menu yaml — see DL#32.
+- **Do not** write Add Menu yaml — see DL#33.
 
 ### Component changes (`wix-form.ts`) — minimal
 
@@ -169,7 +169,7 @@ forms:
 | Examples | **No existing page** — add minimal `examples/cms/src/pages/contact/page.jay-html` (or package integration fixture) |
 | wix-bookings | 0 — still uses `getFormSummary` |
 | jay core | 0 |
-| jay-aiditor | 0 in this task; DL#32 blocked until complete |
+| jay-aiditor | 0 in this task; DL#33 blocked until complete |
 
 ## Examples
 
@@ -259,7 +259,7 @@ tags:
 ### Phase 4 — Docs
 
 1. Update `wix-forms-setup.md`.
-2. Cross-link DL#32.
+2. Cross-link DL#33.
 
 ## Trade-offs
 

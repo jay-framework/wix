@@ -8,6 +8,7 @@ import {
     getCurrentTokens,
     isLoggedIn,
     clearStoredTokens,
+    getClient,
 } from './wix-client';
 
 // Intercept console.log to show in the UI log panel
@@ -256,7 +257,6 @@ async function init() {
         (window as any).refreshTokenDisplay();
 
         // Log what auth methods are available
-        const { getClient } = await import('./wix-client');
         const c = getClient();
         console.log(
             'client.auth methods:',

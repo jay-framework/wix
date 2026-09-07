@@ -30,7 +30,6 @@ interface RouteManifest {
 
 const DEFAULT_EXCLUDE_PLUGINS = [
     'aiditor',
-    'ui-kit',
     'wix-deploy',
     // Build-time validators — use compiler APIs stubbed out of the BaaS bundle
     'wix-media',
@@ -289,6 +288,49 @@ function errorPage(title, err, path) {
     return new Response(html, { status: 500, headers: { 'Content-Type': 'text/html' } });
 }
 
+// Build a concrete URL from a route pattern + instance params (mirrors framework generate-sitemap.ts)
+function buildUrl(pattern, params) {
+    return (
+        pattern
+            .replace(/\\[\\[(\\w+)\\]\\]/g, (_, n) => params[n] || '')
+            .replace(/\\[\\.\\.\\.(\\w+)\\]/g, (_, n) => params[n] || '')
+            .replace(/\\[(\\w+)\\]/g, (_, n) => params[n] || '')
+            .replace(/\\/\\/+/g, '/')
+            .replace(/\\/$/, '') || '/'
+    );
+}
+
+// Serve the Wix page inventory (/_wix/pages.json) — Wix reads this to build /sitemap.xml.
+// Streamed to handle large page counts. All pages are static (Jay resolves params itself).
+function streamPagesJson(manifest) {
+    const enc = new TextEncoder();
+    const stream = new ReadableStream({
+        start(controller) {
+            controller.enqueue(enc.encode('['));
+            let first = true;
+            const emit = (path) => {
+                const entry = { path, srcFilePath: path, static: true };
+                controller.enqueue(enc.encode((first ? '' : ',') + JSON.stringify(entry)));
+                first = false;
+            };
+            for (const route of manifest.routes) {
+                if (route.devOnly || route.noIndex) continue;
+                if (!route.instances || route.instances.length === 0) {
+                    const hasDynamic = route.segments.some((s) => s.type !== 'static');
+                    if (!hasDynamic) emit(route.pattern === '/' ? '/' : route.pattern);
+                    continue;
+                }
+                for (const instance of route.instances) {
+                    emit(buildUrl(route.pattern, instance.params));
+                }
+            }
+            controller.enqueue(enc.encode(']'));
+            controller.close();
+        },
+    });
+    return new Response(stream, { headers: { 'Content-Type': 'application/json' } });
+}
+
 async function handler(request) {
     const url = new URL(request.url);
 
@@ -327,6 +369,10 @@ async function handler(request) {
         if (isActionRequest(url.pathname)) return fetchActionRequest(request);
 
         const manifest = await artifacts.readManifest();
+
+        // Wix reads this page inventory to build /sitemap.xml
+        if (url.pathname === '/_wix/pages.json') return streamPagesJson(manifest);
+
         const match = matchRequest(manifest, url.pathname);
         if (!match) return new Response('Not Found', { status: 404 });
 
@@ -364,6 +410,7 @@ function generateServeSource(frontendDir: string, backendDir: string): string {
         '    ".css": "text/css", ".html": "text/html", ".json": "application/json",',
         '    ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml",',
         '    ".woff2": "font/woff2", ".woff": "font/woff",',
+        '    ".xml": "application/xml", ".txt": "text/plain",',
         '};',
         '',
         'function serveStatic(pathname, res) {',
@@ -578,7 +625,7 @@ export const buildEntry = makeCliCommand('build-entry')
         let patched = fs.readFileSync(outFile, 'utf8');
         let patchCount = 0;
         for (const mod of runtimeStubs) {
-            const pattern = new RegExp(`(\\w+)\\("${mod}"\\)`, 'g');
+            const pattern = new RegExp(`[\\w$]+\\("${mod}"\\)`, 'g');
             const before = patched;
             patched = patched.replace(pattern, '({})');
             if (patched !== before) patchCount++;

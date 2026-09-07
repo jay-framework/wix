@@ -1,10 +1,10 @@
-# Design Log #32 — wix-forms Add Menu contribution
+# Design Log #33 — wix-forms Add Menu contribution
 
 ## Status
 
 **Draft — architect scoping (2026-08-31)**
 
-**Depends on:** [DL#31](./31%20-%20wix-forms-materialized-contracts.md) (materialized contract paths). **Parent:** [jay-aiditor #19](../../jay-aiditor/design-log/19%20-%20aiditor-add-menu.md). **Settings pattern:** [jay-aiditor #33](../../jay-aiditor/design-log/33%20-%20aiditor-plugin-settings-tabs.md).
+**Depends on:** [DL#32](./32%20-%20wix-forms-materialized-contracts.md) (materialized contract paths). **Parent:** [jay-aiditor #19](../../jay-aiditor/design-log/19%20-%20aiditor-add-menu.md). **Settings pattern:** [jay-aiditor #33](../../jay-aiditor/design-log/33%20-%20aiditor-plugin-settings-tabs.md).
 
 ## Background
 
@@ -15,13 +15,13 @@ Forms are **site-specific** and **plural** — prompts must name the form id, ma
 ## Problem
 
 1. No Add Menu entries for Wix Forms — agent does not receive form binding instructions.
-2. Per-form items need **materialized contract paths** (DL#31), not `node_modules/.../wix-form.jay-contract`.
+2. Per-form items need **materialized contract paths** (DL#32), not `node_modules/.../wix-form.jay-contract`.
 3. Optional **Project settings tab** — picking which forms to materialize is easier in UI than hand-editing `forms[]` in yaml (aligns with #33; defer if config-only is enough for v1).
 
 ## Questions and Answers
 
 **Q: Static template item for generic `wix-form`?**
-**A:** **No** after DL#31 — only **generated** items per configured visible form. No static `wix-forms.yaml` in v1 unless we need a single “Forms setup help” reference item (out of scope).
+**A:** **No** after DL#32 — only **generated** items per configured visible form. No static `wix-forms.yaml` in v1 unless we need a single “Forms setup help” reference item (out of scope).
 
 **Q: Generated file name?**
 **A:** `agent-kit/aiditor/add-menu/wix-forms.generated.yaml` — never overwrite hand-authored yaml.
@@ -53,7 +53,7 @@ Forms are **site-specific** and **plural** — prompts must name the form id, ma
 
 ### agentkit handler
 
-1. Ensure DL#31 materialization ran (forms + contracts exist).
+1. Ensure DL#32 materialization ran (forms + contracts exist).
 2. For each visible form in config, fetch title/summary from Wix (or cache from `forms.yaml`).
 3. Write `wix-forms.generated.yaml` with one item per form.
 4. Prompt template includes:

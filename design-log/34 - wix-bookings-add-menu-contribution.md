@@ -1,4 +1,4 @@
-# Design Log #33 — wix-bookings Add Menu contribution
+# Design Log #34 — wix-bookings Add Menu contribution
 
 ## Status
 
