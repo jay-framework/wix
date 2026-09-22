@@ -358,6 +358,8 @@ For NPM packages, declare exports for both server and client entry points:
 
 The `./client` export is required — the framework uses it for browser-side hydration code. The `.` export handles server-side rendering and action execution.
 
+Shared utility packages (for example `@jay-framework/wix-utils`) may expose `./client` for production shared chunks and import maps. They are not plugins — the compiler does **not** rewrite bare imports. Use `@jay-framework/wix-utils` in server code and `@jay-framework/wix-utils/client` in client and hydrate TypeScript.
+
 ## Plugin-Contributed Agent-Kit Guides
 
 A plugin can include guides that are merged into the project's agent-kit during `jay-stack agent-kit`. Create an `agent-kit/` folder with subfolders for each role:

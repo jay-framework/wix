@@ -4,9 +4,13 @@ import { resolve } from 'path';
 export default defineConfig({
     build: {
         lib: {
-            entry: resolve(__dirname, 'lib/index.ts'),
+            entry: {
+                index: resolve(__dirname, 'lib/index.ts'),
+                'index.client': resolve(__dirname, 'lib/index.client.ts'),
+            },
             formats: ['es'],
-            fileName: () => 'index.js',
+            fileName: (_format, entryName) =>
+                entryName === 'index.client' ? 'index.client.js' : 'index.js',
         },
         rollupOptions: {
             external: [],
