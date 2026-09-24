@@ -15,7 +15,8 @@ files:
   - id: promo-video-id-002
     displayName: Promo Clip
     slug: promo-clip
-    url: https://video.wixstatic.com/video/xyz789.mp4
+    url: https://video.wixstatic.com/video/xyz789/file
+    thumbnailUrl: https://static.wixstatic.com/media/poster_xyz789~mv2.jpg
     mediaType: video
     labels: []
     folderId: folder-1

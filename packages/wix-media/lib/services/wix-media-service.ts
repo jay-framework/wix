@@ -10,11 +10,21 @@ import type { BuildDescriptors } from '@wix/sdk-types';
 type FilesClient = BuildDescriptors<typeof files, {}>;
 type FoldersClient = BuildDescriptors<typeof folders, {}>;
 
+/** Read-only preview image from Wix `searchFiles` / `getFileDescriptor` (`thumbnailUrl`). */
+export function managerThumbnailUrlFromDescriptor(file: {
+    thumbnailUrl?: string | null;
+}): string | undefined {
+    const url = file.thumbnailUrl?.trim();
+    return url ? url : undefined;
+}
+
 export interface MediaFileInfo {
     id: string;
     displayName: string;
     slug: string;
     url: string;
+    /** Wix Media Manager preview URL (poster frame for video, raster preview for image/document). */
+    thumbnailUrl?: string;
     mediaType: string;
     width?: number;
     height?: number;
@@ -126,6 +136,7 @@ async function fetchAllPublicFiles(filesClient: FilesClient): Promise<
         id: string;
         displayName: string;
         url: string;
+        thumbnailUrl?: string;
         mediaType: string;
         labels: string[];
         folderId: string;
@@ -136,6 +147,7 @@ async function fetchAllPublicFiles(filesClient: FilesClient): Promise<
         id: string;
         displayName: string;
         url: string;
+        thumbnailUrl?: string;
         mediaType: string;
         labels: string[];
         folderId: string;
@@ -157,6 +169,7 @@ async function fetchAllPublicFiles(filesClient: FilesClient): Promise<
                 id: file._id,
                 displayName: file.displayName ?? file._id,
                 url: file.url ?? '',
+                thumbnailUrl: managerThumbnailUrlFromDescriptor(file),
                 mediaType: (file.mediaType ?? 'UNKNOWN').toLowerCase(),
                 labels: file.labels ?? [],
                 folderId: file.parentFolderId ?? 'media-root',
@@ -186,6 +199,7 @@ function mapRawFileToMediaFileInfo(
         id: string;
         displayName: string;
         url: string;
+        thumbnailUrl?: string;
         mediaType: string;
         labels: string[];
         folderId: string;
@@ -202,6 +216,7 @@ function mapRawFileToMediaFileInfo(
         displayName: file.displayName,
         slug: toSlug(file.displayName),
         url: file.url,
+        ...(file.thumbnailUrl ? { thumbnailUrl: file.thumbnailUrl } : {}),
         mediaType: file.mediaType,
         width: dims.width,
         height: dims.height,
@@ -339,6 +354,7 @@ export function provideWixMediaService(wixClient: WixClient): WixMediaService {
                         id: file._id,
                         displayName: file.displayName ?? file._id,
                         url: file.url ?? '',
+                        thumbnailUrl: managerThumbnailUrlFromDescriptor(file),
                         mediaType: (file.mediaType ?? 'UNKNOWN').toLowerCase(),
                         labels: file.labels ?? [],
                         folderId: fileParentFolderId(file.parentFolderId),

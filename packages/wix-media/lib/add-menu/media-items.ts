@@ -2,6 +2,7 @@
  * Generate Add Menu items for indexed Wix Media Manager files (Design Log #19 M19.2).
  */
 
+import { managerThumbnailUrlForAddMenu } from './manager-thumbnail-url.js';
 import type { MediaFileInfo } from '../services/wix-media-service.js';
 
 export interface MediaAddMenuInteraction {
@@ -57,11 +58,9 @@ function isPreviewableVisualMedia(file: MediaFileInfo): boolean {
     return hasVisualFileExtension(file);
 }
 
-/** Preview URL for picker chips — raster images, vectors, and SVGs served from Wix CDN. */
+/** Preview URL for Add Menu picker chips (see `manager-thumbnail-url.ts`). */
 export function thumbnailUrlForMedia(file: MediaFileInfo): string | undefined {
-    const url = file.url.trim();
-    if (!url || !isPreviewableVisualMedia(file)) return undefined;
-    return url;
+    return managerThumbnailUrlForAddMenu(file);
 }
 
 function stagePlaceInteractionForMedia(file: MediaFileInfo): MediaAddMenuInteraction | undefined {
