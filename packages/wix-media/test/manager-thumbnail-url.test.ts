@@ -5,7 +5,9 @@ import { describe, expect, it } from 'vitest';
 import { managerThumbnailUrlForAddMenu } from '../lib/add-menu/manager-thumbnail-url.js';
 import type { MediaFileInfo } from '../lib/services/wix-media-service.js';
 
-function file(overrides: Partial<MediaFileInfo> & Pick<MediaFileInfo, 'displayName' | 'url' | 'mediaType'>): MediaFileInfo {
+function file(
+    overrides: Partial<MediaFileInfo> & Pick<MediaFileInfo, 'displayName' | 'url' | 'mediaType'>,
+): MediaFileInfo {
     return {
         id: 'file-id',
         slug: 'file',

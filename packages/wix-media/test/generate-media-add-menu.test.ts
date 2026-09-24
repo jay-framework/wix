@@ -72,7 +72,9 @@ describe('buildMediaAddMenuItems', () => {
         const files = loadFixtureFiles();
         const video = files.find((item) => item.mediaType === 'video')!;
         expect(thumbnailUrlForMedia(video)).toBe(video.thumbnailUrl);
-        const item = buildMediaAddMenuItems(files).find((entry) => entry.id === 'wix-media:promo-clip');
+        const item = buildMediaAddMenuItems(files).find(
+            (entry) => entry.id === 'wix-media:promo-clip',
+        );
         expect(item?.thumbnail).toBe(video.thumbnailUrl);
     });
 

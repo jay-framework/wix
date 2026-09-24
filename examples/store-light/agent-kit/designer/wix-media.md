@@ -106,7 +106,8 @@ For hero/banner images that span the full viewport:
 ## Video
 
 Use the media URL directly in `<video>` tags.
-Poster image: append `/v1/fit/w_{w},h_{h}/file.jpg` to video mediaId.
+
+For poster images, use the separate preview image from Media Manager (`thumbnailUrl` on the file descriptor, or `posterUri` on `wix:video://` URLs). Do not use the video media id as an image id on `static.wixstatic.com/media`.
 
 ## Documents
 
