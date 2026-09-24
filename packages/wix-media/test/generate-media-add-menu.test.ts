@@ -68,6 +68,14 @@ describe('buildMediaAddMenuItems', () => {
         expect(buildMediaAddMenuItems(files)[0]?.thumbnail).toBe(hero.url);
     });
 
+    it('sets video thumbnail from Wix Media Manager thumbnailUrl', () => {
+        const files = loadFixtureFiles();
+        const video = files.find((item) => item.mediaType === 'video')!;
+        expect(thumbnailUrlForMedia(video)).toBe(video.thumbnailUrl);
+        const item = buildMediaAddMenuItems(files).find((entry) => entry.id === 'wix-media:promo-clip');
+        expect(item?.thumbnail).toBe(video.thumbnailUrl);
+    });
+
     it('sets stage-place interaction on visual media for drag-to-stage', () => {
         const files = loadFixtureFiles();
         const items = buildMediaAddMenuItems(files);

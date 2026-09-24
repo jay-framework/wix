@@ -32,6 +32,7 @@ function catalogItemToMediaFileInfo(item: {
     title: string;
     folderPath?: string[];
     prompt?: string;
+    thumbnail?: string;
 }): MediaFileInfo {
     const mediaId = item.id.startsWith('wix-media:') ? item.id.slice('wix-media:'.length) : item.id;
     const urlMatch = item.prompt?.match(/URL:\s*(https?:\/\/\S+)/);
@@ -49,6 +50,7 @@ function catalogItemToMediaFileInfo(item: {
         folderId: '',
         folderName: folderPath[folderPath.length - 1] ?? 'Media Root',
         folderPath,
+        ...(item.thumbnail ? { thumbnailUrl: item.thumbnail } : {}),
     };
 }
 
