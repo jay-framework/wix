@@ -1,5 +1,9 @@
 <html>
   <head>
+    <script type="application/jay-validations">
+      jay-stack:
+        allow-no-design-system: true
+    </script>
     <script type="application/jay-headless"
             plugin="@jay-framework/wix-stores-v1"
             contract="category-list"
