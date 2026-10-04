@@ -107,3 +107,4 @@ plugins:
         description: Upload local public/ files to Wix Media Manager
       - name: rebuild-index
         description: Rebuild agent-kit media index from current Wix Media Manager state
+designSystemIndex: ./design-system-index.yaml

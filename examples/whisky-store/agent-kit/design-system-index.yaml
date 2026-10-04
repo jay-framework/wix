@@ -1,0 +1,41 @@
+components:
+  - name: cart-indicator
+    contractPath: ./../../packages/wix-cart/dist/contracts/cart-indicator.jay-contract
+    description: Cart indicator component showing item count, typically used in site
+      header/navigation
+    source: plugin
+    plugin: wix-cart
+    templates: []
+  - name: cart-page
+    contractPath: ./../../packages/wix-cart/dist/contracts/cart-page.jay-contract
+    description: Full cart page showing all items, quantities, totals, and checkout actions
+    source: plugin
+    plugin: wix-cart
+    templates: []
+  - name: mini-cart
+    contractPath: ./../../packages/wix-cart/dist/contracts/mini-cart.jay-contract
+    description: Drawer that auto-opens when a product is added to cart. Place cart
+      content inside.
+    source: plugin
+    plugin: wix-cart
+    templates: []
+  - name: product-page
+    contractPath: ./../../packages/wix-stores-v1/dist/contracts/product-page.jay-contract
+    source: plugin
+    plugin: wix-stores-v1
+    templates: []
+  - name: product-search
+    contractPath: ./../../packages/wix-stores-v1/dist/contracts/product-search.jay-contract
+    source: plugin
+    plugin: wix-stores-v1
+    templates: []
+  - name: category-page
+    contractPath: ./../../packages/wix-stores-v1/dist/contracts/category-page.jay-contract
+    source: plugin
+    plugin: wix-stores-v1
+    templates: []
+  - name: category-list
+    contractPath: ./../../packages/wix-stores-v1/dist/contracts/category-list.jay-contract
+    source: plugin
+    plugin: wix-stores-v1
+    templates: []

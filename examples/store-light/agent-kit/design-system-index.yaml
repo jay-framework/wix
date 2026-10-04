@@ -1,0 +1,50 @@
+components:
+  - name: cart-indicator
+    contractPath: ./../../packages/wix-cart/dist/contracts/cart-indicator.jay-contract
+    description: Cart indicator component showing item count, typically used in site
+      header/navigation
+    source: plugin
+    plugin: wix-cart
+    templates: []
+  - name: cart-page
+    contractPath: ./../../packages/wix-cart/dist/contracts/cart-page.jay-contract
+    description: Full cart page showing all items, quantities, totals, and checkout actions
+    source: plugin
+    plugin: wix-cart
+    templates: []
+  - name: mini-cart
+    contractPath: ./../../packages/wix-cart/dist/contracts/mini-cart.jay-contract
+    description: Drawer that auto-opens when a product is added to cart. Place cart
+      content inside.
+    source: plugin
+    plugin: wix-cart
+    templates: []
+  - name: product-search
+    contractPath: ./../../packages/wix-stores/dist/contracts/product-search.jay-contract
+    description: Product listing with filters, sorting, and pagination. Use for
+      search results and category pages.
+    source: plugin
+    plugin: wix-stores
+    templates: []
+  - name: category-products
+    contractPath: ./../../packages/wix-stores/dist/contracts/category-products.jay-contract
+    description: Products from a specific category. Use for category product
+      showcases, or as related products on a product page (pass productId to
+      exclude the current product).
+    source: plugin
+    plugin: wix-stores
+    templates: []
+  - name: product-spotlight
+    contractPath: ./../../packages/wix-stores/dist/contracts/product-spotlight.jay-contract
+    description: A single product card by slug. Use to feature a specific product on
+      any page (homepage, content pages, etc.).
+    source: plugin
+    plugin: wix-stores
+    templates: []
+  - name: category-list
+    contractPath: ./../../packages/wix-stores/dist/contracts/category-list.jay-contract
+    description: Displays a list of store categories. Use for category navigation
+      grids and menus.
+    source: plugin
+    plugin: wix-stores
+    templates: []
