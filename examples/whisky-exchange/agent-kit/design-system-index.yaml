@@ -1,0 +1,68 @@
+components:
+  - name: gemini-chat
+    contractPath: ./../../node_modules/@jay-framework/gemini-agent-plugin/dist/contracts/gemini-chat.jay-contract
+    description: AI chat agent powered by Gemini with page automation capabilities
+    source: plugin
+    plugin: gemini-agent
+    templates: []
+  - name: cart-indicator
+    contractPath: ./../../packages/wix-cart/dist/contracts/cart-indicator.jay-contract
+    description: Cart indicator component showing item count, typically used in site
+      header/navigation
+    source: plugin
+    plugin: wix-cart
+    templates: []
+  - name: cart-page
+    contractPath: ./../../packages/wix-cart/dist/contracts/cart-page.jay-contract
+    description: Full cart page showing all items, quantities, totals, and checkout actions
+    source: plugin
+    plugin: wix-cart
+    templates: []
+  - name: mini-cart
+    contractPath: ./../../packages/wix-cart/dist/contracts/mini-cart.jay-contract
+    description: Drawer that auto-opens when a product is added to cart. Place cart
+      content inside.
+    source: plugin
+    plugin: wix-cart
+    templates: []
+  - name: login-indicator
+    contractPath: ./../../packages/wix-members/dist/contracts/login-indicator.jay-contract
+    description: Shows member login state in site header/navigation. Provides
+      login/register/logout buttons that redirect to Wix-hosted auth pages.
+    source: plugin
+    plugin: wix-members
+    templates: []
+  - name: auth-callback
+    contractPath: ./../../packages/wix-members/dist/contracts/auth-callback.jay-contract
+    description: Handles OAuth callback after Wix-hosted login/register. Place as
+      keyed component on the callback page.
+    source: plugin
+    plugin: wix-members
+    templates: []
+  - name: protected-page
+    contractPath: ./../../packages/wix-members/dist/contracts/protected-page.jay-contract
+    description: Page-level login guard. Redirects visitors to login page if not
+      authenticated. Use as a keyed component in the page head.
+    source: plugin
+    plugin: wix-members
+    templates: []
+  - name: product-page
+    contractPath: ./../../packages/wix-stores-v1/dist/contracts/product-page.jay-contract
+    source: plugin
+    plugin: wix-stores-v1
+    templates: []
+  - name: product-search
+    contractPath: ./../../packages/wix-stores-v1/dist/contracts/product-search.jay-contract
+    source: plugin
+    plugin: wix-stores-v1
+    templates: []
+  - name: category-page
+    contractPath: ./../../packages/wix-stores-v1/dist/contracts/category-page.jay-contract
+    source: plugin
+    plugin: wix-stores-v1
+    templates: []
+  - name: category-list
+    contractPath: ./../../packages/wix-stores-v1/dist/contracts/category-list.jay-contract
+    source: plugin
+    plugin: wix-stores-v1
+    templates: []

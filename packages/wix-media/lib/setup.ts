@@ -21,7 +21,7 @@ function getWixClient(services: Map<symbol, unknown>): WixClient {
         return fromContext as WixClient;
     }
 
-    return getService(WIX_CLIENT_SERVICE) as unknown as WixClient;
+    return getService(WIX_CLIENT_SERVICE);
 }
 
 function createMediaService(services: Map<symbol, unknown>) {

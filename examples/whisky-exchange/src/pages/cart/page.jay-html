@@ -7,7 +7,7 @@
   <script type="application/jay-data">data:</script>
   <title>Your Basket - The Whisky Exchange</title>
   <meta name="description" content="Review the items in your basket and proceed to checkout." />
-  <link rel="canonical" href="/cart" />
+  <link rel="canonical" href="https://whisky-exchange.example.com/cart" />
   <link rel="stylesheet" href="../../styles/theme.css" />
 </head>
 <body>
@@ -206,8 +206,7 @@
           </div>
           <div if="ai.hasMessages">
             <div forEach="ai.messages" trackBy="index">
-              <div if="role===user" class="chat-message chat-message-user">{content}</div>
-              <div if="role===assistant" class="chat-message chat-message-assistant">{content}</div>
+              <div class="chat-message chat-message-{role}">{content}</div>
             </div>
           </div>
         </div>

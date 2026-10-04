@@ -42,6 +42,8 @@ function buildContract(schema: ProcessedSchema): string {
 
     return `name: ${toPascalCase(schema.collectionId)}Item
 description: Item page for ${schema.displayName || schema.collectionId}
+params:
+  slug: string
 tags:
 ${tags.join('\n')}`;
 }

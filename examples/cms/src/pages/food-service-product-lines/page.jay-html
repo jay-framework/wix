@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Product Lines - Food Service</title>
   <meta name="description" content="Explore our food service product lines with detailed information and downloadable resources.">
-  <link rel="canonical" href="/food-service-product-lines"/>
+  <link rel="canonical" href="https://cms.example.com/food-service-product-lines"/>
   <script type="application/jay-headless"
           plugin="@jay-framework/wix-data"
           contract="list/food-service-product-lines-list"

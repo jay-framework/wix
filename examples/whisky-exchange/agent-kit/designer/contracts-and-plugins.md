@@ -1,5 +1,20 @@
 # Contracts and Plugins
 
+## Discovery: Design-System Index (what you can flatten)
+
+Before hand-authoring a `<jay:X>` region, check what design-system elements already exist. After
+`jay-stack agent-kit`, two generated files catalog every component you can flatten:
+
+- **`design-system.md`** — a human/agent "add-menu": each component, its template variants, and a
+  paste-ready `template=` import + `<jay:X>` snippet. Start here to pick something to add.
+- **`design-system-index.yaml`** — the structured form (linked from `plugins-index.yaml` via
+  `designSystemIndex`). Each component lists its `contractPath`, a component-level `description`, and
+  its `templates[]` (`{ path, variant, title? }`). An empty `templates: []` means the component ships
+  no template yet and must be hand-authored.
+
+Prefer flattening a listed template (link it with `template=` and run `jay-stack sync`) over
+hand-writing the region. See `designer/design-system-guide.md`.
+
 ## Discovery: Plugins Index
 
 After running `jay-stack agent-kit`, read `plugins-index.yaml`:
@@ -100,10 +115,24 @@ props:
   - name: productId
     type: string
     required: true
+    phase: fast # slow (default), fast, or fast+interactive
     description: The ID of the product to display
 ```
 
-Use in jay-html: `<jay:contract-name productId="value">`.
+Use in jay-html: `<jay:contract-name productId="value">` (a literal), or bind a page tag: `<jay:contract-name productId="{someTag}">`.
+
+**Prop phase must cover the binding source.** A prop has a `phase` (like a tag) that declares when the component reads it. When you bind a prop to a page tag, the **source tag's phase must be ≤ the prop's phase**:
+
+- Binding a `slow` prop to a `fast` / `fast+interactive` tag is a **validation error** — the prop is resolved at build, where the source doesn't exist yet, so it would render `''` at SSR. Bind a `fast`-phase source, a route param, or a literal instead.
+- Binding a `fast` (constant) prop to a `fast+interactive` (changing) source is also an error — a constant can't track a value that changes on the client.
+- A higher-phase prop accepts any lower-or-equal source (e.g. a `fast+interactive` prop takes a `slow`, `fast`, or `fast+interactive` binding).
+
+`jay-stack validate` (and `dev` / `build`) report these mismatches with the exact prop, source, and phases.
+
+**Enum prop values must match the contract.** For a prop typed `enum(a | b | c)`:
+
+- A **literal** value must be one of the declared members, case-sensitive — `status="success"` is fine, `status="sucess"` or `status="Success"` is a **validation error** naming the allowed members. (A wrong value silently renders nothing, because no `if="status===..."` branch matches.)
+- A **bound** value (`status="{someTag}"`) must come from a source that is itself an enum with the **same members in the same order**. Binding a `string` tag, or an enum with different or reordered members, to an enum prop is a validation error.
 
 ### Params
 

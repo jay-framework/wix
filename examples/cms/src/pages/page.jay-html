@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script type="application/jay-validations">
+    jay-stack:
+      allow-no-design-system: true
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CMS Example - Jay Framework</title>
   <meta name="description" content="A demonstration of the Jay Framework's Wix Data plugin, showcasing dynamic content management with auto-generated contracts.">
-  <link rel="canonical" href="/"/>
+  <link rel="canonical" href="https://cms.example.com/"/>
   <script type="application/jay-data">
     data:
   </script>

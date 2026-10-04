@@ -2,7 +2,13 @@
 <head>
   <script type="application/jay-headless" plugin="@jay-framework/wix-members" contract="auth-callback" key="authCallback"></script>
   <script type="application/jay-data">data:</script>
+  <script type="application/jay-validations">
+    seo:
+      allow-noindex: true
+  </script>
   <title>Completing Login - The Whisky Exchange</title>
+  <meta name="description" content="Completing your secure login to The Whisky Exchange." />
+  <meta name="robots" content="noindex" />
   <link rel="stylesheet" href="../../../styles/theme.css" />
 </head>
 <body>
@@ -15,12 +21,12 @@
 
   <main>
   <div class="container" style="text-align: center; padding: 120px 0;">
-    <div if="authCallback.isProcessing">
-      <h1 class="page-title">Completing Login...</h1>
-      <p style="color: var(--text-secondary);">Please wait while we verify your credentials.</p>
-    </div>
+    <h1 class="page-title">
+      <span if="authCallback.isProcessing">Completing Login...</span>
+      <span if="authCallback.hasError">Login Failed</span>
+    </h1>
+    <p if="authCallback.isProcessing" style="color: var(--text-secondary);">Please wait while we verify your credentials.</p>
     <div if="authCallback.hasError">
-      <h1 class="page-title">Login Failed</h1>
       <p style="color: var(--text-secondary); margin-bottom: 24px;">{authCallback.errorMessage}</p>
       <a href="/" class="btn btn-primary">Return Home</a>
     </div>

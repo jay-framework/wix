@@ -1,5 +1,7 @@
 name: RecipesItem
 description: Item page for Recipes
+params:
+  slug: string
 tags:
   - {tag: _id, type: data, dataType: string, description: Item ID}
   - {tag: itemLink, type: interactive, elementType: HTMLAnchorElement, description: Link to item}

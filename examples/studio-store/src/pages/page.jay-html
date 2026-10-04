@@ -1,11 +1,15 @@
 <html>
   <head>
+    <script type="application/jay-validations">
+      jay-stack:
+        allow-no-design-system: true
+    </script>
     <script type="application/jay-data">
       data:
     </script>
     <title>Home - Studio Store</title>
     <meta name="description" content="Discover curated products at Studio Store. Modern design meets quality craftsmanship." />
-    <link rel="canonical" href="/" />
+    <link rel="canonical" href="https://studio-store.example.com/" />
     <link rel="stylesheet" href="../styles/brutalist-theme.css" />
     <style>
       .home-page {

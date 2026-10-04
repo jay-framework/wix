@@ -1,5 +1,9 @@
 <html>
   <head>
+    <script type="application/jay-validations">
+      jay-stack:
+        allow-no-design-system: true
+    </script>
     <script type="application/jay-headless"
             plugin="@jay-framework/wix-stores-v1"
             contract="category-list"
@@ -15,7 +19,7 @@
     </script>
     <title>Whisky Store - Premium Spirits Collection</title>
     <meta name="description" content="Browse our curated collection of premium whiskies, rums, gins, and spirits. Expert selections with price match guarantee and express delivery." />
-    <link rel="canonical" href="/" />
+    <link rel="canonical" href="https://whisky-store.example.com/" />
     <link rel="stylesheet" href="../styles/whisky-theme.css" />
     <style>
       /* ============================================================================
@@ -389,7 +393,14 @@
                  trackBy="_id">
           <a href="/categories/{slug}" class="category-card-link" ref="categoryList.categories.categoryLink">
             <div class="category-card-image">
-              <img src="{imageUrl}/v1/fill/w_400,h_300/file.webp" alt="{name}" if="hasImage" loading="lazy" fetchpriority="high" width="400" height="300" />
+              <img
+                src="{imageUrl}/v1/fill/w_400,h_300/file.webp"
+                srcset="{imageUrl}/v1/fill/w_300%2Ch_225/file.webp 300w,
+                        {imageUrl}/v1/fill/w_400%2Ch_300/file.webp 400w,
+                        {imageUrl}/v1/fill/w_600%2Ch_450/file.webp 600w,
+                        {imageUrl}/v1/fill/w_800%2Ch_600/file.webp 800w"
+                sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 25vw"
+                alt="{name}" if="hasImage" loading="lazy" fetchpriority="high" width="400" height="300" />
               <span class="placeholder-icon" if="!hasImage">🥃</span>
             </div>
             <span class="category-card-label">{name}</span>

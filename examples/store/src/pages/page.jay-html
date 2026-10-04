@@ -1,5 +1,9 @@
 <html>
   <head>
+    <script type="application/jay-validations">
+      jay-stack:
+        allow-no-design-system: true
+    </script>
     <script type="application/jay-headless"
             plugin="@jay-framework/wix-stores"
             contract="category-list"
@@ -15,7 +19,7 @@
     </script>
     <title>Store - Home</title>
     <meta name="description" content="Welcome to Store. Browse our curated collection of premium products by category.">
-    <link rel="canonical" href="/">
+    <link rel="canonical" href="https://store.example.com/">
     <link rel="stylesheet" href="../styles/store-theme.css" />
     <style>
       /* Home page styles */
@@ -222,7 +226,7 @@
                    trackBy="_id">
             <a href="/categories/{slug}" class="category-card-link" ref="categoryList.categories.categoryLink">
               <div class="category-card-image">
-                <img src="{imageUrl}/v1/fill/w_400,h_300/file.webp" alt="{name}" if="imageUrl" width="280" height="180" loading="lazy" fetchpriority="high" />
+                <img src="{imageUrl}/v1/fill/w_400,h_300/file.webp" srcset="{imageUrl}/v1/fill/w_300%2Ch_225/file.webp 300w, {imageUrl}/v1/fill/w_400%2Ch_300/file.webp 400w, {imageUrl}/v1/fill/w_600%2Ch_450/file.webp 600w, {imageUrl}/v1/fill/w_800%2Ch_600/file.webp 800w" sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 25vw" alt="{name}" if="imageUrl" width="280" height="180" loading="lazy" fetchpriority="high" />
                 <span class="placeholder-icon" if="!imageUrl">📦</span>
               </div>
               <div class="category-card-content">

@@ -93,6 +93,52 @@ Errors:
 
 Always run validate after creating or editing jay-html and contract files.
 
+`validate` also nudges you to reuse UI through **design-system elements** (warnings, never blocking):
+`REGION-NOT-LINKED` (a hand-authored region that could link a shipped template), `COMPONENT-NO-TEMPLATE` (a
+component shipping no template), `REGION-OVERRIDE-NON-CONTENT` (a linked region restyled into its own
+variant), and `NO-DESIGN-SYSTEM` (the project uses none). Each is suppressible — see
+[design-system-guide.md](design-system-guide.md#suppressing-the-preference-warnings) and
+[validation-guide.md](validation-guide.md).
+
+## jay-stack sync
+
+Re-flatten **design-system elements** — `<jay:X>` regions whose import carries `template=` — from their
+current source templates. Fills an empty region on first use, and re-flattens after a component upgrade,
+**preserving every facet you marked `override`**. See
+[design-system-guide.md](design-system-guide.md) for the full model.
+
+```bash
+# Sync every design-system region in the project
+jay-stack sync
+
+# Sync a single page
+jay-stack sync src/pages/home.jay-html
+
+# Explicitly sync all pages
+jay-stack sync --all
+
+# Show pages that were already in sync
+jay-stack sync -v
+```
+
+Sync is **re-flatten, not merge**: it overwrites everything from source except your `override` facets — no
+merge base, no conflict prompt. It only touches regions with `template=` provenance; keyed and
+hand-authored nested components are left alone. CSS reconciles the same way: an `@scope (.<ref>)` block is
+rewritten to canonical form unless it carries a `/* jay:override */` pragma, which is preserved verbatim.
+
+Example output:
+
+```
+✓ synced 2 region(s) in src/pages/home.jay-html
+Synced 2 region(s) across 1 file(s).
+```
+
+When nothing needs re-flattening:
+
+```
+Nothing to sync.
+```
+
 ## jay-stack params
 
 Discover load param values for SSG route generation.

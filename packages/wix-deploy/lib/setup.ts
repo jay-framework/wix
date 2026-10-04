@@ -104,7 +104,7 @@ export async function setupWixDeploy(ctx: SetupContext): Promise<SetupResult> {
     let collectionOk = false;
     const wixClient = getService(WIX_CLIENT_SERVICE);
     if (wixClient) {
-        const dataClient = (wixClient as any).use({ items, collections });
+        const dataClient = wixClient.use({ items, collections });
         try {
             await dataClient.items.query(DEFAULT_COLLECTION_ID).limit(1).find();
             collectionOk = true;

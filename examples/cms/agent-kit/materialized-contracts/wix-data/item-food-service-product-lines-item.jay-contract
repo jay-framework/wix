@@ -1,5 +1,7 @@
 name: FoodServiceProductLinesItem
 description: Item page for Product_lines
+params:
+  slug: string
 tags:
   - {tag: _id, type: data, dataType: string, description: Item ID}
   - {tag: itemLink, type: interactive, elementType: HTMLAnchorElement, description: Link to item}

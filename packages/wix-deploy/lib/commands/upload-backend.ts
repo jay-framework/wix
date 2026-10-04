@@ -128,7 +128,7 @@ export const uploadBackend = makeCliCommand('upload-backend')
             }
 
             const store = new WixDataArtifactStore({
-                wixClient: wixClient as any,
+                wixClient,
                 collectionId,
                 version,
                 cacheDir: '/tmp/upload-staging',

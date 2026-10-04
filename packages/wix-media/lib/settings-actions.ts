@@ -17,14 +17,7 @@ import type {
 import { provideWixMediaService } from './services/wix-media-service.js';
 import type { MediaFileInfo, WixMediaService } from './services/wix-media-service.js';
 
-function mediaServiceForClient(wixClientService: { wixClient?: WixClient } | WixClient) {
-    const wixClient =
-        typeof wixClientService === 'object' &&
-        wixClientService !== null &&
-        'wixClient' in wixClientService &&
-        wixClientService.wixClient
-            ? wixClientService.wixClient
-            : (wixClientService as unknown as WixClient);
+function mediaServiceForClient(wixClient: WixClient) {
     return provideWixMediaService(wixClient);
 }
 

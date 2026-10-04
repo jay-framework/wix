@@ -10,6 +10,13 @@
  */
 
 const URLS = [
+  'https://npm.dev.wixpress.com/api/npm/npm-repos/@jay-framework/compiler-analyze-exported-types/-/compiler-analyze-exported-types-0.24.4.tgz',
+  'https://npm.dev.wixpress.com/api/npm/npm-repos/@jay-framework/reactive/-/reactive-0.24.4.tgz',
+  'https://npm.dev.wixpress.com/api/npm/npm-repos/@jay-framework/production-server/-/production-server-0.24.4.tgz',
+  'https://npm.dev.wixpress.com/api/npm/npm-repos/@jay-framework/stack-server-build/-/stack-server-build-0.24.4.tgz',
+  'https://npm.dev.wixpress.com/api/npm/npm-repos/@jay-framework/plugin-validator/-/plugin-validator-0.24.4.tgz',
+  'https://npm.dev.wixpress.com/api/npm/npm-repos/@jay-framework/compiler-shared/-/compiler-shared-0.24.4.tgz',
+  'https://npm.dev.wixpress.com/api/npm/npm-repos/@jay-framework/serialization/-/serialization-0.24.4.tgz',
   'https://npm.dev.wixpress.com/api/npm/npm-repos/@jay-framework/seo-validator/-/seo-validator-0.24.4.tgz',
   'https://npm.dev.wixpress.com/api/npm/npm-repos/@jay-framework/webmcp-plugin/-/webmcp-plugin-0.24.4.tgz',
   'https://npm.dev.wixpress.com/api/npm/npm-repos/@jay-framework/gemini-agent-plugin/-/gemini-agent-plugin-0.24.4.tgz',

@@ -15,7 +15,7 @@
     </script>
     <title>Products - Whisky Store</title>
     <meta name="description" content="Browse and search our full collection of premium spirits. Filter by price and category, sort by relevance, price, or name." />
-    <link rel="canonical" href="/products" />
+    <link rel="canonical" href="https://whisky-store.example.com/products" />
     <link rel="stylesheet" href="../../styles/whisky-theme.css" />
     <style>
       .search-page {
@@ -194,6 +194,11 @@
               <a href="{productUrl}" class="product-card-image">
                 <img
                   src="{mainMedia.url}/v1/fill/w_400,h_400/file.webp"
+                  srcset="{mainMedia.url}/v1/fill/w_300%2Ch_300/file.webp 300w,
+                          {mainMedia.url}/v1/fill/w_400%2Ch_400/file.webp 400w,
+                          {mainMedia.url}/v1/fill/w_600%2Ch_600/file.webp 600w,
+                          {mainMedia.url}/v1/fill/w_800%2Ch_800/file.webp 800w"
+                  sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 25vw"
                   alt="{mainMedia.altText}"
                   loading="lazy"
                   fetchpriority="high"

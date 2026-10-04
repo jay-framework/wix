@@ -10,7 +10,7 @@
     </script>
     <title>Your Bag - Studio Store</title>
     <meta name="description" content="Review and manage items in your shopping bag before checkout." />
-    <link rel="canonical" href="/cart" />
+    <link rel="canonical" href="https://studio-store.example.com/cart" />
     <link rel="stylesheet" href="../../styles/brutalist-theme.css" />
     <style>
       /* =====================================================
