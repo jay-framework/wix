@@ -5,14 +5,7 @@ import { refreshMediaProjectCatalog } from '../catalog/refresh-media-project-cat
 
 export const rebuildIndex = makeCliCommand('rebuild-index')
     .withServices(CONSOLE_CONTEXT, WIX_CLIENT_SERVICE)
-    .withHandler(async (_input: {}, console, wixClientService) => {
-        const wixClient =
-            typeof wixClientService === 'object' &&
-            wixClientService !== null &&
-            'wixClient' in wixClientService &&
-            wixClientService.wixClient
-                ? wixClientService.wixClient
-                : (wixClientService as unknown as import('@wix/sdk').WixClient);
+    .withHandler(async (_input: {}, console, wixClient) => {
         const mediaService = provideWixMediaService(wixClient);
 
         console.log('Fetching media from Wix Media Manager...');

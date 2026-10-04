@@ -81,7 +81,7 @@ export const syncTxtFiles = makeCliCommand('sync-txt-files')
                 const body = { [file.bodyKey]: { content, default: false, subdomain } };
 
                 try {
-                    const response = await wixClientService.wixClient.fetchWithAuth(file.url, {
+                    const response = await wixClientService.fetchWithAuth(file.url, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(body),

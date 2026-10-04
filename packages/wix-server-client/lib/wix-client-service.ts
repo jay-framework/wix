@@ -3,9 +3,9 @@ import { WixConfig } from './config-loader';
 import { createJayService } from '@jay-framework/fullstack-component';
 import { registerService } from '@jay-framework/stack-server-runtime';
 
-export interface WixClientService {
-    wixClient: WixClient;
-}
+// The service registered under WIX_CLIENT_SERVICE is the WixClient itself
+// (see provideWixClientService below). Consumers use it directly as a client.
+export type WixClientService = WixClient;
 
 export const WIX_CLIENT_SERVICE = createJayService<WixClientService>('WixClientService');
 
