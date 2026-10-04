@@ -1,3 +1,5 @@
+site:
+  baseUrl: https://whisky-exchange.example.com
 devServer:
   portRange:
     - 3000

@@ -17,7 +17,7 @@
     </script>
     <title>Ceramic Flower Vase - Atelier</title>
     <meta name="description" content="Discover our handcrafted Ceramic Flower Vase. A beautifully designed piece for your home, crafted with care and intention." />
-    <link rel="canonical" href="/products/ceramic-flower-vase" />
+    <link rel="canonical" href="https://store-light.example.com/products/ceramic-flower-vase" />
     <link rel="stylesheet" href="../../../styles/atelier-theme.css" />
     <style>
       /* =====================================================
@@ -166,6 +166,14 @@
       /* Options Section */
       .options-section {
         margin-bottom: 48px;
+      }
+
+      .options-heading {
+        font-family: var(--font-serif);
+        font-size: 22px;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: 24px;
       }
 
       .option-block {
@@ -403,7 +411,14 @@
 
       <!-- Hero - First Image Full Viewport -->
       <section class="hero-image-section">
-        <img src="{productPage.mediaGallery.selectedMedia.url}/v1/fill/w_1200,h_800/file.webp" alt="{productPage.productName}" width="1200" height="800" loading="eager" fetchpriority="high" />
+        <img
+          src="{productPage.mediaGallery.selectedMedia.url}/v1/fill/w_1200,h_800/file.webp"
+          srcset="{productPage.mediaGallery.selectedMedia.url}/v1/fill/w_900%2Ch_600/file.webp 900w,
+                  {productPage.mediaGallery.selectedMedia.url}/v1/fill/w_1200%2Ch_800/file.webp 1200w,
+                  {productPage.mediaGallery.selectedMedia.url}/v1/fill/w_1800%2Ch_1200/file.webp 1800w,
+                  {productPage.mediaGallery.selectedMedia.url}/v1/fill/w_2400%2Ch_1600/file.webp 2400w"
+          sizes="100vw"
+          alt="{productPage.productName}" width="1200" height="800" loading="eager" fetchpriority="high" />
         
         <div class="hero-overlay">
           <div class="hero-badges">
@@ -444,8 +459,9 @@
 
         <!-- Options -->
         <div class="options-section" if="productPage.options">
+          <h2 class="options-heading">Options</h2>
           <div class="option-block" forEach="productPage.options" trackBy="_id">
-            <div class="option-title">{name}</div>
+            <div class="option-title" aria-hidden="true">{name}</div>
             
             <select class="select"
                     if="optionRenderType == TEXT_CHOICES"
@@ -469,8 +485,9 @@
 
         <!-- Modifiers -->
         <div class="options-section" if="productPage.modifiers">
+          <h2 class="options-heading">Add-ons</h2>
           <div class="option-block" forEach="productPage.modifiers" trackBy="_id">
-            <div class="option-title">{name}</div>
+            <div class="option-title" aria-hidden="true">{name}</div>
             
             <select class="select"
                     if="modifierType == TEXT_CHOICES"
@@ -517,7 +534,14 @@
                forEach="productPage.mediaGallery.availableMedia" 
                trackBy="mediaId"
                ref="productPage.mediaGallery.availableMedia.selected">
-            <img src="{media.url}/v1/fill/w_600,h_600/file.webp" alt="" width="600" height="600" loading="lazy" />
+            <img
+              src="{media.url}/v1/fill/w_600,h_600/file.webp"
+              srcset="{media.url}/v1/fill/w_450%2Ch_450/file.webp 450w,
+                      {media.url}/v1/fill/w_600%2Ch_600/file.webp 600w,
+                      {media.url}/v1/fill/w_900%2Ch_900/file.webp 900w,
+                      {media.url}/v1/fill/w_1200%2Ch_1200/file.webp 1200w"
+              sizes="(max-width: 1000px) 100vw, 1000px"
+              alt="" width="600" height="600" loading="lazy" />
           </div>
         </div>
       </section>

@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Basket - Whisky Store</title>
     <meta name="description" content="Review items in your shopping basket. Update quantities, apply coupon codes, and proceed to checkout." />
-    <link rel="canonical" href="/cart" />
+    <link rel="canonical" href="https://whisky-store.example.com/cart" />
     <script type="application/jay-headless"
             plugin="@jay-framework/wix-cart"
             contract="cart-page"

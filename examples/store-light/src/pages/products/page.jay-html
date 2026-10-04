@@ -15,7 +15,7 @@
     </script>
     <title>The Collection - Atelier</title>
     <meta name="description" content="Browse our curated collection of products crafted with intention. Each item selected for quality, design, and purpose." />
-    <link rel="canonical" href="/products" />
+    <link rel="canonical" href="https://store-light.example.com/products" />
     <link rel="stylesheet" href="../../styles/atelier-theme.css" />
     <style>
       /* =====================================================

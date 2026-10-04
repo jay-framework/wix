@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Cart - Atelier</title>
     <meta name="description" content="Review and manage items in your shopping cart. Proceed to checkout when ready." />
-    <link rel="canonical" href="/cart" />
+    <link rel="canonical" href="https://store-light.example.com/cart" />
     <script type="application/jay-headless"
             plugin="@jay-framework/wix-cart"
             contract="cart-page"

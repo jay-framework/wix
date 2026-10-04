@@ -15,7 +15,7 @@
     </script>
     <title>{categoryPage.name} - Whisky Store</title>
     <meta name="description" content="Browse {categoryPage.name} at Whisky Store. {categoryPage.numberOfProducts} products available." />
-    <link rel="canonical" href="/categories/{categoryPage.slug}" />
+    <link rel="canonical" href="https://whisky-store.example.com/categories/{categoryPage.slug}" />
     <link rel="stylesheet" href="../../../styles/whisky-theme.css" />
     <style>
       /* Category page styles */
@@ -175,7 +175,14 @@
 
       <!-- Category Hero Image (if has media) -->
       <div class="category-hero" if="categoryPage.hasImage">
-        <img src="{categoryPage.media.mainMedia.url}/v1/fill/w_1200,h_600/file.webp" alt="{categoryPage.media.mainMedia.altText}" width="1200" height="600" loading="eager" fetchpriority="high" />
+        <img
+          src="{categoryPage.media.mainMedia.url}/v1/fill/w_1200,h_600/file.webp"
+          srcset="{categoryPage.media.mainMedia.url}/v1/fill/w_900%2Ch_450/file.webp 900w,
+                  {categoryPage.media.mainMedia.url}/v1/fill/w_1200%2Ch_600/file.webp 1200w,
+                  {categoryPage.media.mainMedia.url}/v1/fill/w_1800%2Ch_900/file.webp 1800w,
+                  {categoryPage.media.mainMedia.url}/v1/fill/w_2400%2Ch_1200/file.webp 2400w"
+          sizes="100vw"
+          alt="{categoryPage.media.mainMedia.altText}" width="1200" height="600" loading="eager" fetchpriority="high" />
       </div>
 
       <!-- Category Header -->
@@ -200,7 +207,14 @@
                  forEach="categoryPage.products" 
                  trackBy="_id">
           <a href="{productUrl}" class="product-card-image">
-            <img src="{mainMedia.url}/v1/fill/w_400,h_400/file.webp" alt="{mainMedia.altText}" loading="lazy" width="400" height="400" />
+            <img
+              src="{mainMedia.url}/v1/fill/w_400,h_400/file.webp"
+              srcset="{mainMedia.url}/v1/fill/w_300%2Ch_300/file.webp 300w,
+                      {mainMedia.url}/v1/fill/w_400%2Ch_400/file.webp 400w,
+                      {mainMedia.url}/v1/fill/w_600%2Ch_600/file.webp 600w,
+                      {mainMedia.url}/v1/fill/w_800%2Ch_800/file.webp 800w"
+              sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 25vw"
+              alt="{mainMedia.altText}" loading="lazy" width="400" height="400" />
             <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
             <span class="badge badge-success stock-badge" if="inventory.availabilityStatus == IN_STOCK">
               In Stock
@@ -263,7 +277,14 @@
                  forEach="categoryPage.loadedProducts" 
                  trackBy="_id">
           <a href="{productUrl}" class="product-card-image">
-            <img src="{thumbnail.url}/v1/fill/w_400,h_400/file.webp" alt="{thumbnail.altText}" loading="lazy" width="400" height="400" />
+            <img
+              src="{thumbnail.url}/v1/fill/w_400,h_400/file.webp"
+              srcset="{thumbnail.url}/v1/fill/w_300%2Ch_300/file.webp 300w,
+                      {thumbnail.url}/v1/fill/w_400%2Ch_400/file.webp 400w,
+                      {thumbnail.url}/v1/fill/w_600%2Ch_600/file.webp 600w,
+                      {thumbnail.url}/v1/fill/w_800%2Ch_800/file.webp 800w"
+              sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 25vw"
+              alt="{thumbnail.altText}" loading="lazy" width="400" height="400" />
             <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
             <span class="badge badge-success stock-badge" if="inventory.availabilityStatus == IN_STOCK">
               In Stock
@@ -280,12 +301,12 @@
             <p class="product-card-meta" if="brand.name">{brand.name}</p>
             
             <div class="product-rating">
-              <div class="stars">
-                <span class="star filled">★</span>
-                <span class="star filled">★</span>
-                <span class="star filled">★</span>
-                <span class="star filled">★</span>
-                <span class="star">★</span>
+              <div class="stars" aria-label="Rated 4 out of 5">
+                <span class="star filled" aria-hidden="true">★</span>
+                <span class="star filled" aria-hidden="true">★</span>
+                <span class="star filled" aria-hidden="true">★</span>
+                <span class="star filled" aria-hidden="true">★</span>
+                <span class="star" aria-hidden="true">★</span>
               </div>
             </div>
             

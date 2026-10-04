@@ -1,3 +1,5 @@
+site:
+  baseUrl: https://cms.example.com
 devServer:
   portRange:
     - 3200

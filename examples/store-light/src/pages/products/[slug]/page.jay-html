@@ -19,7 +19,7 @@
     </script>
     <title>{productPage.productName} - Atelier</title>
     <meta name="description" content="Shop {productPage.productName} from Atelier. Quality craftsmanship, curated with intention." />
-    <link rel="canonical" href="/products/{slug}" />
+    <link rel="canonical" href="https://store-light.example.com/products/{slug}" />
     <link rel="stylesheet" href="../../../styles/atelier-theme.css" />
     <style>
       /* =====================================================
@@ -486,7 +486,14 @@
       <section class="gallery-section">
         <div class="gallery-container">
           <div class="main-image-wrapper">
-            <img src="{productPage.mediaGallery.selectedMedia.url}/v1/fill/w_800,h_600/file.webp" alt="{productPage.productName}" width="800" height="600" loading="eager" fetchpriority="high" />
+            <img
+              src="{productPage.mediaGallery.selectedMedia.url}/v1/fill/w_800,h_600/file.webp"
+              srcset="{productPage.mediaGallery.selectedMedia.url}/v1/fill/w_600%2Ch_450/file.webp 600w,
+                      {productPage.mediaGallery.selectedMedia.url}/v1/fill/w_800%2Ch_600/file.webp 800w,
+                      {productPage.mediaGallery.selectedMedia.url}/v1/fill/w_1200%2Ch_900/file.webp 1200w,
+                      {productPage.mediaGallery.selectedMedia.url}/v1/fill/w_1600%2Ch_1200/file.webp 1600w"
+              sizes="(max-width: 900px) 100vw, 50vw"
+              alt="{productPage.productName}" width="800" height="600" loading="eager" fetchpriority="high" />
           </div>
           <div class="thumbnails-row">
             <div class="thumb-item {selected == selected ? selected}"
@@ -545,7 +552,7 @@
             <div class="info-card-title">Customize</div>
             <div class="options-grid">
               <div class="option-row" forEach="productPage.options" trackBy="_id">
-                <div class="option-label">{name}</div>
+                <div class="option-label" aria-hidden="true">{name}</div>
                 
                 <!-- Text Choices as Dropdown -->
                 <select class="select"
@@ -575,7 +582,7 @@
             <div class="info-card-title">Personalize</div>
             <div class="options-grid">
               <div class="option-row" forEach="productPage.modifiers" trackBy="_id">
-                <div class="option-label">{name}</div>
+                <div class="option-label" aria-hidden="true">{name}</div>
                 
                 <select class="select"
                         if="modifierType == TEXT_CHOICES"

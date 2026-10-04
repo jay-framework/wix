@@ -9,7 +9,7 @@
     </script>
     <title>Atelier - Curated Collection</title>
     <meta name="description" content="Welcome to Atelier. Browse our curated collection of quality products crafted with intention." />
-    <link rel="canonical" href="/" />
+    <link rel="canonical" href="https://store-light.example.com/" />
     <link rel="stylesheet" href="../styles/atelier-theme.css" />
     <style>
       .hero {
@@ -77,7 +77,14 @@
       <jay:product-spotlight slug="ceramic-flower-vase">
         <div class="spotlight-card" if="hasProduct">
           <a href="{product.productUrl}" ref="product.productLink">
-            <img src="{product.thumbnail.url}/v1/fill/w_400,h_400/file.webp" alt="{product.thumbnail.altText}" width="400" height="400" loading="eager" />
+            <img
+              src="{product.thumbnail.url}/v1/fill/w_400,h_400/file.webp"
+              srcset="{product.thumbnail.url}/v1/fill/w_300%2Ch_300/file.webp 300w,
+                      {product.thumbnail.url}/v1/fill/w_400%2Ch_400/file.webp 400w,
+                      {product.thumbnail.url}/v1/fill/w_600%2Ch_600/file.webp 600w,
+                      {product.thumbnail.url}/v1/fill/w_800%2Ch_800/file.webp 800w"
+              sizes="(max-width: 600px) 100vw, 400px"
+              alt="{product.thumbnail.altText}" width="400" height="400" loading="eager" fetchpriority="high" />
           </a>
           <div class="card-body">
             <h2 class="card-name">
