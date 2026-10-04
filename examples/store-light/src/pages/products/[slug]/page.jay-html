@@ -1,709 +1,611 @@
 <html>
-  <head>
-    <script type="application/jay-headless"
-            plugin="@jay-framework/wix-stores"
-            contract="product-page"
-            key="productPage"
-    ></script>
-    <script type="application/jay-headless"
-            plugin="@jay-framework/wix-cart"
-            contract="cart-indicator"
-            key="cartIndicator"
-    ></script>
-    <script type="application/jay-headless"
-            plugin="@jay-framework/wix-stores"
-            contract="category-products"
-    ></script>
-    <script type="application/jay-data">
+
+<head>
+  <script type="application/jay-headless" plugin="@jay-framework/wix-stores" contract="product-page"
+    key="productPage"></script>
+  <script type="application/jay-headless" src="../../../components/site-header/site-header"
+    contract="../../../components/site-header/site-header.jay-contract"
+    template="../../../components/site-header/site-header.jay-html"></script>
+  <script type="application/jay-headless" plugin="@jay-framework/wix-cart"
+    contract="cart-indicator"></script>
+  <script type="application/jay-headless" plugin="@jay-framework/wix-stores"
+    contract="category-products"></script>
+  <script type="application/jay-data">
       data:
     </script>
-    <title>{productPage.productName} - Atelier</title>
-    <meta name="description" content="Shop {productPage.productName} from Atelier. Quality craftsmanship, curated with intention." />
-    <link rel="canonical" href="https://store-light.example.com/products/{slug}" />
-    <link rel="stylesheet" href="../../../styles/atelier-theme.css" />
-    <style>
-      /* =====================================================
-         ATELIER PRODUCT PAGE - VERTICAL STACKED LAYOUT
-         Full-width gallery on top, details below
-         Sticky action bar at bottom
-         ===================================================== */
-      
-      .product-view {
-        min-height: 100vh;
-        padding-bottom: 100px; /* Space for sticky bar */
+  <title>{productPage.productName} - Atelier</title>
+  <meta name="description"
+    content="Shop {productPage.productName} from Atelier. Quality craftsmanship, curated with intention.">
+  <link rel="canonical" href="https://store-light.example.com/products/{slug}">
+  <link rel="stylesheet" href="../../../styles/atelier-theme.css">
+  <style>
+    /* ===================================================== ATELIER PRODUCT PAGE - VERTICAL STACKED LAYOUT Full-width gallery on top, details below Sticky action bar at bottom ===================================================== */
+    .product-view {
+      min-height: 100vh;
+      padding-bottom: 100px;
+      /* Space for sticky bar */
+    }
+
+    /* Breadcrumb */
+    .breadcrumb-bar {
+      max-width: var(--container-max);
+      margin: 0 auto;
+      padding: 20px var(--page-padding);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      transition: color var(--transition-base);
+    }
+
+    .back-link:hover {
+      color: var(--accent);
+    }
+
+    /* Full-Width Gallery Section */
+    .gallery-section {
+      background: var(--bg-secondary);
+      padding: 40px 0;
+    }
+
+    .gallery-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 var(--page-padding);
+    }
+
+    .main-image-wrapper {
+      aspect-ratio: 4/3;
+      border-radius: var(--radius-2xl);
+      overflow: hidden;
+      background: var(--bg-card);
+      box-shadow: var(--shadow-xl);
+      margin-bottom: 20px;
+    }
+
+    .main-image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .thumbnails-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      overflow-x: auto;
+      padding: 8px 0;
+    }
+
+    .thumb-item {
+      width: 80px;
+      height: 80px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all var(--transition-base);
+      flex-shrink: 0;
+      background: var(--bg-card);
+    }
+
+    .thumb-item:hover,
+    .thumb-item.selected {
+      border-color: var(--text-primary);
+      transform: scale(1.05);
+    }
+
+    .thumb-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Product Details - Centered Cards */
+    .details-section {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 48px var(--page-padding);
+    }
+
+    /* Product Header Card */
+    .product-header-card {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .product-badges {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .product-brand {
+      font-size: 11px;
+      color: var(--accent);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 12px;
+    }
+
+    .product-title {
+      font-family: var(--font-serif);
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 500;
+      line-height: 1.15;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .product-sku-display {
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      margin-bottom: 24px;
+    }
+
+    .product-pricing {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .product-pricing .main-price {
+      font-size: 36px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    .product-pricing .was-price {
+      font-size: 22px;
+      color: var(--text-muted);
+      text-decoration: line-through;
+    }
+
+    .product-unit-price {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+    }
+
+    /* Info Cards */
+    .info-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .info-card-title {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .info-card-title::before {
+      content: '';
+      width: 3px;
+      height: 18px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .info-card-content {
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--text-secondary);
+    }
+
+    /* Stock Indicator */
+    .stock-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .stock-indicator.in-stock {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .stock-indicator.out-of-stock {
+      background: var(--error-bg);
+      color: var(--error);
+    }
+
+    .stock-indicator .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+
+      0%,
+      100% {
+        opacity: 1;
       }
 
-      /* Breadcrumb */
-      .breadcrumb-bar {
-        max-width: var(--container-max);
-        margin: 0 auto;
-        padding: 20px var(--page-padding);
+      50% {
+        opacity: 0.4;
       }
+    }
 
-      .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        color: var(--text-secondary);
-        font-size: 14px;
-        font-weight: 500;
-        letter-spacing: 0.02em;
-        transition: color var(--transition-base);
+    /* Options Card */
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .option-row {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option-row .option-label {
+      margin: 0;
+    }
+
+    .option-choices-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    /* Quantity in Card */
+    .quantity-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .quantity-row .option-label {
+      margin: 0;
+      min-width: 80px;
+    }
+
+    /* Sticky Action Bar */
+    .sticky-action-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      padding: 16px var(--page-padding);
+      box-shadow: 0 -4px 20px rgba(45, 42, 38, 0.08);
+      z-index: 100;
+    }
+
+    .action-bar-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .action-bar-price {
+      display: flex;
+      flex-direction: column;
+      margin-right: auto;
+    }
+
+    .action-bar-price .total-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .action-bar-price .total-amount {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .action-bar-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .action-bar-buttons .btn {
+      min-width: 140px;
+    }
+
+    /* Additional Info Sections */
+    .additional-info {
+      margin-top: 40px;
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+    }
+
+    .expandable-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .expandable-header {
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: background var(--transition-fast);
+    }
+
+    .expandable-header:hover {
+      background: var(--bg-hover);
+    }
+
+    .expandable-title {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .expandable-content {
+      padding: 0 24px 20px;
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--text-secondary);
+    }
+
+    /* Related Products Section */
+    .related-section {
+      max-width: var(--container-max);
+      margin: 0 auto;
+      padding: 60px var(--page-padding);
+      border-top: 1px solid var(--border);
+    }
+
+    .related-section .section-title {
+      font-family: var(--font-serif);
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .related-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 1024px) {
+      .related-grid {
+        grid-template-columns: repeat(2, 1fr);
       }
+    }
 
-      .back-link:hover {
-        color: var(--accent);
+    @media (max-width: 600px) {
+      .related-grid {
+        grid-template-columns: 1fr;
       }
+    }
 
-      /* Full-Width Gallery Section */
-      .gallery-section {
-        background: var(--bg-secondary);
-        padding: 40px 0;
-      }
-
-      .gallery-container {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 0 var(--page-padding);
-      }
-
-      .main-image-wrapper {
-        aspect-ratio: 4/3;
-        border-radius: var(--radius-2xl);
-        overflow: hidden;
-        background: var(--bg-card);
-        box-shadow: var(--shadow-xl);
-        margin-bottom: 20px;
-      }
-
-      .main-image-wrapper img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .thumbnails-row {
-        display: flex;
-        gap: 12px;
-        justify-content: center;
-        overflow-x: auto;
-        padding: 8px 0;
-      }
-
-      .thumb-item {
-        width: 80px;
-        height: 80px;
-        border-radius: var(--radius-md);
-        overflow: hidden;
-        cursor: pointer;
-        border: 2px solid transparent;
-        transition: all var(--transition-base);
-        flex-shrink: 0;
-        background: var(--bg-card);
-      }
-
-      .thumb-item:hover,
-      .thumb-item.selected {
-        border-color: var(--text-primary);
-        transform: scale(1.05);
-      }
-
-      .thumb-item img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      /* Product Details - Centered Cards */
-      .details-section {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 48px var(--page-padding);
-      }
-
-      /* Product Header Card */
-      .product-header-card {
-        text-align: center;
-        margin-bottom: 40px;
-        padding-bottom: 40px;
-        border-bottom: 1px solid var(--border);
-      }
-
-      .product-badges {
-        display: flex;
-        justify-content: center;
-        gap: 12px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-      }
-
-      .product-brand {
-        font-size: 11px;
-        color: var(--accent);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.15em;
-        margin-bottom: 12px;
-      }
-
-      .product-title {
-        font-family: var(--font-serif);
-        font-size: clamp(32px, 5vw, 52px);
-        font-weight: 500;
-        line-height: 1.15;
-        color: var(--text-primary);
-        margin-bottom: 16px;
-        letter-spacing: -0.02em;
-      }
-
-      .product-sku-display {
-        font-size: 12px;
-        color: var(--text-muted);
-        letter-spacing: 0.05em;
-        margin-bottom: 24px;
-      }
-
-      .product-pricing {
-        display: flex;
-        align-items: baseline;
-        justify-content: center;
-        gap: 16px;
-      }
-
-      .product-pricing .main-price {
-        font-size: 36px;
-        font-weight: 600;
-        color: var(--text-primary);
-        letter-spacing: -0.02em;
-      }
-
-      .product-pricing .was-price {
-        font-size: 22px;
-        color: var(--text-muted);
-        text-decoration: line-through;
-      }
-
-      .product-unit-price {
-        font-size: 14px;
-        color: var(--text-secondary);
-        margin-top: 8px;
-      }
-
-      /* Info Cards */
-      .info-cards {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-      }
-
-      .info-card {
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-xl);
-        padding: 28px;
-        box-shadow: var(--shadow-sm);
-      }
-
-      .info-card-title {
-        font-family: var(--font-serif);
-        font-size: 18px;
-        font-weight: 500;
-        color: var(--text-primary);
-        margin-bottom: 16px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .info-card-title::before {
-        content: '';
-        width: 3px;
-        height: 18px;
-        background: var(--accent);
-        border-radius: 2px;
-      }
-
-      .info-card-content {
-        font-size: 15px;
-        line-height: 1.75;
-        color: var(--text-secondary);
-      }
-
-      /* Stock Indicator */
-      .stock-indicator {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 16px;
-        border-radius: var(--radius-md);
-        font-size: 13px;
-        font-weight: 600;
-      }
-
-      .stock-indicator.in-stock {
-        background: var(--success-bg);
-        color: var(--success);
-      }
-
-      .stock-indicator.out-of-stock {
-        background: var(--error-bg);
-        color: var(--error);
-      }
-
-      .stock-indicator .dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: currentColor;
-        animation: pulse-dot 2s infinite;
-      }
-
-      @keyframes pulse-dot {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.4; }
-      }
-
-      /* Options Card */
-      .options-grid {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-      }
-
-      .option-row {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .option-row .option-label {
-        margin: 0;
-      }
-
-      .option-choices-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-
-      /* Quantity in Card */
-      .quantity-row {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-      }
-
-      .quantity-row .option-label {
-        margin: 0;
-        min-width: 80px;
-      }
-
-      /* Sticky Action Bar */
-      .sticky-action-bar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: var(--bg-card);
-        border-top: 1px solid var(--border);
-        padding: 16px var(--page-padding);
-        box-shadow: 0 -4px 20px rgba(45, 42, 38, 0.08);
-        z-index: 100;
-      }
-
+    /* Responsive */
+    @media (max-width: 768px) {
       .action-bar-inner {
-        max-width: 800px;
-        margin: 0 auto;
-        display: flex;
-        align-items: center;
-        gap: 16px;
+        flex-direction: column;
+        gap: 12px;
       }
 
       .action-bar-price {
-        display: flex;
-        flex-direction: column;
-        margin-right: auto;
-      }
-
-      .action-bar-price .total-label {
-        font-size: 12px;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-      }
-
-      .action-bar-price .total-amount {
-        font-size: 24px;
-        font-weight: 700;
-        color: var(--text-primary);
+        margin-right: 0;
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
       }
 
       .action-bar-buttons {
-        display: flex;
-        gap: 12px;
+        width: 100%;
       }
 
       .action-bar-buttons .btn {
-        min-width: 140px;
+        flex: 1;
+        min-width: auto;
       }
 
-      /* Additional Info Sections */
-      .additional-info {
-        margin-top: 40px;
-        padding-top: 40px;
-        border-top: 1px solid var(--border);
+      .gallery-container {
+        padding: 0 16px;
       }
 
-      .expandable-section {
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
-        margin-bottom: 12px;
-        overflow: hidden;
+      .main-image-wrapper {
+        aspect-ratio: 1;
+        border-radius: var(--radius-xl);
       }
+    }
+  </style>
+</head>
 
-      .expandable-header {
-        padding: 20px 24px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        cursor: pointer;
-        transition: background var(--transition-fast);
-      }
-
-      .expandable-header:hover {
-        background: var(--bg-hover);
-      }
-
-      .expandable-title {
-        font-family: var(--font-serif);
-        font-size: 16px;
-        font-weight: 500;
-        color: var(--text-primary);
-      }
-
-      .expandable-content {
-        padding: 0 24px 20px;
-        font-size: 15px;
-        line-height: 1.75;
-        color: var(--text-secondary);
-      }
-
-      /* Related Products Section */
-      .related-section {
-        max-width: var(--container-max);
-        margin: 0 auto;
-        padding: 60px var(--page-padding);
-        border-top: 1px solid var(--border);
-      }
-
-      .related-section .section-title {
-        font-family: var(--font-serif);
-        font-size: 28px;
-        font-weight: 500;
-        color: var(--text-primary);
-        text-align: center;
-        margin-bottom: 40px;
-      }
-
-      .related-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 24px;
-      }
-
-      @media (max-width: 1024px) {
-        .related-grid {
-          grid-template-columns: repeat(2, 1fr);
-        }
-      }
-
-      @media (max-width: 600px) {
-        .related-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      /* Responsive */
-      @media (max-width: 768px) {
-        .action-bar-inner {
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        .action-bar-price {
-          margin-right: 0;
-          width: 100%;
-          flex-direction: row;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .action-bar-buttons {
-          width: 100%;
-        }
-
-        .action-bar-buttons .btn {
-          flex: 1;
-          min-width: auto;
-        }
-
-        .gallery-container {
-          padding: 0 16px;
-        }
-
-        .main-image-wrapper {
-          aspect-ratio: 1;
-          border-radius: var(--radius-xl);
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <main class="product-view">
-      <!-- Site Header -->
-      <header class="site-header">
-        <a href="/products" class="site-logo">Atelier<span>.</span></a>
-        <nav class="site-nav">
-          <a href="/products">Collection</a>
-          <a href="/cart" 
-             class="cart-indicator {cartIndicator.hasItems ? has-items} {cartIndicator.isLoading ? is-loading} {cartIndicator.justAdded ? just-added}" 
-             ref="cartIndicator.cartLink">
-            <span class="cart-indicator-icon">🛒</span>
-            <span class="cart-indicator-count" if="cartIndicator.hasItems">{cartIndicator.itemCount}</span>
-          </a>
-        </nav>
+<body>
+  <main class="product-view"><jay:site-header ref="header">
+      <header class="site-header"><a href="/products" class="site-logo">Atelier<span>.</span></a>
+        <nav class="site-nav"><a href="/products">Collection</a><jay:cart-indicator><a href="/cart"
+              class="cart-indicator {hasItems ? has-items} {isLoading ? is-loading} {justAdded ? just-added}"
+              ref="cartLink"><span class="cart-indicator-icon">🛒</span><span
+                class="cart-indicator-count"
+                if="hasItems">{itemCount}</span></a></jay:cart-indicator></nav>
       </header>
-
-      <!-- Breadcrumb -->
-      <div class="breadcrumb-bar">
-        <a href="/products" class="back-link">
-          ← Back to Collection
-        </a>
+    </jay:site-header>
+    <div class="breadcrumb-bar"><a href="/products" class="back-link">← Back to Collection</a></div>
+    <section class="gallery-section">
+      <div class="gallery-container">
+        <div class="main-image-wrapper"><img
+            src="{productPage.mediaGallery.selectedMedia.url}/v1/fill/w_800,h_600/file.webp"
+            srcset="{productPage.mediaGallery.selectedMedia.url}/v1/fill/w_600%2Ch_450/file.webp 600w, {productPage.mediaGallery.selectedMedia.url}/v1/fill/w_800%2Ch_600/file.webp 800w, {productPage.mediaGallery.selectedMedia.url}/v1/fill/w_1200%2Ch_900/file.webp 1200w, {productPage.mediaGallery.selectedMedia.url}/v1/fill/w_1600%2Ch_1200/file.webp 1600w"
+            sizes="(max-width: 900px) 100vw, 50vw" alt="{productPage.productName}" width="800"
+            height="600" loading="eager" fetchpriority="high"></div>
+        <div class="thumbnails-row">
+          <div class="thumb-item {selected == selected ? selected}"
+            forEach="productPage.mediaGallery.availableMedia" trackBy="mediaId"
+            ref="productPage.mediaGallery.availableMedia.selected"><img
+              src="{media.url}/v1/fill/w_50,h_50/file.jpg" alt="Product thumbnail" width="50"
+              height="50" loading="lazy"></div>
+        </div>
       </div>
-
-      <!-- Full-Width Gallery -->
-      <section class="gallery-section">
-        <div class="gallery-container">
-          <div class="main-image-wrapper">
-            <img
-              src="{productPage.mediaGallery.selectedMedia.url}/v1/fill/w_800,h_600/file.webp"
-              srcset="{productPage.mediaGallery.selectedMedia.url}/v1/fill/w_600%2Ch_450/file.webp 600w,
-                      {productPage.mediaGallery.selectedMedia.url}/v1/fill/w_800%2Ch_600/file.webp 800w,
-                      {productPage.mediaGallery.selectedMedia.url}/v1/fill/w_1200%2Ch_900/file.webp 1200w,
-                      {productPage.mediaGallery.selectedMedia.url}/v1/fill/w_1600%2Ch_1200/file.webp 1600w"
-              sizes="(max-width: 900px) 100vw, 50vw"
-              alt="{productPage.productName}" width="800" height="600" loading="eager" fetchpriority="high" />
+    </section>
+    <section class="details-section">
+      <div class="product-header-card">
+        <div class="product-badges">
+          <div class="badge badge-accent" if="productPage.ribbon">{productPage.ribbon}</div>
+          <div class="product-type-badge physical" if="productPage.productType == PHYSICAL">📦
+            Physical</div>
+          <div class="product-type-badge digital" if="productPage.productType == DIGITAL">⚡ Digital
           </div>
-          <div class="thumbnails-row">
-            <div class="thumb-item {selected == selected ? selected}"
-                 forEach="productPage.mediaGallery.availableMedia" 
-                 trackBy="mediaId"
-                 ref="productPage.mediaGallery.availableMedia.selected">
-              <img src="{media.url}/v1/fill/w_50,h_50/file.jpg" alt="Product thumbnail" width="50" height="50" loading="lazy" />
+          <div class="stock-indicator in-stock" if="productPage.stockStatus == IN_STOCK"><span
+              class="dot"></span>Available</div>
+          <div class="stock-indicator out-of-stock" if="productPage.stockStatus == OUT_OF_STOCK">
+            <span class="dot"></span>Sold Out</div>
+        </div>
+        <div class="product-brand" if="productPage.brand">{productPage.brand}</div>
+        <h1 class="product-title">{productPage.productName}</h1>
+        <div class="product-sku-display" if="productPage.sku">SKU: {productPage.sku}</div>
+        <div class="product-pricing"><span class="main-price">{productPage.price}</span><span
+            class="was-price"
+            if="productPage.strikethroughPrice">{productPage.strikethroughPrice}</span></div>
+        <div class="product-unit-price" if="productPage.pricePerUnit">{productPage.pricePerUnit} per
+          unit</div>
+      </div>
+      <div class="info-cards">
+        <div class="info-card" if="productPage.description">
+          <div class="info-card-title">About this piece</div>
+          <div class="info-card-content">{productPage.description}</div>
+        </div>
+        <div class="info-card" if="productPage.options">
+          <div class="info-card-title">Customize</div>
+          <div class="options-grid">
+            <div class="option-row" forEach="productPage.options" trackBy="_id">
+              <div class="option-label" aria-hidden="true">{name}</div><select class="select"
+                if="optionRenderType == TEXT_CHOICES" ref="productPage.options.textChoice"
+                aria-label="{name}">
+                <option forEach="choices" trackBy="choiceId" value="{choiceId}">{name}</option>
+              </select>
+              <div class="option-choices-row" if="optionRenderType == COLOR_SWATCH_CHOICES"><button
+                  class="choice-btn color-swatch {isSelected ? selected} {!inStock ? out-of-stock}"
+                  style="background-color: {colorCode}" forEach="choices" trackBy="choiceId"
+                  ref="productPage.options.choices.choiceButton" title="{name}"
+                  aria-label="{name}"></button></div>
             </div>
           </div>
         </div>
-      </section>
-
-      <!-- Product Details - Stacked Cards -->
-      <section class="details-section">
-        <!-- Product Header -->
-        <div class="product-header-card">
-          <div class="product-badges">
-            <div class="badge badge-accent" if="productPage.ribbon">{productPage.ribbon}</div>
-            <div class="product-type-badge physical" if="productPage.productType == PHYSICAL">
-              📦 Physical
-            </div>
-            <div class="product-type-badge digital" if="productPage.productType == DIGITAL">
-              ⚡ Digital
-            </div>
-            <div class="stock-indicator in-stock" if="productPage.stockStatus == IN_STOCK">
-              <span class="dot"></span>
-              Available
-            </div>
-            <div class="stock-indicator out-of-stock" if="productPage.stockStatus == OUT_OF_STOCK">
-              <span class="dot"></span>
-              Sold Out
-            </div>
-          </div>
-
-          <div class="product-brand" if="productPage.brand">{productPage.brand}</div>
-          <h1 class="product-title">{productPage.productName}</h1>
-          <div class="product-sku-display" if="productPage.sku">SKU: {productPage.sku}</div>
-
-          <div class="product-pricing">
-            <span class="main-price">{productPage.price}</span>
-            <span class="was-price" if="productPage.strikethroughPrice">{productPage.strikethroughPrice}</span>
-          </div>
-          <div class="product-unit-price" if="productPage.pricePerUnit">{productPage.pricePerUnit} per unit</div>
-        </div>
-
-        <!-- Info Cards -->
-        <div class="info-cards">
-          <!-- Description Card -->
-          <div class="info-card" if="productPage.description">
-            <div class="info-card-title">About this piece</div>
-            <div class="info-card-content">{productPage.description}</div>
-          </div>
-
-          <!-- Options Card -->
-          <div class="info-card" if="productPage.options">
-            <div class="info-card-title">Customize</div>
-            <div class="options-grid">
-              <div class="option-row" forEach="productPage.options" trackBy="_id">
-                <div class="option-label" aria-hidden="true">{name}</div>
-                
-                <!-- Text Choices as Dropdown -->
-                <select class="select"
-                        if="optionRenderType == TEXT_CHOICES"
-                        ref="productPage.options.textChoice"
-                        aria-label="{name}">
-                  <option forEach="choices" trackBy="choiceId" value="{choiceId}">{name}</option>
-                </select>
-
-                <!-- Color Swatch Choices -->
-                <div class="option-choices-row" if="optionRenderType == COLOR_SWATCH_CHOICES">
-                  <button class="choice-btn color-swatch {isSelected ? selected} {!inStock ? out-of-stock}"
-                          style="background-color: {colorCode}"
-                          forEach="choices"
-                          trackBy="choiceId"
-                          ref="productPage.options.choices.choiceButton"
-                          title="{name}"
-                          aria-label="{name}">
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Modifiers Card -->
-          <div class="info-card" if="productPage.modifiers">
-            <div class="info-card-title">Personalize</div>
-            <div class="options-grid">
-              <div class="option-row" forEach="productPage.modifiers" trackBy="_id">
-                <div class="option-label" aria-hidden="true">{name}</div>
-                
-                <select class="select"
-                        if="modifierType == TEXT_CHOICES"
-                        ref="productPage.modifiers.textModifier"
-                        aria-label="{name}">
-                  <option forEach="choices" trackBy="choiceId" value="{choiceId}">{name}</option>
-                </select>
-
-                <div class="option-choices-row" if="modifierType == COLOR_SWATCH_CHOICES">
-                  <button class="choice-btn color-swatch {isSelected ? selected}"
-                          style="background-color: {colorCode}"
-                          forEach="choices"
-                          trackBy="choiceId"
-                          ref="choiceButton"
-                          title="{name}"
-                          aria-label="{name}">
-                  </button>
-                </div>
-
-                <input class="input"
-                       type="text"
-                       if="modifierType == FREE_TEXT"
-                       ref="productPage.modifiers.textInput"
-                       placeholder="Enter your custom text"
-                       maxlength="{textInputLength}"
-                       aria-label="{name}" />
-              </div>
-            </div>
-          </div>
-
-          <!-- Quantity Card -->
-          <div class="info-card">
-            <div class="info-card-title">Quantity</div>
-            <div class="quantity-row">
-              <div class="quantity-controls">
-                <button class="quantity-btn" ref="productPage.quantity.decrementButton">−</button>
-                <input class="quantity-input"
-                       type="number"
-                       value="{productPage.quantity.quantity}"
-                       ref="productPage.quantity.quantity"
-                       min="1"
-                       aria-label="Quantity" />
-                <button class="quantity-btn" ref="productPage.quantity.incrementButton">+</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Additional Info Sections -->
-          <div class="additional-info" if="productPage.infoSections">
-            <div class="expandable-section" forEach="productPage.infoSections" trackBy="_id">
-              <div class="expandable-header">
-                <span class="expandable-title">{title}</span>
-                <span>+</span>
-              </div>
-              <div class="expandable-content">{plainDescription}</div>
+        <div class="info-card" if="productPage.modifiers">
+          <div class="info-card-title">Personalize</div>
+          <div class="options-grid">
+            <div class="option-row" forEach="productPage.modifiers" trackBy="_id">
+              <div class="option-label" aria-hidden="true">{name}</div><select class="select"
+                if="modifierType == TEXT_CHOICES" ref="productPage.modifiers.textModifier"
+                aria-label="{name}">
+                <option forEach="choices" trackBy="choiceId" value="{choiceId}">{name}</option>
+              </select>
+              <div class="option-choices-row" if="modifierType == COLOR_SWATCH_CHOICES"><button
+                  class="choice-btn color-swatch {isSelected ? selected}"
+                  style="background-color: {colorCode}" forEach="choices" trackBy="choiceId"
+                  ref="choiceButton" title="{name}" aria-label="{name}"></button></div><input
+                class="input" type="text" if="modifierType == FREE_TEXT"
+                ref="productPage.modifiers.textInput" placeholder="Enter your custom text"
+                maxlength="{textInputLength}" aria-label="{name}">
             </div>
           </div>
         </div>
-      </section>
-
-      <!-- Related Products -->
-      <jay:category-products productId="{productPage._id}" categorySlug="{productPage.categorySlug}" limit="4">
-        <section class="related-section" if="hasProducts">
-          <h2 class="section-title">More from {categoryName}</h2>
-          <div class="related-grid">
-            <article class="product-card {isAddingToCart ? is-adding}" forEach="products" trackBy="_id">
-              <a href="{productUrl}" class="product-card-image">
-                <img src="{thumbnail.url}/v1/fill/w_300,h_300/file.webp" alt="{thumbnail.altText}" width="300" height="300" loading="lazy" />
-                <span class="badge badge-accent ribbon" if="hasRibbon">{ribbon.name}</span>
-              </a>
-              <div class="product-card-content">
-                <p class="product-card-brand" if="brand.name">{brand.name}</p>
-                <h3 class="product-card-name">
-                  <a href="{productUrl}" ref="products.productLink">{name}</a>
-                </h3>
-                <div class="product-card-price">
-                  <span class="current-price">{price}</span>
-                  <span class="original-price" if="hasDiscount">{strikethroughPrice}</span>
-                </div>
-                <button
-                  class="btn btn-secondary btn-block"
-                  ref="products.addToCartButton"
-                  if="quickAddType === SIMPLE && inventory.availabilityStatus === IN_STOCK"
-                >
-                  Add to Cart
-                </button>
-                <a
-                  href="{productUrl}"
-                  class="btn btn-secondary btn-block"
-                  ref="products.viewOptionsButton"
-                  if="quickAddType !== SIMPLE && inventory.availabilityStatus !== OUT_OF_STOCK"
-                >
-                  View Options
-                </a>
-              </div>
-            </article>
+        <div class="info-card">
+          <div class="info-card-title">Quantity</div>
+          <div class="quantity-row">
+            <div class="quantity-controls"><button class="quantity-btn"
+                ref="productPage.quantity.decrementButton">−</button><input class="quantity-input"
+                type="number" value="{productPage.quantity.quantity}"
+                ref="productPage.quantity.quantity" min="1" aria-label="Quantity"><button
+                class="quantity-btn" ref="productPage.quantity.incrementButton">+</button></div>
           </div>
-        </section>
-      </jay:category-products>
-
-      <!-- Sticky Action Bar -->
-      <div class="sticky-action-bar">
-        <div class="action-bar-inner">
-          <div class="action-bar-price">
-            <span class="total-label">Total</span>
-            <span class="total-amount">{productPage.price}</span>
-          </div>
-          <div class="action-bar-buttons">
-            <button class="btn btn-secondary btn-lg" 
-                    ref="productPage.buyNowButton"
-                    disabled="!productPage.actionsEnabled">
-              Buy Now
-            </button>
-            <button class="btn btn-primary btn-lg" 
-                    ref="productPage.addToCartButton"
-                    disabled="!productPage.actionsEnabled">
-              Add to Cart
-            </button>
+        </div>
+        <div class="additional-info" if="productPage.infoSections">
+          <div class="expandable-section" forEach="productPage.infoSections" trackBy="_id">
+            <div class="expandable-header"><span
+                class="expandable-title">{title}</span><span>+</span></div>
+            <div class="expandable-content">{plainDescription}</div>
           </div>
         </div>
       </div>
-    </main>
-  </body>
+    </section><jay:category-products productId="{productPage._id}"
+      categorySlug="{productPage.categorySlug}" limit="4">
+      <section class="related-section" if="hasProducts">
+        <h2 class="section-title">More from {categoryName}</h2>
+        <div class="related-grid">
+          <article class="product-card {isAddingToCart ? is-adding}" forEach="products"
+            trackBy="_id"><a href="{productUrl}" class="product-card-image"><img
+                src="{thumbnail.url}/v1/fill/w_300,h_300/file.webp" alt="{thumbnail.altText}"
+                width="300" height="300" loading="lazy"><span class="badge badge-accent ribbon"
+                if="hasRibbon">{ribbon.name}</span></a>
+            <div class="product-card-content">
+              <p class="product-card-brand" if="brand.name">{brand.name}</p>
+              <h3 class="product-card-name"><a href="{productUrl}"
+                  ref="products.productLink">{name}</a></h3>
+              <div class="product-card-price"><span class="current-price">{price}</span><span
+                  class="original-price" if="hasDiscount">{strikethroughPrice}</span></div><button
+                class="btn btn-secondary btn-block" ref="products.addToCartButton"
+                if="quickAddType === SIMPLE && inventory.availabilityStatus === IN_STOCK">Add to
+                Cart</button><a href="{productUrl}" class="btn btn-secondary btn-block"
+                ref="products.viewOptionsButton"
+                if="quickAddType !== SIMPLE && inventory.availabilityStatus !== OUT_OF_STOCK">View
+                Options</a>
+            </div>
+          </article>
+        </div>
+      </section>
+    </jay:category-products>
+    <div class="sticky-action-bar">
+      <div class="action-bar-inner">
+        <div class="action-bar-price"><span class="total-label">Total</span><span
+            class="total-amount">{productPage.price}</span></div>
+        <div class="action-bar-buttons"><button class="btn btn-secondary btn-lg"
+            ref="productPage.buyNowButton" disabled="!productPage.actionsEnabled">Buy
+            Now</button><button class="btn btn-primary btn-lg" ref="productPage.addToCartButton"
+            disabled="!productPage.actionsEnabled">Add to Cart</button></div>
+      </div>
+    </div>
+  </main>
+</body>
+
 </html>
