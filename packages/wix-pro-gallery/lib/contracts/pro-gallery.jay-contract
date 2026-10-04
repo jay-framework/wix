@@ -1,0 +1,53 @@
+name: pro-gallery
+description: >-
+  A Wix Pro Gallery created in the Wix Editor, loaded live by gallery id, with the navigation state shared by
+  slideshow, slider and thumbnail layouts (current item, previous/next, autoplay). Markup and layout are up to
+  the template; a grid simply uses `items`.
+
+props:
+  - name: galleryId
+    type: string
+    required: true
+    description: Pro Gallery GUID (Wix dashboard, or the gallery widget's app settings)
+  - name: autoplay
+    type: boolean
+    description: Advance automatically (browser only). Default false.
+  - name: intervalMs
+    type: number
+    description: Autoplay interval in milliseconds. Default 4000 (the Pro Gallery default).
+  - name: loop
+    type: boolean
+    description: Wrap around at either end. Default false.
+
+tags:
+  - { tag: hasItems, type: variant, dataType: boolean, phase: fast+interactive, description: Whether the gallery has any items }
+  - { tag: itemCount, type: data, dataType: number, phase: fast+interactive, description: Number of items }
+  - { tag: currentIndex, type: data, dataType: number, phase: fast+interactive, description: Index of the current item (0-based) }
+  - { tag: currentPosition, type: data, dataType: number, phase: fast+interactive, description: Position of the current item (1-based), for "2 / 5" counters }
+  - { tag: hasPrevious, type: variant, dataType: boolean, phase: fast+interactive, description: Whether previous navigation is possible }
+  - { tag: hasNext, type: variant, dataType: boolean, phase: fast+interactive, description: Whether next navigation is possible }
+  - { tag: isPlaying, type: variant, dataType: boolean, phase: fast+interactive, description: Whether autoplay is running }
+  - { tag: previousButton, type: interactive, elementType: HTMLElement, description: Go to the previous item }
+  - { tag: nextButton, type: interactive, elementType: HTMLElement, description: Go to the next item }
+  - { tag: playPauseButton, type: interactive, elementType: HTMLElement, description: Toggle autoplay }
+
+  - tag: items
+    type: sub-contract
+    repeated: true
+    trackBy: itemId
+    phase: fast+interactive
+    description: Gallery items in the gallery's order
+    tags:
+      - { tag: itemId, type: data, dataType: string, description: Item GUID }
+      - { tag: index, type: data, dataType: number, description: Position in the gallery (0-based); use as a CSS variable to lay out slides }
+      - { tag: title, type: data, dataType: string, description: Item title }
+      - { tag: description, type: data, dataType: string, description: Item description }
+      - { tag: altText, type: data, dataType: string, description: Alt text (falls back to the title) }
+      - { tag: link, type: data, dataType: string, description: Item link URL, empty when none }
+      - { tag: mediaType, type: variant, dataType: "enum (IMAGE | VIDEO)", description: Media kind; videos expose their poster image }
+      - { tag: url, type: data, dataType: string, description: "Base media URL (https://static.wixstatic.com/media/<mediaId>); append a Wix image transform, e.g. {url}/v1/fill/w_980,h_544,al_c,q_85/{mediaId}" }
+      - { tag: mediaId, type: data, dataType: string, description: "Wix media id (file name). Use it as the last URL segment: the image service tunes encoding by it" }
+      - { tag: width, type: data, dataType: number, description: Original width in pixels }
+      - { tag: height, type: data, dataType: number, description: Original height in pixels }
+      - { tag: isCurrent, type: variant, dataType: boolean, description: Whether this is the current item }
+      - { tag: selectButton, type: interactive, elementType: HTMLElement, description: Make this the current item (thumbnails, dots) }

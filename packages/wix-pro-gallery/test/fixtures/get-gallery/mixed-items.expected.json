@@ -1,0 +1,41 @@
+[
+  {
+    "itemId": "image-1",
+    "index": 0,
+    "title": "First",
+    "description": "",
+    "altText": "First",
+    "link": "",
+    "mediaType": "IMAGE",
+    "url": "https://static.wixstatic.com/media/abc_1.jpg",
+    "mediaId": "abc_1.jpg",
+    "width": 400,
+    "height": 300
+  },
+  {
+    "itemId": "image-2",
+    "index": 1,
+    "title": "Second",
+    "description": "Described",
+    "altText": "Alt two",
+    "link": "https://example.com/shop",
+    "mediaType": "IMAGE",
+    "url": "https://static.wixstatic.com/media/abc_2.jpg",
+    "mediaId": "abc_2.jpg",
+    "width": 800,
+    "height": 600
+  },
+  {
+    "itemId": "video-1",
+    "index": 2,
+    "title": "Clip",
+    "description": "",
+    "altText": "Clip",
+    "link": "",
+    "mediaType": "VIDEO",
+    "url": "https://static.wixstatic.com/media/abc_poster.jpg",
+    "mediaId": "abc_poster.jpg",
+    "width": 1920,
+    "height": 1080
+  }
+]
