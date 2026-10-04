@@ -24,14 +24,28 @@ function normalizeProduct(product: Record<string, unknown>): V1Product {
     return p;
 }
 
+/**
+ * Offset paging is only consistent under a total order: the default order and ties of a user sort are not
+ * stable across requests, so products are duplicated or skipped between pages (e.g. 786 products returned
+ * as 751-779 unique ones). When paging, break ties by numericId.
+ */
+export function stableSort(request?: QueryProductsV1Request): WixSort[] {
+    const sort = [...(request?.sort ?? [])];
+    if (request?.paging && !sort.some((s) => s.fieldName === 'numericId')) {
+        sort.push({ fieldName: 'numericId', order: 'ASC' });
+    }
+    return sort;
+}
+
 export async function queryProducts(
     client: WixClient,
     request?: QueryProductsV1Request,
 ): Promise<QueryProductsV1Response> {
     const query: Record<string, unknown> = {};
     if (request?.filter) query.filter = JSON.stringify(request.filter);
-    if (request?.sort) {
-        const v1Sort = request.sort.map((s) => ({
+    const sort = stableSort(request);
+    if (sort.length) {
+        const v1Sort = sort.map((s) => ({
             [s.fieldName]: (s.order || 'ASC').toLowerCase(),
         }));
         query.sort = JSON.stringify(v1Sort);
@@ -43,7 +57,9 @@ export async function queryProducts(
         body: {
             query,
             includeVariants: request?.includeVariants ?? true,
-            includeMerchantSpecificData: request?.includeMerchantSpecificData ?? true,
+            // Merchant-specific data (cost, profit, ...) requires WIX_STORES.MODIFY_PRODUCTS: a storefront
+            // (visitor or read-only) client gets 403. Only request it explicitly.
+            includeMerchantSpecificData: request?.includeMerchantSpecificData ?? false,
         },
     });
     if (result.products) {
