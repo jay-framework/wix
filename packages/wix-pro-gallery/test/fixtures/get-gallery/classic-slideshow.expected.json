@@ -1,0 +1,54 @@
+[
+  {
+    "itemId": "7c9bc665-2a08-44d2-bbb4-9d4f6d03cbe3",
+    "index": 0,
+    "title": "I'm an image title",
+    "description": "Describe your image here.",
+    "altText": "I'm an image title",
+    "link": "",
+    "mediaType": "IMAGE",
+    "url": "https://static.wixstatic.com/media/84770f_038199bb6bdc4db9aff6ade61dfb7e69~mv2.jpg",
+    "mediaId": "84770f_038199bb6bdc4db9aff6ade61dfb7e69~mv2.jpg",
+    "width": 1768,
+    "height": 1056
+  },
+  {
+    "itemId": "828c19de-f2d0-4bc0-afb8-a3233138ac58",
+    "index": 1,
+    "title": "I'm an image title",
+    "description": "Describe your image here.",
+    "altText": "I'm an image title",
+    "link": "",
+    "mediaType": "IMAGE",
+    "url": "https://static.wixstatic.com/media/84770f_60b0c662f03841678e9823840a1fc226~mv2.jpg",
+    "mediaId": "84770f_60b0c662f03841678e9823840a1fc226~mv2.jpg",
+    "width": 1770,
+    "height": 1058
+  },
+  {
+    "itemId": "43e0473e-980e-443b-a902-1846875c37a6",
+    "index": 2,
+    "title": "I'm an image title",
+    "description": "Describe your image here.",
+    "altText": "I'm an image title",
+    "link": "",
+    "mediaType": "IMAGE",
+    "url": "https://static.wixstatic.com/media/84770f_8a9d4fc3a61349f88ffc49ae8858f61b~mv2.jpg",
+    "mediaId": "84770f_8a9d4fc3a61349f88ffc49ae8858f61b~mv2.jpg",
+    "width": 1770,
+    "height": 1054
+  },
+  {
+    "itemId": "5abbf463-4599-4875-b4f2-cae7d7325d26",
+    "index": 3,
+    "title": "I'm an image title",
+    "description": "Describe your image here.",
+    "altText": "I'm an image title",
+    "link": "",
+    "mediaType": "IMAGE",
+    "url": "https://static.wixstatic.com/media/c55f98ed1a97626a07ba65d13654d039.jpg",
+    "mediaId": "c55f98ed1a97626a07ba65d13654d039.jpg",
+    "width": 1000,
+    "height": 667
+  }
+]

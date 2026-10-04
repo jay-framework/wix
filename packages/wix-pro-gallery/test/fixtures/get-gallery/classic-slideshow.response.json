@@ -1,0 +1,94 @@
+{
+  "gallery": {
+    "id": "66f6bc8b-e5b6-4988-bb41-c33abe2df305",
+    "totalItems": 4,
+    "items": [
+      {
+        "id": "7c9bc665-2a08-44d2-bbb4-9d4f6d03cbe3",
+        "sortOrder": 1611056409.2088726,
+        "title": "I'm an image title",
+        "description": "Describe your image here.",
+        "type": "IMAGE",
+        "image": {
+          "type": "WIX_MEDIA",
+          "imageInfo": {
+            "id": "84770f_038199bb6bdc4db9aff6ade61dfb7e69~mv2.jpg",
+            "url": "https://static.wixstatic.com/media/84770f_038199bb6bdc4db9aff6ade61dfb7e69~mv2.jpg",
+            "height": 1056,
+            "width": 1768,
+            "filename": "84770f_038199bb6bdc4db9aff6ade61dfb7e69~mv2.jpg"
+          }
+        },
+        "createdDate": "2026-09-29T10:18:38Z",
+        "updatedDate": "2026-09-29T10:19:34Z",
+        "tags": {
+          "values": ["_fileOrigin_uploaded"]
+        }
+      },
+      {
+        "id": "828c19de-f2d0-4bc0-afb8-a3233138ac58",
+        "sortOrder": 1611057617.5045996,
+        "title": "I'm an image title",
+        "description": "Describe your image here.",
+        "type": "IMAGE",
+        "image": {
+          "type": "WIX_MEDIA",
+          "imageInfo": {
+            "id": "84770f_60b0c662f03841678e9823840a1fc226~mv2.jpg",
+            "url": "https://static.wixstatic.com/media/84770f_60b0c662f03841678e9823840a1fc226~mv2.jpg",
+            "height": 1058,
+            "width": 1770,
+            "filename": "84770f_60b0c662f03841678e9823840a1fc226~mv2.jpg"
+          }
+        },
+        "createdDate": "2026-09-29T10:18:38Z",
+        "updatedDate": "2026-09-29T10:19:34Z",
+        "tags": {
+          "values": ["_fileOrigin_uploaded"]
+        }
+      },
+      {
+        "id": "43e0473e-980e-443b-a902-1846875c37a6",
+        "sortOrder": 1611058221.6524632,
+        "title": "I'm an image title",
+        "description": "Describe your image here.",
+        "type": "IMAGE",
+        "image": {
+          "type": "WIX_MEDIA",
+          "imageInfo": {
+            "id": "84770f_8a9d4fc3a61349f88ffc49ae8858f61b~mv2.jpg",
+            "url": "https://static.wixstatic.com/media/84770f_8a9d4fc3a61349f88ffc49ae8858f61b~mv2.jpg",
+            "height": 1054,
+            "width": 1770,
+            "filename": "84770f_8a9d4fc3a61349f88ffc49ae8858f61b~mv2.jpg"
+          }
+        },
+        "createdDate": "2026-09-29T10:18:38Z",
+        "updatedDate": "2026-09-29T10:19:34Z",
+        "tags": {
+          "values": ["_fileOrigin_uploaded"]
+        }
+      },
+      {
+        "id": "5abbf463-4599-4875-b4f2-cae7d7325d26",
+        "sortOrder": 1611059631.3315,
+        "title": "I'm an image title",
+        "description": "Describe your image here.",
+        "type": "IMAGE",
+        "image": {
+          "type": "WIX_MEDIA",
+          "imageInfo": {
+            "id": "c55f98ed1a97626a07ba65d13654d039.jpg",
+            "url": "https://static.wixstatic.com/media/c55f98ed1a97626a07ba65d13654d039.jpg",
+            "height": 667,
+            "width": 1000,
+            "filename": "c55f98ed1a97626a07ba65d13654d039.jpg"
+          }
+        },
+        "createdDate": "2026-09-29T10:18:38Z",
+        "updatedDate": "2026-09-29T10:19:34Z"
+      }
+    ],
+    "createdDate": "2026-09-29T10:18:38Z"
+  }
+}

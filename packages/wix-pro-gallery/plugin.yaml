@@ -1,0 +1,15 @@
+name: wix-pro-gallery
+# No module field for NPM packages - uses package main export by default
+
+contracts:
+  - name: pro-gallery
+    contract: pro-gallery.jay-contract
+    component: proGallery
+    description: Wix Pro Gallery loaded live by gallery id, with slideshow navigation and autoplay
+
+services:
+  - name: wix-pro-gallery
+    marker: WIX_PRO_GALLERY_SERVICE
+    description: Server-side Pro Gallery item loading
+
+setup: setupWixProGallery

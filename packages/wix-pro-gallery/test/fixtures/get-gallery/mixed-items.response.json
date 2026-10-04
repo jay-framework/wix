@@ -1,0 +1,58 @@
+{
+  "gallery": {
+    "id": "00000000-0000-0000-0000-000000000001",
+    "totalItems": 5,
+    "items": [
+      {
+        "id": "video-1",
+        "sortOrder": 30,
+        "title": "Clip",
+        "type": "VIDEO",
+        "video": {
+          "type": "WIX_MEDIA",
+          "videoInfo": {
+            "id": "abc_video",
+            "posters": [
+              {
+                "id": "abc_poster.jpg",
+                "url": "https://static.wixstatic.com/media/abc_poster.jpg",
+                "width": 1920,
+                "height": 1080
+              }
+            ]
+          }
+        }
+      },
+      { "id": "text-1", "sortOrder": 5, "title": "Just text", "type": "TEXT" },
+      {
+        "id": "image-2",
+        "sortOrder": 20,
+        "title": "Second",
+        "description": "Described",
+        "type": "IMAGE",
+        "link": { "text": "Shop", "url": "https://example.com/shop" },
+        "image": {
+          "type": "WIX_MEDIA",
+          "imageInfo": {
+            "id": "abc_2.jpg",
+            "url": "https://static.wixstatic.com/media/abc_2.jpg/v1/fit/w_800,h_800/file.jpg",
+            "width": 800,
+            "height": 600,
+            "altText": "Alt two"
+          }
+        }
+      },
+      {
+        "id": "image-1",
+        "sortOrder": 10,
+        "title": "First",
+        "type": "IMAGE",
+        "image": {
+          "type": "WIX_MEDIA",
+          "imageInfo": { "id": "abc_1.jpg", "width": 400, "height": 300 }
+        }
+      },
+      { "id": "image-broken", "sortOrder": 15, "type": "IMAGE", "image": {} }
+    ]
+  }
+}

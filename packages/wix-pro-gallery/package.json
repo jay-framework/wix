@@ -1,0 +1,66 @@
+{
+  "name": "@jay-framework/wix-pro-gallery",
+  "version": "0.24.6",
+  "type": "module",
+  "description": "Wix Pro Gallery package for Jay Framework — live gallery items by id, with slideshow navigation and autoplay",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "plugin.yaml"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/index.client.d.ts",
+      "default": "./dist/index.client.js"
+    },
+    "./tools": "./dist/tools.js",
+    "./plugin.yaml": "./plugin.yaml",
+    "./pro-gallery.jay-contract": "./dist/contracts/pro-gallery.jay-contract"
+  },
+  "scripts": {
+    "build": "npm run clean && npm run definitions && npm run build:client && npm run build:server && npm run build:copy-contract && npm run build:types && npm run validate",
+    "definitions": "jay-cli definitions lib",
+    "validate": "jay-stack-cli validate-plugin",
+    "build:client": "vite build",
+    "build:server": "vite build --ssr",
+    "build:copy-contract": "mkdir -p dist/contracts && cp lib/contracts/*.jay-contract* dist/contracts/",
+    "build:types": "tsup lib/index.ts lib/index.client.ts lib/tools.ts --dts-only --format esm",
+    "build:check-types": "tsc",
+    "clean": "rimraf dist",
+    "confirm": "npm run clean && npm run build && npm run test",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@jay-framework/component": "^0.24.6",
+    "@jay-framework/fullstack-component": "^0.24.6",
+    "@jay-framework/reactive": "^0.24.6",
+    "@jay-framework/runtime": "^0.24.6",
+    "@jay-framework/secure": "^0.24.6",
+    "@jay-framework/stack-client-runtime": "^0.24.6",
+    "@jay-framework/stack-server-runtime": "^0.24.6",
+    "@jay-framework/wix-server-client": "^0.24.6",
+    "@wix/sdk": "^1.21.5"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.7",
+    "@babel/preset-env": "^7.23.8",
+    "@babel/preset-typescript": "^7.23.3",
+    "@jay-framework/compiler-jay-stack": "^0.24.6",
+    "@jay-framework/jay-cli": "^0.24.6",
+    "@jay-framework/jay-stack-cli": "^0.24.6",
+    "@jay-framework/vite-plugin": "^0.24.6",
+    "@jay-framework/wix-dev-environment": "workspace:^",
+    "nodemon": "^3.0.3",
+    "rimraf": "^5.0.5",
+    "tslib": "^2.6.2",
+    "tsup": "^8.5.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11",
+    "vitest": "^1.2.0"
+  }
+}
