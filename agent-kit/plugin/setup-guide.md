@@ -23,7 +23,7 @@ agentkit: generateMyAgentKit # export name (NPM) or ./path (local) — optional
 description: Validate credentials and install config # optional, top-level
 ```
 
-**NPM plugins:** `setup` and `agentkit` are export names from the package entry point (`lib/index.ts`).  
+**NPM plugins:** `setup` and `agentkit` are export names from the **`./tools`** entry (`lib/tools.ts`). They are tools-time handlers (may use the compiler) and load only from `./tools` — do not re-export them from `lib/index.ts`, or the compiler can leak into the serve bundle.  
 **Local plugins:** relative paths to handler modules (e.g. `agentkit: ./agentkit` — export `agentkit` or `default` from that module).
 
 `jay-stack validate-plugin` checks that declared handlers exist and are correctly exported.
@@ -254,37 +254,28 @@ export async function generateMyAgentKit(
 | Generate data from live services (product catalogs, CMS schemas)     | `agentkit` | Needs services initialized; refreshed on each agent-kit run |
 | Validate credentials / API keys                                      | `setup`    | Part of initial project configuration                       |
 | Write AIditor add-menu from project-specific data (DESIGN.md tokens) | `agentkit` | Data comes from project files at agent-kit time             |
+| Materialize AIditor Project settings tab discovery                   | `agentkit` | Copy/generate `agent-kit/aiditor/settings/<plugin>.yaml`    |
 
 ## AIditor Add-Menu Items
 
-The agent-kit handler writes to `agent-kit/aiditor/add-menu/<plugin-name>.yaml`. The AIditor discovers and loads all YAML files in this directory.
+See [add-menu-guide.md](add-menu-guide.md) for the complete add-menu item schema, interaction modes, browse sizes, presentation formats, and TypeScript types.
 
-Each item:
+## AIditor Project Settings
 
-```yaml
-items:
-  - id: my-plugin:feature-name # unique ID
-    title: Feature Name # shown in the add menu
-    category: My Plugin # grouping
-    subCategory: Components # sub-grouping
-    pluginName: my-plugin # optional: plugin attribution
-    packageName: '@my-org/my-plugin' # optional: npm package name
-    prompt: | # instructions for the AI agent
-      Use headless component @my-org/my-plugin / contract feature-name.
-      Read agent-kit/designer/feature-name.md for usage guide.
-```
-
-See `agent-kit/plugin/aiditor-add-menu.md` (installed by `jay-stack setup aiditor`) for the full contributor guide.
+See [aiditor-settings-guide.md](aiditor-settings-guide.md) for the full checklist: `settings.template.yaml` in the package, walk-up path resolution from bundled `dist/`, `devOnly` route in `plugin.yaml`, and settings page responsibilities (actions, postMessage, no secrets in forms).
 
 ## Exporting Handlers
 
-For NPM plugins, export handlers from the package entry point:
+For NPM plugins, export setup/agent-kit handlers from the **`./tools`** entry (they may use the
+compiler and must stay out of the serve bundle):
 
 ```typescript
-// lib/index.ts
+// lib/tools.ts (./tools) — compiler allowed, toolchain-only
 export { setupMyPlugin } from './setup.js';
 export { generateMyAgentKit } from './agentkit.js';
-// ... other exports (components, actions, services)
+
+// lib/index.ts (.) — serve entry, compiler-free
+// ... components, actions, services, init (NOT setup/agentkit)
 ```
 
 For local plugins, use relative paths in `plugin.yaml` and export `agentkit` or `default` from the handler module.
