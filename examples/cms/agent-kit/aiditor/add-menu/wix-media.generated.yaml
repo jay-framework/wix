@@ -1705,7 +1705,7 @@ items:
       Labels: Food, Bun, Sandwich, Staple food, Recipe, Ingredient, Fast food, Leaf vegetable, Hamburger, Cuisine
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:shutterstock-305226746-jpg
+  - id: wix-media:shutterstock-305226746-jpg-2
     title: shutterstock_305226746.jpg
     category: Media
     folderPath:
@@ -1725,7 +1725,7 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_d521c1d6f2e240279ba13d0736d5e892~mv2.jpg
       Media id: 19cb78_d521c1d6f2e240279ba13d0736d5e892~mv2.jpg
-      Slug: shutterstock-305226746-jpg
+      Slug: shutterstock-305226746-jpg-2
       Type: image · -
       Folder: Images / Devanco Food Items / Burgers / Beef Burgers
       Labels: Food, Bun, Sandwich, Ingredient, Recipe, Leaf vegetable, Staple food, Fast food, Hamburger, Cuisine
@@ -1757,7 +1757,7 @@ items:
       Labels: Food, Tableware, Ingredient, Recipe, Natural foods, Cuisine, Plum tomato, Dish, Leaf vegetable, Plate
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:turkey-burger-jpg-2
+  - id: wix-media:turkey-burger-jpg
     title: Turkey Burger.jpg
     category: Media
     folderPath:
@@ -1777,7 +1777,7 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_fa5c76b569bd456b8a8050a69eefe016~mv2.jpg
       Media id: 19cb78_fa5c76b569bd456b8a8050a69eefe016~mv2.jpg
-      Slug: turkey-burger-jpg-2
+      Slug: turkey-burger-jpg
       Type: image · -
       Folder: Images / Devanco Food Items / Burgers / Beef Burgers
       Labels: Food, Ingredient, Green, Recipe, Natural foods, Cuisine, Plant, Dish, Leaf vegetable, Baked goods
@@ -2549,7 +2549,7 @@ items:
       Labels: Food, Cloud, Plant, Sky, Table, Tree, Outdoor furniture, Tableware, Interior design, Grass
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:shutterstock-305226746-jpg-2
+  - id: wix-media:shutterstock-305226746-jpg
     title: shutterstock_305226746.jpg
     category: Media
     folderPath:
@@ -2568,13 +2568,13 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_c73abbe025034a089b7bc9b447f27d04~mv2.jpg
       Media id: 19cb78_c73abbe025034a089b7bc9b447f27d04~mv2.jpg
-      Slug: shutterstock-305226746-jpg-2
+      Slug: shutterstock-305226746-jpg
       Type: image · -
       Folder: Images / Devanco Food Items / Burgers
       Labels: Food, Bun, Sandwich, Ingredient, Recipe, Leaf vegetable, Staple food, Fast food, Hamburger, Cuisine
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:turkey-burger-jpg
+  - id: wix-media:turkey-burger-jpg-2
     title: Turkey Burger.jpg
     category: Media
     folderPath:
@@ -2593,7 +2593,7 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_14351d8b4ccd479e87e2bf0d6166d489~mv2.jpg
       Media id: 19cb78_14351d8b4ccd479e87e2bf0d6166d489~mv2.jpg
-      Slug: turkey-burger-jpg
+      Slug: turkey-burger-jpg-2
       Type: image · -
       Folder: Images / Devanco Food Items / Burgers
       Labels: Food, Ingredient, Green, Recipe, Natural foods, Cuisine, Plant, Dish, Leaf vegetable, Baked goods
@@ -6222,6 +6222,7 @@ items:
       - Halal Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_a3f8e3664212427ebf00642a72cb8398f002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -6370,7 +6371,7 @@ items:
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
 
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:devanco-12-18-2020-035-jpg
+  - id: wix-media:devanco-12-18-2020-035-jpg-2
     title: Devanco-12.18.2020-035.jpg
     category: Media
     folderPath:
@@ -6390,7 +6391,7 @@ items:
 
       Media id: 19cb78_113fa80024d645039bbb6118695cd52f~mv2.jpg
 
-      Slug: devanco-12-18-2020-035-jpg
+      Slug: devanco-12-18-2020-035-jpg-2
 
       Type: image · -
 
@@ -6928,6 +6929,7 @@ items:
       - Halal Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_8b12620aef334771a1824863e00d567b.pdf
@@ -7796,6 +7798,7 @@ items:
       - Headshots
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/6167099680654d6a026118a70f4c8715.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_8a01baa255d04baba6e530305f7d0898.xlsx
@@ -8742,6 +8745,7 @@ items:
       - HR Application
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_478bc776037845819dbeaad80bc27409.pdf
@@ -8758,6 +8762,7 @@ items:
       - HR Application
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_add73ee5570241c6b5d86afcfd3f9ef8.pdf
@@ -9510,6 +9515,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_83490bdb0b884f818025550143fc13f4.pdf
@@ -9526,6 +9532,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_233fa3a8aeab4d8fb97a2a6a95c47228.pdf
@@ -9542,6 +9549,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_cb781f65c52b4a858440ee405793cb4f.pdf
@@ -9558,6 +9566,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_0810cb31892543079784822c39b73bfc.pdf
@@ -9574,6 +9583,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_d48daa0ae0644c40a07e8fba8bedcd83.pdf
@@ -9590,6 +9600,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_575f5dbd737c497589304ae91a886b00.pdf
@@ -9606,6 +9617,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_69a07ed0f5ef4ebc86b37919642c12a7.pdf
@@ -9622,6 +9634,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_f04747bc01b341f284ba73039f055735.pdf
@@ -9638,6 +9651,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_01f004225b424738af09eb15539f1a6b.pdf
@@ -9654,6 +9668,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_b815014896e64454a7951260a8028b64.pdf
@@ -9670,6 +9685,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_3b4169d539b8426899e3206590f8709a.pdf
@@ -9686,6 +9702,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_76081751ebb64946899e9c2335041fdc.pdf
@@ -9702,6 +9719,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_1f3cd140eb76471895ffdc12667064af.pdf
@@ -9718,6 +9736,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_29b037abc35c4426b993749b178a908d.pdf
@@ -9734,6 +9753,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_7b3cc710dfbe47f9bb196a0ea141bb30.pdf
@@ -9750,6 +9770,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_0220222f2f884074a66ac63378c9791c.pdf
@@ -9766,6 +9787,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_55426944d91240f5bb81d04ca3c6f7a9.pdf
@@ -9782,6 +9804,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_6e1bc0cc14234776847cd416a638d903.pdf
@@ -9798,6 +9821,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_369a39a5284d4594ba898c55ec4c0d74.pdf
@@ -9814,6 +9838,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_fbb3b897309943588c9aa4497e6e3abb.pdf
@@ -9830,6 +9855,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_2b9aeb3307684881bf2a900ce22e1c56.pdf
@@ -9846,6 +9872,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_6d35dba3b14042a6add01e8da7487591.pdf
@@ -9862,6 +9889,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_55b032c6bdb64a89a72f5bd5d7d01884.pdf
@@ -9878,6 +9906,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_38514cc2278c4d0e96b3b2c6df34a2ff.pdf
@@ -9894,6 +9923,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_32005fceb5cd4502af3d610b684a90c2.pdf
@@ -9910,6 +9940,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_9cb53fee81c8480f8ab4b8ae84ba5de4.pdf
@@ -9926,6 +9957,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_09701cf8d6b34edcabd63d0c328812d1.pdf
@@ -9942,6 +9974,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_49e6288f486f49c9a3288510b75383a4.pdf
@@ -9958,6 +9991,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_317cda5742e44729a25cc3adfefcc8a4.pdf
@@ -9974,6 +10008,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_f89baec7a449407a9962a3249851113b.pdf
@@ -9990,6 +10025,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_9af8c47ad7cb4842a1e1e679c36c4475.pdf
@@ -10006,6 +10042,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_a6828587a34e4aea8ddf1d9a8be0100d.pdf
@@ -10022,6 +10059,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_3c87a0ef53a64e2fabf271e8638be7f4.pdf
@@ -10038,6 +10076,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_25891f98cccd416e97ba24965899527c.pdf
@@ -10054,6 +10093,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_aa166d2e94b0420cbef260615953cabc.pdf
@@ -10070,6 +10110,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_3861d7ded3ea4569b12d636e21bae33d.pdf
@@ -10086,6 +10127,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_75b0cfd1f40748a9a90813ccbd9532c2.pdf
@@ -10102,6 +10144,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_1cb638ccb0634928b4b51f36ca77a60e.pdf
@@ -10118,6 +10161,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_432b35dd80794810be63fa92528ea409.pdf
@@ -10134,6 +10178,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_96c3b79ee5ea4887b25ea7cc65c29a9c.pdf
@@ -10150,6 +10195,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_3d40f5be51db4219b08abcf170355945.pdf
@@ -10166,6 +10212,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_f920d193ed674817b839740e7c0a6fc4.pdf
@@ -10182,6 +10229,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_ec9fdef1bbc04c2abe5bdba5ff85b641.pdf
@@ -10198,6 +10246,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_2dc057716028492094face0b25f95ec6.pdf
@@ -10214,6 +10263,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_90b39004661740ad966c48486bb009af.pdf
@@ -10230,6 +10280,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_793e328419594d9287032dd76edf8f64.pdf
@@ -10246,6 +10297,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_7f93550a300b4e1c8bc8211bbca536be.pdf
@@ -10262,6 +10314,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_206ac7a39dee428db576a750f3572e45.pdf
@@ -10278,6 +10331,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_c15cc290d32941c1ae3296f73b137d89.pdf
@@ -10294,6 +10348,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_d2f3ce37298349b68a04b54afeef918b.pdf
@@ -10310,6 +10365,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_7c052463f1d24dc7b63c7db8b8d4eedf.pdf
@@ -10326,6 +10382,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_f5e5d044ca8e4664af3460851cb78d2a.pdf
@@ -10342,6 +10399,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_86fec00e6ff448848ae810a7ddd4044a.pdf
@@ -10358,6 +10416,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_e5e732bd55924efda46b6a301ebb3bcb.pdf
@@ -10374,6 +10433,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_0061de9bb66e4a9bae88ad9257da8a3f.pdf
@@ -10390,6 +10450,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_000eca8190ee43b09327997c58f160fd.pdf
@@ -10406,6 +10467,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_71abdade55aa4b4ba6657c3efacb871c.pdf
@@ -10422,6 +10484,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_88f59c08f852445bb5f1489f76ab9ab3.pdf
@@ -10438,6 +10501,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_2d107bb920264c82abb132f3637fb821.pdf
@@ -10454,6 +10518,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_3f368eed6a8d4f1e9410371777aaf22c.pdf
@@ -10470,6 +10535,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_4ed68edaba424ff0b9c8d8123d8cb511.pdf
@@ -10486,6 +10552,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_1ab847dad05a471b97879e52ccb5cceb.pdf
@@ -10502,6 +10569,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_9eae05b5aef642e6a6feac870f547a80.pdf
@@ -10518,6 +10586,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_516c1081e3c646c182c3b85e5aab1977.pdf
@@ -10534,6 +10603,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_095c8f3c396141a3a9845b0e5b6d80ae.pdf
@@ -10550,6 +10620,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_f6b6b600ccf84cc6b213f80a58127f7d.pdf
@@ -10566,6 +10637,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_d7962a0be5464522a48dac84586d3dad.pdf
@@ -10582,6 +10654,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_ff2a3231256b44d3a213807b9b48d769.pdf
@@ -10598,6 +10671,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_04c54ef6724d493b8c0d1c60577ae754.pdf
@@ -10614,6 +10688,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_d549ded53541494ea57e93e616b5b506.pdf
@@ -10630,6 +10705,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_437964b684b34203b70d2db8fe5c63e9.pdf
@@ -10646,6 +10722,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_c551de0209a84614ba6986bf0f6e293c.pdf
@@ -10662,6 +10739,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_ee1d55e04a854667bc4cee05602ac212.pdf
@@ -10678,6 +10756,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_31be76d872bd4b0e857c48748103e61d.pdf
@@ -10694,6 +10773,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_f61e76c724e3442ebe7d1153bbac175b.pdf
@@ -10710,6 +10790,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_88b89ad63beb411591a862c52f6b0cad.pdf
@@ -10726,6 +10807,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_60b0b86cdd9b44d282b87b45479c6a2f.pdf
@@ -10742,6 +10824,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_e82f1ca36b07418da09699c674ec20c6.pdf
@@ -10758,6 +10841,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_c573327b095243589cf6a886f0d5718b.pdf
@@ -10774,6 +10858,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_27550252fd4c4245afb8ae22f9c63f25.pdf
@@ -10790,6 +10875,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_932031893f214c53af900e44fab9c883.pdf
@@ -10806,6 +10892,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_052b2176c8b14d179d464390b0ff0309.pdf
@@ -10822,6 +10909,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_1b574ea83ea94d0d990249a34340518e.pdf
@@ -10838,6 +10926,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_c2a0683f2ce54b8e945014106f27ef90.pdf
@@ -10854,6 +10943,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_08a4b8fd07bb459ab6d7f060946d119e.pdf
@@ -10870,6 +10960,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_b3396135ae6943c1989f0d0dc21408a6.pdf
@@ -10886,6 +10977,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_0764a54764dd4b69844509f69a1d8334.pdf
@@ -10902,6 +10994,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_2337210fa8f54fc6bfafb8e731e43f01.pdf
@@ -10918,6 +11011,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_fe0c9642f3e54fa2bf8680e37411faaf.pdf
@@ -10934,6 +11028,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_dd8411e762694cc6828d773a37b11300.pdf
@@ -10950,6 +11045,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_2d46c43270f344d1af602d0ef068c352.pdf
@@ -10966,6 +11062,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_add29627ba784b04b158e2e59e4c2257.pdf
@@ -10982,6 +11079,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_a4f3f9a203e44c5ea576e05520556cc9.pdf
@@ -10998,6 +11096,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_29634f2e36e14c40ad7fca97e6ccac2f.pdf
@@ -11014,6 +11113,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_d15791e6d0d1491fac6cbe58ffdb4935.pdf
@@ -11030,6 +11130,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_5b804d7e05394aa186bd3ded136a987d.pdf
@@ -11046,6 +11147,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_2391547b72ac4bfbad1a84ba007e132b.pdf
@@ -11062,6 +11164,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_745a76c8372c41e292585a9da9bab89b.pdf
@@ -11078,6 +11181,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_f9286fba63df4716a8213b6fa788688c.pdf
@@ -11094,6 +11198,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_174233027b9448eb80f3f62ea997bc94.pdf
@@ -11110,6 +11215,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_1ae4a51f2c7444f3ad629e6cfd4d91d1.pdf
@@ -11126,6 +11232,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_38fe537a301e42b78ce66b626ec23f50.pdf
@@ -11142,6 +11249,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_1d6122579022427aa17dc468305f8449.pdf
@@ -11158,6 +11266,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_a96a02f5c7044bcea8e3a169c79a7df7.pdf
@@ -11174,6 +11283,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_a0820393a7e94734a685f7232b95bc25.pdf
@@ -11190,6 +11300,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_2d80105568fe40b3a958764b2370cdbb.pdf
@@ -11206,6 +11317,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_b327bef102b840a78ec63091a99abbc2.pdf
@@ -11222,6 +11334,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_2cabf03314884ac0a70b334cac5f96b1.pdf
@@ -11238,6 +11351,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_88a511454b4e4f0e9282f4c62603d278.pdf
@@ -11254,6 +11368,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_b0d2572f8aef41689779a07348c3187c.pdf
@@ -11270,6 +11385,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_2793d914ce1242a0818db75627945dc9.pdf
@@ -11286,6 +11402,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_c7faa49508e341c9b2303ef2e8b50527.pdf
@@ -11302,6 +11419,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_92fdb5e4bf5f49edbf1dcec3edaf7612.pdf
@@ -11318,6 +11436,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_61e4005b0c63449c8951666b2f37dd5f.pdf
@@ -11334,6 +11453,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_e2a5764b37094a438698965a574cc74b.pdf
@@ -11350,6 +11470,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_c2f6fbe534ae4fa0adc54d050dc447e7.pdf
@@ -11366,6 +11487,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_6df25fd5b297451bbb17b47f651e1a39.pdf
@@ -11382,6 +11504,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_c22c28c6293c4b23872867bfaa75ea52.pdf
@@ -11398,6 +11521,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_2391133904584e338545863121633e2f.pdf
@@ -11414,6 +11538,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_28864f4bd88241d187102397282e651a.pdf
@@ -11430,6 +11555,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_962cadb9e565407783d88f4c578b09c5.pdf
@@ -11446,6 +11572,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_df016984c2414b17964c00d62cdc9eb1.pdf
@@ -11462,6 +11589,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_2b81bc541d6343ef9ffa511ba5f0e02f.pdf
@@ -11478,6 +11606,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_7959b1b9c41e485fb3cd83bb46efe4b4.pdf
@@ -11494,6 +11623,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_8b0d68d6f33e4af4814960628951f833.pdf
@@ -11510,6 +11640,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_9db27c8d28bc4462b5b861887e2289c0.pdf
@@ -11526,6 +11657,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_bc2d3dcd2b0942dc9f253dbeb14879c2.pdf
@@ -11542,6 +11674,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_f650c131443342d68a00792506d4cbd6.pdf
@@ -11558,6 +11691,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_674d2a50efd14efd840fc2cabc585a00.pdf
@@ -11574,6 +11708,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_6afae935a79b418297265e2538f33a2c.pdf
@@ -11590,6 +11725,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_1de81a908e8045f5a6caf320e453ae66.pdf
@@ -11606,6 +11742,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_f60167d0d7944fa2b42cafaa2fcb2948.pdf
@@ -11622,6 +11759,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_38c4cdde87464c0993f1d22ddce40574.pdf
@@ -11638,6 +11776,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_00d75148b68e4db7b1bc8df5b060fafd.pdf
@@ -11654,6 +11793,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_2d3089339ede45b7a0a4fb0e252b5e74.pdf
@@ -11670,6 +11810,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_643fcd26a3494ede8f769084ebc92c41.pdf
@@ -11686,6 +11827,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_d8693dd7f47b447d8e23f3d929d42380.pdf
@@ -11702,6 +11844,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_c6cd304117bf43c59aae24c9f831e582.pdf
@@ -11718,6 +11861,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_248984ac30934fe68decee1035a71920.pdf
@@ -11734,6 +11878,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_a383c32c34614298b2f8aaecde7dad33.pdf
@@ -11750,6 +11895,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_12724c63e8a64a9bb11583a76cf27d4d.pdf
@@ -11766,6 +11912,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_6672915f775140da837ecfeba8519df5.pdf
@@ -11782,6 +11929,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_4af1b259d1e14cdeaaa1c39cb230bef0.pdf
@@ -11798,6 +11946,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_e88e5e97980d4dc5bd1b44925ecc2b54.pdf
@@ -11814,6 +11963,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_fcece5c7b32a4640b70c9f0dde47d7f1.pdf
@@ -11830,6 +11980,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_bc84282d5980421ca70165fe04405e55.pdf
@@ -11846,6 +11997,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_4ae3333a3834420581b424ec1d8c3f18.pdf
@@ -11862,6 +12014,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_1f8677c2c11c422eaccba94d59241d05.pdf
@@ -11878,6 +12031,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_08bba8e7bbbb4c56b2e51cf89d15c2b1.pdf
@@ -11894,6 +12048,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_72f8a449ad4f4c07b31d29cc8d2157d8.pdf
@@ -11910,6 +12065,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_a5cdd325542542498cf5e27450b70c13.pdf
@@ -11926,6 +12082,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_c379e00659104af4ae0c5a857d9ea5ec.pdf
@@ -11942,6 +12099,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_3fce9e89bd334cc2af7955ee4ed0be00.pdf
@@ -11958,6 +12116,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_0c433ce557434f0b8a2ffb8174953ef4.pdf
@@ -11974,6 +12133,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_70f518b9cfad4ce48dc7be3bfdf7be17.pdf
@@ -11990,6 +12150,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_46a495800be740ebba9427cf4383917c.pdf
@@ -12006,6 +12167,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_8b46dcff2278478ba3b0739da8d4e9ea.pdf
@@ -12022,6 +12184,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_9da2e2aa1b914086b7a2828d7acc2b0b.pdf
@@ -12038,6 +12201,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_9d3ef3e517514ba9a10d4c542ce7bb99.pdf
@@ -12054,6 +12218,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_a3abc2521d854249bb46097bcf0688e0.pdf
@@ -12070,6 +12235,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_3fecdc9f02b047b49a23ec9565f8c37d.pdf
@@ -12086,6 +12252,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_182252e38432444882411009e3136737.pdf
@@ -12102,6 +12269,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_0db27375b9144c9a850f06912bc5645d.pdf
@@ -12118,6 +12286,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_1eab006ac91345969b8b0b6aaadbc065.pdf
@@ -12134,6 +12303,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_7dcf7200e4c7457baf633d160d988d7a.pdf
@@ -12150,6 +12320,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_3efb80639e57496c830eb03f7f3a2997.pdf
@@ -12166,6 +12337,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_892cf9f3167b4e5f8069cb80f8b3d6b7.pdf
@@ -12182,6 +12354,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_d23ce9c4982d4046ac92c6faf4654f5f.pdf
@@ -12198,6 +12371,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_f02a7ec8861b484490277c017f56c3e9.pdf
@@ -12214,6 +12388,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_5a7f242cb1584bdea3e4d8cfd9b3af7f.pdf
@@ -12230,6 +12405,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_90b8bb2179074b29943d95d30a826ad8.pdf
@@ -12246,6 +12422,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_72b9a16431004a198795829c5330302b.pdf
@@ -12262,6 +12439,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_931441c73dcd41d587d3b61fd3a570f8.pdf
@@ -12278,6 +12456,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_b9b8caf51aae4b73a816b7e5d0f6a295.pdf
@@ -12294,6 +12473,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_1b0bdac211634a33a608a028379954ee.pdf
@@ -12310,6 +12490,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_306f63321cd640be849dad1a2f282367.pdf
@@ -12326,6 +12507,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_04e529341187493f8c1a6827bff16c50.pdf
@@ -12342,6 +12524,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_5f411d63454a41a6a8eb0209b23f22d2.pdf
@@ -12358,6 +12541,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_0ecd380c0a2c497281454fb98e6d190d.pdf
@@ -12374,6 +12558,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_5f58d7fb60a5452fb093b3493ba64707.pdf
@@ -12390,6 +12575,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_58cb7716f3d749bfabf41bef2c50142f.pdf
@@ -12406,6 +12592,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_6b2712529c204dbf82168151a5ecd5e9.pdf
@@ -12422,6 +12609,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_9542d920fd3b404ca59c2ce3ad734d41.pdf
@@ -12438,6 +12626,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_a2aa4eed44834705aaa760140704213f.pdf
@@ -12454,6 +12643,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_f5affc37ccbc4632b3ab46b8b646864a.pdf
@@ -12470,6 +12660,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_d5d305b025914181b69cf4b01d9503d8.pdf
@@ -12486,6 +12677,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_cdb5eb1a137d4356a9f84c66c6256c60.pdf
@@ -12502,6 +12694,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_e499170448bd4ddfa09eb12d4ed77403.pdf
@@ -12518,6 +12711,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_a51dad378fb545d281f30ef16ee8e351.pdf
@@ -12534,6 +12728,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_db7a8c0f019245059f9f530ba11b532a.pdf
@@ -12550,6 +12745,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_d94a61d608c449a880db22f909987dc1.pdf
@@ -12566,6 +12762,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_62d75d2be98b442f8d077820b351f9b8.pdf
@@ -12582,6 +12779,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_37244fde1a3a432bac3f07eccf4d39f4.pdf
@@ -12598,6 +12796,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/ef938f_1a7f1e12e3c64e72a9b636b180972cf7.pdf
@@ -12614,6 +12813,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_c339edffacc24664b791b113fcb9fcbf.pdf
@@ -12630,6 +12830,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_a694599b51494cf898c1129be6cba796.pdf
@@ -12646,6 +12847,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_306f37a899304562896be769fcf4dc26.pdf
@@ -12662,6 +12864,7 @@ items:
       - Info Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_6bca068dc7b44b0cae79b6533aa4e325.pdf
@@ -13392,6 +13595,7 @@ items:
       - Jewels Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/afc7a8_d08079e8bc984bb080f2200217fa8b61f002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -13413,6 +13617,7 @@ items:
       - Jewels Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/afc7a8_05bed1bc5f8a4e64966d43a228fa8f4af002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -13434,6 +13639,7 @@ items:
       - Jewels Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/afc7a8_ecbf5f5303ea4ff38fbcb9f1ccdc579ff002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -13455,6 +13661,7 @@ items:
       - Jewels Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/afc7a8_19773807b93c46ec8fbcffdb4598f076f002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -13542,6 +13749,7 @@ items:
       - Jewels Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/afc7a8_c604ae67e40f43b99d3c196901af28d4f002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -13795,6 +14003,7 @@ items:
       - Jewels Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/afc7a8_f8ee9949933b4caa9f47bb193fd7638cf002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -13816,6 +14025,7 @@ items:
       - Jewels Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/afc7a8_07906db2c69040a399cdfe4d74949b77f002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -13837,6 +14047,7 @@ items:
       - Jewels Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/afc7a8_9c5215a1d5a1482c88e798d9ceb63352f002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -13858,6 +14069,7 @@ items:
       - Jewels Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/afc7a8_d49564d7dd61413ba0f7bfa1da9029faf002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -13956,6 +14168,7 @@ items:
       - Jewels Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/afc7a8_121680f912a84889bd4d8f905c299b8ff002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -14043,6 +14256,7 @@ items:
       - Jewels Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/afc7a8_09fad53782cf41d58ab757617a3b1947f002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -15213,6 +15427,7 @@ items:
       - Jewels Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/afc7a8_a4cb6c6865174ce787aff415b37e7482f002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -15398,6 +15613,7 @@ items:
       - Jewels Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/afc7a8_f3a96cf067e4469d8afe4b5725e4005cf002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -15617,6 +15833,7 @@ items:
       - Jewels Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/afc7a8_53a73e16a7db4e6bb10fc04e4c62694ff002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -15660,6 +15877,7 @@ items:
       - Jewels Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/afc7a8_83a020b7f0494ee2b3e64e6462efa487f002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -15681,6 +15899,7 @@ items:
       - Jewels Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/afc7a8_415e40071452477c9b88015b7e737d3bf002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -15724,6 +15943,7 @@ items:
       - Jewels Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/afc7a8_9da4afc7ce044289bd6a8f54f70dbac8f002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -16827,6 +17047,7 @@ items:
     category: Media
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_6160d7e5657346feb69cf76b51fe46ee.pdf
@@ -16891,6 +17112,7 @@ items:
     category: Media
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_5e06936f4fd1490e84fdbfa8e6630105.pdf
@@ -16905,6 +17127,7 @@ items:
     category: Media
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_2ef5ce4da52645529d2c02f9e91e4cef.pdf
@@ -16961,6 +17184,7 @@ items:
     category: Media
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_85de22ef5cac437290be45437186dbaa.pdf
@@ -16975,6 +17199,7 @@ items:
     category: Media
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/6441de_acf161c17e9a4db2acff5a5d20a33d93.pdf
@@ -17541,6 +17766,7 @@ items:
     category: Media
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_02eabcbe3f59450dbf8d94f55ab0de27.pdf
@@ -18123,6 +18349,7 @@ items:
     category: Media
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_37570e9bc872422bb9c0b4db03297277.pdf
@@ -18851,6 +19078,7 @@ items:
       - Meijers Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_a2b87ead0deb481580f2de8ad28b592ef002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -18872,6 +19100,7 @@ items:
       - Meijers Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_0d175b0221f14c3fb310f1c4294c4f72f002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -18970,6 +19199,7 @@ items:
       - Meijers Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_44f57c4b3c0c4c9d844cefbfb23e0533f002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -19046,6 +19276,7 @@ items:
       - Meijers Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_0c92f8980d4a4e2badcc4e7461985d5ff002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -19067,6 +19298,7 @@ items:
       - Meijers Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_f2b2b6dceb2543dba3db5af6994d08d5f002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -19088,6 +19320,7 @@ items:
       - Meijers Campaign
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_32c982abb7894437a4a2c26de0a411c2f002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -20485,6 +20718,7 @@ items:
       - National Restaurant Association
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/afc7a8_227f37d1d49d4802a0782da4163c369ff002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -20506,6 +20740,7 @@ items:
       - National Restaurant Association
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/afc7a8_1d7d0eb8ff034a008ba916c2ca05a2eef002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -21328,6 +21563,7 @@ items:
       - Product Guide
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_e78a078888744a6cbd77aa8f533d7a52.pdf
@@ -23137,6 +23373,7 @@ items:
       - Sell Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_acb6a82c7a6748128d35b1099435860d.pdf
@@ -23153,6 +23390,7 @@ items:
       - Sell Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_33dadac68f5846a9826b496faa7811e0.pdf
@@ -23169,6 +23407,7 @@ items:
       - Sell Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_96ac0954a557426c9f9880edcc757da4.pdf
@@ -23185,6 +23424,7 @@ items:
       - Sell Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_8dcc0535133646a1a898fc5e7a183055.pdf
@@ -23201,6 +23441,7 @@ items:
       - Sell Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_6d5b5f72f4304ca5aa3df67fcaec6d85.pdf
@@ -23217,6 +23458,7 @@ items:
       - Sell Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_20d98c5f520948d5a112d7b47482b83f.pdf
@@ -23233,6 +23475,7 @@ items:
       - Sell Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_20076ede52424452b5ea1ca4dc49b5d4.pdf
@@ -23249,6 +23492,7 @@ items:
       - Sell Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_40052bd3a5ff41318e00106495600917.pdf
@@ -23265,6 +23509,7 @@ items:
       - Sell Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_2cad5cae2aac4cdd863bd26d7e113b59.pdf
@@ -23281,6 +23526,7 @@ items:
       - Sell Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_8723c31710344b6cb67757eac39dca99.pdf
@@ -23297,6 +23543,7 @@ items:
       - Sell Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_2fe11232a6fc4feaab8dfd5a737ff786.pdf
@@ -23313,6 +23560,7 @@ items:
       - Sell Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_d9fdf500ac9d4f0aa2cf4bafe8d715a3.pdf
@@ -23329,6 +23577,7 @@ items:
       - Sell Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_de799cf6bfcd487d805caa0cb48bee11.pdf
@@ -23345,6 +23594,7 @@ items:
       - Sell Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_41c5ef3f87f44ed39b0377be8a2d8dc7.pdf
@@ -23361,6 +23611,7 @@ items:
       - Sell Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_da8ad0c7c4d24b3e9736d9e79f3b15fa.pdf
@@ -23377,6 +23628,7 @@ items:
       - Sell Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_cc6723b1b4f44aa9920efc8efee8fc62.pdf
@@ -23393,6 +23645,7 @@ items:
       - Sell Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_110da52e505e4aab80d38ceadbb7c60e.pdf
@@ -23409,6 +23662,7 @@ items:
       - Sell Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_c1a6f94b098c434f8c6edac942ee6ebf.pdf
@@ -23425,6 +23679,7 @@ items:
       - Sell Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_3f947a1cb9094963aa2cc7de53ebb063.pdf
@@ -23441,6 +23696,7 @@ items:
       - Sell Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_68d2106240ae49d88934037637465868.pdf
@@ -23457,6 +23713,7 @@ items:
       - Sell Sheets
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/dbb8a86ae473275eee143da611a12717.png
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://2d9900f9-865a-418a-8c9d-8849117e0835.usrfiles.com/ugd/19cb78_a5f5e37b6eda4ec88832703cf956e179.pdf
@@ -24744,20 +25001,20 @@ items:
       - States
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/19cb78_02a9642157694dd191eb1fad19cb13ff~mv2.jpg
+    thumbnail: https://static.wixstatic.com/media/19cb78_8987b6631652411bbcb21ecd23ffd190~mv2.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/19cb78_02a9642157694dd191eb1fad19cb13ff~mv2.jpg
+        URL: https://static.wixstatic.com/media/19cb78_8987b6631652411bbcb21ecd23ffd190~mv2.jpg
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://static.wixstatic.com/media/19cb78_02a9642157694dd191eb1fad19cb13ff~mv2.jpg
-      Media id: 19cb78_02a9642157694dd191eb1fad19cb13ff~mv2.jpg
+      URL: https://static.wixstatic.com/media/19cb78_8987b6631652411bbcb21ecd23ffd190~mv2.jpg
+      Media id: 19cb78_8987b6631652411bbcb21ecd23ffd190~mv2.jpg
       Slug: retail-background-jpg
       Type: image · -
       Folder: Images / Sales Page / States
-      Labels: Map, World, Font, Pattern, Slope, Diagram
+      Labels: World, Vertebrate, Ecoregion, Map, Art, Font, Red, Tree, Graphics
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
   - id: wix-media:retail-background-jpg-2
@@ -24769,20 +25026,20 @@ items:
       - States
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/19cb78_8987b6631652411bbcb21ecd23ffd190~mv2.jpg
+    thumbnail: https://static.wixstatic.com/media/19cb78_02a9642157694dd191eb1fad19cb13ff~mv2.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/19cb78_8987b6631652411bbcb21ecd23ffd190~mv2.jpg
+        URL: https://static.wixstatic.com/media/19cb78_02a9642157694dd191eb1fad19cb13ff~mv2.jpg
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://static.wixstatic.com/media/19cb78_8987b6631652411bbcb21ecd23ffd190~mv2.jpg
-      Media id: 19cb78_8987b6631652411bbcb21ecd23ffd190~mv2.jpg
+      URL: https://static.wixstatic.com/media/19cb78_02a9642157694dd191eb1fad19cb13ff~mv2.jpg
+      Media id: 19cb78_02a9642157694dd191eb1fad19cb13ff~mv2.jpg
       Slug: retail-background-jpg-2
       Type: image · -
       Folder: Images / Sales Page / States
-      Labels: World, Vertebrate, Ecoregion, Map, Art, Font, Red, Tree, Graphics
+      Labels: Map, World, Font, Pattern, Slope, Diagram
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
   - id: wix-media:rhodeisland-devancofoodsrep
@@ -25835,16 +26092,16 @@ items:
       - Text
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/shapes/19cb78_b2bd4da7ae6a4f9e9f2bff02f6d7f771.svg
+    thumbnail: https://static.wixstatic.com/shapes/19cb78_aa7f6ec4ba5a4817839c5e45e8981973.svg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/shapes/19cb78_b2bd4da7ae6a4f9e9f2bff02f6d7f771.svg
+        URL: https://static.wixstatic.com/shapes/19cb78_aa7f6ec4ba5a4817839c5e45e8981973.svg
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://static.wixstatic.com/shapes/19cb78_b2bd4da7ae6a4f9e9f2bff02f6d7f771.svg
-      Media id: 19cb78_b2bd4da7ae6a4f9e9f2bff02f6d7f771.svg
+      URL: https://static.wixstatic.com/shapes/19cb78_aa7f6ec4ba5a4817839c5e45e8981973.svg
+      Media id: 19cb78_aa7f6ec4ba5a4817839c5e45e8981973.svg
       Slug: sales-text-svg
       Type: vector · -
       Folder: Images / Text
@@ -25858,16 +26115,16 @@ items:
       - Text
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/shapes/19cb78_aa7f6ec4ba5a4817839c5e45e8981973.svg
+    thumbnail: https://static.wixstatic.com/shapes/19cb78_b2bd4da7ae6a4f9e9f2bff02f6d7f771.svg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
         Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/shapes/19cb78_aa7f6ec4ba5a4817839c5e45e8981973.svg
+        URL: https://static.wixstatic.com/shapes/19cb78_b2bd4da7ae6a4f9e9f2bff02f6d7f771.svg
     prompt: |-
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://static.wixstatic.com/shapes/19cb78_aa7f6ec4ba5a4817839c5e45e8981973.svg
-      Media id: 19cb78_aa7f6ec4ba5a4817839c5e45e8981973.svg
+      URL: https://static.wixstatic.com/shapes/19cb78_b2bd4da7ae6a4f9e9f2bff02f6d7f771.svg
+      Media id: 19cb78_b2bd4da7ae6a4f9e9f2bff02f6d7f771.svg
       Slug: sales-text-svg-2
       Type: vector · -
       Folder: Images / Text
@@ -26439,7 +26696,7 @@ items:
       Labels: Food, Tableware, Ingredient, Recipe, Plate, Cuisine, Gyro, Tortilla, Dish, Taco
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:devanco-12-18-2020-035-jpg-2
+  - id: wix-media:devanco-12-18-2020-035-jpg
     title: Devanco-12.18.2020-035.jpg
     category: Media
     folderPath:
@@ -26458,7 +26715,7 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_3c03b55b15934d43aaf880a0e4a2591f~mv2.jpg
       Media id: 19cb78_3c03b55b15934d43aaf880a0e4a2591f~mv2.jpg
-      Slug: devanco-12-18-2020-035-jpg-2
+      Slug: devanco-12-18-2020-035-jpg
       Type: image · -
       Folder: Images / Devanco Food Items / Traditional Gyro
       Labels: Food, Mettwurst, Ingredient, Tableware, Recipe, Gyro, Sausage, Plate, Serveware, Cuisine
@@ -26759,6 +27016,7 @@ items:
       - Video Maker
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_db3c32f4cdd943d7b48924318902844cf002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
@@ -26780,6 +27038,7 @@ items:
       - Videos
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_ec1d47f663224d87a6043b0b7c6dcd64f002.jpg
     interaction:
       mode: stage-place
       stagePromptTemplate: |-
