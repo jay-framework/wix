@@ -1,4 +1,11 @@
 components:
+  - name: site-header
+    contractPath: ./src/components/site-header/site-header.jay-contract
+    description: Shared Atelier site header — logo, primary nav, and cart indicator
+    source: local
+    templates:
+      - path: ./src/components/site-header/site-header.jay-html
+        variant: ""
   - name: cart-indicator
     contractPath: ./../../packages/wix-cart/dist/contracts/cart-indicator.jay-contract
     description: Cart indicator component showing item count, typically used in site
