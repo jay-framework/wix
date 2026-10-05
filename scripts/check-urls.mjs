@@ -10,6 +10,10 @@
  */
 
 const URLS = [
+  'https://npm.dev.wixpress.com/api/npm/npm-repos/@jay-framework/seo-validator/-/seo-validator-0.25.0.tgz',
+  'https://npm.dev.wixpress.com/api/npm/npm-repos/@jay-framework/webmcp-plugin/-/webmcp-plugin-0.25.0.tgz',
+  'https://npm.dev.wixpress.com/api/npm/npm-repos/@jay-framework/a11y-validator/-/a11y-validator-0.25.0.tgz',
+  'https://npm.dev.wixpress.com/api/npm/npm-repos/@jay-framework/gemini-agent-plugin/-/gemini-agent-plugin-0.25.0.tgz',
   'https://npm.dev.wixpress.com/api/npm/npm-repos/@jay-framework/compiler-analyze-exported-types/-/compiler-analyze-exported-types-0.24.4.tgz',
   'https://npm.dev.wixpress.com/api/npm/npm-repos/@jay-framework/reactive/-/reactive-0.24.4.tgz',
   'https://npm.dev.wixpress.com/api/npm/npm-repos/@jay-framework/production-server/-/production-server-0.24.4.tgz',
