@@ -45,6 +45,7 @@ import { WIX_STORES_V1_CONTEXT, WixStoresV1Context } from '../contexts/wix-store
 import type { V1Product, V1SeoData } from '../wix-apis/types.js';
 import { queryProducts as queryProductsApi } from '../wix-apis/index.js';
 import { stripWixMediaResize } from '@jay-framework/wix-utils';
+import { mapChoice, selectedChoices } from '../utils/product-options.js';
 
 /**
  * URL parameters for product page routes
@@ -130,12 +131,10 @@ function mapOptionsToSlowVS(product: V1Product): ProductPageSlowViewState['optio
                 ? OptionRenderType.COLOR_SWATCH_CHOICES
                 : OptionRenderType.TEXT_CHOICES,
         choices: (option.choices || []).map((choice) => ({
-            choiceId: choice.value || '',
-            name: choice.value || '',
+            ...mapChoice(option.optionType, choice),
             choiceType:
                 option.optionType === 'color' ? ChoiceType.ONE_COLOR : ChoiceType.CHOICE_TEXT,
             inStock: choice.inStock ?? true,
-            colorCode: '',
         })),
     }));
 }
@@ -148,7 +147,7 @@ function mapOptionsToFastVS(product: V1Product): ProductPageFastViewState['optio
         _id: option.name || '',
         textChoiceSelection: undefined,
         choices: (option.choices || []).map((choice) => ({
-            choiceId: choice.value || '',
+            choiceId: mapChoice(option.optionType, choice).choiceId,
             isSelected: false,
         })),
     }));
@@ -357,20 +356,7 @@ function ProductPageInteractive(
     const [selectedMediaId, setSelectedMediaId] = createSignal<string | null>(null);
 
     // Derive selected options for variant matching
-    const selectedOptionsRecord = createMemo(() => {
-        const result: Record<string, string> = {};
-        for (const option of options()) {
-            if (option.textChoiceSelection) {
-                result[option._id] = option.textChoiceSelection;
-            } else {
-                const selectedChoice = option.choices.find((c) => c.isSelected);
-                if (selectedChoice) {
-                    result[option._id] = selectedChoice.choiceId;
-                }
-            }
-        }
-        return result;
-    });
+    const selectedOptionsRecord = createMemo(() => selectedChoices(options()));
 
     function findVariant(variants: InteractiveVariant[], selectedOptions: Record<string, string>) {
         const found = variants.find((variant) =>
@@ -489,7 +475,9 @@ function ProductPageInteractive(
         setIsAddingToCart(true);
         try {
             const variantId = selectedVariant()?._id;
-            await storesContext.addToCart(productId, quantity(), variantId);
+            // A product that does not manage variants has only the default variant: the cart takes the
+            // chosen options instead (without them the line item is dropped).
+            await storesContext.addToCart(productId, quantity(), variantId, selectedOptionsRecord());
             console.log('[ProductPage V1] Added to cart:', quantity(), 'items');
         } catch (error) {
             console.error('[ProductPage V1] Failed to add to cart:', error);

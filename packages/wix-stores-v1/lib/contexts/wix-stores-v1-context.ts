@@ -80,6 +80,7 @@ export interface WixStoresV1Context {
         productId: string,
         quantity?: number,
         variantId?: string,
+        options?: Record<string, string>,
     ): Promise<CartOperationResult>;
     removeLineItems(lineItemIds: string[]): Promise<CartOperationResult>;
     updateLineItemQuantity(lineItemId: string, quantity: number): Promise<CartOperationResult>;
@@ -131,6 +132,7 @@ export function provideWixStoresV1Context(): WixStoresV1Context {
             productId: string,
             quantity: number = 1,
             variantId?: string,
+            options?: Record<string, string>,
         ): Promise<CartOperationResult> {
             console.log(`[WixStoresV1] Adding to cart: ${productId} x ${quantity}`);
 
@@ -150,6 +152,8 @@ export function provideWixStoresV1Context(): WixStoresV1Context {
             return cartContext.addToCart(productId, quantity, {
                 variantId: finalVariantId,
                 productSlug,
+                // Chosen options by option name (catalogReference.options.options).
+                ...(options && Object.keys(options).length ? { modifiers: options } : {}),
             });
         }
 
