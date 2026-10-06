@@ -28,6 +28,7 @@ import {
 } from '../contracts/product-options.jay-contract';
 import type { V1Product, V1ProductOption, V1Variant, V1Collection } from '../wix-apis/types.js';
 import { stripWixMediaResize } from '@jay-framework/wix-utils';
+import { formatPrice } from './format-price';
 
 // ============================================================================
 // Helper Functions
@@ -158,6 +159,7 @@ const DEFAULT_PRODUCT_PAGE_PATH = '/products';
 export function mapProductToCard(
     product: V1Product,
     productPagePath: string = DEFAULT_PRODUCT_PAGE_PATH,
+    locale?: string | null,
 ): ProductCardViewState {
     const mainMedia = product.media?.mainMedia;
     const slug = product.slug || '';
@@ -165,8 +167,19 @@ export function mapProductToCard(
     // V1 prices are numbers - convert to strings for ViewState
     const actualPrice = product.price?.discountedPrice ?? product.price?.price ?? 0;
     const compareAtPrice = product.price?.price ?? 0;
-    const formattedActualPrice = product.price?.formatted?.discountedPrice || '';
-    const formattedCompareAtPrice = product.price?.formatted?.price || '';
+    const currency = product.price?.currency;
+    const formattedActualPrice = formatPrice(
+        product.price?.discountedPrice ?? product.price?.price,
+        currency,
+        locale,
+        product.price?.formatted?.discountedPrice,
+    );
+    const formattedCompareAtPrice = formatPrice(
+        product.price?.price,
+        currency,
+        locale,
+        product.price?.formatted?.price,
+    );
 
     const hasDiscount = hasProductDiscount(product);
     return {
