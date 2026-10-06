@@ -203,6 +203,8 @@ export function provideWixStoresContext(): WixStoresContext {
                 modifiers: translatedModifiers,
                 customTextFields: translatedCustomTextFields,
                 productSlug: product.slug,
+                preOrderRequested:
+                    !variant.inventoryStatus?.inStock && !!variant.inventoryStatus?.preorderEnabled,
             });
         }
 

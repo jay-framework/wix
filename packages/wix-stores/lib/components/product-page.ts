@@ -83,6 +83,8 @@ interface InteractiveVariant {
     choices: VariantChoice[];
     mediaId?: string;
     inventoryStatus: StockStatus;
+    /** Out-of-stock variants can still be bought when the store takes pre-orders for them */
+    preorderEnabled: boolean;
 }
 
 /**
@@ -332,6 +334,11 @@ function mapModifiersToFastVS(
     );
 }
 
+/** A variant can be added to the cart when it is in stock or open for pre-order */
+function isPurchasable(variant: InteractiveVariant): boolean {
+    return variant.inventoryStatus === StockStatus.IN_STOCK || variant.preorderEnabled;
+}
+
 function mapVariants(variantsInfo: VariantsInfo): InteractiveVariant[] {
     return (
         variantsInfo?.variants.map((variant) => ({
@@ -342,6 +349,7 @@ function mapVariants(variantsInfo: VariantsInfo): InteractiveVariant[] {
             inventoryStatus: variant.inventoryStatus.inStock
                 ? StockStatus.IN_STOCK
                 : StockStatus.OUT_OF_STOCK,
+            preorderEnabled: !!variant.inventoryStatus.preorderEnabled,
             mediaId: variant.media?._id,
             strikethroughPrice: variant.price.compareAtPrice?.formattedAmount || '',
         })) || []
@@ -515,7 +523,9 @@ async function renderFastChanging(
     // Select default variant: prefer first in-stock variant, fall back to first
     const { variants } = slowCarryForward;
     const defaultVariant =
-        variants.find((v) => v.inventoryStatus === StockStatus.IN_STOCK) || variants[0];
+        variants.find((v) => v.inventoryStatus === StockStatus.IN_STOCK) ||
+        variants.find(isPurchasable) ||
+        variants[0];
 
     // Pre-select the default variant's option choices
     const options = slowCarryForward.options.map((option) => {
@@ -552,7 +562,8 @@ async function renderFastChanging(
     const isInStock = slowCarryForward.stockStatus === StockStatus.IN_STOCK;
 
     return Pipeline.ok({
-        actionsEnabled: isInStock && defaultVariant.inventoryStatus === StockStatus.IN_STOCK,
+        actionsEnabled:
+            (isInStock || defaultVariant.preorderEnabled) && isPurchasable(defaultVariant),
         options,
         modifiers: slowCarryForward.modifiers,
         mediaGallery,
@@ -637,8 +648,8 @@ function ProductPageInteractive(
     const strikethroughPrice = createMemo(() => selectedVariant().strikethroughPrice);
     const stockStatus = createMemo(() => selectedVariant().inventoryStatus);
 
-    // Actions are enabled when the selected variant is in stock
-    const computedActionsEnabled = createMemo(() => stockStatus() === StockStatus.IN_STOCK);
+    // Actions are enabled when the selected variant is in stock or can be pre-ordered
+    const computedActionsEnabled = createMemo(() => isPurchasable(selectedVariant()));
 
     const interactiveMedia = createMemo((prev: MediaGalleryViewState) => {
         prev = prev || mediaGallery();
@@ -795,7 +806,7 @@ function ProductPageInteractive(
     });
 
     refs.addToCartButton.onclick(async () => {
-        if (stockStatus() === StockStatus.OUT_OF_STOCK) {
+        if (!computedActionsEnabled()) {
             console.warn('Product is out of stock');
             return;
         }

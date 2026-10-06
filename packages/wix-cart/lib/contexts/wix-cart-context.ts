@@ -92,6 +92,8 @@ export interface AddToCartOptions {
     modifiers?: Record<string, string>;
     /** Product slug for building the correct product page URL in cart */
     productSlug?: string;
+    /** Buy an out-of-stock variant as a pre-order (without it the cart line is NOT_AVAILABLE, quantity 0) */
+    preOrderRequested?: boolean;
 }
 
 /**
@@ -261,6 +263,7 @@ export function provideWixCartContext(thankYouUrl: string = '/thank-you'): WixCa
             if (options?.modifiers) catalogOptions.options = options.modifiers;
             if (options?.customTextFields)
                 catalogOptions.customTextFields = options.customTextFields;
+            if (options?.preOrderRequested) catalogOptions.preOrderRequested = true;
 
             const lineItem = {
                 catalogReference: {
