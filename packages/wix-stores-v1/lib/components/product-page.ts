@@ -39,6 +39,7 @@ import {
     WixStoresV1Service,
 } from '../services/wix-stores-v1-service';
 import { MediaGalleryViewState, Selected } from '../contracts/media-gallery.jay-contract';
+import { selectMedia } from '../utils/select-media';
 import { MediaType } from '../contracts/media.jay-contract';
 import { JSONPatchOperation, patch, REPLACE } from '@jay-framework/json-patch';
 import { WIX_STORES_V1_CONTEXT, WixStoresV1Context } from '../contexts/wix-stores-v1-context';
@@ -390,31 +391,9 @@ function ProductPageInteractive(
     );
     const computedActionsEnabled = createMemo(() => stockStatus() === StockStatus.IN_STOCK);
 
-    const interactiveMedia = createMemo((prev: MediaGalleryViewState) => {
-        prev = prev || mediaGallery();
-        const oldSelectedIndex = prev.availableMedia.findIndex(
-            (_) => _.selected === Selected.selected,
-        );
-        const newSelectedIndex = Math.max(
-            0,
-            prev.availableMedia.findIndex((_) => _.mediaId === selectedMediaId()),
-        );
-        if (oldSelectedIndex === newSelectedIndex) return prev;
-        const newSelectedMedia = prev.availableMedia[newSelectedIndex];
-        return patch(prev, [
-            { op: REPLACE, path: ['selectedMedia'], value: newSelectedMedia.media },
-            {
-                op: REPLACE,
-                path: ['availableMedia', oldSelectedIndex, 'selected'],
-                value: Selected.notSelected,
-            },
-            {
-                op: REPLACE,
-                path: ['availableMedia', newSelectedIndex, 'selected'],
-                value: Selected.selected,
-            },
-        ]);
-    });
+    const interactiveMedia = createMemo((prev: MediaGalleryViewState) =>
+        selectMedia(prev || mediaGallery(), selectedMediaId()),
+    );
 
     // Quantity controls
     refs.quantity.decrementButton.onclick(() => {
