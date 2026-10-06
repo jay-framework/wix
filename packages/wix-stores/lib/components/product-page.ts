@@ -23,6 +23,7 @@ import {
 } from '../contracts/product-page.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service';
 import { buildProductUrl, findRootCategorySlug } from '../utils/product-mapper';
+import { formatPrice } from '../utils/format-price';
 import type {
     ChoiceTypeWithLiterals,
     ConnectedModifier,
@@ -332,18 +333,22 @@ function mapModifiersToFastVS(
     );
 }
 
-function mapVariants(variantsInfo: VariantsInfo): InteractiveVariant[] {
+function mapVariants(
+    variantsInfo: VariantsInfo,
+    currency: string | undefined,
+    locale: string | null,
+): InteractiveVariant[] {
     return (
         variantsInfo?.variants.map((variant) => ({
             _id: variant._id,
             choices: variant.choices,
             sku: variant.sku,
-            price: variant.price.actualPrice.formattedAmount,
+            price: formatPrice(variant.price.actualPrice, currency, locale),
             inventoryStatus: variant.inventoryStatus.inStock
                 ? StockStatus.IN_STOCK
                 : StockStatus.OUT_OF_STOCK,
             mediaId: variant.media?._id,
-            strikethroughPrice: variant.price.compareAtPrice?.formattedAmount || '',
+            strikethroughPrice: formatPrice(variant.price.compareAtPrice, currency, locale),
         })) || []
     );
 }
@@ -478,11 +483,19 @@ async function renderSlowlyChanging(
                     options: mapOptionsToFastVS(options),
                     modifiers: mapModifiersToFastVS(modifiers),
                     sku: 'N/A not in API',
-                    price: actualPriceRange?.minValue?.formattedAmount || '',
+                    price: formatPrice(
+                        actualPriceRange?.minValue,
+                        product.currency,
+                        wixStores.locale,
+                    ),
                     strikethroughPrice:
                         actualPriceRange?.minValue?.amount !==
                         product.compareAtPriceRange?.minValue?.amount
-                            ? compareAtPriceRange?.minValue?.formattedAmount || ''
+                            ? formatPrice(
+                                  compareAtPriceRange?.minValue,
+                                  product.currency,
+                                  wixStores.locale,
+                              )
                             : '',
                     pricePerUnit: physicalProperties?.pricePerUnitRange?.minValue?.description,
                     stockStatus:
@@ -490,7 +503,7 @@ async function renderSlowlyChanging(
                         inventory?.availabilityStatus === 'PARTIALLY_OUT_OF_STOCK'
                             ? StockStatus.IN_STOCK
                             : StockStatus.OUT_OF_STOCK,
-                    variants: mapVariants(variantsInfo),
+                    variants: mapVariants(variantsInfo, product.currency, wixStores.locale),
                 },
             };
         });

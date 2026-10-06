@@ -100,6 +100,9 @@ const CONFIG_TEMPLATE = `# Wix Stores Configuration
 # Fallback category for pages without category context:
 # defaultCategory: "all-products"
 #
+# Locale for prices (BCP 47; a Wix site's regional setting). Not set = the API's formatted amounts:
+# locale: "ja-JP"
+#
 # To see available categories: jay-stack setup wix-stores (generates category tree reference)
 
 urls:

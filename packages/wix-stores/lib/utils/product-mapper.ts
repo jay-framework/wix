@@ -18,6 +18,7 @@ import {
     ProductOptionsViewState,
 } from '../contracts/product-options.jay-contract';
 import { formatWixMediaUrl } from '@jay-framework/wix-utils';
+import { formatPrice } from './format-price';
 import { type UrlTemplates } from '../config-loader';
 
 // ============================================================================
@@ -383,6 +384,7 @@ export interface V3ProductForCard {
     };
     actualPriceRange?: { minValue?: { amount?: string; formattedAmount?: string } };
     compareAtPriceRange?: { minValue?: { amount?: string; formattedAmount?: string } };
+    currency?: string;
     inventory?: { availabilityStatus?: string; preorderStatus?: string };
     ribbon?: { _id?: string; name?: string };
     brand?: { _id?: string; name?: string };
@@ -398,6 +400,7 @@ export function mapProductToCard(
     product: V3ProductForCard,
     urls: UrlTemplates,
     tree: CategoryTree,
+    locale?: string | null,
 ): ProductCardViewState {
     const mainMedia = product.media?.main;
     const slug = product.slug || '';
@@ -411,17 +414,23 @@ export function mapProductToCard(
 
     const actualAmount =
         variantPrice?.actualPrice?.amount || product.actualPriceRange?.minValue?.amount || '0';
-    const actualFormattedAmount =
-        variantPrice?.actualPrice?.formattedAmount ||
-        product.actualPriceRange?.minValue?.formattedAmount ||
-        '';
+    const actualFormattedAmount = formatPrice(
+        variantPrice?.actualPrice?.formattedAmount
+            ? variantPrice.actualPrice
+            : product.actualPriceRange?.minValue,
+        product.currency,
+        locale,
+    );
 
     const compareAtAmount =
         variantPrice?.compareAtPrice?.amount || product.compareAtPriceRange?.minValue?.amount;
-    const compareAtFormattedAmount =
-        variantPrice?.compareAtPrice?.formattedAmount ||
-        product.compareAtPriceRange?.minValue?.formattedAmount ||
-        '';
+    const compareAtFormattedAmount = formatPrice(
+        variantPrice?.compareAtPrice?.formattedAmount
+            ? variantPrice.compareAtPrice
+            : product.compareAtPriceRange?.minValue,
+        product.currency,
+        locale,
+    );
 
     const hasDiscount = isValidPrice(compareAtAmount) && compareAtAmount !== actualAmount;
     return {
