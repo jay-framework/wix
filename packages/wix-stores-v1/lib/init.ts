@@ -16,6 +16,7 @@ import { getService } from '@jay-framework/stack-server-runtime';
 import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
 
 import { provideWixStoresV1Service } from './services/wix-stores-v1-service';
+import { loadWixStoresV1Config } from './config-loader';
 import {
     provideWixStoresV1Context,
     type WixStoresV1InitData,
@@ -37,7 +38,7 @@ export const init = makeJayInit()
 
         // Create and register the stores V1 service (products, collections, inventory)
         // Note: Cart service is registered by wix-cart plugin
-        provideWixStoresV1Service(wixClient);
+        provideWixStoresV1Service(wixClient, loadWixStoresV1Config());
 
         console.log('[wix-stores-v1] Server initialization complete');
 

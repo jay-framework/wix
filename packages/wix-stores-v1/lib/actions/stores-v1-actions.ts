@@ -21,6 +21,8 @@ import {
     queryCollections as queryCollectionsApi,
 } from '../wix-apis/index.js';
 import type { WixFilter } from '@jay-framework/wix-server-client';
+import type { V1Product } from '../wix-apis/types.js';
+import { pageInProductOrder, usesProductOrder } from '../utils/product-order.js';
 
 // ============================================================================
 // Types
@@ -166,6 +168,24 @@ function buildPriceFilter(
     return { $and: [baseFilter, priceFilter] };
 }
 
+/**
+ * The default listing in the configured product order (see WixStoresV1Config.productOrder): every product by
+ * numericId, the configured slugs moved first. No V1 query sorts by a collection's manual order.
+ */
+async function queryInProductOrder(wixStores: WixStoresV1Service, page: number, pageSize: number) {
+    const all: V1Product[] = [];
+    for (let offset = 0; ; offset += 100) {
+        const result = await queryProductsApi(wixStores.wixClient, {
+            sort: [{ fieldName: 'numericId', order: 'ASC' }],
+            paging: { limit: 100, offset },
+        });
+        const products = result.products || [];
+        all.push(...products);
+        if (products.length < 100) break;
+    }
+    return pageInProductOrder(all, wixStores.productOrder, page, pageSize);
+}
+
 export const searchProducts = makeJayQuery('wixStoresV1.searchProducts')
     .withServices(WIX_STORES_V1_SERVICE_MARKER)
     .withHandler(
@@ -199,11 +219,13 @@ export const searchProducts = makeJayQuery('wixStoresV1.searchProducts')
                 }
 
                 const [result, minPriceResult, maxPriceResult] = await Promise.all([
-                    queryProductsApi(wixStores.wixClient, {
-                        filter: fullFilter,
-                        sort: sort.length > 0 ? sort : undefined,
-                        paging: { limit: pageSize, offset: (page - 1) * pageSize },
-                    }),
+                    usesProductOrder(wixStores.productOrder, sortBy, fullFilter)
+                        ? queryInProductOrder(wixStores, page, pageSize)
+                        : queryProductsApi(wixStores.wixClient, {
+                              filter: fullFilter,
+                              sort: sort.length > 0 ? sort : undefined,
+                              paging: { limit: pageSize, offset: (page - 1) * pageSize },
+                          }),
                     queryProductsApi(wixStores.wixClient, {
                         filter: baseFilter,
                         sort: [{ fieldName: 'price', order: 'ASC' }],
@@ -236,7 +258,9 @@ export const searchProducts = makeJayQuery('wixStoresV1.searchProducts')
                 const ranges = generatePriceBuckets(minBound, maxBound, currencySymbol);
                 const totalCount = result.totalResults ?? products.length;
                 const totalPages = Math.ceil(totalCount / pageSize);
-                const mappedProducts = products.map((p) => mapProductToCard(p));
+                const mappedProducts = products.map((p) =>
+                    mapProductToCard(p, undefined, wixStores.locale),
+                );
 
                 return {
                     products: mappedProducts,
@@ -280,7 +304,7 @@ export const getProductBySlug = makeJayQuery('wixStoresV1.getProductBySlug')
 
                 const product = result.products?.[0];
                 if (!product) return null;
-                return mapProductToCard(product);
+                return mapProductToCard(product, undefined, wixStores.locale);
             } catch (error) {
                 console.error('[wixStoresV1.getProductBySlug] Failed to get product:', error);
                 return null;
