@@ -43,4 +43,9 @@ contexts:
 
 setup: setupWixStoresV1
 
+validators:
+  - name: wix-stores-v1-config
+    handler: validateWixStoresV1ProjectConfig
+    description: Checks config/.wix-stores-v1.yaml when the project uses wix-stores-v1
+
 # Plugin initialization uses makeJayInit pattern in lib/init.ts

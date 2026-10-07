@@ -36,7 +36,13 @@ oauthStrategy:
   clientId: 'your-oauth-client-id'
 ```
 
-### 2. Use Server Actions
+### 2. Store configuration (optional)
+
+Run `jay-stack setup wix-stores-v1` to create `config/.wix-stores-v1.yaml`. Use **`locale`** for product-card price formatting (BCP 47), and **`productOrder`** for manual sort order on the default shop grid (product URL slugs only).
+
+Full reference: `agent-kit/designer/store-configuration.md` (materialized under your project after `jay-stack agent-kit`).
+
+### 3. Use Server Actions
 
 ```typescript
 import { searchProducts, getProductBySlug, getCollections } from '@jay-framework/wix-stores-v1';
@@ -58,7 +64,7 @@ const product = await getProductBySlug({ slug: 'peat-s-beast-px-finish-54-1' });
 const collections = await getCollections();
 ```
 
-### 3. Use Client Context
+### 4. Use Client Context
 
 ```typescript
 import { useContext } from '@jay-framework/runtime';
