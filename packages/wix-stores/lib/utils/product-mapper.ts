@@ -414,20 +414,26 @@ export function mapProductToCard(
 
     const actualAmount =
         variantPrice?.actualPrice?.amount || product.actualPriceRange?.minValue?.amount || '0';
+    const variantActual = variantPrice?.actualPrice;
+    const actualPriceSource =
+        variantActual && (isValidPrice(variantActual.amount) || variantActual.formattedAmount)
+            ? variantActual
+            : product.actualPriceRange?.minValue;
     const actualFormattedAmount = formatPrice(
-        variantPrice?.actualPrice?.formattedAmount
-            ? variantPrice.actualPrice
-            : product.actualPriceRange?.minValue,
+        actualPriceSource,
         product.currency,
         locale,
     );
 
     const compareAtAmount =
         variantPrice?.compareAtPrice?.amount || product.compareAtPriceRange?.minValue?.amount;
+    const variantCompare = variantPrice?.compareAtPrice;
+    const comparePriceSource =
+        variantCompare && (isValidPrice(variantCompare.amount) || variantCompare.formattedAmount)
+            ? variantCompare
+            : product.compareAtPriceRange?.minValue;
     const compareAtFormattedAmount = formatPrice(
-        variantPrice?.compareAtPrice?.formattedAmount
-            ? variantPrice.compareAtPrice
-            : product.compareAtPriceRange?.minValue,
+        comparePriceSource,
         product.currency,
         locale,
     );
