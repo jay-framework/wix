@@ -22,6 +22,7 @@ import {
 } from '../wix-apis/index.js';
 import type { WixFilter } from '@jay-framework/wix-server-client';
 import type { V1Product } from '../wix-apis/types.js';
+import { pageInProductOrder, usesProductOrder } from '../utils/product-order.js';
 
 // ============================================================================
 // Types
@@ -182,13 +183,7 @@ async function queryInProductOrder(wixStores: WixStoresV1Service, page: number, 
         all.push(...products);
         if (products.length < 100) break;
     }
-    const rank = new Map(wixStores.productOrder.map((slug, i) => [slug, i]));
-    const at = (product: V1Product) => rank.get(product.slug || '') ?? rank.size;
-    all.sort((a, b) => at(a) - at(b));
-    return {
-        products: all.slice((page - 1) * pageSize, page * pageSize),
-        totalResults: all.length,
-    };
+    return pageInProductOrder(all, wixStores.productOrder, page, pageSize);
 }
 
 export const searchProducts = makeJayQuery('wixStoresV1.searchProducts')
@@ -224,9 +219,7 @@ export const searchProducts = makeJayQuery('wixStoresV1.searchProducts')
                 }
 
                 const [result, minPriceResult, maxPriceResult] = await Promise.all([
-                    wixStores.productOrder.length > 0 &&
-                    sortBy === 'relevance' &&
-                    Object.keys(fullFilter).length === 0
+                    usesProductOrder(wixStores.productOrder, sortBy, fullFilter)
                         ? queryInProductOrder(wixStores, page, pageSize)
                         : queryProductsApi(wixStores.wixClient, {
                               filter: fullFilter,
