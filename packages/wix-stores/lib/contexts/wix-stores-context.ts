@@ -28,7 +28,7 @@ import {
     type CartOperationResult as CartResult,
 } from '@jay-framework/wix-cart';
 import { getProduct as getProductApi } from '../wix-apis/index.js';
-import { isPreOrderRequest } from '../utils/purchasable';
+import { buildWixStoresAddToCartOptions } from './build-add-to-cart-options';
 
 // ============================================================================
 // Type Definitions
@@ -198,14 +198,16 @@ export function provideWixStoresContext(): WixStoresContext {
                 }
             }
 
-            // Delegate to cart context with resolved variant and slug
-            return cartContext.addToCart(productId, quantity, {
-                variantId: variant._id,
-                modifiers: translatedModifiers,
-                customTextFields: translatedCustomTextFields,
-                productSlug: product.slug,
-                preOrderRequested: isPreOrderRequest(variant.inventoryStatus),
-            });
+            return cartContext.addToCart(
+                productId,
+                quantity,
+                buildWixStoresAddToCartOptions(
+                    product,
+                    variant,
+                    translatedModifiers,
+                    translatedCustomTextFields,
+                ),
+            );
         }
 
         return {

@@ -812,7 +812,7 @@ function ProductPageInteractive(
 
     refs.addToCartButton.onclick(async () => {
         if (!computedActionsEnabled()) {
-            console.warn('Product is out of stock');
+            console.warn('Product is not available for purchase');
             return;
         }
 
