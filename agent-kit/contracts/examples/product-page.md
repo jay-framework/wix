@@ -101,6 +101,12 @@ tags:
 - **`fast+interactive` on pricing** — prices change when a variant is selected on the client.
 - **Nested `repeated`** — options contain choices, both with their own `trackBy` for efficient diffing.
 
+## Pre-order vs purchase buttons (Catalog V3 / `wix-stores`)
+
+- **`stockStatus`** is for **display** only (for example an “Out of stock” badge can still show on a SKU that accepts pre-orders).
+- **`actionsEnabled`** controls **Add to cart** and **Buy now**, including pre-order when the store allows it.
+- In jay-html, disable purchase buttons with `disabled="!productPage.actionsEnabled"` — **not** with `stockStatus===OUT_OF_STOCK` alone.
+
 ## Jay-HTML usage
 
 ```html
@@ -121,5 +127,5 @@ tags:
   </div>
 </div>
 
-<button ref="addToCartButton">Add to Cart</button>
+<button ref="addToCartButton" disabled="!actionsEnabled">Add to Cart</button>
 ```

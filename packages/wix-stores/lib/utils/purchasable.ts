@@ -20,7 +20,10 @@ export function mapVariantStock(inventoryStatus: {
 
 /** A variant can be added to the cart when it is in stock or open for pre-order */
 export function isPurchasable(variant: PurchasableVariant): boolean {
-    return variant.inventoryStatus === StockStatus.IN_STOCK || variant.preorderEnabled;
+    return (
+        variant.inventoryStatus === StockStatus.IN_STOCK ||
+        (variant.inventoryStatus === StockStatus.OUT_OF_STOCK && variant.preorderEnabled)
+    );
 }
 
 /** The variant a product page starts on: the first in stock, else the first open for pre-order, else the first */
