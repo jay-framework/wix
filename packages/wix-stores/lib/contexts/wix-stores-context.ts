@@ -28,6 +28,7 @@ import {
     type CartOperationResult as CartResult,
 } from '@jay-framework/wix-cart';
 import { getProduct as getProductApi } from '../wix-apis/index.js';
+import { isPreOrderRequest } from '../utils/purchasable';
 
 // ============================================================================
 // Type Definitions
@@ -203,6 +204,7 @@ export function provideWixStoresContext(): WixStoresContext {
                 modifiers: translatedModifiers,
                 customTextFields: translatedCustomTextFields,
                 productSlug: product.slug,
+                preOrderRequested: isPreOrderRequest(variant.inventoryStatus),
             });
         }
 
