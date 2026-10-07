@@ -24,6 +24,11 @@ export interface WixStoresConfig {
     urls: UrlTemplates;
     /** Slug of the fallback category for pages without category context */
     defaultCategory: string | null;
+    /**
+     * Locale prices are formatted with (BCP 47, e.g. "ja-JP" — a Wix site's regional setting). Not set = the
+     * API's formattedAmount.
+     */
+    locale?: string | null;
 }
 
 /**
@@ -37,6 +42,7 @@ export function loadWixStoresConfig(projectRoot?: string): WixStoresConfig {
     const defaults: WixStoresConfig = {
         urls: { product: '/products/{slug}', category: null },
         defaultCategory: null,
+        locale: null,
     };
 
     if (!fs.existsSync(configPath)) {
@@ -58,5 +64,6 @@ export function loadWixStoresConfig(projectRoot?: string): WixStoresConfig {
             category: typeof urls?.category === 'string' ? urls.category : null,
         },
         defaultCategory: typeof raw.defaultCategory === 'string' ? raw.defaultCategory : null,
+        locale: typeof raw.locale === 'string' ? raw.locale : null,
     };
 }

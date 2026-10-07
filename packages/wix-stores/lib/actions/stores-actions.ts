@@ -401,7 +401,7 @@ export const searchProducts = makeJayQuery('wixStores.searchProducts')
                 // Map products to card view state with URL resolution
                 const tree = await wixStores.getCategoryTree();
                 const mappedProducts = products.map((p) =>
-                    mapProductToCard(p, wixStores.urls, tree),
+                    mapProductToCard(p, wixStores.urls, tree, wixStores.locale),
                 );
 
                 return {
@@ -463,7 +463,7 @@ export const getProductBySlug = makeJayQuery('wixStores.getProductBySlug')
                 }
 
                 const tree = await wixStores.getCategoryTree();
-                return mapProductToCard(product, wixStores.urls, tree);
+                return mapProductToCard(product, wixStores.urls, tree, wixStores.locale);
             } catch (error) {
                 console.error('[wixStores.getProductBySlug] Failed to get product:', error);
                 // Return null for not found instead of throwing
