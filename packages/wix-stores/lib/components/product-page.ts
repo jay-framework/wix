@@ -49,6 +49,12 @@ import {
     WixStoresContext,
 } from '../contexts/wix-stores-context';
 import { handleError } from '../utils/wix-error-handler';
+import {
+    initialActionsEnabled,
+    isPurchasable,
+    mapVariantStock,
+    pickDefaultVariant,
+} from '../utils/purchasable';
 
 /**
  * Extract user-defined extended fields from the product response.
@@ -334,11 +340,6 @@ function mapModifiersToFastVS(
     );
 }
 
-/** A variant can be added to the cart when it is in stock or open for pre-order */
-function isPurchasable(variant: InteractiveVariant): boolean {
-    return variant.inventoryStatus === StockStatus.IN_STOCK || variant.preorderEnabled;
-}
-
 function mapVariants(variantsInfo: VariantsInfo): InteractiveVariant[] {
     return (
         variantsInfo?.variants.map((variant) => ({
@@ -346,10 +347,7 @@ function mapVariants(variantsInfo: VariantsInfo): InteractiveVariant[] {
             choices: variant.choices,
             sku: variant.sku,
             price: variant.price.actualPrice.formattedAmount,
-            inventoryStatus: variant.inventoryStatus.inStock
-                ? StockStatus.IN_STOCK
-                : StockStatus.OUT_OF_STOCK,
-            preorderEnabled: !!variant.inventoryStatus.preorderEnabled,
+            ...mapVariantStock(variant.inventoryStatus),
             mediaId: variant.media?._id,
             strikethroughPrice: variant.price.compareAtPrice?.formattedAmount || '',
         })) || []
@@ -520,12 +518,9 @@ async function renderFastChanging(
 ) {
     const Pipeline = RenderPipeline.for<ProductPageFastViewState, ProductFastCarryForward>();
 
-    // Select default variant: prefer first in-stock variant, fall back to first
+    // Select default variant: prefer first in-stock variant, then one open for pre-order, then the first
     const { variants } = slowCarryForward;
-    const defaultVariant =
-        variants.find((v) => v.inventoryStatus === StockStatus.IN_STOCK) ||
-        variants.find(isPurchasable) ||
-        variants[0];
+    const defaultVariant = pickDefaultVariant(variants);
 
     // Pre-select the default variant's option choices
     const options = slowCarryForward.options.map((option) => {
@@ -559,11 +554,8 @@ async function renderFastChanging(
         }
     }
 
-    const isInStock = slowCarryForward.stockStatus === StockStatus.IN_STOCK;
-
     return Pipeline.ok({
-        actionsEnabled:
-            (isInStock || defaultVariant.preorderEnabled) && isPurchasable(defaultVariant),
+        actionsEnabled: initialActionsEnabled(slowCarryForward.stockStatus, defaultVariant),
         options,
         modifiers: slowCarryForward.modifiers,
         mediaGallery,

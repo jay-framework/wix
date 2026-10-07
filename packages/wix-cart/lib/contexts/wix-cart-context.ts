@@ -34,6 +34,7 @@ import {
     createCheckoutFromCurrentCart as createCheckoutApi,
     createRedirectSession as createRedirectSessionApi,
 } from '../wix-apis/index.js';
+import { buildAddToCartLineItem } from './add-to-cart-line-item';
 import {
     CartState,
     estimateCurrentCartTotalsOrNull,
@@ -56,9 +57,6 @@ export interface WixCartInitData {
     /** URL path for post-checkout redirect (default: /thank-you) */
     thankYouUrl: string;
 }
-
-/** Wix Stores App ID for catalog references */
-const WIX_STORES_APP_ID = '215238eb-22a5-4c36-9e7b-e7c08025e04e';
 
 /**
  * Reactive cart indicator state.
@@ -258,21 +256,7 @@ export function provideWixCartContext(thankYouUrl: string = '/thank-you'): WixCa
         ): Promise<CartOperationResult> {
             console.log(`[WixCart] Adding to cart: ${productId} x ${quantity}`, options);
 
-            const catalogOptions: Record<string, unknown> = {};
-            if (options?.variantId) catalogOptions.variantId = options.variantId;
-            if (options?.modifiers) catalogOptions.options = options.modifiers;
-            if (options?.customTextFields)
-                catalogOptions.customTextFields = options.customTextFields;
-            if (options?.preOrderRequested) catalogOptions.preOrderRequested = true;
-
-            const lineItem = {
-                catalogReference: {
-                    catalogItemId: productId,
-                    appId: WIX_STORES_APP_ID,
-                    ...(Object.keys(catalogOptions).length > 0 ? { options: catalogOptions } : {}),
-                },
-                quantity,
-            };
+            const lineItem = buildAddToCartLineItem(productId, quantity, options);
 
             const result = await addToCartApi(wixClient, [lineItem]);
 
