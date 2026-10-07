@@ -48,7 +48,7 @@ Design documentation for the Jay Framework Wix integration packages.
 
 ## Design Log Methodology
 
-See the main Jay Framework [design log methodology](../../jay/design-log/readme.md) for guidelines.
+See the main Jay Framework [design log methodology](https://github.com/jay-framework/jay/blob/main/CLAUDE.md#design-log-methodology) for guidelines.
 
 ### Quick Reference
 
