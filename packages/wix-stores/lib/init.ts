@@ -38,6 +38,7 @@ export const init = makeJayInit()
         provideWixStoresService(wixClient, {
             urls: storesConfig.urls,
             defaultCategory: storesConfig.defaultCategory,
+            locale: storesConfig.locale,
         });
 
         console.log(

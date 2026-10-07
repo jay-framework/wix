@@ -24,6 +24,8 @@ export interface WixStoresService {
     urls: UrlTemplates;
     /** Slug of the fallback category for pages without category context */
     defaultCategory: string | null;
+    /** Locale prices are formatted with; null = the API's formattedAmount */
+    locale: string | null;
     /** Get the cached category tree. Lazily built on first call. */
     getCategoryTree(): Promise<CategoryTree>;
     /** Get cached product customizations (options with choices). Lazily loaded. */
@@ -45,6 +47,7 @@ export const WIX_STORES_SERVICE_MARKER = createJayService<WixStoresService>('Wix
 export interface WixStoresServiceOptions {
     urls?: UrlTemplates;
     defaultCategory?: string | null;
+    locale?: string | null;
 }
 
 /**
@@ -63,6 +66,7 @@ export function provideWixStoresService(
         wixClient,
         urls: options?.urls ?? { product: '/products/{slug}', category: null },
         defaultCategory: options?.defaultCategory ?? null,
+        locale: options?.locale ?? null,
 
         async getCategoryTree(): Promise<CategoryTree> {
             if (cachedTree) return cachedTree;

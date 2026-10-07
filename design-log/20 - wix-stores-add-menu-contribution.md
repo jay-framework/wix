@@ -2,7 +2,7 @@
 
 ## Status
 
-**Execution-ready** — architect review addressed. Parent: [jay-aiditor #19](../jay-aiditor/design-log/19%20-%20aiditor-add-menu.md). AIditor tasks: [implementation plan](../jay-aiditor/design-log/19%20-%20aiditor-add-menu-implementation-plan.md).
+**Execution-ready** — architect review addressed. Parent: [jay-aiditor #19](https://github.com/wix-incubator/jay-aiditor/blob/main/design-log/19%20-%20aiditor-add-menu.md). AIditor tasks: [implementation plan](https://github.com/wix-incubator/jay-aiditor/blob/main/design-log/19%20-%20aiditor-add-menu-implementation-plan.md).
 
 **Out of scope:** wix-media ([#19](./19%20-%20wix-media-plugin.md)), wix-stores-v1 parity.
 
@@ -22,11 +22,11 @@ Static component items remain in `wix-stores.yaml` (setup). AIditor merges both 
 
 ## Release coordination
 
-Ship **`@jay-framework/wix-stores`** with **`@jay-framework/aiditor`** for M19.1 smoke. ui-kit ([#142](../../jay/design-log/142%20-%20ui-kit-add-menu-contribution.md)) independent.
+Ship **`@jay-framework/wix-stores`** with **`@jay-framework/aiditor`** for M19.1 smoke. ui-kit ([#142](https://github.com/jay-framework/jay/blob/main/design-log/142%20-%20ui-kit-add-menu-contribution.md)) independent.
 
 ## Background
 
-AIditor reads `agent-kit/aiditor/add-menu/*.yaml` on plugin setup. Extend existing `setupWixStores` in [`lib/setup.ts`](../packages/wix-stores/lib/setup.ts).
+AIditor reads `agent-kit/aiditor/add-menu/*.yaml` on plugin setup. Extend existing `setupWixStores` in [`packages/wix-stores/lib/setup.ts`](https://github.com/jay-framework/wix/blob/main/packages/wix-stores/lib/setup.ts).
 
 ## Design
 
