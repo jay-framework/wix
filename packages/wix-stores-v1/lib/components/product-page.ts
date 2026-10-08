@@ -46,11 +46,7 @@ import { WIX_STORES_V1_CONTEXT, WixStoresV1Context } from '../contexts/wix-store
 import type { V1Product, V1SeoData } from '../wix-apis/types.js';
 import { queryProducts as queryProductsApi } from '../wix-apis/index.js';
 import { stripWixMediaResize } from '@jay-framework/wix-utils';
-import {
-    allOptionsHaveSelection,
-    mapChoice,
-    selectedChoices,
-} from '../utils/product-options.js';
+import { allOptionsHaveSelection, mapChoice, selectedChoices } from '../utils/product-options.js';
 
 /**
  * URL parameters for product page routes
@@ -317,8 +313,7 @@ async function renderFastChanging(
     const firstVariant = slowCarryForward.variants[0];
 
     return Pipeline.ok({
-        actionsEnabled:
-            isInStock && allOptionsHaveSelection(slowCarryForward.options),
+        actionsEnabled: isInStock && allOptionsHaveSelection(slowCarryForward.options),
         options: slowCarryForward.options,
         modifiers: [],
         mediaGallery: slowCarryForward.mediaGallery,
@@ -381,8 +376,7 @@ function ProductPageInteractive(
         () => selectedVariant()?.inventoryStatus || StockStatus.OUT_OF_STOCK,
     );
     const computedActionsEnabled = createMemo(
-        () =>
-            stockStatus() === StockStatus.IN_STOCK && allOptionsHaveSelection(options()),
+        () => stockStatus() === StockStatus.IN_STOCK && allOptionsHaveSelection(options()),
     );
 
     const interactiveMedia = createMemo((prev: MediaGalleryViewState) =>
@@ -464,7 +458,12 @@ function ProductPageInteractive(
             const variantId = selectedVariant()?._id;
             // A product that does not manage variants has only the default variant: the cart takes the
             // chosen options instead (without them the line item is dropped).
-            await storesContext.addToCart(productId, quantity(), variantId, selectedOptionsRecord());
+            await storesContext.addToCart(
+                productId,
+                quantity(),
+                variantId,
+                selectedOptionsRecord(),
+            );
             console.log('[ProductPage V1] Added to cart:', quantity(), 'items');
         } catch (error) {
             console.error('[ProductPage V1] Failed to add to cart:', error);
