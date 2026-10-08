@@ -46,7 +46,11 @@ import { WIX_STORES_V1_CONTEXT, WixStoresV1Context } from '../contexts/wix-store
 import type { V1Product, V1SeoData } from '../wix-apis/types.js';
 import { queryProducts as queryProductsApi } from '../wix-apis/index.js';
 import { stripWixMediaResize } from '@jay-framework/wix-utils';
-import { mapChoice, selectedChoices } from '../utils/product-options.js';
+import {
+    allOptionsHaveSelection,
+    mapChoice,
+    selectedChoices,
+} from '../utils/product-options.js';
 
 /**
  * URL parameters for product page routes
@@ -313,7 +317,8 @@ async function renderFastChanging(
     const firstVariant = slowCarryForward.variants[0];
 
     return Pipeline.ok({
-        actionsEnabled: isInStock,
+        actionsEnabled:
+            isInStock && allOptionsHaveSelection(slowCarryForward.options),
         options: slowCarryForward.options,
         modifiers: [],
         mediaGallery: slowCarryForward.mediaGallery,
@@ -375,7 +380,10 @@ function ProductPageInteractive(
     const stockStatus = createMemo(
         () => selectedVariant()?.inventoryStatus || StockStatus.OUT_OF_STOCK,
     );
-    const computedActionsEnabled = createMemo(() => stockStatus() === StockStatus.IN_STOCK);
+    const computedActionsEnabled = createMemo(
+        () =>
+            stockStatus() === StockStatus.IN_STOCK && allOptionsHaveSelection(options()),
+    );
 
     const interactiveMedia = createMemo((prev: MediaGalleryViewState) =>
         selectMedia(prev || mediaGallery(), selectedMediaId()),
@@ -446,8 +454,8 @@ function ProductPageInteractive(
     });
 
     refs.addToCartButton.onclick(async () => {
-        if (stockStatus() === StockStatus.OUT_OF_STOCK) {
-            console.warn('[ProductPage V1] Product is out of stock');
+        if (!computedActionsEnabled()) {
+            console.warn('[ProductPage V1] Product is not available for purchase');
             return;
         }
 
