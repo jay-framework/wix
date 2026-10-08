@@ -66,11 +66,16 @@ Run `jay-stack agent-kit` (or `yarn agent-kit`) to index the live category tree 
 
 ### Config File (`config/.wix-stores.yaml`)
 
+Created by `jay-stack setup wix-stores`. Full reference: `agent-kit/designer/store-configuration.md` (materialized after `jay-stack agent-kit`).
+
 ```yaml
 # URL templates — how the component builds canonical links
 urls:
   product: '/products/{slug}' # default
   category: null # no category pages by default
+
+# Optional: BCP 47 regional setting for Intl price formatting (cards + product page)
+# locale: 'ja-JP'
 ```
 
 URL templates use three placeholders:

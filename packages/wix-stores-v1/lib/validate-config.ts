@@ -65,7 +65,8 @@ export function validateProductOrderSlugs(
         if (slug.length === 0) {
             issues.push({
                 severity: 'error',
-                message: 'productOrder contains an empty slug entry — remove it or set a product URL slug.',
+                message:
+                    'productOrder contains an empty slug entry — remove it or set a product URL slug.',
             });
             continue;
         }

@@ -8,10 +8,7 @@ import * as path from 'path';
 import type { PluginSetupContext, PluginSetupResult } from '@jay-framework/stack-server-runtime';
 import { getService } from '@jay-framework/stack-server-runtime';
 import { fetchCatalogProductSlugs } from './catalog-slugs.js';
-import {
-    WIX_STORES_V1_CONFIG_FILE_NAME,
-    loadWixStoresV1Config,
-} from './config-loader.js';
+import { WIX_STORES_V1_CONFIG_FILE_NAME, loadWixStoresV1Config } from './config-loader.js';
 import {
     WIX_STORES_V1_SERVICE_MARKER,
     type WixStoresV1Service,

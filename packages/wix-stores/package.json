@@ -59,6 +59,7 @@
     "@babel/preset-env": "^7.23.8",
     "@babel/preset-typescript": "^7.23.3",
     "@jay-framework/compiler-jay-stack": "^0.25.0",
+    "@jay-framework/compiler-shared": "^0.25.0",
     "@jay-framework/jay-cli": "^0.25.0",
     "@jay-framework/jay-stack-cli": "^0.25.0",
     "@jay-framework/vite-plugin": "^0.25.0",

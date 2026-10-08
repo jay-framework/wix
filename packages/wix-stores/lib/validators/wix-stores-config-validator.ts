@@ -6,16 +6,15 @@ import type {
 import { walkElements } from '@jay-framework/compiler-shared';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { WIX_STORES_V1_CONFIG_FILE_NAME } from '../config-loader.js';
-import { validateWixStoresV1Config } from '../validate-config.js';
+import { WIX_STORES_CONFIG_FILE_NAME } from '../config-loader.js';
+import { validateWixStoresConfig } from '../validate-config.js';
 
-const WIX_STORES_V1_PLUGIN_RE = /wix-stores-v1/;
 const validatedProjects = new Set<string>();
 
-function pageUsesWixStoresV1(ctx: JayHtmlValidationContext): boolean {
-    let usesV1 = false;
+function pageUsesWixStoresV3(ctx: JayHtmlValidationContext): boolean {
+    let usesV3 = false;
     walkElements(ctx.body, ctx, (element) => {
-        if (usesV1) {
+        if (usesV3) {
             return;
         }
         const tagName = element.rawTagName?.toLowerCase();
@@ -26,15 +25,18 @@ function pageUsesWixStoresV1(ctx: JayHtmlValidationContext): boolean {
             return;
         }
         const pluginAttr = element.getAttribute('plugin') ?? '';
-        if (WIX_STORES_V1_PLUGIN_RE.test(pluginAttr)) {
-            usesV1 = true;
+        if (pluginAttr.includes('wix-stores-v1')) {
+            return;
+        }
+        if (/wix-stores/.test(pluginAttr)) {
+            usesV3 = true;
         }
     });
-    return usesV1;
+    return usesV3;
 }
 
 function toFindings(
-    issues: ReturnType<typeof validateWixStoresV1Config>,
+    issues: ReturnType<typeof validateWixStoresConfig>,
 ): JayHtmlValidationFinding[] {
     return issues.map((issue) => ({
         severity: issue.severity,
@@ -43,16 +45,16 @@ function toFindings(
     }));
 }
 
-export const validateWixStoresV1ProjectConfig: JayHtmlValidatorFn = (ctx) => {
+export const validateWixStoresProjectConfig: JayHtmlValidatorFn = (ctx) => {
     if (validatedProjects.has(ctx.projectRoot)) {
         return [];
     }
 
-    const configPath = path.join(ctx.projectRoot, 'config', WIX_STORES_V1_CONFIG_FILE_NAME);
+    const configPath = path.join(ctx.projectRoot, 'config', WIX_STORES_CONFIG_FILE_NAME);
     const configExists = fs.existsSync(configPath);
-    const usesV1 = pageUsesWixStoresV1(ctx);
+    const usesV3 = pageUsesWixStoresV3(ctx);
 
-    if (!configExists && !usesV1) {
+    if (!configExists && !usesV3) {
         return [];
     }
 
@@ -63,11 +65,11 @@ export const validateWixStoresV1ProjectConfig: JayHtmlValidatorFn = (ctx) => {
             {
                 severity: 'warning',
                 message:
-                    'This page uses @jay-framework/wix-stores-v1 but config/.wix-stores-v1.yaml is missing.',
-                suggestion: 'Run jay-stack setup wix-stores-v1 to create the config template.',
+                    'This page uses @jay-framework/wix-stores but config/.wix-stores.yaml is missing.',
+                suggestion: 'Run jay-stack setup wix-stores to create the config template.',
             },
         ];
     }
 
-    return toFindings(validateWixStoresV1Config(ctx.projectRoot));
+    return toFindings(validateWixStoresConfig(ctx.projectRoot));
 };

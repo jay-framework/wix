@@ -54,3 +54,8 @@ contexts:
 setup: setupWixStores
 agentkit: generateWixStoresAgentKit
 description: Validate Wix Stores service; generate category tree reference and Add Menu catalogs
+
+validators:
+  - name: wix-stores-config
+    handler: validateWixStoresProjectConfig
+    description: Checks config/.wix-stores.yaml when the project uses wix-stores (Catalog V3)

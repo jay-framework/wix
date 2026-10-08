@@ -419,11 +419,7 @@ export function mapProductToCard(
         variantActual && (isValidPrice(variantActual.amount) || variantActual.formattedAmount)
             ? variantActual
             : product.actualPriceRange?.minValue;
-    const actualFormattedAmount = formatPrice(
-        actualPriceSource,
-        product.currency,
-        locale,
-    );
+    const actualFormattedAmount = formatPrice(actualPriceSource, product.currency, locale);
 
     const compareAtAmount =
         variantPrice?.compareAtPrice?.amount || product.compareAtPriceRange?.minValue?.amount;
@@ -432,11 +428,7 @@ export function mapProductToCard(
         variantCompare && (isValidPrice(variantCompare.amount) || variantCompare.formattedAmount)
             ? variantCompare
             : product.compareAtPriceRange?.minValue;
-    const compareAtFormattedAmount = formatPrice(
-        comparePriceSource,
-        product.currency,
-        locale,
-    );
+    const compareAtFormattedAmount = formatPrice(comparePriceSource, product.currency, locale);
 
     const hasDiscount = isValidPrice(compareAtAmount) && compareAtAmount !== actualAmount;
     return {

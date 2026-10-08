@@ -333,7 +333,7 @@ Alternatively, expose a **number** data tag (`itemCount`) and use numeric compar
 
 | Plugin | Config file | Notes |
 | ------ | ----------- | ----- |
-| `@jay-framework/wix-stores` (Catalog V3) | `config/.wix-stores.yaml` | Product URL templates, optional `locale` for prices |
+| `@jay-framework/wix-stores` (Catalog V3) | `config/.wix-stores.yaml` | URL templates, optional `locale`, `defaultCategory` — see `agent-kit/designer/store-configuration.md` after `jay-stack agent-kit` |
 | `@jay-framework/wix-stores-v1` (Catalog V1) | `config/.wix-stores-v1.yaml` | Optional `locale` (product cards), `productOrder` (default grid slug order) — see the plugin’s `agent-kit/designer/store-configuration.md` after `jay-stack agent-kit` |
 
 See also [developer/configuration.md](../developer/configuration.md).
