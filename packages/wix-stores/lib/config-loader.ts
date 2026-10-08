@@ -9,6 +9,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
 
+export const WIX_STORES_CONFIG_FILE_NAME = '.wix-stores.yaml';
+
 /**
  * URL templates for building canonical product and category links.
  * Placeholders: {slug}, {category}, {prefix}
@@ -37,7 +39,7 @@ export interface WixStoresConfig {
  */
 export function loadWixStoresConfig(projectRoot?: string): WixStoresConfig {
     const root = projectRoot ?? process.cwd();
-    const configPath = path.join(root, 'config', '.wix-stores.yaml');
+    const configPath = path.join(root, 'config', WIX_STORES_CONFIG_FILE_NAME);
 
     const defaults: WixStoresConfig = {
         urls: { product: '/products/{slug}', category: null },

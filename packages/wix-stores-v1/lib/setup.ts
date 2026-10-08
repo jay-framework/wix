@@ -1,24 +1,48 @@
 /**
  * Setup handler for wix-stores-v1 plugin.
- * Validates that the Wix Stores app is installed by querying products.
+ * Validates Stores V1 API access, writes config template, and checks config/.wix-stores-v1.yaml.
  */
 
+import * as fs from 'fs';
+import * as path from 'path';
+import type { PluginSetupContext, PluginSetupResult } from '@jay-framework/stack-server-runtime';
 import { getService } from '@jay-framework/stack-server-runtime';
+import { fetchCatalogProductSlugs } from './catalog-slugs.js';
+import { WIX_STORES_V1_CONFIG_FILE_NAME, loadWixStoresV1Config } from './config-loader.js';
 import {
     WIX_STORES_V1_SERVICE_MARKER,
     type WixStoresV1Service,
-} from './services/wix-stores-v1-service';
+} from './services/wix-stores-v1-service.js';
 import { queryProducts } from './wix-apis/index.js';
+import type { ConfigValidationIssue } from './validate-config.js';
+import { validateWixStoresV1ConfigValue } from './validate-config.js';
 
-interface PluginSetupContext {
-    configDir: string;
-    projectRoot: string;
-    initError?: Error;
-}
+export const CONFIG_TEMPLATE = `# Wix Stores V1 configuration (config/.wix-stores-v1.yaml)
+#
+# BCP 47 — copy from the Wix site dashboard → Settings → Language & region (regional settings).
+# Omit or leave unset to keep the Catalog V1 API formatted price strings on product cards.
+# locale: 'he-IL'
+#
+# Product URL slugs (product.slug from the V1 API), in the order they should appear on the
+# default shop listing (relevance sort, no filters). NOT product names, SKUs, or collection IDs.
+# productOrder:
+#   - 'i-m-a-product'
+#   - 'blue-widget'
+#
+# Full reference: agent-kit/designer/store-configuration.md (materialized after jay-stack agent-kit)
 
-interface PluginSetupResult {
-    status: 'configured' | 'needs-config' | 'error';
-    message?: string;
+`;
+
+function formatConfigIssues(issues: ConfigValidationIssue[]): string {
+    if (issues.length === 0) {
+        return '';
+    }
+    const lines = issues.map((issue) => {
+        const label = issue.severity === 'error' ? 'Error' : 'Warning';
+        const hint = issue.suggestion ? ` ${issue.suggestion}` : '';
+        return `  - ${label}: ${issue.message}${hint}`;
+    });
+    return `\n\nConfig (${WIX_STORES_V1_CONFIG_FILE_NAME}):\n${lines.join('\n')}`;
 }
 
 export async function setupWixStoresV1(ctx: PluginSetupContext): Promise<PluginSetupResult> {
@@ -39,10 +63,21 @@ export async function setupWixStoresV1(ctx: PluginSetupContext): Promise<PluginS
         };
     }
 
+    const configPath = path.join(ctx.configDir, WIX_STORES_V1_CONFIG_FILE_NAME);
+    const configCreated: string[] = [];
+
+    if (!fs.existsSync(configPath)) {
+        if (!fs.existsSync(ctx.configDir)) {
+            fs.mkdirSync(ctx.configDir, { recursive: true });
+        }
+        fs.writeFileSync(configPath, CONFIG_TEMPLATE, 'utf-8');
+        configCreated.push(`config/${WIX_STORES_V1_CONFIG_FILE_NAME}`);
+    }
+
     try {
         await queryProducts(service.wixClient, { paging: { limit: 1 } });
-    } catch (e: any) {
-        const msg = e.message || '';
+    } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : String(e);
         const hint =
             msg.includes('404') || msg.includes('not found')
                 ? 'Wix Stores may not be installed on this site'
@@ -55,8 +90,32 @@ export async function setupWixStoresV1(ctx: PluginSetupContext): Promise<PluginS
         };
     }
 
+    const config = loadWixStoresV1Config(ctx.projectRoot);
+    let catalogSlugs: Set<string> | undefined;
+    let productCount: number | undefined;
+
+    if (config.productOrder.length > 0) {
+        try {
+            const catalog = await fetchCatalogProductSlugs(service.wixClient);
+            catalogSlugs = catalog.slugs;
+            productCount = catalog.totalCount;
+        } catch {
+            // Setup still succeeds; slug checks are best-effort when the catalog cannot be read.
+        }
+    }
+
+    const configIssues = validateWixStoresV1ConfigValue(config, {
+        catalogSlugs,
+        productCount,
+    });
+    const hasConfigErrors = configIssues.some((issue) => issue.severity === 'error');
+
+    let message = 'Wix Stores V1 connected';
+    message += formatConfigIssues(configIssues);
+
     return {
-        status: 'configured',
-        message: 'Wix Stores V1 connected',
+        status: hasConfigErrors ? 'needs-config' : 'configured',
+        message,
+        ...(configCreated.length > 0 ? { configCreated } : {}),
     };
 }

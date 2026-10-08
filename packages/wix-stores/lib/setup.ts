@@ -23,9 +23,13 @@ import { searchProducts as searchProductsApi } from './wix-apis/search-products.
 import type { DataExtensionSchema } from './utils/data-extension-schema';
 import { buildCategoryAddMenuItems, type CategoryTreeNode } from './add-menu/category-items.js';
 import { copyAiditorAddMenuThumbnails } from './add-menu/copy-aiditor-thumbnails.js';
-import { loadWixStoresConfig } from './config-loader.js';
-
-const CONFIG_FILE_NAME = '.wix-stores.yaml';
+import { fetchCategorySlugs } from './catalog-category-slugs.js';
+import {
+    loadWixStoresConfig,
+    WIX_STORES_CONFIG_FILE_NAME,
+} from './config-loader.js';
+import type { ConfigValidationIssue } from './validate-config.js';
+import { validateWixStoresConfigValue } from './validate-config.js';
 const ADD_MENU_OUTPUT_REL = 'agent-kit/aiditor/add-menu/wix-stores.yaml';
 const ADD_MENU_GENERATED_REL = 'agent-kit/aiditor/add-menu/wix-stores.generated.yaml';
 
@@ -103,11 +107,23 @@ const CONFIG_TEMPLATE = `# Wix Stores Configuration
 # Locale for prices (BCP 47; a Wix site's regional setting). Not set = the API's formatted amounts:
 # locale: "ja-JP"
 #
-# To see available categories: jay-stack setup wix-stores (generates category tree reference)
+# Full reference: agent-kit/designer/store-configuration.md (materialized after jay-stack agent-kit)
 
 urls:
   product: "/products/{slug}"
 `;
+
+function formatConfigIssues(issues: ConfigValidationIssue[]): string {
+    if (issues.length === 0) {
+        return '';
+    }
+    const lines = issues.map((issue) => {
+        const label = issue.severity === 'error' ? 'Error' : 'Warning';
+        const hint = issue.suggestion ? ` ${issue.suggestion}` : '';
+        return `  - ${label}: ${issue.message}${hint}`;
+    });
+    return `\n\nConfig (${WIX_STORES_CONFIG_FILE_NAME}):\n${lines.join('\n')}`;
+}
 
 export async function setupWixStores(ctx: PluginSetupContext): Promise<PluginSetupResult> {
     if (ctx.initError) {
@@ -128,7 +144,7 @@ export async function setupWixStores(ctx: PluginSetupContext): Promise<PluginSet
     }
 
     // Create config template if it doesn't exist
-    const configPath = path.join(ctx.configDir, CONFIG_FILE_NAME);
+    const configPath = path.join(ctx.configDir, WIX_STORES_CONFIG_FILE_NAME);
     const configCreated: string[] = [];
 
     if (!fs.existsSync(configPath)) {
@@ -136,7 +152,7 @@ export async function setupWixStores(ctx: PluginSetupContext): Promise<PluginSet
             fs.mkdirSync(ctx.configDir, { recursive: true });
         }
         fs.writeFileSync(configPath, CONFIG_TEMPLATE, 'utf-8');
-        configCreated.push(`config/${CONFIG_FILE_NAME}`);
+        configCreated.push(`config/${WIX_STORES_CONFIG_FILE_NAME}`);
     }
 
     const service = getService(WIX_STORES_SERVICE_MARKER) as WixStoresService;
@@ -157,10 +173,25 @@ export async function setupWixStores(ctx: PluginSetupContext): Promise<PluginSet
         };
     }
 
-    const message = `Wix Stores configured (product URL: ${service.urls.product})`;
+    const config = loadWixStoresConfig(ctx.projectRoot);
+    let categorySlugs: Set<string> | undefined;
+
+    if (config.defaultCategory) {
+        try {
+            categorySlugs = await fetchCategorySlugs(service.wixClient);
+        } catch {
+            // Best-effort: setup still succeeds when categories cannot be loaded.
+        }
+    }
+
+    const configIssues = validateWixStoresConfigValue(config, { categorySlugs });
+    const hasConfigErrors = configIssues.some((issue) => issue.severity === 'error');
+
+    let message = `Wix Stores configured (product URL: ${service.urls.product})`;
+    message += formatConfigIssues(configIssues);
 
     return {
-        status: 'configured',
+        status: hasConfigErrors ? 'needs-config' : 'configured',
         message,
         ...(configCreated.length > 0 ? { configCreated } : {}),
     };

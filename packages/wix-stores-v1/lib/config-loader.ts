@@ -9,6 +9,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
 
+export const WIX_STORES_V1_CONFIG_FILE_NAME = '.wix-stores-v1.yaml';
+
 export interface WixStoresV1Config {
     /**
      * Locale product card prices are formatted with (BCP 47, e.g. "he-IL" — a Wix site's regional setting).
@@ -28,7 +30,11 @@ export interface WixStoresV1Config {
  * Returns defaults when the config file doesn't exist.
  */
 export function loadWixStoresV1Config(projectRoot?: string): WixStoresV1Config {
-    const configPath = path.join(projectRoot ?? process.cwd(), 'config', '.wix-stores-v1.yaml');
+    const configPath = path.join(
+        projectRoot ?? process.cwd(),
+        'config',
+        WIX_STORES_V1_CONFIG_FILE_NAME,
+    );
     const raw = fs.existsSync(configPath)
         ? (yaml.load(fs.readFileSync(configPath, 'utf8')) as Record<string, unknown> | null)
         : null;
