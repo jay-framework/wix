@@ -57,9 +57,7 @@ export function validateLocale(locale: string | null | undefined): ConfigValidat
     }
 }
 
-export function validateUrlTemplates(
-    urls: WixStoresConfig['urls'],
-): ConfigValidationIssue[] {
+export function validateUrlTemplates(urls: WixStoresConfig['urls']): ConfigValidationIssue[] {
     const issues: ConfigValidationIssue[] = [];
     const product = urls.product;
 
@@ -120,7 +118,8 @@ export function validateUrlTemplates(
             if (!category.includes('{category}')) {
                 issues.push({
                     severity: 'warning',
-                    message: 'urls.category should include {category} so category pages resolve correctly.',
+                    message:
+                        'urls.category should include {category} so category pages resolve correctly.',
                 });
             }
             const badCategoryPlaceholders = unknownPlaceholders(category);
@@ -162,7 +161,8 @@ export function validateDefaultCategory(
         issues.push({
             severity: 'warning',
             message: `defaultCategory slug "${defaultCategory}" was not found in the store category tree.`,
-            suggestion: 'Run jay-stack agent-kit and check agent-kit/references/wix-stores/categories.yaml.',
+            suggestion:
+                'Run jay-stack agent-kit and check agent-kit/references/wix-stores/categories.yaml.',
         });
     }
     return issues;

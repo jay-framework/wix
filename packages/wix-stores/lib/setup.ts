@@ -24,10 +24,7 @@ import type { DataExtensionSchema } from './utils/data-extension-schema';
 import { buildCategoryAddMenuItems, type CategoryTreeNode } from './add-menu/category-items.js';
 import { copyAiditorAddMenuThumbnails } from './add-menu/copy-aiditor-thumbnails.js';
 import { fetchCategorySlugs } from './catalog-category-slugs.js';
-import {
-    loadWixStoresConfig,
-    WIX_STORES_CONFIG_FILE_NAME,
-} from './config-loader.js';
+import { loadWixStoresConfig, WIX_STORES_CONFIG_FILE_NAME } from './config-loader.js';
 import type { ConfigValidationIssue } from './validate-config.js';
 import { validateWixStoresConfigValue } from './validate-config.js';
 const ADD_MENU_OUTPUT_REL = 'agent-kit/aiditor/add-menu/wix-stores.yaml';

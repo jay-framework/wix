@@ -74,6 +74,7 @@ urls:
   product: '/products/{slug}' # default
   category: null # no category pages by default
 
+
 # Optional: BCP 47 regional setting for Intl price formatting (cards + product page)
 # locale: 'ja-JP'
 ```

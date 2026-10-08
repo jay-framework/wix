@@ -34,13 +34,26 @@ export interface OptionSelection {
     choices: { choiceId: string; isSelected: boolean }[];
 }
 
+function choiceIdForOption(option: OptionSelection): string | undefined {
+    return option.textChoiceSelection || option.choices.find((c) => c.isSelected)?.choiceId;
+}
+
 /** The selected choice of each option, by option name (options without a selection are left out). */
 export function selectedChoices(options: OptionSelection[]): Record<string, string> {
     const result: Record<string, string> = {};
     for (const option of options) {
-        const choiceId =
-            option.textChoiceSelection || option.choices.find((c) => c.isSelected)?.choiceId;
+        const choiceId = choiceIdForOption(option);
         if (choiceId) result[option._id] = choiceId;
     }
     return result;
+}
+
+/** True when every product option has a selection (vacuously true when there are no options). */
+export function allOptionsHaveSelection(options: OptionSelection[]): boolean {
+    for (const option of options) {
+        if (!choiceIdForOption(option)) {
+            return false;
+        }
+    }
+    return true;
 }

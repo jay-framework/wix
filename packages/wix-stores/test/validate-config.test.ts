@@ -23,9 +23,9 @@ describe('validateLocale', () => {
 describe('validateUrlTemplates', () => {
     it('requires {slug} in urls.product', () => {
         const issues = validateUrlTemplates({ product: '/products/', category: null });
-        expect(issues.some((issue) => issue.severity === 'error' && issue.message.includes('{slug}'))).toBe(
-            true,
-        );
+        expect(
+            issues.some((issue) => issue.severity === 'error' && issue.message.includes('{slug}')),
+        ).toBe(true);
     });
 
     it('errors on unknown placeholders', () => {
@@ -66,6 +66,8 @@ describe('validateWixStoresConfigValue', () => {
             defaultCategory: null,
             locale: '@bad',
         });
-        expect(issues.filter((issue) => issue.severity === 'error').length).toBeGreaterThanOrEqual(2);
+        expect(issues.filter((issue) => issue.severity === 'error').length).toBeGreaterThanOrEqual(
+            2,
+        );
     });
 });
