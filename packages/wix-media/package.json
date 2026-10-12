@@ -8,13 +8,17 @@
   "files": [
     "dist",
     "plugin.yaml",
-    "agent-kit"
+    "agent-kit",
+    "upload-public.jay-command",
+    "rebuild-index.jay-command"
   ],
   "exports": {
     ".": "./dist/index.js",
     "./client": "./dist/index.client.js",
     "./tools": "./dist/tools.js",
     "./plugin.yaml": "./plugin.yaml",
+    "./upload-public.jay-command": "./upload-public.jay-command",
+    "./rebuild-index.jay-command": "./rebuild-index.jay-command",
     "./dist/pages/settings/page.jay-html": "./dist/pages/settings/page.jay-html"
   },
   "scripts": {

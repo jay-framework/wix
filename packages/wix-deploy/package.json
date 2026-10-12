@@ -15,10 +15,15 @@
     "./artifact-store": "./dist/artifact-store.js",
     "./tools": "./dist/tools.js",
     "./plugin.yaml": "./plugin.yaml",
+    "./deploy.jay-command": "./dist/commands/deploy.jay-command",
+    "./build-entry.jay-command": "./dist/commands/build-entry.jay-command",
+    "./upload-backend.jay-command": "./dist/commands/upload-backend.jay-command",
+    "./deploy-baas.jay-command": "./dist/commands/deploy-baas.jay-command",
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "npm run clean && npm run build:server && npm run build:types && npm run validate",
+    "build": "npm run clean && npm run build:server && npm run build:types && npm run build:copy-commands && npm run validate",
+    "build:copy-commands": "mkdir -p dist/commands && cp lib/commands/*.jay-command dist/commands/",
     "validate": "jay-stack-cli validate-plugin",
     "build:server": "vite build --ssr",
     "build:types": "tsup lib/index.ts lib/tools.ts --dts-only --format esm",
