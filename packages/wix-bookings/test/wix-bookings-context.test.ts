@@ -38,15 +38,19 @@ describe('canBookOnline', () => {
 describe('bookings context', () => {
     const config = { bookingAppId: WIX_BOOKINGS_APP_ID, staffResourceTypeId: '', slotWindowDays: 14, postCheckoutUrl: '/' };
 
-    it("reads the site plan's booking features once", async () => {
+    it("reads the site plan's booking features and time zone with one settings call", async () => {
         calls.length = 0;
         responses['/_api/bookings-settings/v2/settings'] = {
-            bookingsSettings: { features: { bookingsGroups: { enabled: true }, bookingsAppointments: { enabled: false }, bookingsCourses: {} } },
+            bookingsSettings: {
+                features: { bookingsGroups: { enabled: true }, bookingsAppointments: { enabled: false }, bookingsCourses: {} },
+                siteProperties: { timeZone: 'Asia/Singapore' },
+            },
         };
         const context = createWixBookingsContext({} as never, config);
         expect(await context.features()).toEqual({ groups: true, appointments: false, courses: false, payments: false });
+        expect(await context.timeZone()).toBe('Asia/Singapore');
         await context.features();
-        expect(calls.map((c) => c.path)).toEqual(['/_api/bookings-settings/v2/settings?fields=FEATURES']);
+        expect(calls.map((c) => c.path)).toEqual(['/_api/bookings-settings/v2/settings?fields=FEATURES&fields=SITE_PROPERTIES']);
     });
 
     it('finds a service by its URL slug and queries its slots like the calendar does', async () => {

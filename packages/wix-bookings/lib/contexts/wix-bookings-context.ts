@@ -65,6 +65,8 @@ export interface TimeSlotsQuery {
 export interface WixBookingsContext {
     /** The booking features of the site's plan (read once per page). */
     features(): Promise<BookingFeatures>;
+    /** The business time zone, which Wix's calendar shows availability in by default. */
+    timeZone(): Promise<string>;
     /** A bookable service by one of its URL slugs (`/booking-calendar/<slug>`, `/service-page/<slug>`). */
     serviceBySlug(slug: string): Promise<RawBookingService | undefined>;
     /** Class sessions (and appointment openings) in a local date range, as Wix's calendar queries them. */
@@ -75,27 +77,33 @@ export interface WixBookingsContext {
 
 export const WIX_BOOKINGS_CONTEXT = createJayContext<WixBookingsContext>('wix:bookings');
 
-interface FeaturesResponse {
-    bookingsSettings?: { features?: Record<string, { enabled?: boolean } | undefined> };
+interface SettingsResponse {
+    bookingsSettings?: {
+        features?: Record<string, { enabled?: boolean } | undefined>;
+        siteProperties?: { timeZone?: string };
+    };
 }
 
 export function createWixBookingsContext(wixClient: WixClient, config: WixBookingsConfig): WixBookingsContext {
-    let features: Promise<BookingFeatures> | undefined;
+    let settings: Promise<SettingsResponse['bookingsSettings']> | undefined;
+    const readSettings = () =>
+        (settings ??= wixFetch<SettingsResponse>(
+            wixClient,
+            '/_api/bookings-settings/v2/settings?fields=FEATURES&fields=SITE_PROPERTIES',
+        ).then((res) => res.bookingsSettings));
     const service = createWixBookingsService(wixClient, config);
     return {
-        features() {
-            features ??= wixFetch<FeaturesResponse>(wixClient, '/_api/bookings-settings/v2/settings?fields=FEATURES').then(
-                (res) => {
-                    const f = res.bookingsSettings?.features ?? {};
-                    return {
-                        groups: Boolean(f.bookingsGroups?.enabled),
-                        appointments: Boolean(f.bookingsAppointments?.enabled),
-                        courses: Boolean(f.bookingsCourses?.enabled),
-                        payments: Boolean(f.bookingsPayments?.enabled),
-                    };
-                },
-            );
-            return features;
+        async features() {
+            const f = (await readSettings())?.features ?? {};
+            return {
+                groups: Boolean(f.bookingsGroups?.enabled),
+                appointments: Boolean(f.bookingsAppointments?.enabled),
+                courses: Boolean(f.bookingsCourses?.enabled),
+                payments: Boolean(f.bookingsPayments?.enabled),
+            };
+        },
+        async timeZone() {
+            return (await readSettings())?.siteProperties?.timeZone ?? 'UTC';
         },
         async serviceBySlug(slug) {
             const res = await wixFetch<{ services?: RawBookingService[] }>(wixClient, '/bookings/v2/services/query', {
