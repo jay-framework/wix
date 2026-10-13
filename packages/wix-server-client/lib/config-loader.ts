@@ -18,7 +18,9 @@ export interface OAuthConfig {
 
 export type ServerAuthConfig =
     | { kind: 'apiKey'; apiKey: ApiKeyConfig }
-    | { kind: 'app'; app: AppConfig };
+    | { kind: 'app'; app: AppConfig }
+    /** No server secret: the server reads public data as a visitor of `oauthStrategy.clientId`. */
+    | { kind: 'visitor' };
 
 export interface WixConfig {
     auth: ServerAuthConfig;
@@ -42,11 +44,9 @@ function parseServerAuth(config: Record<string, Record<string, string>>): Server
         );
     }
 
-    if (!hasApiKey && !hasApp) {
-        throw new Error(
-            'Config validation failed: either "apiKeyStrategy" or "appStrategy" section is required',
-        );
-    }
+    // Without a server secret, server-side reads (catalog, services) use visitor access: a site can then ship
+    // with no secret at all (e.g. a static export).
+    if (!hasApiKey && !hasApp) return { kind: 'visitor' };
 
     if (hasApiKey) {
         const strategy = config.apiKeyStrategy;
