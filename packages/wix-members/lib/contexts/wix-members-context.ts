@@ -10,6 +10,13 @@ import { Tokens } from '@wix/sdk';
 import { WIX_CLIENT_CONTEXT, WixClientContext } from '@jay-framework/wix-server-client';
 import { setAuthCookie } from '../utils/auth-cookie.js';
 import { loadMemberProfile } from '../utils/member-profile.js';
+import {
+    createDirectLogin,
+    type DirectLoginAuth,
+    type DirectLoginOptions,
+    type MemberAuthResult,
+    type RegisterOptions,
+} from '../utils/direct-login.js';
 
 // ============================================================================
 // OAuthStrategy Auth Type
@@ -72,6 +79,15 @@ export interface WixMembersContext {
     logout(): Promise<void>;
     refreshMemberState(): Promise<void>;
 
+    /** Log in with email and password on this page (no redirect), as the Wix site members dialog does. */
+    login(email: string, password: string, options?: DirectLoginOptions): Promise<MemberAuthResult>;
+    /** Sign up with email and password on this page; logs the new member in unless the site asks for more. */
+    register(email: string, password: string, options?: RegisterOptions): Promise<MemberAuthResult>;
+    /** Complete a login or sign-up that returned `emailVerificationRequired` with the code Wix emailed. */
+    verifyEmail(code: string): Promise<MemberAuthResult>;
+    /** Email a password reset link; the link returns to `redirectUri` (default: the current page). */
+    sendPasswordReset(email: string, redirectUri?: string): Promise<void>;
+
     onLogin: EventEmitter<void, any>;
     onLogout: EventEmitter<void, any>;
 }
@@ -87,7 +103,10 @@ const OAUTH_DATA_KEY = 'wix_members_oauth_data';
 export function provideWixMembersContext(initData: WixMembersInitData): WixMembersContext {
     const wixClientContext: WixClientContext = useGlobalContext(WIX_CLIENT_CONTEXT);
     const wixClient = wixClientContext.client!;
-    const auth = wixClient.auth as unknown as OAuthAuth;
+    const auth = wixClient.auth as unknown as OAuthAuth & DirectLoginAuth;
+    // Tokens set through the client context are kept for later page loads (older contexts lack setTokens).
+    const keepTokens = (tokens: Tokens) =>
+        wixClientContext.setTokens ? wixClientContext.setTokens(tokens) : auth.setTokens(tokens);
 
     const membersContext = registerReactiveGlobalContext(WIX_MEMBERS_CONTEXT, () => {
         const [isLoggedIn, setIsLoggedIn] = createSignal(false);
@@ -150,7 +169,7 @@ export function provideWixMembersContext(initData: WixMembersInitData): WixMembe
             }
 
             const memberTokens = await auth.getMemberTokens(code, state, oauthData);
-            auth.setTokens(memberTokens);
+            keepTokens(memberTokens);
             setAuthCookie('member');
             await refreshMemberState();
             onLogin.emit();
@@ -169,7 +188,7 @@ export function provideWixMembersContext(initData: WixMembersInitData): WixMembe
             }
 
             const visitorTokens = await auth.generateVisitorTokens();
-            auth.setTokens(visitorTokens);
+            keepTokens(visitorTokens);
             setAuthCookie('visitor');
             await refreshMemberState();
             onLogout.emit();
@@ -189,7 +208,19 @@ export function provideWixMembersContext(initData: WixMembersInitData): WixMembe
             updateMemberSignals(true, profile.name, profile.avatar);
         }
 
+        const directLogin = createDirectLogin(auth, async (tokens) => {
+            keepTokens(tokens);
+            setAuthCookie('member');
+            await refreshMemberState();
+            onLogin.emit();
+        });
+
         return {
+            login: directLogin.login,
+            register: directLogin.register,
+            verifyEmail: directLogin.verifyEmail,
+            sendPasswordReset: (email: string, redirectUri?: string) =>
+                directLogin.sendPasswordReset(email, redirectUri ?? window.location.href),
             memberIndicator: {
                 isLoggedIn,
                 isLoading,

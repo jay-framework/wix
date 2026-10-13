@@ -8,6 +8,12 @@ export type {
     ReactiveMemberIndicator,
     AuthCallbackResult,
 } from './contexts/wix-members-context';
+export type {
+    MemberAuthResult,
+    MemberAuthErrorCode,
+    DirectLoginOptions,
+    RegisterOptions,
+} from './utils/direct-login';
 
 export { loginIndicator } from './components/login-indicator';
 export { authCallback } from './components/auth-callback';
