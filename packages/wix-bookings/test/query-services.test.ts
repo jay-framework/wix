@@ -2,11 +2,11 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('@jay-framework/wix-server-client', () => ({
+vi.mock('@jay-framework/wix-server-client/client', () => ({
     wixFetch: vi.fn(),
 }));
 
-import { wixFetch } from '@jay-framework/wix-server-client';
+import { wixFetch } from '@jay-framework/wix-server-client/client';
 import { queryBookingServices } from '../lib/wix-apis/query-services.js';
 
 const mockWixFetch = vi.mocked(wixFetch);

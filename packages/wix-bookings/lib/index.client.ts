@@ -10,3 +10,13 @@ export type {
     BookingFormFieldView,
     CreateBookingOutcome,
 } from './types.js';
+export {
+    WIX_BOOKINGS_CONTEXT,
+    canBookOnline,
+    createWixBookingsContext,
+    type BookingFeatures,
+    type BookingStep,
+    type TimeSlot,
+    type TimeSlotsQuery,
+    type WixBookingsContext,
+} from './contexts/wix-bookings-context.js';

@@ -1,5 +1,5 @@
 import type { WixClient } from '@wix/sdk';
-import { wixFetch } from '@jay-framework/wix-server-client';
+import { wixFetch } from '@jay-framework/wix-server-client/client';
 
 const AVAILABILITY_PAGE_SIZE = 100;
 
