@@ -60,6 +60,8 @@ describe('bookings context', () => {
         const context = createWixBookingsContext({} as never, config);
         expect(await context.serviceBySlug('east-basic')).toEqual({ id: 's1', type: 'CLASS' });
         expect(calls[0].body.query.filter).toEqual({ 'supportedSlugs.name': 'east-basic', hidden: false });
+        expect(await context.serviceById('s1')).toEqual({ id: 's1', type: 'CLASS' });
+        expect(calls.pop()!.body.query.filter).toEqual({ _id: 's1' });
         const slots = await context.timeSlots({
             serviceIds: ['s1'], timeZone: 'Asia/Singapore', fromLocalDate: '2026-10-14T00:00:00', toLocalDate: '2026-10-31T23:59:59', maxSlotsPerDay: 1,
         });

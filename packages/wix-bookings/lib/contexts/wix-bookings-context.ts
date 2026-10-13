@@ -3,7 +3,7 @@ import type { WixClient } from '@wix/sdk';
 import { WIX_CLIENT_CONTEXT, wixFetch, type WixClientContext } from '@jay-framework/wix-server-client/client';
 import type { WixBookingsConfig } from '../config-loader.js';
 import type { BookingServiceType } from '../types.js';
-import type { RawBookingService } from '../wix-apis/query-services.js';
+import { getBookingServiceById, type RawBookingService } from '../wix-apis/query-services.js';
 import { createWixBookingsService } from '../services/create-wix-bookings-service.js';
 import type { WixBookingsService } from '../services/wix-bookings-service-marker.js';
 
@@ -69,6 +69,8 @@ export interface WixBookingsContext {
     timeZone(): Promise<string>;
     /** A bookable service by one of its URL slugs (`/booking-calendar/<slug>`, `/service-page/<slug>`). */
     serviceBySlug(slug: string): Promise<RawBookingService | undefined>;
+    /** A service by its id (the booking form gets the id of the slot chosen on the calendar). */
+    serviceById(id: string): Promise<RawBookingService | undefined>;
     /** Class sessions (and appointment openings) in a local date range, as Wix's calendar queries them. */
     timeSlots(query: TimeSlotsQuery): Promise<TimeSlot[]>;
     /** Create the booking and continue to checkout (or confirm a free booking), as the server action does. */
@@ -111,6 +113,9 @@ export function createWixBookingsContext(wixClient: WixClient, config: WixBookin
                 body: { query: { filter: { 'supportedSlugs.name': slug, hidden: false }, paging: { limit: 1 } } },
             });
             return res.services?.[0];
+        },
+        serviceById(id) {
+            return getBookingServiceById(wixClient, id);
         },
         async timeSlots(query) {
             const res = await wixFetch<{ timeSlots?: TimeSlot[] }>(wixClient, '/_api/service-availability/v2/time-slots/event', {
