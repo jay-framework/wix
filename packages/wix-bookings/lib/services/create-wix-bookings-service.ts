@@ -114,12 +114,11 @@ export function createWixBookingsService(wixClient: WixClient, config: WixBookin
                 endDate: input.slot.localEndDate,
                 timezone: input.timezone,
                 location: { locationType: 'OWNER_BUSINESS' },
-                resourceSelections: [
-                    {
-                        resourceTypeId: config.staffResourceTypeId,
-                        selectionMethod: 'ANY_RESOURCE',
-                    },
-                ],
+                // Any staff member of the configured staff resource type; without one, the slot's own (a class
+                // session names its staff; Wix rejects an empty resource type id).
+                ...(config.staffResourceTypeId
+                    ? { resourceSelections: [{ resourceTypeId: config.staffResourceTypeId, selectionMethod: 'ANY_RESOURCE' }] }
+                    : {}),
             };
 
             if (input.serviceType === 'APPOINTMENT') {
