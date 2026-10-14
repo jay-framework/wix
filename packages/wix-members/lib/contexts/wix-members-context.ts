@@ -213,7 +213,7 @@ export function provideWixMembersContext(initData: WixMembersInitData): WixMembe
             setAuthCookie('member');
             await refreshMemberState();
             onLogin.emit();
-        });
+        }, { redirectUri: typeof window === 'undefined' ? undefined : `${window.location.origin}/` });
 
         return {
             login: directLogin.login,
