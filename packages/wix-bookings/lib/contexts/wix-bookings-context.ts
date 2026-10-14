@@ -1,6 +1,6 @@
 import { createJayContext, registerGlobalContext, useGlobalContext } from '@jay-framework/runtime';
 import type { WixClient } from '@wix/sdk';
-import { WIX_CLIENT_CONTEXT, wixFetch, type WixClientContext } from '@jay-framework/wix-server-client/client';
+import { WIX_CLIENT_CONTEXT, WixApiError, wixFetch, type WixClientContext } from '@jay-framework/wix-server-client/client';
 import type { WixBookingsConfig } from '../config-loader.js';
 import type { BookingServiceType } from '../types.js';
 import { getBookingServiceById, type RawBookingService } from '../wix-apis/query-services.js';
@@ -75,6 +75,26 @@ export interface WixBookingsContext {
     timeSlots(query: TimeSlotsQuery): Promise<TimeSlot[]>;
     /** Create the booking and continue to checkout (or confirm a free booking), as the server action does. */
     createBooking: WixBookingsService['createBooking'];
+    /**
+     * A placed order (a confirmed booking's `orderId`) as its buyer reads it, with the texts Wix's thank-you page
+     * shows; undefined for anyone else.
+     */
+    orderById(orderId: string): Promise<BookingOrder | undefined>;
+}
+
+/** The parts of an eCommerce order Wix's thank-you page shows. */
+export interface BookingOrder {
+    id: string;
+    number?: string;
+    billingInfo?: { contactDetails?: { firstName?: string; lastName?: string } };
+    buyerInfo?: { email?: string };
+    lineItems?: {
+        productName?: { original?: string; translated?: string };
+        descriptionLines?: { plainText?: { original?: string; translated?: string } }[];
+        image?: { url?: string };
+        price?: { formattedAmount?: string };
+    }[];
+    priceSummary?: Record<string, { formattedAmount?: string } | undefined>;
 }
 
 export const WIX_BOOKINGS_CONTEXT = createJayContext<WixBookingsContext>('wix:bookings');
@@ -134,6 +154,15 @@ export function createWixBookingsContext(wixClient: WixClient, config: WixBookin
             return res.timeSlots ?? [];
         },
         createBooking: service.createBooking,
+        async orderById(orderId) {
+            try {
+                const res = await wixFetch<{ order?: BookingOrder }>(wixClient, `/ecom/v1/orders/${encodeURIComponent(orderId)}`);
+                return res.order;
+            } catch (error) {
+                if (error instanceof WixApiError) return undefined; // not this visitor's or member's order
+                throw error;
+            }
+        },
     };
 }
 

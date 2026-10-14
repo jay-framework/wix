@@ -15,6 +15,7 @@ export {
     canBookOnline,
     createWixBookingsContext,
     type BookingFeatures,
+    type BookingOrder,
     type BookingStep,
     type TimeSlot,
     type TimeSlotsQuery,

@@ -9,7 +9,9 @@ vi.mock('@jay-framework/wix-server-client/client', () => ({
     WixApiError: class extends Error {},
     wixFetch: vi.fn(async (_client: unknown, path: string, options: { body?: any } = {}) => {
         calls.push({ path, body: options.body });
-        return responses[path.split('?')[0]] ?? {};
+        const response = responses[path.split('?')[0]];
+        if (response instanceof Error) throw response;
+        return response ?? {};
     }),
 }));
 
@@ -70,6 +72,15 @@ describe('bookings context', () => {
             serviceIds: ['s1'], timeZone: 'Asia/Singapore', fromLocalDate: '2026-10-14T00:00:00', toLocalDate: '2026-10-31T23:59:59',
             includeNonBookable: true, maxSlotsPerDay: 1, eventFilter: {}, cursorPaging: { limit: 1000 },
         });
+    });
+
+    it("reads a placed order for its buyer, and nothing for anyone else", async () => {
+        const { WixApiError } = await import('@jay-framework/wix-server-client/client');
+        responses['/ecom/v1/orders/o1'] = { order: { id: 'o1', number: '10001' } };
+        responses['/ecom/v1/orders/o2'] = new (WixApiError as unknown as new (m: string) => Error)('Forbidden');
+        const context = createWixBookingsContext({} as never, config);
+        expect(await context.orderById('o1')).toEqual({ id: 'o1', number: '10001' });
+        expect(await context.orderById('o2')).toBeUndefined();
     });
 
     it('defaults the bookings app id to the Wix Bookings app', () => {
