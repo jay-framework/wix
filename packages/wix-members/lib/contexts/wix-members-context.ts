@@ -10,6 +10,7 @@ import { Tokens } from '@wix/sdk';
 import { WIX_CLIENT_CONTEXT, WixClientContext } from '@jay-framework/wix-server-client';
 import { setAuthCookie } from '../utils/auth-cookie.js';
 import { loadMemberProfile } from '../utils/member-profile.js';
+import { memberAccessToken } from '../utils/member-access-token.js';
 import {
     createDirectLogin,
     type DirectLoginAuth,
@@ -40,6 +41,7 @@ interface OAuthAuth {
     setTokens(tokens: Tokens): void;
     getTokens(): Tokens;
     loggedIn(): boolean;
+    getAuthHeaders(): Promise<{ headers: { Authorization: string } }>;
 }
 
 interface OauthData {
@@ -78,6 +80,11 @@ export interface WixMembersContext {
     handleAuthCallback(url?: string): Promise<AuthCallbackResult>;
     logout(): Promise<void>;
     refreshMemberState(): Promise<void>;
+    /**
+     * The logged-in member's access token, renewed when it expired, or undefined for a visitor. For a backend the
+     * site calls on the member's behalf (e.g. to serve members-only pages), which checks it with Wix.
+     */
+    memberAccessToken(): Promise<string | undefined>;
 
     /** Log in with email and password on this page (no redirect), as the Wix site members dialog does. */
     login(email: string, password: string, options?: DirectLoginOptions): Promise<MemberAuthResult>;
@@ -231,6 +238,7 @@ export function provideWixMembersContext(initData: WixMembersInitData): WixMembe
             handleAuthCallback,
             logout,
             refreshMemberState,
+            memberAccessToken: () => memberAccessToken(auth, keepTokens),
             onLogin,
             onLogout,
         };
