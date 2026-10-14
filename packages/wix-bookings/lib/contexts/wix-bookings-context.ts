@@ -80,6 +80,11 @@ export interface WixBookingsContext {
      * shows; undefined for anyone else.
      */
     orderById(orderId: string): Promise<BookingOrder | undefined>;
+    /**
+     * The visitor's or member's own confirmed and pending bookings of a service (Wix's booking form asks "Book this
+     * again?" when there is one).
+     */
+    serviceBookings(serviceId: string): Promise<{ id?: string; startDate?: string; status?: string }[]>;
 }
 
 /** The parts of an eCommerce order Wix's thank-you page shows. */
@@ -154,6 +159,20 @@ export function createWixBookingsContext(wixClient: WixClient, config: WixBookin
             return res.timeSlots ?? [];
         },
         createBooking: service.createBooking,
+        async serviceBookings(serviceId) {
+            const res = await wixFetch<{ extendedBookings?: { booking?: { id?: string; startDate?: string; status?: string } }[] }>(
+                wixClient,
+                '/_api/bookings-reader/v2/extended-bookings/query',
+                {
+                    method: 'POST',
+                    body: {
+                        query: { filter: { 'bookedEntity.slot.serviceId': serviceId, status: { $in: ['CONFIRMED', 'PENDING'] } }, cursorPaging: { limit: 100 } },
+                        withBookingAllowedActions: false,
+                    },
+                },
+            ).catch(() => ({ extendedBookings: [] }));
+            return (res.extendedBookings ?? []).map((e) => e.booking ?? {}).filter((b) => b.id || b.startDate);
+        },
         async orderById(orderId) {
             try {
                 const res = await wixFetch<{ order?: BookingOrder }>(wixClient, `/ecom/v1/orders/${encodeURIComponent(orderId)}`);

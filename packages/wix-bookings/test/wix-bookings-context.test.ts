@@ -83,6 +83,14 @@ describe('bookings context', () => {
         expect(await context.orderById('o2')).toBeUndefined();
     });
 
+    it("lists the visitor's own confirmed and pending bookings of a service", async () => {
+        calls.length = 0;
+        responses['/_api/bookings-reader/v2/extended-bookings/query'] = { extendedBookings: [{ booking: { id: 'b1', startDate: '2026-10-18T19:00:00Z', status: 'CONFIRMED' } }] };
+        const context = createWixBookingsContext({} as never, config);
+        expect(await context.serviceBookings('s1')).toEqual([{ id: 'b1', startDate: '2026-10-18T19:00:00Z', status: 'CONFIRMED' }]);
+        expect(calls[0].body.query.filter).toEqual({ 'bookedEntity.slot.serviceId': 's1', status: { $in: ['CONFIRMED', 'PENDING'] } });
+    });
+
     it('defaults the bookings app id to the Wix Bookings app', () => {
         expect(loadWixBookingsConfig('/nonexistent').bookingAppId).toBe('13d21c63-b5ec-5912-8397-c3a5ddb27a97');
     });
