@@ -153,8 +153,8 @@ export function createWixBookingsService(wixClient: WixClient, config: WixBookin
                 return { outcome: 'redirect', redirectUrl };
             }
 
-            await placeBookingOrder(wixClient, cartId);
-            return { outcome: 'confirmed' };
+            const { orderId } = await placeBookingOrder(wixClient, cartId);
+            return { outcome: 'confirmed', ...(orderId ? { orderId } : {}) };
         },
     };
 }

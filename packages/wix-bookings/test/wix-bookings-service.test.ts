@@ -87,10 +87,12 @@ describe('WixBookingsService.createBooking', () => {
         mockCalculateBookingCart.mockResolvedValue({
             summary: { priceSummary: { total: { amount: '0' } } },
         });
+        mockPlaceBookingOrder.mockResolvedValue({ orderId: 'order-1' });
         const service = provideWixBookingsService(mockClient, config);
 
         await expect(service.createBooking(bookingInput)).resolves.toEqual({
             outcome: 'confirmed',
+            orderId: 'order-1',
         });
         expect(mockPlaceBookingOrder).toHaveBeenCalledWith(mockClient, 'cart-1');
         expect(mockCreateBookingRedirectSession).not.toHaveBeenCalled();
