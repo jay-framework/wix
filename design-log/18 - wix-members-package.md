@@ -1086,3 +1086,7 @@ Added configuration and validation for the auth callback URL:
 - **Agent-kit guide**: Created `agent-kit/plugin/wix-members-setup.md` documenting setup steps, template examples for all three contracts, and the OAuth flow.
 
 Deviation from original design: The original design did not specify a config file — the callback URL was hardcoded as a default with an optional override via `WixMembersInitData`. This made it impossible to validate during `jay-stack setup` and easy to forget creating the callback page.
+
+### Direct login on the page (2026-10-15)
+
+On-page login and sign-up are back, **alongside** the redirect flow above: migrated Wix sites must keep Wix's own members dialog. The redirect stays the default, and Google and Facebook still use it. The member's token exchange goes through a same-origin redirect frame, because `getMemberTokensForDirectLogin` doesn't complete with bare-host allowed domains, and member tokens are kept across page loads. Design and results: [DL 34](./34%20-%20direct%20member%20login.md).
