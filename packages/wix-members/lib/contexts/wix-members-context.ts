@@ -11,6 +11,7 @@ import { WIX_CLIENT_CONTEXT, WixClientContext } from '@jay-framework/wix-server-
 import { setAuthCookie } from '../utils/auth-cookie.js';
 import { loadMemberProfile } from '../utils/member-profile.js';
 import { memberAccessToken } from '../utils/member-access-token.js';
+import { hostedLoginOptions, type SocialLoginProvider } from '../utils/hosted-login.js';
 import {
     createDirectLogin,
     type DirectLoginAuth,
@@ -29,7 +30,7 @@ interface OAuthAuth {
     generateOAuthData(redirectUri: string, originalUri?: string): OauthData;
     getAuthUrl(
         oauthData: OauthData,
-        opts?: { prompt?: 'login' | 'none'; responseMode?: 'fragment' | 'web_message' | 'query' },
+        opts?: { prompt?: 'login' | 'none'; responseMode?: 'fragment' | 'web_message' | 'query'; idp?: SocialLoginProvider },
     ): Promise<{ authUrl: string }>;
     getMemberTokens(code: string, state: string, oauthData: OauthData): Promise<Tokens>;
     parseFromUrl(
@@ -76,7 +77,8 @@ export interface AuthCallbackResult {
 export interface WixMembersContext {
     memberIndicator: ReactiveMemberIndicator;
 
-    redirectToLogin(callbackUrl?: string): Promise<string>;
+    /** The Wix-hosted login's URL; with `idp`, straight to that provider's sign-in (Google, Facebook). */
+    redirectToLogin(callbackUrl?: string, options?: { idp?: SocialLoginProvider }): Promise<string>;
     handleAuthCallback(url?: string): Promise<AuthCallbackResult>;
     logout(): Promise<void>;
     refreshMemberState(): Promise<void>;
@@ -139,16 +141,13 @@ export function provideWixMembersContext(initData: WixMembersInitData): WixMembe
             return window.location.origin + url;
         }
 
-        async function redirectToLogin(callbackUrl?: string): Promise<string> {
+        async function redirectToLogin(callbackUrl?: string, options?: { idp?: SocialLoginProvider }): Promise<string> {
             const redirectUri = callbackUrl || getCallbackUrl();
             const oauthData = auth.generateOAuthData(redirectUri, window.location.href);
 
             sessionStorage.setItem(OAUTH_DATA_KEY, JSON.stringify(oauthData));
 
-            const { authUrl } = await auth.getAuthUrl(oauthData, {
-                prompt: 'login',
-                responseMode: 'query',
-            });
+            const { authUrl } = await auth.getAuthUrl(oauthData, hostedLoginOptions(options?.idp));
 
             return authUrl;
         }
