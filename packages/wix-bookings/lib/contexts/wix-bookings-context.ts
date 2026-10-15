@@ -85,6 +85,8 @@ export interface WixBookingsContext {
      * again?" when there is one).
      */
     serviceBookings(serviceId: string): Promise<{ id?: string; startDate?: string; status?: string }[]>;
+    /** One of the visitor's or member's own bookings (an order's line item names it), with its start and end. */
+    bookingById(bookingId: string): Promise<{ id?: string; startDate?: string; endDate?: string; status?: string } | undefined>;
 }
 
 /** The parts of an eCommerce order Wix's thank-you page shows. */
@@ -95,6 +97,8 @@ export interface BookingOrder {
     buyerInfo?: { email?: string };
     lineItems?: {
         productName?: { original?: string; translated?: string };
+        /** For a booking: the booking's id. */
+        catalogReference?: { catalogItemId?: string; appId?: string };
         descriptionLines?: { plainText?: { original?: string; translated?: string } }[];
         image?: { url?: string };
         price?: { formattedAmount?: string };
@@ -119,6 +123,15 @@ export function createWixBookingsContext(wixClient: WixClient, config: WixBookin
             '/_api/bookings-settings/v2/settings?fields=FEATURES&fields=SITE_PROPERTIES',
         ).then((res) => res.bookingsSettings));
     const service = createWixBookingsService(wixClient, config);
+    /** The visitor's or member's own bookings matching `filter` (Bookings Reader). */
+    const ownBookings = async (filter: Record<string, unknown>) => {
+        const res = await wixFetch<{ extendedBookings?: { booking?: { id?: string; startDate?: string; endDate?: string; status?: string } }[] }>(
+            wixClient,
+            '/_api/bookings-reader/v2/extended-bookings/query',
+            { method: 'POST', body: { query: { filter, cursorPaging: { limit: 100 } }, withBookingAllowedActions: false } },
+        ).catch(() => ({ extendedBookings: [] }));
+        return (res.extendedBookings ?? []).map((e) => e.booking ?? {});
+    };
     return {
         async features() {
             const f = (await readSettings())?.features ?? {};
@@ -160,18 +173,10 @@ export function createWixBookingsContext(wixClient: WixClient, config: WixBookin
         },
         createBooking: service.createBooking,
         async serviceBookings(serviceId) {
-            const res = await wixFetch<{ extendedBookings?: { booking?: { id?: string; startDate?: string; status?: string } }[] }>(
-                wixClient,
-                '/_api/bookings-reader/v2/extended-bookings/query',
-                {
-                    method: 'POST',
-                    body: {
-                        query: { filter: { 'bookedEntity.slot.serviceId': serviceId, status: { $in: ['CONFIRMED', 'PENDING'] } }, cursorPaging: { limit: 100 } },
-                        withBookingAllowedActions: false,
-                    },
-                },
-            ).catch(() => ({ extendedBookings: [] }));
-            return (res.extendedBookings ?? []).map((e) => e.booking ?? {}).filter((b) => b.id || b.startDate);
+            return (await ownBookings({ 'bookedEntity.slot.serviceId': serviceId, status: { $in: ['CONFIRMED', 'PENDING'] } })).filter((b) => b.id || b.startDate);
+        },
+        async bookingById(bookingId) {
+            return (await ownBookings({ id: bookingId }))[0];
         },
         async orderById(orderId) {
             try {

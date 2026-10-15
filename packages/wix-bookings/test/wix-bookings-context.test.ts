@@ -91,6 +91,14 @@ describe('bookings context', () => {
         expect(calls[0].body.query.filter).toEqual({ 'bookedEntity.slot.serviceId': 's1', status: { $in: ['CONFIRMED', 'PENDING'] } });
     });
 
+    it("reads one of the visitor's own bookings by id", async () => {
+        calls.length = 0;
+        responses['/_api/bookings-reader/v2/extended-bookings/query'] = { extendedBookings: [{ booking: { id: 'b2', startDate: '2026-10-25T19:00:00Z', endDate: '2026-10-25T20:00:00Z' } }] };
+        const context = createWixBookingsContext({} as never, config);
+        expect(await context.bookingById('b2')).toEqual({ id: 'b2', startDate: '2026-10-25T19:00:00Z', endDate: '2026-10-25T20:00:00Z' });
+        expect(calls[0].body.query.filter).toEqual({ id: 'b2' });
+    });
+
     it('defaults the bookings app id to the Wix Bookings app', () => {
         expect(loadWixBookingsConfig('/nonexistent').bookingAppId).toBe('13d21c63-b5ec-5912-8397-c3a5ddb27a97');
     });
