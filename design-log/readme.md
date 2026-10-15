@@ -39,6 +39,7 @@ Design documentation for the Jay Framework Wix integration packages.
 | 31  | [Wix TXT Files and Sitemap Sync](./31%20-%20wix%20txt%20files%20and%20sitemap%20sync.md)             | Implemented     |
 | 32  | [Runtime/Tools Entry Split for Plugins](./32%20-%20runtime-tools%20entry%20split%20for%20plugins.md) | Implemented     |
 | 33  | [Wix Pro Gallery Plugin](./33%20-%20wix-pro-gallery.md)                                              | Implemented     |
+| 35  | [wix-bookings in the Browser](./35%20-%20wix-bookings%20browser%20context.md)                        | Implemented     |
 
 ## Packages Covered
 
