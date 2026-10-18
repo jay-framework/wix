@@ -180,3 +180,7 @@ See `exploration/wix-app-secret/` for the validation script.
 
 - **Discriminated union vs. optional fields**: Discriminated union (`kind` field) is more type-safe and makes the branching explicit. Slightly more verbose in the config loader, but prevents impossible states.
 - **Keeping oauthStrategy separate vs. inferring from appId**: Inferring reduces config boilerplate for `appStrategy` users, but introduces an implicit relationship. Explicit keeps things predictable.
+
+## Follow-up: Visitor-Only Server Mode (2026-10-15)
+
+A config with **neither** `apiKeyStrategy` nor `appStrategy` is now accepted. The server client then uses OAuth visitor tokens of `oauthStrategy.clientId`, so a site that reads only public data at build time ships with no secret, for example a static export. See [DL 34](./34%20-%20direct%20member%20login.md).
