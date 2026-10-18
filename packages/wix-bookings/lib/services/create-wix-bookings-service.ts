@@ -49,7 +49,10 @@ async function resolvePaidCheckoutRedirectUrl(
 }
 
 /** The bookings operations on a Wix client: the server's (API key) or a visitor's in the browser. */
-export function createWixBookingsService(wixClient: WixClient, config: WixBookingsConfig): WixBookingsService {
+export function createWixBookingsService(
+    wixClient: WixClient,
+    config: WixBookingsConfig,
+): WixBookingsService {
     return {
         async listServices() {
             const items = await queryBookingServices(wixClient, config.bookingAppId);
@@ -117,7 +120,14 @@ export function createWixBookingsService(wixClient: WixClient, config: WixBookin
                 // Any staff member of the configured staff resource type; without one, the slot's own (a class
                 // session names its staff; Wix rejects an empty resource type id).
                 ...(config.staffResourceTypeId
-                    ? { resourceSelections: [{ resourceTypeId: config.staffResourceTypeId, selectionMethod: 'ANY_RESOURCE' }] }
+                    ? {
+                          resourceSelections: [
+                              {
+                                  resourceTypeId: config.staffResourceTypeId,
+                                  selectionMethod: 'ANY_RESOURCE',
+                              },
+                          ],
+                      }
                     : {}),
             };
 

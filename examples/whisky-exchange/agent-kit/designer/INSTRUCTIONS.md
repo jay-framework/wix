@@ -143,4 +143,5 @@ jay-stack dev
 | File | Plugin | Description |
 | --- | --- | --- |
 | [store-configuration.md](store-configuration.md) | wix-stores-v1 | Optional project config for **Catalog V1** stores (`@jay-framework/wix-stores-v1`). For Catalog V3, use `config/.wix-stores.yaml` with `@jay-framework/wix-stores` instead. |
+| [a11y-patterns.md](a11y-patterns.md) | a11y-validator | Common accessibility patterns and how to fix validation errors. Each section corresponds to an a11y-validator rule. |
 | [wix-media.md](wix-media.md) | wix-media | How to use images, video, documents, and audio from Wix Media Manager in jay-html templates. |

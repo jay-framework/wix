@@ -142,4 +142,5 @@ jay-stack dev
 
 | File | Plugin | Description |
 | --- | --- | --- |
+| [a11y-patterns.md](a11y-patterns.md) | a11y-validator | Common accessibility patterns and how to fix validation errors. Each section corresponds to an a11y-validator rule. |
 | [wix-media.md](wix-media.md) | wix-media | How to use images, video, documents, and audio from Wix Media Manager in jay-html templates. |

@@ -144,4 +144,5 @@ jay-stack dev
 | --- | --- | --- |
 | [related-products.md](related-products.md) | wix-stores | Show a row of product cards at the bottom of a product detail page — same-category siblings, excluding the product being viewed. |
 | [store-configuration.md](store-configuration.md) | wix-stores | Project config for **Catalog V3** stores (`@jay-framework/wix-stores`). For Catalog V1, use `config/.wix-stores-v1.yaml` with `@jay-framework/wix-stores-v1`. |
+| [a11y-patterns.md](a11y-patterns.md) | a11y-validator | Common accessibility patterns and how to fix validation errors. Each section corresponds to an a11y-validator rule. |
 | [wix-media.md](wix-media.md) | wix-media | How to use images, video, documents, and audio from Wix Media Manager in jay-html templates. |

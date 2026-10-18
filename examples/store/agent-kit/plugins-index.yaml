@@ -63,6 +63,13 @@ plugins:
         description: Category list listing the categories
         type: static
         path: ./../../packages/wix-stores/dist/contracts/category-list.jay-contract
+      - name: product-page
+        description: Full product detail page with variants, options, media gallery, and
+          add-to-cart. Use for individual product pages.
+        type: dynamic
+        path: ./agent-kit/materialized-contracts/wix-stores/product-page.jay-contract
+        metadata:
+          extendedFieldCount: 0
     actions:
       - name: searchProducts
         description: Search products in the Wix Store catalog using Catalog V3. Supports

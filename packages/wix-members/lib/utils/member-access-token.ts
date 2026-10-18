@@ -12,7 +12,10 @@ export interface AccessTokenAuth {
  * The logged-in member's access token, renewed when it expired, or undefined for a visitor. A renewed token is
  * handed to `keep` so later page loads use it.
  */
-export async function memberAccessToken(auth: AccessTokenAuth, keep: (tokens: Tokens) => void): Promise<string | undefined> {
+export async function memberAccessToken(
+    auth: AccessTokenAuth,
+    keep: (tokens: Tokens) => void,
+): Promise<string | undefined> {
     if (!auth.loggedIn()) return undefined;
     const before = auth.getTokens().accessToken?.value;
     const { headers } = await auth.getAuthHeaders();

@@ -49,6 +49,7 @@ A: It's the member's own OAuth access token, already held by the page. The backe
 ## Design
 
 **wix-members**
+
 - `lib/utils/direct-login.ts`, `createDirectLogin(auth, onMemberTokens, { redirectUri?, frame? })`, providing:
   - `login(email, password, { captchaToken? })` and `register(email, password, { publicProfile?, nickname?, captchaToken? })`;
   - `verifyEmail(code)` and `sendPasswordReset(email, redirectUri)`.
@@ -60,6 +61,7 @@ A: It's the member's own OAuth access token, already held by the page. The backe
 - `redirectToLogin(callbackUrl?, { idp?: 'google' | 'facebook' })` (`lib/utils/hosted-login.ts`): with a provider, the hosted login goes straight to its sign-in, using the SDK's well-known IdP connections.
 
 **wix-server-client**
+
 - `WixClientContext.setTokens(tokens)` sets the tokens and stores them, per OAuth client, for later page loads. `clearStoredTokens(oauthClientId)` clears that client's tokens.
 - **Visitor-only server mode:** with neither `apiKeyStrategy` nor `appStrategy`, `config.auth.kind` is `'visitor'`, and the server client uses `OAuthStrategy({ clientId: oauthStrategy.clientId })`.
 
@@ -92,11 +94,11 @@ if (result.status === 'failure' && result.errorCode === 'invalidPassword') showF
 
 ## Trade-offs
 
-| Decision | Benefit | Cost |
-| --- | --- | --- |
-| On-page login alongside the redirect | Migrated sites keep Wix's own dialog | The site handles CAPTCHA and errors (with the codes provided) |
-| Same-origin frame for the code | Works with the documented allowed-domains format | Briefly loads `/` in a hidden frame |
-| Visitor-only server mode | A static export ships without secrets | Server code can read public data only |
+| Decision                             | Benefit                                          | Cost                                                          |
+| ------------------------------------ | ------------------------------------------------ | ------------------------------------------------------------- |
+| On-page login alongside the redirect | Migrated sites keep Wix's own dialog             | The site handles CAPTCHA and errors (with the codes provided) |
+| Same-origin frame for the code       | Works with the documented allowed-domains format | Briefly loads `/` in a hidden frame                           |
+| Visitor-only server mode             | A static export ships without secrets            | Server code can read public data only                         |
 
 ## Verification Criteria
 

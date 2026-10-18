@@ -30,7 +30,11 @@ interface OAuthAuth {
     generateOAuthData(redirectUri: string, originalUri?: string): OauthData;
     getAuthUrl(
         oauthData: OauthData,
-        opts?: { prompt?: 'login' | 'none'; responseMode?: 'fragment' | 'web_message' | 'query'; idp?: SocialLoginProvider },
+        opts?: {
+            prompt?: 'login' | 'none';
+            responseMode?: 'fragment' | 'web_message' | 'query';
+            idp?: SocialLoginProvider;
+        },
     ): Promise<{ authUrl: string }>;
     getMemberTokens(code: string, state: string, oauthData: OauthData): Promise<Tokens>;
     parseFromUrl(
@@ -141,7 +145,10 @@ export function provideWixMembersContext(initData: WixMembersInitData): WixMembe
             return window.location.origin + url;
         }
 
-        async function redirectToLogin(callbackUrl?: string, options?: { idp?: SocialLoginProvider }): Promise<string> {
+        async function redirectToLogin(
+            callbackUrl?: string,
+            options?: { idp?: SocialLoginProvider },
+        ): Promise<string> {
             const redirectUri = callbackUrl || getCallbackUrl();
             const oauthData = auth.generateOAuthData(redirectUri, window.location.href);
 
@@ -214,12 +221,19 @@ export function provideWixMembersContext(initData: WixMembersInitData): WixMembe
             updateMemberSignals(true, profile.name, profile.avatar);
         }
 
-        const directLogin = createDirectLogin(auth, async (tokens) => {
-            keepTokens(tokens);
-            setAuthCookie('member');
-            await refreshMemberState();
-            onLogin.emit();
-        }, { redirectUri: typeof window === 'undefined' ? undefined : `${window.location.origin}/` });
+        const directLogin = createDirectLogin(
+            auth,
+            async (tokens) => {
+                keepTokens(tokens);
+                setAuthCookie('member');
+                await refreshMemberState();
+                onLogin.emit();
+            },
+            {
+                redirectUri:
+                    typeof window === 'undefined' ? undefined : `${window.location.origin}/`,
+            },
+        );
 
         return {
             login: directLogin.login,

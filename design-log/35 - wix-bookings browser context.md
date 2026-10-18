@@ -40,17 +40,21 @@ A: `undefined`: a `WixApiError` maps to "not your order". The page then shows Wi
 
 ```ts
 interface WixBookingsContext {
-    features(): Promise<BookingFeatures>;          // plan: groups, appointments, courses, payments (one settings call)
-    timeZone(): Promise<string>;                   // siteProperties.timeZone, the same call
-    serviceBySlug(slug: string): Promise<RawBookingService | undefined>;
-    serviceById(id: string): Promise<RawBookingService | undefined>;
-    timeSlots(query: TimeSlotsQuery): Promise<TimeSlot[]>;     // /_api/service-availability/v2/time-slots/event
-    createBooking: WixBookingsService['createBooking'];        // confirmed → { orderId } | redirect → checkout URL
-    orderById(orderId: string): Promise<BookingOrder | undefined>;
-    serviceBookings(serviceId: string): Promise<{ id?; startDate?; status? }[]>;   // CONFIRMED + PENDING
-    bookingById(bookingId: string): Promise<{ id?; startDate?; endDate?; status? } | undefined>;
+  features(): Promise<BookingFeatures>; // plan: groups, appointments, courses, payments (one settings call)
+  timeZone(): Promise<string>; // siteProperties.timeZone, the same call
+  serviceBySlug(slug: string): Promise<RawBookingService | undefined>;
+  serviceById(id: string): Promise<RawBookingService | undefined>;
+  timeSlots(query: TimeSlotsQuery): Promise<TimeSlot[]>; // /_api/service-availability/v2/time-slots/event
+  createBooking: WixBookingsService['createBooking']; // confirmed → { orderId } | redirect → checkout URL
+  orderById(orderId: string): Promise<BookingOrder | undefined>;
+  serviceBookings(serviceId: string): Promise<{ id?; startDate?; status? }[]>; // CONFIRMED + PENDING
+  bookingById(bookingId: string): Promise<{ id?; startDate?; endDate?; status? } | undefined>;
 }
-export function canBookOnline(features: BookingFeatures, type: BookingServiceType, step: BookingStep): boolean;
+export function canBookOnline(
+  features: BookingFeatures,
+  type: BookingServiceType,
+  step: BookingStep,
+): boolean;
 ```
 
 - **Service flow:** `createWixBookingsService` moves out of the server service into `lib/services/create-wix-bookings-service.ts`, shared by both sides.
@@ -62,10 +66,19 @@ export function canBookOnline(features: BookingFeatures, type: BookingServiceTyp
 
 ```ts
 const bookings = useGlobalContext(WIX_BOOKINGS_CONTEXT);
-if (!canBookOnline(await bookings.features(), service.type, 'calendar')) return showNotAvailableDialog();
-const result = await bookings.createBooking({ serviceId, serviceType, slot, formValues, timezone, siteOrigin });
-if (result.outcome === 'redirect') location.href = result.redirectUrl;              // Wix checkout
-else location.href = `/booking-confirmation?orderId=${result.orderId}`;            // Wix's thank-you page
+if (!canBookOnline(await bookings.features(), service.type, 'calendar'))
+  return showNotAvailableDialog();
+const result = await bookings.createBooking({
+  serviceId,
+  serviceType,
+  slot,
+  formValues,
+  timezone,
+  siteOrigin,
+});
+if (result.outcome === 'redirect')
+  location.href = result.redirectUrl; // Wix checkout
+else location.href = `/booking-confirmation?orderId=${result.orderId}`; // Wix's thank-you page
 ```
 
 ✅ With no `staffResourceTypeId`, a class booking is created: no `resourceSelections` is sent.
@@ -73,11 +86,11 @@ else location.href = `/booking-confirmation?orderId=${result.orderId}`;         
 
 ## Trade-offs
 
-| Decision | Benefit | Cost |
-| --- | --- | --- |
+| Decision                                  | Benefit                                         | Cost                                                     |
+| ----------------------------------------- | ----------------------------------------------- | -------------------------------------------------------- |
 | Browser context over the visitor's client | Works without a Jay server, as Wix's widgets do | The plan check runs in the page, as in Wix's own widgets |
-| One shared service flow | Server and browser book the same way | Its API wrappers must load in both environments |
-| `orderById` maps errors to `undefined` | Non-buyers get Wix's empty thank-you page | A network error looks like "not your order" |
+| One shared service flow                   | Server and browser book the same way            | Its API wrappers must load in both environments          |
+| `orderById` maps errors to `undefined`    | Non-buyers get Wix's empty thank-you page       | A network error looks like "not your order"              |
 
 ## Verification Criteria
 
@@ -107,6 +120,6 @@ else location.href = `/booking-confirmation?orderId=${result.orderId}`;         
 
 ## Review Follow-up
 
-Code review of PR #34 found that `readSettings` cached a *rejected* settings promise: one transient failure of the `bookings-settings` call made every later `features()` and `timeZone()` reject for the page's lifetime, and `timeZone()`'s intended `'UTC'` fallback (`?? 'UTC'`) never ran on a rejection. `readSettings` now catches the failure, resolves to `undefined` (so `features()` reads all-false and `timeZone()` falls back to `'UTC'`), and clears the cache so a later call retries. Covered by a new test in `wix-bookings-context.test.ts` (**37/37 passing**).
+Code review of PR #34 found that `readSettings` cached a _rejected_ settings promise: one transient failure of the `bookings-settings` call made every later `features()` and `timeZone()` reject for the page's lifetime, and `timeZone()`'s intended `'UTC'` fallback (`?? 'UTC'`) never ran on a rejection. `readSettings` now catches the failure, resolves to `undefined` (so `features()` reads all-false and `timeZone()` falls back to `'UTC'`), and clears the cache so a later call retries. Covered by a new test in `wix-bookings-context.test.ts` (**37/37 passing**).
 
 Not changed: `orderById`/`ownBookings` map errors to empty results on purpose, so the page fails soft like Wix's own widgets.

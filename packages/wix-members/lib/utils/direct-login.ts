@@ -18,7 +18,10 @@ export interface DirectLoginAuth {
         profile?: { nickname?: string; privacyStatus?: 'PUBLIC' | 'PRIVATE' };
         captchaTokens?: { recaptchaToken?: string; invisibleRecaptchaToken?: string };
     }): Promise<SdkLoginState>;
-    processVerification(nextInputs: { verificationCode: string }, state?: SdkLoginState): Promise<SdkLoginState>;
+    processVerification(
+        nextInputs: { verificationCode: string },
+        state?: SdkLoginState,
+    ): Promise<SdkLoginState>;
     getMemberTokensForDirectLogin(sessionToken: string): Promise<Tokens>;
     sendPasswordResetEmail(email: string, redirectUri: string): Promise<void>;
     /** The authorization-code methods `memberTokensByRedirect` uses. */
@@ -27,7 +30,10 @@ export interface DirectLoginAuth {
         oauthData: OAuthData,
         opts: { prompt: 'none'; responseMode: 'query'; sessionToken: string },
     ): Promise<{ authUrl: string }>;
-    parseFromUrl?(url: string, responseMode: 'query'): { code: string | null; state: string | null; error?: string; errorDescription?: string };
+    parseFromUrl?(
+        url: string,
+        responseMode: 'query',
+    ): { code: string | null; state: string | null; error?: string; errorDescription?: string };
     getMemberTokens?(code: string, state: string, oauthData: OAuthData): Promise<Tokens>;
 }
 
@@ -44,7 +50,11 @@ export interface OAuthData {
  * Load `url` in a hidden frame and resolve with the frame's address once it is at `redirectUri` (the page's own
  * origin, so the page can read it).
  */
-export type RedirectFrame = (url: string, redirectUri: string, timeoutMs: number) => Promise<string>;
+export type RedirectFrame = (
+    url: string,
+    redirectUri: string,
+    timeoutMs: number,
+) => Promise<string>;
 
 export const hiddenRedirectFrame: RedirectFrame = (url, redirectUri, timeoutMs) =>
     new Promise((resolve, reject) => {
@@ -82,22 +92,39 @@ export const hiddenRedirectFrame: RedirectFrame = (url, redirectUri, timeoutMs) 
  * scheme, and the page stops at the first one.
  */
 export async function memberTokensByRedirect(
-    auth: Required<Pick<DirectLoginAuth, 'generateOAuthData' | 'getAuthUrl' | 'parseFromUrl' | 'getMemberTokens'>>,
+    auth: Required<
+        Pick<
+            DirectLoginAuth,
+            'generateOAuthData' | 'getAuthUrl' | 'parseFromUrl' | 'getMemberTokens'
+        >
+    >,
     sessionToken: string,
     redirectUri: string,
     frame: RedirectFrame = hiddenRedirectFrame,
 ): Promise<Tokens> {
     const oauthData = auth.generateOAuthData(redirectUri);
-    const { authUrl } = await auth.getAuthUrl(oauthData, { prompt: 'none', responseMode: 'query', sessionToken });
+    const { authUrl } = await auth.getAuthUrl(oauthData, {
+        prompt: 'none',
+        responseMode: 'query',
+        sessionToken,
+    });
     const returned = await frame(authUrl, redirectUri, 30_000);
     const { code, state, error, errorDescription } = auth.parseFromUrl(returned, 'query');
-    if (error || !code || !state) throw new Error(errorDescription || error || 'No authorization code in the login redirect');
+    if (error || !code || !state)
+        throw new Error(errorDescription || error || 'No authorization code in the login redirect');
     return auth.getMemberTokens(code, state, oauthData);
 }
 
 /** The SDK's `StateMachine` result of login, register and processVerification. */
 export interface SdkLoginState {
-    loginState: 'SUCCESS' | 'INITIAL' | 'FAILURE' | 'EMAIL_VERIFICATION_REQUIRED' | 'OWNER_APPROVAL_REQUIRED' | 'USER_CAPTCHA_REQUIRED' | 'SILENT_CAPTCHA_REQUIRED';
+    loginState:
+        | 'SUCCESS'
+        | 'INITIAL'
+        | 'FAILURE'
+        | 'EMAIL_VERIFICATION_REQUIRED'
+        | 'OWNER_APPROVAL_REQUIRED'
+        | 'USER_CAPTCHA_REQUIRED'
+        | 'SILENT_CAPTCHA_REQUIRED';
     data?: { sessionToken?: string; stateToken?: string };
     error?: string;
     errorCode?: MemberAuthErrorCode;
@@ -168,7 +195,8 @@ export function createDirectLogin(
         switch (state.loginState) {
             case 'SUCCESS': {
                 const sessionToken = state.data?.sessionToken;
-                if (!sessionToken) return { status: 'failure', error: 'No session token in the login response' };
+                if (!sessionToken)
+                    return { status: 'failure', error: 'No session token in the login response' };
                 await onMemberTokens(await memberTokens(sessionToken));
                 return { status: 'success' };
             }
@@ -182,7 +210,11 @@ export function createDirectLogin(
                 return { status: 'captchaRequired' };
             default:
                 if (state.errorCode === 'missingCaptchaToken') return { status: 'captchaRequired' };
-                return { status: 'failure', errorCode: state.errorCode, error: state.error || 'Login failed' };
+                return {
+                    status: 'failure',
+                    errorCode: state.errorCode,
+                    error: state.error || 'Login failed',
+                };
         }
     }
 
@@ -197,7 +229,11 @@ export function createDirectLogin(
             const profile = {
                 ...(options?.nickname ? { nickname: options.nickname } : {}),
                 ...(options?.publicProfile !== undefined
-                    ? { privacyStatus: options.publicProfile ? ('PUBLIC' as const) : ('PRIVATE' as const) }
+                    ? {
+                          privacyStatus: options.publicProfile
+                              ? ('PUBLIC' as const)
+                              : ('PRIVATE' as const),
+                      }
                     : {}),
             };
             return settle(
@@ -210,7 +246,8 @@ export function createDirectLogin(
             );
         },
         async verifyEmail(code) {
-            if (!pending) return { status: 'failure', error: 'No login is waiting for an email code' };
+            if (!pending)
+                return { status: 'failure', error: 'No login is waiting for an email code' };
             return settle(await auth.processVerification({ verificationCode: code }, pending));
         },
         sendPasswordReset(email, redirectUri) {
