@@ -38,46 +38,100 @@ describe('canBookOnline', () => {
 });
 
 describe('bookings context', () => {
-    const config = { bookingAppId: WIX_BOOKINGS_APP_ID, staffResourceTypeId: '', slotWindowDays: 14, postCheckoutUrl: '/' };
+    const config = {
+        bookingAppId: WIX_BOOKINGS_APP_ID,
+        staffResourceTypeId: '',
+        slotWindowDays: 14,
+        postCheckoutUrl: '/',
+    };
 
     it("reads the site plan's booking features and time zone with one settings call", async () => {
         calls.length = 0;
         responses['/_api/bookings-settings/v2/settings'] = {
             bookingsSettings: {
-                features: { bookingsGroups: { enabled: true }, bookingsAppointments: { enabled: false }, bookingsCourses: {} },
+                features: {
+                    bookingsGroups: { enabled: true },
+                    bookingsAppointments: { enabled: false },
+                    bookingsCourses: {},
+                },
                 siteProperties: { timeZone: 'Asia/Singapore' },
             },
         };
         const context = createWixBookingsContext({} as never, config);
-        expect(await context.features()).toEqual({ groups: true, appointments: false, courses: false, payments: false });
+        expect(await context.features()).toEqual({
+            groups: true,
+            appointments: false,
+            courses: false,
+            payments: false,
+        });
         expect(await context.timeZone()).toBe('Asia/Singapore');
         await context.features();
-        expect(calls.map((c) => c.path)).toEqual(['/_api/bookings-settings/v2/settings?fields=FEATURES&fields=SITE_PROPERTIES']);
+        expect(calls.map((c) => c.path)).toEqual([
+            '/_api/bookings-settings/v2/settings?fields=FEATURES&fields=SITE_PROPERTIES',
+        ]);
+    });
+
+    it('falls back on a settings failure and retries on the next call, not caching the rejection', async () => {
+        calls.length = 0;
+        responses['/_api/bookings-settings/v2/settings'] = new Error('settings down');
+        const context = createWixBookingsContext({} as never, config);
+        expect(await context.features()).toEqual({
+            groups: false,
+            appointments: false,
+            courses: false,
+            payments: false,
+        });
+        expect(await context.timeZone()).toBe('UTC');
+        responses['/_api/bookings-settings/v2/settings'] = {
+            bookingsSettings: {
+                features: { bookingsGroups: { enabled: true } },
+                siteProperties: { timeZone: 'Asia/Singapore' },
+            },
+        };
+        expect(await context.timeZone()).toBe('Asia/Singapore');
+        expect(calls).toHaveLength(3);
     });
 
     it('finds a service by its URL slug and queries its slots like the calendar does', async () => {
         calls.length = 0;
         responses['/bookings/v2/services/query'] = { services: [{ id: 's1', type: 'CLASS' }] };
-        responses['/_api/service-availability/v2/time-slots/event'] = { timeSlots: [{ localStartDate: '2026-10-14T09:00:00', bookable: true }] };
+        responses['/_api/service-availability/v2/time-slots/event'] = {
+            timeSlots: [{ localStartDate: '2026-10-14T09:00:00', bookable: true }],
+        };
         const context = createWixBookingsContext({} as never, config);
         expect(await context.serviceBySlug('east-basic')).toEqual({ id: 's1', type: 'CLASS' });
-        expect(calls[0].body.query.filter).toEqual({ 'supportedSlugs.name': 'east-basic', hidden: false });
+        expect(calls[0].body.query.filter).toEqual({
+            'supportedSlugs.name': 'east-basic',
+            hidden: false,
+        });
         expect(await context.serviceById('s1')).toEqual({ id: 's1', type: 'CLASS' });
         expect(calls.pop()!.body.query.filter).toEqual({ _id: 's1' });
         const slots = await context.timeSlots({
-            serviceIds: ['s1'], timeZone: 'Asia/Singapore', fromLocalDate: '2026-10-14T00:00:00', toLocalDate: '2026-10-31T23:59:59', maxSlotsPerDay: 1,
+            serviceIds: ['s1'],
+            timeZone: 'Asia/Singapore',
+            fromLocalDate: '2026-10-14T00:00:00',
+            toLocalDate: '2026-10-31T23:59:59',
+            maxSlotsPerDay: 1,
         });
         expect(slots).toHaveLength(1);
         expect(calls[1].body).toEqual({
-            serviceIds: ['s1'], timeZone: 'Asia/Singapore', fromLocalDate: '2026-10-14T00:00:00', toLocalDate: '2026-10-31T23:59:59',
-            includeNonBookable: true, maxSlotsPerDay: 1, eventFilter: {}, cursorPaging: { limit: 1000 },
+            serviceIds: ['s1'],
+            timeZone: 'Asia/Singapore',
+            fromLocalDate: '2026-10-14T00:00:00',
+            toLocalDate: '2026-10-31T23:59:59',
+            includeNonBookable: true,
+            maxSlotsPerDay: 1,
+            eventFilter: {},
+            cursorPaging: { limit: 1000 },
         });
     });
 
-    it("reads a placed order for its buyer, and nothing for anyone else", async () => {
+    it('reads a placed order for its buyer, and nothing for anyone else', async () => {
         const { WixApiError } = await import('@jay-framework/wix-server-client/client');
         responses['/ecom/v1/orders/o1'] = { order: { id: 'o1', number: '10001' } };
-        responses['/ecom/v1/orders/o2'] = new (WixApiError as unknown as new (m: string) => Error)('Forbidden');
+        responses['/ecom/v1/orders/o2'] = new (WixApiError as unknown as new (m: string) => Error)(
+            'Forbidden',
+        );
         const context = createWixBookingsContext({} as never, config);
         expect(await context.orderById('o1')).toEqual({ id: 'o1', number: '10001' });
         expect(await context.orderById('o2')).toBeUndefined();
@@ -85,21 +139,46 @@ describe('bookings context', () => {
 
     it("lists the visitor's own confirmed and pending bookings of a service", async () => {
         calls.length = 0;
-        responses['/_api/bookings-reader/v2/extended-bookings/query'] = { extendedBookings: [{ booking: { id: 'b1', startDate: '2026-10-18T19:00:00Z', status: 'CONFIRMED' } }] };
+        responses['/_api/bookings-reader/v2/extended-bookings/query'] = {
+            extendedBookings: [
+                { booking: { id: 'b1', startDate: '2026-10-18T19:00:00Z', status: 'CONFIRMED' } },
+            ],
+        };
         const context = createWixBookingsContext({} as never, config);
-        expect(await context.serviceBookings('s1')).toEqual([{ id: 'b1', startDate: '2026-10-18T19:00:00Z', status: 'CONFIRMED' }]);
-        expect(calls[0].body.query.filter).toEqual({ 'bookedEntity.slot.serviceId': 's1', status: { $in: ['CONFIRMED', 'PENDING'] } });
+        expect(await context.serviceBookings('s1')).toEqual([
+            { id: 'b1', startDate: '2026-10-18T19:00:00Z', status: 'CONFIRMED' },
+        ]);
+        expect(calls[0].body.query.filter).toEqual({
+            'bookedEntity.slot.serviceId': 's1',
+            status: { $in: ['CONFIRMED', 'PENDING'] },
+        });
     });
 
     it("reads one of the visitor's own bookings by id", async () => {
         calls.length = 0;
-        responses['/_api/bookings-reader/v2/extended-bookings/query'] = { extendedBookings: [{ booking: { id: 'b2', startDate: '2026-10-25T19:00:00Z', endDate: '2026-10-25T20:00:00Z' } }] };
+        responses['/_api/bookings-reader/v2/extended-bookings/query'] = {
+            extendedBookings: [
+                {
+                    booking: {
+                        id: 'b2',
+                        startDate: '2026-10-25T19:00:00Z',
+                        endDate: '2026-10-25T20:00:00Z',
+                    },
+                },
+            ],
+        };
         const context = createWixBookingsContext({} as never, config);
-        expect(await context.bookingById('b2')).toEqual({ id: 'b2', startDate: '2026-10-25T19:00:00Z', endDate: '2026-10-25T20:00:00Z' });
+        expect(await context.bookingById('b2')).toEqual({
+            id: 'b2',
+            startDate: '2026-10-25T19:00:00Z',
+            endDate: '2026-10-25T20:00:00Z',
+        });
         expect(calls[0].body.query.filter).toEqual({ id: 'b2' });
     });
 
     it('defaults the bookings app id to the Wix Bookings app', () => {
-        expect(loadWixBookingsConfig('/nonexistent').bookingAppId).toBe('13d21c63-b5ec-5912-8397-c3a5ddb27a97');
+        expect(loadWixBookingsConfig('/nonexistent').bookingAppId).toBe(
+            '13d21c63-b5ec-5912-8397-c3a5ddb27a97',
+        );
     });
 });

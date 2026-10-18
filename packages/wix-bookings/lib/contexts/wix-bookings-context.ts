@@ -1,6 +1,11 @@
 import { createJayContext, registerGlobalContext, useGlobalContext } from '@jay-framework/runtime';
 import type { WixClient } from '@wix/sdk';
-import { WIX_CLIENT_CONTEXT, WixApiError, wixFetch, type WixClientContext } from '@jay-framework/wix-server-client/client';
+import {
+    WIX_CLIENT_CONTEXT,
+    WixApiError,
+    wixFetch,
+    type WixClientContext,
+} from '@jay-framework/wix-server-client/client';
 import type { WixBookingsConfig } from '../config-loader.js';
 import type { BookingServiceType } from '../types.js';
 import { getBookingServiceById, type RawBookingService } from '../wix-apis/query-services.js';
@@ -31,7 +36,11 @@ export type BookingStep = 'serviceList' | 'calendar' | 'form';
  * site's plan does not include stops the visitor ("not yet available for online bookings"). The service list
  * and service page let courses through (they start at the form); the form checks every type.
  */
-export function canBookOnline(features: BookingFeatures, type: BookingServiceType | 'COURSE', step: BookingStep): boolean {
+export function canBookOnline(
+    features: BookingFeatures,
+    type: BookingServiceType | 'COURSE',
+    step: BookingStep,
+): boolean {
     if (type === 'COURSE') return step !== 'form' || features.courses;
     return type === 'CLASS' ? features.groups : features.appointments;
 }
@@ -47,8 +56,15 @@ export interface TimeSlot {
     bookableCapacity?: number;
     eventInfo?: { eventId?: string };
     location?: { id?: string; name?: string; formattedAddress?: string; locationType?: string };
-    availableResources?: { resourceTypeId?: string; resources?: { id?: string; name?: string }[] }[];
-    bookingPolicyViolations?: { tooEarlyToBook?: boolean; tooLateToBook?: boolean; bookOnlineDisabled?: boolean };
+    availableResources?: {
+        resourceTypeId?: string;
+        resources?: { id?: string; name?: string }[];
+    }[];
+    bookingPolicyViolations?: {
+        tooEarlyToBook?: boolean;
+        tooLateToBook?: boolean;
+        bookOnlineDisabled?: boolean;
+    };
 }
 
 export interface TimeSlotsQuery {
@@ -84,9 +100,13 @@ export interface WixBookingsContext {
      * The visitor's or member's own confirmed and pending bookings of a service (Wix's booking form asks "Book this
      * again?" when there is one).
      */
-    serviceBookings(serviceId: string): Promise<{ id?: string; startDate?: string; status?: string }[]>;
+    serviceBookings(
+        serviceId: string,
+    ): Promise<{ id?: string; startDate?: string; status?: string }[]>;
     /** One of the visitor's or member's own bookings (an order's line item names it), with its start and end. */
-    bookingById(bookingId: string): Promise<{ id?: string; startDate?: string; endDate?: string; status?: string } | undefined>;
+    bookingById(
+        bookingId: string,
+    ): Promise<{ id?: string; startDate?: string; endDate?: string; status?: string } | undefined>;
 }
 
 /** The parts of an eCommerce order Wix's thank-you page shows. */
@@ -115,21 +135,40 @@ interface SettingsResponse {
     };
 }
 
-export function createWixBookingsContext(wixClient: WixClient, config: WixBookingsConfig): WixBookingsContext {
+export function createWixBookingsContext(
+    wixClient: WixClient,
+    config: WixBookingsConfig,
+): WixBookingsContext {
     let settings: Promise<SettingsResponse['bookingsSettings']> | undefined;
-    const readSettings = () =>
-        (settings ??= wixFetch<SettingsResponse>(
-            wixClient,
-            '/_api/bookings-settings/v2/settings?fields=FEATURES&fields=SITE_PROPERTIES',
-        ).then((res) => res.bookingsSettings));
+    const readSettings = () => {
+        if (!settings) {
+            settings = wixFetch<SettingsResponse>(
+                wixClient,
+                '/_api/bookings-settings/v2/settings?fields=FEATURES&fields=SITE_PROPERTIES',
+            )
+                .then((res) => res.bookingsSettings)
+                .catch(() => {
+                    // Don't cache a transient failure: fall back (features all-false, timeZone UTC) and allow a later retry.
+                    settings = undefined;
+                    return undefined;
+                });
+        }
+        return settings;
+    };
     const service = createWixBookingsService(wixClient, config);
     /** The visitor's or member's own bookings matching `filter` (Bookings Reader). */
     const ownBookings = async (filter: Record<string, unknown>) => {
-        const res = await wixFetch<{ extendedBookings?: { booking?: { id?: string; startDate?: string; endDate?: string; status?: string } }[] }>(
-            wixClient,
-            '/_api/bookings-reader/v2/extended-bookings/query',
-            { method: 'POST', body: { query: { filter, cursorPaging: { limit: 100 } }, withBookingAllowedActions: false } },
-        ).catch(() => ({ extendedBookings: [] }));
+        const res = await wixFetch<{
+            extendedBookings?: {
+                booking?: { id?: string; startDate?: string; endDate?: string; status?: string };
+            }[];
+        }>(wixClient, '/_api/bookings-reader/v2/extended-bookings/query', {
+            method: 'POST',
+            body: {
+                query: { filter, cursorPaging: { limit: 100 } },
+                withBookingAllowedActions: false,
+            },
+        }).catch(() => ({ extendedBookings: [] }));
         return (res.extendedBookings ?? []).map((e) => e.booking ?? {});
     };
     return {
@@ -146,41 +185,62 @@ export function createWixBookingsContext(wixClient: WixClient, config: WixBookin
             return (await readSettings())?.siteProperties?.timeZone ?? 'UTC';
         },
         async serviceBySlug(slug) {
-            const res = await wixFetch<{ services?: RawBookingService[] }>(wixClient, '/bookings/v2/services/query', {
-                method: 'POST',
-                body: { query: { filter: { 'supportedSlugs.name': slug, hidden: false }, paging: { limit: 1 } } },
-            });
+            const res = await wixFetch<{ services?: RawBookingService[] }>(
+                wixClient,
+                '/bookings/v2/services/query',
+                {
+                    method: 'POST',
+                    body: {
+                        query: {
+                            filter: { 'supportedSlugs.name': slug, hidden: false },
+                            paging: { limit: 1 },
+                        },
+                    },
+                },
+            );
             return res.services?.[0];
         },
         serviceById(id) {
             return getBookingServiceById(wixClient, id);
         },
         async timeSlots(query) {
-            const res = await wixFetch<{ timeSlots?: TimeSlot[] }>(wixClient, '/_api/service-availability/v2/time-slots/event', {
-                method: 'POST',
-                body: {
-                    serviceIds: query.serviceIds,
-                    timeZone: query.timeZone,
-                    fromLocalDate: query.fromLocalDate,
-                    toLocalDate: query.toLocalDate,
-                    includeNonBookable: query.includeNonBookable ?? true,
-                    ...(query.maxSlotsPerDay ? { maxSlotsPerDay: query.maxSlotsPerDay } : {}),
-                    eventFilter: {},
-                    cursorPaging: { limit: query.limit ?? 1000 },
+            const res = await wixFetch<{ timeSlots?: TimeSlot[] }>(
+                wixClient,
+                '/_api/service-availability/v2/time-slots/event',
+                {
+                    method: 'POST',
+                    body: {
+                        serviceIds: query.serviceIds,
+                        timeZone: query.timeZone,
+                        fromLocalDate: query.fromLocalDate,
+                        toLocalDate: query.toLocalDate,
+                        includeNonBookable: query.includeNonBookable ?? true,
+                        ...(query.maxSlotsPerDay ? { maxSlotsPerDay: query.maxSlotsPerDay } : {}),
+                        eventFilter: {},
+                        cursorPaging: { limit: query.limit ?? 1000 },
+                    },
                 },
-            });
+            );
             return res.timeSlots ?? [];
         },
         createBooking: service.createBooking,
         async serviceBookings(serviceId) {
-            return (await ownBookings({ 'bookedEntity.slot.serviceId': serviceId, status: { $in: ['CONFIRMED', 'PENDING'] } })).filter((b) => b.id || b.startDate);
+            return (
+                await ownBookings({
+                    'bookedEntity.slot.serviceId': serviceId,
+                    status: { $in: ['CONFIRMED', 'PENDING'] },
+                })
+            ).filter((b) => b.id || b.startDate);
         },
         async bookingById(bookingId) {
             return (await ownBookings({ id: bookingId }))[0];
         },
         async orderById(orderId) {
             try {
-                const res = await wixFetch<{ order?: BookingOrder }>(wixClient, `/ecom/v1/orders/${encodeURIComponent(orderId)}`);
+                const res = await wixFetch<{ order?: BookingOrder }>(
+                    wixClient,
+                    `/ecom/v1/orders/${encodeURIComponent(orderId)}`,
+                );
                 return res.order;
             } catch (error) {
                 if (error instanceof WixApiError) return undefined; // not this visitor's or member's order
@@ -191,7 +251,10 @@ export function createWixBookingsContext(wixClient: WixClient, config: WixBookin
 }
 
 /** Client init: the bookings context on the page's Wix client (wix-server-client's). */
-export function provideWixBookingsContext(config: WixBookingsConfig): WixBookingsContext | undefined {
+export function provideWixBookingsContext(
+    config: WixBookingsConfig,
+): WixBookingsContext | undefined {
+    // The `/client` subpath ships no type declarations, so this import is untyped here; cast restores the context type.
     const client = (useGlobalContext(WIX_CLIENT_CONTEXT) as WixClientContext | undefined)?.client;
     if (!client) return undefined;
     const context = createWixBookingsContext(client, config);

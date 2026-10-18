@@ -104,3 +104,9 @@ else location.href = `/booking-confirmation?orderId=${result.orderId}`;         
 - **Deviations:**
   - `orderById`, `serviceBookings` and `bookingById` were added during implementation, for Wix's thank-you page and the booking form's dialog.
   - The staff selection fix was found while booking end to end.
+
+## Review Follow-up
+
+Code review of PR #34 found that `readSettings` cached a *rejected* settings promise: one transient failure of the `bookings-settings` call made every later `features()` and `timeZone()` reject for the page's lifetime, and `timeZone()`'s intended `'UTC'` fallback (`?? 'UTC'`) never ran on a rejection. `readSettings` now catches the failure, resolves to `undefined` (so `features()` reads all-false and `timeZone()` falls back to `'UTC'`), and clears the cache so a later call retries. Covered by a new test in `wix-bookings-context.test.ts` (**37/37 passing**).
+
+Not changed: `orderById`/`ownBookings` map errors to empty results on purpose, so the page fails soft like Wix's own widgets.
