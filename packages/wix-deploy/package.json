@@ -11,8 +11,14 @@
     "agent-kit"
   ],
   "exports": {
-    ".": "./dist/index.js",
-    "./artifact-store": "./dist/artifact-store.js",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./artifact-store": {
+      "types": "./dist/artifact-store.d.ts",
+      "default": "./dist/artifact-store.js"
+    },
     "./tools": "./dist/tools.js",
     "./plugin.yaml": "./plugin.yaml",
     "./deploy.jay-command": "./dist/commands/deploy.jay-command",
@@ -26,7 +32,7 @@
     "build:copy-commands": "mkdir -p dist/commands && cp lib/commands/*.jay-command dist/commands/",
     "validate": "jay-stack-cli validate-plugin",
     "build:server": "vite build --ssr",
-    "build:types": "tsup lib/index.ts lib/tools.ts --dts-only --format esm",
+    "build:types": "tsup lib/index.ts lib/artifact-store.ts lib/tools.ts --dts-only --format esm",
     "build:check-types": "tsc",
     "clean": "rimraf dist",
     "confirm": "npm run clean && npm run build && npm run test",
