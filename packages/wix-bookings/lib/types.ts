@@ -28,5 +28,6 @@ export interface BookingFormFieldView {
 }
 
 export type CreateBookingOutcome =
-    | { outcome: 'confirmed' }
+    /** Booked with nothing to pay: `orderId` is the placed order (Wix's thank-you page is /thank-you-page/<orderId>). */
+    | { outcome: 'confirmed'; orderId?: string }
     | { outcome: 'redirect'; redirectUrl: string };

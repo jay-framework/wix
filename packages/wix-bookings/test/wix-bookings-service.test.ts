@@ -87,13 +87,27 @@ describe('WixBookingsService.createBooking', () => {
         mockCalculateBookingCart.mockResolvedValue({
             summary: { priceSummary: { total: { amount: '0' } } },
         });
+        mockPlaceBookingOrder.mockResolvedValue({ orderId: 'order-1' });
         const service = provideWixBookingsService(mockClient, config);
 
         await expect(service.createBooking(bookingInput)).resolves.toEqual({
             outcome: 'confirmed',
+            orderId: 'order-1',
         });
         expect(mockPlaceBookingOrder).toHaveBeenCalledWith(mockClient, 'cart-1');
         expect(mockCreateBookingRedirectSession).not.toHaveBeenCalled();
+    });
+
+    it('selects any staff member of the configured staff type, and none without one (a class session names its staff)', async () => {
+        mockCalculateBookingCart.mockResolvedValue({ summary: { priceSummary: { total: { amount: '0' } } } });
+        mockPlaceBookingOrder.mockResolvedValue({ orderId: 'order-1' });
+        await provideWixBookingsService(mockClient, config).createBooking(bookingInput);
+        const slot = (call: number) => (mockCreateBookingRecord.mock.calls[call][1] as any).booking.bookedEntity.slot;
+        expect(slot(0).resourceSelections).toEqual([{ resourceTypeId: 'staff-type-1', selectionMethod: 'ANY_RESOURCE' }]);
+        const classInput = { ...bookingInput, serviceType: 'CLASS' as const, slot: { ...bookingInput.slot, eventId: 'ev-1' } };
+        await provideWixBookingsService(mockClient, { ...config, staffResourceTypeId: '' }).createBooking(classInput);
+        expect(slot(1).resourceSelections).toBeUndefined();
+        expect(slot(1).eventId).toBe('ev-1');
     });
 
     it('should return a redirect URL when cart total is greater than zero', async () => {
