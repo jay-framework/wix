@@ -19,7 +19,10 @@
       "types": "./dist/artifact-store.d.ts",
       "default": "./dist/artifact-store.js"
     },
-    "./tools": "./dist/tools.js",
+    "./tools": {
+      "types": "./dist/tools.d.ts",
+      "default": "./dist/tools.js"
+    },
     "./plugin.yaml": "./plugin.yaml",
     "./deploy.jay-command": "./dist/commands/deploy.jay-command",
     "./build-entry.jay-command": "./dist/commands/build-entry.jay-command",

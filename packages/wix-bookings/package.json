@@ -19,7 +19,10 @@
       "types": "./dist/index.client.d.ts",
       "default": "./dist/index.client.js"
     },
-    "./tools": "./dist/tools.js",
+    "./tools": {
+      "types": "./dist/tools.d.ts",
+      "default": "./dist/tools.js"
+    },
     "./plugin.yaml": "./plugin.yaml",
     "./booking-flow.jay-contract": "./dist/contracts/booking-flow.jay-contract",
     "./list-services.jay-action": "./dist/actions/list-services.jay-action",
