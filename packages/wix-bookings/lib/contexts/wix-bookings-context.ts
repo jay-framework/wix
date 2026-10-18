@@ -1,11 +1,6 @@
 import { createJayContext, registerGlobalContext, useGlobalContext } from '@jay-framework/runtime';
 import type { WixClient } from '@wix/sdk';
-import {
-    WIX_CLIENT_CONTEXT,
-    WixApiError,
-    wixFetch,
-    type WixClientContext,
-} from '@jay-framework/wix-server-client/client';
+import { WIX_CLIENT_CONTEXT, WixApiError, wixFetch } from '@jay-framework/wix-server-client/client';
 import type { WixBookingsConfig } from '../config-loader.js';
 import type { BookingServiceType } from '../types.js';
 import { getBookingServiceById, type RawBookingService } from '../wix-apis/query-services.js';
@@ -254,8 +249,7 @@ export function createWixBookingsContext(
 export function provideWixBookingsContext(
     config: WixBookingsConfig,
 ): WixBookingsContext | undefined {
-    // The `/client` subpath ships no type declarations, so this import is untyped here; cast restores the context type.
-    const client = (useGlobalContext(WIX_CLIENT_CONTEXT) as WixClientContext | undefined)?.client;
+    const client = useGlobalContext(WIX_CLIENT_CONTEXT)?.client;
     if (!client) return undefined;
     const context = createWixBookingsContext(client, config);
     registerGlobalContext(WIX_BOOKINGS_CONTEXT, context);

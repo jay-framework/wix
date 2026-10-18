@@ -12,7 +12,9 @@ function withConfig(yaml: string) {
 }
 
 describe('loadConfig', () => {
-    afterEach(() => vi.restoreAllMocks());
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
 
     it('reads a site with only an OAuth client as visitor-only: no server secret ships with it', () => {
         withConfig('oauthStrategy:\n  clientId: c1\n');
@@ -22,7 +24,9 @@ describe('loadConfig', () => {
     it('keeps an API key for the server when there is one, and rejects two server strategies', () => {
         withConfig('oauthStrategy:\n  clientId: c1\napiKeyStrategy:\n  apiKey: k\n  siteId: s\n');
         expect(loadConfig().auth).toEqual({ kind: 'apiKey', apiKey: { apiKey: 'k', siteId: 's' } });
-        withConfig('oauthStrategy:\n  clientId: c1\napiKeyStrategy:\n  apiKey: k\n  siteId: s\nappStrategy:\n  appId: a\n  appSecret: x\n');
+        withConfig(
+            'oauthStrategy:\n  clientId: c1\napiKeyStrategy:\n  apiKey: k\n  siteId: s\nappStrategy:\n  appId: a\n  appSecret: x\n',
+        );
         expect(() => loadConfig()).toThrow('not both');
     });
 });
