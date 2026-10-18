@@ -10,6 +10,11 @@ export interface WixClientContext {
     getTokens(): Tokens | null;
     /** Generate new visitor tokens (creates new session) */
     generateVisitorTokens(): Promise<Tokens>;
+    /**
+     * Use these tokens from now on and keep them for later page loads (e.g. member tokens after a login).
+     * Setting tokens on `client.auth` directly lasts only until the page reloads.
+     */
+    setTokens(tokens: Tokens): void;
     /** Refresh the access token using the refresh token */
     refreshToken(): Promise<Tokens>;
 }
@@ -59,9 +64,10 @@ function getStoredTokens(oauthClientId: string): StoredTokens | null {
 /**
  * Clear stored tokens (for logout or session reset).
  */
-export function clearStoredTokens(): void {
+export function clearStoredTokens(oauthClientId = ''): void {
     try {
-        localStorage.removeItem(TOKENS_STORAGE_KEY);
+        // Tokens are stored per OAuth client (see storeTokens).
+        localStorage.removeItem(TOKENS_STORAGE_KEY + oauthClientId);
     } catch (error) {
         console.warn('[WixClient] Failed to clear tokens:', error);
     }
@@ -98,12 +104,18 @@ export async function provideWixClientContext(oauthClientId: string) {
             return tokens;
         },
 
+        setTokens(tokens: Tokens): void {
+            wixClient.auth.setTokens(tokens);
+            storeTokens(tokens, oauthClientId);
+        },
+
         async refreshToken(): Promise<Tokens> {
             const currentTokens = wixClient.auth.getTokens();
             if (!currentTokens?.refreshToken) {
                 throw new Error('No refresh token available');
             }
             const tokens = await wixClient.auth.renewToken(currentTokens.refreshToken);
+            wixClient.auth.setTokens(tokens);
             storeTokens(tokens, oauthClientId);
             return tokens;
         },
