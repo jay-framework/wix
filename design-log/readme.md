@@ -43,6 +43,7 @@ Design documentation for the Jay Framework Wix integration packages.
 | 35  | [wix-bookings in the Browser](./35%20-%20wix-bookings%20browser%20context.md)                                  | Implemented                               |
 | 36  | [Slow-Render SWR + Render-on-Miss on Wix](./36%20-%20slow%20render%20swr%20and%20render-on-miss%20on%20wix.md) | Implemented (store) · Decided (TTL/grace) |
 | 37  | [BaaS Entry — Project Action Registration](./37%20-%20baas-entry-project-action-registration.md)               | Implemented                               |
+| 38  | [Per-Form Contracts for wix-forms](./38%20-%20per-form%20contracts%20for%20wix-forms.md)                       | Implemented                               |
 
 ## Packages Covered
 
