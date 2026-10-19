@@ -10,9 +10,7 @@ export const init = makeJayInit()
         const wixClient = getService(WIX_CLIENT_SERVICE);
         const config = loadWixFormsConfig(process.cwd());
         provideWixFormsService(wixClient, config);
-        if (config.defaultFormId) {
-            console.log(`[wix-forms] Default form: ${config.defaultFormId}`);
-        }
+        console.log(`[wix-forms] Forms namespace: ${config.namespace}`);
         console.log('[wix-forms] Server initialization complete');
         return {};
     })

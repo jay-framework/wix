@@ -1,11 +1,12 @@
 name: wix-forms
 # No module field for NPM packages - uses package main export by default
 
-contracts:
-  - name: wix-form
-    contract: wix-form.jay-contract
+# Dynamic contracts — one contract generated per Wix form at agent-kit time (DL#36).
+# Materializes as form/<slug>, all served by the shared wixForm component.
+dynamic_contracts:
+  - prefix: form
     component: wixForm
-    description: Dynamic form loaded from Wix Forms by form ID
+    generator: formContractGenerator
 
 services:
   - name: wix-forms
@@ -18,4 +19,10 @@ actions:
   - name: submitForm
     action: submit-form.jay-action
 
+validators:
+  - name: wix-forms-bindings
+    handler: validateWixFormBindings
+    description: Flags retired generic `fields` binding and unknown form-field tags
+
 setup: setupWixForms
+agentkit: generateWixFormsAgentKit

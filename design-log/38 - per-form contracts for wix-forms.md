@@ -353,3 +353,55 @@ Rationale (jay prevention order: validation → agent-kit → framework): both a
 - **`getFormSummary` participant-form contract generation** (wix-bookings) → out of scope; that path stays dynamic (OQ-7).
 - **i18n field labels / per-locale contracts** → **defer.**
 - **Runtime form switching via `formId` prop** → removed (OQ-6); reintroduce only on real need.
+
+---
+
+## Implementation Results
+
+Implemented in `packages/wix-forms` only (wix plugin scope; downstream/Starkdale propagation is a separate later phase — Implementation Plan step 9). Branch `wix-forms-refactor`.
+
+### What changed
+
+**Added**
+- `lib/wix-apis/list-forms.ts` — `GET /form-schema-service/v4/forms?namespace=…` via `wixFetch` (sibling of `get-form.ts`), cursor-paged, `enabled`/`disabled`/`formIds` query filter.
+- `lib/generators/contract-utils.ts` — self-contained YAML tag builders (`fieldTag`, `optionsSubContract`, `reservedFormTags`, `contractTagName`, `toPascalCase`/`toKebabCase`, `elementTypeFor`). Not cross-imported from wix-data (§4 decision).
+- `lib/generators/form-slug.ts` — `computeFormSlugs`: kebab slug + ordering-independent id-suffix dedup (Note B).
+- `lib/generators/form-contract-generator.ts` — `makeContractGenerator().withServices(WIX_FORMS_SERVICE).generateWith(...)`; one `GeneratedContractYaml` per form, `metadata:{formId}`.
+- `lib/components/form-view-state.ts` — pure per-target view-state mapper (extracted for unit testing).
+- `lib/validators/wix-form-bindings.ts` — `validateWixFormBindings` (`JayHtmlValidatorFn`).
+- `agent-kit/plugin/per-form-contracts.md`.
+- Tests: `test/form-slug.test.ts`, `test/form-contract-generator.test.ts` (+ fixture `test/fixtures/form-contract-generator/contact.jay-contract`), `test/form-view-state.test.ts`, `test/wix-form-bindings-validator.test.ts`.
+
+**Changed**
+- `plugin.yaml` — static `contracts:` → `dynamic_contracts` (`prefix: form`, `generator: formContractGenerator`); added `validators:` (`wix-forms-bindings`) and `agentkit: generateWixFormsAgentKit`.
+- `lib/components/wix-form.ts` — refactored to `makeJayStackComponent<any>().withProps<PageProps & DynamicContractProps<{ formId }>>()`; reads `props.metadata.formId`; view-state keyed by field `target`; submission errors mapped per-field by target into each field's `error` slot. `getFormSchema`/slow-phase load kept.
+- `lib/config-loader.ts` — `{ defaultFormId }` → optional `{ namespace?, formIds?, include? }` with default namespace `wix.form_app.form`.
+- `lib/services/wix-forms-service(-marker).ts` — added `listForms()` (build-time list + cache + zero-result error) and `config`; `getFormFields`/`createSubmission` no longer use `defaultFormId`.
+- `lib/setup.ts` — removed `defaultFormId` gate; added `generateWixFormsAgentKit` emitting `agent-kit/references/wix-forms/forms.yaml`.
+- `lib/init.ts`, `lib/tools.ts`, `lib/index.ts`, `lib/types.ts` (`ListedFormView`), `package.json` (deps: `+@jay-framework/compiler-shared`; devDeps: `+@jay-framework/compiler-jay-html`, `+node-html-parser`; removed the `./wix-form.jay-contract` export; `build:copy-contract` no longer copies contracts), `agent-kit/plugin/wix-forms-setup.md` (stale snippet fixed).
+
+### Deviations from the frozen design
+
+1. **Contract registered name.** The materializer registers `${prefix}/${toKebabCase(generated.name)}`. To land exactly on `form/<slug>` where `<slug>` = kebab(form name) (TL;DR / Examples / Verification #1, e.g. `form/contact`), the generator returns `name = <slug>` (already kebab), NOT PascalCase. This diverges from wix-data (whose generator returns PascalCase `RecipesItem` → `item/recipes-item`); returning PascalCase here would have produced `form/contact-form`, contradicting the DL's examples. The YAML's internal `name:` is `PascalCase(slug)+"Form"` (`ContactForm`) per §3. No design intent changed — this is purely how to hit the specified slug through the existing materializer.
+
+2. **Static contract file not physically deleted (permission-blocked).** `rm lib/contracts/wix-form.jay-contract` was denied by the harness (twice). All references were removed (plugin.yaml entry, `package.json` export, `build:copy-contract` contract glob, component no longer imports its types), so the file + its generated `lib/contracts/wix-form.jay-contract.d.ts` are inert and unreferenced; the build and validate-plugin pass with them present. **Follow-up required (user): delete `lib/contracts/wix-form.jay-contract` and `lib/contracts/wix-form.jay-contract.d.ts`.** `build:copy-contract` was already made resilient to their absence.
+
+3. **Bug caught by the exact-output test (no false green).** The first run of the fixture test failed because `form.fields.map(fieldTag)` passed the array index as `fieldTag`'s `level` arg, drifting each field's indentation and producing unparseable YAML. Fixed to `.map((f) => fieldTag(f))`. The exact-output (`toEqual` vs fixture) + `parseContract` assertions caught it — the intended value of writing the correct expected contract first.
+
+### Namespace confirmation (OQ-8)
+
+Implemented with default `namespace: "wix.form_app.form"`; `listForms()` throws a clear error when the namespace returns zero forms. **The namespace string is still ⚠️ assumed — it MUST be confirmed against a live site's List Forms response during the later Starkdale QA phase** (one `GET …/v4/forms?namespace=wix.form_app.form`). Likewise, a live `jay-stack agent-kit` run against a real site (VPN + credentials) to confirm per-form contracts materialize as `form/<slug>` is part of that phase; this phase verified the generator/agent-kit logic via unit tests + the plugin build's `validate-plugin`.
+
+### Core-vs-plugin validator finding (the hard gate)
+
+Investigated whether core `jay-stack validate` already rejects a binding to a non-existent contract sub-tag. **Finding: core covers it PARTIALLY.**
+- **Covered by core:** unknown **data** bindings — `{key.notAField}`, `forEach="key.fields"`, `if=`, attribute expressions — including keyed headless imports (the import key is merged into the page ViewState; accessor resolution emits `the data field [key.x] not found in Jay data` as a generate-stage **error** surfaced by `jay-stack validate` and the plugin-validator runner). So `forEach="contact.fields"` is already a core error.
+- **NOT covered by core:** unknown **`ref=`** sub-tags — template refs absent from the contract's ref tree are silently grafted in (no error), and the ref element-type check early-returns when the tag does not resolve.
+
+Per the DL gate ("if core does NOT reject unknown sub-contract paths, the plugin validator MUST add the check"), the `wix-forms-bindings` plugin validator therefore adds: **(1)** the guaranteed retired-`fields` migration message (friendlier than core's generic data-field error; Verification #4), and **(2)** unknown-field `ref=` detection — the one gap core misses — by checking each `ref="<key>.<seg>…"` first segment against the form contract's tags. It also best-effort flags a retired `contract="wix-form"` import.
+
+### Build / test results
+
+- `yarn install` (VPN available) + `yarn build` → **27/27 packages built successfully**, including `@jay-framework/wix-forms` whose `build` ends in `jay-stack-cli validate-plugin` (passed). DL#179 leak scan: serve entries (`dist/index.js`, `dist/index.client.js`) import no compiler/html-parser packages; validator + agent-kit live only in `dist/tools.js`.
+- `wix-forms` unit tests: **31/31 passing** (6 files). `build:check-types` (tsc): clean.
+- Full workspace `yarn test` aborted early on a pre-existing, unrelated flake (`@jay-framework/wix-server-client` → wsrun "command not found: vitest"; vitest resolves fine when that package is run directly). `wix-bookings` (the only consumer touching this code, via the untouched `getFormSummary`): 36/37 — the one failure is a locale/timezone date-label test unrelated to forms.

@@ -11,4 +11,13 @@ export {
     WIX_FORMS_SERVICE,
     type WixFormsService,
 } from './services/wix-forms-service.js';
-export type { FormFieldView, FormFieldSummaryView, FormFieldErrorView } from './types.js';
+export type {
+    FormFieldView,
+    FormFieldSummaryView,
+    FormFieldErrorView,
+    ListedFormView,
+} from './types.js';
+export type { WixFormsConfig } from './config-loader.js';
+
+// Dynamic contract generator (for per-form contract materialization, DL#36)
+export { generator as formContractGenerator } from './generators/form-contract-generator.js';
