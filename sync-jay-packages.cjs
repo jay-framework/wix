@@ -30,6 +30,9 @@ if (args.includes('--help') || args.includes('-h')) {
   console.log('  source-repo-path  Path to the jay source repository');
   console.log('                    Default: ../jay (relative to script location)');
   console.log('');
+  console.log('After syncing, removes each example\'s build folders (dist, build) and');
+  console.log('Vite cache (node_modules/.vite) so they rebuild against the synced packages.');
+  console.log('');
   console.log('Examples:');
   console.log('  node sync-jay-packages.cjs');
   console.log('  node sync-jay-packages.cjs /path/to/jay');
@@ -113,6 +116,39 @@ function copyPackage(packageName, sourcePath) {
   } else {
     console.log(`${colors.red}  ✗ Source not found: ${sourcePath}${colors.reset}`);
     return false;
+  }
+}
+
+// Remove stale build artifacts from all examples so they rebuild against the freshly synced
+// framework: each example's build folders (dist, build) and its Vite cache (node_modules/.vite).
+function cleanExamples() {
+  const examplesDir = path.join(SCRIPT_DIR, 'examples');
+  if (!fs.existsSync(examplesDir)) {
+    return;
+  }
+
+  console.log('');
+  console.log(`${colors.yellow}Cleaning example build artifacts and Vite caches...${colors.reset}`);
+
+  const examples = fs
+    .readdirSync(examplesDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name);
+
+  for (const example of examples) {
+    const exampleDir = path.join(examplesDir, example);
+    const targets = [
+      path.join(exampleDir, 'dist'),
+      path.join(exampleDir, 'build'),
+      path.join(exampleDir, 'node_modules', '.vite'),
+    ];
+
+    for (const target of targets) {
+      if (fs.existsSync(target)) {
+        fs.rmSync(target, { recursive: true, force: true });
+        console.log(`  ✓ Removed ${path.relative(SCRIPT_DIR, target)}`);
+      }
+    }
   }
 }
 
@@ -208,6 +244,9 @@ function main() {
       failCount++;
     }
   }
+
+  // Clear stale example build artifacts and Vite caches so they pick up the synced packages
+  cleanExamples();
 
   console.log('');
   console.log(`${colors.green}Package sync complete!${colors.reset}`);
