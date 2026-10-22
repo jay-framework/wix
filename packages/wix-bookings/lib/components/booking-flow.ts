@@ -25,6 +25,11 @@ import type {
 } from '../types.js';
 import { createBooking, listSlots } from '../actions/bookings-actions.js';
 import { getFormSummary, validateFormSummaryField } from '@jay-framework/wix-forms';
+import {
+    SLOW_RENDER_TTL,
+    SLOW_RENDER_GRACE,
+    SLOW_RENDER_ERROR_TTL,
+} from '../slow-render-defaults.js';
 
 const DEFAULT_PARTICIPANT_FIELDS: BookingFormFieldView[] = [
     { target: 'first_name', label: 'First Name', type: 'STRING', required: true },
@@ -61,6 +66,7 @@ async function renderSlowlyChanging(_props: object, bookings: WixBookingsService
         return phaseOutput<BookingFlowSlowViewState, BookingFlowCarryForward>(
             { services },
             { services },
+            { ttl: SLOW_RENDER_TTL, grace: SLOW_RENDER_GRACE },
         );
     } catch (error) {
         const rawMessage =
@@ -72,6 +78,7 @@ async function renderSlowlyChanging(_props: object, bookings: WixBookingsService
         return phaseOutput<BookingFlowSlowViewState, BookingFlowCarryForward>(
             { services: [] },
             { services: [], servicesError: message },
+            { ttl: SLOW_RENDER_ERROR_TTL },
         );
     }
 }

@@ -242,7 +242,8 @@ ${localActionImports.join('\n')}
 
 // Framework imports
 import {
-    matchRequest,
+    resolveRequest,
+    InstanceRenderer,
     fetchPageRequest,
     fetchActionRequest,
     isActionRequest,
@@ -266,6 +267,7 @@ const VERSION = process.env.JAY_BUILD_VERSION || '${version}';
 const LOCAL_BACKEND_DIR = process.env.JAY_BACKEND_DIR || '';
 
 let artifacts;
+let renderer;
 let initialized = false;
 let initError = null;
 
@@ -327,6 +329,10 @@ ${actionsArray.join('\n')}
         console.log('[BaaS] Artifact store ready (eager files from dist/, lazy from collection)');
     }
 
+    // Stale refresh + render-on-miss (Jay Design Logs #226/#227). Shares the slow-render slots
+    // (JAY_SLOW_RENDER_CONCURRENCY) and writes refreshed / new instances to the collection.
+    renderer = new InstanceRenderer(artifacts);
+
     initialized = true;
     console.log('[BaaS] Initialization complete');
 }
@@ -357,31 +363,37 @@ function buildUrl(pattern, params) {
 }
 
 // Serve the Wix page inventory (/_wix/pages.json) — Wix reads this to build /sitemap.xml.
+// Instances come from the store's (TTL-cached) listing, so new items appear within the list TTL.
 // Streamed to handle large page counts. All pages are static (Jay resolves params itself).
 function streamPagesJson(manifest) {
     const enc = new TextEncoder();
     const stream = new ReadableStream({
-        start(controller) {
-            controller.enqueue(enc.encode('['));
-            let first = true;
-            const emit = (path) => {
-                const entry = { path, srcFilePath: path, static: true };
-                controller.enqueue(enc.encode((first ? '' : ',') + JSON.stringify(entry)));
-                first = false;
-            };
-            for (const route of manifest.routes) {
-                if (route.devOnly || route.noIndex) continue;
-                if (!route.instances || route.instances.length === 0) {
-                    const hasDynamic = route.segments.some((s) => s.type !== 'static');
-                    if (!hasDynamic) emit(route.pattern === '/' ? '/' : route.pattern);
-                    continue;
+        async start(controller) {
+            try {
+                controller.enqueue(enc.encode('['));
+                let first = true;
+                const emit = (path) => {
+                    const entry = { path, srcFilePath: path, static: true };
+                    controller.enqueue(enc.encode((first ? '' : ',') + JSON.stringify(entry)));
+                    first = false;
+                };
+                for (const route of manifest.routes) {
+                    if (route.devOnly || route.noIndex) continue;
+                    let count = 0;
+                    for await (const instance of artifacts.listInstances(route)) {
+                        count++;
+                        emit(buildUrl(route.pattern, instance.params));
+                    }
+                    if (count === 0) {
+                        const hasDynamic = route.segments.some((s) => s.type !== 'static');
+                        if (!hasDynamic) emit(route.pattern === '/' ? '/' : route.pattern);
+                    }
                 }
-                for (const instance of route.instances) {
-                    emit(buildUrl(route.pattern, instance.params));
-                }
+                controller.enqueue(enc.encode(']'));
+                controller.close();
+            } catch (e) {
+                controller.error(e);
             }
-            controller.enqueue(enc.encode(']'));
-            controller.close();
         },
     });
     return new Response(stream, { headers: { 'Content-Type': 'application/json' } });
@@ -429,11 +441,20 @@ async function handler(request) {
         // Wix reads this page inventory to build /sitemap.xml
         if (url.pathname === '/_wix/pages.json') return streamPagesJson(manifest);
 
-        const match = matchRequest(manifest, url.pathname);
-        if (!match) return new Response('Not Found', { status: 404 });
+        const resolved = await resolveRequest(manifest, url.pathname, artifacts, renderer);
+        if (resolved.kind === 'redirect') {
+            return new Response(null, { status: resolved.status, headers: { Location: resolved.location } });
+        }
+        if (resolved.kind === 'unavailable') {
+            return new Response('Service Unavailable', {
+                status: 503,
+                headers: { 'Retry-After': String(resolved.retryAfterSeconds), 'Cache-Control': 'no-store' },
+            });
+        }
+        if (resolved.kind === 'notFound') return new Response('Not Found', { status: 404 });
 
         const cookies = parseCookies(request.headers.get('cookie') || '');
-        return fetchPageRequest(match, manifest, url, artifacts, STATIC_BASE_URL, cookies);
+        return fetchPageRequest(resolved.match, manifest, url, artifacts, STATIC_BASE_URL, cookies, renderer);
     } catch (e) {
         console.error('[BaaS] REQUEST FAILED:', url.pathname, e.message, e.stack);
         return errorPage('Request Failed', e, url.pathname);

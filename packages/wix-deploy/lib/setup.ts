@@ -120,6 +120,9 @@ export async function setupWixDeploy(ctx: SetupContext): Promise<SetupResult> {
                         { key: 'sizeBytes', type: 'NUMBER' },
                         { key: 'category', type: 'TEXT' },
                         { key: 'version', type: 'TEXT' },
+                        // instance items (cache.json): their own index entry (Jay DL#227)
+                        { key: 'route', type: 'TEXT' },
+                        { key: 'params', type: 'OBJECT' },
                     ],
                     permissions: {
                         insert: 'ADMIN',

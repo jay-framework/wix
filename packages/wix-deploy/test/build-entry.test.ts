@@ -1,14 +1,14 @@
 // @vitest-environment node
 
 /**
- * Regression test for DL#36 — BaaS Entry Project Action Registration.
+ * Regression test for DL#37 — BaaS Entry Project Action Registration.
  *
  * Bug: build-entry's generateEntrySource bundled and registered PLUGIN action
  * modules only. Project action modules (manifest actions with isPlugin:false +
  * a serverModule, authored as src/actions/*.actions.ts) were never imported or
  * registered, so on Wix BaaS every POST /_jay/actions/<name> for a project
  * action returned 404 ACTION_NOT_FOUND — while self-hosted serve worked.
- * Found in: design-log/36 - baas-entry-project-action-registration.md
+ * Found in: design-log/37 - baas-entry-project-action-registration.md
  * Expected: the generated entry imports each project action module by absolute
  *   path AND adds it to the registerActionsFromModules([...]) array.
  * Actual (before fix): neither the import nor the registration entry is emitted.
@@ -45,7 +45,7 @@ function generate(
     );
 }
 
-describe('generateEntrySource — project action registration (DL#36)', () => {
+describe('generateEntrySource — project action registration (DL#37)', () => {
     it('imports each project action module by absolute path', () => {
         const source = generate([PROJECT_ACTION]);
         expect(source).toContain(
@@ -72,7 +72,7 @@ describe('generateEntrySource — project action registration (DL#36)', () => {
     });
 });
 
-describe('collectLocalActionModules — manifest derivation (DL#36)', () => {
+describe('collectLocalActionModules — manifest derivation (DL#37)', () => {
     const BUILD_DIR = '/build/v1.0.0/backend';
 
     it('keeps only non-plugin actions that have a serverModule, resolved to an absolute path', () => {

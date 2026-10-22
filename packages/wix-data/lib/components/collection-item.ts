@@ -15,6 +15,7 @@ import {
 } from '@jay-framework/fullstack-component';
 import { WIX_DATA_SERVICE_MARKER, WixDataService } from '../services/wix-data-service';
 import { CollectionConfig } from '../types';
+import { SLOW_RENDER_TTL, SLOW_RENDER_GRACE } from '../slow-render-defaults.js';
 
 /**
  * URL parameters for item page routes
@@ -122,6 +123,8 @@ async function renderSlowlyChanging(
                 itemId: item._id!,
                 collectionId: colId,
             },
+            ttl: SLOW_RENDER_TTL,
+            grace: SLOW_RENDER_GRACE,
         }));
 }
 

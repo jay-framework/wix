@@ -38,6 +38,7 @@ import {
     queryCollections as queryCollectionsApi,
 } from '../wix-apis/index.js';
 import { stripWixMediaResize } from '@jay-framework/wix-utils';
+import { SLOW_RENDER_TTL, SLOW_RENDER_GRACE } from '../slow-render-defaults.js';
 
 /**
  * URL parameters for collection page routes
@@ -198,6 +199,8 @@ async function renderSlowlyChanging(
                     products: productData.products,
                     currentOffset: productData.products.length,
                 },
+                ttl: SLOW_RENDER_TTL,
+                grace: SLOW_RENDER_GRACE,
             };
         });
 }

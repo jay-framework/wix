@@ -32,6 +32,7 @@ import { patch, REPLACE } from '@jay-framework/json-patch';
 import { searchProducts, ProductSortField } from '../actions/stores-v1-actions';
 import { WIX_STORES_V1_CONTEXT, WixStoresV1Context } from '../contexts/wix-stores-v1-context';
 import { queryCollections as queryCollectionsApi } from '../wix-apis/index.js';
+import { SLOW_RENDER_TTL, SLOW_RENDER_GRACE } from '../slow-render-defaults.js';
 
 /**
  * Collection info for filtering (V1 uses collections, not categories)
@@ -97,6 +98,8 @@ async function renderSlowlyChanging(props: PageProps, wixStores: WixStoresV1Serv
                     fuzzySearch: false,
                     collections: collectionInfos,
                 },
+                ttl: SLOW_RENDER_TTL,
+                grace: SLOW_RENDER_GRACE,
             };
         });
 }

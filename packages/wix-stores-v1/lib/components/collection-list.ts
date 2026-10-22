@@ -21,6 +21,7 @@ import {
     WixStoresV1Service,
 } from '../services/wix-stores-v1-service';
 import { queryCollections as queryCollectionsApi } from '../wix-apis/index.js';
+import { SLOW_RENDER_TTL, SLOW_RENDER_GRACE } from '../slow-render-defaults.js';
 
 /**
  * Collection item for the list view
@@ -73,6 +74,8 @@ async function renderSlowlyChanging(props: PageProps, wixStores: WixStoresV1Serv
                     hasCategories: collectionItems.length > 0,
                 },
                 carryForward: {},
+                ttl: SLOW_RENDER_TTL,
+                grace: SLOW_RENDER_GRACE,
             };
         });
 }

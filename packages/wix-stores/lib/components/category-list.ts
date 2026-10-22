@@ -10,6 +10,7 @@ import {
 } from '../contracts/category-list.jay-contract';
 import { WIX_STORES_SERVICE_MARKER, WixStoresService } from '../services/wix-stores-service';
 import { queryCategories as queryCategoriesApi } from '../wix-apis/index.js';
+import { SLOW_RENDER_TTL, SLOW_RENDER_GRACE } from '../slow-render-defaults.js';
 
 /**
  * URL parameters for category list.
@@ -95,6 +96,8 @@ async function renderSlowlyChanging(
                     hasCategories: categoryItems.length > 0,
                 },
                 carryForward: {},
+                ttl: SLOW_RENDER_TTL,
+                grace: SLOW_RENDER_GRACE,
             };
         });
 }

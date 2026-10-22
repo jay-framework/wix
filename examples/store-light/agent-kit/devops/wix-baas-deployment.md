@@ -83,8 +83,18 @@ Create a collection named `jay-backend-files` in the Wix dashboard (on the busin
 | `content` | Text | File content |
 | `fileType` | Text | File extension |
 | `sizeBytes` | Number | Content byte length |
-| `category` | Text | `eager` or `lazy` |
+| `category` | Text | `eager`, `lazy` or `instance` |
 | `version` | Text | Build version (semver) |
+| `route` | Text | Instance items only — the route pattern, e.g. `/products/[slug]` |
+| `params` | Object | Instance items only — the route params of the instance |
+
+`instance` items are the slow-render data (`*.cache.json`) of one page instance. The item **is** the instance index: the sitemap / `/_wix/pages.json` list the `instance` items of each route (cached in memory for 10 minutes), and the server creates one when it renders a new item on first request. The runtime therefore needs write access (insert / update / remove) to the collection, not only read.
+
+### Fresh data and new items
+
+- Slow render may return `ttl` / `grace` (seconds). Once an instance is older than its `ttl`, the server serves the stored data right away (`Cache-Control: no-store`, `jay-freshness: stale, <age>ms`) and refreshes the item in the collection in the background; once older than `grace` it waits up to `JAY_STALE_WAIT_MS` (default 2000) for the refresh.
+- A URL with no instance item (for example a product published after the last deploy) is rendered on first request and stored. A slow render answering 404 is remembered for 10 minutes and served as 404; if it cannot render now (all slow-render slots busy, error) the server answers `503` with `Retry-After`.
+- `JAY_SLOW_RENDER_CONCURRENCY` (default 5) caps concurrent slow renders per server instance; there is no queue.
 
 ### 7. Validate setup
 

@@ -19,6 +19,7 @@ import { WIX_STORES_CONTEXT, WixStoresContext } from '../contexts/wix-stores-con
 import { setupCardInteractions } from '../utils/card-interactions.js';
 import { handleError } from '../utils/wix-error-handler';
 import { ProductCardViewState } from '../contracts/product-card.jay-contract';
+import { SLOW_RENDER_TTL, SLOW_RENDER_GRACE } from '../slow-render-defaults.js';
 
 const DEFAULT_LIMIT = 4;
 
@@ -44,6 +45,8 @@ async function renderSlowlyChanging(
         return Pipeline.ok({ categoryName: '' }).toPhaseOutput((viewState) => ({
             viewState,
             carryForward: { products: [] },
+            ttl: SLOW_RENDER_TTL,
+            grace: SLOW_RENDER_GRACE,
         }));
     }
 
@@ -92,6 +95,8 @@ async function renderSlowlyChanging(
         .toPhaseOutput(({ categoryName, products }) => ({
             viewState: { categoryName },
             carryForward: { products },
+            ttl: SLOW_RENDER_TTL,
+            grace: SLOW_RENDER_GRACE,
         }));
 }
 
