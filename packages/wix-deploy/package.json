@@ -39,7 +39,7 @@
     "build:check-types": "tsc",
     "clean": "rimraf dist",
     "confirm": "npm run clean && npm run build && npm run test",
-    "test": ":"
+    "test": "vitest run"
   },
   "dependencies": {
     "@jay-framework/fullstack-component": "^0.25.5",
@@ -61,7 +61,8 @@
     "@jay-framework/jay-stack-cli": "^0.25.5",
     "tsup": "^8.0.0",
     "typescript": "^5.3.3",
-    "vite": "^5.0.0"
+    "vite": "^5.0.0",
+    "vitest": "^1.2.0"
   },
   "engines": {
     "node": ">=20.0.0"

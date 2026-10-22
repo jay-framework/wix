@@ -41,6 +41,7 @@ Design documentation for the Jay Framework Wix integration packages.
 | 33  | [Wix Pro Gallery Plugin](./33%20-%20wix-pro-gallery.md)                                              | Implemented     |
 | 34  | [Direct Member Login on the Page](./34%20-%20direct%20member%20login.md)                             | Implemented     |
 | 35  | [wix-bookings in the Browser](./35%20-%20wix-bookings%20browser%20context.md)                        | Implemented     |
+| 36  | [BaaS Entry — Project Action Registration](./36%20-%20baas-entry-project-action-registration.md)     | Implemented     |
 
 ## Packages Covered
 

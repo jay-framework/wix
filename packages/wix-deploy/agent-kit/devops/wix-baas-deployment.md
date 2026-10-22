@@ -159,6 +159,7 @@ See **Troubleshooting → Local `serve.mjs` vs production** below.
 │ Bundled by esbuild:                                     │
 │  ├── Framework serve code                               │
 │  ├── Plugin code (wix-stores, wix-cart, etc.)           │
+│  ├── Plugin actions + project actions (registered)      │
 │  ├── Server element modules (SSR render functions)      │
 │  ├── ssr-runtime (inlined)                              │
 │  ├── Wix SDK (@wix/sdk, @wix/stores, etc.)             │
@@ -188,6 +189,23 @@ See **Troubleshooting → Local `serve.mjs` vs production** below.
 │  └── pages/**/*.css (route stylesheets)                 │
 └─────────────────────────────────────────────────────────┘
 ```
+
+### Actions on BaaS (plugin and project)
+
+Both kinds of server actions are pre-imported into `entry.mjs` and registered at
+init via `registerActionsFromModules`, so `POST /_jay/actions/<name>` resolves
+without any filesystem lookup:
+
+- **Plugin actions** — from `@jay-framework/wix-*` packages (listed in the route
+  manifest with `isPlugin: true`).
+- **Project actions** — your own `src/actions/*.actions.ts`, compiled to
+  `server/actions/*.js` and listed with `isPlugin: false` + a `serverModule`.
+  `build-entry` bundles each project action module by absolute path and registers
+  it alongside the plugin actions.
+
+`build-entry` fails the build if the manifest lists a project action without a
+`serverModule` (it cannot be bundled) — a published site must never answer 404 for
+an action it lists.
 
 ## Updating After Data Changes
 
@@ -253,6 +271,23 @@ For other runtime 500 causes (e.g. stale `page-parts.json`, fast-phase ViewState
 **Cause:** `@jay-framework/wix-media`, `seo-validator`, or `a11y-validator` in `dependencies` get bundled into `entry.mjs`. They are build-time only.
 
 **Fix:** Move to `devDependencies` in `package.json`, then rebuild and redeploy.
+
+---
+
+### Action returns 404 ACTION_NOT_FOUND on BaaS but works on `serve`
+
+**Symptom:** `POST /_jay/actions/<name>` for one of your own `src/actions/*`
+actions answers `404 {"code":"ACTION_NOT_FOUND"}` on the published site, while the
+dev server and `jay-stack serve` handle it fine.
+
+**Cause:** the project action module was not bundled into `entry.mjs`. Self-hosted
+`serve` registers every manifest action from disk; BaaS registers pre-imported
+modules, so a project action missing from the generated registration 404s.
+
+**Fix:** rebuild the entry (`jay-stack-cli run wix-deploy/build-entry`) with a
+current `wix-deploy` — it now bundles and registers project actions, and fails the
+build if a listed project action has no `serverModule`. Confirm locally: an `OPTIONS`
+to `/_jay/actions/<name>` returns **405** (registered) rather than **404**.
 
 ---
 
