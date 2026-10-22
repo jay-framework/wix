@@ -61,4 +61,34 @@ describe('formContractGenerator', () => {
             checkValidationErrors(parseContract(contract.yaml, 'form-contact.jay-contract')),
         ).not.toThrow();
     });
+
+    /**
+     * Bug: Break B — a real Wix form returns snake_case / kebab-case field
+     * targets (e.g. `first_name`, `phone-number`). jay camelCases every
+     * contract tag into its ViewState accessor and ref name, so the generated
+     * tag MUST be camelCased or the page's `{form.firstName...}` bindings and
+     * `ref="form.firstName.input"` resolve to undefined.
+     * Found in: design-log/38 - per-form contracts for wix-forms.md
+     * Expected: generated tags are `firstName` / `phoneNumber`, never the raw
+     * `first_name` / `phone-number`.
+     */
+    it('should camelCase snake_case and kebab-case field targets into contract tags', async () => {
+        const form: ListedFormView = {
+            id: 'f9',
+            name: 'Snake Form',
+            fields: [
+                { target: 'first_name', label: 'First name', inputType: 'text', required: true, placeholder: '', options: [] },
+                { target: 'phone-number', label: 'Phone', inputType: 'text', required: false, placeholder: '', options: [] },
+            ],
+        };
+
+        const [contract] = await formContractGenerator.generate(serviceWith([form]));
+        const parsed = checkValidationErrors(parseContract(contract.yaml, 'form-snake.jay-contract'));
+        const fieldTags = parsed.tags.map((tag) => tag.tag);
+
+        expect(fieldTags).toContain('firstName');
+        expect(fieldTags).toContain('phoneNumber');
+        expect(fieldTags).not.toContain('first_name');
+        expect(fieldTags).not.toContain('phone-number');
+    });
 });

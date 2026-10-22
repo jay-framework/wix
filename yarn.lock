@@ -2848,6 +2848,7 @@ __metadata:
     "@jay-framework/wix-dev-environment": "workspace:^"
     "@jay-framework/wix-server-client": "npm:^0.25.5"
     "@wix/sdk": "npm:^1.21.5"
+    change-case: "npm:^4.1.2"
     js-yaml: "npm:^4.1.0"
     node-html-parser: "npm:^6.1.0"
     nodemon: "npm:^3.0.3"

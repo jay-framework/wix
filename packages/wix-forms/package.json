@@ -51,6 +51,7 @@
     "@jay-framework/stack-server-runtime": "^0.25.5",
     "@jay-framework/wix-server-client": "^0.25.5",
     "@wix/sdk": "^1.21.5",
+    "change-case": "^4.1.2",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {

@@ -7,6 +7,7 @@
  */
 
 import type { FormFieldView } from '../types.js';
+import { camelCase } from './camel-case.js';
 
 const INDENT = '  ';
 
@@ -94,13 +95,17 @@ export const RESERVED_TAG_NAMES = new Set([
 ]);
 
 /**
- * The contract tag / view-state key for a field. Equals the field's `target`,
- * except when that would collide with a reserved form-level tag — then it is
- * suffixed so both remain bindable (DL#38 OQ-3). Shared by the generator and
- * the component so the generated tag and the runtime view-state key agree.
+ * The contract tag / view-state key / ref name for a field. The field's
+ * `target` is camelCased to match how jay compiles every contract tag into its
+ * ViewState accessor and ref name (Break B — otherwise a `first_name` target
+ * renders `{form.firstName...}` bindings as `undefined`). If the camelCased
+ * name then collides with a reserved form-level tag it is suffixed so both
+ * remain bindable (DL#38 OQ-3). Shared by the generator and the component so
+ * the generated tag, the compiled accessor, and the ref name all agree.
  */
 export function contractTagName(target: string): string {
-    return RESERVED_TAG_NAMES.has(target) ? `${target}Field` : target;
+    const name = camelCase(target);
+    return RESERVED_TAG_NAMES.has(name) ? `${name}Field` : name;
 }
 
 export function toPascalCase(value: string): string {
