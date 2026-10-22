@@ -13,6 +13,7 @@ import {
 } from '@jay-framework/fullstack-component';
 import { WIX_DATA_SERVICE_MARKER, WixDataService } from '../services/wix-data-service';
 import { WixDataItem } from '@wix/wix-data-items-sdk/build/cjs/src/data-v2-data-item-items.universal';
+import { SLOW_RENDER_TTL, SLOW_RENDER_GRACE } from '../slow-render-defaults.js';
 
 /**
  * Props for card widget
@@ -111,6 +112,8 @@ async function renderSlowlyChanging(
         .toPhaseOutput(({ viewState, itemId }) => ({
             viewState,
             carryForward: { itemId },
+            ttl: SLOW_RENDER_TTL,
+            grace: SLOW_RENDER_GRACE,
         }));
 }
 

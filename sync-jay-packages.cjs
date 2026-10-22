@@ -30,7 +30,7 @@ if (args.includes('--help') || args.includes('-h')) {
   console.log('  source-repo-path  Path to the jay source repository');
   console.log('                    Default: ../jay (relative to script location)');
   console.log('');
-  console.log('After syncing, removes each example\'s build folders (dist, build) and');
+  console.log("After syncing, removes each example's build folders (dist, build) and");
   console.log('Vite cache (node_modules/.vite) so they rebuild against the synced packages.');
   console.log('');
   console.log('Examples:');

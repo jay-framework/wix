@@ -47,6 +47,7 @@ import type { V1Product, V1SeoData } from '../wix-apis/types.js';
 import { queryProducts as queryProductsApi } from '../wix-apis/index.js';
 import { stripWixMediaResize } from '@jay-framework/wix-utils';
 import { allOptionsHaveSelection, mapChoice, selectedChoices } from '../utils/product-options.js';
+import { SLOW_RENDER_TTL, SLOW_RENDER_GRACE } from '../slow-render-defaults.js';
 
 /**
  * URL parameters for product page routes
@@ -298,6 +299,8 @@ async function renderSlowlyChanging(
                     stockStatus,
                     variants,
                 },
+                ttl: SLOW_RENDER_TTL,
+                grace: SLOW_RENDER_GRACE,
             };
         });
 }

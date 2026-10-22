@@ -30,9 +30,11 @@ const SKIP_EXTENSIONS = new Set([
 ]);
 const MAX_BATCH_BYTES = 400_000;
 
-function categorize(relativePath: string): 'eager' | 'lazy' {
+function categorize(relativePath: string): 'eager' | 'lazy' | 'instance' {
     if (relativePath === 'route-manifest.json') return 'eager';
     if (relativePath === 'build-metadata.json') return 'eager';
+    // Each instance's cache.json is its own index entry (Jay Design Log #227).
+    if (relativePath.endsWith('.cache.json')) return 'instance';
     return 'lazy';
 }
 
@@ -40,7 +42,7 @@ interface FileEntry {
     relativePath: string;
     fullPath: string;
     sizeBytes: number;
-    category: 'eager' | 'lazy';
+    category: 'eager' | 'lazy' | 'instance';
 }
 
 function scanFileEntries(
@@ -142,11 +144,23 @@ export const uploadBackend = makeCliCommand('upload-backend')
 
             for (let i = 0; i < batches.length; i++) {
                 const batch = batches[i];
-                const files = batch.map((f) => ({
-                    path: f.relativePath,
-                    content: fs.readFileSync(f.fullPath, 'utf8'),
-                    category: f.category as 'eager' | 'lazy',
-                }));
+                const files = batch.map((f) => {
+                    const content = fs.readFileSync(f.fullPath, 'utf8');
+                    // Instance cache files carry their own `route` + `params` (index fields).
+                    const index =
+                        f.category === 'instance'
+                            ? JSON.parse(content)
+                            : ({} as Record<string, any>);
+                    return {
+                        path: f.relativePath,
+                        content,
+                        category: f.category,
+                        ...(f.category === 'instance' && {
+                            route: index.route as string,
+                            params: index.params as Record<string, string>,
+                        }),
+                    };
+                });
 
                 const count = await store.writeFiles(files);
                 uploaded += count;

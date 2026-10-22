@@ -57,6 +57,7 @@ import {
     mapVariantStock,
     pickDefaultVariant,
 } from '../utils/purchasable';
+import { SLOW_RENDER_TTL, SLOW_RENDER_GRACE } from '../slow-render-defaults.js';
 
 /**
  * Extract user-defined extended fields from the product response.
@@ -512,6 +513,8 @@ async function renderSlowlyChanging(
                             : StockStatus.OUT_OF_STOCK,
                     variants: mapVariants(variantsInfo, product.currency, wixStores.locale),
                 },
+                ttl: SLOW_RENDER_TTL,
+                grace: SLOW_RENDER_GRACE,
             };
         });
 }

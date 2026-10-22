@@ -19,6 +19,7 @@ import { WIX_DATA_SERVICE_MARKER, WixDataService } from '../services/wix-data-se
 import { getComponentFields, isComponentEnabled } from '../types';
 import { queryItems } from '../actions/data-actions';
 import { WixDataItem } from '@wix/wix-data-items-sdk';
+import { SLOW_RENDER_TTL, SLOW_RENDER_GRACE } from '../slow-render-defaults.js';
 
 const PAGE_SIZE = 20;
 
@@ -311,6 +312,8 @@ async function renderSlowlyChanging(
                 slugField: data.slugField,
                 fieldWhitelist: data.fieldWhitelist,
             },
+            ttl: SLOW_RENDER_TTL,
+            grace: SLOW_RENDER_GRACE,
         }));
 }
 

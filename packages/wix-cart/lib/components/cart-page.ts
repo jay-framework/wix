@@ -23,6 +23,7 @@ import { WIX_CART_SERVICE, WixCartService } from '../services/wix-cart-service-m
 import { WIX_CART_CONTEXT, WixCartContext } from '../contexts/wix-cart-context';
 import { CartState, CartLineItem } from '../contexts/cart-helpers';
 import { patch, REPLACE } from '@jay-framework/json-patch';
+import { SLOW_RENDER_TTL, SLOW_RENDER_GRACE } from '../slow-render-defaults.js';
 
 // ============================================================================
 // Types
@@ -138,6 +139,8 @@ async function renderSlowlyChanging(_props: PageProps, _wixCart: WixCartService)
             emptyCartMessage: 'Your cart is empty',
         },
         carryForward: {},
+        ttl: SLOW_RENDER_TTL,
+        grace: SLOW_RENDER_GRACE,
     }));
 }
 

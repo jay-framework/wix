@@ -17,6 +17,7 @@ import { WIX_STORES_CONTEXT, WixStoresContext } from '../contexts/wix-stores-con
 import { handleError } from '../utils/wix-error-handler';
 import { getProductBySlug } from '../actions/stores-actions.js';
 import { ProductCardViewState, QuickAddType } from '../contracts/product-card.jay-contract';
+import { SLOW_RENDER_TTL, SLOW_RENDER_GRACE } from '../slow-render-defaults.js';
 
 export interface ProductSpotlightProps {
     slug: string;
@@ -89,6 +90,8 @@ async function renderSlowlyChanging(
                     },
                 },
                 carryForward: { product },
+                ttl: SLOW_RENDER_TTL,
+                grace: SLOW_RENDER_GRACE,
             };
         });
 }

@@ -30,6 +30,7 @@ import {
 import { formatWixMediaUrl } from '@jay-framework/wix-utils';
 import { SearchProductsInput, SearchProductsOutput } from '../actions/search-products.jay-action';
 import { handleError } from '../utils/wix-error-handler';
+import { SLOW_RENDER_TTL, SLOW_RENDER_GRACE } from '../slow-render-defaults.js';
 
 /**
  * Category info carried forward from slow to fast phase
@@ -509,6 +510,8 @@ async function renderSlowlyChanging(
                     preloadedResult: productsResult,
                     baseOptionFilters,
                 },
+                ttl: SLOW_RENDER_TTL,
+                grace: SLOW_RENDER_GRACE,
             };
         });
 }

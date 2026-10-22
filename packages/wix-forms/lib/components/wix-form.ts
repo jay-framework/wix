@@ -18,6 +18,11 @@ import { WIX_FORMS_SERVICE, type WixFormsService } from '../services/wix-forms-s
 import type { FormFieldErrorView, FormFieldView } from '../types.js';
 import { submitForm } from '../actions/forms-actions.js';
 import { parseSubmissionFieldErrors, validateFormField } from '../utils/project-form-fields.js';
+import {
+    SLOW_RENDER_TTL,
+    SLOW_RENDER_GRACE,
+    SLOW_RENDER_ERROR_TTL,
+} from '../slow-render-defaults.js';
 
 export interface WixFormProps {
     formId?: string;
@@ -68,6 +73,7 @@ async function renderSlowlyChanging(props: WixFormProps, forms: WixFormsService)
                 options,
             },
             { formId, fields, options },
+            { ttl: SLOW_RENDER_TTL, grace: SLOW_RENDER_GRACE },
         );
     } catch (error) {
         const rawMessage = error instanceof Error ? error.message : 'Could not load the form.';
@@ -78,6 +84,7 @@ async function renderSlowlyChanging(props: WixFormProps, forms: WixFormsService)
         return phaseOutput<WixFormSlowViewState, WixFormCarryForward>(
             { fields: [], options: [] },
             { formId: props.formId ?? '', fields: [], options: [], loadError: message },
+            { ttl: SLOW_RENDER_ERROR_TTL },
         );
     }
 }

@@ -19,6 +19,7 @@ import { WIX_DATA_CONTEXT, WixDataContext } from '../contexts/wix-data-context';
 import { CollectionConfig } from '../types';
 import { isTableField } from '../generators/contract-utils';
 import { WixDataItem } from '@wix/wix-data-items-sdk/build/cjs/src/data-v2-data-item-items.universal';
+import { SLOW_RENDER_TTL, SLOW_RENDER_GRACE } from '../slow-render-defaults.js';
 
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -176,6 +177,8 @@ async function renderSlowlyChanging(
                 pageSize: data.pageSize,
                 totalCount: data.totalCount,
             },
+            ttl: SLOW_RENDER_TTL,
+            grace: SLOW_RENDER_GRACE,
         }));
 }
 
