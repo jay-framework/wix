@@ -8,7 +8,7 @@ export interface WixFormsService {
     /**
      * Enumerate every form in the configured namespace (build time), each with
      * its projected visible fields. Cached for the build process so List runs
-     * once and is shared by the generator and the agent-kit reference (DL#36).
+     * once and is shared by the generator and the agent-kit reference (DL#38).
      */
     listForms(): Promise<ListedFormView[]>;
     /** Load one form's fields by id (runtime slow phase). */

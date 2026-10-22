@@ -56,7 +56,7 @@ describe('validateWixFormBindings', () => {
         expect(findings).toEqual([
             expect.objectContaining({
                 severity: 'error',
-                message: 'Binding "contact.fields" uses the generic form-fields array removed in DL#36.',
+                message: 'Binding "contact.fields" uses the generic form-fields array removed in DL#38.',
                 attribute: 'fields',
             }),
         ]);
@@ -93,7 +93,7 @@ describe('validateWixFormBindings', () => {
             expect.objectContaining({
                 severity: 'error',
                 message:
-                    'Contract "wix-form" was removed in DL#36 — forms now use a per-form contract "form/<slug>".',
+                    'Contract "wix-form" was removed in DL#38 — forms now use a per-form contract "form/<slug>".',
             }),
         ]);
     });

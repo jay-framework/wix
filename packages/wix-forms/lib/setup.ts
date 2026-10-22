@@ -15,7 +15,7 @@ import { elementTypeFor } from './generators/contract-utils.js';
 
 const CONFIG_FILE = '.wix-forms.yaml';
 
-// Per-form contracts are auto-generated for every enabled form in the namespace (DL#36).
+// Per-form contracts are auto-generated for every enabled form in the namespace (DL#38).
 // All config is an OPTIONAL filter/override — absent config generates every form.
 const CONFIG_TEMPLATE = `# Wix Forms configuration (optional).
 #
@@ -105,7 +105,7 @@ export async function generateWixFormsAgentKit(
             {
                 _generated: new Date().toISOString(),
                 _description:
-                    'Wix Forms per-form contracts for agent discovery (DL#36). ' +
+                    'Wix Forms per-form contracts for agent discovery (DL#38). ' +
                     'Bind explicit field tags, e.g. {contact.email.label}, ref="contact.email.input".',
                 namespace: formsService.config.namespace,
                 totalForms: formSummaries.length,

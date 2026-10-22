@@ -1,5 +1,5 @@
 /**
- * Shared Wix Form component (DL#36).
+ * Shared Wix Form component (DL#38).
  *
  * One schema-agnostic component serves every per-form contract. It reads the
  * form identity from `props.metadata.formId` (set by the generator), loads that

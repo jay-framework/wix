@@ -29,7 +29,7 @@ export interface FormFieldErrorView {
     errorMessage: string;
 }
 
-/** A form enumerated at build time, with its projected visible fields (DL#36). */
+/** A form enumerated at build time, with its projected visible fields (DL#38). */
 export interface ListedFormView {
     id: string;
     name: string;

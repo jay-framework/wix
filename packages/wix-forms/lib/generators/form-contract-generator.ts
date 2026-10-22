@@ -1,5 +1,5 @@
 /**
- * Per-form contract generator (DL#36).
+ * Per-form contract generator (DL#38).
  *
  * Runs in the jay agent-kit phase: enumerates every form in the configured
  * namespace via List Forms and emits one contract per form, with tags named
@@ -18,7 +18,7 @@ import { computeFormSlugs } from './form-slug.js';
  * Build one per-form contract YAML.
  *
  * `slug` is the registered contract slug (`form/<slug>`); the YAML's own
- * `name:` is PascalCase(slug) + "Form" (DL#36 §3).
+ * `name:` is PascalCase(slug) + "Form" (DL#38 §3).
  */
 function buildContract(form: ListedFormView, slug: string): string {
     const fieldTags = form.fields.map((field) => fieldTag(field));
@@ -44,7 +44,7 @@ export const generator = makeContractGenerator()
             console.log(`[wix-forms] Generated form contract: form/${slug}`);
             return {
                 // The materializer kebab-cases this into `form/<name>`; the slug is
-                // already kebab, so it registers as `form/<slug>` exactly (DL#36).
+                // already kebab, so it registers as `form/<slug>` exactly (DL#38).
                 name: slug,
                 yaml: buildContract(form, slug),
                 description: describe(form),

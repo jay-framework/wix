@@ -1,5 +1,5 @@
 /**
- * Deterministic, ordering-independent form slugs (DL#36 OQ-5 / Note B).
+ * Deterministic, ordering-independent form slugs (DL#38 OQ-5 / Note B).
  *
  * A form's slug is the kebab-cased form name. When two or more forms share the
  * same kebab name, EVERY colliding form is suffixed with a stable prefix of its

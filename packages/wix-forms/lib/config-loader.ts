@@ -4,7 +4,7 @@ import yaml from 'js-yaml';
 import type { FormInclude } from './wix-apis/list-forms.js';
 
 /**
- * Wix Forms config (DL#36 §1).
+ * Wix Forms config (DL#38 §1).
  *
  * Optional filter/override for per-form contract generation — NOT a form list.
  * Absent config → generate every enabled form in the default namespace.
@@ -20,7 +20,7 @@ export interface WixFormsConfig {
 
 /**
  * The standalone Wix Forms namespace (OQ-8).
- * ⚠️ Confirm against a live site's List Forms response — see DL#36 Implementation Results.
+ * ⚠️ Confirm against a live site's List Forms response — see DL#38 Implementation Results.
  */
 export const DEFAULT_FORMS_NAMESPACE = 'wix.form_app.form';
 

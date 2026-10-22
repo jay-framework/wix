@@ -9,7 +9,7 @@ import type { RawFormField } from './get-form.js';
  * namespace, each already carrying its full `formFields` schema — so a single
  * (cursor-paged) call yields everything needed to generate per-form contracts
  * at build time, with no per-form `getFormSchema` fetch. Sibling of
- * `get-form.ts`; same `wixFetch` pattern (DL#36, OQ-1).
+ * `get-form.ts`; same `wixFetch` pattern (DL#38, OQ-1).
  */
 
 export interface ListedForm {
@@ -25,7 +25,7 @@ interface ListFormsResponse {
     };
 }
 
-/** Which forms to enumerate — maps to the List Forms `enabled`/`disabled` filter (DL#36 config). */
+/** Which forms to enumerate — maps to the List Forms `enabled`/`disabled` filter (DL#38 config). */
 export type FormInclude = 'enabled' | 'disabled' | 'all';
 
 export interface ListFormsParams {

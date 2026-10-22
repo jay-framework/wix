@@ -1,4 +1,4 @@
-Per-form contracts for wix-forms (DL#36).
+Per-form contracts for wix-forms (DL#38).
 
 ## One contract per form, with field-named tags
 
@@ -64,6 +64,6 @@ Form-level tags stay at the top level: `isLoading`, `loadError`, `isSubmitting`,
 
 Never write `forEach="contact.fields"`, `{contact.fields...}`, or
 `ref="contact.fields.formInputs"`. These bind the generic repeated array removed
-in DL#36. The `wix-forms-bindings` validator flags leftover `.fields` bindings
+in DL#38. The `wix-forms-bindings` validator flags leftover `.fields` bindings
 and unknown field tags used as refs, with a migration message. There is no
 `formId` prop and no `defaultFormId` — form identity is fixed by the contract.

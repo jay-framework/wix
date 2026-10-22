@@ -5,7 +5,7 @@ Wix Forms plugin setup — dynamic forms and shared getFormSummary action.
 Per-form headless contracts (one per Wix form) and two server actions:
 
 - **form/&lt;slug&gt;** — one contract generated per Wix form at agent-kit time, with
-  tags named after that form's fields. See `per-form-contracts.md` (DL#36).
+  tags named after that form's fields. See `per-form-contracts.md` (DL#38).
 - **getFormSummary** — returns participant field schema for other plugins (e.g. wix-bookings)
 - **submitForm** — submits form values to Wix Forms
 
@@ -58,7 +58,7 @@ Each form has its own contract `form/<slug>`. Discover slugs and field names in
 </form>
 ```
 
-See `per-form-contracts.md` for the full contract shape and binding rules (DL#36).
+See `per-form-contracts.md` for the full contract shape and binding rules (DL#38).
 
 ## Cross-plugin use: getFormSummary
 

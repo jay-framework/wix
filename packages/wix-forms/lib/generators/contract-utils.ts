@@ -1,9 +1,9 @@
 /**
- * Contract YAML building blocks for per-form contract generation (DL#36).
+ * Contract YAML building blocks for per-form contract generation (DL#38).
  *
  * Small, self-contained helpers copied in the spirit of wix-data's
  * `contract-utils` so wix-forms stays independent of wix-data internals
- * (DL#36 §4). Each builder returns a YAML fragment at a given indent.
+ * (DL#38 §4). Each builder returns a YAML fragment at a given indent.
  */
 
 import type { FormFieldView } from '../types.js';
@@ -15,7 +15,7 @@ function pad(level: number): string {
     return INDENT.repeat(level);
 }
 
-/** Interactive element type for a field, chosen per DL#36 §3 field-type mapping. */
+/** Interactive element type for a field, chosen per DL#38 §3 field-type mapping. */
 export function elementTypeFor(field: FormFieldView): string {
     switch (field.inputType) {
         case 'textarea':
@@ -72,7 +72,7 @@ function optionsSubContract(level: number): string[] {
     ];
 }
 
-/** Reserved form-level tags, kept at the top level (DL#36 §3). */
+/** Reserved form-level tags, kept at the top level (DL#38 §3). */
 export function reservedFormTags(level = 1): string {
     const item = pad(level);
     return [
@@ -84,7 +84,7 @@ export function reservedFormTags(level = 1): string {
     ].join('\n');
 }
 
-/** Names reserved for form-level tags — a field whose target collides is suffixed (DL#36 OQ-3). */
+/** Names reserved for form-level tags — a field whose target collides is suffixed (DL#38 OQ-3). */
 export const RESERVED_TAG_NAMES = new Set([
     'isLoading',
     'loadError',
@@ -96,7 +96,7 @@ export const RESERVED_TAG_NAMES = new Set([
 /**
  * The contract tag / view-state key for a field. Equals the field's `target`,
  * except when that would collide with a reserved form-level tag — then it is
- * suffixed so both remain bindable (DL#36 OQ-3). Shared by the generator and
+ * suffixed so both remain bindable (DL#38 OQ-3). Shared by the generator and
  * the component so the generated tag and the runtime view-state key agree.
  */
 export function contractTagName(target: string): string {
