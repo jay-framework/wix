@@ -10,6 +10,7 @@
  */
 
 const URLS = [
+  'https://npm.dev.wixpress.com/@types%2fchai',
   'https://npm.dev.wixpress.com/api/npm/npm-repos/@jay-framework/stack-server-runtime/-/stack-server-runtime-0.25.5.tgz',
   'https://npm.dev.wixpress.com/api/npm/npm-repos/@jay-framework/typescript-bridge/-/typescript-bridge-0.25.5.tgz',
   'https://npm.dev.wixpress.com/api/npm/npm-repos/@jay-framework/seo-validator/-/seo-validator-0.25.5.tgz',

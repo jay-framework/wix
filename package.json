@@ -48,7 +48,21 @@
     "wsrun": "^5.2.4"
   },
   "resolutions": {
-    "@wix/sdk-runtime": "1.0.11"
+    "@wix/sdk-runtime": "1.0.11",
+    "vite": "^6.4.4",
+    "vitest": "^4.1.11",
+    "@types/node": "^22.20.1",
+    "proxy-addr": "^2.0.8",
+    "shell-quote": "^1.11.0",
+    "undici": "^8.10.2",
+    "compression": "^1.8.2",
+    "follow-redirects": "^1.16.1",
+    "fast-uri": "^3.1.8",
+    "underscore": "^1.13.8",
+    "source-map-js": "^1.2.2",
+    "qs": "^6.16.0",
+    "launch-editor": "^2.14.2",
+    "colord": "^2.9.4"
   },
   "engines": {
     "node": ">=20.0.0"

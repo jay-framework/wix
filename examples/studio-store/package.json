@@ -30,7 +30,7 @@
     "@jay-framework/wix-deploy": "workspace:^",
     "@jay-framework/wix-server-client": "workspace:^",
     "@jay-framework/wix-stores": "workspace:^",
-    "compression": "^1.7.5",
+    "compression": "^1.8.2",
     "express": "^5.0.1",
     "sirv": "^3.0.0"
   },
@@ -45,6 +45,6 @@
     "cross-env": "^7.0.3",
     "rimraf": "^5.0.5",
     "typescript": "~5.7.2",
-    "vite": "^6.0.1"
+    "vite": "^6.4.4"
   }
 }
