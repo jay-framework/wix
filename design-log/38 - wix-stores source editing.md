@@ -260,3 +260,52 @@ Target source: page.jay-html L42 <img src="{productPage.mediaGallery.selectedMed
 3. On a 0.25.5 project, `agent-kit/plugins-index.yaml` lists the three actions and the `product-page` description pointer, and `agent-kit/designer/INSTRUCTIONS.md` lists both guides.
 4. Live: after `updateProductMainImage`, `GET /stores/v3/products/{id}` returns `media.main` = the new image. The dev page shows it after the refresh step.
 5. Demo: an AIditor comment "change this image to <url>" on the product image updates the Stores catalog, and the jay-html diff is empty.
+
+## Implementation Results
+
+Phases 1–3 implemented. Phase 4 (live verification + AIditor demo) is pending.
+
+### Files
+
+- `lib/wix-apis/types.ts`: `V3Product.revision`; write types `WritableProductMediaItem`, `ProductUpdate`, `UpdateProductResponse`.
+- `lib/wix-apis/update-product.ts` (+ `wix-apis/index.ts` export): `PATCH /stores/v3/products/{id}`, body `{ product: { id, revision, ...patch }, fields? }`, response normalized like the reads.
+- `lib/editing/media-items.ts`: `buildMainImageItems`, `isSupportedImageUrl`.
+- `lib/editing/editing-actions.ts`: `getProductForEditing` (`makeJayQuery`, no caching), `updateProductMainImage`, `updateProductText` (`makeJayAction`). Exported only from `lib/tools.ts`; `dist/index.js` and `dist/index.client.js` do not contain them.
+- `lib/actions/{get-product-for-editing,update-product-main-image,update-product-text}.jay-action`; `plugin.yaml` `actions:` entries with `devOnly: true`; `package.json` exports for the three files (required: `jay-stack` resolves an npm plugin's action metadata through `<package>/<file>.jay-action`).
+- `plugin.yaml` contracts: `editingGuide` on `product-search`, `category-products`, `product-spotlight`, and on the `product-page` dynamic contract (forward-compat); `readonly: true` on `category-list`; description pointers on the three static contracts.
+- `product-page` description pointer in both `lib/contracts/product-page.jay-contract` and `lib/generators/product-page-contract-generator.ts` (identical text).
+- Guides: `agent-kit/designer/wix-stores-editing-product-page.md`, `agent-kit/designer/wix-stores-editing-product-cards.md`; "Source editing" section in `agent-kit/designer/store-configuration.md`; README "Source Editing (dev only)" section.
+- Tests: `test/editing/media-items.test.ts`, `test/editing/editing-actions.test.ts`, `test/wix-apis/update-product.test.ts`; fixtures in `test/fixtures/edit-main-image/` and `test/fixtures/editing-actions/` (hand-written from the Catalog V3 REST typings).
+
+### Test results
+
+- `packages/wix-stores`: **67/67** passing (40 existing + 27 new: 11 media-items, 2 update-product, 14 editing-actions).
+- `npm run build` passes, including `validate-plugin` ("Plugin validation successful!"). `tsc` clean.
+- Registration check in `examples/store` (Jay 0.25.5): `jay-stack-cli action wix-stores/getProductForEditing --input '{}' -v` logs "Loaded metadata … / Registered NPM plugin action" for all three actions from `./tools`. Execution stops at the missing Wix Store service because the example has no Wix credentials, which is expected. No real Wix API was called.
+
+### Deviations from the design
+
+1. **REST field names in the write body.** §2 writes existing items as `{ _id }` (SDK naming). `wixFetch` calls REST directly, and the SDK's `updateProduct` renames `_id` → `id` before sending (`renameKeysFromSDKRequestToRESTRequest` in `@wix/auto_sdk_stores_products-v-3`). So items are sent as `{ id }`, as is `product.id`, which §2 already did.
+2. **Existing items keep their `altText`** (`{ id, altText }`). Re-sending only `{ id }` would wipe alt text from the rest of the gallery, because the array is overwritten as a whole. An existing item without an id (not expected) is re-sent by `url`.
+3. **Extra error codes**, beyond the three in §3: `INVALID_IMAGE_URL` (imageUrl is neither http(s) nor `wix:image://`, checked before any API call), `NOTHING_TO_UPDATE` (`updateProductText` without `name`/`plainDescription`), `REVISION_CONFLICT` (the single retry also got 409), and `WIX_API_ERROR` (anything else, with status + body).
+4. **The read always requests `MEDIA_ITEMS_INFO` + `PLAIN_DESCRIPTION`.** §2 lists only `MEDIA_ITEMS_INFO`. `getProductForEditing` returns the description, and every write path shares one read.
+5. **`productId` wins when both `slug` and `productId` are given** (exact key, no slug lookup).
+6. **CLI binary.** The guides use `npx jay-stack-cli action wix-stores/<action> --input '<json>'`, not `jay-stack action`. The package's `bin` is a bare path, so the installed command is `jay-stack-cli`, matching the examples' scripts. The `<plugin>/` prefix is not checked by 0.25.5: the action is matched by name suffix.
+7. **`.jay-action` optional syntax** is `slug?: string` (the repo's existing form), not `slug: string?` as written in §3.
+8. **The "no URL" guidance drops the `uploadMediaFile` route from Q3.** That action takes a multipart file and returns a `fileId`, not a URL, so it cannot be driven through `jay-stack-cli action --input`. The guides offer an http(s) URL or an existing `wix:image://` from the wix-media index.
+
+### Still assumed (verify in Phase 4)
+
+- Wix ingests an external `url` quickly enough that the PATCH response carries `media.main.url` (`mainImageUrl` is `''` otherwise).
+- A revision conflict is HTTP 409.
+- An mtime-only `touch` of `page.jay-html` clears the 0.25.5 dev slow-render cache.
+
+### Phase 4 — live verification (2026-10-25)
+
+Demo store: a new Wix Headless site from the `commerce` template (Catalog V3, Stores pre-installed), a Jay 0.25.5 project from `create-jay --plugins "Wix Stores"` with this build copied into `node_modules`, `apiKeyStrategy` credentials.
+
+- ✅ `getProductForEditing({slug})` via `npx jay-stack-cli action` returned id, revision and both gallery items.
+- ✅ `updateProductMainImage` (direct CLI call, on a scratch product, then restored): PATCH succeeded, revision 1 → 2, and the response already carried `mainImageUrl`.
+- ✅ **New finding:** Wix imports an external `url` as a **new** Media Manager file (new id), even when the URL points at a file already in the site's media. Replacing the main with a gallery image therefore leaves that image twice in the gallery (imported copy + original). Follow-up: when `imageUrl` resolves to an existing item (`static.wixstatic.com/media/<id>` or `wix:image://`), reorder that item to the front by `id` instead of importing.
+- ✅ **AIditor end-to-end** (`e2e-3-wix-stores-image-20261025.mp4`): comment "Use the lifestyle photo as the main product image: <url>" on the bound product image → the agent followed the product-page guide and updated the Stores catalog (live API: `media.main` changed, revision 1 → 2); project `src/` unchanged. The preview showed the new image while the run was still finishing — consistent with the guide's `touch` refresh step (the dev log does not print cache-clear messages at the default level, so the mechanism is not directly confirmed).
+- ⚠️ Still unverified: the revision-conflict status (no conflict occurred).

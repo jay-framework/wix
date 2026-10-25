@@ -8,6 +8,7 @@ export type {
 } from './search-products.js';
 export { getProduct } from './get-product.js';
 export { getProductBySlug } from './get-product-by-slug.js';
+export { updateProduct } from './update-product.js';
 export { queryCategories } from './query-categories.js';
 export { getCategory } from './get-category.js';
 export { queryInventory } from './query-inventory.js';

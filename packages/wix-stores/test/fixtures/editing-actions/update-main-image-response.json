@@ -1,0 +1,28 @@
+{
+  "product": {
+    "id": "prod-air-runner",
+    "slug": "air-runner",
+    "revision": "8",
+    "media": {
+      "main": {
+        "id": "c837a6_red~mv2.jpg",
+        "image": { "url": "https://static.wixstatic.com/media/c837a6_red~mv2.jpg" },
+        "mediaType": "IMAGE"
+      },
+      "itemsInfo": {
+        "items": [
+          {
+            "id": "c837a6_red~mv2.jpg",
+            "image": { "url": "https://static.wixstatic.com/media/c837a6_red~mv2.jpg" },
+            "mediaType": "IMAGE"
+          },
+          {
+            "id": "c837a6_back~mv2.jpg",
+            "image": { "url": "https://static.wixstatic.com/media/c837a6_back~mv2.jpg" },
+            "mediaType": "IMAGE"
+          }
+        ]
+      }
+    }
+  }
+}

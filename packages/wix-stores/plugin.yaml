@@ -5,20 +5,25 @@ contracts:
   - name: product-search
     contract: product-search.jay-contract
     component: productSearch
-    description: Headless product search page
+    description: 'Headless product search page. Editing products shown here: agent-kit/designer/wix-stores-editing-product-cards.md'
+    editingGuide: ./agent-kit/designer/wix-stores-editing-product-cards.md
   # category-page removed — use product-search with prefix/category params instead
   - name: category-products
     contract: category-products.jay-contract
     component: categoryProducts
-    description: Products from a category — use for showcases or as related products (exclude current product via productId)
+    description: 'Products from a category — use for showcases or as related products (exclude current product via productId). Editing products shown here: agent-kit/designer/wix-stores-editing-product-cards.md'
+    editingGuide: ./agent-kit/designer/wix-stores-editing-product-cards.md
   - name: product-spotlight
     contract: product-spotlight.jay-contract
     component: productSpotlight
-    description: A single product card by product ID — use to feature a product on any page
+    description: 'A single product card by product ID — use to feature a product on any page. Editing the product shown here: agent-kit/designer/wix-stores-editing-product-cards.md'
+    editingGuide: ./agent-kit/designer/wix-stores-editing-product-cards.md
   - name: category-list
     contract: category-list.jay-contract
     component: categoryList
     description: Category list listing the categories
+    # Category editing is out of scope for source editing (DL #38)
+    readonly: true
 
 # Dynamic contracts — materialized at setup time from site-specific data
 dynamic_contracts:
@@ -26,6 +31,8 @@ dynamic_contracts:
   - prefix: 'product-page'
     component: productPage
     generator: productPageContractGenerator
+    # Forward-compat (DL #38): not yet read on dynamic_contracts; the contract description carries the pointer
+    editingGuide: ./agent-kit/designer/wix-stores-editing-product-page.md
     headTags:
       - title
       - meta:description
@@ -40,6 +47,16 @@ actions:
     action: get-categories.jay-action
   - name: getVariantStock
     action: get-variant-stock.jay-action
+  # devOnly source-editing actions (DL #38) — exported from ./tools, never registered in production
+  - name: getProductForEditing
+    action: get-product-for-editing.jay-action
+    devOnly: true
+  - name: updateProductMainImage
+    action: update-product-main-image.jay-action
+    devOnly: true
+  - name: updateProductText
+    action: update-product-text.jay-action
+    devOnly: true
 
 services:
   - name: wix-stores

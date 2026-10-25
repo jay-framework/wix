@@ -1,0 +1,14 @@
+{
+  "product": {
+    "id": "prod-air-runner",
+    "slug": "air-runner",
+    "revision": "8",
+    "media": {
+      "main": {
+        "id": "c837a6_red~mv2.jpg",
+        "image": { "url": "https://static.wixstatic.com/media/c837a6_red~mv2.jpg" },
+        "mediaType": "IMAGE"
+      }
+    }
+  }
+}

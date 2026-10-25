@@ -127,6 +127,8 @@ export interface SeoKeyword {
 
 export interface V3Product {
     _id?: string;
+    /** Optimistic-concurrency token; required by updateProduct. */
+    revision?: string;
     name?: string;
     slug?: string;
     plainDescription?: string;
@@ -177,6 +179,27 @@ export interface GetProductResponse {
 }
 
 export interface GetProductBySlugResponse {
+    product?: V3Product;
+}
+
+// Update types (REST request shape — proto field names, `id` not `_id`)
+
+/** A media item as written to the REST API: an existing Media Manager file by `id`, or an external `url`. */
+export interface WritableProductMediaItem {
+    id?: string;
+    url?: string;
+    altText?: string;
+}
+
+export interface ProductUpdate {
+    id: string;
+    revision: string;
+    name?: string;
+    plainDescription?: string;
+    media?: { itemsInfo: { items: WritableProductMediaItem[] } };
+}
+
+export interface UpdateProductResponse {
     product?: V3Product;
 }
 

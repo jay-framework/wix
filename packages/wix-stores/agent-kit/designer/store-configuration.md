@@ -65,3 +65,7 @@ Match templates to your real routes under `src/pages/`. Run `jay-stack agent-kit
 | Locale | Cards + PDP | Cards only (PDP follow-up) |
 | Manual grid order | API / sort | `productOrder` slug list |
 | Categories | V3 category API | V1 collections |
+
+## Source editing
+
+The devOnly editing actions (`updateProductMainImage`, `updateProductText`) write to the Wix Stores catalog. They need `apiKeyStrategy` in `config/.wix.yaml` with an API key that has the Wix Stores **Manage Products** permission; with visitor/OAuth-only config they fail with `WRITE_NOT_AUTHORIZED`. See `wix-stores-editing-product-page.md` and `wix-stores-editing-product-cards.md`.

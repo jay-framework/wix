@@ -1,0 +1,20 @@
+name: updateProductMainImage
+description: >-
+  DEV ONLY — source editing. Replace a Wix Stores product's main image in the Stores catalog
+  (the image shown on product-page and product cards). Identify the product by slug (product-page
+  route param) or productId (product-card forEach itemId). imageUrl is a public http(s) URL or a
+  wix:image:// Media Manager URL. keepPrevious keeps the old main image in the gallery.
+  See agent-kit/designer/wix-stores-editing-product-page.md.
+
+inputSchema:
+  slug?: string
+  productId?: string
+  imageUrl: string
+  altText?: string
+  keepPrevious?: boolean
+
+outputSchema:
+  productId: string
+  slug: string
+  revision: string
+  mainImageUrl: string

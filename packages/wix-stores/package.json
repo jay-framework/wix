@@ -34,7 +34,10 @@
     "./search-products.jay-action": "./dist/actions/search-products.jay-action",
     "./get-product-by-slug.jay-action": "./dist/actions/get-product-by-slug.jay-action",
     "./get-categories.jay-action": "./dist/actions/get-categories.jay-action",
-    "./get-variant-stock.jay-action": "./dist/actions/get-variant-stock.jay-action"
+    "./get-variant-stock.jay-action": "./dist/actions/get-variant-stock.jay-action",
+    "./get-product-for-editing.jay-action": "./dist/actions/get-product-for-editing.jay-action",
+    "./update-product-main-image.jay-action": "./dist/actions/update-product-main-image.jay-action",
+    "./update-product-text.jay-action": "./dist/actions/update-product-text.jay-action"
   },
   "scripts": {
     "build": "npm run clean && npm run definitions && npm run build:client && npm run build:server && npm run build:copy-contract && npm run build:types && npm run validate",

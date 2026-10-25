@@ -1,0 +1,19 @@
+name: updateProductText
+description: >-
+  DEV ONLY — source editing. Update a Wix Stores product's name and/or description in the Stores
+  catalog. Identify the product by slug (product-page route param) or productId (product-card
+  forEach itemId). plainDescription must be valid HTML (e.g. "<p>Light and fast.</p>").
+  See agent-kit/designer/wix-stores-editing-product-page.md.
+
+inputSchema:
+  slug?: string
+  productId?: string
+  name?: string
+  plainDescription?: string
+
+outputSchema:
+  productId: string
+  slug: string
+  revision: string
+  name: string
+  plainDescription: string
