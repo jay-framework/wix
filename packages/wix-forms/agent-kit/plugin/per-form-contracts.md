@@ -30,15 +30,26 @@ Run `jay-stack agent-kit`, then read:
 
 A field `email` becomes a `sub-contract` tag `email` carrying:
 
-- `label` (data), `placeholder` (data, text-like fields only), `required`
-  (variant), `error` (data), and one `input` interactive tag.
-- `input.elementType` is `HTMLInputElement` for text/email/tel/url,
-  `HTMLTextAreaElement` for multiline, `HTMLSelectElement` for choice fields.
-- Choice (select) fields also expose a repeated `options` sub-contract
-  (`value`, `label`).
+- `label` (data), `placeholder` (data, text-like fields only), `value`
+  (text-like: data string; checkbox: variant boolean — DL#39), `required`
+  (variant), `error` (data), `invalid` (variant — DL#39), one `input`
+  interactive tag, and one `control` interactive tag (DL#39, custom UI).
+- `input.elementType` is `HTMLInputElement` for text/email/tel/url and single
+  checkboxes, `HTMLTextAreaElement` for multiline, `HTMLSelectElement` for
+  choice (select / multiselect) fields.
+- Choice fields expose a repeated `options` sub-contract (`value`, `label`); a
+  **multiselect** adds a per-option `selected` variant (DL#39 — the array
+  representation, since an array `dataType` is invalid).
+- **Hidden** Wix fields (DL#39 4a) materialize a value+control channel only
+  (no `label`/`placeholder`/`input`).
 
 Form-level tags stay at the top level: `isLoading`, `loadError`, `isSubmitting`,
-`statusMessage` (data/variant) and `submitButton` (interactive).
+`isSubmitted` (DL#39), `statusMessage` (data/variant), `submitButton`,
+`resetButton` (DL#39), and `honeypot` (DL#39) interactive tags.
+
+> **Rich production forms** (confirmation/sent state, prefill, live validation,
+> hidden/derived values, custom-UI/multi-step, honeypot, non-string fields) — see
+> [`rich-forms.md`](./rich-forms.md).
 
 ## Binding is explicit
 

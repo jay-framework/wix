@@ -20,18 +20,21 @@ const fields: FormFieldView[] = [
 ];
 
 describe('buildFieldsViewState', () => {
-    it('should key each field by its target with label/required/error, placeholder for inputs and options for selects', () => {
+    it('should key each field by its target with label/required/error/invalid, placeholder+value for inputs and options for selects', () => {
         expect(buildFieldsViewState(fields)).toEqual({
             email: {
                 label: 'Email',
                 required: true,
                 error: '',
+                invalid: false,
                 placeholder: 'you@site.com',
+                value: '',
             },
             country: {
                 label: 'Country',
                 required: false,
                 error: '',
+                invalid: false,
                 options: [{ value: 'us', label: 'United States' }],
             },
         });
@@ -41,6 +44,18 @@ describe('buildFieldsViewState', () => {
         const result = buildFieldsViewState(fields, { email: 'Invalid email address' });
         expect(result.email.error).toEqual('Invalid email address');
         expect(result.country.error).toEqual('');
+    });
+
+    it('should reflect the per-field invalid flag and value echo by target', () => {
+        const result = buildFieldsViewState(
+            fields,
+            { email: 'Invalid email address' },
+            { email: true },
+            { email: 'ada@example.com' },
+        );
+        expect(result.email.invalid).toBe(true);
+        expect(result.email.value).toEqual('ada@example.com');
+        expect(result.country.invalid).toBe(false);
     });
 });
 
@@ -52,17 +67,26 @@ describe('buildFormViewState', () => {
             loadError: '',
         });
         expect(result).toEqual({
-            email: { label: 'Email', required: true, error: '', placeholder: 'you@site.com' },
+            email: {
+                label: 'Email',
+                required: true,
+                error: '',
+                invalid: false,
+                placeholder: 'you@site.com',
+                value: '',
+            },
             country: {
                 label: 'Country',
                 required: false,
                 error: '',
+                invalid: false,
                 options: [{ value: 'us', label: 'United States' }],
             },
             isLoading: false,
             loadError: '',
             isSubmitting: true,
             statusMessage: 'Form submitted successfully.',
+            isSubmitted: false,
         });
     });
 

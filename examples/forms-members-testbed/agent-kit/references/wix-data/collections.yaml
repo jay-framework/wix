@@ -1,0 +1,211 @@
+_generated: '2026-10-25T12:12:47.720Z'
+_description: CMS collection schemas for agent discovery. Shows field types, references, and visibility.
+totalCollections: 5
+visibleCollections: 0
+collections:
+  - collectionId: jay-backend-files
+    visible: false
+    pathPrefix: /jay-backend-files
+    slugField: title
+    fields:
+      - key: title
+        displayName: Title
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: _owner
+        displayName: Owner
+        type: TEXT
+    references: []
+    components: {}
+  - collectionId: Members/Badges
+    visible: false
+    pathPrefix: /members-badges
+    slugField: slug
+    fields:
+      - key: backgroundColor
+        displayName: Background Color
+        type: TEXT
+      - key: description
+        displayName: Description
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: icon
+        displayName: Icon
+        type: IMAGE
+      - key: textColor
+        displayName: Text Color
+        type: TEXT
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: slug
+        displayName: Slug
+        type: TEXT
+      - key: roleId
+        displayName: Role ID
+        type: TEXT
+      - key: members
+        displayName: Members
+        type: MULTI_REFERENCE
+      - key: title
+        displayName: Title
+        type: TEXT
+    references:
+      - fieldName: members
+        targetCollection: Members/FullData
+        isMulti: true
+    components: {}
+  - collectionId: Members/FullData
+    visible: false
+    pathPrefix: /members-fulldata
+    slugField: slug
+    fields:
+      - key: loginEmail
+        displayName: Login Email
+        type: TEXT
+      - key: email
+        displayName: Email
+        type: TEXT
+      - key: privacyStatus
+        displayName: Privacy Status
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Creation Date
+        type: DATETIME
+      - key: profilePhoto
+        displayName: Profile Photo
+        type: IMAGE
+      - key: _updatedDate
+        displayName: Last Updated
+        type: DATETIME
+      - key: slug
+        displayName: Slug
+        type: TEXT
+      - key: lastName
+        displayName: Last Name
+        type: TEXT
+      - key: firstName
+        displayName: First Name
+        type: TEXT
+      - key: activityStatus
+        displayName: Activity Status
+        type: TEXT
+      - key: lastLoginDate
+        displayName: Last Login Date
+        type: DATETIME
+      - key: status
+        displayName: Status
+        type: TEXT
+      - key: contactId
+        displayName: Contact Id
+        type: TEXT
+      - key: coverPhoto
+        displayName: Cover Photo
+        type: IMAGE
+      - key: phone
+        displayName: Phone
+        type: TEXT
+      - key: nickname
+        displayName: Nickname
+        type: TEXT
+    references: []
+    components: {}
+  - collectionId: Members/PrivateMembersData
+    visible: false
+    pathPrefix: /members-privatemembersdata
+    slugField: slug
+    fields:
+      - key: name
+        displayName: Name
+        type: TEXT
+      - key: lastLogin
+        displayName: Last Login Date
+        type: DATETIME
+      - key: loginEmail
+        displayName: Login Email
+        type: TEXT
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Creation Date
+        type: DATETIME
+      - key: _updatedDate
+        displayName: Last Updated
+        type: DATETIME
+      - key: slug
+        displayName: Slug
+        type: TEXT
+      - key: phones
+        displayName: Phones
+        type: OBJECT
+      - key: lastName
+        displayName: Last Name
+        type: TEXT
+      - key: firstName
+        displayName: First Name
+        type: TEXT
+      - key: mainPhone
+        displayName: Main Phone
+        type: TEXT
+      - key: language
+        displayName: Language
+        type: TEXT
+      - key: status
+        displayName: Status
+        type: TEXT
+      - key: picture
+        displayName: Picture
+        type: IMAGE
+      - key: nickname
+        displayName: Nickname
+        type: TEXT
+    references: []
+    components: {}
+  - collectionId: Members/PublicData
+    visible: false
+    pathPrefix: /members-publicdata
+    slugField: slug
+    fields:
+      - key: _id
+        displayName: ID
+        type: TEXT
+      - key: _createdDate
+        displayName: Created Date
+        type: DATETIME
+      - key: profilePhoto
+        displayName: Profile Photo
+        type: IMAGE
+      - key: _updatedDate
+        displayName: Updated Date
+        type: DATETIME
+      - key: slug
+        displayName: Slug
+        type: TEXT
+      - key: coverPhoto
+        displayName: Cover Photo
+        type: IMAGE
+      - key: title
+        displayName: Title
+        type: TEXT
+      - key: nickname
+        displayName: Nickname
+        type: TEXT
+    references: []
+    components: {}

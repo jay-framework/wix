@@ -11,7 +11,13 @@ export {
     WIX_FORMS_SERVICE,
     type WixFormsService,
 } from './services/wix-forms-service.js';
+export {
+    WIX_FORMS_SUBMISSION_AUGMENTER,
+    type SubmissionAugmenter,
+    type SubmissionAugmentInput,
+} from './services/wix-forms-submission-augmenter.js';
 export type {
+    FieldValue,
     FormFieldView,
     FormFieldSummaryView,
     FormFieldErrorView,

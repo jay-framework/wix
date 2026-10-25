@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import yaml from 'js-yaml';
 import type { FormInclude } from './wix-apis/list-forms.js';
+import type { MemberPrefillMap } from './utils/member-prefill.js';
 
 /**
  * Wix Forms config (DL#38 §1).
@@ -16,6 +17,12 @@ export interface WixFormsConfig {
     formIds: string[];
     /** Which forms to enumerate. Default: `enabled`. */
     include: FormInclude;
+    /**
+     * Opt-in signed-in-member prefill (DL#39 Capability 2). Maps a field target to
+     * a dot-path into the Wix member, e.g. `{ email: loginEmail, firstName: profile.firstName }`.
+     * Absent → no member prefill.
+     */
+    memberPrefill: MemberPrefillMap;
 }
 
 /**
@@ -30,6 +37,7 @@ interface RawWixFormsConfig {
     namespace?: string;
     formIds?: string[];
     include?: FormInclude;
+    memberPrefill?: Record<string, string>;
 }
 
 export function loadWixFormsConfig(projectRoot: string): WixFormsConfig {
@@ -42,7 +50,22 @@ export function loadWixFormsConfig(projectRoot: string): WixFormsConfig {
         namespace: raw?.namespace?.trim() || DEFAULT_FORMS_NAMESPACE,
         formIds: Array.isArray(raw?.formIds) ? raw!.formIds : [],
         include: raw?.include ?? 'enabled',
+        memberPrefill: readMemberPrefill(raw?.memberPrefill),
     };
+}
+
+/** Keep only string→string entries; ignore anything malformed. */
+function readMemberPrefill(raw: Record<string, string> | undefined): MemberPrefillMap {
+    if (!raw || typeof raw !== 'object') {
+        return {};
+    }
+    const map: MemberPrefillMap = {};
+    for (const [target, memberPath] of Object.entries(raw)) {
+        if (typeof memberPath === 'string' && memberPath.trim()) {
+            map[target] = memberPath;
+        }
+    }
+    return map;
 }
 
 function defaultConfig(): WixFormsConfig {
@@ -50,5 +73,6 @@ function defaultConfig(): WixFormsConfig {
         namespace: DEFAULT_FORMS_NAMESPACE,
         formIds: [],
         include: 'enabled',
+        memberPrefill: {},
     };
 }

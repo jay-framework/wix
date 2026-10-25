@@ -11,7 +11,14 @@ import {
 import type { FormFieldView } from '../lib/types.js';
 
 describe('projectFormFields', () => {
-    it('should project raw form fields into form field views', () => {
+    /**
+     * Bug: DL#38 dropped hidden fields entirely (`!field.hidden`), so a page could
+     *   not populate a Wix hidden field and it never reached the submission.
+     * Found in: design-log/39 - general forms infrastructure.md §Design 4a (narrows DL#38 OQ-4)
+     * Expected: hidden fields are MARKED (hidden: true), not dropped, so the generator
+     *   can emit their value+control channel and the component submits them.
+     */
+    it('should project raw form fields, marking (not dropping) hidden fields', () => {
         const result = projectFormFields({
             fields: [
                 {
@@ -26,9 +33,9 @@ describe('projectFormFields', () => {
                     view: { label: 'Message', fieldType: 'TEXT_AREA' },
                 },
                 {
-                    target: 'hidden_field',
+                    target: 'propertyId',
                     hidden: true,
-                    view: { label: 'Hidden' },
+                    view: { label: 'Property' },
                 },
             ],
         });
@@ -44,6 +51,7 @@ describe('projectFormFields', () => {
                 maxLength: undefined,
                 pattern: undefined,
                 options: [],
+                hidden: false,
             },
             {
                 target: 'message',
@@ -55,8 +63,64 @@ describe('projectFormFields', () => {
                 maxLength: undefined,
                 pattern: undefined,
                 options: [],
+                hidden: false,
+            },
+            {
+                target: 'propertyId',
+                label: 'Property',
+                inputType: 'text',
+                required: false,
+                placeholder: '',
+                minLength: undefined,
+                maxLength: undefined,
+                pattern: undefined,
+                options: [],
+                hidden: true,
             },
         ]);
+    });
+
+    /**
+     * Bug (DL#39 4c, test 3 — runtime, failing-first): the submit path is
+     *   Record<string,string> and the projection has no checkbox/multiselect kind,
+     *   so a boolean checkbox submits its static `value` attribute and a multi-select
+     *   is truncated to a single string.
+     * Found in: design-log/39 - general forms infrastructure.md §Design 4c.
+     * Expected: readInputType (via projectFormFields) returns 'checkbox' for a single
+     *   boolean field and 'multiselect' for a multiple-selection choice.
+     * Actual (pre-fix): FormFieldInputType has neither kind and readInputType returns
+     *   'text' / 'select' — this test fails red at runtime until 4c lands.
+     */
+    it('should detect a single boolean field as a checkbox', () => {
+        const result = projectFormFields({
+            fields: [
+                {
+                    target: 'consent',
+                    view: { label: 'I agree', fieldType: 'CHECKBOX' },
+                    validation: { required: true, boolean: {} },
+                },
+            ],
+        });
+        expect(result[0]?.inputType).toBe('checkbox');
+    });
+
+    it('should detect a multiple-selection choice as a multiselect', () => {
+        const result = projectFormFields({
+            fields: [
+                {
+                    target: 'interests',
+                    view: {
+                        label: 'Interests',
+                        fieldType: 'CHECKBOX_GROUP',
+                        options: [
+                            { value: 'news', label: 'News' },
+                            { value: 'offers', label: 'Offers' },
+                        ],
+                    },
+                },
+            ],
+        });
+        expect(result[0]?.inputType).toBe('multiselect');
     });
 
     it('should map select fields from options', () => {

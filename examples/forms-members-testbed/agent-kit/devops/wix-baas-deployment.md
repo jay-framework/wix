@@ -1,0 +1,323 @@
+# Deploying to Wix BaaS
+
+## Overview
+
+The `wix-deploy` plugin deploys Jay Framework apps to Wix BaaS (serverless). It bundles the server code into a single `entry.mjs`, uploads page data to a Wix data collection, and deploys to BaaS + CDN.
+
+```bash
+npm run build:production     # build frontend + backend
+npm run deploy               # bundle + upload + deploy
+```
+
+## Setup (First Time)
+
+### 1. Create the Wix headless site
+
+```bash
+npm create @wix/new@latest init
+```
+
+Creates `wix.config.json` with `appId` and `siteId`. This is the **deployment target** — the BaaS worker and CDN assets go here.
+
+### 2. Add Wix applications
+
+In the Wix Business Manager, add the applications your project needs (e.g., Wix Stores, Wix Data). This is done on the **backend services site** — which may be the same site as the deployment target, or a different one in a headless setup.
+
+### 3. Create an API key
+
+In the Wix dashboard (API Keys section), create an API key with permissions for:
+- Wix Data (read/write) — for the backend files data collection
+- Any APIs your app uses (Stores, CMS, etc.)
+
+### 4. Configure credentials
+
+Add the API key to `config/.wix.yaml`. Running `jay-stack-cli setup` will fill in `clientId` and `siteId` from `wix.config.json` automatically — you only need to add the API key.
+
+```yaml
+apiKeyStrategy:
+  apiKey: <your-api-key>
+  siteId: <auto-filled-from-wix-config>
+oauthStrategy:
+  clientId: <auto-filled-from-wix-config>
+```
+
+### 5. Authenticate with Wix CLI
+
+Run in your terminal:
+
+```bash
+npx @wix/cli login
+```
+
+Stores OAuth tokens in `~/.wix/auth/`. The deploy command refreshes expired tokens automatically.
+
+### 5b. Grant Velo deploy permissions to the headless application
+
+Open the permissions dashboard for your headless application (`appId` from `wix.config.json`):
+
+`https://manage.wix.com/apps/<appId>/dev-center-permissions`
+
+Add:
+
+| Permission | Required for |
+|------------|--------------|
+| `VELO.APP_PROJECT_READ` | Reading app project before deploy |
+| `VELO.APP_DEPLOYMENT_CREATE` | Creating and releasing deployments |
+
+Site co-owner access is not enough — the **headless application** must have these permissions. Without them, deploy fails with 403 at "Creating deployment...".
+
+After adding permissions, refresh the CLI session in your terminal:
+
+```bash
+npx @wix/cli logout
+npx @wix/cli login
+```
+
+### 6. Create the data collection
+
+Create a collection named `jay-backend-files` in the Wix dashboard (on the business site, where `.wix.yaml` points). Required fields:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `path` | Text | Relative file path |
+| `content` | Text | File content |
+| `fileType` | Text | File extension |
+| `sizeBytes` | Number | Content byte length |
+| `category` | Text | `eager`, `lazy` or `instance` |
+| `version` | Text | Build version (semver) |
+| `route` | Text | Instance items only — the route pattern, e.g. `/products/[slug]` |
+| `params` | Object | Instance items only — the route params of the instance |
+
+`instance` items are the slow-render data (`*.cache.json`) of one page instance. The item **is** the instance index: the sitemap / `/_wix/pages.json` list the `instance` items of each route (cached in memory for 10 minutes), and the server creates one when it renders a new item on first request. The runtime therefore needs write access (insert / update / remove) to the collection, not only read.
+
+### Fresh data and new items
+
+- Slow render may return `ttl` / `grace` (seconds). Once an instance is older than its `ttl`, the server serves the stored data right away (`Cache-Control: no-store`, `jay-freshness: stale, <age>ms`) and refreshes the item in the collection in the background; once older than `grace` it waits up to `JAY_STALE_WAIT_MS` (default 2000) for the refresh.
+- A URL with no instance item (for example a product published after the last deploy) is rendered on first request and stored. A slow render answering 404 is remembered for 10 minutes and served as 404; if it cannot render now (all slow-render slots busy, error) the server answers `503` with `Retry-After`.
+- `JAY_SLOW_RENDER_CONCURRENCY` (default 5) caps concurrent slow renders per server instance; there is no queue.
+
+### 7. Validate setup
+
+```bash
+jay-stack-cli setup
+```
+
+Should show all three plugins as configured:
+- `wix-server-client` — credentials verified
+- `wix-deploy` — deploy target confirmed
+- `wix-stores` — Stores API connected
+
+## Two Credential Files
+
+The two config files serve different purposes and can point to different Wix sites:
+
+| File | Purpose | Used At | Key Fields |
+|------|---------|---------|------------|
+| `config/.wix.yaml` | Backend services — Wix SDK, data collections, Stores API | Build time + BaaS runtime | `apiKey`, `clientId`, `siteId` |
+| `wix.config.json` | Deployment target — BaaS hosting + CDN | Deploy time only | `appId`, `siteId` |
+
+**Headless architecture:** Deploy the BaaS worker to one site (the "app" site via `wix.config.json`) while accessing products, orders, and content on a different site (the "business" site via `.wix.yaml`).
+
+**Simple setup:** Both files point to the same site. The `clientId` in `.wix.yaml` equals `appId` in `wix.config.json`.
+
+## Deploy Command
+
+### `wix-deploy/deploy` (recommended)
+
+```bash
+jay-stack-cli run wix-deploy/deploy --exclude-plugins aiditor
+```
+
+Internally:
+1. **Bundle** `entry.mjs` (~2.5 MB) — plugins, server elements, framework code
+2. **Parallel:**
+   - Upload backend data files → Wix data collection
+   - Deploy entry.mjs → BaaS + frontend assets → CDN
+
+Options:
+- `--exclude-plugins <names>` — comma-separated plugins to exclude from the bundle
+- `--collection-id <name>` — data collection name (default: `jay-backend-files`)
+- `--static-base-url <url>` — CDN URL prefix for static assets
+- `--dry-run` — preview without uploading
+
+### Individual commands (for debugging)
+
+```bash
+jay-stack-cli run wix-deploy/build-entry       # bundle entry.mjs only
+jay-stack-cli run wix-deploy/upload-backend     # upload data files only
+jay-stack-cli run wix-deploy/deploy-baas        # deploy to BaaS + CDN only
+```
+
+## Local Testing
+
+```bash
+node serve.mjs
+```
+
+Starts a local server at `http://localhost:4000`. Generated by `wix-deploy/build-entry` alongside `dist/entry.mjs`.
+
+By default, uses `WixDataArtifactStore` (same as production) — lazy artifacts (`page-parts.json`, cache files) are fetched from the Wix data collection for the deployed build version. Deploy first, or set `JAY_BACKEND_DIR=build/v*/backend` to test a fresh local build offline.
+
+See **Troubleshooting → Local `serve.mjs` vs production** below.
+
+## What Gets Deployed Where
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ entry.mjs (2.5 MB) → Wix BaaS                          │
+│                                                         │
+│ Bundled by esbuild:                                     │
+│  ├── Framework serve code                               │
+│  ├── Plugin code (wix-stores, wix-cart, etc.)           │
+│  ├── Plugin actions + project actions (registered)      │
+│  ├── Server element modules (SSR render functions)      │
+│  ├── ssr-runtime (inlined)                              │
+│  ├── Wix SDK (@wix/sdk, @wix/stores, etc.)             │
+│  ├── WixDataArtifactStore (data collection client)      │
+│  └── MODULE_REGISTRY (pre-imported module lookups)      │
+│                                                         │
+│ No node_modules on disk. No dynamic import() at runtime.│
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ Wix Data Collection (jay-backend-files)                  │
+│                                                         │
+│ Eager (loaded on cold start):                           │
+│  ├── route-manifest.json                                │
+│  └── build-metadata.json                                │
+│                                                         │
+│ Lazy (fetched per-route, cached in /tmp):               │
+│  ├── page-parts.json (per route)                        │
+│  └── *.cache.json (per page instance)                   │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ Wix CDN                                                  │
+│                                                         │
+│  ├── shared/*.js (framework client runtime)             │
+│  ├── pages/**/*.js (route client bundles + hydrate)     │
+│  └── pages/**/*.css (route stylesheets)                 │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Actions on BaaS (plugin and project)
+
+Both kinds of server actions are pre-imported into `entry.mjs` and registered at
+init via `registerActionsFromModules`, so `POST /_jay/actions/<name>` resolves
+without any filesystem lookup:
+
+- **Plugin actions** — from `@jay-framework/wix-*` packages (listed in the route
+  manifest with `isPlugin: true`).
+- **Project actions** — your own `src/actions/*.actions.ts`, compiled to
+  `server/actions/*.js` and listed with `isPlugin: false` + a `serverModule`.
+  `build-entry` bundles each project action module by absolute path and registers
+  it alongside the plugin actions.
+
+`build-entry` fails the build if the manifest lists a project action without a
+`serverModule` (it cannot be bundled) — a published site must never answer 404 for
+an action it lists.
+
+## Updating After Data Changes
+
+When products or CMS content changes, the renderer server updates page files in the data collection. The BaaS instance picks up changes on the next request for that page (cache miss triggers a fresh fetch).
+
+To redeploy code changes: `npm run build:production && npm run deploy`.
+
+## Troubleshooting
+
+### Deploy fails with 403 (Velo permissions)
+
+**Symptom:**
+
+```
+[deploy] baas | Creating deployment...
+403 Forbidden — Permission 'VELO.APP_PROJECT_READ' denied for app with id '<appId>'
+```
+
+**Cause:** The headless application (`appId` in `wix.config.json`) is missing Velo deploy permissions. Site co-owner access does not grant deploy rights to the application.
+
+**Fix:**
+
+1. Open `https://manage.wix.com/apps/<appId>/dev-center-permissions` (replace `<appId>` with the value from `wix.config.json`)
+2. Add:
+   - `VELO.APP_PROJECT_READ`
+   - `VELO.APP_DEPLOYMENT_CREATE`
+3. In your terminal, refresh the Wix CLI session:
+
+   ```bash
+   npx @wix/cli logout
+   npx @wix/cli login
+   ```
+
+4. Retry: `npm run deploy`
+
+**Verify:** `npx @wix/cli whoami`
+
+---
+
+### Live site returns 500 after successful deploy
+
+#### 1. Regenerate `entry.mjs` after adding local modules
+
+**Symptom:** `Module not found in registry: server/components/...`
+
+**Cause:** Local server modules are not in `MODULE_REGISTRY` inside `entry.mjs`. `npm run deploy` runs `build-entry` internally, but if you test locally with an old `dist/entry.mjs`, modules may be missing.
+
+**Fix:**
+
+```bash
+npm run build:production
+jay-stack-cli run wix-deploy/build-entry
+node serve.mjs    # local smoke test
+npm run deploy
+```
+
+For other runtime 500 causes (e.g. stale `page-parts.json`, fast-phase ViewState), see Jay design log #174 and agent-kit `devops/production-build.md`.
+
+#### 2. Move validators to devDependencies
+
+**Symptom:** Deploy succeeds; runtime errors mention `walkElements`, `resolveBinding`, or `parseTemplateParts` stubs.
+
+**Cause:** `@jay-framework/wix-media`, `seo-validator`, or `a11y-validator` in `dependencies` get bundled into `entry.mjs`. They are build-time only.
+
+**Fix:** Move to `devDependencies` in `package.json`, then rebuild and redeploy.
+
+---
+
+### Action returns 404 ACTION_NOT_FOUND on BaaS but works on `serve`
+
+**Symptom:** `POST /_jay/actions/<name>` for one of your own `src/actions/*`
+actions answers `404 {"code":"ACTION_NOT_FOUND"}` on the published site, while the
+dev server and `jay-stack serve` handle it fine.
+
+**Cause:** the project action module was not bundled into `entry.mjs`. Self-hosted
+`serve` registers every manifest action from disk; BaaS registers pre-imported
+modules, so a project action missing from the generated registration 404s.
+
+**Fix:** rebuild the entry (`jay-stack-cli run wix-deploy/build-entry`) with a
+current `wix-deploy` — it now bundles and registers project actions, and fails the
+build if a listed project action has no `serverModule`. Confirm locally: an `OPTIONS`
+to `/_jay/actions/<name>` returns **405** (registered) rather than **404**.
+
+---
+
+### Local `serve.mjs` vs production
+
+| Mode | How | When to use |
+|------|-----|-------------|
+| Default | `node serve.mjs` | Production-like: `WixDataArtifactStore`, lazy files from data collection |
+| Filesystem | `JAY_BACKEND_DIR=build/v*/backend node serve.mjs` | Test a fresh local build without redeploying |
+
+**Note:** Filesystem mode dynamic-imports server modules from disk. Service resolution can differ from the bundled `entry.mjs` on BaaS. Prefer default mode to match production, or redeploy first so the data collection has current artifacts.
+
+---
+
+### Deploy checklist (quick)
+
+```bash
+jay-stack-cli setup
+npx @wix/cli login
+npm run build:production
+npm run deploy
+curl -s -o /dev/null -w "%{http_code}\n" https://<your-release-url>/
+```

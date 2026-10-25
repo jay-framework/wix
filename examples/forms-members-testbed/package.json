@@ -1,0 +1,40 @@
+{
+  "name": "forms-members-testbed",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "setup": "jay-stack-cli setup --interactive",
+    "dev": "jay-stack-cli dev",
+    "agent-kit": "jay-stack-cli agent-kit",
+    "validate": "jay-stack-cli validate",
+    "clean": "rimraf dist && rimraf build && rimraf -g 'src/**/*.d.ts'",
+    "definitions": "jay-cli definitions src",
+    "build": "npm run agent-kit && npm run definitions",
+    "build:production": "npm run build && jay-stack-cli build",
+    "build:check-types": "tsc",
+    "serve": "jay-stack-cli serve",
+    "wix:deploy": "jay-stack-cli run wix-deploy/deploy --exclude-plugins aiditor",
+    "wix:serve": "node serve.mjs",
+    "aiditor:publish": "npm run build:production && npm run wix:deploy"
+  },
+  "dependencies": {
+    "@jay-framework/fullstack-component": "^0.25.5",
+    "@jay-framework/jay-stack-cli": "^0.25.5",
+    "@jay-framework/wix-data": "workspace:^",
+    "@jay-framework/wix-deploy": "workspace:^",
+    "@jay-framework/wix-forms": "workspace:^",
+    "@jay-framework/wix-members": "workspace:^",
+    "@jay-framework/wix-server-client": "workspace:^"
+  },
+  "devDependencies": {
+    "@jay-framework/a11y-validator": "^0.25.5",
+    "@jay-framework/aiditor": "^0.25.5",
+    "@jay-framework/jay-cli": "^0.25.5",
+    "@jay-framework/seo-validator": "^0.25.5",
+    "@types/node": "^22.10.0",
+    "rimraf": "^6.0.0",
+    "typescript": "~5.7.2",
+    "vite": "^6.0.1"
+  }
+}

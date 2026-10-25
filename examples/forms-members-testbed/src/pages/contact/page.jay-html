@@ -1,0 +1,138 @@
+<html>
+  <head>
+    <title>Contact — Jay Wix Forms testbed</title>
+    <meta
+      name="description"
+      content="Contact form powered by the @jay-framework/wix-forms headless per-form contract (DL#38/#39): live validation, honeypot, sent-state + reset."
+    />
+    <script type="application/jay-data">
+      data:
+    </script>
+    <script
+      type="application/jay-headless"
+      plugin="@jay-framework/wix-forms"
+      contract="form/contact-my-form"
+      key="contact"
+    ></script>
+    <link rel="stylesheet" href="../../styles/theme.css" />
+    <style>
+      .contact {
+        max-width: 32rem;
+        margin: 3rem auto;
+        padding: 0 1rem;
+      }
+      .contact-form label {
+        display: block;
+        margin-bottom: 1rem;
+        font-weight: 600;
+      }
+      .contact-form input {
+        display: block;
+        width: 100%;
+        margin-top: 0.25rem;
+        padding: 0.5rem;
+        font: inherit;
+        box-sizing: border-box;
+      }
+      .contact-form input[aria-invalid='true'] {
+        outline: 2px solid #c0392b;
+      }
+      .error {
+        color: #c0392b;
+        font-weight: 400;
+        font-size: 0.875rem;
+      }
+      .status {
+        margin-top: 1rem;
+      }
+      /* Honeypot — kept in the DOM for bots, hidden from real users and AT. */
+      .hp {
+        position: absolute;
+        left: -9999px;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+      }
+      .thank-you {
+        padding: 1.5rem;
+        border: 1px solid #2ecc71;
+        border-radius: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="contact">
+      <h1>Contact us</h1>
+
+      <p class="error" if="contact.loadError">{contact.loadError}</p>
+
+      <form class="contact-form" if="!contact.isSubmitted">
+        <label
+          >{contact.firstNameD142.label}
+          <input
+            ref="contact.firstNameD142.input"
+            placeholder="{contact.firstNameD142.placeholder}"
+            aria-invalid="{contact.firstNameD142.invalid}"
+          />
+          <span
+            class="error"
+            role="alert"
+            aria-live="polite"
+            if="contact.firstNameD142.error"
+            >{contact.firstNameD142.error}</span
+          >
+        </label>
+
+        <label
+          >{contact.lastNameC480.label}
+          <input
+            ref="contact.lastNameC480.input"
+            placeholder="{contact.lastNameC480.placeholder}"
+            aria-invalid="{contact.lastNameC480.invalid}"
+          />
+          <span
+            class="error"
+            role="alert"
+            aria-live="polite"
+            if="contact.lastNameC480.error"
+            >{contact.lastNameC480.error}</span
+          >
+        </label>
+
+        <label
+          >{contact.email_76b1.label}
+          <input
+            ref="contact.email_76b1.input"
+            placeholder="{contact.email_76b1.placeholder}"
+            aria-invalid="{contact.email_76b1.invalid}"
+          />
+          <span
+            class="error"
+            role="alert"
+            aria-live="polite"
+            if="contact.email_76b1.error"
+            >{contact.email_76b1.error}</span
+          >
+        </label>
+
+        <!-- Honeypot: real users never fill this; a bot that fills every input trips it. -->
+        <input
+          class="hp"
+          ref="contact.honeypot"
+          tabindex="-1"
+          autocomplete="off"
+          aria-hidden="true"
+        />
+
+        <button type="button" ref="contact.submitButton">Send</button>
+        <p class="status" if="contact.statusMessage">{contact.statusMessage}</p>
+      </form>
+
+      <section class="thank-you" role="status" if="contact.isSubmitted">
+        <h2>Thanks, {contact.firstNameD142.value}!</h2>
+        <p>We'll reply to {contact.email_76b1.value} shortly.</p>
+        <button type="button" ref="contact.resetButton">Send another</button>
+      </section>
+    </main>
+  </body>
+</html>

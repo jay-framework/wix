@@ -1,0 +1,5 @@
+# Both public and private registries host @jay-framework/* at 0.25.5, but public npm
+# (registry.npmjs.org) is unreachable/flaky over the Wix VPN on this machine
+# (ENOTCONN/EBADF). The parent wix/.npmrc points the default registry at public npm, so
+# scope @jay-framework to the private Wix registry (reachable over the VPN) for reliable installs.
+@jay-framework:registry=https://npm.dev.wixpress.com

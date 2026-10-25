@@ -1,14 +1,21 @@
 import type { RawFormField } from '../wix-apis/get-form.js';
 import type { FormSummaryField } from '../wix-apis/get-form-summary.js';
 import type {
+    FieldValue,
     FormFieldInputType,
     FormFieldOptionView,
     FormFieldSummaryView,
     FormFieldView,
 } from '../types.js';
 
+const MULTI_SELECT_TYPES = new Set(['CHECKBOX_GROUP', 'MULTI_SELECT', 'TAGS']);
+
 function readFieldOptions(field: RawFormField): FormFieldOptionView[] {
-    const rawOptions = field.view?.options ?? field.inputOptions?.stringOptions?.options ?? [];
+    const rawOptions =
+        field.view?.options ??
+        field.inputOptions?.stringOptions?.options ??
+        field.inputOptions?.arrayOptions?.options ??
+        [];
     return rawOptions
         .map((option) => ({
             value: option.value ?? option.label ?? '',
@@ -17,10 +24,33 @@ function readFieldOptions(field: RawFormField): FormFieldOptionView[] {
         .filter((option) => option.value);
 }
 
+function componentTypeOf(field: RawFormField): string | undefined {
+    return (
+        field.view?.fieldType ??
+        field.inputOptions?.stringOptions?.componentType ??
+        field.inputOptions?.arrayOptions?.componentType
+    );
+}
+
+/** A choice field that permits selecting more than one option (DL#39 4c). */
+function isMultiSelect(field: RawFormField): boolean {
+    if (field.inputOptions?.arrayOptions) return true;
+    return MULTI_SELECT_TYPES.has(componentTypeOf(field) ?? '');
+}
+
+/** A single boolean checkbox (consent-style) — no options, boolean-valued (DL#39 4c). */
+function isBooleanField(field: RawFormField): boolean {
+    if (field.inputOptions?.booleanOptions || field.validation?.boolean) return true;
+    return componentTypeOf(field) === 'CHECKBOX';
+}
+
 function readInputType(field: RawFormField, target: string): FormFieldInputType {
     const options = readFieldOptions(field);
     if (options.length > 0) {
-        return 'select';
+        return isMultiSelect(field) ? 'multiselect' : 'select';
+    }
+    if (isBooleanField(field)) {
+        return 'checkbox';
     }
 
     const viewFieldType = field.view?.fieldType ?? field.inputOptions?.stringOptions?.componentType;
@@ -40,8 +70,10 @@ export function projectFormFields(rawForm: {
     formFields?: RawFormField[];
 }): FormFieldView[] {
     const rawFields = rawForm.fields ?? rawForm.formFields ?? [];
+    // DL#39 4a narrows DL#38 OQ-4: hidden fields are MARKED (hidden: true), not dropped,
+    // so a page can populate them via the `control` channel and they reach the submission.
     return rawFields
-        .filter((field) => field.target && !field.hidden)
+        .filter((field) => field.target)
         .map((field) => {
             const target = field.target!;
             const label =
@@ -63,6 +95,7 @@ export function projectFormFields(rawForm: {
                 maxLength: field.validation?.string?.maxLength,
                 pattern: field.validation?.string?.pattern,
                 options: readFieldOptions(field),
+                hidden: Boolean(field.hidden),
             };
         });
 }
@@ -110,8 +143,18 @@ export function validateFormSummaryField(field: FormFieldSummaryView, value: str
     return '';
 }
 
-export function validateFormField(field: FormFieldView, value: string): string {
-    const trimmed = (value ?? '').trim();
+export function validateFormField(field: FormFieldView, value: FieldValue): string {
+    // Non-string kinds (DL#39 4c): required means checked (boolean) / non-empty (array);
+    // the string format/length/regex rules below apply only to string values.
+    if (field.inputType === 'checkbox') {
+        return field.required && value !== true ? `${field.label} is required.` : '';
+    }
+    if (field.inputType === 'multiselect') {
+        const empty = !Array.isArray(value) || value.length === 0;
+        return field.required && empty ? `${field.label} is required.` : '';
+    }
+
+    const trimmed = (typeof value === 'string' ? value : '').trim();
     if (field.required && !trimmed) {
         return `${field.label} is required.`;
     }

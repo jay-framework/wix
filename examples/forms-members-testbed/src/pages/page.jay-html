@@ -1,0 +1,53 @@
+<html lang="en">
+  <head>
+    <title>Welcome to forms-members-testbed</title>
+    <meta name="description" content="Jay Stack + Wix headless testbed — Wix Forms (per-form contracts), Members, Data, Deploy.">
+    <script type="application/jay-data" contract="./page.jay-contract"></script>
+    <link rel="stylesheet" href="../styles/theme.css" />
+    <style>
+      .hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 50vh;
+        text-align: center;
+        padding: 3rem 2rem 2rem;
+      }
+      .hero-title {
+        font-size: clamp(2.2rem, 5vw, 3.5rem);
+        font-weight: 800;
+        margin-bottom: 1rem;
+        line-height: 1.15;
+      }
+      .hero-subtitle {
+        font-size: 1.2rem;
+        color: var(--color-text-muted);
+        max-width: 520px;
+        margin-bottom: 2rem;
+      }
+      .cta-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.85rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #fff;
+        background: var(--color-primary);
+        border: none;
+        border-radius: 0.6rem;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <h1 class="hero-title">{title}</h1>
+        <p class="hero-subtitle">{description}</p>
+        <a class="cta-btn" href="/contact">Open the contact form &#10132;</a>
+      </section>
+    </main>
+  </body>
+</html>

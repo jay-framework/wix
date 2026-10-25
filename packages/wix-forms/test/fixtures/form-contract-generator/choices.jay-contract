@@ -1,0 +1,42 @@
+name: ChoicesForm
+description: Wix form "Choices" (c1)
+tags:
+  - tag: consent
+    type: sub-contract
+    phase: fast+interactive
+    description: I agree
+    tags:
+      - { tag: label, type: data, dataType: string }
+      - { tag: value, type: variant, dataType: boolean }
+      - { tag: required, type: variant, dataType: boolean }
+      - { tag: error, type: data, dataType: string }
+      - { tag: invalid, type: variant, dataType: boolean }
+      - { tag: input, type: interactive, elementType: HTMLInputElement }
+      - { tag: control, type: interactive, elementType: HTMLElement }
+  - tag: interests
+    type: sub-contract
+    phase: fast+interactive
+    description: Interests
+    tags:
+      - { tag: label, type: data, dataType: string }
+      - { tag: required, type: variant, dataType: boolean }
+      - { tag: error, type: data, dataType: string }
+      - { tag: invalid, type: variant, dataType: boolean }
+      - { tag: input, type: interactive, elementType: HTMLSelectElement }
+      - { tag: control, type: interactive, elementType: HTMLElement }
+      - tag: options
+        type: sub-contract
+        repeated: true
+        trackBy: value
+        tags:
+          - { tag: value, type: data, dataType: string }
+          - { tag: label, type: data, dataType: string }
+          - { tag: selected, type: variant, dataType: boolean }
+  - { tag: isLoading, type: variant, dataType: boolean, phase: fast+interactive }
+  - { tag: loadError, type: data, dataType: string, phase: fast+interactive }
+  - { tag: isSubmitting, type: variant, dataType: boolean, phase: fast+interactive }
+  - { tag: isSubmitted, type: variant, dataType: boolean, phase: fast+interactive }
+  - { tag: statusMessage, type: data, dataType: string, phase: fast+interactive }
+  - { tag: submitButton, type: interactive, elementType: HTMLButtonElement }
+  - { tag: resetButton, type: interactive, elementType: HTMLButtonElement }
+  - { tag: honeypot, type: interactive, elementType: HTMLInputElement }

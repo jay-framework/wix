@@ -44,6 +44,8 @@ Design documentation for the Jay Framework Wix integration packages.
 | 36  | [Slow-Render SWR + Render-on-Miss on Wix](./36%20-%20slow%20render%20swr%20and%20render-on-miss%20on%20wix.md) | Implemented (store) · Decided (TTL/grace) |
 | 37  | [BaaS Entry — Project Action Registration](./37%20-%20baas-entry-project-action-registration.md)               | Implemented                               |
 | 38  | [Per-Form Contracts for wix-forms](./38%20-%20per-form%20contracts%20for%20wix-forms.md)                       | Implemented                               |
+| 39  | [General Forms Infrastructure for wix-forms](./39%20-%20general%20forms%20infrastructure.md)                   | Approved — implementation in progress      |
+| 40  | [Server-Side Form Transactions and Request Context](./40%20-%20server-side%20form%20transactions%20and%20request%20context.md) | Design — development-ready (awaiting approval) |
 
 ## Packages Covered
 

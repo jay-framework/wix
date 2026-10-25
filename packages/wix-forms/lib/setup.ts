@@ -12,6 +12,14 @@ import { DEFAULT_FORMS_NAMESPACE } from './config-loader.js';
 import { WIX_FORMS_SERVICE, type WixFormsService } from './services/wix-forms-service-marker.js';
 import { computeFormSlugs } from './generators/form-slug.js';
 import { elementTypeFor } from './generators/contract-utils.js';
+import type { FormFieldView } from './types.js';
+
+/** The runtime value type a field submits (DL#39 4c) — a hint for agent-kit discovery. */
+function valueTypeFor(field: FormFieldView): 'string' | 'boolean' | 'string[]' {
+    if (field.inputType === 'checkbox') return 'boolean';
+    if (field.inputType === 'multiselect') return 'string[]';
+    return 'string';
+}
 
 const CONFIG_FILE = '.wix-forms.yaml';
 
@@ -30,6 +38,12 @@ formIds: []
 
 # Which forms to generate: enabled | disabled | all
 include: enabled
+
+# Optional (DL#39): seed fields from the signed-in member. Map a field target to a
+# Wix member dot-path. Absent = no member prefill.
+# memberPrefill:
+#   email: loginEmail
+#   firstName: profile.firstName
 `;
 
 // ============================================================================
@@ -94,6 +108,10 @@ export async function generateWixFormsAgentKit(
             type: field.inputType,
             required: field.required,
             elementType: elementTypeFor(field),
+            // DL#39 channel hints so agents discover the new value/control surfaces.
+            hidden: Boolean(field.hidden),
+            hasControl: true,
+            valueType: valueTypeFor(field),
         })),
     }));
 

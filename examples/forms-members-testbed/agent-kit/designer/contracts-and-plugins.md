@@ -1,0 +1,330 @@
+# Contracts and Plugins
+
+## Discovery: Design-System Index (what you can flatten)
+
+Before hand-authoring a `<jay:X>` region, check what design-system elements already exist. After
+`jay-stack agent-kit`, two generated files catalog every component you can flatten:
+
+- **`design-system.md`** — a human/agent "add-menu": each component, its template variants, and a
+  paste-ready `template=` import + `<jay:X>` snippet. Start here to pick something to add.
+- **`design-system-index.yaml`** — the structured form (linked from `plugins-index.yaml` via
+  `designSystemIndex`). Each component lists its `contractPath`, a component-level `description`, and
+  its `templates[]` (`{ path, variant, title? }`). An empty `templates: []` means the component ships
+  no template yet and must be hand-authored.
+
+Prefer flattening a listed template (link it with `template=` and run `jay-stack sync`) over
+hand-writing the region. See `designer/design-system-guide.md`.
+
+## Discovery: Plugins Index
+
+After running `jay-stack agent-kit`, read `plugins-index.yaml`:
+
+```yaml
+jay_stack_version: '1.0.0'
+plugins:
+  - name: wix-stores
+    path: ./node_modules/@wix/stores
+    contracts:
+      - name: product-page
+        type: static
+        path: ./node_modules/@wix/stores/lib/contracts/product-page.jay-contract
+      - name: product-search
+        type: static
+        path: ./node_modules/@wix/stores/lib/contracts/product-search.jay-contract
+    actions:
+      - name: searchProducts
+        description: Search products with text/filter/sort/pagination
+        path: ./node_modules/@wix/stores/lib/actions/search-products.jay-action
+      - name: getProductBySlug
+        description: Get a single product by URL slug
+        path: ./node_modules/@wix/stores/lib/actions/get-product-by-slug.jay-action
+```
+
+Fields:
+
+- `name` — plugin name (use in `plugin="..."` attributes in jay-html)
+- `path` — path to plugin root (relative to project root)
+- `contracts[].name` — contract name (use in `contract="..."` attributes)
+- `contracts[].type` — `static` (defined in source) or `dynamic` (generated at runtime)
+- `contracts[].path` — path to the `.jay-contract` file you can read
+- `actions[].name` — action name (use with `jay-stack action <plugin>/<action>`)
+- `actions[].description` — short description of what the action does
+- `actions[].path` — path to the `.jay-action` file with full input/output schemas
+
+## Reading plugin.yaml
+
+Each plugin has a `plugin.yaml` at its root (the `path` from plugins-index):
+
+```yaml
+name: wix-stores
+contracts:
+  - name: product-page
+    contract: product-page.jay-contract
+    component: productPage
+    description: Complete headless product page with server-side rendering
+  - name: product-search
+    contract: product-search.jay-contract
+    component: productSearch
+    description: Headless product search page
+actions:
+  - name: searchProducts
+    action: search-products.jay-action
+  - name: getProductBySlug
+    action: get-product-by-slug.jay-action
+  - name: getCategories
+    action: get-categories.jay-action
+```
+
+Key fields:
+
+- `contracts[].name` — use in `contract="..."` in jay-html
+- `contracts[].description` — what the component does (helps you decide which to use)
+- `actions[].name` — action name (use with `jay-stack action <plugin>/<action>`)
+- `actions[].action` — path to `.jay-action` file with full metadata (description, input/output schemas)
+
+## Reading .jay-contract Files
+
+Contracts define the data shape (ViewState), interaction points (Refs), and rendering phases.
+
+### Tag Types
+
+| Type                              | Purpose                          | Jay-HTML Usage                    |
+| --------------------------------- | -------------------------------- | --------------------------------- |
+| `data`                            | Read-only data value             | `{tagName}` binding               |
+| `variant`                         | Enum or boolean for conditions   | `if="tagName===value"`            |
+| `interactive`                     | Element ref for user interaction | `ref="tagName"`                   |
+| `[data, interactive]`             | Both data and interactive        | `{tagName}` + `ref="tagName"`     |
+| `sub-contract`                    | Nested object                    | `{parent.child}`                  |
+| `sub-contract` + `repeated: true` | Array for loops                  | `forEach="tagName" trackBy="..."` |
+
+### Phases
+
+| Phase              | When                     | Example                                   |
+| ------------------ | ------------------------ | ----------------------------------------- |
+| `slow`             | Build time (SSG)         | Product name, description, static content |
+| `fast`             | Request time (SSR)       | Live pricing, stock status                |
+| `fast+interactive` | Request + client updates | Price that updates on variant selection   |
+| _(no phase)_       | All phases               | Available everywhere                      |
+
+### Props
+
+Components that accept props:
+
+```yaml
+props:
+  - name: productId
+    type: string
+    required: true
+    phase: fast # slow (default), fast, or fast+interactive
+    description: The ID of the product to display
+```
+
+Use in jay-html: `<jay:contract-name productId="value">` (a literal), or bind a page tag: `<jay:contract-name productId="{someTag}">`.
+
+**Prop phase must cover the binding source.** A prop has a `phase` (like a tag) that declares when the component reads it. When you bind a prop to a page tag, the **source tag's phase must be ≤ the prop's phase**:
+
+- Binding a `slow` prop to a `fast` / `fast+interactive` tag is a **validation error** — the prop is resolved at build, where the source doesn't exist yet, so it would render `''` at SSR. Bind a `fast`-phase source, a route param, or a literal instead.
+- Binding a `fast` (constant) prop to a `fast+interactive` (changing) source is also an error — a constant can't track a value that changes on the client.
+- A higher-phase prop accepts any lower-or-equal source (e.g. a `fast+interactive` prop takes a `slow`, `fast`, or `fast+interactive` binding).
+
+`jay-stack validate` (and `dev` / `build`) report these mismatches with the exact prop, source, and phases.
+
+**Enum prop values must match the contract.** For a prop typed `enum(a | b | c)`:
+
+- A **literal** value must be one of the declared members, case-sensitive — `status="success"` is fine, `status="sucess"` or `status="Success"` is a **validation error** naming the allowed members. (A wrong value silently renders nothing, because no `if="status===..."` branch matches.)
+- A **bound** value (`status="{someTag}"`) must come from a source that is itself an enum with the **same members in the same order**. Binding a `string` tag, or an enum with different or reordered members, to an enum prop is a validation error.
+
+### Params
+
+Page components with dynamic routes:
+
+```yaml
+params:
+  slug: string
+```
+
+Params are always strings. Discover values with `jay-stack params`.
+
+### Linked Sub-Contracts
+
+A sub-contract can reference another contract file:
+
+```yaml
+- tag: mediaGallery
+  type: sub-contract
+  phase: fast+interactive
+  link: ./media-gallery # refers to media-gallery.jay-contract in same directory
+```
+
+Read the linked file to see the nested tags.
+
+## Contract Examples
+
+**Simple component with props:**
+
+```yaml
+name: ProductWidget
+props:
+  - name: productId
+    type: string
+    required: true
+tags:
+  - tag: name
+    type: data
+    dataType: string
+    phase: slow
+  - tag: price
+    type: data
+    dataType: number
+    phase: slow
+  - tag: inStock
+    type: variant
+    dataType: boolean
+    phase: fast+interactive
+  - tag: addToCart
+    type: interactive
+    elementType: HTMLButtonElement
+```
+
+**Page with nested loops:**
+
+```yaml
+name: product-page
+tags:
+  - tag: productName
+    type: data
+    dataType: string
+  - tag: price
+    type: data
+    dataType: string
+    phase: fast+interactive
+  - tag: addToCartButton
+    type: interactive
+    elementType: HTMLButtonElement
+  - tag: options
+    type: sub-contract
+    repeated: true
+    trackBy: _id
+    tags:
+      - tag: _id
+        type: data
+        dataType: string
+      - tag: name
+        type: data
+        dataType: string
+      - tag: choices
+        type: sub-contract
+        repeated: true
+        trackBy: choiceId
+        tags:
+          - tag: choiceId
+            type: data
+            dataType: string
+          - tag: name
+            type: data
+            dataType: string
+          - tag: isSelected
+            type: variant
+            dataType: boolean
+            phase: fast+interactive
+          - tag: choiceButton
+            type: interactive
+            elementType: HTMLButtonElement
+```
+
+## Reading .jay-action Files
+
+Actions with `.jay-action` files have rich metadata: name, description, and typed input/output schemas. Read the file at the `path` from `plugins-index.yaml` (or from `plugin.yaml`'s `actions[].action` field).
+
+### .jay-action Format
+
+```yaml
+name: searchProducts
+description: Search products with text/filter/sort/pagination
+
+import:
+  productCard: product-card.jay-contract
+
+inputSchema:
+  query: string
+  filters?:
+    inStockOnly?: boolean
+    minPrice?: number
+    maxPrice?: number
+  sortBy?: enum(relevance | price_asc | price_desc)
+  pageSize?: number
+
+outputSchema:
+  products:
+    - productCard
+  totalCount: number
+  hasMore: boolean
+```
+
+### Jay-Type Notation
+
+Schemas use a compact type notation:
+
+| Notation                          | Meaning                                                  |
+| --------------------------------- | -------------------------------------------------------- |
+| `propName: string`                | Required string property                                 |
+| `propName?: number`               | Optional number property                                 |
+| `propName: boolean`               | Required boolean                                         |
+| `propName: enum(a \| b \| c)`     | Required enum                                            |
+| `propName:` + nested block        | Nested object                                            |
+| `propName:` + `- childProp: type` | Array of objects (YAML list)                             |
+| `propName: record(T)`             | Record with typed values (e.g., `record(boolean)`)       |
+| `propName: importedName`          | Type from `import:` block (references a `.jay-contract`) |
+| `- importedName`                  | Array of imported type                                   |
+
+### Using Action Metadata
+
+1. **Discovery** — read `plugins-index.yaml` for action names and descriptions
+2. **Details** — read the `.jay-action` file at the path for full input/output schemas
+3. **Run** — use `jay-stack action <plugin>/<action> --input '{...}'` with a JSON body matching the inputSchema
+
+## From Contract to Jay-HTML
+
+### Step by step
+
+1. **Read the contract** — identify tags, their types, and phases
+2. **Map `data` tags** → `{tagName}` bindings
+3. **Map `variant` tags** → `if="tagName===value"` conditions
+4. **Map `interactive` tags** → `ref="tagName"` on appropriate element types
+5. **Map `sub-contract` + `repeated: true`** → `forEach="tagName" trackBy="..."` loops
+6. **Map nested `sub-contract`** → dotted paths or nested context inside forEach
+7. **Respect phases** — don't assume fast-only data is available at build time
+
+### Quick mapping
+
+| Contract Tag                                                     | Jay-HTML                                      |
+| ---------------------------------------------------------------- | --------------------------------------------- |
+| `{tag: title, type: data}`                                       | `<h1>{title}</h1>`                            |
+| `{tag: active, type: variant, dataType: boolean}`                | `<span if="active">Active</span>`             |
+| `{tag: status, type: variant, dataType: "enum (A \| B)"}`        | `<div if="status===A">...</div>`              |
+| `{tag: btn, type: interactive, elementType: HTMLButtonElement}`  | `<button ref="btn">Click</button>`            |
+| `{tag: link, type: interactive, elementType: HTMLAnchorElement}` | `<a ref="link">Go</a>`                        |
+| `{tag: input, type: interactive, elementType: HTMLInputElement}` | `<input ref="input" value="{val}" />`         |
+| `{tag: sel, type: interactive, elementType: HTMLSelectElement}`  | `<select ref="sel">...</select>`              |
+| `{tag: items, type: sub-contract, repeated: true, trackBy: id}`  | `<div forEach="items" trackBy="id">...</div>` |
+| `{tag: detail, type: sub-contract}`                              | `{detail.fieldName}`                          |
+
+### Empty list / empty state
+
+For repeated lists, add a **boolean variant** (e.g. `hasItems`, `hasCategories`) for empty-state UI. Do **not** use JavaScript property access in jay-html — `if="items.length===0"` fails at runtime because jay-html looks for a tag named `items.length`, not the array's length.
+
+```yaml
+# ✅ In the contract
+- tag: hasCategories
+  type: variant
+  dataType: boolean
+  description: Whether there are any categories
+```
+
+```html
+<!-- ✅ In jay-html -->
+<p if="!hasCategories">No categories yet.</p>
+<div if="hasCategories" forEach="categories" trackBy="_id">...</div>
+```
+
+Alternatively, expose a **number** data tag (`itemCount`) and use numeric comparison: `if="itemCount===0"`. See [jay-html-template-syntax.md](jay-html-template-syntax.md#expression-limits-important) and [contracts/examples/category-list.md](https://github.com/jay-framework/jay/blob/main/packages/jay-stack/stack-cli/agent-kit-template/contracts/examples/category-list.md).

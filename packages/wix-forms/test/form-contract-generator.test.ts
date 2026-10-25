@@ -14,7 +14,7 @@ const fixturesDir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fix
 
 function serviceWith(forms: ListedFormView[]): WixFormsService {
     return {
-        config: { namespace: 'wix.form_app.form', formIds: [], include: 'enabled' },
+        config: { namespace: 'wix.form_app.form', formIds: [], include: 'enabled', memberPrefill: {} },
         listForms: async () => forms,
         getFormFields: async () => [],
         getFormSummaryFields: async () => [],
@@ -55,6 +55,50 @@ describe('formContractGenerator', () => {
         expect(contract.yaml.trim()).toEqual(expected.trim());
     });
 
+    /**
+     * Bug (DL#39 4c, test 4 — runtime, failing-first): the generator cannot express a
+     *   non-string field, so a checkbox and a multiselect are mis-modeled.
+     * Found in: design-log/39 - general forms infrastructure.md §Design 4c (MUST-VERIFY #2).
+     * Expected: a checkbox field emits a `value` VARIANT (boolean) and HTMLInputElement input;
+     *   a multiselect emits the repeated `options` sub-contract with a per-option `selected`
+     *   variant and an HTMLSelectElement input. No `dataType: array` anywhere.
+     * Actual (pre-fix): the generator emits a `value` DATA (string) for the checkbox, an
+     *   HTMLInputElement for the multiselect, and no `selected` variant — this fails red as
+     *   a fixture diff until 4c lands.
+     */
+    it('should model a checkbox as a boolean value variant and a multiselect via options.selected', async () => {
+        const expected = await readFile(
+            path.join(fixturesDir, 'form-contract-generator', 'choices.jay-contract'),
+            'utf-8',
+        );
+        const choicesForm: ListedFormView = {
+            id: 'c1',
+            name: 'Choices',
+            fields: [
+                { target: 'consent', label: 'I agree', inputType: 'checkbox', required: true, placeholder: '', options: [] },
+                {
+                    target: 'interests',
+                    label: 'Interests',
+                    inputType: 'multiselect',
+                    required: false,
+                    placeholder: '',
+                    options: [
+                        { value: 'news', label: 'News' },
+                        { value: 'offers', label: 'Offers' },
+                    ],
+                },
+            ],
+        };
+
+        const [contract] = await formContractGenerator.generate(serviceWith([choicesForm]));
+        expect(contract.yaml.trim()).toEqual(expected.trim());
+        // The shape must parse — confirms the nested per-option `selected` variant inside a
+        // repeated sub-contract round-trips (DL#39 MUST-VERIFY #2).
+        expect(() =>
+            checkValidationErrors(parseContract(contract.yaml, 'form-choices.jay-contract')),
+        ).not.toThrow();
+    });
+
     it('should produce a contract that parses without validation errors', async () => {
         const [contract] = await formContractGenerator.generate(serviceWith([contactForm]));
         expect(() =>
@@ -83,7 +127,9 @@ describe('formContractGenerator', () => {
         };
 
         const [contract] = await formContractGenerator.generate(serviceWith([form]));
-        const parsed = checkValidationErrors(parseContract(contract.yaml, 'form-snake.jay-contract'));
+        const parsed = checkValidationErrors(
+            parseContract(contract.yaml, 'form-snake.jay-contract'),
+        ) as { tags: Array<{ tag: string }> };
         const fieldTags = parsed.tags.map((tag) => tag.tag);
 
         expect(fieldTags).toContain('firstName');

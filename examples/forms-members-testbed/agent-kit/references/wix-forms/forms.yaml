@@ -1,0 +1,35 @@
+_generated: '2026-10-25T12:12:47.733Z'
+_description: >-
+  Wix Forms per-form contracts for agent discovery (DL#38). Bind explicit field tags, e.g. {contact.email.label},
+  ref="contact.email.input".
+namespace: wix.form_app.form
+totalForms: 1
+forms:
+  - contract: form/contact-my-form
+    formId: e87b4d6f-6a0f-4b5b-b730-63b9fa236f35
+    name: ContactMyForm
+    fields:
+      - target: first_name_d142
+        label: First name
+        type: text
+        required: false
+        elementType: HTMLInputElement
+        hidden: false
+        hasControl: true
+        valueType: string
+      - target: last_name_c480
+        label: Last name
+        type: text
+        required: false
+        elementType: HTMLInputElement
+        hidden: false
+        hasControl: true
+        valueType: string
+      - target: email_76b1
+        label: Email
+        type: email
+        required: false
+        elementType: HTMLInputElement
+        hidden: false
+        hasControl: true
+        valueType: string

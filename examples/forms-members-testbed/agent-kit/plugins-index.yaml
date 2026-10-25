@@ -1,0 +1,259 @@
+plugins:
+  - name: wix-data
+    path: ./../../packages/wix-data
+    contracts: []
+    actions:
+      - name: queryItems
+        description: Query items from a Wix Data collection with pagination, sorting,
+          and filtering. Returns matching items with total count.
+        path: ./../../packages/wix-data/dist/actions/query-items.jay-action
+      - name: getItemBySlug
+        description: Get a single item from a Wix Data collection by its URL slug.
+          Returns the item data or null if not found.
+        path: ./../../packages/wix-data/dist/actions/get-item-by-slug.jay-action
+      - name: getCategories
+        description: Get categories for a Wix Data collection. Returns category names,
+          slugs, and item counts.
+        path: ./../../packages/wix-data/dist/actions/get-categories.jay-action
+    services:
+      - name: wix-data
+        marker: WIX_DATA_SERVICE_MARKER
+        description: Wix Data API access with collection schema caching
+    contexts:
+      - name: wix-data
+        marker: WIX_DATA_CONTEXT
+        description: Client-side access to Wix Data items API
+  - name: wix-deploy
+    path: ./../../packages/wix-deploy
+    contracts: []
+    commands:
+      - name: deploy
+      - name: build-entry
+      - name: upload-backend
+      - name: deploy-baas
+  - name: wix-forms
+    path: ./../../packages/wix-forms
+    contracts:
+      - name: form/contact-my-form
+        description: Wix form "ContactMyForm" (e87b4d6f-6a0f-4b5b-b730-63b9fa236f35)
+        type: dynamic
+        path: ./agent-kit/materialized-contracts/wix-forms/form-contact-my-form.jay-contract
+        metadata:
+          formId: e87b4d6f-6a0f-4b5b-b730-63b9fa236f35
+    actions:
+      - name: getFormSummary
+        description: Load flat form field summaries for booking participant forms or
+          other integrations.
+        path: ./../../packages/wix-forms/dist/actions/get-form-summary.jay-action
+      - name: submitForm
+        description: Submit a Wix Form with field values keyed by target.
+        path: ./../../packages/wix-forms/dist/actions/submit-form.jay-action
+    services:
+      - name: wix-forms
+        marker: WIX_FORMS_SERVICE
+        description: Server-side Wix Forms schema and submission APIs
+  - name: wix-members
+    path: ./../../packages/wix-members
+    contracts:
+      - name: login-indicator
+        description: Shows member auth state in site header, with login/register/logout
+          buttons
+        type: static
+        path: ./../../packages/wix-members/dist/contracts/login-indicator.jay-contract
+      - name: auth-callback
+        description: Handles OAuth callback after Wix-hosted login/register
+        type: static
+        path: ./../../packages/wix-members/dist/contracts/auth-callback.jay-contract
+      - name: protected-page
+        description: Page-level login guard — redirects visitors to login page
+        type: static
+        path: ./../../packages/wix-members/dist/contracts/protected-page.jay-contract
+    services:
+      - name: wix-members
+        marker: WIX_MEMBERS_SERVICE
+        description: Server-side member operations via Wix Members API
+    contexts:
+      - name: wix-members
+        marker: WIX_MEMBERS_CONTEXT
+        description: Client-side member auth state, redirect login/register/logout
+          operations
+  - name: wix-server-client
+    path: ./../../packages/wix-server-client
+    contracts: []
+    services:
+      - name: wix-client
+        marker: WIX_CLIENT_SERVICE
+        description: Core Wix SDK client with API key authentication
+    contexts:
+      - name: wix-client
+        marker: WIX_CLIENT_CONTEXT
+        description: Client-side OAuth authentication and token management
+  - name: a11y-validator
+    path: ./../../node_modules/@jay-framework/a11y-validator
+    contracts: []
+  - name: aiditor
+    path: ./../../node_modules/@jay-framework/aiditor
+    contracts:
+      - name: aiditor-shell
+        description: AIditor shell — editor chrome banner
+        type: static
+        path: ./../../node_modules/@jay-framework/aiditor/dist/aiditor-shell.jay-contract
+    actions:
+      - name: getAiditorBootstrap
+        description: One-shot bootstrap returning project directory and dev server base URL
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/get-aiditor-bootstrap.jay-action
+      - name: getProjectInfoAction
+        description: List all page routes in the project via dev server
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/get-project-info.jay-action
+      - name: getPageParamsAction
+        description: Stream dynamic route parameter combinations from dev server
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/get-page-params.jay-action
+      - name: listFreezesAction
+        description: List frozen page states for a given route
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/list-freezes.jay-action
+      - name: sendToCanvasAgentAction
+        description: Send a request (marker submit, composer message, thread reply, Add
+          Page, settings, route change, video review, plugin install) to the
+          canvas agent with its captures
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/send-to-canvas-agent.jay-action
+      - name: streamCanvasAgentEventsAction
+        description: Stream one canvas's agent events after a sequence number, for a
+          bounded window (the client reconnects)
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/stream-canvas-agent-events.jay-action
+      - name: listCanvasAgentTasksAction
+        description: Snapshot of a canvas's agent tasks (active only unless includeDone)
+          and whether its manager is busy
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/list-canvas-agent-tasks.jay-action
+      - name: getCanvasAgentHistoryAction
+        description: Newest page of a canvas's agent events (or the page before
+          beforeSeq), its tasks, and lane summaries
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/get-canvas-agent-history.jay-action
+      - name: cancelAgentTaskAction
+        description: Stop a live agent task or cancel a queued one
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/cancel-agent-task.jay-action
+      - name: stopCanvasAgentAction
+        description: Stop the canvas manager and every live or queued task of the canvas
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/stop-canvas-agent.jay-action
+      - name: clearCanvasAgentHistoryAction
+        description: Delete a canvas's machine-local agent events and finished tasks;
+          keeps threads and lane summaries (refused while tasks are active)
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/clear-canvas-agent-history.jay-action
+      - name: cancelBriefFillAction
+        description: Cancel an in-flight Add Page brief generation from images
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/cancel-brief-fill.jay-action
+      - name: readFileAction
+        description: Read a file from the project filesystem (text or image as base64)
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/read-file.jay-action
+      - name: checkAddPageRouteAction
+        description: Validate and normalize an Add Page route; check if it already exists
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/check-add-page-route.jay-action
+      - name: startAddPageRequestAction
+        description: Mint an Add Page request folder under .aiditor/page-requests/
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/start-add-page-request.jay-action
+      - name: saveAddPageDraftAction
+        description: Persist Add Page composer markdown to the request folder
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/save-add-page-draft.jay-action
+      - name: uploadAddPageAssetAction
+        description: Upload a reference or asset file for an Add Page request
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/upload-add-page-asset.jay-action
+      - name: reclassifyAddPageAssetAction
+        description: Move an attachment between references/ and assets/ for an Add Page
+          request
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/reclassify-add-page-asset.jay-action
+      - name: submitAddPageAction
+        description: Run the Add Page implementation agent as a task on the canvas agent
+          and stream its progress until it settles
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/submit-add-page.jay-action
+      - name: checkPageAddPageBriefAction
+        description: Check whether a Jay page has saved Add Page brief files next to its
+          jay-html
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/check-page-add-page-brief.jay-action
+      - name: openAddPageFromBriefAction
+        description: Load a page's saved Add Page brief into a new page request with a
+          unique copy route
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/open-add-page-from-brief.jay-action
+      - name: generateAddPageBriefFromImageAction
+        description: Generate Add Page Content or Design markdown from screenshot(s) via
+          vision AI
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/generate-add-page-brief-from-image.jay-action
+      - name: checkPluginUpdateAction
+        description: Compare installed plugin version with latest on npm
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/check-plugin-update.jay-action
+      - name: listJayPluginsAction
+        description: List Jay plugin catalog with install and setup status
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/list-jay-plugins.jay-action
+      - name: listPluginContractsAction
+        description: List contracts for an installed plugin
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/list-plugin-contracts.jay-action
+      - name: ensureProjectPluginAction
+        description: Install plugin package, run setup and agent-kit (stream)
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/ensure-project-plugin.jay-action
+      - name: getPluginSetupStatusAction
+        description: Query plugin setup status from cache or refresh
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/get-plugin-setup-status.jay-action
+      - name: rerunPluginSetupAction
+        description: Re-run jay-stack setup for a plugin
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/rerun-plugin-setup.jay-action
+      - name: syncAddPagePluginManifestAction
+        description: Sync selected plugins to content.md managed section and request.json
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/sync-add-page-plugin-manifest.jay-action
+      - name: listAddMenuItemsAction
+        description: List Add Menu catalog items from agent-kit/aiditor/add-menu/
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/list-add-menu-items.jay-action
+      - name: syncAddMenuAttachmentsAction
+        description: Persist Add Menu attachments to request.json (content.md unchanged
+          unless contentMd is passed)
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/sync-add-menu-attachments.jay-action
+      - name: resolveAddMenuContractParamsAction
+        description: Resolve URL params from a materialized contract for Add Menu Q8 helpers
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/resolve-add-menu-contract-params.jay-action
+      - name: getPageMetaAction
+        description: Load page meta (route migration) for an agent context key
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/get-page-meta.jay-action
+      - name: savePageMetaAction
+        description: Save page meta (route migration) for an agent context key
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/save-page-meta.jay-action
+      - name: getContractInspectorTagsAction
+        description: Resolve contract tags for Page Info component explorer
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/get-contract-inspector-tags.jay-action
+      - name: getPageAssetsAction
+        description: Load page assets registry for an agent context key
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/get-page-assets.jay-action
+      - name: savePageAssetsAction
+        description: Persist page assets registry for an agent context key
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/save-page-assets.jay-action
+      - name: syncDetectedPageAssetsAction
+        description: Merge auto-detected page components into page assets registry
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/sync-detected-page-assets.jay-action
+      - name: writePluginSourceAction
+        description: Add or update a local plugin source in .aiditor/plugin-sources.yaml
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/write-plugin-source.jay-action
+      - name: checkAiditorPublishAction
+        description: Check whether the Jay project defines an aiditor:publish npm script
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/check-aiditor-publish.jay-action
+      - name: runAiditorPublishAction
+        description: Run the Jay project's aiditor:publish npm script (stream)
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/run-aiditor-publish.jay-action
+      - name: listCanvasDocumentsAction
+        description: List saved canvas documents for the current project
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/list-canvas-documents.jay-action
+      - name: getCanvasDocumentAction
+        description: Load a saved canvas document by id
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/get-canvas-document.jay-action
+      - name: saveCanvasDocumentAction
+        description: Save or update a canvas document
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/save-canvas-document.jay-action
+      - name: deleteCanvasDocumentAction
+        description: Delete a saved canvas document and its machine-local agent history
+          (refused while its agent tasks are active)
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/delete-canvas-document.jay-action
+      - name: renameCanvasDocumentAction
+        description: Rename a saved canvas document
+        path: ./../../node_modules/@jay-framework/aiditor/dist/actions/rename-canvas-document.jay-action
+    routes:
+      - path: /aiditor
+        description: AIditor — visual AI-driven code editor
+  - name: seo-validator
+    path: ./../../node_modules/@jay-framework/seo-validator
+    contracts: []
+designSystemIndex: ./design-system-index.yaml

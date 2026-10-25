@@ -1,6 +1,6 @@
 import { createJayService } from '@jay-framework/fullstack-component';
 import type { WixFormsConfig } from '../config-loader.js';
-import type { FormFieldSummaryView, FormFieldView, ListedFormView } from '../types.js';
+import type { FieldValue, FormFieldSummaryView, FormFieldView, ListedFormView } from '../types.js';
 
 export interface WixFormsService {
     /** Plugin configuration (namespace / formIds / include filter). */
@@ -14,7 +14,7 @@ export interface WixFormsService {
     /** Load one form's fields by id (runtime slow phase). */
     getFormFields(formId: string): Promise<FormFieldView[]>;
     getFormSummaryFields(formId?: string): Promise<FormFieldSummaryView[]>;
-    createSubmission(formId: string, values: Record<string, string>): Promise<void>;
+    createSubmission(formId: string, values: Record<string, FieldValue>): Promise<void>;
 }
 
 export const WIX_FORMS_SERVICE = createJayService<WixFormsService>('WixFormsService');

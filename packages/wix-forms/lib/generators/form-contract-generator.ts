@@ -11,7 +11,7 @@
 import { makeContractGenerator } from '@jay-framework/fullstack-component';
 import { WIX_FORMS_SERVICE } from '../services/wix-forms-service-marker.js';
 import type { ListedFormView } from '../types.js';
-import { fieldTag, reservedFormTags, toPascalCase } from './contract-utils.js';
+import { fieldTag, hiddenFieldTag, reservedFormTags, toPascalCase } from './contract-utils.js';
 import { computeFormSlugs } from './form-slug.js';
 
 /**
@@ -21,7 +21,9 @@ import { computeFormSlugs } from './form-slug.js';
  * `name:` is PascalCase(slug) + "Form" (DL#38 §3).
  */
 function buildContract(form: ListedFormView, slug: string): string {
-    const fieldTags = form.fields.map((field) => fieldTag(field));
+    const fieldTags = form.fields.map((field) =>
+        field.hidden ? hiddenFieldTag(field) : fieldTag(field),
+    );
     const tags = [...fieldTags, reservedFormTags()].join('\n');
     return `name: ${toPascalCase(slug)}Form
 description: ${describe(form)}

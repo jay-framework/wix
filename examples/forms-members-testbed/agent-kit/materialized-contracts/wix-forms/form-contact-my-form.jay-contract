@@ -1,0 +1,50 @@
+name: ContactMyFormForm
+description: Wix form "ContactMyForm" (e87b4d6f-6a0f-4b5b-b730-63b9fa236f35)
+tags:
+  - tag: firstNameD142
+    type: sub-contract
+    phase: fast+interactive
+    description: First name
+    tags:
+      - { tag: label, type: data, dataType: string }
+      - { tag: placeholder, type: data, dataType: string }
+      - { tag: value, type: data, dataType: string }
+      - { tag: required, type: variant, dataType: boolean }
+      - { tag: error, type: data, dataType: string }
+      - { tag: invalid, type: variant, dataType: boolean }
+      - { tag: input, type: interactive, elementType: HTMLInputElement }
+      - { tag: control, type: interactive, elementType: HTMLElement }
+  - tag: lastNameC480
+    type: sub-contract
+    phase: fast+interactive
+    description: Last name
+    tags:
+      - { tag: label, type: data, dataType: string }
+      - { tag: placeholder, type: data, dataType: string }
+      - { tag: value, type: data, dataType: string }
+      - { tag: required, type: variant, dataType: boolean }
+      - { tag: error, type: data, dataType: string }
+      - { tag: invalid, type: variant, dataType: boolean }
+      - { tag: input, type: interactive, elementType: HTMLInputElement }
+      - { tag: control, type: interactive, elementType: HTMLElement }
+  - tag: email_76b1
+    type: sub-contract
+    phase: fast+interactive
+    description: Email
+    tags:
+      - { tag: label, type: data, dataType: string }
+      - { tag: placeholder, type: data, dataType: string }
+      - { tag: value, type: data, dataType: string }
+      - { tag: required, type: variant, dataType: boolean }
+      - { tag: error, type: data, dataType: string }
+      - { tag: invalid, type: variant, dataType: boolean }
+      - { tag: input, type: interactive, elementType: HTMLInputElement }
+      - { tag: control, type: interactive, elementType: HTMLElement }
+  - { tag: isLoading, type: variant, dataType: boolean, phase: fast+interactive }
+  - { tag: loadError, type: data, dataType: string, phase: fast+interactive }
+  - { tag: isSubmitting, type: variant, dataType: boolean, phase: fast+interactive }
+  - { tag: isSubmitted, type: variant, dataType: boolean, phase: fast+interactive }
+  - { tag: statusMessage, type: data, dataType: string, phase: fast+interactive }
+  - { tag: submitButton, type: interactive, elementType: HTMLButtonElement }
+  - { tag: resetButton, type: interactive, elementType: HTMLButtonElement }
+  - { tag: honeypot, type: interactive, elementType: HTMLInputElement }
