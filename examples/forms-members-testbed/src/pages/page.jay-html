@@ -3,6 +3,7 @@
     <title>Welcome to forms-members-testbed</title>
     <meta name="description" content="Jay Stack + Wix headless testbed — Wix Forms (per-form contracts), Members, Data, Deploy.">
     <script type="application/jay-data" contract="./page.jay-contract"></script>
+    <script type="application/jay-headless" plugin="@jay-framework/wix-members" contract="login-indicator" key="auth"></script>
     <link rel="stylesheet" href="../styles/theme.css" />
     <style>
       .hero {
@@ -43,6 +44,11 @@
   </head>
   <body>
     <main>
+      <nav class="auth-bar" aria-label="Account">
+        <span if="auth.isLoading">Checking login…</span>
+        <span if="!auth.isLoading&&auth.isLoggedIn">Logged in as {auth.memberName} <button ref="auth.logoutButton">Log out</button></span>
+        <button if="!auth.isLoading&&!auth.isLoggedIn" ref="auth.loginButton">Log in</button>
+      </nav>
       <section class="hero">
         <h1 class="hero-title">{title}</h1>
         <p class="hero-subtitle">{description}</p>
