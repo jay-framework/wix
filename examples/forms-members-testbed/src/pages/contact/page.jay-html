@@ -122,6 +122,7 @@
           tabindex="-1"
           autocomplete="off"
           aria-hidden="true"
+          aria-label="Leave this field empty"
         />
 
         <button type="button" ref="contact.submitButton">Send</button>
