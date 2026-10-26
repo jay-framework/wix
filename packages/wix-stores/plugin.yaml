@@ -51,8 +51,8 @@ actions:
   - name: getProductForEditing
     action: get-product-for-editing.jay-action
     devOnly: true
-  - name: updateProductMainImage
-    action: update-product-main-image.jay-action
+  - name: updateProductImage
+    action: update-product-image.jay-action
     devOnly: true
   - name: updateProductText
     action: update-product-text.jay-action

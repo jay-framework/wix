@@ -6,6 +6,6 @@ export { validateWixStoresProjectConfig } from './validators/wix-stores-config-v
 // devOnly source-editing actions (DL #38) — write to the Stores catalog; excluded from production
 export {
     getProductForEditing,
-    updateProductMainImage,
+    updateProductImage,
     updateProductText,
 } from './editing/editing-actions.js';

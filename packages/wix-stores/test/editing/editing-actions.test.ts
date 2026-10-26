@@ -1,16 +1,26 @@
 // @vitest-environment node
 
-import { readFile } from 'node:fs/promises';
+import { mkdtemp, readFile, truncate, writeFile } from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { WixClient } from '@wix/sdk';
 import { wixFetch, WixApiError } from '@jay-framework/wix-server-client';
 import {
     getProductForEditing,
-    updateProductMainImage,
+    updateProductImage,
     updateProductText,
 } from '../../lib/editing/editing-actions.js';
 import type { WixStoresService } from '../../lib/services/wix-stores-service.js';
+import {
+    MediaUploadError,
+    uploadImageToMediaFolder,
+} from '../../lib/wix-apis/upload-media-file.js';
+
+vi.mock('../../lib/wix-apis/upload-media-file.js', async (importOriginal) => ({
+    ...(await importOriginal<typeof import('../../lib/wix-apis/upload-media-file.js')>()),
+    uploadImageToMediaFolder: vi.fn(),
+}));
 
 vi.mock('@jay-framework/wix-server-client', async (importOriginal) => ({
     ...(await importOriginal<typeof import('@jay-framework/wix-server-client')>()),
@@ -26,6 +36,9 @@ async function readFixture<T = unknown>(name: string): Promise<T> {
 const wixClient = {} as WixClient;
 const wixStores = { wixClient } as WixStoresService;
 const mockedWixFetch = vi.mocked(wixFetch);
+const mockedUpload = vi.mocked(uploadImageToMediaFolder);
+const imageFilesDir = path.join(__dirname, '..', 'fixtures', 'image-files');
+const CAP_BACK_FILE = path.join(imageFilesDir, 'cap back.JPEG');
 
 /** Script wixFetch: each call consumes the next response (a value resolves, an Error rejects). */
 function respondWith(...responses: unknown[]) {
@@ -48,6 +61,7 @@ const NEW_IMAGE_URL = 'https://example.com/red-sneaker.jpg';
 
 beforeEach(() => {
     mockedWixFetch.mockReset();
+    mockedUpload.mockReset();
 });
 
 describe('getProductForEditing', () => {
@@ -73,22 +87,20 @@ describe('getProductForEditing', () => {
     });
 });
 
-describe('updateProductMainImage', () => {
+describe('updateProductImage', () => {
     it('reads the current revision, then PATCHes the media items with it', async () => {
         respondWith(
             await readFixture('get-product-response.json'),
-            await readFixture('update-main-image-response.json'),
+            await readFixture('update-image-response.json'),
         );
 
-        const output = await updateProductMainImage.handler(
+        const output = await updateProductImage.handler(
             { slug: 'air-runner', imageUrl: NEW_IMAGE_URL },
             wixStores,
         );
 
-        expect(requestedCalls()).toEqual(
-            await readFixture('expected-update-main-image-calls.json'),
-        );
-        expect(output).toEqual(await readFixture('expected-update-main-image-output.json'));
+        expect(requestedCalls()).toEqual(await readFixture('expected-update-image-calls.json'));
+        expect(output).toEqual(await readFixture('expected-update-image-output.json'));
     });
 
     it('re-reads the product and retries once when the write hits a revision conflict (409)', async () => {
@@ -96,18 +108,18 @@ describe('updateProductMainImage', () => {
             await readFixture('get-product-response.json'),
             conflict(),
             await readFixture('get-product-response-revision-8.json'),
-            await readFixture('update-main-image-response.json'),
+            await readFixture('update-image-response.json'),
         );
 
-        const output = await updateProductMainImage.handler(
+        const output = await updateProductImage.handler(
             { productId: 'prod-air-runner', imageUrl: NEW_IMAGE_URL },
             wixStores,
         );
 
         expect(requestedCalls()).toEqual(
-            await readFixture('expected-update-main-image-retry-calls.json'),
+            await readFixture('expected-update-image-retry-calls.json'),
         );
-        expect(output).toEqual(await readFixture('expected-update-main-image-output.json'));
+        expect(output).toEqual(await readFixture('expected-update-image-retry-output.json'));
     });
 
     it('fails with REVISION_CONFLICT when the retry conflicts too', async () => {
@@ -119,23 +131,150 @@ describe('updateProductMainImage', () => {
         );
 
         await expect(
-            updateProductMainImage.handler(
-                { slug: 'air-runner', imageUrl: NEW_IMAGE_URL },
-                wixStores,
-            ),
+            updateProductImage.handler({ slug: 'air-runner', imageUrl: NEW_IMAGE_URL }, wixStores),
         ).rejects.toMatchObject({ name: 'ActionError', code: 'REVISION_CONFLICT' });
         expect(mockedWixFetch).toHaveBeenCalledTimes(4);
     });
 
     it('fails with INVALID_IMAGE_URL for a non-URL image, without calling Wix', async () => {
         await expect(
-            updateProductMainImage.handler(
+            updateProductImage.handler(
                 { slug: 'air-runner', imageUrl: 'a red sneaker' },
                 wixStores,
             ),
         ).rejects.toMatchObject({ name: 'ActionError', code: 'INVALID_IMAGE_URL' });
         expect(mockedWixFetch).not.toHaveBeenCalled();
     });
+});
+
+describe('updateProductImage — gallery item and local file (DL #40)', () => {
+    it('uploads the local file and replaces the gallery item with mediaId in place', async () => {
+        respondWith(
+            await readFixture('get-product-response.json'),
+            await readFixture('get-product-response.json'),
+            await readFixture('update-gallery-image-response.json'),
+        );
+        mockedUpload.mockResolvedValueOnce('a73159_new~mv2.jpeg');
+
+        const output = await updateProductImage.handler(
+            {
+                slug: 'air-runner',
+                mediaId: 'c837a6_back~mv2.jpg',
+                imageFile: CAP_BACK_FILE,
+                altText: 'Cap, back',
+            },
+            wixStores,
+        );
+
+        expect(mockedUpload).toHaveBeenCalledWith(wixClient, {
+            fileName: 'cap back.JPEG',
+            mimeType: 'image/jpeg',
+            bytes: new Uint8Array([1, 2, 3, 4]),
+        });
+        expect(requestedCalls()).toEqual(
+            await readFixture('expected-update-gallery-image-from-file-calls.json'),
+        );
+        expect(output).toEqual(
+            await readFixture('expected-update-gallery-image-from-file-output.json'),
+        );
+    });
+
+    it('resolves a relative imageFile against the project root (cwd)', async () => {
+        respondWith(
+            await readFixture('get-product-response.json'),
+            await readFixture('update-image-response.json'),
+        );
+        mockedUpload.mockResolvedValueOnce('c837a6_red~mv2.jpg');
+
+        await updateProductImage.handler(
+            { slug: 'air-runner', imageFile: path.relative(process.cwd(), CAP_BACK_FILE) },
+            wixStores,
+        );
+
+        expect(mockedUpload).toHaveBeenCalledWith(
+            wixClient,
+            expect.objectContaining({ fileName: 'cap back.JPEG' }),
+        );
+    });
+
+    it.each([
+        ['neither imageUrl nor imageFile', { slug: 'air-runner' }],
+        [
+            'both imageUrl and imageFile',
+            { slug: 'air-runner', imageUrl: NEW_IMAGE_URL, imageFile: CAP_BACK_FILE },
+        ],
+    ])('fails with IMAGE_SOURCE_REQUIRED for %s, without calling Wix', async (_, input) => {
+        await expect(updateProductImage.handler(input, wixStores)).rejects.toMatchObject({
+            name: 'ActionError',
+            code: 'IMAGE_SOURCE_REQUIRED',
+        });
+        expect(mockedWixFetch).not.toHaveBeenCalled();
+    });
+
+    it.each([
+        ['FILE_NOT_FOUND', path.join(imageFilesDir, 'missing.jpg')],
+        ['UNSUPPORTED_FILE_TYPE', path.join(imageFilesDir, 'notes.txt')],
+    ])('fails with %s before calling Wix', async (code, imageFile) => {
+        await expect(
+            updateProductImage.handler({ slug: 'air-runner', imageFile }, wixStores),
+        ).rejects.toMatchObject({ name: 'ActionError', code });
+        expect(mockedWixFetch).not.toHaveBeenCalled();
+        expect(mockedUpload).not.toHaveBeenCalled();
+    });
+
+    it('fails with FILE_TOO_LARGE for a file over 10 MB', async () => {
+        const dir = await mkdtemp(path.join(os.tmpdir(), 'wix-stores-image-'));
+        const bigFile = path.join(dir, 'big.png');
+        await writeFile(bigFile, '');
+        await truncate(bigFile, 10 * 1024 * 1024 + 1);
+
+        await expect(
+            updateProductImage.handler({ slug: 'air-runner', imageFile: bigFile }, wixStores),
+        ).rejects.toMatchObject({ name: 'ActionError', code: 'FILE_TOO_LARGE' });
+        expect(mockedWixFetch).not.toHaveBeenCalled();
+    });
+
+    it('fails with MEDIA_ITEM_NOT_FOUND for an unknown mediaId, before uploading', async () => {
+        respondWith(await readFixture('get-product-response.json'));
+
+        await expect(
+            updateProductImage.handler(
+                { slug: 'air-runner', mediaId: 'nope', imageFile: CAP_BACK_FILE },
+                wixStores,
+            ),
+        ).rejects.toMatchObject({ name: 'ActionError', code: 'MEDIA_ITEM_NOT_FOUND' });
+        expect(mockedUpload).not.toHaveBeenCalled();
+    });
+
+    it.each([401, 403])(
+        'fails with MEDIA_UPLOAD_NOT_AUTHORIZED when a Media call is rejected with %i',
+        async (status) => {
+            mockedUpload.mockRejectedValueOnce(
+                new WixApiError(status, '/site-media/v1/folders', 'forbidden'),
+            );
+
+            await expect(
+                updateProductImage.handler(
+                    { slug: 'air-runner', imageFile: CAP_BACK_FILE },
+                    wixStores,
+                ),
+            ).rejects.toMatchObject({ name: 'ActionError', code: 'MEDIA_UPLOAD_NOT_AUTHORIZED' });
+        },
+    );
+
+    it.each(['MEDIA_UPLOAD_FAILED', 'MEDIA_FILE_NOT_READY'] as const)(
+        'surfaces %s from the upload as an ActionError',
+        async (code) => {
+            mockedUpload.mockRejectedValueOnce(new MediaUploadError(code, 'upload problem'));
+
+            await expect(
+                updateProductImage.handler(
+                    { slug: 'air-runner', imageFile: CAP_BACK_FILE },
+                    wixStores,
+                ),
+            ).rejects.toMatchObject({ name: 'ActionError', code });
+        },
+    );
 });
 
 describe('updateProductText', () => {
@@ -166,8 +305,8 @@ describe('editing action errors', () => {
     it.each([
         ['getProductForEditing', () => getProductForEditing.handler({}, wixStores)],
         [
-            'updateProductMainImage',
-            () => updateProductMainImage.handler({ imageUrl: NEW_IMAGE_URL }, wixStores),
+            'updateProductImage',
+            () => updateProductImage.handler({ imageUrl: NEW_IMAGE_URL }, wixStores),
         ],
         ['updateProductText', () => updateProductText.handler({ name: 'x' }, wixStores)],
     ])('%s fails with MISSING_PRODUCT_IDENTITY without slug or productId', async (_, run) => {
@@ -182,7 +321,7 @@ describe('editing action errors', () => {
         respondWith(new WixApiError(404, '/stores/v3/products/slug/nope', 'not found'));
 
         await expect(
-            updateProductMainImage.handler({ slug: 'nope', imageUrl: NEW_IMAGE_URL }, wixStores),
+            updateProductImage.handler({ slug: 'nope', imageUrl: NEW_IMAGE_URL }, wixStores),
         ).rejects.toMatchObject({ name: 'ActionError', code: 'PRODUCT_NOT_FOUND' });
     });
 

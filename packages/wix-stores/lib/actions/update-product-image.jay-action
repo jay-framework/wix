@@ -1,0 +1,28 @@
+name: updateProductImage
+description: >-
+  DEV ONLY — source editing. Replace one of a Wix Stores product's images in the Stores catalog:
+  the main image (default), or the gallery item with mediaId (a product media item id — the
+  product-page thumbnails forEach item id, or the item whose id appears in the displayed image src;
+  see getProductForEditing media.items). Identify the product by slug (product-page route param)
+  or productId (product-card forEach itemId). Pass exactly one image source: imageUrl (public http(s)
+  URL or wix:image:// Media Manager URL) or imageFile (a local image path, e.g. a user attachment;
+  uploaded to the Media Manager "media" folder). keepPrevious keeps the replaced image right after
+  the new one. See agent-kit/designer/wix-stores-editing-product-page.md.
+
+inputSchema:
+  slug?: string
+  productId?: string
+  mediaId?: string
+  imageUrl?: string
+  imageFile?: string
+  altText?: string
+  keepPrevious?: boolean
+
+outputSchema:
+  productId: string
+  slug: string
+  revision: string
+  mainImageUrl: string
+  imageUrl: string
+  replacedMediaId: string
+  uploadedFileId?: string

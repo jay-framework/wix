@@ -248,17 +248,18 @@ jay-stack action wix-stores/getCategories
 
 Three `devOnly` actions (exported from `./tools`, never registered in production) let an agent change product data at its source — the Wix Stores catalog — instead of hard-coding it into jay-html:
 
-| Action                   | Does                                                                                               |
-| ------------------------ | -------------------------------------------------------------------------------------------------- |
-| `getProductForEditing`   | Look up a product by `slug` or `productId`; returns name, description and media                    |
-| `updateProductMainImage` | Replace the main image (`imageUrl`: http(s) or `wix:image://`; optional `altText`, `keepPrevious`) |
-| `updateProductText`      | Update `name` and/or `plainDescription` (HTML)                                                     |
+| Action                 | Does                                                                                                                                                                                                             |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `getProductForEditing` | Look up a product by `slug` or `productId`; returns name, description and media                                                                                                                                  |
+| `updateProductImage`   | Replace the main image, or the gallery item `mediaId`, from `imageUrl` (http(s) / `wix:image://`) or `imageFile` (local image, uploaded to the Media Manager folder `media`); optional `altText`, `keepPrevious` |
+| `updateProductText`    | Update `name` and/or `plainDescription` (HTML)                                                                                                                                                                   |
 
 ```bash
-npx jay-stack-cli action wix-stores/updateProductMainImage --input '{"slug":"air-runner","imageUrl":"https://example.com/red-sneaker.jpg"}'
+npx jay-stack-cli action wix-stores/updateProductImage --input '{"slug":"air-runner","imageUrl":"https://example.com/red-sneaker.jpg"}'
+npx jay-stack-cli action wix-stores/updateProductImage --input '{"slug":"air-runner","mediaId":"c837a6_b2~mv2.jpg","imageFile":"./photos/back.jpg"}'
 ```
 
-Writes need `apiKeyStrategy` in `config/.wix.yaml` with the Wix Stores _Manage Products_ permission. Agent guides: `agent-kit/designer/wix-stores-editing-product-page.md`, `agent-kit/designer/wix-stores-editing-product-cards.md`.
+Writes need `apiKeyStrategy` in `config/.wix.yaml` with the Wix Stores _Manage Products_ permission (plus Media Manager upload permission for `imageFile`). Agent guides: `agent-kit/designer/wix-stores-editing-product-page.md`, `agent-kit/designer/wix-stores-editing-product-cards.md`.
 
 ## Agent Kit References
 

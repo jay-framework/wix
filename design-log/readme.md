@@ -45,7 +45,7 @@ Design documentation for the Jay Framework Wix integration packages.
 | 37  | [BaaS Entry — Project Action Registration](./37%20-%20baas-entry-project-action-registration.md)               | Implemented                               |
 | 38  | [wix-stores Source Editing — editing guides + devOnly write actions](./38%20-%20wix-stores%20source%20editing.md) | Implemented (live demo verified)          |
 | 39  | [Wix Headless Onboarding for Jay Projects](./39%20-%20wix%20headless%20onboarding%20for%20jay%20projects.md) | Design (findings, awaiting review)        |
-| 40  | [wix-stores Product Image from a Local File](./40%20-%20wix-stores%20product%20image%20from%20a%20local%20file.md) | Design (awaiting review)                  |
+| 40  | [wix-stores Product Image (main or gallery item) from a Local File](./40%20-%20wix-stores%20product%20image%20from%20a%20local%20file.md) | Implemented (live CLI verified)           |
 
 ## Packages Covered
 

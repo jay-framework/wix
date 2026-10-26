@@ -1,5 +1,5 @@
 /**
- * devOnly source-editing actions (DL #38).
+ * devOnly source-editing actions (DL #38; image replacement from a local file / gallery item: DL #40).
  *
  * Let the AIditor agent change product data at its source — the Wix Stores catalog — instead of
  * hard-coding it into jay-html. Exported from `tools.ts` only, so production never registers them.
@@ -16,15 +16,21 @@ import {
     updateProduct as updateProductApi,
 } from '../wix-apis/index.js';
 import type { ProductUpdate, V3Product } from '../wix-apis/types.js';
-import { buildMainImageItems, isSupportedImageUrl } from './media-items.js';
+import {
+    buildReplacedImageItems,
+    indexOfReplacedItem,
+    isSupportedImageUrl,
+} from './media-items.js';
+import { readImageFile } from './image-file.js';
+import { MediaUploadError, uploadImageToMediaFolder } from '../wix-apis/upload-media-file.js';
 import type {
     GetProductForEditingInput,
     GetProductForEditingOutput,
 } from '../actions/get-product-for-editing.jay-action';
 import type {
-    UpdateProductMainImageInput,
-    UpdateProductMainImageOutput,
-} from '../actions/update-product-main-image.jay-action';
+    UpdateProductImageInput,
+    UpdateProductImageOutput,
+} from '../actions/update-product-image.jay-action';
 import type {
     UpdateProductTextInput,
     UpdateProductTextOutput,
@@ -46,32 +52,42 @@ export const getProductForEditing = makeJayQuery('wixStores.getProductForEditing
         },
     );
 
-export const updateProductMainImage = makeJayAction('wixStores.updateProductMainImage')
+export const updateProductImage = makeJayAction('wixStores.updateProductImage')
     .withServices(WIX_STORES_SERVICE_MARKER)
     .withHandler(
         async (
-            input: UpdateProductMainImageInput,
+            input: UpdateProductImageInput,
             wixStores: WixStoresService,
-        ): Promise<UpdateProductMainImageOutput> => {
+        ): Promise<UpdateProductImageOutput> => {
+            const client = wixStores.wixClient;
             const identity = toProductIdentity(input);
-            assertSupportedImageUrl(input.imageUrl);
-            const updated = await writeWithRevisionRetry(wixStores.wixClient, identity, {
+            const source = toImageSource(input);
+            if (input.mediaId !== undefined)
+                await assertMediaItemExists(client, identity, input.mediaId);
+            const { imageUrl, uploadedFileId } = await resolveImageUrl(client, source);
+
+            let replacedMediaId = '';
+            let replacedIndex = 0;
+            const updated = await writeWithRevisionRetry(client, identity, {
                 fields: ['MEDIA_ITEMS_INFO'],
-                buildPatch: (current) => ({
-                    media: {
-                        itemsInfo: {
-                            items: buildMainImageItems(
-                                current.media?.itemsInfo?.items ?? [],
-                                input.imageUrl,
-                                { altText: input.altText, keepPrevious: input.keepPrevious },
-                            ),
-                        },
-                    },
-                }),
+                buildPatch: (current) => {
+                    const existingItems = current.media?.itemsInfo?.items ?? [];
+                    replacedIndex = indexOfReplacedItem(existingItems, input.mediaId);
+                    replacedMediaId = existingItems[replacedIndex]?._id ?? '';
+                    const items = buildReplacedImageItems(existingItems, imageUrl, {
+                        mediaId: input.mediaId,
+                        altText: input.altText,
+                        keepPrevious: input.keepPrevious,
+                    });
+                    return { media: { itemsInfo: { items } } };
+                },
             });
             return {
                 ...toWriteResult(updated),
                 mainImageUrl: updated.media?.main?.url ?? '',
+                imageUrl: updated.media?.itemsInfo?.items?.[replacedIndex]?.url ?? '',
+                replacedMediaId,
+                ...(uploadedFileId ? { uploadedFileId } : {}),
             };
         },
     );
@@ -216,6 +232,61 @@ function toTextPatch(input: UpdateProductTextInput): ProductPatch {
     };
 }
 
+// ============================================================================
+// Image source (DL #40)
+// ============================================================================
+
+type ImageSource = { imageUrl: string } | { imageFile: string };
+
+function toImageSource(input: UpdateProductImageInput): ImageSource {
+    const hasUrl = input.imageUrl !== undefined;
+    const hasFile = input.imageFile !== undefined;
+    if (hasUrl === hasFile) {
+        throw new ActionError(
+            'IMAGE_SOURCE_REQUIRED',
+            'Pass exactly one of imageUrl (public http(s) or wix:image:// URL) or imageFile (local image path, e.g. an attachment).',
+        );
+    }
+    if (hasUrl) {
+        assertSupportedImageUrl(input.imageUrl!);
+        return { imageUrl: input.imageUrl! };
+    }
+    return { imageFile: input.imageFile! };
+}
+
+async function assertMediaItemExists(
+    client: WixClient,
+    identity: ProductIdentity,
+    mediaId: string,
+): Promise<void> {
+    const product = await readProduct(client, identity);
+    indexOfReplacedItem(product.media?.itemsInfo?.items ?? [], mediaId);
+}
+
+async function resolveImageUrl(
+    client: WixClient,
+    source: ImageSource,
+): Promise<{ imageUrl: string; uploadedFileId?: string }> {
+    if ('imageUrl' in source) return { imageUrl: source.imageUrl };
+    const upload = await readImageFile(source.imageFile);
+    const uploadedFileId = await uploadImage(client, upload);
+    return {
+        imageUrl: `wix:image://v1/${uploadedFileId}/${encodeURIComponent(upload.fileName)}`,
+        uploadedFileId,
+    };
+}
+
+async function uploadImage(
+    client: WixClient,
+    upload: Parameters<typeof uploadImageToMediaFolder>[1],
+): Promise<string> {
+    try {
+        return await uploadImageToMediaFolder(client, upload);
+    } catch (error) {
+        throw toUploadActionError(error);
+    }
+}
+
 function assertSupportedImageUrl(imageUrl: string): void {
     if (!isSupportedImageUrl(imageUrl)) {
         throw new ActionError(
@@ -259,6 +330,17 @@ function toWriteActionError(error: unknown, identity: ProductIdentity): ActionEr
         );
     }
     return toWixApiActionError(error, `update product with ${describeIdentity(identity)}`);
+}
+
+function toUploadActionError(error: unknown): ActionError {
+    if (error instanceof WixApiError && (error.status === 401 || error.status === 403)) {
+        return new ActionError(
+            'MEDIA_UPLOAD_NOT_AUTHORIZED',
+            `Wix rejected the Media Manager upload (${error.status}). The API key in config/.wix.yaml (apiKeyStrategy) needs the Media Manager permissions (manage folders, MEDIA.SITE_MEDIA_FILES_UPLOAD). Tell the user; don't work around it.`,
+        );
+    }
+    if (error instanceof MediaUploadError) return new ActionError(error.code, error.message);
+    return toWixApiActionError(error, 'upload the image to the Media Manager');
 }
 
 function toWixApiActionError(error: unknown, operation: string): ActionError {

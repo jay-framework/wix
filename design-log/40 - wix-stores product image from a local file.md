@@ -1,6 +1,6 @@
 # 40 — wix-stores: replace a product image (main or gallery item) from a local file
 
-Status: **[Design]** — approved by Noam, then revised in scope (any gallery item, not only the main image) before implementation started. Extends DL #38 (source editing actions); DL #38's design section is not rewritten.
+Status: **[Implemented]** — approved by Noam, then revised in scope (any gallery item, not only the main image) before implementation started. Extends DL #38 (source editing actions); DL #38's design section is not rewritten.
 
 ## Decisions for the Implementer (TL;DR)
 
@@ -179,3 +179,21 @@ Product cards: `mainMedia.url` → `updateProductImage` without `mediaId` (the m
 
 - **Agent-kit:** yes — the two wix-stores editing guides (Phase 3).
 - **Validation:** none — which gallery item the user meant is not knowable at build time.
+
+## Implementation Results (2026-10-26)
+
+**Files:** `lib/wix-apis/upload-media-file.ts` (new), `lib/editing/image-file.ts` (new — path resolution, type/size checks, MIME map), `lib/editing/media-items.ts` (`buildReplacedImageItems`, `indexOfReplacedItem`), `lib/editing/editing-actions.ts` (`updateProductImage`), `lib/actions/update-product-image.jay-action` (renamed), `plugin.yaml`, `package.json`, `lib/tools.ts`, README, the two editing guides, `store-configuration.md`.
+
+**Phase 1 live spike** (before code, demo store, API key from `config/.wix.yaml`): root `media` folder created, `generate-upload-url` 200, `PUT` 200, file listed by exact `displayName`, `get-file-by-id` → `operationStatus: READY` within the first poll. The spike left one `spike-<timestamp>.jpeg` in Media Manager → `media`.
+
+**Deviations from the Design**
+1. The readiness call is `GET /site-media/v1/files/get-file-by-id?fileId=` (the first draft said `/files/{fileId}`; corrected in the Design before implementation, from the spike). Query strings are built with `URLSearchParams` (so `~` in ids is sent as `%7E`; accepted by Wix).
+2. `MEDIA_ITEM_NOT_FOUND` is thrown from `indexOfReplacedItem` (`media-items.ts`) — used both by the pre-upload check and inside `buildPatch` — rather than by the handler.
+3. Upload/processing failures are a typed `MediaUploadError` (`MEDIA_UPLOAD_FAILED` / `MEDIA_FILE_NOT_READY`) in the REST layer; the handler maps it, and 401/403 on any Media call, to the `ActionError` codes.
+4. The 409-retry test gets its own expected output (`expected-update-image-retry-output.json`): after the conflict the re-read product's main is a different item, so `replacedMediaId` is that item — the correct behavior per "lookup runs on `current`".
+
+**Tests:** wix-stores 91/91 (was 67 + new: 4 item-builder, 8 upload client, 12 action cases). `npm run build` incl. `validate-plugin` ✅. Root `yarn wsrun -t test`: 26/27 workspaces pass; `@jay-framework/wix-server-client` fails with `command not found: vitest` (environment, untouched package). Root `yarn build` fails in untouched `wix-deploy` (`lib/artifact-store.ts` imports `production-server/serve` members missing from the installed jay 0.25.5) — pre-existing, unrelated.
+
+**Live (Phase 4, CLI on the demo store, Baseball Cap):** `updateProductImage({ slug, mediaId: <3rd item>, imageFile })` → uploaded `a73159_d498…~mv2.jpeg`, gallery = [main, item 2, new] (main + item 2 unchanged), `replacedMediaId` = the 3rd item; restored with `imageUrl: "wix:image://v1/<original id>/cap.jpg"` + `mediaId` → original gallery back. AIditor demo: pending (waits for Noam's live Wix dashboard login).
+
+**jay-feedback:** agent-kit — yes, the two wix-stores editing guides (which image → `mediaId`; attachment → `imageFile`; no copy into `public/`). Validation — none (which gallery image the user meant is runtime context).

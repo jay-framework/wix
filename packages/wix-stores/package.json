@@ -36,7 +36,7 @@
     "./get-categories.jay-action": "./dist/actions/get-categories.jay-action",
     "./get-variant-stock.jay-action": "./dist/actions/get-variant-stock.jay-action",
     "./get-product-for-editing.jay-action": "./dist/actions/get-product-for-editing.jay-action",
-    "./update-product-main-image.jay-action": "./dist/actions/update-product-main-image.jay-action",
+    "./update-product-image.jay-action": "./dist/actions/update-product-image.jay-action",
     "./update-product-text.jay-action": "./dist/actions/update-product-text.jay-action"
   },
   "scripts": {

@@ -1,0 +1,26 @@
+[
+  ["/site-media/v1/folders?parentFolderId=media-root", { "method": "GET" }],
+  [
+    "/site-media/v1/folders",
+    { "method": "POST", "body": { "displayName": "media", "parentFolderId": "media-root" } }
+  ],
+  [
+    "/site-media/v1/files/generate-upload-url",
+    {
+      "method": "POST",
+      "body": {
+        "mimeType": "image/jpeg",
+        "fileName": "cap back.jpeg",
+        "parentFolderId": "folder-media",
+        "sizeInBytes": "4"
+      }
+    }
+  ],
+  ["/site-media/v1/files?parentFolderId=folder-media&paging.limit=100", { "method": "GET" }],
+  [
+    "/site-media/v1/files?parentFolderId=folder-media&paging.limit=100&paging.cursor=page-2",
+    { "method": "GET" }
+  ],
+  ["/site-media/v1/files/get-file-by-id?fileId=a73159_new%7Emv2.jpeg", { "method": "GET" }],
+  ["/site-media/v1/files/get-file-by-id?fileId=a73159_new%7Emv2.jpeg", { "method": "GET" }]
+]

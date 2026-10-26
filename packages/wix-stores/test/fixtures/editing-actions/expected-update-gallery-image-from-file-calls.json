@@ -1,0 +1,31 @@
+[
+  [
+    "/stores/v3/products/slug/air-runner?fields=MEDIA_ITEMS_INFO&fields=PLAIN_DESCRIPTION",
+    { "method": "GET" }
+  ],
+  [
+    "/stores/v3/products/slug/air-runner?fields=MEDIA_ITEMS_INFO&fields=PLAIN_DESCRIPTION",
+    { "method": "GET" }
+  ],
+  [
+    "/stores/v3/products/prod-air-runner",
+    {
+      "method": "PATCH",
+      "body": {
+        "product": {
+          "id": "prod-air-runner",
+          "revision": "7",
+          "media": {
+            "itemsInfo": {
+              "items": [
+                { "id": "c837a6_main~mv2.jpg", "altText": "Air Runner, side view" },
+                { "id": "a73159_new~mv2.jpeg", "altText": "Cap, back" }
+              ]
+            }
+          }
+        },
+        "fields": ["MEDIA_ITEMS_INFO"]
+      }
+    }
+  ]
+]
