@@ -1,0 +1,12 @@
+name: page
+
+tags:
+  - tag: reference
+    type: data
+    dataType: string
+    phase: fast
+
+  - tag: callerType
+    type: data
+    dataType: string
+    phase: fast

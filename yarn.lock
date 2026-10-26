@@ -7785,6 +7785,7 @@ __metadata:
     "@jay-framework/jay-cli": "npm:^0.25.5"
     "@jay-framework/jay-stack-cli": "npm:^0.25.5"
     "@jay-framework/seo-validator": "npm:^0.25.5"
+    "@jay-framework/stack-server-runtime": "npm:^0.25.5"
     "@jay-framework/wix-data": "workspace:^"
     "@jay-framework/wix-deploy": "workspace:^"
     "@jay-framework/wix-forms": "workspace:^"
