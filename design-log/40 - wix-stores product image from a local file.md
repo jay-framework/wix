@@ -197,3 +197,7 @@ Product cards: `mainMedia.url` → `updateProductImage` without `mediaId` (the m
 **Live (Phase 4, CLI on the demo store, Baseball Cap):** `updateProductImage({ slug, mediaId: <3rd item>, imageFile })` → uploaded `a73159_d498…~mv2.jpeg`, gallery = [main, item 2, new] (main + item 2 unchanged), `replacedMediaId` = the 3rd item; restored with `imageUrl: "wix:image://v1/<original id>/cap.jpg"` + `mediaId` → original gallery back. AIditor demo: pending (waits for Noam's live Wix dashboard login).
 
 **jay-feedback:** agent-kit — yes, the two wix-stores editing guides (which image → `mediaId`; attachment → `imageFile`; no copy into `public/`). Validation — none (which gallery image the user meant is runtime context).
+
+### Demo follow-up (2026-10-26)
+
+Recording scenario 2 (click thumbnail 2, "replace this image" + photo), one real agent run picked the right `mediaId` but added `"keepPrevious":true` on its own, so it inserted the photo instead of replacing. The guides said keepPrevious was optional but never said that "replace" means leaving it out (Q2's intent). **Fix (agent-kit):** both guides now say *"Replace this image" means replace: do not pass `keepPrevious`; only pass it when the user explicitly asks to keep the old image.* On the re-recorded run the agent replaced item 2 in place. wix-stores tests 91/91 and the build with validate-plugin are unchanged.

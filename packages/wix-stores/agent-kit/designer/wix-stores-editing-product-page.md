@@ -55,7 +55,7 @@ Run from the project root.
    npx jay-stack-cli action wix-stores/updateProductText --input '{"slug":"air-runner","name":"Air Runner Pro"}'
    ```
 
-   Pass exactly one of `imageFile` / `imageUrl`. Omitting `mediaId` replaces the main (first) image. Optional: `"altText":"…"`, `"keepPrevious":true`. An attached file is uploaded to the Media Manager folder `media` — **don't copy it into `public/`**.
+   Pass exactly one of `imageFile` / `imageUrl`. Omitting `mediaId` replaces the main (first) image. Optional: `"altText":"…"`. **"Replace this image" means replace: do not pass `keepPrevious`.** Pass `"keepPrevious":true` only when the user explicitly asks to keep the old image too. An attached file is uploaded to the Media Manager folder `media` — **don't copy it into `public/`**.
 
 3. Refresh the page (workaround for Jay 0.25.5, whose dev server caches the slow render until a route file changes): touch the route's `page.jay-html` (mtime only, no content change):
 
@@ -73,6 +73,6 @@ If the user attached a file, use `imageFile` with its path. Otherwise ask for an
 
 ## Caveats
 
-- By default the replaced image is **removed** from the gallery. If a product option choice (e.g. a color) links to that image, the link is lost. Pass `"keepPrevious":true` to keep it right after the new one.
+- By default the replaced image is **removed** from the gallery. If a product option choice (e.g. a color) links to that image, the link is lost. Only if the user asks to keep it, pass `"keepPrevious":true` (keeps it right after the new one).
 - Errors: `MISSING_PRODUCT_IDENTITY` (pass `slug` or `productId`), `PRODUCT_NOT_FOUND` (check the slug), `MEDIA_ITEM_NOT_FOUND` (the message lists the product's media ids), `IMAGE_SOURCE_REQUIRED` (exactly one of `imageFile`/`imageUrl`), `INVALID_IMAGE_URL`, `FILE_NOT_FOUND` / `UNSUPPORTED_FILE_TYPE` (jpg, jpeg, png, webp, gif) / `FILE_TOO_LARGE` (≤ 10 MB), `MEDIA_UPLOAD_NOT_AUTHORIZED` (the API key needs Media Manager upload permission; tell the user), `MEDIA_UPLOAD_FAILED` / `MEDIA_FILE_NOT_READY` (retry once), `WRITE_NOT_AUTHORIZED` (writes need `apiKeyStrategy` in `config/.wix.yaml` with an API key that has the Wix Stores _Manage Products_ permission; tell the user, don't work around it).
 - These actions exist on the dev server only. They write to the live Wix catalog.
