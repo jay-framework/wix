@@ -76,3 +76,4 @@ The plugin participates in four CLI commands, each running different hooks:
 | [rich-forms.md](rich-forms.md) | wix-forms |  |
 | [wix-forms-setup.md](wix-forms-setup.md) | wix-forms |  |
 | [wix-members-setup.md](wix-members-setup.md) | wix-members |  |
+| [wix-request-session.md](wix-request-session.md) | wix-server-client | ## Site by default, the caller when the request carries a session |
