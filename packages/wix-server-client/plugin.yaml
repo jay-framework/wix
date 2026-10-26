@@ -18,6 +18,8 @@ actions:
   - name: getDashboardUrl
     action: get-dashboard-url.jay-action
     devOnly: true
+  - name: syncSession
+    action: sync-session.jay-action
 
 setup: setupWixServerClient
 description: Configure Wix API credentials (API key, site ID, OAuth client ID)
