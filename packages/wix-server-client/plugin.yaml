@@ -14,5 +14,9 @@ contexts:
     marker: WIX_CLIENT_CONTEXT
     description: Client-side OAuth authentication and token management
 
+actions:
+  - name: syncSession
+    action: sync-session.jay-action
+
 setup: setupWixServerClient
 description: Configure Wix API credentials (API key, site ID, OAuth client ID)

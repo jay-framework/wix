@@ -1,0 +1,10 @@
+name: syncSession
+description: Mirror the browser's Wix OAuth tokens into the httpOnly wix_session cookie after verifying them with token-info, or clear it.
+
+inputSchema:
+  tokens?: object
+  clear?: boolean
+
+outputSchema:
+  ok: boolean
+  callerType?: string
