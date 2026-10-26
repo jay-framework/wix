@@ -501,3 +501,20 @@ Found during the review of DL#40. This is a defect in DL#39's own submit path. I
 ### Note (2026-10-26) — submit runs as the site
 
 Member prefill (Q4) runs in the browser with the member's tokens, but the server submit path (`submitForm` → `createSubmission`) uses the site-wide `WIX_CLIENT_SERVICE`: the Wix submission is made as the **site**. This stays the default under DL#40. DL#40 gives the hook a verified `caller` and a caller-scoped `client`, both read from wix-server-client's server-set `wix_session` cookie (one path, localhost included).
+
+### Implementation Results — planned fix (DL#40 Phase 0), 2026-10-26
+
+The planned fix above landed first, as its own commit, before DL#40's hook (DL#40 then extended the same files, as planned).
+
+- **Server.** New `submission/run-submission.ts#runSubmission({ formId, values }, { createSubmission })`, imported only by `actions/forms-actions.ts`. A `WixApiError` with field violations is **returned** as `{ success: false, fieldErrors }`. Any other failure was still rethrown (the 403 companion), until DL#40 Phase 2 turned it into a returned generic message.
+- **Result type.** `SubmitRequestInput` and `SubmitFormResult` in `types.ts`; `submit-form.jay-action` output gains `fieldErrors?: object`.
+- **Client.** `components/submit-outcome.ts` holds `SUBMIT_FAILED_MESSAGE` and a pure `presentSubmitRejection(result, fields)` that **returns** `{ errorByTarget, invalidByTarget, statusMessage }` (the component applies it). The dead `instanceof WixApiError` branch and the `WixApiError` / `parseSubmissionFieldErrors` imports are gone from `wix-form.ts`.
+- **Client validation skips hidden fields.** `components/submission-values.ts#validateVisibleFields(fields, values)` replaces the submit-time loop.
+- **Bug-repro tests, red first:**
+  - `test/submission/run-submission.test.ts`: field violations are returned (red: module missing, then green), and the 403 companion is still thrown;
+  - `test/submission-values.test.ts`: an empty required hidden field gives no error, and an empty required visible one does (red: `validateVisibleFields is not a function`);
+  - `test/submit-outcome.test.ts`: a hidden target's error is shown as `Reference: is required`.
+- **MUST-VERIFY `errorPath === target` — CLOSED (live, 2026-10-26).** On the testbed dev server, a submission with an invalid email came back as `fieldErrors: { email_76b1: 'must match format "email"' }`, which is the field's `target`. The test fixture (`test/fixtures/submission/field-violation-400.json`) was shaped from the documented body before this capture, and its key shape matches.
+- **Deviation.** `SubmitRejection` (the parameter of `presentSubmitRejection`) is a structural type with `success: boolean`. The base tsconfig is not `strict`, so a `success: true | false` discriminant does not narrow.
+- **Tests.** wix-forms 71/71 after this step; tsc exit 0; `npm run build` passes `validate-plugin`.
+- **Status.** DL#39 stays "Approved — implementation in progress": Phase 9 browser QA and MUST-VERIFY #1 (boolean/array wire shape) are still open.
