@@ -2,7 +2,8 @@ import { makeJayQuery, makeJayAction } from '@jay-framework/fullstack-component'
 import { hasService, getService } from '@jay-framework/stack-server-runtime';
 import { WIX_FORMS_SERVICE } from '../services/wix-forms-service-marker.js';
 import { WIX_FORMS_SUBMISSION_AUGMENTER } from '../services/wix-forms-submission-augmenter.js';
-import type { FieldValue } from '../types.js';
+import { runSubmission } from '../submission/run-submission.js';
+import type { SubmitRequestInput } from '../types.js';
 
 export const getFormSummary = makeJayQuery('wixForms.getFormSummary')
     .withServices(WIX_FORMS_SERVICE)
@@ -14,7 +15,7 @@ export const getFormSummary = makeJayQuery('wixForms.getFormSummary')
 export const submitForm = makeJayAction('wixForms.submitForm')
     .withServices(WIX_FORMS_SERVICE)
     .withHandler(
-        async (input: { formId?: string; values: Record<string, FieldValue> }, forms) => {
+        async (input: SubmitRequestInput, forms) => {
             const formId = input.formId ?? '';
             // Optional server-derived values (DL#39 4b): a project registers an augmenter
             // into WIX_FORMS_SUBMISSION_AUGMENTER; absent one, the DOM values submit as-is.
@@ -28,7 +29,9 @@ export const submitForm = makeJayAction('wixForms.submitForm')
                       })),
                   }
                 : input.values;
-            await forms.createSubmission(formId, values);
-            return { success: true };
+            return runSubmission(
+                { formId, values },
+                { createSubmission: (id, submitted) => forms.createSubmission(id, submitted) },
+            );
         },
     );

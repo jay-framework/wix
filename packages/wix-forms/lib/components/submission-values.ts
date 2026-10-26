@@ -11,6 +11,7 @@
  */
 
 import type { FieldValue, FormFieldView } from '../types.js';
+import { validateFormField } from '../utils/project-form-fields.js';
 
 /** The per-field value store, keyed by `field.target`. */
 export type FieldStore = Record<string, FieldValue>;
@@ -86,4 +87,21 @@ function hasValue(value: FieldValue): boolean {
     if (typeof value === 'string') return value.length > 0;
     if (Array.isArray(value)) return value.length > 0;
     return value === true;
+}
+
+/**
+ * Submit-time client validation (DL#39 planned fix). Hidden fields are skipped: they have
+ * no error tag to show a message, and Wix re-validates them on the server.
+ */
+export function validateVisibleFields(
+    fields: FormFieldView[],
+    values: Record<string, FieldValue>,
+): Record<string, string> {
+    const errors: Record<string, string> = {};
+    for (const field of fields) {
+        if (field.hidden) continue;
+        const message = validateFormField(field, values[field.target] ?? emptyValueFor(field));
+        if (message) errors[field.target] = message;
+    }
+    return errors;
 }

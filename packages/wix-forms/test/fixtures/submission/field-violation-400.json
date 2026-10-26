@@ -1,0 +1,24 @@
+{
+    "message": "Submission validation failed",
+    "details": {
+        "validationError": {
+            "fieldViolations": [
+                {
+                    "field": "submission.submissions",
+                    "description": "Submission validation failed",
+                    "violatedRule": "OTHER",
+                    "ruleName": "SUBMISSION_VALIDATION",
+                    "data": {
+                        "errors": [
+                            {
+                                "errorPath": "email_4b3a",
+                                "errorType": "FORMAT_ERROR",
+                                "errorMessage": "must be a valid email"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}

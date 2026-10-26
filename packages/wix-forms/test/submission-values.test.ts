@@ -5,6 +5,7 @@ import {
     emptyStoreFor,
     projectSubmissionValues,
     seedControlValues,
+    validateVisibleFields,
     type ControlSeed,
 } from '../lib/components/submission-values.js';
 import type { FormFieldView } from '../lib/types.js';
@@ -147,6 +148,33 @@ describe('seedControlValues', () => {
         expect(seedControlValues({ email: 'ada@x.com' }, seeds)).toEqual({
             email: 'ada@x.com',
             propertyId: 'prop-123',
+        });
+    });
+});
+
+describe('validateVisibleFields', () => {
+    function requiredField(target: string, hidden: boolean): FormFieldView {
+        return { ...textField(target), label: target, required: true, hidden };
+    }
+
+    /**
+     * Bug: a required hidden field the page left empty blocks submit with nothing shown.
+     * Found in: design-log/39 - general forms infrastructure.md, "Known defect found in review + planned fix"
+     * Expected: client validation skips hidden fields (no error tag exists to show one);
+     *   Wix re-validates them server-side.
+     * Actual: the submit loop validates hidden fields too, so submit silently stops.
+     */
+    it('should not report an empty required hidden field', () => {
+        const fields = [requiredField('reference', true)];
+
+        expect(validateVisibleFields(fields, { reference: '' })).toEqual({});
+    });
+
+    it('should report an empty required visible field', () => {
+        const fields = [requiredField('first_name', false), requiredField('reference', true)];
+
+        expect(validateVisibleFields(fields, { first_name: '', reference: '' })).toEqual({
+            first_name: 'first_name is required.',
         });
     });
 });

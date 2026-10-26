@@ -55,3 +55,17 @@ export interface ListedFormView {
     name: string;
     fields: FormFieldView[];
 }
+
+/** The `submitForm` action input (DL#39). */
+export interface SubmitRequestInput {
+    formId?: string;
+    values: Record<string, FieldValue>;
+}
+
+/**
+ * The `submitForm` action result (DL#39 planned fix). Outcomes are RETURNED, because the
+ * action transport keeps only `{ code, message }` of a thrown error.
+ */
+export type SubmitFormResult =
+    | { success: true }
+    | { success: false; fieldErrors: Record<string, string> };

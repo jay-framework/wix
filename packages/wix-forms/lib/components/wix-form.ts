@@ -23,18 +23,19 @@ import {
 } from '@jay-framework/fullstack-component';
 import { createEffect, createSignal, Props } from '@jay-framework/component';
 import { useGlobalContext } from '@jay-framework/runtime';
-import { WixApiError } from '@jay-framework/wix-server-client';
 import { WIX_CLIENT_CONTEXT } from '@jay-framework/wix-server-client/client';
 import { WIX_FORMS_SERVICE, type WixFormsService } from '../services/wix-forms-service-marker.js';
 import type { FieldValue, FormFieldView } from '../types.js';
 import type { MemberPrefillMap } from '../utils/member-prefill.js';
 import { submitForm } from '../actions/forms-actions.js';
-import { parseSubmissionFieldErrors, validateFormField } from '../utils/project-form-fields.js';
+import { validateFormField } from '../utils/project-form-fields.js';
+import { presentSubmitRejection } from './submit-outcome.js';
 import {
     emptyStoreFor,
     emptyValueFor,
     projectSubmissionValues,
     seedControlValues,
+    validateVisibleFields,
     type ControlSeed,
 } from './submission-values.js';
 import { getMyMember } from '../wix-apis/get-my-member.js';
@@ -238,37 +239,31 @@ function WixFormInteractive(
         }
 
         const submissionValues = readFormValues();
-        const clientErrors: Record<string, string> = {};
-        const invalid: Record<string, boolean> = {};
-        for (const field of carryForward.fields) {
-            const errorMessage = validateFormField(
-                field,
-                submissionValues[field.target] ?? emptyValueFor(field),
-            );
-            if (errorMessage) {
-                clientErrors[field.target] = errorMessage;
-                invalid[field.target] = true;
-            }
-        }
+        const clientErrors = validateVisibleFields(carryForward.fields, submissionValues);
         if (Object.keys(clientErrors).length) {
             setErrorByTarget(clientErrors);
-            setInvalidByTarget(invalid);
+            setInvalidByTarget(
+                Object.fromEntries(Object.keys(clientErrors).map((target) => [target, true])),
+            );
             return;
         }
 
         setIsSubmitting(true);
         try {
-            await submitForm({ formId: carryForward.formId, values: submissionValues });
-            setIsSubmitted(true);
-            // The store is intentionally NOT cleared — the confirmation echoes it (Q2).
-        } catch (error) {
-            if (error instanceof WixApiError) {
-                const mapped = parseSubmissionFieldErrors(error.responseBody);
-                if (Object.keys(mapped).length) {
-                    setErrorByTarget(mapped);
-                    return;
-                }
+            const result = await submitForm({
+                formId: carryForward.formId,
+                values: submissionValues,
+            });
+            if (result.success) {
+                setIsSubmitted(true);
+                // The store is intentionally NOT cleared — the confirmation echoes it (Q2).
+            } else {
+                const rejection = presentSubmitRejection(result, carryForward.fields);
+                setErrorByTarget(rejection.errorByTarget);
+                setInvalidByTarget(rejection.invalidByTarget);
+                setStatusMessage(rejection.statusMessage);
             }
+        } catch (error) {
             setStatusMessage(describeSubmitError(error));
         } finally {
             setIsSubmitting(false);
