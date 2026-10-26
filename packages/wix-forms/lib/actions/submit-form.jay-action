@@ -7,4 +7,6 @@ inputSchema:
 
 outputSchema:
   success: boolean
+  redirectTo?: string
+  message?: string
   fieldErrors?: object

@@ -63,9 +63,9 @@ export interface SubmitRequestInput {
 }
 
 /**
- * The `submitForm` action result (DL#41 planned fix). Outcomes are RETURNED, because the
- * action transport keeps only `{ code, message }` of a thrown error.
+ * The `submitForm` action result (DL#41 planned fix, extended by DL#42). Every outcome is
+ * RETURNED, because the action transport keeps only `{ code, message }` of a thrown error.
  */
 export type SubmitFormResult =
-    | { success: true }
-    | { success: false; fieldErrors: Record<string, string> };
+    | { success: true; redirectTo?: string }
+    | { success: false; message?: string; fieldErrors?: Record<string, string> };
