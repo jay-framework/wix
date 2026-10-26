@@ -1,9 +1,10 @@
 import { makeJayQuery, makeJayAction } from '@jay-framework/fullstack-component';
 import { hasService, getService } from '@jay-framework/stack-server-runtime';
+import { resolveRequestIdentity } from '@jay-framework/wix-server-client';
 import { WIX_FORMS_SERVICE } from '../services/wix-forms-service-marker.js';
-import { WIX_FORMS_SUBMISSION_AUGMENTER } from '../services/wix-forms-submission-augmenter.js';
-import { runSubmission } from '../submission/run-submission.js';
-import type { SubmitRequestInput } from '../types.js';
+import { WIX_FORMS_SUBMIT_HOOKS } from '../services/wix-forms-submit-hooks.js';
+import { runSubmission, selectHook } from '../submission/run-submission.js';
+import type { SubmitFormResult, SubmitRequestInput } from '../types.js';
 
 export const getFormSummary = makeJayQuery('wixForms.getFormSummary')
     .withServices(WIX_FORMS_SERVICE)
@@ -12,26 +13,18 @@ export const getFormSummary = makeJayQuery('wixForms.getFormSummary')
         return { fields };
     });
 
+/** DL#40 §Design 3: a thin wrapper; `runSubmission` returns every outcome. */
 export const submitForm = makeJayAction('wixForms.submitForm')
+    .withRequest()
     .withServices(WIX_FORMS_SERVICE)
-    .withHandler(
-        async (input: SubmitRequestInput, forms) => {
-            const formId = input.formId ?? '';
-            // Optional server-derived values (DL#39 4b): a project registers an augmenter
-            // into WIX_FORMS_SUBMISSION_AUGMENTER; absent one, the DOM values submit as-is.
-            // The augmenter result is shallow-merged OVER the DOM values (server wins).
-            const values = hasService(WIX_FORMS_SUBMISSION_AUGMENTER)
-                ? {
-                      ...input.values,
-                      ...(await getService(WIX_FORMS_SUBMISSION_AUGMENTER).augment({
-                          formId,
-                          values: input.values,
-                      })),
-                  }
-                : input.values;
-            return runSubmission(
-                { formId, values },
-                { createSubmission: (id, submitted) => forms.createSubmission(id, submitted) },
-            );
-        },
-    );
+    .withHandler(async (input: SubmitRequestInput, request, forms): Promise<SubmitFormResult> => {
+        const hooks = hasService(WIX_FORMS_SUBMIT_HOOKS) ? getService(WIX_FORMS_SUBMIT_HOOKS) : undefined;
+        return runSubmission(input, {
+            createSubmission: (formId, values) => forms.createSubmission(formId, values),
+            resolveIdentity: async () => {
+                const identity = resolveRequestIdentity(request.cookies);
+                return { caller: await identity.caller, client: identity.client };
+            },
+            hook: selectHook(hooks, input.formId ?? ''),
+        });
+    });

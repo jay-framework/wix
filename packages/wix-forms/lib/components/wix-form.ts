@@ -23,13 +23,13 @@ import {
 } from '@jay-framework/fullstack-component';
 import { createEffect, createSignal, Props } from '@jay-framework/component';
 import { useGlobalContext } from '@jay-framework/runtime';
-import { WIX_CLIENT_CONTEXT } from '@jay-framework/wix-server-client/client';
+import { ensureSessionFresh, WIX_CLIENT_CONTEXT } from '@jay-framework/wix-server-client/client';
 import { WIX_FORMS_SERVICE, type WixFormsService } from '../services/wix-forms-service-marker.js';
-import type { FieldValue, FormFieldView } from '../types.js';
+import type { FieldValue, FormFieldView, SubmitFormResult } from '../types.js';
 import type { MemberPrefillMap } from '../utils/member-prefill.js';
 import { submitForm } from '../actions/forms-actions.js';
 import { validateFormField } from '../utils/project-form-fields.js';
-import { presentSubmitRejection } from './submit-outcome.js';
+import { presentSubmitRejection, SUBMIT_FAILED_MESSAGE, toSitePath } from './submit-outcome.js';
 import {
     emptyStoreFor,
     emptyValueFor,
@@ -191,6 +191,7 @@ function WixFormInteractive(
         setInvalidByTarget({});
         setStatusMessage('');
         setIsSubmitted(false);
+        setIsSubmitting(false);
         dirtyTargets.clear();
         honeypotValue = '';
         clearNativeInputsAfterRemount();
@@ -227,8 +228,16 @@ function WixFormInteractive(
         resetForm();
     });
 
+    // A bfcache Back restore must not leave the button disabled by a redirect (DL#40 §4).
+    if (typeof window !== 'undefined') {
+        window.addEventListener('pageshow', (event: PageTransitionEvent) => {
+            if (event.persisted) setIsSubmitting(false);
+        });
+    }
+
     refs.submitButton?.onclick(async ({ event }: { event: Event }) => {
         event.preventDefault();
+        if (isSubmitting()) return; // a second click while one is in flight
         setStatusMessage('');
         setErrorByTarget({});
 
@@ -248,27 +257,43 @@ function WixFormInteractive(
             return;
         }
 
-        setIsSubmitting(true);
+        setIsSubmitting(true); // synchronous: before the first await (double-submit guard)
+        let result: SubmitFormResult;
         try {
-            const result = await submitForm({
-                formId: carryForward.formId,
-                values: submissionValues,
-            });
-            if (result.success) {
-                setIsSubmitted(true);
-                // The store is intentionally NOT cleared — the confirmation echoes it (Q2).
-            } else {
-                const rejection = presentSubmitRejection(result, carryForward.fields);
-                setErrorByTarget(rejection.errorByTarget);
-                setInvalidByTarget(rejection.invalidByTarget);
-                setStatusMessage(rejection.statusMessage);
-            }
-        } catch (error) {
-            setStatusMessage(describeSubmitError(error));
-        } finally {
+            // Only the transport can throw here: NETWORK_ERROR, TIMEOUT, an unexpected server throw.
+            await ensureSessionFresh();
+            result = await submitForm({ formId: carryForward.formId, values: submissionValues });
+        } catch {
+            setStatusMessage(SUBMIT_FAILED_MESSAGE);
+            setIsSubmitting(false);
+            return;
+        }
+        const redirectPath = presentSubmitResult(result);
+        if (redirectPath) {
+            window.location.assign(redirectPath); // the button stays disabled while the page navigates
+        } else {
             setIsSubmitting(false);
         }
     });
+
+    /** Applies a returned submit result; returns the site path to navigate to, if any. */
+    function presentSubmitResult(result: SubmitFormResult): string | undefined {
+        if (!result.success) {
+            const rejection = presentSubmitRejection(result, carryForward.fields);
+            setErrorByTarget(rejection.errorByTarget);
+            setInvalidByTarget(rejection.invalidByTarget);
+            setStatusMessage(rejection.statusMessage);
+            return undefined;
+        }
+        // The store is intentionally NOT cleared — the confirmation echoes it (Q2).
+        setIsSubmitted(true);
+        const redirectTo = (result as { redirectTo?: string }).redirectTo;
+        const redirectPath = toSitePath(redirectTo);
+        if (redirectTo !== undefined && !redirectPath) {
+            console.error('[wix-forms] dropped an unsafe redirectTo', { formId: carryForward.formId }); // L6
+        }
+        return redirectPath;
+    }
 
     async function seedFromMember(): Promise<void> {
         if (!Object.keys(carryForward.memberPrefill).length) {
@@ -412,14 +437,6 @@ function describeLoadError(error: unknown): string {
     return rawMessage.includes('403')
         ? 'Forms API access denied. Add Wix Forms permission to your API key in the Wix dashboard.'
         : rawMessage || 'Could not load the form. Please try again later.';
-}
-
-function describeSubmitError(error: unknown): string {
-    const rawMessage =
-        error instanceof Error ? error.message : 'Something went wrong. Please try again.';
-    return rawMessage.includes('403')
-        ? 'Form submission denied. Add Wix Forms permission to your API key in the Wix dashboard.'
-        : rawMessage;
 }
 
 export const wixForm = makeJayStackComponent<any>()
