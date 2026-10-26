@@ -1090,3 +1090,9 @@ Deviation from original design: The original design did not specify a config fil
 ### Direct login on the page (2026-10-15)
 
 On-page login and sign-up are back, **alongside** the redirect flow above: migrated Wix sites must keep Wix's own members dialog. The redirect stays the default, and Google and Facebook still use it. The member's token exchange goes through a same-origin redirect frame, because `getMemberTokensForDirectLogin` doesn't complete with bare-host allowed domains, and member tokens are kept across page loads. Design and results: [DL 34](./34%20-%20direct%20member%20login.md).
+
+### Correction (2026-10-26) — tokens are not in cookies
+
+The Design above says member tokens are stored in cookies and read by the server. **The implementation differs:** OAuth tokens (visitor, or member after login) are kept in the browser's localStorage by `wix-server-client`'s `WIX_CLIENT_CONTEXT`. The only cookie is `wix_auth_role` (`lib/utils/auth-cookie.ts`), a client-set **hint** used for rendering decisions (e.g. `protected-page`); it is forgeable and is **not** a credential. Never trust this cookie.
+
+**Update (2026-10-26).** The localStorage note above still holds: the browser owns the OAuth tokens. They now also have a **server-set, httpOnly mirror cookie** (`wix_session`, DL#40): wix-server-client's `storeTokens` calls its `syncSession` action whenever the access token changes, so this package's login and logout (both through `setTokens`) keep it in sync without new code. Server code reads it with `resolveRequestIdentity`. Wix's own `smSession` cookie on Wix-hosted domains is not used (undocumented exchange, Wix-hosted only).

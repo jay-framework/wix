@@ -784,3 +784,12 @@ export const init = makeJayInit()
 8. **Type Safety:** Generated contracts provide autocomplete in jay-html
 9. **Load More Works:** Client-side pagination loads more items
 10. **Sorting Works:** Table columns can be sorted
+
+## Note (2026-10-26) — auth and collection permissions
+
+**Q: Do member-only collection permissions apply to wix-data?** It depends on where the call runs.
+
+- **Server** (slow/fast render, actions, `WIX_DATA_SERVICE`): uses `WIX_CLIENT_SERVICE` (`lib/init.ts`), the site client built from the API key / app config. Calls run with **site** access; per-collection member/visitor permission rules are **not** applied. Server code must enforce its own access rules (e.g. filter by a verified owner id).
+- **Browser** (`WIX_DATA_CONTEXT`, `lib/contexts/wix-data-context.ts`): built on `WIX_CLIENT_CONTEXT`, the visitor's or member's OAuth client. Calls run as that person, and the collection's permission rules **do** apply.
+
+Server calls run as the site **by default**. When a request carries wix-server-client's server-set `wix_session` cookie (the browser's OAuth tokens, mirrored after a `token-info` check; DL#40), server code can get a caller-scoped client from `resolveRequestIdentity(request.cookies)`, and calls through it do get the collection's permissions. This works on localhost too. wix-data does not use it today.

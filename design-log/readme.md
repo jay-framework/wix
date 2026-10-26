@@ -45,13 +45,15 @@ Design documentation for the Jay Framework Wix integration packages.
 | 37  | [BaaS Entry — Project Action Registration](./37%20-%20baas-entry-project-action-registration.md)               | Implemented                               |
 | 38  | [Per-Form Contracts for wix-forms](./38%20-%20per-form%20contracts%20for%20wix-forms.md)                       | Implemented                               |
 | 39  | [General Forms Infrastructure for wix-forms](./39%20-%20general%20forms%20infrastructure.md)                   | Approved — implementation in progress      |
-| 40  | [Server-Side Form Transactions and Request Context](./40%20-%20server-side%20form%20transactions%20and%20request%20context.md) | Design — development-ready (awaiting approval) |
+| 40  | [Server-Side Submission Hook for wix-forms](./40%20-%20server-side%20submission%20hook%20for%20wix-forms.md) | Approved |
 
 ## Packages Covered
 
 - `@jay-framework/wix-server-client` - Base Wix SDK client and authentication
 - `@jay-framework/wix-stores` - E-commerce components (products, cart, checkout)
 - `@jay-framework/wix-data` - Wix Data collections integration
+
+Cross-cutting: server-side Wix calls run as the **site** by default, and as the visitor/member when the request carries wix-server-client's `wix_session` cookie (a server-set mirror of the browser's OAuth tokens). Browser calls run as the visitor/member. See DL #40 (*Jay Wix plugins: site by default, the caller when the request carries a session*) and DL #05's auth note.
 
 ## Design Log Methodology
 
