@@ -39,10 +39,6 @@ The server Wix client is a site-wide singleton. The browser's OAuth tokens (visi
 
 DL#39's planned fix creates `submission/run-submission.ts`, which maps Wix field violations on the server and **returns** `{ success: false, fieldErrors }`. This DL extends that module and that result.
 
-### Rejected route: Wix-hosted `smSession` cookies (probe, 2026-10-26)
-
-A temporary probe in `examples/forms-members-testbed` (to be removed; nothing depends on it) showed that on a Wix-hosted domain, Wix sets its own session cookies (`smSession`, httpOnly) after member login, and that a Wix-internal site endpoint can exchange them for the member's identity. **Rejected:** that endpoint is undocumented (not acceptable in open-source plugins), and the cookies exist only on Wix-hosted domains, never on localhost.
-
 ### Jay Wix plugins: site by default, the caller when the request carries a session
 
 | Where the Wix call runs | Credential | Whose permissions apply |
