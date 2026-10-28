@@ -46,7 +46,7 @@ Design documentation for the Jay Framework Wix integration packages.
 | 38  | [Per-Form Contracts for wix-forms](./38%20-%20per-form%20contracts%20for%20wix-forms.md)                       | Implemented                               |
 | 39  | [General Forms Infrastructure for wix-forms](./39%20-%20general%20forms%20infrastructure.md)                   | Approved — implementation in progress      |
 | 40  | [Server-Side Submission Hook for wix-forms](./40%20-%20server-side%20submission%20hook%20for%20wix-forms.md) | Implemented |
-| 41  | [Act as the Caller](./41%20-%20act%20as%20the%20caller.md) | Approved |
+| 41  | [Act as the Caller](./41%20-%20act%20as%20the%20caller.md) | Approved — implementation in progress (Phases 1–3 done; Phase 4 pending live checks) |
 
 ## Packages Covered
 

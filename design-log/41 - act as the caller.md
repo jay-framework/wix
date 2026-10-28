@@ -1,6 +1,6 @@
 # 41 - Act as the Caller
 
-Status: Approved (2026-10-28)
+Status: Approved — implementation in progress (Phases 1–3 done; Phase 4 pending live checks)
 
 Builds on **DL#40** (session cookie `wix_session`, `resolveRequestIdentity`, the submit hook), **DL#39** (forms submit chain) and **DL#05** (wix-data, its 2026-10-26 auth note). Generic: any Jay project, no downstream site named. Uses only Wix's documented headless APIs and SDK.
 
@@ -353,3 +353,40 @@ async function renderFastChanging(props, carry, wixData) {
   - wix-data plugin agent-kit (new `packages/wix-data/agent-kit/plugin/caller-scoped-data.md`, as wix-data has no agent-kit folder today): server is site by default; `forCaller(resolveRequestIdentity(cookies))` for member-owned data; only in `.withRequest()` actions or fast render, never slow render, never with `.withCaching()`; **every** cookie-dependent fast render sends `Cache-Control: private` through its `responseHeaders`, the signed-out branch included; `NoCallerSessionError.reason` is `'none'` or `'expired'`; in fast render, an expired/missing session renders the signed-out state; map `isPermissionDenied` to `ActionError('FORBIDDEN')`; on the identity's `client` only `client.use(module)`, `client.graphql` and `wixFetch(..., { authorization })` work (`fetchWithAuth`/`fetch`/`enableContext` throw). wix-forms guide also: direct `WIX_FORMS_SERVICE.createSubmission(formId, values)` calls are unchanged and post as the site.
   - wix-server-client `packages/wix-server-client/agent-kit/plugin/wix-request-session.md` (+ the synced testbed copy): `session` (`none` / `active` / `expired`) — expired is not none: never fall back to the site on `'expired'`; `authorization`; `expiresAt`; `isExpiringSoon` / `EXPIRY_MARGIN_SECONDS`; `wixFetch(..., { authorization })` and that it throws rather than send an unauthenticated request; the caller client's supported surface (`use`, `graphql`, `wixFetch`) vs the throwing stubs (`fetch`, `fetchWithAuth`, `enableContext`).
 - **Validation: none.** Slow-render misuse already throws (`NoCallerSessionError`, empty cookies), and jay's `.withRequest()`/`.withCaching()` guard already rejects caching. A static check that `forCaller` is not called from slow render would need call-graph analysis; not worth it now.
+
+## Implementation Results
+
+### Phases 1–3 (2026-10-28)
+
+**Phase 1 — wix-server-client.** `resolveRequestIdentity` returns `session` / `authorization` / `expiresAt`; the caller client is `createClient({ modules: {}, headers: { Authorization } })` with `fetchWithAuth`, `fetch` and `enableContext` replaced by throwing stubs on the client itself. `decodeSessionCookie` rejects a missing or non-finite `expiresAt`. `siteOAuthClientId()` is read only in the lazy `caller` getter. `wixFetch` takes `authorization` and throws instead of sending no `Authorization`. `isPermissionDenied` matches exactly `WDE0027` and is false for every `WixApiError`. `index.ts` exports `isExpiringSoon`, `EXPIRY_MARGIN_SECONDS`, `SessionState`, `WixFetchOptions` and `isPermissionDenied`. Before the fix, the "lapses mid-request" test reproduced the bug: the OAuthStrategy client called `/oauth2/token` and sent no `Authorization`. DL#40's V13 session tests were moved to the new shape, and its Implementation Results record the change.
+
+**Phase 2 — wix-forms.** As §Design 2: `SubmitOptions`, `CallerSession`, `SubmitDeps.resolveClient`, `createSubmission(formId, values, authorization?)`, `postedAs`, `SessionExpiredError`, `SUBMIT_NOT_ALLOWED_MESSAGE`, `SUBMIT_SESSION_EXPIRED_MESSAGE`, L6, no retry. `create-submission.ts` posts to `/form-submission-service/v4/submissions`. `WixFormsService.createSubmission` takes an optional `authorization`; wix-bookings, which only checks for the service, builds and tests unchanged.
+
+**Phase 3 — wix-data.** `WixDataService.forCaller(identity)` and `NoCallerSessionError('none' | 'expired')`, built per call with `identity.client.use(items)`. `ItemsClient` is exported.
+
+**Agent-kit (pre-V4/V5 subset).** The three guides from §jay-feedback were written, along with the synced testbed copy. Content gated by V2/V4/V5 is marked "pending verification" rather than published: the not-allowed message, the captcha `{ as: 'site' }` guidance and `forCaller` in fast render. The wix-data guide limits `forCaller` to `.withRequest()` actions until V4. wix-data now ships `agent-kit` in `files`.
+
+**Test results.**
+- wix-server-client: 50/51 (1 skipped: pending V2 `WixApiError(401/403)` rows).
+- wix-forms: 142/143 (1 skipped: pending V2 not-allowed status).
+- wix-data: 5/5.
+- wix-bookings: 37/37.
+- `tsc --noEmit` is clean and `npm run build` succeeds in all four packages.
+
+### Deviations
+
+- **The `WDE0027` fixture is SDK-produced, not a live capture.** `isPermissionDenied` is tested on the error that `@wix/sdk` throws when it receives the V2/V6-recorded body (`details.applicationError.code = 'WDE0027'` / `'WDE0117'`, driven through `@wix/data` with a mocked `fetch`). If a live capture during V2 shows a different shape, update the test and the helper.
+- **428 `SITE_IS_A_TEMPLATE` on a caller post logs L4, not L6** (per Q4, "generic L4 for caller and site posts"). §Design 2's ordering of the `failed` row would otherwise have sent it to L6. The code is read from the `WixApiError` body.
+- **`isExpiringSoon(undefined)` is true.** A missing expiry is treated as expired. It cannot occur for `'active'`, because the cookie decoder rejects it.
+- **`identitySubmitDeps(identity)`** (in `run-submission.ts`) builds `resolveClient` and `resolveIdentity` from one shared identity, so the "a form without a hook does not call token-info" test exercises the real wiring. `forms-actions.ts` uses it. `createSubmitAttempt` is exported for the `postedAs` tests.
+- **Test tooling:** wix-data had no test runner. It now has `vitest run`, a `vitest` devDependency and a `node` test environment (the `jsdom` environment it named was not installed). wix-server-client declares `@wix/data` as a devDependency for its caller-client tests.
+
+### Pending for Phase 4
+
+- **V2 (forms side):** the refusal status for `/form-submission-service/v4/submissions`. Then fill in the skipped `isPermissionDenied` `WixApiError` rows and the skipped `SUBMIT_NOT_ALLOWED_MESSAGE` test, and un-gate the guide sentence.
+- **V3:** live check of an expired token through the headers client (status/body, no `/oauth2/token`).
+- **V4 (hard gate):** `Cache-Control: private` from fast render, in dev and in production/CDN. Until then, `forCaller` in fast render stays out of the guide.
+- **V5:** restricted-submitter and captcha forms with a visitor token, and whether a site post passes captcha. This decides the captcha `{ as: 'site' }` guidance.
+- **Remaining DL#05/#40 notes:** add DL#05's note.
+- **Demo:** `/demo-feature` with visitor `submitter.visitorId` and member `submitter.memberId`.
+- **Final step:** the readme cross-cutting line, when the status moves to Implemented.
