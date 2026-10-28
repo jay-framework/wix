@@ -1,6 +1,6 @@
 # 40 — wix-stores: replace a product image (main or gallery item) from a local file
 
-Status: **[Implemented]** — approved by Noam, then revised in scope (any gallery item, not only the main image) before implementation started. Extends DL #38 (source editing actions); DL #38's design section is not rewritten.
+Status: **[Implemented]** — approved at design review, then revised in scope (any gallery item, not only the main image) before implementation started. Extends DL #38 (source editing actions); DL #38's design section is not rewritten.
 
 ## Decisions for the Implementer (TL;DR)
 
@@ -38,12 +38,12 @@ The product page shows a large image bound to `productPage.mediaGallery.selected
 
 ## Questions and Answers
 
-**Q1. Upload folder: `Source editing` folder vs. Media Manager root?** Proposed: a dedicated folder (easy cleanup, clear provenance). *(For Noam.)*
+**Q1. Upload folder: `Source editing` folder vs. Media Manager root?** Proposed: a dedicated folder (easy cleanup, clear provenance).
 **A:** Settled — a dedicated folder at the Media Manager root named **`media`**. These are ordinary site images used by Stores, so the name should be what a site editor expects, not a feature label like `Source editing`.
 **Q2. Replace vs. keep the old main?** Unchanged from DL #38: replace by default, `keepPrevious: true` prepends. The guide keeps telling the agent to use the default for "replace".
 **A (revision):** `keepPrevious` now applies to whichever item is replaced: the new image is inserted at that item's position and the old one is kept right after it.
 **Q3. Wait for readiness, or reference the file immediately?** Wait (poll), because Wix documents that an uploaded file "is not immediately available". Whether a product can reference a still-processing file is unverified; polling avoids the question.
-**Q4. A second action (`updateProductGalleryImage`) or one action with `mediaId?`** *(scope revision, Noam)*
+**Q4. A second action (`updateProductGalleryImage`) or one action with `mediaId?`** *(scope revision after product review)*
 **A:** One action. Main is just "the first item"; a separate action would duplicate the upload, validation and revision-retry path. Renamed to `updateProductImage` because it is no longer main-only.
 **Q5. How does the agent know which gallery item the large image shows?** `selectedMedia` has no id in the markup.
 **A:** From the rendered `src`. The AIditor adds `shows src "…"` to the Target source line; the URL contains the item `_id` (`https://static.wixstatic.com/media/<_id>…`). The guide tells the agent to run `getProductForEditing` and pick the item whose `id` appears in that `src` (or whose `url` equals it). If none matches, ask the user — do not guess the main.
@@ -194,7 +194,7 @@ Product cards: `mainMedia.url` → `updateProductImage` without `mediaId` (the m
 
 **Tests:** wix-stores 91/91 (was 67 + new: 4 item-builder, 8 upload client, 12 action cases). `npm run build` incl. `validate-plugin` ✅. Root `yarn wsrun -t test`: 26/27 workspaces pass; `@jay-framework/wix-server-client` fails with `command not found: vitest` (environment, untouched package). Root `yarn build` fails in untouched `wix-deploy` (`lib/artifact-store.ts` imports `production-server/serve` members missing from the installed jay 0.25.5) — pre-existing, unrelated.
 
-**Live (Phase 4, CLI on the demo store, Baseball Cap):** `updateProductImage({ slug, mediaId: <3rd item>, imageFile })` → uploaded `a73159_d498…~mv2.jpeg`, gallery = [main, item 2, new] (main + item 2 unchanged), `replacedMediaId` = the 3rd item; restored with `imageUrl: "wix:image://v1/<original id>/cap.jpg"` + `mediaId` → original gallery back. AIditor demo: pending (waits for Noam's live Wix dashboard login).
+**Live (Phase 4, CLI on the demo store, Baseball Cap):** `updateProductImage({ slug, mediaId: <3rd item>, imageFile })` → uploaded `a73159_d498…~mv2.jpeg`, gallery = [main, item 2, new] (main + item 2 unchanged), `replacedMediaId` = the 3rd item; restored with `imageUrl: "wix:image://v1/<original id>/cap.jpg"` + `mediaId` → original gallery back. AIditor demo: recorded 2026-10-26 with real agent runs (main image, 2nd gallery item, description), all three verified in the Wix dashboard; see Demo follow-up below.
 
 **jay-feedback:** agent-kit — yes, the two wix-stores editing guides (which image → `mediaId`; attachment → `imageFile`; no copy into `public/`). Validation — none (which gallery image the user meant is runtime context).
 

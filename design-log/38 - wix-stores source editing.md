@@ -1,6 +1,6 @@
 # 38 — wix-stores Source Editing: per-contract editing guides + devOnly product write actions
 
-Status: **[Design]**. Awaiting Noam's review. He asked for the draft and said implementation does not have to wait for his review.
+Status: **[Implemented]** — live-verified 2026-10-25 (Phase 4 below). `updateProductMainImage` was later generalized to `updateProductImage` by DL #40.
 
 ## Decisions for the Implementer (TL;DR)
 
@@ -61,7 +61,7 @@ Optional, not needed for the demo. A `getProductDashboardUrl` action could be ad
 `designer`. The AIditor agent reads `agent-kit/designer/INSTRUCTIONS.md` and `agent-kit/plugins-index.yaml`.
 
 **Q6. Option-choice `linkedMedia` points at existing media ids. What happens if we drop the old main?**
-That choice loses its image link. This is acceptable for the demo. The guide mentions it, and `keepPrevious: true` avoids it. *(Open, for Noam.)*
+That choice loses its image link. This is acceptable for the demo. The guide mentions it, and `keepPrevious: true` avoids it. *(Open — awaiting product approval.)*
 
 ## Design
 
@@ -263,7 +263,7 @@ Target source: page.jay-html L42 <img src="{productPage.mediaGallery.selectedMed
 
 ## Implementation Results
 
-Phases 1–3 implemented. Phase 4 (live verification + AIditor demo) is pending.
+Phases 1–4 implemented. Phase 4 (live verification + AIditor demo) is recorded at the end of this section.
 
 ### Files
 
