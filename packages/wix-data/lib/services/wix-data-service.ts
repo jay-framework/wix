@@ -10,11 +10,12 @@ import { items, collections } from '@wix/data';
 import { DataCollection } from '@wix/auto_sdk_data_collections';
 import { createJayService } from '@jay-framework/fullstack-component';
 import { registerService } from '@jay-framework/stack-server-runtime';
+import type { RequestIdentity } from '@jay-framework/wix-server-client';
 import { WixDataConfig, CollectionConfig } from '../types';
 import { ProcessedSchema, processSchema } from '../utils/processed-schema';
 import { BuildDescriptors } from '@wix/sdk-types';
 
-type ItemsClient = BuildDescriptors<typeof items, {}>;
+export type ItemsClient = BuildDescriptors<typeof items, {}>;
 type CollectionsClient = BuildDescriptors<typeof collections, {}>;
 
 /**
@@ -23,8 +24,16 @@ type CollectionsClient = BuildDescriptors<typeof collections, {}>;
  * Provides access to Wix Data APIs, configuration, and cached schemas.
  */
 export interface WixDataService {
-    /** Wix Data Items API client */
+    /** Wix Data Items API client, acting as the site */
     items: ItemsClient;
+
+    /**
+     * Items acting as the caller (DL#41): Wix sets `_owner` and enforces the collection's
+     * permissions. Use only in `.withRequest()` actions or fast render, with
+     * `resolveRequestIdentity(cookies)`. Throws `NoCallerSessionError` unless the session is
+     * active; it never falls back to the site.
+     */
+    forCaller(identity: RequestIdentity): ItemsClient;
 
     /** Wix Data Collections API client */
     collections: CollectionsClient;
@@ -59,6 +68,26 @@ export interface WixDataService {
  * Use with `.withServices(WIX_DATA_SERVICE_MARKER)` in component definitions.
  */
 export const WIX_DATA_SERVICE_MARKER = createJayService<WixDataService>('Wix Data Service');
+
+/** `forCaller` without an active caller session: 'none' (no cookie) or 'expired'. */
+export class NoCallerSessionError extends Error {
+    constructor(readonly reason: 'none' | 'expired') {
+        super(
+            reason === 'expired'
+                ? "wix-data forCaller: the caller's session expired"
+                : 'wix-data forCaller: the request has no caller session',
+        );
+        this.name = 'NoCallerSessionError';
+    }
+}
+
+/** Built per call on the caller's headers-only client; never the module-level site singleton. */
+function callerItemsClient(identity: RequestIdentity): ItemsClient {
+    if (identity.session !== 'active' || !identity.client) {
+        throw new NoCallerSessionError(identity.session === 'expired' ? 'expired' : 'none');
+    }
+    return identity.client.use(items) as ItemsClient;
+}
 
 // Singleton instances
 let itemsClientInstance: ItemsClient;
@@ -128,6 +157,7 @@ export function provideWixDataService(wixClient: WixClient, config: WixDataConfi
     }
     const service: WixDataService = {
         items: itemsClient,
+        forCaller: callerItemsClient,
         collections: collectionsClient,
         config,
 
