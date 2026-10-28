@@ -30,14 +30,20 @@ export function encodeSessionCookie(tokens: Tokens): string {
     return Buffer.from(JSON.stringify({ accessToken, refreshToken })).toString('base64url');
 }
 
-/** The tokens in a cookie value, or undefined for a missing or unreadable one. */
+/**
+ * The tokens in a cookie value, or undefined for a missing or unreadable one — including an
+ * access token without a finite `expiresAt` (DL#41 §Design 0).
+ */
 export function decodeSessionCookie(value: string | undefined): Tokens | undefined {
     if (!value) return undefined;
     try {
         const tokens = JSON.parse(Buffer.from(value, 'base64url').toString('utf8')) as Tokens;
-        return typeof tokens?.accessToken?.value === 'string' && tokens.accessToken.value
-            ? tokens
-            : undefined;
+        const accessToken = tokens?.accessToken;
+        const isReadable =
+            typeof accessToken?.value === 'string' &&
+            accessToken.value !== '' &&
+            Number.isFinite(accessToken.expiresAt);
+        return isReadable ? tokens : undefined;
     } catch {
         return undefined;
     }
