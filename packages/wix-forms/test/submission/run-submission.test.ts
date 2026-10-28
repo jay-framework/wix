@@ -4,10 +4,29 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActionError } from '@jay-framework/fullstack-component';
-import { WixApiError, type VerifiedCaller } from '@jay-framework/wix-server-client';
-import { runSubmission, selectHook, type SubmitDeps } from '../../lib/submission/run-submission.js';
-import { SubmitIgnoredError, type SubmitHook } from '../../lib/services/wix-forms-submit-hooks.js';
-import { SUBMIT_FAILED_MESSAGE } from '../../lib/components/submit-outcome.js';
+import {
+    resolveRequestIdentity,
+    WIX_SESSION_COOKIE,
+    WixApiError,
+    type VerifiedCaller,
+} from '@jay-framework/wix-server-client';
+import {
+    createSubmitAttempt,
+    identitySubmitDeps,
+    runSubmission,
+    selectHook,
+    type CallerSession,
+    type SubmitDeps,
+} from '../../lib/submission/run-submission.js';
+import {
+    SessionExpiredError,
+    SubmitIgnoredError,
+    type SubmitHook,
+} from '../../lib/services/wix-forms-submit-hooks.js';
+import {
+    SUBMIT_FAILED_MESSAGE,
+    SUBMIT_SESSION_EXPIRED_MESSAGE,
+} from '../../lib/components/submit-outcome.js';
 import type { FieldValue } from '../../lib/types.js';
 
 /**
@@ -49,21 +68,37 @@ function loggedMessages(): string[] {
 interface Harness {
     deps: SubmitDeps;
     posts: Array<[string, Record<string, FieldValue>]>;
+    /** The `authorization` of each post: the caller's token, or undefined for the site client. */
+    authorizations: Array<string | undefined>;
     resolveIdentity: ReturnType<typeof vi.fn>;
+    resolveClient: ReturnType<typeof vi.fn>;
 }
 
-function harness(options: { wixFails?: () => unknown; hook?: SubmitHook } = {}): Harness {
+interface HarnessOptions {
+    wixFails?: () => unknown;
+    hook?: SubmitHook;
+    /** The request's caller session; default: no session cookie. */
+    session?: CallerSession;
+}
+
+function harness(options: HarnessOptions = {}): Harness {
     const posts: Harness['posts'] = [];
+    const authorizations: Harness['authorizations'] = [];
     const resolveIdentity = vi.fn(async () => ({ caller: MEMBER, client: CALLER_CLIENT }));
+    const resolveClient = vi.fn((): CallerSession => options.session ?? { session: 'none' });
     return {
         posts,
+        authorizations,
         resolveIdentity,
+        resolveClient,
         deps: {
-            createSubmission: async (formId, values) => {
+            createSubmission: async (formId, values, authorization) => {
                 posts.push([formId, values]);
+                authorizations.push(authorization);
                 if (options.wixFails) throw options.wixFails();
             },
             resolveIdentity,
+            resolveClient,
             hook: options.hook,
         },
     };
@@ -329,5 +364,249 @@ describe('runSubmission — V6, hook selection and identity', () => {
                 { formId: FORM_ID, error: 'Error: Wix API 503: /oauth2/token-info' },
             ],
         ]);
+    });
+});
+
+const CALLER_TOKEN = 'caller-access-token';
+const CALLER_REFRESH_TOKEN = 'caller-refresh-token';
+const L4 = '[wix-forms] Wix rejected the submission';
+const L6 = "[wix-forms] Wix refused the caller's submission";
+
+function nowInSeconds(): number {
+    return Math.floor(Date.now() / 1000);
+}
+
+function activeSession(): CallerSession {
+    return { session: 'active', authorization: CALLER_TOKEN, expiresAt: nowInSeconds() + 3600 };
+}
+
+function expiredSession(): CallerSession {
+    return { session: 'expired', expiresAt: nowInSeconds() + 30 };
+}
+
+const wixRefusal = (status: number, code: string) => () =>
+    new WixApiError(status, SUBMISSIONS_PATH, JSON.stringify({ details: { applicationError: { code } } }));
+
+describe('runSubmission — DL#41, who the submission posts as', () => {
+    it('should post with the caller client when the request has a session', async () => {
+        const { deps, authorizations } = harness({ session: activeSession() });
+
+        expect(await submitWith(deps)).toEqual({ success: true });
+        expect(authorizations).toEqual([CALLER_TOKEN]);
+    });
+
+    it('should post with the site client when there is no session', async () => {
+        const { deps, authorizations } = harness();
+
+        expect(await submitWith(deps)).toEqual({ success: true });
+        expect(authorizations).toEqual([undefined]);
+    });
+
+    it("should post as the site when the hook passes { as: 'site' }", async () => {
+        const { deps, authorizations } = harness({
+            session: activeSession(),
+            hook: async ({ submit }) => submit(undefined, { as: 'site' }),
+        });
+
+        expect(await submitWith(deps)).toEqual({ success: true });
+        expect(authorizations).toEqual([undefined]);
+    });
+
+    it("{ as: 'site' } with an expired cookie should still post as the site", async () => {
+        const { deps, authorizations } = harness({
+            session: expiredSession(),
+            hook: async ({ submit }) => submit(undefined, { as: 'site' }),
+        });
+
+        expect(await submitWith(deps)).toEqual({ success: true });
+        expect(authorizations).toEqual([undefined]);
+    });
+});
+
+describe('runSubmission — DL#41, an expired session', () => {
+    it('a form without a hook and an expired session returns SUBMIT_SESSION_EXPIRED_MESSAGE and never posts', async () => {
+        const { deps, posts } = harness({ session: expiredSession() });
+
+        expect(await submitWith(deps)).toEqual({ success: false, message: SUBMIT_SESSION_EXPIRED_MESSAGE });
+        expect(posts).toEqual([]);
+    });
+
+    it('submit() on an expired session rejects with SessionExpiredError, consumes the attempt, and a second submit() is ignored (L2)', async () => {
+        const rejections: unknown[] = [];
+        const { deps, posts } = harness({
+            session: expiredSession(),
+            hook: async ({ submit }) => {
+                await submit().catch((error) => rejections.push(error));
+                await submit().catch((error) => rejections.push(error));
+            },
+        });
+
+        expect(await submitWith(deps)).toEqual({ success: false, message: SUBMIT_SESSION_EXPIRED_MESSAGE });
+        expect(rejections.map((error) => (error as Error).constructor)).toEqual([
+            SessionExpiredError,
+            SubmitIgnoredError,
+        ]);
+        expect(posts).toEqual([]);
+        expect(loggedMessages()).toEqual([
+            '[wix-forms] submit() was ignored: it already ran, or the hook had settled',
+        ]);
+    });
+
+    it('submit re-checks expiry: a token that lapsed during the hook is not posted', async () => {
+        vi.useFakeTimers({ toFake: ['Date'] });
+        try {
+            const { deps, posts } = harness({
+                session: activeSession(),
+                hook: async ({ submit }) => {
+                    vi.setSystemTime(Date.now() + 3600 * 1000);
+                    await submit();
+                },
+            });
+
+            expect(await submitWith(deps)).toEqual({ success: false, message: SUBMIT_SESSION_EXPIRED_MESSAGE });
+            expect(posts).toEqual([]);
+        } finally {
+            vi.useRealTimers();
+        }
+    });
+});
+
+describe('runSubmission — DL#41, resolving the caller session', () => {
+    it('an active session without authorization logs L1, returns SUBMIT_FAILED_MESSAGE, never posts', async () => {
+        const { deps, posts } = harness({ session: { session: 'active', expiresAt: nowInSeconds() + 3600 } });
+
+        expect(await submitWith(deps)).toEqual({ success: false, message: SUBMIT_FAILED_MESSAGE });
+        expect(posts).toEqual([]);
+        expect(loggedMessages()).toEqual(['[wix-forms] could not resolve the caller identity']);
+    });
+
+    it('resolveClient throwing (no server init) returns SUBMIT_FAILED_MESSAGE and never posts as the site', async () => {
+        const { deps, posts, resolveClient } = harness();
+        resolveClient.mockImplementation(() => {
+            throw new Error('wix-server-client: no OAuth client id.');
+        });
+
+        expect(await submitWith(deps)).toEqual({ success: false, message: SUBMIT_FAILED_MESSAGE });
+        expect(posts).toEqual([]);
+        expect(loggedMessages()).toEqual(['[wix-forms] could not resolve the caller identity']);
+    });
+
+    it('a form without a hook does not call token-info', async () => {
+        const fetchImpl = vi.fn(async () => new Response('{}'));
+        const cookie = Buffer.from(
+            JSON.stringify({
+                accessToken: { value: CALLER_TOKEN, expiresAt: nowInSeconds() + 3600 },
+                refreshToken: { value: CALLER_REFRESH_TOKEN, role: 'member' },
+            }),
+        ).toString('base64url');
+        const identity = resolveRequestIdentity({ [WIX_SESSION_COOKIE]: cookie }, fetchImpl as never);
+        const authorizations: Array<string | undefined> = [];
+
+        const result = await runSubmission(
+            { formId: FORM_ID, values: {} },
+            {
+                ...identitySubmitDeps(identity),
+                createSubmission: async (_formId, _values, authorization) => void authorizations.push(authorization),
+            },
+        );
+
+        expect(result).toEqual({ success: true });
+        expect(authorizations).toEqual([CALLER_TOKEN]);
+        expect(fetchImpl).not.toHaveBeenCalled();
+    });
+});
+
+describe('runSubmission — DL#41, Wix refuses a caller post', () => {
+    it('does not retry as the site when Wix refuses the caller', async () => {
+        const { deps, authorizations } = harness({ session: activeSession(), wixFails: forbidden });
+
+        expect(await submitWith(deps)).toEqual({ success: false, message: SUBMIT_FAILED_MESSAGE });
+        expect(authorizations).toEqual([CALLER_TOKEN]);
+        expect(loggedMessages()).toEqual([L6]);
+    });
+
+    it('the caller-refusal branch applies when the hook rethrows the submit error', async () => {
+        const { deps, posts } = harness({
+            session: activeSession(),
+            wixFails: forbidden,
+            hook: async ({ submit }) => submit(),
+        });
+
+        expect(await submitWith(deps)).toEqual({ success: false, message: SUBMIT_FAILED_MESSAGE });
+        expect(posts.length).toEqual(1);
+        expect(loggedMessages()).toEqual([L6]);
+    });
+
+    it('a caller 428 INVALID_CAPTCHA returns SUBMIT_FAILED_MESSAGE, no retry', async () => {
+        const { deps, posts } = harness({ session: activeSession(), wixFails: wixRefusal(428, 'INVALID_CAPTCHA') });
+
+        expect(await submitWith(deps)).toEqual({ success: false, message: SUBMIT_FAILED_MESSAGE });
+        expect(posts.length).toEqual(1);
+        expect(loggedMessages()).toEqual([L6]);
+    });
+
+    it.each([
+        ['caller', activeSession()],
+        ['site', { session: 'none' } as CallerSession],
+    ])('428 SITE_IS_A_TEMPLATE takes the generic path for a %s post', async (_label, session) => {
+        const { deps } = harness({ session, wixFails: wixRefusal(428, 'SITE_IS_A_TEMPLATE') });
+
+        expect(await submitWith(deps)).toEqual({ success: false, message: SUBMIT_FAILED_MESSAGE });
+        expect(loggedMessages()).toEqual([L4]);
+    });
+
+    it('a 403 on a site post keeps the generic message', async () => {
+        const { deps } = harness({ wixFails: forbidden });
+
+        expect(await submitWith(deps)).toEqual({ success: false, message: SUBMIT_FAILED_MESSAGE });
+        expect(loggedMessages()).toEqual([L4]);
+    });
+
+    it('field violations on a caller post still return fieldErrors', async () => {
+        const { deps } = harness({ session: activeSession(), wixFails: fieldViolation });
+
+        expect(await submitWith(deps)).toEqual({
+            success: false,
+            fieldErrors: { email_4b3a: 'must be a valid email' },
+        });
+    });
+
+    it('no token appears in the logs', async () => {
+        const { deps } = harness({ session: activeSession(), wixFails: forbidden });
+
+        await submitWith(deps);
+
+        const logged = JSON.stringify(errorLog.mock.calls);
+        expect([logged.includes(CALLER_TOKEN), logged.includes(CALLER_REFRESH_TOKEN)]).toEqual([false, false]);
+    });
+
+    it.skip('pending V2: a caller refusal with the V2-recorded status returns SUBMIT_NOT_ALLOWED_MESSAGE (no forms status is recorded yet)', () => {});
+});
+
+describe('createSubmitAttempt — DL#41 postedAs', () => {
+    const post = async () => {};
+
+    it("postedAs is 'site' when forced with { as: 'site' }", async () => {
+        const attempt = createSubmitAttempt(FORM_ID, {}, post, activeSession());
+
+        await attempt.submit(undefined, { as: 'site' });
+
+        expect(attempt.postedAs).toEqual('site');
+    });
+
+    it("postedAs is 'site' with no session", async () => {
+        const attempt = createSubmitAttempt(FORM_ID, {}, post, { session: 'none' });
+
+        await attempt.submit();
+
+        expect(attempt.postedAs).toEqual('site');
+    });
+
+    it("postedAs is 'caller' with an active session", async () => {
+        const attempt = createSubmitAttempt(FORM_ID, {}, post, activeSession());
+
+        await attempt.submit();
+
+        expect(attempt.postedAs).toEqual('caller');
     });
 });

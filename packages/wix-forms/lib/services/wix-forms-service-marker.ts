@@ -14,7 +14,15 @@ export interface WixFormsService {
     /** Load one form's fields by id (runtime slow phase). */
     getFormFields(formId: string): Promise<FormFieldView[]>;
     getFormSummaryFields(formId?: string): Promise<FormFieldSummaryView[]>;
-    createSubmission(formId: string, values: Record<string, FieldValue>): Promise<void>;
+    /**
+     * Posts a submission. `authorization` (DL#41): the caller's access token
+     * (`RequestIdentity.authorization`); omitted, it posts as the site.
+     */
+    createSubmission(
+        formId: string,
+        values: Record<string, FieldValue>,
+        authorization?: string,
+    ): Promise<void>;
 }
 
 export const WIX_FORMS_SERVICE = createJayService<WixFormsService>('WixFormsService');
