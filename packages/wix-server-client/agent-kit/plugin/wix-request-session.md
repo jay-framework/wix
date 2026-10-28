@@ -5,7 +5,7 @@
 | Where the Wix call runs | Credential | Whose permissions apply |
 |---|---|---|
 | Server, default (actions, slow/fast render, plugin services) | `WIX_CLIENT_SERVICE` (API key / app) | **The site** (elevated) |
-| Server, request with a `wix_session` cookie | `resolveRequestIdentity(request.cookies).client` | **The visitor/member** |
+| Server, request with an active `wix_session` cookie | `resolveRequestIdentity(request.cookies).client` | **The visitor/member** |
 | Browser (interactive phase) | `WIX_CLIENT_CONTEXT` (OAuth tokens in localStorage) | **The visitor/member** |
 
 So server code that calls Wix through `WIX_CLIENT_SERVICE` bypasses member-only rules (for
@@ -36,10 +36,43 @@ export const myAction = makeJayAction('mySite.myAction')
   unreachable: fail the request with a generic message.
 - A `VISITOR` caller proves a browser session only (anyone can mint one). Need a person? Require
   `MEMBER`.
-- `client`: a Wix client acting as the caller, or `undefined` without a cookie. It needs no check:
-  Wix rejects a bad token when it is used.
+- `session`: `'none' | 'active' | 'expired'`. **Expired is not none**: never fall back to the site on
+  `'expired'`. A token within `EXPIRY_MARGIN_SECONDS` (60 s) of expiry counts as expired;
+  `isExpiringSoon(expiresAt)` is that one rule.
+- `client`: a Wix client acting as the caller, set only when `session === 'active'`. It needs no
+  check: Wix rejects a bad token when it is used. It carries the access token as a header and has
+  no OAuth strategy, so it never renews a token and never becomes an anonymous visitor: a token
+  that lapses mid-request is rejected by Wix.
+- `authorization`: the access-token value (set when `'active'`), for `wixFetch`. Never log it.
+- `expiresAt`: the access-token expiry in epoch seconds (set for `'active'` and `'expired'`).
 - The server never refreshes tokens. Records are keyed on `caller.id`, never on an id the browser
   sent.
+
+## Calling Wix as the caller
+
+On the caller `client`, only these work:
+
+| Supported | Throws |
+|---|---|
+| `client.use(module)` (e.g. `client.use(items)`), `client.graphql(...)` | `client.fetchWithAuth`, `client.fetch`, `client.enableContext` |
+| `wixFetch(client, path, { authorization })` | |
+
+```ts
+import { resolveRequestIdentity, wixFetch } from '@jay-framework/wix-server-client';
+
+const identity = resolveRequestIdentity(request.cookies);
+if (identity.session === 'active') {
+  await wixFetch(identity.client!, '/some/v1/endpoint', { method: 'POST', body, authorization: identity.authorization });
+}
+```
+
+`wixFetch` with `authorization` sends exactly that token, never the site's credentials. Without it,
+`wixFetch` uses the client's own auth (the site client) and **throws rather than send an
+unauthenticated request**, for example when given the caller client without `authorization`.
+
+`isPermissionDenied(error)` is true when Wix refused a call for the caller's permissions (a wix-data
+`WDE0027` error); map it to `ActionError('FORBIDDEN', ...)`. An invalid token (`WDE0117`) is not a
+permission refusal.
 
 ## Before a cookie-dependent action, in the browser
 
