@@ -1,0 +1,9 @@
+{
+  "product": {
+    "id": "prod-air-runner",
+    "slug": "air-runner",
+    "name": "Air Runner Pro",
+    "revision": "8",
+    "plainDescription": "<p>Light and fast.</p>"
+  }
+}

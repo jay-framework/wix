@@ -43,6 +43,9 @@ Design documentation for the Jay Framework Wix integration packages.
 | 35  | [wix-bookings in the Browser](./35%20-%20wix-bookings%20browser%20context.md)                                  | Implemented                               |
 | 36  | [Slow-Render SWR + Render-on-Miss on Wix](./36%20-%20slow%20render%20swr%20and%20render-on-miss%20on%20wix.md) | Implemented (store) · Decided (TTL/grace) |
 | 37  | [BaaS Entry — Project Action Registration](./37%20-%20baas-entry-project-action-registration.md)               | Implemented                               |
+| 38  | [wix-stores Source Editing — editing guides + devOnly write actions](./38%20-%20wix-stores%20source%20editing.md) | Implemented (live demo verified)          |
+| 39  | [Wix Headless Onboarding for Jay Projects](./39%20-%20wix%20headless%20onboarding%20for%20jay%20projects.md) | Design (findings, awaiting review)        |
+| 40  | [wix-stores Product Image (main or gallery item) from a Local File](./40%20-%20wix-stores%20product%20image%20from%20a%20local%20file.md) | Implemented (CLI + demo verified)         |
 
 ## Packages Covered
 

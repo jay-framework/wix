@@ -17,7 +17,7 @@ import { buildExtendedFieldsSubContract } from '../utils/data-extension-schema';
  * Source of truth: lib/contracts/product-page.jay-contract
  */
 const BASE_CONTRACT_YAML = `name: product-page
-description: Full product detail page with variants, options, media gallery, and add-to-cart. Use for individual product pages.
+description: "Full product detail page with variants, options, media gallery, and add-to-cart. Use for individual product pages. Edit bound product data (image, name, description) at its source: agent-kit/designer/wix-stores-editing-product-page.md."
 params:
   slug: string
   prefix: string?

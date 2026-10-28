@@ -1,0 +1,42 @@
+{
+  "product": {
+    "id": "prod-air-runner",
+    "slug": "air-runner",
+    "name": "Air Runner",
+    "revision": "7",
+    "plainDescription": "<p>Light and fast.</p>",
+    "media": {
+      "main": {
+        "id": "c837a6_main~mv2.jpg",
+        "image": {
+          "url": "https://static.wixstatic.com/media/c837a6_main~mv2.jpg",
+          "altText": "Air Runner, side view"
+        },
+        "mediaType": "IMAGE"
+      },
+      "itemsInfo": {
+        "items": [
+          {
+            "id": "c837a6_main~mv2.jpg",
+            "image": {
+              "url": "https://static.wixstatic.com/media/c837a6_main~mv2.jpg",
+              "altText": "Air Runner, side view",
+              "width": 1000,
+              "height": 1000
+            },
+            "mediaType": "IMAGE"
+          },
+          {
+            "id": "c837a6_back~mv2.jpg",
+            "image": {
+              "url": "https://static.wixstatic.com/media/c837a6_back~mv2.jpg",
+              "width": 1000,
+              "height": 1000
+            },
+            "mediaType": "IMAGE"
+          }
+        ]
+      }
+    }
+  }
+}

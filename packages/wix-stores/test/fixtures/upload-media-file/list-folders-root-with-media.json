@@ -1,0 +1,6 @@
+{
+  "folders": [
+    { "id": "folder-other", "displayName": "photos", "parentFolderId": "media-root" },
+    { "id": "folder-media", "displayName": "media", "parentFolderId": "media-root" }
+  ]
+}

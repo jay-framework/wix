@@ -1,0 +1,6 @@
+[
+  [
+    "/stores/v3/products/prod-air-runner?fields=MEDIA_ITEMS_INFO&fields=PLAIN_DESCRIPTION",
+    { "method": "GET" }
+  ]
+]

@@ -1,0 +1,23 @@
+name: getProductForEditing
+description: >-
+  DEV ONLY — source editing. Look up a Wix Stores product in the catalog and return its current
+  name, description (HTML) and media, so you can confirm the product with the user before updating it.
+  Identify the product by slug (product-page route param / product-spotlight slug prop) or productId
+  (product-card forEach itemId). See agent-kit/designer/wix-stores-editing-product-page.md.
+
+inputSchema:
+  slug?: string
+  productId?: string
+
+outputSchema:
+  productId: string
+  slug: string
+  revision: string
+  name: string
+  plainDescription: string
+  media:
+    mainUrl: string
+    items:
+      - id: string
+        url: string
+        mediaType: string

@@ -1,0 +1,7 @@
+{
+  "files": [
+    { "id": "a73159_new~mv2.jpeg", "displayName": "cap back.jpeg", "state": "OK", "createdDate": "2026-10-26T10:00:00Z" },
+    { "id": "a73159_deleted~mv2.jpeg", "displayName": "cap back.jpeg", "state": "DELETED", "createdDate": "2026-10-26T11:00:00Z" }
+  ],
+  "nextCursor": { "cursors": { "next": "" }, "hasNext": false }
+}

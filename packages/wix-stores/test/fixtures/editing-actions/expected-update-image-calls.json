@@ -1,0 +1,27 @@
+[
+  [
+    "/stores/v3/products/slug/air-runner?fields=MEDIA_ITEMS_INFO&fields=PLAIN_DESCRIPTION",
+    { "method": "GET" }
+  ],
+  [
+    "/stores/v3/products/prod-air-runner",
+    {
+      "method": "PATCH",
+      "body": {
+        "product": {
+          "id": "prod-air-runner",
+          "revision": "7",
+          "media": {
+            "itemsInfo": {
+              "items": [
+                { "url": "https://example.com/red-sneaker.jpg" },
+                { "id": "c837a6_back~mv2.jpg" }
+              ]
+            }
+          }
+        },
+        "fields": ["MEDIA_ITEMS_INFO"]
+      }
+    }
+  ]
+]

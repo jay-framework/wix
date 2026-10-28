@@ -244,6 +244,23 @@ jay-stack action wix-stores/getProductBySlug --input '{"slug": "blue-sneakers"}'
 jay-stack action wix-stores/getCategories
 ```
 
+## Source Editing (dev only)
+
+Three `devOnly` actions (exported from `./tools`, never registered in production) let an agent change product data at its source — the Wix Stores catalog — instead of hard-coding it into jay-html:
+
+| Action                 | Does                                                                                                                                                                                                             |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `getProductForEditing` | Look up a product by `slug` or `productId`; returns name, description and media                                                                                                                                  |
+| `updateProductImage`   | Replace the main image, or the gallery item `mediaId`, from `imageUrl` (http(s) / `wix:image://`) or `imageFile` (local image, uploaded to the Media Manager folder `media`); optional `altText`, `keepPrevious` |
+| `updateProductText`    | Update `name` and/or `plainDescription` (HTML)                                                                                                                                                                   |
+
+```bash
+npx jay-stack-cli action wix-stores/updateProductImage --input '{"slug":"air-runner","imageUrl":"https://example.com/red-sneaker.jpg"}'
+npx jay-stack-cli action wix-stores/updateProductImage --input '{"slug":"air-runner","mediaId":"c837a6_b2~mv2.jpg","imageFile":"./photos/back.jpg"}'
+```
+
+Writes need `apiKeyStrategy` in `config/.wix.yaml` with the Wix Stores _Manage Products_ permission (plus Media Manager upload permission for `imageFile`). Agent guides: `agent-kit/designer/wix-stores-editing-product-page.md`, `agent-kit/designer/wix-stores-editing-product-cards.md`.
+
 ## Agent Kit References
 
 Running `jay-stack setup wix-stores` generates `agent-kit/references/wix-stores/categories.yaml` — the full category tree with IDs, names, slugs, product counts, and parent-child hierarchy.
@@ -252,6 +269,7 @@ Running `jay-stack setup wix-stores` generates `agent-kit/references/wix-stores/
 
 - [Design Log 10 - Category-Prefixed Product Routes](../../design-log/10%20-%20category-prefixed-product-routes.md)
 - [Design Log 11 - Category Deep-Linking & Header](../../design-log/11%20-%20category-deep-linking-and-header.md)
+- [Design Log 38 - wix-stores Source Editing](../../design-log/38%20-%20wix-stores%20source%20editing.md)
 
 ## License
 
