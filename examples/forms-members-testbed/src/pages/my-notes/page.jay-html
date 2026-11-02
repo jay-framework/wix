@@ -1,0 +1,16 @@
+<html lang="en">
+  <head>
+    <title>My notes</title>
+    <meta name="description" content="Your own notes, read with your identity (caller-scoped wix-data).">
+    <script type="application/jay-data" contract="./page.jay-contract"></script>
+    <link rel="stylesheet" href="../../styles/theme.css" />
+  </head>
+  <body>
+    <main>
+      <h1>My notes</h1>
+      <p if="signedIn">You have {noteCount} note(s). Only your own notes are listed.</p>
+      <p if="!signedIn">Sign in on the home page to see your notes.</p>
+      <p class="status">Status: {status}</p>
+    </main>
+  </body>
+</html>

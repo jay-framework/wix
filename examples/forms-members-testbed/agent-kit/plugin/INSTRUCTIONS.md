@@ -72,6 +72,7 @@ The plugin participates in four CLI commands, each running different hooks:
 
 | File | Plugin | Description |
 | --- | --- | --- |
+| [caller-scoped-data.md](caller-scoped-data.md) | wix-data | ## The site by default |
 | [per-form-contracts.md](per-form-contracts.md) | wix-forms |  |
 | [rich-forms.md](rich-forms.md) | wix-forms |  |
 | [wix-forms-setup.md](wix-forms-setup.md) | wix-forms |  |

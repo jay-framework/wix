@@ -1,0 +1,17 @@
+name: my-notes
+
+tags:
+  - tag: signedIn
+    type: variant
+    dataType: boolean
+    phase: fast
+
+  - tag: noteCount
+    type: data
+    dataType: number
+    phase: fast
+
+  - tag: status
+    type: data
+    dataType: string
+    phase: fast
