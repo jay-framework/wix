@@ -518,3 +518,11 @@ The planned fix above landed first, as its own commit, before DL#40's hook (DL#4
 - **Deviation.** `SubmitRejection` (the parameter of `presentSubmitRejection`) is a structural type with `success: boolean`. The base tsconfig is not `strict`, so a `success: true | false` discriminant does not narrow.
 - **Tests.** wix-forms 71/71 after this step; tsc exit 0; `npm run build` passes `validate-plugin`.
 - **Status.** DL#39 stays "Approved — implementation in progress": Phase 9 browser QA and MUST-VERIFY #1 (boolean/array wire shape) are still open.
+
+### Browser re-QA fix (2026-11-02) — hidden control seeding at submit time
+
+Re-QA on the real site showed the mount-time seed (2026-10-25 fix) still sent `unit_id: ""`. Cause: jay's component `mountedSignal` starts `true`, so `createEffect` runs during construction, before hydration binds the refs; `exec$` finds no element and resolves `undefined`. The pure `seedControlValues` unit test could not catch this (it is a lifecycle-timing bug).
+
+Fix: the submit handler also awaits `seedControlsIntoStore` before projecting/validating values — elements are bound by then, and seeding never overrides edited or stored values. No unit-level repro (no DOM/hydration harness in this package); the reproduction and proof are the browser runs: before → payload `unit_id: ""`, hook refuses; after → `unit_id` = the residence id, submit `success: true`. 142/143 wix-forms tests pass (1 skipped).
+
+Follow-up worth a jay look: a supported "after hydration/bind" hook for components, so element reads at mount are not a trap.

@@ -247,6 +247,11 @@ function WixFormInteractive(
             return;
         }
 
+        // Seed page-provided control values (hidden fields) here too: the mount-time seed can
+        // run before hydration binds the control elements, so its `exec$` reads nothing. At
+        // submit time the elements are bound; seeding never overrides edited or stored values.
+        await seedControlsIntoStore(refs, carryForward.fields, dirtyTargets, setValues);
+
         const submissionValues = readFormValues();
         const clientErrors = validateVisibleFields(carryForward.fields, submissionValues);
         if (Object.keys(clientErrors).length) {
