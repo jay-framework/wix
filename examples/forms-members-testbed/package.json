@@ -11,6 +11,7 @@
     "clean": "rimraf dist && rimraf build && rimraf -g 'src/**/*.d.ts'",
     "definitions": "jay-cli definitions src",
     "build": "npm run agent-kit && npm run definitions",
+    "test": ":",
     "build:production": "npm run build && jay-stack-cli build",
     "build:check-types": "tsc",
     "serve": "jay-stack-cli serve",

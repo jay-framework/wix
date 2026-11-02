@@ -1,31 +1,7 @@
 plugins:
   - name: wix-data
     path: ./../../packages/wix-data
-    contracts:
-      - name: item/food-service-product-lines-item
-        description: Item page for Product_lines
-        type: dynamic
-        path: ./agent-kit/materialized-contracts/wix-data/item-food-service-product-lines-item.jay-contract
-        metadata:
-          collectionId: Food_Service--Product_lines
-      - name: item/recipes-item
-        description: Item page for Recipes
-        type: dynamic
-        path: ./agent-kit/materialized-contracts/wix-data/item-recipes-item.jay-contract
-        metadata:
-          collectionId: Recipes
-      - name: list/food-service-product-lines-list
-        description: List page for Product_lines
-        type: dynamic
-        path: ./agent-kit/materialized-contracts/wix-data/list-food-service-product-lines-list.jay-contract
-        metadata:
-          collectionId: Food_Service--Product_lines
-      - name: list/recipes-list
-        description: List page for Recipes
-        type: dynamic
-        path: ./agent-kit/materialized-contracts/wix-data/list-recipes-list.jay-contract
-        metadata:
-          collectionId: Recipes
+    contracts: []
     actions:
       - name: queryItems
         description: Query items from a Wix Data collection with pagination, sorting,
@@ -58,6 +34,11 @@ plugins:
   - name: wix-server-client
     path: ./../../packages/wix-server-client
     contracts: []
+    actions:
+      - name: syncSession
+        description: Mirror the browser's Wix OAuth tokens into the httpOnly wix_session
+          cookie after verifying them with token-info, or clear it.
+        path: ./../../packages/wix-server-client/dist/actions/sync-session.jay-action
     services:
       - name: wix-client
         marker: WIX_CLIENT_SERVICE

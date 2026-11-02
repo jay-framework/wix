@@ -67,3 +67,9 @@ The plugin participates in four CLI commands, each running different hooks:
 - **Data is immutable** — never mutate ViewState directly, use JSON Patch
 - **Phase-aware** — choose the right rendering phase for each piece of data
 - **Props for configuration, params for URLs** — props are passed by parent components, params come from route segments
+
+## Plugin-Contributed Guides
+
+| File | Plugin | Description |
+| --- | --- | --- |
+| [wix-request-session.md](wix-request-session.md) | wix-server-client | ## Site by default, the caller when the request carries a session |
