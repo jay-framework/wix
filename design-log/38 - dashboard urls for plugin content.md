@@ -300,4 +300,5 @@ Not live-tested yet; stores-v1 per-collection link still unverified.
 ### Other findings (outside this log)
 
 - jay: `<jay:…>` instance components render empty when a sibling element (e.g. `<header>`) precedes their container, and when a page mixes key-based and instance imports. Repro pages kept for a bug report.
-- wix-forms: a rich-text field label renders `[object Object]`. wix-forms / wix-bookings `build:types` fail on `main` (`ttl` not in `PhaseOutput` type of the installed jay).
+- wix-forms: a rich-text field label renders `[object Object]`. **Fixed** in `1508ee4` — `projectFormFields` now flattens Ricos label content to plain text (repro: `packages/wix-forms/test/rich-text-label.test.ts`).
+- wix-forms / wix-bookings `build:types` fail on `main` (`ttl` not in `PhaseOutput` type of the installed jay). **Cause:** the wix code correctly uses jay's slow-phase `ttl`/`grace` (jay stale-while-revalidate feature), but the published `@jay-framework/*@0.25.5` on npm predates it; jay `main` declares it while still at version 0.25.5. **Fix needs a jay release** carrying that feature, then a dependency bump in wix (or `node sync-jay-packages.cjs ../jay` locally). No wix code change.
