@@ -7,6 +7,7 @@
 import { makeContractGenerator } from '@jay-framework/fullstack-component';
 import { WIX_DATA_SERVICE_MARKER } from '../services/wix-data-service';
 import { ProcessedSchema } from '../utils/processed-schema';
+import { sourceEditingContractHeader } from '../source-editing.js';
 import {
     dataTag,
     interactiveTag,
@@ -42,6 +43,7 @@ function buildContract(schema: ProcessedSchema): string {
 
     return `name: ${toPascalCase(schema.collectionId)}Item
 description: Item page for ${schema.displayName || schema.collectionId}
+${sourceEditingContractHeader(schema.collectionId, 'item')}
 params:
   slug: string
 tags:

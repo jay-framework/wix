@@ -16,6 +16,11 @@ import type {
 } from '@jay-framework/stack-server-runtime';
 import { getService } from '@jay-framework/stack-server-runtime';
 import { WIX_DATA_SERVICE_MARKER, type WixDataService } from './services/wix-data-service';
+import {
+    SHARED_EDITING_GUIDE_PATH,
+    writeEditingGuideStubsForCollection,
+    writeSharedEditingGuideCopy,
+} from './source-editing.js';
 
 const CONFIG_FILE_NAME = 'wix-data.yaml';
 
@@ -165,8 +170,29 @@ export async function generateWixDataAgentKit(
         'utf-8',
     );
 
+    writeSharedEditingGuideCopy(ctx.referencesDir);
+    const stubPaths: string[] = [];
+    for (const summary of collectionSummaries) {
+        stubPaths.push(
+            ...writeEditingGuideStubsForCollection(
+                ctx.referencesDir,
+                summary.collectionId,
+                summary.components,
+                summary.visible,
+            ),
+        );
+    }
+
+    const agentKitCreated = [
+        `agent-kit/references/${ctx.pluginName}/collections.yaml`,
+        SHARED_EDITING_GUIDE_PATH,
+        ...stubPaths.map((p) =>
+            path.relative(ctx.projectRoot, p).split(path.sep).join('/'),
+        ),
+    ];
+
     return {
-        agentKitCreated: [`agent-kit/references/${ctx.pluginName}/collections.yaml`],
-        message: `${collectionSummaries.length} collections (${collectionSummaries.filter((c) => c.visible).length} visible)`,
+        agentKitCreated,
+        message: `${collectionSummaries.length} collections (${collectionSummaries.filter((c) => c.visible).length} visible), ${stubPaths.length} editing guide stub(s)`,
     };
 }
