@@ -8,12 +8,18 @@ Product and category data (names, prices, descriptions, images, options) is mana
 
 ## What you get
 
-When the user clicks an element in the editor, you get the **source-editing inspector result** for it: `file` (the page jay-html), `route`, `routePattern`, `node`, and `stack` — enclosing frames, **innermost → outermost**:
+When the user clicks an element in the editor, you get the **source-editing inspector result** for it: `file` (the page jay-html), `route`, `routePattern`, `node`, and `stack`.
 
-- `{ kind: 'forEach', lines, itemId }` — a repeated item; `itemId` is that item's `trackBy` value.
-- `{ kind: 'region', lines, name, props? }` — a component instance written as `<jay:NAME …>` in the jay-html; `name` is `NAME` (e.g. `<jay:category-products>` → `category-products`), `props` are its static props.
+- `node` — the clicked element: `lines`, `tag`, `html` (its open tag, attributes and own text), `rect`, and `contentFromBinding` when its content comes from data. `null` if nothing marked was hit.
+- `stack` — enclosing frames, **innermost → outermost**:
+  - `{ kind: 'forEach', lines, itemId }` — a repeated item; `itemId` is that item's `trackBy` value (`_id` for every list in the table below).
+  - `{ kind: 'region', lines, name, props? }` — a component instance written as `<jay:NAME …>` in the jay-html; `name` is `NAME` (e.g. `<jay:category-products>` → `category-products`), `props` are its static props.
+
+All `lines` are 1-based line ranges in `file` — markers are only added to the page jay-html.
 
 **Page-level contracts produce no `region` frame.** A contract added with `<script type="application/jay-headless" plugin="@jay-framework/wix-stores" contract="X" key="K">` in the page `<head>` is identified by reading `file`, and its lists appear as `forEach="K.<list>"`.
+
+**Plugin check:** every row below counts only when the contract comes from `plugin="@jay-framework/wix-stores"` — the page script with that `key`, or (for a `region` frame) the `<head>` script that imports that contract. A same-named contract from another plugin doesn't count.
 
 No inspector result → you can't identify a record; use a fallback.
 
@@ -29,9 +35,9 @@ No inspector result → you can't identify a record; use a fallback.
    | `K.categories` | page script `contract="category-list" key="K"` | category `_id` |
    | `categories` | inside a `region` frame named `category-list` | category `_id` |
 
-   Use the **first** frame that matches. Any other `forEach` (`suggestions`, `filters…`, `options`, `choices`, `modifiers`, `infoSections`, `mediaGallery…`, `lineItems`, …) is **not** a product or category — skip it and keep going outward.
+   A row matches only if the same element also has `trackBy="_id"`; any other `trackBy` → fallback. Use the **first** frame that matches. Any other `forEach` (`suggestions`, `filters…`, `options`, `choices`, `modifiers`, `infoSections`, `mediaGallery…`, `lineItems`, …) is **not** a product or category — skip it and keep going outward.
 
-2. **No match in step 1 → the product comes from the page or a spotlight:**
+2. **No match in step 1 → the product comes from a spotlight or the page.** Check in this order; the first that applies wins — a click inside a `<jay:product-spotlight>` on a product page is the **spotlight's** product, not the page's:
    - **Spotlight** — the innermost `region` frame named `product-spotlight`: slug = `props.slug`; if missing, read the `slug="…"` attribute on the `<jay:product-spotlight>` tag in `file` at the frame's `lines`.
    - **Product page** — `file` has a page script with `contract="product-page"` (wix-stores plugin): slug = the script body's `slug:` value if present (static product pages, e.g. `slug: ceramic-flower-vase`); otherwise the value in `route` at the `[slug]` segment of `routePattern`.
    - Then call `wix-stores/getProductBySlug` with `{ "slug": "<slug>" }`; product id = the result's `_id`, product name = its `name`.
@@ -41,7 +47,11 @@ No inspector result → you can't identify a record; use a fallback.
    - product → `wix-stores/products/product/<productId>`
    - category → `wix-stores/categories/list/category/<categoryId>`
 
-4. **Reply:** "This product is managed in the Wix dashboard: <url>" (or "This category …"). Name it if you know the name — from `wix-stores/getProductBySlug`, or text visible in `node.html`. Otherwise describe it by what the user clicked; **never invent a name.**
+4. **Reply:**
+   - link: "This product is managed in the Wix dashboard: <url>" (or "This category …");
+   - write: "Updated <field> on <product name> (id <productId>) from <old> to <new>." and add the dashboard link.
+
+   Name it if you know the name — from `wix-stores/getProductBySlug`, or text visible in `node.html`. Otherwise describe it by what the user clicked; **never invent a name.**
 
 ## Fallbacks
 
@@ -49,7 +59,7 @@ Give the list link instead, and say you couldn't identify the specific item:
 
 - products → path `wix-stores/products`; categories → path `wix-stores/categories/list`
 
-Fall back when: there is no inspector result; no `forEach` frame matches step 1 and step 2 doesn't apply; `wix-stores/getProductBySlug` returns `null`; the slug can't be read; or you're unsure whether the item is a product or a category.
+Fall back when: there is no inspector result; no `forEach` frame matches step 1 and step 2 doesn't apply; `wix-stores/getProductBySlug` returns `null`; or the slug can't be read.
 
 If `wix-server-client/getDashboardUrl` itself fails, give no link: tell the user the data is managed in the Wix dashboard (Store Products / Categories) and that you couldn't build the link.
 

@@ -274,6 +274,18 @@ Pass = no jay-html edit for content; data updated at the source **or** the dashb
 
 Deviation 7: a category deep link exists — `wix-stores/categories/list/category/{categoryId}` (seen live in the dashboard), replacing "no category deep link" for wix-stores `category-list`. Deviation 8: `wix-stores-dashboard-content.md` now resolves the record mechanically from the inspector `stack` + the page jay-html: page-level (`key=`) contracts emit **no** `region` frame, so the products list is matched by its `forEach` attribute (`K.searchResults`, `K.products`, `products` inside `<jay:category-products>`); product pages take the slug from the script body (static pages) or the `[slug]` route param. Writes (deviation 6) stay allowed, but only with an id from these steps. wix-stores-v1 collections still say "no per-collection link" — not verified.
 
+### QA — rewritten wix-stores guide (2026-11-03, 3 cases, real AIditor runs, recorded)
+
+Testbed page `/shop` added: page-level `product-search` (`key="search"`) grid + `category-list` (`key="cats"`) chips. The category deep link opened live to the category editor before the runs. Data restored after each run.
+
+| Case | Request | Result |
+| --- | --- | --- |
+| S1 product page (`/products/:slug`, Baseball Cap) | rename the product | ~ no source edit, identified the product by slug, but **no dashboard link**: Wix MCP wasn't authorized, so it replied with words ("Dashboard → Stores → Products") and asked for permission |
+| S2 store grid (`/shop`, 2nd card) | rename the product | ✓ the right product (Minimalist Tote Bag, from the inspector `itemId`) renamed in Wix Stores; no source diff |
+| S3 category (`/shop`, `test2` chip) | rename the category | ✓ the right category renamed (dashboard shows "Home & Living"); no source diff |
+
+**Finding 3 — the guide is still not read.** None of the 3 workers opened `wix-stores-dashboard-content.md`; none called `wix-server-client/getDashboardUrl`. S2/S3 found the right id because the inspector `itemId` is the trackBy `_id`, then wrote with the API key read from `config/.wix.yaml`. S1 had no write path and fell back to directions instead of step 3's link. Right outcomes in S2/S3 are not evidence the guide works; finding 2's fix (the AIditor passes `editingGuide` with the selection) is still the blocker.
+
 ### Other findings (outside this log)
 
 - jay: `<jay:…>` instance components render empty when a sibling element (e.g. `<header>`) precedes their container, and when a page mixes key-based and instance imports. Repro pages kept for a bug report.
