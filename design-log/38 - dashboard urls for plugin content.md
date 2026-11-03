@@ -205,7 +205,7 @@ The jay `dynamic_contracts` schema has no `editingGuide`/`readonly`. For now, ea
 
 ## Implementation Results
 
-**Status: Phase A + B implemented; Phase C QA blocked** by a finding that challenges the design premise (QA finding 1 below). Awaiting a product decision.
+**Status: Phase A + B implemented; Phase C QA done (5 ✓ / 1 partial / 2 ✗).** Product decision on finding 1 (allow writes) applied 2026-11-03; finding 2 (page-only overrides) needs the jay `editingGuide` follow-up.
 
 ### Phase A — `getDashboardUrl` (wix-server-client)
 
@@ -246,6 +246,33 @@ One guide per plugin under `agent-kit/designer/<plugin>-dashboard-content.md` (s
 - **Stores "change this product name" ✗ (finding 1):** the worker never opened the wix-stores guide, ran `cat config/.wix.yaml` (API key in its transcript), then renamed the live product with `curl -X PATCH` using that key (it also tried the claude.ai Wix MCP). Product name restored after the run. Remaining cases were stopped: they would hit the same path.
 
 **Finding 1 — the guide-only model is not enough.** A guide is advisory. An agent that has the API key on disk and a Wix MCP will write when it doesn't read the guide. Options for product: (a) make the guide unmissable — the AIditor passes the contract's `editingGuide` with the selected element (jay follow-up "surface `editingGuide`" becomes blocking); (b) keep the key out of reach of the agent (deny reads of `config/.wix.yaml` in the AIditor agent's permissions); (c) a validation/permission rule; or accept writes (the earlier rejected design). (a)+(b) together match this design.
+
+### Product decision on finding 1 (2026-11-03)
+
+Product approved direct writes: **an agent that knows how, and has access, may update the data at its source**, even when the contract's guide only describes the dashboard. Deviation 6: the five dashboard guides now say "**Do not edit code.** If you can update the data at its source (a Wix API or tool you have access to), you may do so and say exactly what you changed; otherwise give the dashboard link below." (was "do not edit code and do not write data"). Pro Gallery, cart and members guides are unchanged.
+
+### Phase C — full QA run (2026-11-03, 8 cases, real AIditor agent runs, recorded)
+
+Pass = no jay-html edit for content; data updated at the source **or** the dashboard link given. Live data was restored after each run.
+
+| Case | Request | Result |
+| --- | --- | --- |
+| 01 stores product name | rename the spotlight product | ✓ renamed in the Wix Stores catalog; no source diff |
+| 02 CMS article title | rename the marked article | ✓ renamed the marked `Articles` item in the CMS; no source diff |
+| 03 forms field label | rename a field label | ✗ **no data change; hard-coded the label in jay-html** (`<span if="target === 'first_name_f409'">Your first name</span>`); offered the dashboard as an alternative |
+| 04 bookings service name | rename the service | ~ no source edit, identified the service id, but neither renamed it nor gave the dashboard **URL** (directions in words; asked to use the Wix MCP) |
+| 05 cart count (readonly) | "show 3 here instead of 0" | ✗ **replaced `{cart.itemCount}` with a hard-coded `3`** in jay-html; no session-state reply |
+| 06 gallery photo | replace a slide photo | ✓ no source edit; Editor gallery manager, `home` link, named the slide; no Media Manager |
+| 07 gallery autoplay | slower slideshow | ✓ `intervalMs` 4000 → 8000 on `<jay:pro-gallery>` |
+| 08 hard-coded heading | change an `<h2>` | ✓ text edited in jay-html — guides don't block markup edits |
+
+**5 ✓ / 1 partial / 2 ✗.**
+
+**Finding 2 — "a page-only override" is the remaining failure mode.** In 03 and 05 the worker chose to hard-code a value over the binding, scoped to one page, instead of following the guide — and in 05 it discarded live session state. Both contracts carry `editingGuide` / `readonly`, but nothing puts them in front of the worker. This supports option (a) of finding 1: the AIditor should send the selected element's `editingGuide` / `readonly` with the request (jay follow-up "surface `editingGuide`" → blocking). A validation can't catch it: the hard-coded override is valid jay-html.
+
+### wix-stores guide rewrite (2026-11-03)
+
+Deviation 7: a category deep link exists — `wix-stores/categories/list/category/{categoryId}` (seen live in the dashboard), replacing "no category deep link" for wix-stores `category-list`. Deviation 8: `wix-stores-dashboard-content.md` now resolves the record mechanically from the inspector `stack` + the page jay-html: page-level (`key=`) contracts emit **no** `region` frame, so the products list is matched by its `forEach` attribute (`K.searchResults`, `K.products`, `products` inside `<jay:category-products>`); product pages take the slug from the script body (static pages) or the `[slug]` route param. Writes (deviation 6) stay allowed, but only with an id from these steps. wix-stores-v1 collections still say "no per-collection link" — not verified.
 
 ### Other findings (outside this log)
 
