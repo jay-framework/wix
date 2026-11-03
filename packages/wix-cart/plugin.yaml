@@ -6,14 +6,17 @@ contracts:
     contract: cart-indicator.jay-contract
     component: cartIndicator
     description: Lightweight cart indicator for site headers showing item count
+    readonly: true
   - name: cart-page
     contract: cart-page.jay-contract
     component: cartPage
     description: Full cart page with line item management and checkout
+    readonly: true
   - name: mini-cart
     contract: mini-cart.jay-contract
     component: miniCart
     description: Drawer that auto-opens when a product is added to cart
+    readonly: true
 
 services:
   - name: wix-cart

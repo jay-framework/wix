@@ -22,10 +22,13 @@
       "types": "./dist/tools.d.ts",
       "default": "./dist/tools.js"
     },
-    "./plugin.yaml": "./plugin.yaml"
+    "./plugin.yaml": "./plugin.yaml",
+    "./get-dashboard-url.jay-action": "./dist/actions/get-dashboard-url.jay-action"
   },
   "scripts": {
-    "build": "npm run clean && npm run build:client && npm run build:server && npm run build:types && npm run validate",
+    "build": "npm run clean && npm run definitions && npm run build:client && npm run build:server && npm run build:copy-actions && npm run build:types && npm run validate",
+    "definitions": "jay-cli definitions lib/actions",
+    "build:copy-actions": "mkdir -p dist/actions && cp lib/actions/*.jay-action dist/actions/",
     "validate": "jay-stack-cli validate-plugin",
     "build:client": "vite build",
     "build:server": "vite build --ssr",

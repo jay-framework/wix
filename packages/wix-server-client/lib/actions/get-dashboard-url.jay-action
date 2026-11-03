@@ -1,0 +1,11 @@
+name: getDashboardUrl
+description: >-
+  Dev-only. Build the Wix dashboard URL for a dashboard path (site id read server-side), e.g. path
+  "wix-stores/products/product/<productId>". Use it to send the site owner to dashboard-managed content
+  instead of editing code or data.
+
+inputSchema:
+  path: string
+
+outputSchema:
+  url: string

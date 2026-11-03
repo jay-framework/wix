@@ -5,14 +5,17 @@ contracts:
     contract: login-indicator.jay-contract
     component: loginIndicator
     description: Shows member auth state in site header, with login/register/logout buttons
+    readonly: true
   - name: auth-callback
     contract: auth-callback.jay-contract
     component: authCallback
     description: Handles OAuth callback after Wix-hosted login/register
+    readonly: true
   - name: protected-page
     contract: protected-page.jay-contract
     component: protectedPage
     description: Page-level login guard — redirects visitors to login page
+    readonly: true
 
 services:
   - name: wix-members

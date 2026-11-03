@@ -6,6 +6,7 @@ contracts:
     contract: wix-form.jay-contract
     component: wixForm
     description: Dynamic form loaded from Wix Forms by form ID
+    editingGuide: ./agent-kit/designer/wix-forms-dashboard-content.md
 
 services:
   - name: wix-forms

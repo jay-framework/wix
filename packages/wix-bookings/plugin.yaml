@@ -6,6 +6,7 @@ contracts:
     contract: booking-flow.jay-contract
     component: bookingFlow
     description: Full booking flow (service list, slot picker, form, checkout)
+    editingGuide: ./agent-kit/designer/wix-bookings-dashboard-content.md
 
 services:
   - name: wix-bookings
