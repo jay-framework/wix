@@ -1,4 +1,4 @@
-import type { RawFormField } from '../wix-apis/get-form.js';
+import type { RawFieldLabel, RawFormField, RichContentNode } from '../wix-apis/get-form.js';
 import type { FormSummaryField } from '../wix-apis/get-form-summary.js';
 import type {
     FormFieldInputType,
@@ -15,6 +15,17 @@ function readFieldOptions(field: RawFormField): FormFieldOptionView[] {
             label: option.label ?? option.value ?? '',
         }))
         .filter((option) => option.value);
+}
+
+function readLabelText(label: RawFieldLabel | undefined): string {
+    if (label === undefined) return '';
+    if (typeof label === 'string') return label;
+    return collectRichText(label).trim();
+}
+
+function collectRichText(node: RichContentNode): string {
+    const ownText = node.textData?.text ?? '';
+    return ownText + (node.nodes ?? []).map(collectRichText).join('');
 }
 
 function readInputType(field: RawFormField, target: string): FormFieldInputType {
@@ -45,8 +56,8 @@ export function projectFormFields(rawForm: {
         .map((field) => {
             const target = field.target!;
             const label =
-                field.view?.label ??
-                field.inputOptions?.stringOptions?.textInputOptions?.label ??
+                readLabelText(field.view?.label) ||
+                readLabelText(field.inputOptions?.stringOptions?.textInputOptions?.label) ||
                 target;
             const placeholder =
                 field.view?.placeholder ??

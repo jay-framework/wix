@@ -1,11 +1,19 @@
 import type { WixClient } from '@wix/sdk';
 import { wixFetch } from '@jay-framework/wix-server-client';
 
+/** A Ricos rich-content node — some field types (e.g. long answer) carry their label as rich content. */
+export interface RichContentNode {
+    textData?: { text?: string };
+    nodes?: RichContentNode[];
+}
+
+export type RawFieldLabel = string | RichContentNode;
+
 export interface RawFormField {
     target?: string;
     hidden?: boolean;
     view?: {
-        label?: string;
+        label?: RawFieldLabel;
         placeholder?: string;
         fieldType?: string;
         options?: Array<{ value?: string; label?: string }>;
@@ -21,7 +29,7 @@ export interface RawFormField {
     };
     inputOptions?: {
         stringOptions?: {
-            textInputOptions?: { label?: string; placeholder?: string };
+            textInputOptions?: { label?: RawFieldLabel; placeholder?: string };
             componentType?: string;
             options?: Array<{ value?: string; label?: string }>;
         };
