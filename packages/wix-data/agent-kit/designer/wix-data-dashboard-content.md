@@ -33,7 +33,7 @@ No inspector result → fallback.
    - list / table: the `forEach` frame whose element in `file` has `forEach="K.items"` (or `items` inside the region) and `trackBy="_id"` → `itemId` is the item `_id`;
    - item page: the item shown by the route — look it up in the collection by the `[slug]` segment of `route`/`routePattern`, and use it only if exactly one item matches.
 5. **Encode** a `/` inside the collection id as `%2F` (`Bookings/Services` → `Bookings%2FServices`); the dashboard does not open the raw form.
-6. **Build the link** with `wix-server-client/getDashboardUrl` `{ "path": "wix-cms/data/<collectionId>" }`. There is no per-item dashboard link.
+6. **Build the link** with `wix-server-client/getDashboardUrl` `{ "path": "wix-cms/data/<collectionId>" }`. There is no per-item dashboard link. Run it from the project root: `npx jay-stack-cli action wix-server-client/getDashboardUrl --input '{"path":"wix-cms/data/<collectionId>"}'`; the output's `url` is the link. Never read `config/.wix.yaml` or other credential files to build it.
 7. **Reply:**
    - link: "This content is managed in the Wix CMS: <url>", naming the item (its visible title in `node.html`, or its `_id`) and the **field** to update when known;
    - write: "Updated <field> on <item title> (collection <collectionId>, id <itemId>) from <old> to <new>." and add the link.
