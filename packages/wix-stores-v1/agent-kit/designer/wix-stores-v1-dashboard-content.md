@@ -2,18 +2,55 @@
 
 **Plugin** `@jay-framework/wix-stores-v1` · **contracts** `product-page`, `product-search`, `category-page`, `category-list`.
 
-Product and collection data (names, prices, descriptions, images, options) is managed in the **Wix dashboard**. When asked to change it: **Do not edit code.** If you can update the data at its source (a Wix API or tool you have access to), you may do so and say exactly what you changed\; otherwise give the dashboard link below.
+Product and collection data (names, prices, descriptions, images, options) is managed in the **Wix dashboard**. When asked to change it: **do not edit code.** Identify the record with the steps below, then either update it at its source (a Wix API or tool you have access to) and say exactly what you changed, or give its dashboard link. **Never write without an id from these steps** — a wrong id changes, or sends the site owner to, the wrong product. When a step doesn't give a clear answer, use a [fallback](#fallbacks): it gives a list link and never writes.
+
+**Mixed requests** (e.g. "change the price and make the title bigger"): edit the jay-html part normally, and give the dashboard link for the data part.
+
+## What you get
+
+When the user clicks an element in the editor, you get the **source-editing inspector result**: `file` (the page jay-html), `route`, `routePattern`, `node` (the clicked element: `lines`, `tag`, `html` — its open tag, attributes and own text) and `stack` — enclosing frames, **innermost → outermost**:
+
+- `{ kind: 'forEach', lines, itemId }` — a repeated item; `itemId` is the value of its `trackBy`.
+- `{ kind: 'region', lines, name, props? }` — a `<jay:NAME …>` instance; `props` are its static props.
+
+All `lines` are 1-based ranges in `file`. This plugin's contracts are added as page scripts — `<script type="application/jay-headless" plugin="@jay-framework/wix-stores-v1" contract="X" key="K">` in `<head>` — which produce **no** `region` frame; their lists appear as `forEach="K.<list>"`. Only scripts with `plugin="@jay-framework/wix-stores-v1"` count.
+
+No inspector result → fallback.
 
 ## Steps
 
-1. Find the product id:
-   - inside `forEach` on `product-search` / `category-page`: the inspector `itemId` (trackBy `_id`);
-   - `product-page`: use `_id` if you have it, else the route's `slug` param → call `wix-stores-v1/getProductBySlug` with `{ "slug": "<slug>" }`, take `_id`.
-2. Call `wix-server-client/getDashboardUrl` with `{ "path": "wix-stores/products/product/<productId>" }`.
-3. Reply: "This product is managed in the Wix dashboard: <url>" and name the product.
+1. **Find the record.** Go through the `forEach` frames in `stack`, innermost first. For each, read the element in `file` at the frame's `lines` and match its `forEach="…"` against this table. A row matches only if the element also has `trackBy="_id"`.
 
-- No product id → path `wix-stores/products`.
-- Collections (`category-list`, the `category-page` header) → path `wix-stores/categories/list` (there is no per-collection link).
+   | `forEach` attribute | page script | `itemId` is |
+   |---------------------|-------------|-------------|
+   | `K.searchResults` | `contract="product-search" key="K"` | product `_id` |
+   | `K.products` or `K.loadedProducts` | `contract="category-page" key="K"` | product `_id` |
+   | `K.categories` | `contract="category-list" key="K"` | collection `_id` |
+
+   Use the **first** frame that matches. Any other `forEach` (`suggestions`, `filters…`, `breadcrumbs`, `media…`, `options`, `choices`, `modifiers`, `infoSections`, …) is **not** a product or collection — skip it and keep going outward.
+
+2. **No match in step 1:**
+   - **Product page** — `file` has a page script `contract="product-page"`: slug = the script body's `slug:` value if present, otherwise the value in `route` at the `[slug]` segment of `routePattern`. Call `wix-stores-v1/getProductBySlug` with `{ "slug": "<slug>" }`; product id = the result's `_id`, name = its `name`. On a product page, **never** use a `forEach` `itemId` — those are option / info-section / modifier ids.
+   - **Collection page** (click outside its product list, e.g. the header) — page script `contract="category-page"`: it's the collection; use the collections link.
+   - Neither applies → fallback.
+
+3. **Build the link** with `wix-server-client/getDashboardUrl` `{ "path": "<path>" }`:
+   - product → `wix-stores/products/product/<productId>`
+   - collection → `wix-stores/categories/list` (no per-collection link is verified for Catalog V1)
+
+4. **Reply:**
+   - link: "This product is managed in the Wix dashboard: <url>" (or "Collections are managed in the Wix dashboard: <url>", naming the collection);
+   - write: "Updated <field> on <product name> (id <productId>) from <old> to <new>." and add the dashboard link.
+
+   Name it from `wix-stores-v1/getProductBySlug` or text visible in `node.html`; otherwise describe what the user clicked. **Never invent a name.**
+
+## Fallbacks
+
+Give the list link instead, and say you couldn't identify the specific item: products → path `wix-stores/products`; collections → path `wix-stores/categories/list`.
+
+Fall back when: there is no inspector result; no step matches; `trackBy` isn't `_id`; `wix-stores-v1/getProductBySlug` returns `null`; or the slug can't be read.
+
+If `wix-server-client/getDashboardUrl` itself fails, give no link: say the data is managed in the Wix dashboard (Store Products / Categories) and that you couldn't build the link.
 
 ## Not dashboard content
 

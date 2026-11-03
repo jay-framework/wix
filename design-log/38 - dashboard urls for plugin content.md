@@ -286,6 +286,17 @@ Testbed page `/shop` added: page-level `product-search` (`key="search"`) grid + 
 
 **Finding 3 — the guide is still not read.** None of the 3 workers opened `wix-stores-dashboard-content.md`; none called `wix-server-client/getDashboardUrl`. S2/S3 found the right id because the inspector `itemId` is the trackBy `_id`, then wrote with the API key read from `config/.wix.yaml`. S1 had no write path and fell back to directions instead of step 3's link. Right outcomes in S2/S3 are not evidence the guide works; finding 2's fix (the AIditor passes `editingGuide` with the selection) is still the blocker.
 
+### All guides on the mechanical lookup (2026-11-03)
+
+Deviation 9: every `editingGuide` / readonly guide (stores-v1, forms, bookings, wix-data, pro-gallery, cart, members) now follows the stores guide's shape: what the inspector returns; a lookup table matching `forEach` + `trackBy` attributes (page scripts give `K.<list>` and no `region` frame); plugin check; write only with an id from the steps; one fallback section; link + write reply wording. Fixes found on the way:
+- **bookings** — "or the currently selected service" had no id source (the contract exposes only `selectedServiceName`) → services-list link, no lookup by name.
+- **cart** — a cart line's `itemId` is a `lineItemId`, not a product id → products-list link, no product writes from the cart.
+- **forms / cart / members** — explicit "never hard-code a value or replace a binding, not even for one page" (QA cases 03 and 05).
+- **wix-data** — page scripts (`list/…` with `key`) have no region frame; item `_id` from `K.items`, collection from `plugins-index.yaml`.
+- **pro-gallery** — trust `itemId` over screenshots (QA 06 autoplay mis-read).
+
+Not live-tested yet; stores-v1 per-collection link still unverified.
+
 ### Other findings (outside this log)
 
 - jay: `<jay:…>` instance components render empty when a sibling element (e.g. `<header>`) precedes their container, and when a page mixes key-based and instance imports. Repro pages kept for a bug report.
