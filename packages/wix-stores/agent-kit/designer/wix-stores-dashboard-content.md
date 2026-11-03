@@ -47,6 +47,8 @@ No inspector result → you can't identify a record; use a fallback.
    - product → `wix-stores/products/product/<productId>`
    - category → `wix-stores/categories/list/category/<categoryId>`
 
+   Run it from the project root: `npx jay-stack-cli action wix-server-client/getDashboardUrl --input '{"path":"<path>"}'`; the output's `url` is the link. Never read `config/.wix.yaml` or other credential files to build it.
+
 4. **Reply:**
    - link: "This product is managed in the Wix dashboard: <url>" (or "This category …");
    - write: "Updated <field> on <product name> (id <productId>) from <old> to <new>." and add the dashboard link.
