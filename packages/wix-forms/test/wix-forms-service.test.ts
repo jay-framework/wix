@@ -59,7 +59,7 @@ describe('WixFormsService.getFormSummaryFields', () => {
     });
 });
 
-describe('WixFormsService.createSubmission (DL#41)', () => {
+describe('WixFormsService.createSubmission (DL#43)', () => {
     const SUBMISSIONS_URL = 'https://www.wixapis.com/form-submission-service/v4/submissions';
 
     function stubFetch() {

@@ -1,6 +1,6 @@
-Rich production forms with wix-forms (DL#39).
+Rich production forms with wix-forms (DL#41).
 
-Builds on the per-form contracts (DL#38 — see `per-form-contracts.md`). Every form's
+Builds on the per-form contracts (DL#40 — see `per-form-contracts.md`). Every form's
 contract already carries the tags below; a page uses only the ones it binds, and any it
 ignores are inert. Everything is driven by one per-field **value store** inside the shared
 `wixForm` component — the single source of truth for each field's current value.

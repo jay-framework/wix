@@ -1,14 +1,14 @@
 /**
- * Client-safe presentation of a submit result (DL#39 planned fix). Imported by the
+ * Client-safe presentation of a submit result (DL#41 planned fix). Imported by the
  * browser component; must never import server-only modules.
  */
 
 import type { FormFieldView } from '../types.js';
 
 export const SUBMIT_FAILED_MESSAGE = 'We could not complete your request. Please try again.';
-/** A caller post Wix refused for permissions (DL#41; applies only once V2 records the status). */
+/** A caller post Wix refused for permissions (DL#43; applies only once V2 records the status). */
 export const SUBMIT_NOT_ALLOWED_MESSAGE = 'Please sign in to submit this form.';
-/** The caller's session cookie expired before the post (DL#41 Q5). */
+/** The caller's session cookie expired before the post (DL#43 Q5). */
 export const SUBMIT_SESSION_EXPIRED_MESSAGE =
     'Your session expired. Please refresh the page and try again.';
 

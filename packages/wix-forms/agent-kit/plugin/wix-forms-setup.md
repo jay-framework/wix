@@ -5,7 +5,7 @@ Wix Forms plugin setup — dynamic forms and shared getFormSummary action.
 Per-form headless contracts (one per Wix form) and two server actions:
 
 - **form/&lt;slug&gt;** — one contract generated per Wix form at agent-kit time, with
-  tags named after that form's fields. See `per-form-contracts.md` (DL#38).
+  tags named after that form's fields. See `per-form-contracts.md` (DL#40).
 - **getFormSummary** — returns participant field schema for other plugins (e.g. wix-bookings)
 - **submitForm** — submits form values to Wix Forms
 
@@ -25,7 +25,7 @@ form in the namespace whether or not this file exists:
 namespace: "wix.form_app.form"   # List Forms namespace (default shown)
 formIds: []                       # restrict to specific form ids (empty = all)
 include: enabled                  # enabled | disabled | all
-memberPrefill:                    # optional (DL#39) — seed fields from the signed-in member
+memberPrefill:                    # optional (DL#41) — seed fields from the signed-in member
   email: loginEmail
   firstName: profile.firstName
 ```
@@ -61,10 +61,10 @@ Each form has its own contract `form/<slug>`. Discover slugs and field names in
 </form>
 ```
 
-See `per-form-contracts.md` for the full contract shape and binding rules (DL#38).
+See `per-form-contracts.md` for the full contract shape and binding rules (DL#40).
 For rich production forms — confirmation/sent state, prefill, live validation,
 hidden/derived values, custom-UI/multi-step, honeypot, and non-string fields — see
-`rich-forms.md` (DL#39).
+`rich-forms.md` (DL#41).
 
 ## Cross-plugin use: getFormSummary
 
@@ -85,4 +85,4 @@ Flow: user selects a booking service → `getFormSummary({ formId: service.formI
 | `namespace` | string | No | List Forms namespace. Default `wix.form_app.form` (standalone Wix Forms) |
 | `formIds` | string[] | No | Restrict generation to these form ids (empty = all forms in namespace) |
 | `include` | enum | No | `enabled` (default) \| `disabled` \| `all` |
-| `memberPrefill` | map | No | (DL#39) `<fieldTarget>: <member dot-path>` — seed fields from the signed-in member (e.g. `email: loginEmail`) |
+| `memberPrefill` | map | No | (DL#41) `<fieldTarget>: <member dot-path>` — seed fields from the signed-in member (e.g. `email: loginEmail`) |

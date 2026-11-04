@@ -29,7 +29,7 @@ afterEach(() => {
     vi.unstubAllGlobals();
 });
 
-describe('wixFetch authorization (DL#41 §Design 0)', () => {
+describe('wixFetch authorization (DL#43 §Design 0)', () => {
     it('with the authorization option sends exactly that header and never mixes in the site client auth', async () => {
         const fetchMock = stubFetch();
         const { client, getAuthHeaders } = siteClientWithAuth();
@@ -71,7 +71,7 @@ describe('wixFetch authorization (DL#41 §Design 0)', () => {
 
 /**
  * The SDK error for a refused data call, produced by driving `@wix/data` through the real SDK
- * against the WDE0027 / WDE0117 responses recorded in DL#41 V2 / V6.
+ * against the WDE0027 / WDE0117 responses recorded in DL#43 V2 / V6.
  */
 async function sdkDataErrorFor(code: string, status: number, message: string): Promise<unknown> {
     stubFetch(status, { message, details: { applicationError: { code, description: message } } });
@@ -86,7 +86,7 @@ async function sdkDataErrorFor(code: string, status: number, message: string): P
     throw new Error('expected the SDK call to be refused');
 }
 
-describe('isPermissionDenied (DL#41 §Design 1)', () => {
+describe('isPermissionDenied (DL#43 §Design 1)', () => {
     it('is true for the WDE0027 SDK data error', async () => {
         const error = await sdkDataErrorFor(
             'WDE0027',

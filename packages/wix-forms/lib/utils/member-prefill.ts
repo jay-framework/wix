@@ -1,5 +1,5 @@
 /**
- * Member-prefill mapping (DL#39 Capability 2, Q3).
+ * Member-prefill mapping (DL#41 Capability 2, Q3).
  *
  * The plugin cannot infer which field is "the email" or "the name" — field targets
  * are site-defined — so member prefill is opt-in config: a map from a field target

@@ -59,7 +59,7 @@ describe('validateWixFormBindings', () => {
         expect(findings).toEqual([
             expect.objectContaining({
                 severity: 'error',
-                message: 'Binding "contact.fields" uses the generic form-fields array removed in DL#38.',
+                message: 'Binding "contact.fields" uses the generic form-fields array removed in DL#40.',
                 attribute: 'fields',
             }),
         ]);
@@ -96,7 +96,7 @@ describe('validateWixFormBindings', () => {
             expect.objectContaining({
                 severity: 'error',
                 message:
-                    'Contract "wix-form" was removed in DL#38 — forms now use a per-form contract "form/<slug>".',
+                    'Contract "wix-form" was removed in DL#40 — forms now use a per-form contract "form/<slug>".',
             }),
         ]);
     });
@@ -109,7 +109,7 @@ describe('validateWixFormBindings', () => {
     });
 });
 
-describe('validateWixFormBindings — DL#39 second-segment ref check (gate iv)', () => {
+describe('validateWixFormBindings — DL#41 second-segment ref check (gate iv)', () => {
     // A contract whose field sub-contracts carry NESTED tags, as the real validation context may.
     const nestedImport = {
         key: 'contact',
@@ -169,7 +169,7 @@ describe('validateWixFormBindings — DL#39 second-segment ref check (gate iv)',
     });
 });
 
-describe('validateWixFormBindings — DL#39 memberPrefill config drift', () => {
+describe('validateWixFormBindings — DL#41 memberPrefill config drift', () => {
     const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'wix-forms-validator-'));
 
     afterAll(() => {

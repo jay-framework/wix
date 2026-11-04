@@ -13,7 +13,7 @@ export const getFormSummary = makeJayQuery('wixForms.getFormSummary')
         return { fields };
     });
 
-/** DL#40 §Design 3: a thin wrapper; `runSubmission` returns every outcome. */
+/** DL#42 §Design 3: a thin wrapper; `runSubmission` returns every outcome. */
 export const submitForm = makeJayAction('wixForms.submitForm')
     .withRequest()
     .withServices(WIX_FORMS_SERVICE)

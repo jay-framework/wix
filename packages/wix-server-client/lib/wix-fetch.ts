@@ -20,7 +20,7 @@ export interface WixFetchOptions {
     method?: string;
     body?: any;
     /**
-     * The caller's access token (`RequestIdentity.authorization`, DL#41). When set, it is the only
+     * The caller's access token (`RequestIdentity.authorization`, DL#43). When set, it is the only
      * credential sent; the client's own auth headers are not read.
      */
     authorization?: string;
@@ -130,11 +130,11 @@ export class WixApiError extends Error {
     }
 }
 
-/** The Wix data error code for "the current user does not have permissions" (DL#41 V2). */
+/** The Wix data error code for "the current user does not have permissions" (DL#43 V2). */
 const DATA_PERMISSION_DENIED_CODE = 'WDE0027';
 
 /**
- * True when Wix refused the call for the caller's permissions (DL#41 §Design 1).
+ * True when Wix refused the call for the caller's permissions (DL#43 §Design 1).
  * SDK data errors: exactly WDE0027 (an invalid token, WDE0117, is not a permission refusal).
  * WixApiError: no status qualifies until the forms-side V2 check records one.
  */

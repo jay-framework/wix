@@ -30,7 +30,7 @@ export {
     type WixCursorPaging,
 } from './wix-fetch.js';
 
-// Request session (DL#40): server-side Wix calls run as the site by default, and as the
+// Request session (DL#42): server-side Wix calls run as the site by default, and as the
 // caller when the request carries the `wix_session` cookie.
 export { syncSession, type SyncSessionInput, type SyncSessionResult } from './actions/session-actions.js';
 export {

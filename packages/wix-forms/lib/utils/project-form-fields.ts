@@ -1,4 +1,4 @@
-import type { RawFormField } from '../wix-apis/get-form.js';
+import type { RawFieldLabel, RawFormField, RichContentNode } from '../wix-apis/get-form.js';
 import type { FormSummaryField } from '../wix-apis/get-form-summary.js';
 import type {
     FieldValue,
@@ -32,16 +32,27 @@ function componentTypeOf(field: RawFormField): string | undefined {
     );
 }
 
-/** A choice field that permits selecting more than one option (DL#39 4c). */
+/** A choice field that permits selecting more than one option (DL#41 4c). */
 function isMultiSelect(field: RawFormField): boolean {
     if (field.inputOptions?.arrayOptions) return true;
     return MULTI_SELECT_TYPES.has(componentTypeOf(field) ?? '');
 }
 
-/** A single boolean checkbox (consent-style) — no options, boolean-valued (DL#39 4c). */
+/** A single boolean checkbox (consent-style) — no options, boolean-valued (DL#41 4c). */
 function isBooleanField(field: RawFormField): boolean {
     if (field.inputOptions?.booleanOptions || field.validation?.boolean) return true;
     return componentTypeOf(field) === 'CHECKBOX';
+}
+
+function readLabelText(label: RawFieldLabel | undefined): string {
+    if (label === undefined) return '';
+    if (typeof label === 'string') return label;
+    return collectRichText(label).trim();
+}
+
+function collectRichText(node: RichContentNode): string {
+    const ownText = node.textData?.text ?? '';
+    return ownText + (node.nodes ?? []).map(collectRichText).join('');
 }
 
 function readInputType(field: RawFormField, target: string): FormFieldInputType {
@@ -70,15 +81,15 @@ export function projectFormFields(rawForm: {
     formFields?: RawFormField[];
 }): FormFieldView[] {
     const rawFields = rawForm.fields ?? rawForm.formFields ?? [];
-    // DL#39 4a narrows DL#38 OQ-4: hidden fields are MARKED (hidden: true), not dropped,
+    // DL#41 4a narrows DL#40 OQ-4: hidden fields are MARKED (hidden: true), not dropped,
     // so a page can populate them via the `control` channel and they reach the submission.
     return rawFields
         .filter((field) => field.target)
         .map((field) => {
             const target = field.target!;
             const label =
-                field.view?.label ??
-                field.inputOptions?.stringOptions?.textInputOptions?.label ??
+                readLabelText(field.view?.label) ||
+                readLabelText(field.inputOptions?.stringOptions?.textInputOptions?.label) ||
                 target;
             const placeholder =
                 field.view?.placeholder ??
@@ -144,7 +155,7 @@ export function validateFormSummaryField(field: FormFieldSummaryView, value: str
 }
 
 export function validateFormField(field: FormFieldView, value: FieldValue): string {
-    // Non-string kinds (DL#39 4c): required means checked (boolean) / non-empty (array);
+    // Non-string kinds (DL#41 4c): required means checked (boolean) / non-empty (array);
     // the string format/length/regex rules below apply only to string values.
     if (field.inputType === 'checkbox') {
         return field.required && value !== true ? `${field.label} is required.` : '';

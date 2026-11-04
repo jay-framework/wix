@@ -1,5 +1,5 @@
 /**
- * The `wix_session` cookie: a server-set mirror of the browser's OAuth tokens (DL#40 Q22).
+ * The `wix_session` cookie: a server-set mirror of the browser's OAuth tokens (DL#42 Q22).
  * Value: base64url JSON of `{ accessToken, refreshToken }`.
  */
 
@@ -13,7 +13,7 @@ const THIRTY_DAYS_IN_SECONDS = 30 * 24 * 60 * 60;
 /**
  * `Secure` is left to jay's default (set when the request is https), so the cookie also
  * works on `http://localhost`. Max-Age is an assumption: the refresh-token lifetime was not
- * measurable (DL#40 Implementation Results).
+ * measurable (DL#42 Implementation Results).
  */
 export const SESSION_COOKIE_OPTIONS: CookieOptions = {
     httpOnly: true,
@@ -32,7 +32,7 @@ export function encodeSessionCookie(tokens: Tokens): string {
 
 /**
  * The tokens in a cookie value, or undefined for a missing or unreadable one — including an
- * access token without a finite `expiresAt` (DL#41 §Design 0).
+ * access token without a finite `expiresAt` (DL#43 §Design 0).
  */
 export function decodeSessionCookie(value: string | undefined): Tokens | undefined {
     if (!value) return undefined;

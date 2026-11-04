@@ -1,5 +1,5 @@
 /**
- * Server-side submit hooks (DL#40 §Design 2), one per form. Replaces DL#39's augmenter.
+ * Server-side submit hooks (DL#42 §Design 2), one per form. Replaces DL#41's augmenter.
  *
  * A project registers them inside `makeJayInit().withServer(...)`: a top-level
  * `registerService` in `src/init.ts` would ship the hooks to the browser.
@@ -57,7 +57,7 @@ export class SubmitIgnoredError extends Error {
     }
 }
 
-/** The rejection of a caller `submit()` whose session expired: nothing was posted (DL#41 Q5). */
+/** The rejection of a caller `submit()` whose session expired: nothing was posted (DL#43 Q5). */
 export class SessionExpiredError extends Error {
     constructor(formId: string) {
         super(`submit() did not post form "${formId}": the caller's session expired`);

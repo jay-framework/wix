@@ -75,7 +75,7 @@ describe('presentSubmitRejection with a form-level message (V10)', () => {
     });
 });
 
-describe('presentSubmitRejection with the DL#41 caller messages', () => {
+describe('presentSubmitRejection with the DL#43 caller messages', () => {
     it.each([
         [SUBMIT_NOT_ALLOWED_MESSAGE, 'Please sign in to submit this form.'],
         [SUBMIT_SESSION_EXPIRED_MESSAGE, 'Your session expired. Please refresh the page and try again.'],

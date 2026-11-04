@@ -98,7 +98,7 @@ describe('wix client context tokens', () => {
     });
 });
 
-describe('wix session cookie sync (DL#40 V13, client)', () => {
+describe('wix session cookie sync (DL#42 V13, client)', () => {
     beforeEach(() => {
         localStorage.clear();
         syncSession.mockReset();

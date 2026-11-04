@@ -55,10 +55,10 @@ describe('projectSubmissionValues', () => {
     });
 
     /**
-     * Bug (DL#39 4c, test 1 — TYPE-LEVEL check, not a vitest-runtime reproduction):
+     * Bug (DL#41 4c, test 1 — TYPE-LEVEL check, not a vitest-runtime reproduction):
      *   a boolean/consent checkbox value is coerced to a string by the Record<string,string>
      *   submit path, so the submission cannot carry the field's checked state as a boolean.
-     * Found in: design-log/39 - general forms infrastructure.md §Design 4c; projection/submit
+     * Found in: design-log/41 - general forms infrastructure.md §Design 4c; projection/submit
      *   path is Record<string,string> (submission-values.ts, create-submission.ts).
      * Expected: projecting a store whose `consent` slot is boolean `true` yields `true`
      *   (boolean), and `false` when unchecked — the checked state, not a static string.
@@ -74,10 +74,10 @@ describe('projectSubmissionValues', () => {
     });
 
     /**
-     * Bug (DL#39 4c, test 2 — TYPE-LEVEL check, not a vitest-runtime reproduction):
+     * Bug (DL#41 4c, test 2 — TYPE-LEVEL check, not a vitest-runtime reproduction):
      *   a multiselect value is truncated to a single string by the Record<string,string>
      *   submit path, so the submission cannot carry all selected values.
-     * Found in: design-log/39 - general forms infrastructure.md §Design 4c.
+     * Found in: design-log/41 - general forms infrastructure.md §Design 4c.
      * Expected: projecting a store whose `interests` slot is `['a','b']` yields the
      *   2-element string[] `['a','b']`.
      * Actual (pre-fix): the Record<string,string> projection cannot be typed to hold an
@@ -93,10 +93,10 @@ describe('projectSubmissionValues', () => {
 
 describe('emptyStoreFor', () => {
     /**
-     * Bug (DL#39 Capability 1 reset — browser QA): after a successful submit, clicking the
+     * Bug (DL#41 Capability 1 reset — browser QA): after a successful submit, clicking the
      *   resetButton ("Send another") brought the form back (isSubmitted=false) but the native
      *   inputs stayed PRE-FILLED with the previously submitted values instead of blank.
-     * Found in: design-log/39 - general forms infrastructure.md §Implementation Results
+     * Found in: design-log/41 - general forms infrastructure.md §Implementation Results
      *   (Reset DOM-clear fix). The DOM-timing half (exec$ against the re-mounted node) has no
      *   unit harness; this covers the pure reset decision — what each field clears to — so a
      *   cleared store yields cleared inputs when reflected on re-mount.
@@ -115,12 +115,12 @@ describe('emptyStoreFor', () => {
 
 describe('seedControlValues', () => {
     /**
-     * Bug (DL#39 Phase-9 browser QA): a hidden control-channel field
+     * Bug (DL#41 Phase-9 browser QA): a hidden control-channel field
      *   (`<input type="hidden" ref="contact.propertyId.control" data-value="{routeValue}">`)
      *   rendered the correct value but its value never reached the submission store at
      *   hydration, so submit-time required-field validation failed silently (no DOM error
      *   is bound to a hidden field) and the form never POSTed.
-     * Found in: design-log/39 - general forms infrastructure.md §Implementation Results
+     * Found in: design-log/41 - general forms infrastructure.md §Implementation Results
      *   (Browser-QA defects fixed); the construction-time `exec$` read resolved to
      *   `undefined` because the ref element is not yet bound during component construction.
      * Expected: a non-empty control value for an untouched field IS seeded into the store.
@@ -159,7 +159,7 @@ describe('validateVisibleFields', () => {
 
     /**
      * Bug: a required hidden field the page left empty blocks submit with nothing shown.
-     * Found in: design-log/39 - general forms infrastructure.md, "Known defect found in review + planned fix"
+     * Found in: design-log/41 - general forms infrastructure.md, "Known defect found in review + planned fix"
      * Expected: client validation skips hidden fields (no error tag exists to show one);
      *   Wix re-validates them server-side.
      * Actual: the submit loop validates hidden fields too, so submit silently stops.

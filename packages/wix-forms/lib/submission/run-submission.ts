@@ -1,5 +1,5 @@
 /**
- * Server-side submit orchestration (DL#39 planned fix, extended by DL#40 §Design 3).
+ * Server-side submit orchestration (DL#41 planned fix, extended by DL#42 §Design 3).
  * Server-only: imported by `actions/forms-actions.ts` alone. It lives outside `actions/`
  * because the jay-stack compiler treats any import path containing `/actions/` or
  * `-actions` as an action module.
@@ -34,7 +34,7 @@ import { parseSubmissionFieldErrors } from '../utils/project-form-fields.js';
 
 type Values = Record<string, FieldValue>;
 
-/** The request's caller session, as forms needs it to post (DL#41 §Design 2). */
+/** The request's caller session, as forms needs it to post (DL#43 §Design 2). */
 export interface CallerSession {
     session: 'none' | 'active' | 'expired';
     authorization?: string;
@@ -51,7 +51,7 @@ export interface SubmitDeps {
     hook?: SubmitHook;
 }
 
-/** One request identity shared by both resolvers (DL#41 §Design 2, forms-actions). */
+/** One request identity shared by both resolvers (DL#43 §Design 2, forms-actions). */
 export function identitySubmitDeps(
     identity: RequestIdentity,
 ): Pick<SubmitDeps, 'resolveClient' | 'resolveIdentity'> {
@@ -182,7 +182,7 @@ function handledRejection(error: unknown): Promise<never> {
     return rejection;
 }
 
-/** DL#40 §Design 3, the 5-row table: the first matching row wins. */
+/** DL#42 §Design 3, the 5-row table: the first matching row wins. */
 function settleSubmission(
     formId: string,
     attempt: SubmitAttempt,
@@ -210,7 +210,7 @@ function settleSubmission(
     return { success: false, message: SUBMIT_FAILED_MESSAGE };
 }
 
-/** The `failed` row (DL#41 §Design 2): reads the attempt's own failure, swallowed or rethrown. */
+/** The `failed` row (DL#43 §Design 2): reads the attempt's own failure, swallowed or rethrown. */
 function failedSubmissionResult(formId: string, attempt: SubmitAttempt): SubmitFormResult {
     const failure = attempt.failure;
     if (failure instanceof SessionExpiredError) {
@@ -227,7 +227,7 @@ function failedSubmissionResult(formId: string, attempt: SubmitAttempt): SubmitF
     return { success: false, message: SUBMIT_FAILED_MESSAGE };
 }
 
-/** 428 SITE_IS_A_TEMPLATE is about the site, not the caller: the generic L4 path (DL#41 Q4). */
+/** 428 SITE_IS_A_TEMPLATE is about the site, not the caller: the generic L4 path (DL#43 Q4). */
 function isSiteTemplateRefusal(error: unknown): boolean {
     if (!(error instanceof WixApiError) || error.status !== 428) return false;
     try {

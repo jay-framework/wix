@@ -1,6 +1,6 @@
 /**
  * Verify a Wix OAuth access token with the documented `oauth2/token-info` endpoint
- * (DL#40 §Design 1). Server-only. Never logs: the token must not reach any log.
+ * (DL#42 §Design 1). Server-only. Never logs: the token must not reach any log.
  */
 
 import { WixApiError } from '../wix-fetch.js';
@@ -16,7 +16,7 @@ const TOKEN_INFO_TIMEOUT_MS = 5000;
 
 /**
  * Statuses that mean "this token is invalid" rather than "token-info failed". Measured in
- * DL#40 Phase 1: made-up, non-JWT and empty tokens all answer 200 with `active:false`, so
+ * DL#42 Phase 1: made-up, non-JWT and empty tokens all answer 200 with `active:false`, so
  * the set is empty and every non-200 is a transport failure.
  */
 const INVALID_TOKEN_STATUSES: ReadonlySet<number> = new Set();

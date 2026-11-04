@@ -1,11 +1,19 @@
 import type { WixClient } from '@wix/sdk';
 import { wixFetch } from '@jay-framework/wix-server-client';
 
+/** A Ricos rich-content node — some field types (e.g. long answer) carry their label as rich content. */
+export interface RichContentNode {
+    textData?: { text?: string };
+    nodes?: RichContentNode[];
+}
+
+export type RawFieldLabel = string | RichContentNode;
+
 export interface RawFormField {
     target?: string;
     hidden?: boolean;
     view?: {
-        label?: string;
+        label?: RawFieldLabel;
         placeholder?: string;
         fieldType?: string;
         options?: Array<{ value?: string; label?: string }>;
@@ -18,18 +26,18 @@ export interface RawFormField {
             maxLength?: number;
             pattern?: string;
         };
-        /** Present for a boolean (single-checkbox) field (DL#39 4c). */
+        /** Present for a boolean (single-checkbox) field (DL#41 4c). */
         boolean?: Record<string, unknown>;
     };
     inputOptions?: {
         stringOptions?: {
-            textInputOptions?: { label?: string; placeholder?: string };
+            textInputOptions?: { label?: RawFieldLabel; placeholder?: string };
             componentType?: string;
             options?: Array<{ value?: string; label?: string }>;
         };
-        /** Present for a single-checkbox (boolean) field (DL#39 4c). */
+        /** Present for a single-checkbox (boolean) field (DL#41 4c). */
         booleanOptions?: Record<string, unknown>;
-        /** Present for a multi-selection (array) choice field (DL#39 4c). */
+        /** Present for a multi-selection (array) choice field (DL#41 4c). */
         arrayOptions?: {
             componentType?: string;
             options?: Array<{ value?: string; label?: string }>;

@@ -1,5 +1,5 @@
 /**
- * Pure store→submission projection (DL#39 §0 — the value-store spine).
+ * Pure store→submission projection (DL#41 §0 — the value-store spine).
  *
  * The interactive component holds ONE per-field value store keyed by the raw Wix
  * `field.target` (the submission key). `readFormValues` returns a projection of
@@ -7,7 +7,7 @@
  * pure, framework-free projection so it is unit-testable without a DOM harness.
  *
  * The store/projection value type is `FieldValue` (`string | string[] | boolean`;
- * DL#39 4c) so boolean checkboxes and multi-select arrays survive submission.
+ * DL#41 4c) so boolean checkboxes and multi-select arrays survive submission.
  */
 
 import type { FieldValue, FormFieldView } from '../types.js';
@@ -40,7 +40,7 @@ export function projectSubmissionValues(
 }
 
 /**
- * The cleared value store for a form reset ("send another", DL#39 Capability 1) — every
+ * The cleared value store for a form reset ("send another", DL#41 Capability 1) — every
  * field at its kind-specific empty value (text → '', checkbox → false, multiselect → []).
  *
  * Making the reset store explicit per field (rather than an opaque `{}`) keeps the submit
@@ -56,7 +56,7 @@ export function emptyStoreFor(fields: FormFieldView[]): FieldStore {
     return store;
 }
 
-/** One page-provided control value read from the DOM, with the field's dirty state (DL#39 4a). */
+/** One page-provided control value read from the DOM, with the field's dirty state (DL#41 4a). */
 export interface ControlSeed {
     target: string;
     value: FieldValue;
@@ -64,7 +64,7 @@ export interface ControlSeed {
 }
 
 /**
- * Seed page-provided control values into the store (DL#39 4a — hidden fields and
+ * Seed page-provided control values into the store (DL#41 4a — hidden fields and
  * custom-UI defaults). A control seeds its slot only when it carries a non-empty value
  * and the user has not already edited that field; values already in the store are kept.
  *
@@ -90,7 +90,7 @@ function hasValue(value: FieldValue): boolean {
 }
 
 /**
- * Submit-time client validation (DL#39 planned fix). Hidden fields are skipped: they have
+ * Submit-time client validation (DL#41 planned fix). Hidden fields are skipped: they have
  * no error tag to show a message, and Wix re-validates them on the server.
  */
 export function validateVisibleFields(

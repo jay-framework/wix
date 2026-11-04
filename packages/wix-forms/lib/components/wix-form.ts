@@ -1,12 +1,12 @@
 /**
- * Shared Wix Form component (DL#38, extended by DL#39).
+ * Shared Wix Form component (DL#40, extended by DL#41).
  *
  * One schema-agnostic component serves every per-form contract. It reads the
  * form identity from `props.metadata.formId` (set by the generator), loads that
  * form's fields in the slow phase, and builds a view-state object KEYED BY FIELD
  * TARGET plus the reserved form-level tags.
  *
- * DL#39 turns this into general forms infrastructure. Everything rests on ONE
+ * DL#41 turns this into general forms infrastructure. Everything rests on ONE
  * per-field value store (§0): a `Record<target, value>` signal that is the single
  * source of truth for each field's current value. Submission, prefill, live
  * validation, hidden/custom-UI values, and the confirmation echo are all thin
@@ -228,7 +228,7 @@ function WixFormInteractive(
         resetForm();
     });
 
-    // A bfcache Back restore must not leave the button disabled by a redirect (DL#40 §4).
+    // A bfcache Back restore must not leave the button disabled by a redirect (DL#42 §4).
     if (typeof window !== 'undefined') {
         window.addEventListener('pageshow', (event: PageTransitionEvent) => {
             if (event.persisted) setIsSubmitting(false);
@@ -411,7 +411,7 @@ function wireHoneypot(refs: any, record: (value: string) => void): void {
 }
 
 /**
- * Read a native input's value by field kind (DL#39 4c): a checkbox reads `.checked`
+ * Read a native input's value by field kind (DL#41 4c): a checkbox reads `.checked`
  * (boolean), a multiselect reads `.selectedOptions` (string[]), everything else `.value`.
  */
 function readNativeValue(field: FormFieldView, target: EventTarget | null): FieldValue {

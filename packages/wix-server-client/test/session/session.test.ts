@@ -117,7 +117,7 @@ describe('resolveRequestIdentity (V13)', () => {
         expect(fetchImpl).not.toHaveBeenCalled();
     });
 
-    it('should give an active session with the cookie access token as authorization and a headers-only client (DL#41)', async () => {
+    it('should give an active session with the cookie access token as authorization and a headers-only client (DL#43)', async () => {
         const tokens = tokensFor('member-access');
         const cookies = { [WIX_SESSION_COOKIE]: encodeSessionCookie(tokens) };
 

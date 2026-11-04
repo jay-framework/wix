@@ -7,6 +7,7 @@
 import { makeContractGenerator } from '@jay-framework/fullstack-component';
 import { WIX_DATA_SERVICE_MARKER } from '../services/wix-data-service';
 import { ProcessedSchema } from '../utils/processed-schema';
+import { sourceEditingContractHeader } from '../source-editing.js';
 import {
     dataTag,
     interactiveTag,
@@ -69,6 +70,7 @@ function buildContract(schema: ProcessedSchema): string {
 
     return `name: ${toPascalCase(schema.collectionId)}Table
 description: Table widget for ${schema.displayName || schema.collectionId}
+${sourceEditingContractHeader(schema.collectionId)}
 tags:
 ${tags.join('\n')}`;
 }

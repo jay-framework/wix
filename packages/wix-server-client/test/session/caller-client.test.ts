@@ -1,8 +1,8 @@
 // @vitest-environment node
 
 /**
- * DL#41 §Design 0: the caller client is a headers-only `createClient`, with no OAuth strategy.
- * Bug (DL#40): the OAuthStrategy caller client renews an expired access token and, when renewal
+ * DL#43 §Design 0: the caller client is a headers-only `createClient`, with no OAuth strategy.
+ * Bug (DL#42): the OAuthStrategy caller client renews an expired access token and, when renewal
  * is impossible, falls back to an anonymous grant — an expired member silently becomes a new visitor.
  */
 
@@ -71,7 +71,7 @@ afterEach(() => {
     vi.restoreAllMocks();
 });
 
-describe('isExpiringSoon (DL#41 §Design 0)', () => {
+describe('isExpiringSoon (DL#43 §Design 0)', () => {
     it('is the single 60 s margin: true at now + 59, false at now + 61', () => {
         const now = 1_000_000;
         expect([
@@ -82,7 +82,7 @@ describe('isExpiringSoon (DL#41 §Design 0)', () => {
     });
 });
 
-describe('resolveRequestIdentity session state (DL#41 §Design 0)', () => {
+describe('resolveRequestIdentity session state (DL#43 §Design 0)', () => {
     it.each([
         ['missing', undefined],
         ['non-finite', Number.NaN],
@@ -152,7 +152,7 @@ describe('resolveRequestIdentity session state (DL#41 §Design 0)', () => {
     });
 });
 
-describe('the caller client (DL#41 §Design 0)', () => {
+describe('the caller client (DL#43 §Design 0)', () => {
     it('has no OAuth strategy: client.auth.getAuthHeaders() returns empty headers', async () => {
         const identity = resolveRequestIdentity(activeCookies());
 

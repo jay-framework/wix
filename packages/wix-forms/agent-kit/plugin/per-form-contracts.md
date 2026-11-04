@@ -1,4 +1,4 @@
-Per-form contracts for wix-forms (DL#38).
+Per-form contracts for wix-forms (DL#40).
 
 ## One contract per form, with field-named tags
 
@@ -31,21 +31,21 @@ Run `jay-stack agent-kit`, then read:
 A field `email` becomes a `sub-contract` tag `email` carrying:
 
 - `label` (data), `placeholder` (data, text-like fields only), `value`
-  (text-like: data string; checkbox: variant boolean — DL#39), `required`
-  (variant), `error` (data), `invalid` (variant — DL#39), one `input`
-  interactive tag, and one `control` interactive tag (DL#39, custom UI).
+  (text-like: data string; checkbox: variant boolean — DL#41), `required`
+  (variant), `error` (data), `invalid` (variant — DL#41), one `input`
+  interactive tag, and one `control` interactive tag (DL#41, custom UI).
 - `input.elementType` is `HTMLInputElement` for text/email/tel/url and single
   checkboxes, `HTMLTextAreaElement` for multiline, `HTMLSelectElement` for
   choice (select / multiselect) fields.
 - Choice fields expose a repeated `options` sub-contract (`value`, `label`); a
-  **multiselect** adds a per-option `selected` variant (DL#39 — the array
+  **multiselect** adds a per-option `selected` variant (DL#41 — the array
   representation, since an array `dataType` is invalid).
-- **Hidden** Wix fields (DL#39 4a) materialize a value+control channel only
+- **Hidden** Wix fields (DL#41 4a) materialize a value+control channel only
   (no `label`/`placeholder`/`input`).
 
 Form-level tags stay at the top level: `isLoading`, `loadError`, `isSubmitting`,
-`isSubmitted` (DL#39), `statusMessage` (data/variant), `submitButton`,
-`resetButton` (DL#39), and `honeypot` (DL#39) interactive tags.
+`isSubmitted` (DL#41), `statusMessage` (data/variant), `submitButton`,
+`resetButton` (DL#41), and `honeypot` (DL#41) interactive tags.
 
 > **Rich production forms** (confirmation/sent state, prefill, live validation,
 > hidden/derived values, custom-UI/multi-step, honeypot, non-string fields) — see
@@ -75,6 +75,6 @@ Form-level tags stay at the top level: `isLoading`, `loadError`, `isSubmitting`,
 
 Never write `forEach="contact.fields"`, `{contact.fields...}`, or
 `ref="contact.fields.formInputs"`. These bind the generic repeated array removed
-in DL#38. The `wix-forms-bindings` validator flags leftover `.fields` bindings
+in DL#40. The `wix-forms-bindings` validator flags leftover `.fields` bindings
 and unknown field tags used as refs, with a migration message. There is no
 `formId` prop and no `defaultFormId` — form identity is fixed by the contract.

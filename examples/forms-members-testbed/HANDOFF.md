@@ -42,7 +42,7 @@ npm run dev                          # http://localhost:3000
 npm run build:production && npm run wix:deploy   # deploy to Wix BaaS
 ```
 
-## Test our local wix-forms (DL #38/#39 + the two browser-QA bugfixes)
+## Test our local wix-forms (DL #40/#41 + the two browser-QA bugfixes)
 
 Published 0.25.5 is the OLD generic wix-forms. After install, overlay the local build:
 

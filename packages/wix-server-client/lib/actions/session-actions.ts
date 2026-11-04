@@ -1,5 +1,5 @@
 /**
- * Session action (DL#40 §Design 1): mirror the browser's OAuth tokens into the httpOnly
+ * Session action (DL#42 §Design 1): mirror the browser's OAuth tokens into the httpOnly
  * `wix_session` cookie, after verifying them with token-info.
  */
 

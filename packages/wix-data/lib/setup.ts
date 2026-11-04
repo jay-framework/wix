@@ -16,6 +16,7 @@ import type {
 } from '@jay-framework/stack-server-runtime';
 import { getService } from '@jay-framework/stack-server-runtime';
 import { WIX_DATA_SERVICE_MARKER, type WixDataService } from './services/wix-data-service';
+import { SHARED_EDITING_GUIDE_PATH, writeSharedEditingGuideCopy } from './source-editing.js';
 
 const CONFIG_FILE_NAME = 'wix-data.yaml';
 
@@ -165,8 +166,15 @@ export async function generateWixDataAgentKit(
         'utf-8',
     );
 
+    writeSharedEditingGuideCopy(ctx.referencesDir);
+
+    const agentKitCreated = [
+        `agent-kit/references/${ctx.pluginName}/collections.yaml`,
+        SHARED_EDITING_GUIDE_PATH,
+    ];
+
     return {
-        agentKitCreated: [`agent-kit/references/${ctx.pluginName}/collections.yaml`],
-        message: `${collectionSummaries.length} collections (${collectionSummaries.filter((c) => c.visible).length} visible)`,
+        agentKitCreated,
+        message: `${collectionSummaries.length} collections (${collectionSummaries.filter((c) => c.visible).length} visible), CMS editing guide copied`,
     };
 }

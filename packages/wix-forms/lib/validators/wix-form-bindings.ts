@@ -1,11 +1,11 @@
 /**
- * wix-forms plugin validator (DL#38).
+ * wix-forms plugin validator (DL#40).
  *
  * Fires on jay-html pages that use per-form contracts. Two detectable cases,
- * both carrying the DL#38 migration message:
+ * both carrying the DL#40 migration message:
  *
  *  1. Retired generic `fields` binding — a `form/<slug>` import that still binds
- *     `<key>.fields` (the generic repeated array removed in DL#38). This is the
+ *     `<key>.fields` (the generic repeated array removed in DL#40). This is the
  *     GUARANTEED case: the `form/` import resolves, so it appears in
  *     `headlessImports`. Detected across every binding form (data/forEach/if/ref).
  *  2. Unknown field tag used as a `ref` — `ref="<key>.<missingField>…"` whose
@@ -13,7 +13,7 @@
  *     validation already rejects unknown DATA bindings (`{<key>.x}`, `forEach`,
  *     `if`, attributes) but SILENTLY grafts unknown `ref=` sub-tags
  *     (`graftTemplateOnlyRefs`), so this check closes the one gap core misses
- *     (DL#38 hard gate; see Implementation Results for the core-vs-plugin finding).
+ *     (DL#40 hard gate; see Implementation Results for the core-vs-plugin finding).
  *
  * Best-effort: a page still importing the deleted `contract="wix-form"` also
  * gets the migration message, IF the unresolved name surfaces in headlessImports.
@@ -31,7 +31,7 @@ const RETIRED_CONTRACT_NAME = 'wix-form';
 const FORM_CONTRACT_PREFIX = 'form/';
 
 const MIGRATION_HINT =
-    'The generic `fields` tag was removed in DL#38. Bind explicit per-form field tags instead ' +
+    'The generic `fields` tag was removed in DL#40. Bind explicit per-form field tags instead ' +
     '— e.g. `{contact.email.label}`, `ref="contact.email.input"`, ' +
     '`<option forEach="contact.country.options" trackBy="value">`. Discover a form\'s real field ' +
     'names in agent-kit/references/wix-forms/forms.yaml or the materialized form/<slug> contract.';
@@ -43,7 +43,7 @@ export const validateWixFormBindings: JayHtmlValidatorFn = (ctx) => {
         if (imp.contractName === RETIRED_CONTRACT_NAME) {
             findings.push({
                 severity: 'error',
-                message: `Contract "wix-form" was removed in DL#38 — forms now use a per-form contract "form/<slug>".`,
+                message: `Contract "wix-form" was removed in DL#40 — forms now use a per-form contract "form/<slug>".`,
                 suggestion: MIGRATION_HINT,
             });
         }
@@ -63,10 +63,10 @@ export const validateWixFormBindings: JayHtmlValidatorFn = (ctx) => {
 };
 
 /**
- * memberPrefill config drift (DL#39 Capability 2 / §Agent Feedback Loop): a configured
+ * memberPrefill config drift (DL#41 Capability 2 / §Agent Feedback Loop): a configured
  * `memberPrefill` target that matches NO field of any form imported on this page is almost
  * certainly a typo. Targets are raw field targets, so compare them camelCased, the way the
- * generated contract tags are named (DL#38 Break B).
+ * generated contract tags are named (DL#40 Break B).
  */
 function detectUnknownMemberPrefillTargets(
     ctx: Parameters<JayHtmlValidatorFn>[0],
@@ -119,7 +119,7 @@ function detectRetiredFieldsBindings(
         if (pattern.test(serialized)) {
             findings.push({
                 severity: 'error',
-                message: `Binding "${key}.fields" uses the generic form-fields array removed in DL#38.`,
+                message: `Binding "${key}.fields" uses the generic form-fields array removed in DL#40.`,
                 suggestion: MIGRATION_HINT,
                 attribute: 'fields',
             });
@@ -180,7 +180,7 @@ function detectUnknownRefFieldTags(
             });
             return;
         }
-        // Second-segment sub-tag check (DL#39 §Agent Feedback Loop — gate iv). Only runs when the
+        // Second-segment sub-tag check (DL#41 §Agent Feedback Loop — gate iv). Only runs when the
         // validation context carries the field's nested sub-contract tags; otherwise the guaranteed
         // first-segment check above plus the agent-kit guide cover it (the stated fallback).
         if (!secondSegment) return;

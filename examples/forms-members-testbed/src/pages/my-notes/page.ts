@@ -3,10 +3,10 @@ import { WIX_DATA_SERVICE_MARKER, NoCallerSessionError } from '@jay-framework/wi
 import { isPermissionDenied, resolveRequestIdentity } from '@jay-framework/wix-server-client';
 import type { MyNotesContract } from './page.jay-contract';
 
-/** The page reads per-caller data, so it must never be shared-cached (DL#41 V4). */
+/** The page reads per-caller data, so it must never be shared-cached (DL#43 V4). */
 const PER_CALLER_HEADERS = { responseHeaders: { 'Cache-Control': 'private' } };
 
-/** Lists the signed-in member's own ProbeNotes, read as the caller (DL#41 demo). */
+/** Lists the signed-in member's own ProbeNotes, read as the caller (DL#43 demo). */
 export const page = makeJayStackComponent<MyNotesContract>()
     .withProps()
     .withServices(WIX_DATA_SERVICE_MARKER)

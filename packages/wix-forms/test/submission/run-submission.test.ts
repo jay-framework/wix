@@ -30,7 +30,7 @@ import {
 import type { FieldValue } from '../../lib/types.js';
 
 /**
- * Shaped after the documented Wix Forms 400 body. Not a live capture: DL#39's
+ * Shaped after the documented Wix Forms 400 body. Not a live capture: DL#41's
  * MUST-VERIFY (`errorPath` equals the field target) is still open.
  */
 const FIELD_VIOLATION_BODY = readFileSync(
@@ -149,7 +149,7 @@ describe('runSubmission — V1, row 1 (succeeded)', () => {
 describe('runSubmission — V2, row 2 (Wix field violations)', () => {
     /**
      * Bug: per-field submission errors never reach the browser.
-     * Found in: design-log/39 - general forms infrastructure.md, "Known defect found in review + planned fix"
+     * Found in: design-log/41 - general forms infrastructure.md, "Known defect found in review + planned fix"
      * Expected: the server maps Wix's field violations and RETURNS { success:false, fieldErrors }.
      * Actual: the WixApiError was thrown and the transport dropped its responseBody.
      */
@@ -387,7 +387,7 @@ function expiredSession(): CallerSession {
 const wixRefusal = (status: number, code: string) => () =>
     new WixApiError(status, SUBMISSIONS_PATH, JSON.stringify({ details: { applicationError: { code } } }));
 
-describe('runSubmission — DL#41, who the submission posts as', () => {
+describe('runSubmission — DL#43, who the submission posts as', () => {
     it('should post with the caller client when the request has a session', async () => {
         const { deps, authorizations } = harness({ session: activeSession() });
 
@@ -423,7 +423,7 @@ describe('runSubmission — DL#41, who the submission posts as', () => {
     });
 });
 
-describe('runSubmission — DL#41, an expired session', () => {
+describe('runSubmission — DL#43, an expired session', () => {
     it('a form without a hook and an expired session returns SUBMIT_SESSION_EXPIRED_MESSAGE and never posts', async () => {
         const { deps, posts } = harness({ session: expiredSession() });
 
@@ -471,7 +471,7 @@ describe('runSubmission — DL#41, an expired session', () => {
     });
 });
 
-describe('runSubmission — DL#41, resolving the caller session', () => {
+describe('runSubmission — DL#43, resolving the caller session', () => {
     it('an active session without authorization logs L1, returns SUBMIT_FAILED_MESSAGE, never posts', async () => {
         const { deps, posts } = harness({ session: { session: 'active', expiresAt: nowInSeconds() + 3600 } });
 
@@ -516,7 +516,7 @@ describe('runSubmission — DL#41, resolving the caller session', () => {
     });
 });
 
-describe('runSubmission — DL#41, Wix refuses a caller post', () => {
+describe('runSubmission — DL#43, Wix refuses a caller post', () => {
     it('does not retry as the site when Wix refuses the caller', async () => {
         const { deps, authorizations } = harness({ session: activeSession(), wixFails: forbidden });
 
@@ -583,7 +583,7 @@ describe('runSubmission — DL#41, Wix refuses a caller post', () => {
     it.skip('pending V2: a caller refusal with the V2-recorded status returns SUBMIT_NOT_ALLOWED_MESSAGE (no forms status is recorded yet)', () => {});
 });
 
-describe('createSubmitAttempt — DL#41 postedAs', () => {
+describe('createSubmitAttempt — DL#43 postedAs', () => {
     const post = async () => {};
 
     it("postedAs is 'site' when forced with { as: 'site' }", async () => {

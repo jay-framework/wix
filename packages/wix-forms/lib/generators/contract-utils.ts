@@ -1,9 +1,9 @@
 /**
- * Contract YAML building blocks for per-form contract generation (DL#38).
+ * Contract YAML building blocks for per-form contract generation (DL#40).
  *
  * Small, self-contained helpers copied in the spirit of wix-data's
  * `contract-utils` so wix-forms stays independent of wix-data internals
- * (DL#38 §4). Each builder returns a YAML fragment at a given indent.
+ * (DL#40 §4). Each builder returns a YAML fragment at a given indent.
  */
 
 import type { FormFieldView } from '../types.js';
@@ -16,7 +16,7 @@ function pad(level: number): string {
     return INDENT.repeat(level);
 }
 
-/** Interactive element type for a field, chosen per DL#38 §3 field-type mapping. */
+/** Interactive element type for a field, chosen per DL#40 §3 field-type mapping. */
 export function elementTypeFor(field: FormFieldView): string {
     switch (field.inputType) {
         case 'textarea':
@@ -29,7 +29,7 @@ export function elementTypeFor(field: FormFieldView): string {
     }
 }
 
-/** Options-bearing field kinds share the repeated `options` sub-contract (DL#38 §3, DL#39 4c). */
+/** Options-bearing field kinds share the repeated `options` sub-contract (DL#40 §3, DL#41 4c). */
 function hasOptions(field: FormFieldView): boolean {
     return field.inputType === 'select' || field.inputType === 'multiselect';
 }
@@ -40,7 +40,7 @@ function isTextLike(field: FormFieldView): boolean {
 }
 
 /**
- * The per-field value channel (DL#39 Capability 2 / 4c), modeled on supported primitive
+ * The per-field value channel (DL#41 Capability 2 / 4c), modeled on supported primitive
  * `dataType`s only (an array is not a valid `dataType`):
  *  - checkbox → `value` variant (boolean), so markup can branch on checked state.
  *  - options-bearing (select / multiselect) → NO flat value tag; the selection is exposed
@@ -91,7 +91,7 @@ export function fieldTag(field: FormFieldView, level = 1): string {
 }
 
 /**
- * Hidden-field sub-contract (DL#39 Capability 4a) — a value + control channel only
+ * Hidden-field sub-contract (DL#41 Capability 4a) — a value + control channel only
  * (NO label/placeholder/input), so a page can populate a Wix hidden field it has a
  * value for. Emitted only for fields the projection marks `hidden`.
  */
@@ -124,14 +124,14 @@ function optionsSubContract(field: FormFieldView, level: number): string[] {
         `${child}- { tag: label, type: data, dataType: string }`,
     ];
     // A multiselect exposes its selection as a per-option boolean `selected` variant —
-    // the sanctioned array representation (an array `dataType` is invalid) (DL#39 4c).
+    // the sanctioned array representation (an array `dataType` is invalid) (DL#41 4c).
     if (field.inputType === 'multiselect') {
         lines.push(`${child}- { tag: selected, type: variant, dataType: boolean }`);
     }
     return lines;
 }
 
-/** Reserved form-level tags, kept at the top level (DL#38 §3, DL#39 Caps 1 + 4a). */
+/** Reserved form-level tags, kept at the top level (DL#40 §3, DL#41 Caps 1 + 4a). */
 export function reservedFormTags(level = 1): string {
     const item = pad(level);
     return [
@@ -146,7 +146,7 @@ export function reservedFormTags(level = 1): string {
     ].join('\n');
 }
 
-/** Names reserved for form-level tags — a field whose target collides is suffixed (DL#38 OQ-3). */
+/** Names reserved for form-level tags — a field whose target collides is suffixed (DL#40 OQ-3). */
 export const RESERVED_TAG_NAMES = new Set([
     'isLoading',
     'loadError',
@@ -164,7 +164,7 @@ export const RESERVED_TAG_NAMES = new Set([
  * ViewState accessor and ref name (Break B — otherwise a `first_name` target
  * renders `{form.firstName...}` bindings as `undefined`). If the camelCased
  * name then collides with a reserved form-level tag it is suffixed so both
- * remain bindable (DL#38 OQ-3). Shared by the generator and the component so
+ * remain bindable (DL#40 OQ-3). Shared by the generator and the component so
  * the generated tag, the compiled accessor, and the ref name all agree.
  */
 export function contractTagName(target: string): string {

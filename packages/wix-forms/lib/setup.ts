@@ -14,7 +14,7 @@ import { computeFormSlugs } from './generators/form-slug.js';
 import { elementTypeFor } from './generators/contract-utils.js';
 import type { FormFieldView } from './types.js';
 
-/** The runtime value type a field submits (DL#39 4c) — a hint for agent-kit discovery. */
+/** The runtime value type a field submits (DL#41 4c) — a hint for agent-kit discovery. */
 function valueTypeFor(field: FormFieldView): 'string' | 'boolean' | 'string[]' {
     if (field.inputType === 'checkbox') return 'boolean';
     if (field.inputType === 'multiselect') return 'string[]';
@@ -23,7 +23,7 @@ function valueTypeFor(field: FormFieldView): 'string' | 'boolean' | 'string[]' {
 
 const CONFIG_FILE = '.wix-forms.yaml';
 
-// Per-form contracts are auto-generated for every enabled form in the namespace (DL#38).
+// Per-form contracts are auto-generated for every enabled form in the namespace (DL#40).
 // All config is an OPTIONAL filter/override — absent config generates every form.
 const CONFIG_TEMPLATE = `# Wix Forms configuration (optional).
 #
@@ -39,7 +39,7 @@ formIds: []
 # Which forms to generate: enabled | disabled | all
 include: enabled
 
-# Optional (DL#39): seed fields from the signed-in member. Map a field target to a
+# Optional (DL#41): seed fields from the signed-in member. Map a field target to a
 # Wix member dot-path. Absent = no member prefill.
 # memberPrefill:
 #   email: loginEmail
@@ -108,7 +108,7 @@ export async function generateWixFormsAgentKit(
             type: field.inputType,
             required: field.required,
             elementType: elementTypeFor(field),
-            // DL#39 channel hints so agents discover the new value/control surfaces.
+            // DL#41 channel hints so agents discover the new value/control surfaces.
             hidden: Boolean(field.hidden),
             hasControl: true,
             valueType: valueTypeFor(field),
@@ -123,7 +123,7 @@ export async function generateWixFormsAgentKit(
             {
                 _generated: new Date().toISOString(),
                 _description:
-                    'Wix Forms per-form contracts for agent discovery (DL#38). ' +
+                    'Wix Forms per-form contracts for agent discovery (DL#40). ' +
                     'Bind explicit field tags, e.g. {contact.email.label}, ref="contact.email.input".',
                 namespace: formsService.config.namespace,
                 totalForms: formSummaries.length,

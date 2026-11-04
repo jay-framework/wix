@@ -12,9 +12,9 @@ import type { FormFieldView } from '../lib/types.js';
 
 describe('projectFormFields', () => {
     /**
-     * Bug: DL#38 dropped hidden fields entirely (`!field.hidden`), so a page could
+     * Bug: DL#40 dropped hidden fields entirely (`!field.hidden`), so a page could
      *   not populate a Wix hidden field and it never reached the submission.
-     * Found in: design-log/39 - general forms infrastructure.md §Design 4a (narrows DL#38 OQ-4)
+     * Found in: design-log/41 - general forms infrastructure.md §Design 4a (narrows DL#40 OQ-4)
      * Expected: hidden fields are MARKED (hidden: true), not dropped, so the generator
      *   can emit their value+control channel and the component submits them.
      */
@@ -81,11 +81,11 @@ describe('projectFormFields', () => {
     });
 
     /**
-     * Bug (DL#39 4c, test 3 — runtime, failing-first): the submit path is
+     * Bug (DL#41 4c, test 3 — runtime, failing-first): the submit path is
      *   Record<string,string> and the projection has no checkbox/multiselect kind,
      *   so a boolean checkbox submits its static `value` attribute and a multi-select
      *   is truncated to a single string.
-     * Found in: design-log/39 - general forms infrastructure.md §Design 4c.
+     * Found in: design-log/41 - general forms infrastructure.md §Design 4c.
      * Expected: readInputType (via projectFormFields) returns 'checkbox' for a single
      *   boolean field and 'multiselect' for a multiple-selection choice.
      * Actual (pre-fix): FormFieldInputType has neither kind and readInputType returns

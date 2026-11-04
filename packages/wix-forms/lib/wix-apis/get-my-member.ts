@@ -1,9 +1,9 @@
 /**
- * Fetch the signed-in member for prefill (DL#39 Capability 2).
+ * Fetch the signed-in member for prefill (DL#41 Capability 2).
  *
  * Reads the public Wix Members REST endpoint `GET /members/v1/members/my` — the
  * same endpoint and field shape wix-members reads — WITHOUT a package dependency
- * on the sibling plugin. This runs in the interactive (client) phase (DL#39 Q4),
+ * on the sibling plugin. This runs in the interactive (client) phase (DL#41 Q4),
  * so it imports `wixFetch` from the CLIENT entry `@jay-framework/wix-server-client/client`
  * (mirroring the client-side member-profile precedent), not the server entry.
  */

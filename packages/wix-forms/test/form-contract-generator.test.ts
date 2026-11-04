@@ -56,9 +56,9 @@ describe('formContractGenerator', () => {
     });
 
     /**
-     * Bug (DL#39 4c, test 4 — runtime, failing-first): the generator cannot express a
+     * Bug (DL#41 4c, test 4 — runtime, failing-first): the generator cannot express a
      *   non-string field, so a checkbox and a multiselect are mis-modeled.
-     * Found in: design-log/39 - general forms infrastructure.md §Design 4c (MUST-VERIFY #2).
+     * Found in: design-log/41 - general forms infrastructure.md §Design 4c (MUST-VERIFY #2).
      * Expected: a checkbox field emits a `value` VARIANT (boolean) and HTMLInputElement input;
      *   a multiselect emits the repeated `options` sub-contract with a per-option `selected`
      *   variant and an HTMLSelectElement input. No `dataType: array` anywhere.
@@ -93,7 +93,7 @@ describe('formContractGenerator', () => {
         const [contract] = await formContractGenerator.generate(serviceWith([choicesForm]));
         expect(contract.yaml.trim()).toEqual(expected.trim());
         // The shape must parse — confirms the nested per-option `selected` variant inside a
-        // repeated sub-contract round-trips (DL#39 MUST-VERIFY #2).
+        // repeated sub-contract round-trips (DL#41 MUST-VERIFY #2).
         expect(() =>
             checkValidationErrors(parseContract(contract.yaml, 'form-choices.jay-contract')),
         ).not.toThrow();
@@ -112,7 +112,7 @@ describe('formContractGenerator', () => {
      * contract tag into its ViewState accessor and ref name, so the generated
      * tag MUST be camelCased or the page's `{form.firstName...}` bindings and
      * `ref="form.firstName.input"` resolve to undefined.
-     * Found in: design-log/38 - per-form contracts for wix-forms.md
+     * Found in: design-log/40 - per-form contracts for wix-forms.md
      * Expected: generated tags are `firstName` / `phoneNumber`, never the raw
      * `first_name` / `phone-number`.
      */

@@ -35,7 +35,7 @@ interface StoredTokens {
 
 /**
  * Store tokens in localStorage for session persistence — the only code that persists them —
- * and mirror a changed access token into the server's `wix_session` cookie (DL#40 Q4).
+ * and mirror a changed access token into the server's `wix_session` cookie (DL#42 Q4).
  */
 function storeTokens(tokens: Tokens, oauthClientId: string): void {
     try {
@@ -50,7 +50,7 @@ function storeTokens(tokens: Tokens, oauthClientId: string): void {
 }
 
 // ============================================================================
-// Session cookie mirror (DL#40): the browser owns the tokens, the cookie mirrors them.
+// Session cookie mirror (DL#42): the browser owns the tokens, the cookie mirrors them.
 // ============================================================================
 
 /** The client-bound OAuth strategy: `getAuthHeaders()` renews an expired access token. */

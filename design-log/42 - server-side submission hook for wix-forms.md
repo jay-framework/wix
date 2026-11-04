@@ -1,8 +1,8 @@
-# 40 - Server-Side Submission Hook for wix-forms
+# 42 - Server-Side Submission Hook for wix-forms
 
 Status: Implemented (2026-10-26; browser demo pending, see Implementation Results)
 
-Builds on **DL#39 (General Forms Infrastructure)**: its value store, `control` channel, hidden fields, `submitForm` action, and the **structured submit result** that DL#39's own planned defect fix introduces (DL#39 → Implementation Results → *Known defect found in review + planned fix*). Generic: any Jay project, no downstream site named. Paths are relative to `packages/wix-forms/lib/` unless stated.
+Builds on **DL#41 (General Forms Infrastructure)**: its value store, `control` channel, hidden fields, `submitForm` action, and the **structured submit result** that DL#41's own planned defect fix introduces (DL#41 → Implementation Results → *Known defect found in review + planned fix*). Generic: any Jay project, no downstream site named. Paths are relative to `packages/wix-forms/lib/` unless stated.
 
 ## Decisions for the Implementer (TL;DR)
 
@@ -14,11 +14,11 @@ Builds on **DL#39 (General Forms Infrastructure)**: its value store, `control` c
 - **Upstream prerequisite:** jay's request-cookie access for actions (`.withRequest()` → `request.cookies`, `request.setCookie`, `request.clearCookie`), with jay's same-origin check on actions.
 - **Any token-info failure** (non-200 outside the invalid-token set, network, 5 s timeout) → logged generic failure; the hook does not run. Cookie and token values are never logged.
 - **A `VISITOR` caller proves a browser session, not a person.** A flow that needs identity requires `caller.type === 'MEMBER'` (Q19).
-- **One hook per form replaces DL#39's augmenter.** `WIX_FORMS_SUBMIT_HOOKS` is a `formId → hook` map, looked up own-property only. A hook gets `{ formId, values, caller, client, submit }`; `submit()` still posts with the site client. `submit(values?)` POSTs to Wix at most once and resolves `void`; an ignored call rejects with the exported `SubmitIgnoredError`.
-- **A hook rejects only with `ActionError(code, message)`**, which is form-level. Wix's own per-field violations, captured inside `submit()`, still come back as `fieldErrors` (DL#39's fix). A hook-raised per-field rejection is deferred (§Trade-offs).
+- **One hook per form replaces DL#41's augmenter.** `WIX_FORMS_SUBMIT_HOOKS` is a `formId → hook` map, looked up own-property only. A hook gets `{ formId, values, caller, client, submit }`; `submit()` still posts with the site client. `submit(values?)` POSTs to Wix at most once and resolves `void`; an ignored call rejects with the exported `SubmitIgnoredError`.
+- **A hook rejects only with `ActionError(code, message)`**, which is form-level. Wix's own per-field violations, captured inside `submit()`, still come back as `fieldErrors` (DL#41's fix). A hook-raised per-field rejection is deferred (§Trade-offs).
 - **No throw path.** `runSubmission` **returns** every outcome as `{ success: true, redirectTo? } | { success: false, message?, fieldErrors? }`. The client has one result path, plus a catch for transport errors that shows the generic message.
 - **Explicit attempt state** (`idle → pending → succeeded | failed`, plus `sealed`). The attempt is sealed when the hook settles. **Once `submit()` was called, the Wix outcome alone decides the result**, so a swallowed and a rethrown `submit()` failure give the same result. Five rows (§Design 3).
-- **Client-side submit validation skips hidden fields.** Wix re-validates them, and its errors reach `statusMessage`. This lands in DL#39's fix (Phase 0), because a required hidden field filled by the server would otherwise block submit silently.
+- **Client-side submit validation skips hidden fields.** Wix re-validates them, and its errors reach `statusMessage`. This lands in DL#41's fix (Phase 0), because a required hidden field filled by the server would otherwise block submit silently.
 - **Double-submit guard.** `setIsSubmitting(true)` runs synchronously after validation and before the first `await`. It stays set while a redirect navigates; `resetForm` and a bfcache `pageshow` clear it.
 - **Hooks are registered inside `makeJayInit().withServer(...)`.** A bare top-level `registerService` in the project's `src/init.ts` ships the hook to the browser.
 - **`redirectTo`.** A hook may return `{ redirectTo: '/path?ref=…' }`. The client checks it once, with `toSitePath`, before `window.location.assign`.
@@ -29,15 +29,15 @@ Builds on **DL#39 (General Forms Infrastructure)**: its value store, `control` c
 
 ## Background
 
-DL#39's submit chain:
+DL#41's submit chain:
 
-1. **Browser.** `WixFormInteractive` (`components/wix-form.ts`, `refs.submitButton?.onclick`, :229) validates **every** projected field, hidden ones included (:240-257), then calls `submitForm({ formId, values })` (:261). Its catch branch (:264-272) is dead code (DL#39's known defect) and falls back to `describeSubmitError` (:422-428).
+1. **Browser.** `WixFormInteractive` (`components/wix-form.ts`, `refs.submitButton?.onclick`, :229) validates **every** projected field, hidden ones included (:240-257), then calls `submitForm({ formId, values })` (:261). Its catch branch (:264-272) is dead code (DL#41's known defect) and falls back to `describeSubmitError` (:422-428).
 2. **Action.** `submitForm` (`actions/forms-actions.ts:14-34`) optionally merges `WIX_FORMS_SUBMISSION_AUGMENTER.augment()` over the values (:22-30), calls `forms.createSubmission`, and returns `{ success: true }`.
 3. **Wix API.** `createFormSubmission` (`wix-apis/create-submission.ts`) POSTs `/forms/v4/submissions` through `wixFetch` with the **site** client and returns `void`. A non-2xx answer throws `WixApiError(status, path, responseBody)`.
 
 The server Wix client is a site-wide singleton. The browser's OAuth tokens (visitor, or member after login) live in localStorage (`provideWixClientContext`, `wix-server-client` `wix-client-context.ts:76-125`, persisted only by `storeTokens`, :38). They never reach the server today.
 
-DL#39's planned fix creates `submission/run-submission.ts`, which maps Wix field violations on the server and **returns** `{ success: false, fieldErrors }`. This DL extends that module and that result.
+DL#41's planned fix creates `submission/run-submission.ts`, which maps Wix field violations on the server and **returns** `{ success: false, fieldErrors }`. This DL extends that module and that result.
 
 ### Jay Wix plugins: site by default, the caller when the request carries a session
 
@@ -53,7 +53,7 @@ DL#39's planned fix creates `submission/run-submission.ts`, which maps Wix field
 
 ### Driving use case (generic)
 
-A **"request a visit"** form backed by a Wix Form. Custom UI writes the visitor's choices into form fields through DL#39's `control` channel. On submit, the server must:
+A **"request a visit"** form backed by a Wix Form. Custom UI writes the visitor's choices into form fields through DL#41's `control` channel. On submit, the server must:
 
 1. identify the verified caller;
 2. re-check availability, and reject with a message if the slot is taken;
@@ -72,9 +72,9 @@ A **"request a visit"** form backed by a Wix Form. Custom UI writes the visitor'
 
 ## Prior Art / Adjacent Mechanisms
 
-- **DL#39 4b augmenter** (`services/wix-forms-submission-augmenter.ts`). **Partially solves** the problem. Its registration pattern (a project-provided marker, resolved with `hasService`) is reused; its shape is **subsumed** by the hook.
+- **DL#41 4b augmenter** (`services/wix-forms-submission-augmenter.ts`). **Partially solves** the problem. Its registration pattern (a project-provided marker, resolved with `hasService`) is reused; its shape is **subsumed** by the hook.
 - **jay action transport** (`@jay-framework/stack-server-runtime` `ActionRegistry`; `@jay-framework/stack-client-runtime` `createActionCaller`). **Constrains** the design. A thrown error crosses as `{ code, message }` only, and fields such as `responseBody` are dropped. A **returned** value rides through intact, so outcomes are returned. The caller aborts after 30 s by default (configurable with `setActionCallerOptions({ timeout })`) and throws `ActionError('TIMEOUT')`, and a `TypeError` from `fetch` becomes `ActionError('NETWORK_ERROR')`.
-- **jay's `ActionError` convention** (`@jay-framework/fullstack-component`). **Constrains** the design: `throw new ActionError(code, message)` is an action's user-facing error, and DL#39's guide promises that an augmenter throw "is surfaced as a submit error".
+- **jay's `ActionError` convention** (`@jay-framework/fullstack-component`). **Constrains** the design: `throw new ActionError(code, message)` is an action's user-facing error, and DL#41's guide promises that an augmenter throw "is surfaced as a submit error".
 - **Headless component ↔ page events** (`@jay-framework/stack-client-runtime` `makeCompositeJayComponent`). **Rules out** an event-based outcome: a plugin's `createEvent` emitter is discarded, so the page cannot subscribe to it.
 - **Server-returned redirect.** **Solves step 7.** wix-bookings (`booking-flow.ts:268-271`) and wix-cart (`cart-page.ts:308-309`) navigate to a server-returned URL.
 - **`@wix/sdk` `getTokenInfo`** (`build/get-token-info.js`, internal: not reachable through the package `exports`). **Prior art for step 1.** It POSTs `{ token }` as JSON to `/oauth2/token-info` with no `Authorization` header, and types the body as `{ active: boolean; subjectType: 'APP' | 'USER' | 'MEMBER' | 'VISITOR' | 'UNKNOWN'; subjectId: string; exp: number; iat: number; clientId?: string; siteId: string; instanceId?: string }`. It cannot be reused: it is not exported, and it throws on any non-200 with a message only, so a status cannot be classified.
@@ -121,7 +121,7 @@ A:
 **Answered.**
 
 **Q6 — Keep the augmenter alongside the hook?**
-A: No. `augment` is `submit({ ...values, ...derived })`. DL#39 is unreleased, so the migration is small (§Design 5). **Answered.**
+A: No. `augment` is `submit({ ...values, ...derived })`. DL#41 is unreleased, so the migration is small (§Design 5). **Answered.**
 
 **Q7 — How is a hook scoped to a form?**
 A: The service value is `Record<formId, SubmitHook>`. Form ids come from the generated `forms.yaml` (`setup.ts:99-104`). The `formId` comes from the browser, so the lookup is `Object.hasOwn(hooks, formId)`, which keeps `'constructor'` from resolving. **Decision:** `formId` is not case-normalised; a case variant that misses the hook only reaches Wix, which Q18 already accepts. **Answered.**
@@ -150,7 +150,7 @@ A: The consumer's own write, for example with a unique key on slot + date. **Ans
 **Q15** — Withdrawn — merged into Q4.
 
 **Q16 — What changes for code that threw from the augmenter?**
-A: An `ActionError` is still shown as the message. **Any other error is logged and shown as `SUBMIT_FAILED_MESSAGE`.** This is a user-visible change for an augmenter that threw a plain `Error` (its text used to reach the user), and a Wix 403 no longer shows the permission hint (the server log keeps it). An `ActionError` thrown by the hook *after* `submit()` was called is logged, not shown (Q17). The Phase 3 migration snippet and DL#39's Implementation Results state this. **Answered.**
+A: An `ActionError` is still shown as the message. **Any other error is logged and shown as `SUBMIT_FAILED_MESSAGE`.** This is a user-visible change for an augmenter that threw a plain `Error` (its text used to reach the user), and a Wix 403 no longer shows the permission hint (the server log keeps it). An `ActionError` thrown by the hook *after* `submit()` was called is logged, not shown (Q17). The Phase 3 migration snippet and DL#41's Implementation Results state this. **Answered.**
 
 **Q17 — What if the hook throws after `submit()` succeeded?**
 A: The submission stands. The throw is logged, and the result is `{ success: true }` with no `redirectTo`. A failure result would invite a retry that duplicates the submission. **Answered.**
@@ -162,7 +162,7 @@ A: Probably. A script holding a visitor token can likely POST `/forms/v4/submiss
 A: `MEMBER` proves a logged-in member. `VISITOR` proves only a session, which anyone can self-mint with the public client id, so it is never spam protection or a person. A member whose refresh fails becomes a new visitor. A hook that needs a person checks `caller?.type === 'MEMBER'`. **Answered.**
 
 **Q20 — How are field errors on hidden or unknown fields shown?**
-A: Per DL#39's `presentSubmitRejection`: visible fields get `errorByTarget` / `invalidByTarget`. Every other target is joined into `statusMessage` as `label || target: message`, after `result.message`. With nothing to show, the message is `SUBMIT_FAILED_MESSAGE`. **Answered.**
+A: Per DL#41's `presentSubmitRejection`: visible fields get `errorByTarget` / `invalidByTarget`. Every other target is joined into `statusMessage` as `label || target: message`, after `result.message`. With nothing to show, the message is `SUBMIT_FAILED_MESSAGE`. **Answered.**
 
 **Q21 — Where do the modules live?**
 A: **Server-only (wix-forms):** `submission/run-submission.ts`, imported only by `actions/forms-actions.ts` through `../submission/run-submission.js` (does not match `isActionImport`). wix-server-client's `session/` server modules are exported from its server `index.ts` only; `ensureSessionFresh` from `index.client.ts`. **Client (wix-forms):** the client-safe `components/submit-outcome.ts`, which both sides import. No client file imports `submission/`. **Answered.**
@@ -235,7 +235,7 @@ The project provides it, so it is not listed in wix-forms' `plugin.yaml`, the sa
 
 ### 3. `runSubmission`: the orchestration (pure, node-testable)
 
-This extends DL#39's `submission/run-submission.ts`.
+This extends DL#41's `submission/run-submission.ts`.
 
 ```ts
 export interface SubmitDeps {
@@ -343,7 +343,7 @@ if (isSubmitting()) return;                        // a second click while one i
 setStatusMessage(''); setErrorByTarget({});
 if (honeypotValue.trim()) { setIsSubmitted(true); return; }   // unchanged: no POST, no token read
 const submissionValues = readFormValues();
-const clientErrors = validateVisibleFields(carryForward.fields, submissionValues); // DL#39 fix: skips hidden
+const clientErrors = validateVisibleFields(carryForward.fields, submissionValues); // DL#41 fix: skips hidden
 if (Object.keys(clientErrors).length) { /* set errors + invalid, return */ }
 setIsSubmitting(true);                             // synchronous: before the first await
 let result: SubmitFormResult;
@@ -433,7 +433,7 @@ sequenceDiagram
 
 ## Implementation Plan
 
-**Phase 0: prerequisite, owned by DL#39.** Land DL#39's planned fix, including its skip-hidden-fields client validation (`validateVisibleFields`). It creates `submission/run-submission.ts`, its test file, `components/submit-outcome.ts`, and `{ success:false, fieldErrors }`. Phase 2 extends these. If this DL lands first, it subsumes the fix, and DL#39's Implementation Results records that.
+**Phase 0: prerequisite, owned by DL#41.** Land DL#41's planned fix, including its skip-hidden-fields client validation (`validateVisibleFields`). It creates `submission/run-submission.ts`, its test file, `components/submit-outcome.ts`, and `{ success:false, fieldErrors }`. Phase 2 extends these. If this DL lands first, it subsumes the fix, and DL#41's Implementation Results records that.
 
 **Phase 1: session (wix-server-client).** Gated on jay's request-cookie access for actions being available (synced into wix).
 
@@ -442,8 +442,8 @@ sequenceDiagram
 
 **Phase 2: hook and orchestration.**
 
-1. MUST-VERIFY DL#39's open gate: in a live 400 body, `errorPath` equals the field `target`.
-2. Write the tests red first (V1–V6, V9–V10). Flip DL#39's companion test ("a 403 is still thrown") to a **returned** `SUBMIT_FAILED_MESSAGE`, per V3.
+1. MUST-VERIFY DL#41's open gate: in a live 400 body, `errorPath` equals the field `target`.
+2. Write the tests red first (V1–V6, V9–V10). Flip DL#41's companion test ("a 403 is still thrown") to a **returned** `SUBMIT_FAILED_MESSAGE`, per V3.
 3. Implement §Design 2, 3, 4, and 5.
 4. Run `tsc`, `vitest`, and `npm run build` (ending in `validate-plugin`) for wix-forms. Run `tsc` and the tests for wix-bookings, which consumes `WIX_FORMS_SERVICE`, and for wix-server-client.
 
@@ -532,7 +532,7 @@ export const init = makeJayInit().withServer(async () => {
   - A hook's `submit(modified)` sends exactly `modified`, including a hook-set value for a required hidden field that the client sent empty. A returned `redirectTo` is passed through.
   - A throw after `submit()` resolved gives `{ success: true }` with no `redirectTo`, and is logged (L3).
 - [ ] **V2. Row 2, Wix field violations.**
-  - With no hook (DL#39's bug-repro), a field-violation `WixApiError` gives a **returned** `{ success: false, fieldErrors: { <target>: <message> } }`.
+  - With no hook (DL#41's bug-repro), a field-violation `WixApiError` gives a **returned** `{ success: false, fieldErrors: { <target>: <message> } }`.
   - **Parity:** a hook that swallows the rejection, one that rethrows it, one that rethrows a wrapper, and one that throws `ActionError` after compensating all get the same result. Only the throws that are not the failure itself are logged.
 - [ ] **V3. Row 3, other Wix failure.**
   - A 403 `WixApiError` and a `TypeError('fetch failed')` both give `SUBMIT_FAILED_MESSAGE`. Both are returned, not thrown, and both are logged (L4).
@@ -570,7 +570,7 @@ Client pure helpers:
 Build, demo, agent-kit:
 
 - [ ] **V11. Gates.**
-  - DL#39's `errorPath === target` gate is verified live.
+  - DL#41's `errorPath === target` gate is verified live.
   - No `WIX_FORMS_SUBMISSION_AUGMENTER` and no `describeSubmitError` remain in `lib/`.
   - `npm run build` passes `validate-plugin`.
   - No file under `components/` or `utils/`, and not `index.client.ts`, imports `submission/`, and wix-server-client's `index.client.ts` exports nothing from `session/` server modules.
@@ -585,7 +585,7 @@ Build, demo, agent-kit:
 ## Scope Pre-mortem (what this will NOT handle)
 
 - Availability reads, slot-picker UI, and reschedule flows: those are the consumer's.
-- Double-booking (Q14), direct Wix submissions (Q18), and bot protection beyond DL#39's honeypot (Q19).
+- Double-booking (Q14), direct Wix submissions (Q18), and bot protection beyond DL#41's honeypot (Q19).
 - Absolute or external `redirectTo`, and client-side routing for the redirect.
 - Switching any plugin's default server calls (e.g. wix-data) to run as the member.
 - Server-side token refresh and server-minted visitor tokens (Quick Start middleware).
@@ -600,7 +600,7 @@ Build, demo, agent-kit:
 
 ## Implementation Results
 
-Implemented on branch `wix-forms-contracts-fix` (2026-10-26) in five commits: DL#39's Phase 0 fix, wix-server-client session (Phase 1), wix-forms hook (Phase 2), agent-kit (Phase 3), and testbed (Phase 4 prep). jay is untouched; its request-cookie access for actions (`.withRequest()`) was consumed from the synced build.
+Implemented on branch `wix-forms-contracts-fix` (2026-10-26) in five commits: DL#41's Phase 0 fix, wix-server-client session (Phase 1), wix-forms hook (Phase 2), agent-kit (Phase 3), and testbed (Phase 4 prep). jay is untouched; its request-cookie access for actions (`.withRequest()`) was consumed from the synced build.
 
 ### Phase 1 findings (measured live on the testbed site, 2026-10-26)
 
@@ -641,9 +641,9 @@ Implemented on branch `wix-forms-contracts-fix` (2026-10-26) in five commits: DL
 
 ### Verification
 
-- **V1–V6** (`packages/wix-forms/test/submission/run-submission.test.ts`), **V9–V10** (`test/submit-outcome.test.ts`), **V7** (`packages/wix-server-client/test/session/verify-access-token.test.ts`), **V13** (`test/session/session.test.ts` and `test/wix-client-context.test.ts`): all written red first (modules or functions missing), then green. DL#39's 403 companion was flipped to a returned `SUBMIT_FAILED_MESSAGE` (V3).
+- **V1–V6** (`packages/wix-forms/test/submission/run-submission.test.ts`), **V9–V10** (`test/submit-outcome.test.ts`), **V7** (`packages/wix-server-client/test/session/verify-access-token.test.ts`), **V13** (`test/session/session.test.ts` and `test/wix-client-context.test.ts`): all written red first (modules or functions missing), then green. DL#41's 403 companion was flipped to a returned `SUBMIT_FAILED_MESSAGE` (V3).
 - **V11:**
-  - DL#39's `errorPath === target` gate is closed live (see DL#39).
+  - DL#41's `errorPath === target` gate is closed live (see DL#41).
   - No `WIX_FORMS_SUBMISSION_AUGMENTER` and no `describeSubmitError` remain in `lib/`.
   - No `components/`, `utils/` or `index.client.ts` file imports `submission/`.
   - wix-server-client's `index.client.ts` exports nothing from `session/`.
@@ -653,7 +653,7 @@ Implemented on branch `wix-forms-contracts-fix` (2026-10-26) in five commits: DL
   - `paused` → `{ success: false, message: 'Submissions are paused (demo).' }`;
   - `wixreject` → `{ success: false, fieldErrors: { email_76b1: … } }`, with the compensation logged;
   - `/contact/confirmed?ref=DEMO-abc&caller=MEMBER` renders both values.
-- **Test counts:** wix-server-client **33/33** (was 2), wix-forms **117/117** (was 56 before DL#39's fix), wix-bookings **37/37**. tsc exit 0 for all three. Root `yarn test`: 27/28 workspaces pass; `forms-members-testbed` has no `test` script (this predates DL#40).
+- **Test counts:** wix-server-client **33/33** (was 2), wix-forms **117/117** (was 56 before DL#41's fix), wix-bookings **37/37**. tsc exit 0 for all three. Root `yarn test`: 27/28 workspaces pass; `forms-members-testbed` has no `test` script (this predates DL#42).
 - **V12 (browser demo): NOT DONE.** It needs the owner to log in as a member on the testbed. It is the only open item.
 
 ### Deviations
@@ -672,6 +672,6 @@ Implemented on branch `wix-forms-contracts-fix` (2026-10-26) in five commits: DL
 - Refresh-token lifetime (the 30-day `Max-Age` is an assumption).
 - An expired-token token-info fixture.
 
-### Follow-up (2026-10-28): OAuthStrategy caller client replaced by DL #41 §Design 0
+### Follow-up (2026-10-28): OAuthStrategy caller client replaced by DL #43 §Design 0
 
-`resolveRequestIdentity(cookies).client` was an `OAuthStrategy` client. On an expired access token that strategy renews it and, failing that, falls back to an anonymous grant, so an expired member could silently become a new visitor. It is now a headers-only `createClient({ modules: {}, headers: { Authorization } })` with no OAuth strategy. The identity also gains `session` (`'none' | 'active' | 'expired'`, 60 s margin), `authorization` and `expiresAt`. `siteOAuthClientId()` is read only inside the lazy `caller` getter. The V13 session tests were updated to this shape. See DL #41 for the design and its tests.
+`resolveRequestIdentity(cookies).client` was an `OAuthStrategy` client. On an expired access token that strategy renews it and, failing that, falls back to an anonymous grant, so an expired member could silently become a new visitor. It is now a headers-only `createClient({ modules: {}, headers: { Authorization } })` with no OAuth strategy. The identity also gains `session` (`'none' | 'active' | 'expired'`, 60 s margin), `authorization` and `expiresAt`. `siteOAuthClientId()` is read only inside the lazy `caller` getter. The V13 session tests were updated to this shape. See DL #43 for the design and its tests.

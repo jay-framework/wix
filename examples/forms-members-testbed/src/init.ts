@@ -1,5 +1,5 @@
 /**
- * Project init: the demo submit hook for the contact form (wix-forms DL#40 Phase 4).
+ * Project init: the demo submit hook for the contact form (wix-forms DL#42 Phase 4).
  *
  * Registered inside `.withServer(...)`, which the client build strips: a top-level
  * `registerService` here would ship the hook to the browser.

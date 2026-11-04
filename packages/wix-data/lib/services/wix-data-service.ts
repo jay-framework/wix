@@ -28,7 +28,7 @@ export interface WixDataService {
     items: ItemsClient;
 
     /**
-     * Items acting as the caller (DL#41): Wix sets `_owner` and enforces the collection's
+     * Items acting as the caller (DL#43): Wix sets `_owner` and enforces the collection's
      * permissions. Use only in `.withRequest()` actions or fast render, with
      * `resolveRequestIdentity(cookies)`. Throws `NoCallerSessionError` unless the session is
      * active; it never falls back to the site.

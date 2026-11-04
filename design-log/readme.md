@@ -43,10 +43,12 @@ Design documentation for the Jay Framework Wix integration packages.
 | 35  | [wix-bookings in the Browser](./35%20-%20wix-bookings%20browser%20context.md)                                  | Implemented                               |
 | 36  | [Slow-Render SWR + Render-on-Miss on Wix](./36%20-%20slow%20render%20swr%20and%20render-on-miss%20on%20wix.md) | Implemented (store) · Decided (TTL/grace) |
 | 37  | [BaaS Entry — Project Action Registration](./37%20-%20baas-entry-project-action-registration.md)               | Implemented                               |
-| 38  | [Per-Form Contracts for wix-forms](./38%20-%20per-form%20contracts%20for%20wix-forms.md)                       | Implemented                               |
-| 39  | [General Forms Infrastructure for wix-forms](./39%20-%20general%20forms%20infrastructure.md)                   | Approved — implementation in progress      |
-| 40  | [Server-Side Submission Hook for wix-forms](./40%20-%20server-side%20submission%20hook%20for%20wix-forms.md) | Implemented |
-| 41  | [Act as the Caller](./41%20-%20act%20as%20the%20caller.md) | Approved — implementation in progress (Phases 1–3 done; Phase 4 pending live checks) |
+| 38  | [Dashboard URLs for Plugin Content](./38%20-%20dashboard%20urls%20for%20plugin%20content.md)               | Implemented (final QA 2026-11-03; Pro Gallery headless guide 2026-11-04)          |
+| 39  | [Materialized Contract Editing Guides](./39%20-%20materialized%20contract%20editing%20guides.md)           | Implemented                               |
+| 40  | [Per-Form Contracts for wix-forms](./40%20-%20per-form%20contracts%20for%20wix-forms.md)                       | Implemented                               |
+| 41  | [General Forms Infrastructure for wix-forms](./41%20-%20general%20forms%20infrastructure.md)                   | Approved — implementation in progress      |
+| 42  | [Server-Side Submission Hook for wix-forms](./42%20-%20server-side%20submission%20hook%20for%20wix-forms.md) | Implemented |
+| 43  | [Act as the Caller](./43%20-%20act%20as%20the%20caller.md) | Approved — implementation in progress (Phases 1–3 done; Phase 4 pending live checks) |
 
 ## Packages Covered
 

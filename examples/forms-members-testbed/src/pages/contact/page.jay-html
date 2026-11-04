@@ -3,7 +3,7 @@
     <title>Contact — Jay Wix Forms testbed</title>
     <meta
       name="description"
-      content="Contact form powered by the @jay-framework/wix-forms headless per-form contract (DL#38/#39): live validation, honeypot, sent-state + reset."
+      content="Contact form powered by the @jay-framework/wix-forms headless per-form contract (DL#40/#41): live validation, honeypot, sent-state + reset."
     />
     <script type="application/jay-data">
       data:

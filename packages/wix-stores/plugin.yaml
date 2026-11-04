@@ -6,19 +6,23 @@ contracts:
     contract: product-search.jay-contract
     component: productSearch
     description: Headless product search page
+    editingGuide: ./agent-kit/designer/wix-stores-dashboard-content.md
   # category-page removed — use product-search with prefix/category params instead
   - name: category-products
     contract: category-products.jay-contract
     component: categoryProducts
     description: Products from a category — use for showcases or as related products (exclude current product via productId)
+    editingGuide: ./agent-kit/designer/wix-stores-dashboard-content.md
   - name: product-spotlight
     contract: product-spotlight.jay-contract
     component: productSpotlight
     description: A single product card by product ID — use to feature a product on any page
+    editingGuide: ./agent-kit/designer/wix-stores-dashboard-content.md
   - name: category-list
     contract: category-list.jay-contract
     component: categoryList
     description: Category list listing the categories
+    editingGuide: ./agent-kit/designer/wix-stores-dashboard-content.md
 
 # Dynamic contracts — materialized at setup time from site-specific data
 dynamic_contracts:

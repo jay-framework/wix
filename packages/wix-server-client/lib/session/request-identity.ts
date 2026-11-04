@@ -1,8 +1,8 @@
 /**
- * Who is calling, read from the request's `wix_session` cookie (DL#40 §Design 1).
+ * Who is calling, read from the request's `wix_session` cookie (DL#42 §Design 1).
  * Server-only.
  *
- * The caller client is headers-only, with no OAuth strategy (DL#41 §Design 0): an OAuthStrategy
+ * The caller client is headers-only, with no OAuth strategy (DL#43 §Design 0): an OAuthStrategy
  * client renews an expired token and, failing that, falls back to an anonymous grant, which would
  * silently turn an expired member into a new visitor. With no strategy there is nothing to renew.
  */

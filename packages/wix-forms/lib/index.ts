@@ -31,5 +31,5 @@ export type {
 } from './types.js';
 export type { WixFormsConfig } from './config-loader.js';
 
-// Dynamic contract generator (for per-form contract materialization, DL#38)
+// Dynamic contract generator (for per-form contract materialization, DL#40)
 export { generator as formContractGenerator } from './generators/form-contract-generator.js';

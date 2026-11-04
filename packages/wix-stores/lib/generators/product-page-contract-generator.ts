@@ -11,6 +11,9 @@ import { makeContractGenerator } from '@jay-framework/fullstack-component';
 import { WIX_STORES_SERVICE_MARKER } from '../services/wix-stores-service';
 import { buildExtendedFieldsSubContract } from '../utils/data-extension-schema';
 
+/** Project path of the guide `jay-stack agent-kit` copies from this package's agent-kit/designer (same pattern as wix-data, DL #39). */
+const EDITING_GUIDE_PATH = 'agent-kit/designer/wix-stores-dashboard-content.md';
+
 /**
  * Base product-page contract YAML.
  * Inlined to avoid file-system dependencies at runtime.
@@ -18,6 +21,7 @@ import { buildExtendedFieldsSubContract } from '../utils/data-extension-schema';
  */
 const BASE_CONTRACT_YAML = `name: product-page
 description: Full product detail page with variants, options, media gallery, and add-to-cart. Use for individual product pages.
+editingGuide: ${EDITING_GUIDE_PATH}
 params:
   slug: string
   prefix: string?
@@ -136,15 +140,9 @@ export const generator = makeContractGenerator()
         const schemas = await wixStoresService.getDataExtensionSchemas();
         const extendedFieldsBlock = buildExtendedFieldsSubContract(schemas);
 
-        // Append extended fields to the base contract
-        let yaml = BASE_CONTRACT_YAML;
-        if (extendedFieldsBlock) {
-            yaml = yaml + '\n\n' + extendedFieldsBlock;
-        }
-
         return [
             {
-                yaml,
+                yaml: buildProductPageContractYaml(extendedFieldsBlock),
                 description: 'Product page with data extension fields',
                 metadata: {
                     extendedFieldCount: schemas.reduce(
@@ -155,3 +153,8 @@ export const generator = makeContractGenerator()
             },
         ];
     });
+
+/** The base contract, with the site's extended fields sub-contract appended when there is one. */
+export function buildProductPageContractYaml(extendedFieldsBlock: string | null | undefined): string {
+    return extendedFieldsBlock ? BASE_CONTRACT_YAML + '\n\n' + extendedFieldsBlock : BASE_CONTRACT_YAML;
+}

@@ -9,18 +9,22 @@ contracts:
     headTags:
       - title
       - meta:description
+    editingGuide: ./agent-kit/designer/wix-stores-v1-dashboard-content.md
   - name: product-search
     contract: product-search.jay-contract
     component: productSearch
     description: Headless product search page (Catalog V1)
+    editingGuide: ./agent-kit/designer/wix-stores-v1-dashboard-content.md
   - name: category-page
     contract: category-page.jay-contract
     component: categoryPage
     description: Collection page showing products (V1 uses collections instead of categories)
+    editingGuide: ./agent-kit/designer/wix-stores-v1-dashboard-content.md
   - name: category-list
     contract: category-list.jay-contract
     component: categoryList
     description: List of store collections (V1 uses collections instead of categories)
+    editingGuide: ./agent-kit/designer/wix-stores-v1-dashboard-content.md
 
 # Server actions (named exports from main module)
 actions:

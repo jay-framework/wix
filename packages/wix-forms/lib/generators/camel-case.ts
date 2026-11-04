@@ -1,5 +1,5 @@
 /**
- * camelCase that preserves leading underscores (DL#38).
+ * camelCase that preserves leading underscores (DL#40).
  *
  * jay camelCases every contract tag into the compiled ViewState accessor and
  * ref name using `@jay-framework/compiler-shared`'s `camelCase`, which wraps

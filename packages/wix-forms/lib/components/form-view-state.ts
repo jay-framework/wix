@@ -1,12 +1,12 @@
 /**
- * Per-form view-state mapping (DL#38, extended by DL#39).
+ * Per-form view-state mapping (DL#40, extended by DL#41).
  *
  * Turns the projected `FormFieldView[]` into a view-state object KEYED BY FIELD
  * TARGET — `{ email: { label, placeholder, required, error, invalid, value }, … }`
  * — plus the reserved form-level tags, matching the generated per-form contract.
  * Pure and framework-free so it can be unit-tested directly.
  *
- * DL#39 adds, per field, a live-validation `invalid` flag and a `value` echo (seeded
+ * DL#41 adds, per field, a live-validation `invalid` flag and a `value` echo (seeded
  * by prefill, updated on input), and a form-level `isSubmitted` flag that drives the
  * confirmation / sent-state view swap.
  */

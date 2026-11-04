@@ -5,7 +5,7 @@ import type { FormInclude } from './wix-apis/list-forms.js';
 import type { MemberPrefillMap } from './utils/member-prefill.js';
 
 /**
- * Wix Forms config (DL#38 §1).
+ * Wix Forms config (DL#40 §1).
  *
  * Optional filter/override for per-form contract generation — NOT a form list.
  * Absent config → generate every enabled form in the default namespace.
@@ -18,7 +18,7 @@ export interface WixFormsConfig {
     /** Which forms to enumerate. Default: `enabled`. */
     include: FormInclude;
     /**
-     * Opt-in signed-in-member prefill (DL#39 Capability 2). Maps a field target to
+     * Opt-in signed-in-member prefill (DL#41 Capability 2). Maps a field target to
      * a dot-path into the Wix member, e.g. `{ email: loginEmail, firstName: profile.firstName }`.
      * Absent → no member prefill.
      */
@@ -27,7 +27,7 @@ export interface WixFormsConfig {
 
 /**
  * The standalone Wix Forms namespace (OQ-8).
- * ⚠️ Confirm against a live site's List Forms response — see DL#38 Implementation Results.
+ * ⚠️ Confirm against a live site's List Forms response — see DL#40 Implementation Results.
  */
 export const DEFAULT_FORMS_NAMESPACE = 'wix.form_app.form';
 

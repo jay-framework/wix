@@ -8,7 +8,7 @@ import { contractTagName } from '../lib/generators/contract-utils.js';
  *   produced the tag `first_name` while the page bound `{form.firstName.label}`
  *   and `ref="form.firstName.input"` → fields rendered `undefined` and their
  *   values were never read on submit.
- * Found in: design-log/38 - per-form contracts for wix-forms.md (Implementation Results)
+ * Found in: design-log/40 - per-form contracts for wix-forms.md (Implementation Results)
  * Expected: contractTagName camelCases the target to match jay's accessor/ref
  *   convention (preserving leading underscores, as jay's camelCase does), then
  *   suffixes with `Field` only when the camelCased name collides with a

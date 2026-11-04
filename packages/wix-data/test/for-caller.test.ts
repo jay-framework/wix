@@ -1,6 +1,6 @@
 // @vitest-environment node
 
-/** DL#41 §Design 3: `WixDataService.forCaller(identity)` — opt-in caller-scoped items, never the site. */
+/** DL#43 §Design 3: `WixDataService.forCaller(identity)` — opt-in caller-scoped items, never the site. */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { clearClientInitData, setClientInitData } from '@jay-framework/stack-server-runtime';
@@ -46,7 +46,7 @@ afterEach(() => {
     vi.unstubAllGlobals();
 });
 
-describe('WixDataService.forCaller (DL#41 §Design 3)', () => {
+describe('WixDataService.forCaller (DL#43 §Design 3)', () => {
     it('throws NoCallerSessionError without a session', () => {
         const service = provideWixDataService(siteClient(), CONFIG);
 
