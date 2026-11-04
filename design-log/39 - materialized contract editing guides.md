@@ -1,14 +1,16 @@
 # 39 — Materialized contract editing guides (wix-data)
 
-**Status:** [Implemented]
+**Status:** [Implemented] — final shape **2026-11-04** (per-contract stub files were shipped on 2026-11-03 then **removed**; see [Implementation Results](#implementation-results)).
 
 ## Decisions for the Implementer (TL;DR)
 
+**Read this section only** for how the code works today.
+
 1. **Option B.** `collectionId` and `editingGuide` live on each **materialized** `.jay-contract` YAML (top-level fields). **`plugins-index.yaml` is unchanged** (no `editingGuide` column).
 2. **No Jay framework changes.** Generators emit extra YAML lines; Jay’s materializer writes them as today.
-3. **No AIditor prompt injection.** Agents resolve: inspector `stack` contract name → `plugins-index` `path` → read `.jay-contract` → read `editingGuide` markdown.
-4. **`editingGuide` is always a project-root-relative path** to a markdown file under `agent-kit/references/wix-data/`.
-5. **Per-contract stub** (`editing-guides/<prefix>-<kebab>.md`) points at one **shared** procedure doc copied to `agent-kit/references/wix-data/wix-data-dashboard-content.md`.
+3. **No AIditor prompt injection (in this log).** Agents resolve: inspector `stack` contract name → `plugins-index` `path` → read `.jay-contract` → read `editingGuide` markdown.
+4. **`collectionId`** on the contract is authoritative for which Wix CMS collection applies — **never derive it from the contract name.**
+5. **`editingGuide`** on every materialized wix-data contract is the **same** project-root path: `agent-kit/references/wix-data/wix-data-dashboard-content.md` (the shared CMS procedure, copied from the plugin on `jay-stack agent-kit`). Same pattern as wix-stores generated `product-page` pointing at one dashboard guide — **no** `editing-guides/` stub files.
 6. **Static wix plugins** may add the same top-level fields on hand-authored `.jay-contract` files later; this log implements **wix-data dynamic** contracts only.
 
 ## Background
@@ -31,7 +33,7 @@ Today only `plugins-index.metadata.collectionId` hints at the collection; there 
 - DL#38 — shared `wix-data-dashboard-content.md`; `getDashboardUrl`; no per-dynamic-contract manifest entries.
 - Jay `contract-materializer` — writes `generated.yaml` verbatim; adds `metadata` to index only.
 
-## Design
+## Implemented behavior (2026-11-04)
 
 ### Materialized `.jay-contract` header (generated)
 
@@ -39,38 +41,73 @@ Today only `plugins-index.metadata.collectionId` hints at the collection; there 
 name: RecipesList
 description: List page for Recipes
 collectionId: Recipes
-editingGuide: agent-kit/references/wix-data/editing-guides/list-recipes-list.md
+editingGuide: agent-kit/references/wix-data/wix-data-dashboard-content.md
 tags:
   ...
 ```
 
 - `collectionId` — Wix Data collection `_id` (same value as `plugins-index.metadata.collectionId`).
-- `editingGuide` — path from **project root** to the stub for contract `list/recipes-list` (`prefix` + kebab of generator `name`, matching Jay materializer naming).
+- `editingGuide` — always the shared CMS guide under `agent-kit/references/wix-data/` (not per-contract paths).
 
 ### Agent workflow
 
 1. Source-editing marker → `stack` region `name` (e.g. `list/recipes-list`) or wix-data page script contract.
 2. `agent-kit/plugins-index.yaml` → `path` for that contract name.
 3. Read `.jay-contract` → `collectionId`, `editingGuide`.
-4. Read `editingGuide` stub → follow link to shared `wix-data-dashboard-content.md`.
-
-### Stub file (generated at `jay-stack agent-kit`)
-
-`agent-kit/references/wix-data/editing-guides/list-recipes-list.md`:
-
-- States materialized contract id and collection id.
-- Links to `../wix-data-dashboard-content.md`.
-
-Shared guide is **copied** from the plugin package into `agent-kit/references/wix-data/wix-data-dashboard-content.md` on each agent-kit run (project-local, stable path).
+4. Open **`editingGuide`** (the shared procedure) and follow it using **`collectionId`** from the same file.
 
 ### Code (wix-data package)
 
 | File | Role |
 |------|------|
-| `lib/source-editing.ts` | Kebab naming (match Jay materializer), paths, YAML header lines, stub markdown |
-| `lib/generators/*-contract-generator.ts` | Insert header fields in `buildContract()` |
-| `lib/setup.ts` `generateWixDataAgentKit` | Copy shared guide; write stubs per visible collection × enabled component kinds |
-| `agent-kit/designer/wix-data-dashboard-content.md` | Prefer `collectionId` / `editingGuide` on contract file |
+| `lib/source-editing.ts` | `SHARED_EDITING_GUIDE_PATH`, `sourceEditingContractHeader(collectionId)`, copy shared guide into references |
+| `lib/generators/*-contract-generator.ts` | Insert `collectionId` + `editingGuide` in `buildContract()` |
+| `lib/setup.ts` `generateWixDataAgentKit` | Write `collections.yaml`; copy shared guide to `agent-kit/references/wix-data/wix-data-dashboard-content.md` |
+| `agent-kit/designer/wix-data-dashboard-content.md` | Lookup workflow + CMS steps (source of copy in references) |
+
+### Verification (current)
+
+- [x] Materialized wix-data `.jay-contract` files include `collectionId` and `editingGuide`.
+- [x] Every contract’s `editingGuide` equals `agent-kit/references/wix-data/wix-data-dashboard-content.md`.
+- [x] `jay-stack agent-kit` copies the shared guide (no `editing-guides/` directory).
+- [x] `npm run validate` in `wix-data` passes; `test/source-editing.test.ts` covers header YAML.
+
+**Regenerate in a project:** `jay-stack agent-kit` (shared guide copy), then re-materialize dynamic contracts so `.jay-contract` headers update.
+
+---
+
+## Superseded initial design (2026-11-03 — do not implement)
+
+The first implementation used **per-contract stub markdown** under `agent-kit/references/wix-data/editing-guides/` (`list-recipes-list.md`, etc.). Each stub repeated `collectionId` and linked to the shared guide. After review we dropped that layer: `collectionId` on the `.jay-contract` is enough, and all contracts share one guide path (less agent-kit noise, matches wix-stores).
+
+<details>
+<summary>Original Design section (historical)</summary>
+
+### Materialized header (initial)
+
+```yaml
+editingGuide: agent-kit/references/wix-data/editing-guides/list-recipes-list.md
+```
+
+- `editingGuide` was a **per-contract stub** path (`prefix` + kebab of generator name).
+
+### Agent workflow (initial)
+
+4. Read `editingGuide` stub → follow link to shared `wix-data-dashboard-content.md`.
+
+### Stub file (initial)
+
+Generated at agent-kit: small markdown per visible collection × component kind, linking to `../wix-data-dashboard-content.md`.
+
+### Trade-offs (initial)
+
+- Stub per contract — extra files; intended to name collection without re-reading contract YAML (redundant once `collectionId` lives on the contract).
+
+### Verification (initial)
+
+- Stubs created under `editing-guides/`; stub path matched `editingGuide` on each contract.
+
+</details>
 
 ## Implementation Plan
 
@@ -80,29 +117,21 @@ Shared guide is **copied** from the plugin package into `agent-kit/references/wi
 4. Update designer guide copy.
 5. Append Implementation Results after verify.
 
-## Trade-offs
-
-- **Stub per contract** — more files under `agent-kit/references/`; agents open a small file that names the collection without re-reading the index.
-- **No index `editingGuide`** — one extra read (open `.jay-contract`); matches user choice and avoids Jay changes.
-- **Discovery still conventional** — without AIditor injection, agent-kit docs must state the 4-step workflow.
-
-## Verification Criteria
-
-- [x] Materialized wix-data `.jay-contract` files include `collectionId` and `editingGuide`.
-- [x] `jay-stack agent-kit` creates stubs and shared guide copy under `agent-kit/references/wix-data/`.
-- [x] Stub path matches `editingGuide` on the contract for the same collection/prefix.
-- [x] `npm run validate` in `wix-data` passes.
+_(Plan followed; step 3 later simplified — no stubs.)_
 
 ## Implementation Results
 
-**2026-11-03** — wix-data only; no Jay changes; `plugins-index` unchanged.
+**2026-11-03 — First ship (later superseded for stubs only).**
 
-- Added `lib/source-editing.ts`: kebab naming (matches Jay materializer), `sourceEditingContractHeader()`, stub writer, shared guide copy into `agent-kit/references/wix-data/wix-data-dashboard-content.md`.
+- Added `lib/source-editing.ts` with `sourceEditingContractHeader()`, stub writers, shared guide copy.
 - All four contract generators emit `collectionId` + `editingGuide` in materialized YAML.
-- `generateWixDataAgentKit` writes per-contract stubs under `agent-kit/references/wix-data/editing-guides/` and copies the shared designer guide into references.
-- Updated `agent-kit/designer/wix-data-dashboard-content.md`: contract-file lookup workflow, CMS field step from `node.lines`.
-- Tests: `test/source-editing.test.ts` (4/4 pass). `npm run build` + `validate-plugin` pass.
+- `generateWixDataAgentKit` wrote per-contract stubs under `editing-guides/` and copied the shared designer guide.
+- Updated designer guide: contract-file lookup workflow.
+- Tests and `validate-plugin` passed.
 
-**Regenerate in a project:** `jay-stack agent-kit` (stubs + shared copy), then materialize dynamic contracts (setup/agent-kit pipeline) so `.jay-contract` files pick up new headers.
+**2026-11-04 — Final shape: shared `editingGuide` only.**
 
-**2026-11-04 — Simplify editingGuide (no per-contract stubs).** Product/architecture review: stubs duplicated `collectionId` already on the `.jay-contract` and only linked to the shared CMS guide (same pattern as wix-stores `product-page`). **Change:** every materialized wix-data contract's `editingGuide` is `agent-kit/references/wix-data/wix-data-dashboard-content.md`; agent-kit setup only copies that file (no `editing-guides/`). **Deviation from Design § stub:** dropped stub layer; contract YAML still carries `collectionId` + `editingGuide`. Tests: `test/source-editing.test.ts` updated; run package validate after change.
+- **Decision:** Drop per-contract stubs; point every materialized contract’s `editingGuide` at `agent-kit/references/wix-data/wix-data-dashboard-content.md`. Rationale: stubs duplicated `collectionId` already on the contract and only forwarded to the shared doc (same model as wix-stores `product-page`).
+- **Code:** Removed stub generation and kebab path helpers from `source-editing.ts`; `sourceEditingContractHeader(collectionId)` only; generators and setup updated; designer guide step 3 opens `editingGuide` directly.
+- **Tests:** `test/source-editing.test.ts` — header + YAML quoting (2 tests). `npm run build` + `validate-plugin` pass.
+- **Projects:** Re-run `jay-stack agent-kit` and re-materialize wix-data contracts; delete leftover `editing-guides/` if present.
