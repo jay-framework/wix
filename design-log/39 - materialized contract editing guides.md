@@ -104,3 +104,5 @@ Shared guide is **copied** from the plugin package into `agent-kit/references/wi
 - Tests: `test/source-editing.test.ts` (4/4 pass). `npm run build` + `validate-plugin` pass.
 
 **Regenerate in a project:** `jay-stack agent-kit` (stubs + shared copy), then materialize dynamic contracts (setup/agent-kit pipeline) so `.jay-contract` files pick up new headers.
+
+**2026-11-04 — Simplify editingGuide (no per-contract stubs).** Product/architecture review: stubs duplicated `collectionId` already on the `.jay-contract` and only linked to the shared CMS guide (same pattern as wix-stores `product-page`). **Change:** every materialized wix-data contract's `editingGuide` is `agent-kit/references/wix-data/wix-data-dashboard-content.md`; agent-kit setup only copies that file (no `editing-guides/`). **Deviation from Design § stub:** dropped stub layer; contract YAML still carries `collectionId` + `editingGuide`. Tests: `test/source-editing.test.ts` updated; run package validate after change.

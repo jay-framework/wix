@@ -2,9 +2,9 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
-    editingGuideProjectPath,
     generatorContractName,
     materializedContractName,
+    SHARED_EDITING_GUIDE_PATH,
     sourceEditingContractHeader,
     toKebabCase,
 } from '../lib/source-editing.ts';
@@ -20,16 +20,15 @@ describe('wix-data source-editing (DL#39)', () => {
         assert.equal(generatorContractName('item', 'Articles'), 'ArticlesItem');
     });
 
-    it('aligns editingGuide path with materialized file naming', () => {
-        assert.equal(
-            editingGuideProjectPath('list', 'Recipes'),
-            'agent-kit/references/wix-data/editing-guides/list-recipes-list.md',
-        );
+    it('points every materialized contract at the shared CMS guide', () => {
+        const header = sourceEditingContractHeader('Recipes', 'list');
+        assert.match(header, /collectionId: Recipes/);
+        assert.match(header, new RegExp(`editingGuide: ${SHARED_EDITING_GUIDE_PATH.replace(/\//g, '\\/')}`));
     });
 
     it('quotes collection ids that contain slashes', () => {
         const header = sourceEditingContractHeader('Bookings/Services', 'list');
         assert.match(header, /collectionId: "Bookings\/Services"/);
-        assert.match(header, /editingGuide: agent-kit\/references\/wix-data\/editing-guides\//);
+        assert.match(header, /editingGuide: agent-kit\/references\/wix-data\/wix-data-dashboard-content\.md/);
     });
 });
