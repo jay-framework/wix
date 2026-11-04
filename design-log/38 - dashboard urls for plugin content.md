@@ -350,3 +350,24 @@ Each comment got one reply, the thread was idle afterwards, no code changed, and
 **2026-11-04 — Drop wix-cart session-state designer guide.** Same pattern as members: `cart-indicator`, `cart-page`, and `mini-cart` are all `readonly: true` in `plugin.yaml` with no `editingGuide`. Counts and line items are visitor session state; layout is jay-html. Catalog fields on a line item belong to wix-stores when the marked element is store data. Removed `packages/wix-cart/agent-kit/designer/wix-cart-session-state.md`.
 
 **2026-11-04 — Remove unused shared agent-behavior stub.** `wix/agent-kit/designer/dashboard-content-agent-behavior.md` was never referenced (not copied by `jay-stack agent-kit`; no include mechanism). Shared reply/write/ambiguity wording lives **inlined** in each `packages/*/agent-kit/designer/*-dashboard-content.md` — edit those files when changing agent behavior.
+
+**2026-11-04 — Pro Gallery on Wix Headless (supersedes decision #5 for slide content).** Recorded walkthrough (`dl38-pro-gallery-dashboard-walkthrough-v2-20261104.mp4`) and DL #64 T6 (`dl64-qa-change-request-T6-pro-gallery-slide-image-20261104.mp4`) on the headless testbed:
+
+- **Runtime:** Jay `wix-pro-gallery` read path works — slide content loads live by `galleryId`; a Pro Gallery API `PATCH` on an item updates the live `/gallery` page with no jay-html change (then restored).
+- **Dashboard:** Confirmed again — no Pro Gallery sidebar entry, search returns help only, Manage Apps has no **Open** for Pro Gallery, Wix Editor returns 400 on headless. There is **no owner-facing visual screen** to edit slides (unlike Forms, Stores, Bookings).
+- **Product / UX:** For typical non-technical headless site owners, Pro Gallery slide content is **not** dashboard-managed in practice; changes require the Pro Gallery API or an agent with Wix access. Sending owners to dashboard **home** or the **Editor** was a dead end — the prior guide and decision #5 ("tier 3 home + Editor gallery manager") were wrong for Jay headless sites.
+- **Guide fix:** Rewrote `packages/wix-pro-gallery/agent-kit/designer/wix-pro-gallery-dashboard-content.md` (and the testbed copy under `wix-store-e2e/agent-kit/designer/`): headless-first section; **do not** use `getDashboardUrl` / home or Editor for slide **content**; document Pro Gallery API `PATCH …/galleries/{galleryId}/items/{itemId}` for agents with Wix tools; owner reply offers agent help after Wix connection when no tool yet; classic Editor path only when the site actually has an Editor.
+- **Still open (unchanged from Open Questions):** devOnly Jay actions for gallery writes (parity with stores image updates) — separate design log if product wants attachment → slide without raw REST in the guide. DL #33 (plugin scope) stays read-only + navigation; no contract/README change in this pass.
+
+**2026-11-04 — Pro Gallery guide: not dashboard-managed on headless.** Product/architecture review: slides are Pro Gallery API data, but Jay headless sites have **no** Pro Gallery screen in the site dashboard and no Editor (see gate table row pro-gallery → tier 3 `home` was a weak fallback). **Decision:** keep `editingGuide` on `pro-gallery` (slide content is not jay-html), but rewrite `packages/wix-pro-gallery/agent-kit/designer/wix-pro-gallery-dashboard-content.md` — do **not** send owners to dashboard `home` or the Editor by default on headless; prefer Pro Gallery REST (PATCH item, etc.) when the agent has Wix API access, honest replies when not; Classic Editor gallery manager only when the site is known to use the Editor. Autoplay / `galleryId` / layout stay jay-html props and template (unchanged from TL;DR #8).
+
+**2026-11-04 — Reconcile earlier sections (supersedes where they conflict).**
+
+| Earlier text in this log | Still true? | Current rule |
+| --- | --- | --- |
+| Decision **#6** + deviation **4** (`wix-cart-session-state.md` / `wix-members-session-state.md`) | **No** | Cart and members: **`readonly: true` only** in `plugin.yaml`; no session-state designer files. Session semantics come from the contract flag + normal designer docs (layout) and plugin setup (members). |
+| Implemented table row “readonly guides for cart, members” | **No** | Those guides were removed; coverage is `readonly: true` without `editingGuide`. |
+| Deviation **9** listing cart/members alongside dashboard guides | **Partially** | Cart/members are no longer guide-shaped; stores, data, forms, bookings, pro-gallery guides remain. |
+| Design § “reply text via INSTRUCTIONS.md” for cart/members (lines ~132–134) | **No** | Never shipped that way; deviation 4 used package designer files, now dropped entirely for cart/members. |
+
+Related same-day log: wix DL **#39** (2026-11-04) — wix-data `editingGuide` points at one copied reference guide, no per-contract stubs.
