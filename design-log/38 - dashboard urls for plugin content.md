@@ -1,19 +1,38 @@
 # 38 - Dashboard URLs for Plugin Content
 
-**Status:** Implemented — all phases done; final QA recorded 2026-11-03 (see Implementation Results → Final status and decisions)
+**Status:** [Implemented] — Phases A–C done; final QA recorded 2026-11-03; several course corrections **2026-11-04** (cart/members guides removed, Pro Gallery headless, wix-data contract pointers — see DL #39).
 
-## Decisions for the Implementer (TL;DR)
+**Read first:** [Authoritative summary (2026-11-04)](#authoritative-summary-2026-11-04) — current product and code. The [original TL;DR](#decisions-for-the-implementer-tldr--original-design) and parts of [Design](#design) are historical where they conflict with that summary or [Implementation Results → Final status](#final-status-and-decisions-2026-11-03).
 
-1. **Behavior.** When asked to change content bound to a Wix plugin contract, the agent edits **no code and no data**. It replies: "This content is managed in the Wix dashboard" + the URL of the exact record, or the closest list page when no record URL exists. Props and markup are not covered by this rule (#8).
+## Authoritative summary (2026-11-04)
+
+What implementers and agents should treat as true today:
+
+1. **Bound plugin data (not props/markup).** Values from a contract's ViewState (product name, CMS field, form field stored in Wix, booking service name, gallery slide content on headless, etc.) are **not** fixed by hard-coding jay-html or replacing bindings — including "just this page" (QA cases 03, 05). **Props** (`galleryId`, `autoplay`, `formId` on the component, layout/CSS) stay normal jay-html edits (original TL;DR #8).
+2. **Writes at the source are allowed** when the agent is confident it has the right record id from the guide's lookup steps and a working Wix API or tool; say plainly what changed. If not confident, ambiguous, or no tool → **do not write**; give a dashboard link when `getDashboardUrl` applies.
+3. **Dashboard links only via `getDashboardUrl`.** One devOnly action on `@jay-framework/wix-server-client`: `getDashboardUrl({ path }) → { url }`. Never build URLs from credential files; guides document `npx jay-stack-cli action wix-server-client/getDashboardUrl --input '{"path":"…"}'`.
+4. **Static contracts:** `editingGuide` or `readonly: true` on each entry in the plugin's `plugin.yaml`; one shared **`agent-kit/designer/<plugin>-dashboard-content.md`** per plugin (mechanical inspector lookup + fallbacks inlined there).
+5. **Dynamic / generated contracts (no `plugin.yaml` entry):** the **materialized `.jay-contract`** names the guide — see **wix DL #39**. **wix-stores** `product-page`: `editingGuide: agent-kit/designer/wix-stores-dashboard-content.md`. **wix-data** (item/list/table/card): top-level **`collectionId`** (authoritative; never from contract name) + **`editingGuide: agent-kit/references/wix-data/wix-data-dashboard-content.md`** (single shared CMS procedure copied on `jay-stack agent-kit` — **no** per-contract stub files under `editing-guides/`).
+6. **Cart and members:** **`readonly: true` only** — no `editingGuide`, no session-state designer guides (removed 2026-11-04). Reply: session state, not site content; edit template if they meant look.
+7. **Pro Gallery on Jay headless:** slide **content** is not dashboard-managed in practice (no Pro Gallery dashboard app, no Editor on headless). Guide: Pro Gallery API when the agent has access; do **not** default to dashboard `home` or Editor for slide photos/titles. Autoplay/`galleryId`/layout remain props/template.
+8. **AIditor follow-up (jay):** surface each selection's `editingGuide` / `readonly` in the worker prompt so guides are not optional reading (DL #64 / finding 2).
+
+Cross-refs: **wix DL #39** (wix-data materialized headers); **wix DL #64** (thread replies, contract guide injection).
+
+## Decisions for the Implementer (TL;DR) — original design
+
+> **Partially superseded** by [Authoritative summary](#authoritative-summary-2026-11-04) and [Final status (2026-11-03)](#final-status-and-decisions-2026-11-03). Items below reflect the **first** written design; strikethrough notes mark what changed after QA and product review.
+
+1. **Behavior.** ~~When asked to change content bound to a Wix plugin contract, the agent edits **no code and no data**.~~ **Superseded:** do not edit **code** for bound data; **may update data at its source** when the guide's id steps and tools allow; otherwise dashboard link + plain reply (Final status #1–2).
 2. **One action, not one per plugin.** Add a single devOnly action `getDashboardUrl` to `@jay-framework/wix-server-client`:
    `getDashboardUrl({ path: string }) → { url: string }` returning `https://manage.wix.com/dashboard/<siteId>/<path>`. No per-plugin URL actions.
 3. **Route templates live in guides.** Each contract's `editingGuide` file holds its route template(s) and says which inspector identity fills each placeholder. Contracts with no editable record are `readonly: true`.
 4. **siteId source, in order.** (a) call the exported `loadConfig()`; if it throws (no `config/.wix.yaml`, missing `oauthStrategy`, …) treat as absent; if `auth.kind !== 'apiKey'` (`visitor` or `app`, neither carries a siteId) treat as absent; else use `auth.apiKey.siteId`. (b) non-empty `siteId` in `wix.config.json`. (c) neither → throw `"Ask the site owner to configure the Wix site."`
 5. **Stores product page** has only the `slug` route param → the guide tells the agent to call the existing public `getProductBySlug` action to get `_id`. No new action.
-6. **`dynamic_contracts` can't carry `editingGuide`** today (wix-stores `product-page`, all wix-data contracts). Interim: the plugin's agent-kit contribution carries the same guidance. Jay follow-up listed below.
-7. **No writes.** We don't add write actions, media upload, or anything else that copies the dashboard.
+6. **`dynamic_contracts` can't carry `editingGuide` in jay's schema** (wix-stores `product-page`, wix-data). **Interim was** agent-kit designer sections only. **Now:** generated `.jay-contract` YAML carries `editingGuide` (+ `collectionId` for wix-data) per **wix DL #39**; jay manifest follow-ups remain optional.
+7. ~~**No writes.** We don't add write actions, media upload, or anything else that copies the dashboard.~~ **Superseded (2026-11-03):** no new **devOnly write actions** in this log; agents **may** use existing Wix APIs/tools when the guide allows and ids are known.
 8. **Data vs markup.** TL;DR #1 covers **bound data** only (values from a plugin's ViewState). A component's **props** (e.g. pro-gallery `galleryId`, `autoplay`, `intervalMs`, `loop`; wix-forms `formId`) and the template's markup/CSS live in jay-html and are edited normally. Each guide says which requests are props/markup and which are dashboard data.
-9. **Pro Gallery links to the gallery, never to Media Manager.** Fallback order: gallery-specific route → galleries list route → dashboard `home`, the reply always naming `galleryId` (and the item title/`itemId` for a slide). Finding the route is blocking for this row (Verification #1).
+9. **Pro Gallery links to the gallery, never to Media Manager.** **Superseded for headless slide content (2026-11-04):** no reliable gallery dashboard route on headless; see [Authoritative summary #7](#authoritative-summary-2026-11-04). Media Manager was never correct for "change this slide."
 10. **Verify routes before writing guides.** Phase A (below) must prove API-key siteId == dashboard metaSiteId and settle every "assumed"/"unknown" table row before any guide is written.
 
 ## Background
@@ -108,7 +127,7 @@ No id → path `wix-stores/products`.
 | wix-stores product-page (dynamic) | param `slug` / `_id` | `wix-stores/products/product/{productId}` | docs |
 | wix-stores-v1 product-page, product-search | `_id` / slug | `wix-stores/products/product/{productId}` | assumed for v1 catalog — verify |
 | wix-stores-v1 category-page, category-list | slug / `_id` | `wix-stores/categories/list` | assumed for v1 — verify |
-| wix-data item/list/table/card (dynamic) | `metadata.collectionId` of the contract's entry in `agent-kit/plugins-index.yaml` (e.g. `item/recipes-item` → `Recipes`); `collections.yaml` only for field context. Never derive from the contract name | `wix-cms/data/{collectionId}` (no per-item URL) | docs; namespaced ids (`Blog/Categories`) — verify |
+| wix-data item/list/table/card (dynamic) | **`collectionId` on the materialized `.jay-contract`** (primary); fallback `metadata.collectionId` in `plugins-index.yaml`. Never derive from contract name. `collections.yaml` for field types only | `wix-cms/data/{collectionId}` (encode `/` as `%2F` in path); no per-item URL | docs; namespaced ids — use `%2F` (gate verified) |
 | wix-forms wix-form | prop `formId` (else config `defaultFormId`) | `wix-forms/form/{formId}`; list `wix-forms` | docs |
 | wix-bookings booking-flow | services itemId (`id`) | `bookings/services/form/{serviceId}`; list `bookings/services` | docs |
 | wix-pro-gallery pro-gallery | prop `galleryId`; slide = itemId | not in routes.json. Find live: gallery route → else galleries list → else `home`. Never Media Manager (TL;DR #9) | unknown — **blocking** verify |
@@ -129,9 +148,9 @@ The guide also says: slide images are Wix media files, but a slide's image is re
 
 ### Readonly reply
 
-`editingGuide` and `readonly: true` are mutually exclusive in `plugin.yaml`, so cart/members contracts get **only** `readonly: true`. The reply text lives in the wix repo-root `agent-kit/plugin/INSTRUCTIONS.md` line (Feedback loop), which applies to every `readonly: true` contract:
+`editingGuide` and `readonly: true` are mutually exclusive in `plugin.yaml`, so cart/members contracts get **only** `readonly: true` (no designer guide file — removed 2026-11-04). The worker should treat session carts/login as non-editable content and avoid hard-coded binding overrides (see [Authoritative summary #6](#authoritative-summary-2026-11-04)). Booking-flow is not readonly: its `editingGuide` gives the services dashboard route and states the slot/selection part of this reply inline.
 
-cart, members: "This shows the visitor's session state (cart / login), not site content. There is nothing to edit here; change the template markup if you meant its look." Booking-flow is not readonly: its `editingGuide` gives the services dashboard route and states the slot/selection part of this reply inline.
+> **Historical:** early drafts put readonly reply text in repo-root `INSTRUCTIONS.md` or `wix-*-session-state.md` designer files; neither is the current model for cart/members.
 
 ### Finding the guide
 
@@ -139,9 +158,9 @@ Until plugins-index carries `editingGuide` (jay follow-up), the agent finds a **
 
 Booking slots/selection are flow state, not editable content; the booking-flow guide says so. wix-media has no contracts, so nothing to do there.
 
-### Dynamic contracts (interim)
+### Dynamic contracts (interim → materialized headers)
 
-The jay `dynamic_contracts` schema has no `editingGuide`/`readonly`. For now, each affected plugin (wix-stores, wix-data) adds the same guidance to its **agent-kit** contribution ("dashboard-managed content" section), so the agent finds it through the normal agent-kit materialization. wix-stores' static guides also cover the product page.
+The jay `dynamic_contracts` schema still has no `editingGuide`/`readonly` on the manifest. **Implemented pointer (wix, no jay change):** plugins that **generate** contracts write top-level fields into materialized `.jay-contract` YAML — **wix DL #39** (wix-data: `collectionId` + shared `editingGuide` under `agent-kit/references/wix-data/`) and wix-stores `product-page` (`editingGuide` → stores designer guide). Agent-kit **designer** markdown remains the procedure; the contract file is how the agent finds it. Jay follow-ups (index surfacing, schema) remain optional.
 
 ### Feedback loop (jay-feedback)
 
@@ -167,7 +186,7 @@ The jay `dynamic_contracts` schema has no `editingGuide`/`readonly`. For now, ea
 | Request on selected element | ❌ Wrong | ✅ Right |
 | --- | --- | --- |
 | "Change this product name" (product list item) | Replace `{name}` in jay-html with literal text | `getDashboardUrl` with `wix-stores/products/product/{itemId}`; reply with URL; empty diff |
-| "Fix this article title" (CMS item) | Edit jay-html or call a data write | `wix-cms/data/{collectionId}` from `plugins-index.yaml` `metadata.collectionId`; reply names the item |
+| "Fix this article title" (CMS item) | Edit jay-html or call a data write | Resolve `collectionId` from the materialized `.jay-contract` (DL #39); `getDashboardUrl` with `wix-cms/data/{collectionId}`; reply names the item |
 | "Replace this slide's photo" (pro-gallery item) | Edit `{url}` / link Media Manager | Gallery route per TL;DR #9, naming `galleryId` + slide title |
 | "Make the slideshow slower" | Send to dashboard | Edit `intervalMs` on `<jay:pro-gallery>` in jay-html |
 | "Change cart count" | Hard-code a number | Readonly reply |
@@ -237,8 +256,8 @@ One guide per plugin under `agent-kit/designer/<plugin>-dashboard-content.md` (s
 1. `makeJayQuery` instead of `makeJayAction` — it is a read; matches `getMediaSettingsStatus`.
 2. Path charset also allows `%XX` escapes (gate finding above).
 3. One guide file per plugin (not per contract): contracts of one plugin share the same steps; the file opens by naming plugin + contracts.
-4. Readonly reply text ships as `agent-kit/designer/wix-cart-session-state.md` / `wix-members-session-state.md`, not in `agent-kit/plugin/INSTRUCTIONS.md`: that file is regenerated from the jay template by `yarn agent-kit` and never reaches a project.
-5. The same per-plugin agent-kit file is the interim guidance for dynamic contracts (wix-stores `product-page`, wix-data) — no separate section.
+4. Readonly reply text shipped initially as `agent-kit/designer/wix-cart-session-state.md` / `wix-members-session-state.md` — **removed 2026-11-04**; cart/members use `readonly: true` only (see reconcile table).
+5. The same per-plugin **designer** file is the guide content for static contracts; **dynamic** contracts point at it (stores) or at the copied wix-data reference guide via **`editingGuide` on the materialized `.jay-contract`** (DL #39).
 
 ### Phase C — AIditor QA (real agent runs)
 
@@ -292,7 +311,7 @@ Deviation 9: every `editingGuide` / readonly guide (stores-v1, forms, bookings, 
 - **bookings** — "or the currently selected service" had no id source (the contract exposes only `selectedServiceName`) → services-list link, no lookup by name.
 - **cart** — a cart line's `itemId` is a `lineItemId`, not a product id → products-list link, no product writes from the cart.
 - **forms / cart / members** — explicit "never hard-code a value or replace a binding, not even for one page" (QA cases 03 and 05).
-- **wix-data** — page scripts (`list/…` with `key`) have no region frame; item `_id` from `K.items`, collection from `plugins-index.yaml`.
+- **wix-data** — page scripts (`list/…` with `key`) have no region frame; item `_id` from `K.items`; **collection id from `collectionId` on the materialized `.jay-contract`** (not from contract name; plugins-index metadata is fallback only).
 - **pro-gallery** — trust `itemId` over screenshots (QA 06 autoplay mis-read).
 
 Not live-tested yet; stores-v1 per-collection link still unverified.
@@ -305,7 +324,7 @@ Not live-tested yet; stores-v1 per-collection link still unverified.
 2. **One complete reply, then wait.** For dashboard-managed content the agent replies once, in 1–3 plain sentences: where the content comes from, the record's dashboard link, and — only when a tool that can make the change is available — an offer to do it, with the permission request in the same reply. No file paths, code or component names in the reply.
 3. **Links must come from `getDashboardUrl`.** The agent never constructs a dashboard URL; a link that no tool or guide returned is dropped. Guides give the exact command (`npx jay-stack-cli action wix-server-client/getDashboardUrl --input '{"path":"…"}'`) and forbid reading `config/.wix.yaml` or other credential files to build it.
 4. **Generated contracts name their guide themselves — no jay change.** A plugin that generates and materializes contracts writes `editingGuide:` (and, for wix-data, `collectionId:`) into the generated contract (wix DL #39). A jay-side alternative (guide fields in the plugins index for dynamic contracts) was drafted and dropped as unnecessary.
-5. **Pro Gallery has no dashboard page** → tier 3 (dashboard home) + "edit it in the Wix Editor's gallery manager"; never Media Manager.
+5. **Pro Gallery on headless** → not dashboard-managed for slide content; Pro Gallery API or honest reply (see Authoritative summary #7). ~~tier 3 `home` + Editor gallery manager~~ superseded 2026-11-04.
 6. **Session state is readonly** (cart, members): explain, edit nothing, never replace a binding with a fixed value.
 
 **Implemented in this repo (local commits on `source-editing-dashboard-urls`):**
@@ -313,8 +332,8 @@ Not live-tested yet; stores-v1 per-collection link still unverified.
 | Change | Where |
 | --- | --- |
 | `getDashboardUrl` devOnly action, 23/23 tests | `packages/wix-server-client` |
-| Guides on the mechanical lookup for stores, stores-v1, forms, bookings, data, pro-gallery; readonly guides for cart, members | each package's `agent-kit/designer/` |
-| Generated wix-data contracts carry `collectionId` + `editingGuide`, per-contract guide stubs under `agent-kit/references/wix-data/editing-guides/` | `f8afb67` (wix DL #39) |
+| Guides on the mechanical lookup for stores, stores-v1, forms, bookings, data, pro-gallery; cart/members **`readonly: true` only** (no session-state designer guides) | each package's `agent-kit/designer/` (+ wix-data reference copy under `agent-kit/references/wix-data/`) |
+| Generated wix-data contracts carry `collectionId` + shared `editingGuide` (`agent-kit/references/wix-data/wix-data-dashboard-content.md`; stubs dropped 2026-11-04) | wix DL **#39** |
 | Exact `getDashboardUrl` command + no-credential-files rule in the CMS guide | `646926a` |
 | Generated wix-stores `product-page` contract carries `editingGuide: agent-kit/designer/wix-stores-dashboard-content.md` (repro test `test/product-page-contract-yaml.test.ts`); same command line in the stores guide | `f5b01d6` |
 | Rich-text form label `[object Object]` fixed | `1508ee4` |
@@ -367,7 +386,8 @@ Each comment got one reply, the thread was idle afterwards, no code changed, and
 | --- | --- | --- |
 | Decision **#6** + deviation **4** (`wix-cart-session-state.md` / `wix-members-session-state.md`) | **No** | Cart and members: **`readonly: true` only** in `plugin.yaml`; no session-state designer files. Session semantics come from the contract flag + normal designer docs (layout) and plugin setup (members). |
 | Implemented table row “readonly guides for cart, members” | **No** | Those guides were removed; coverage is `readonly: true` without `editingGuide`. |
-| Deviation **9** listing cart/members alongside dashboard guides | **Partially** | Cart/members are no longer guide-shaped; stores, data, forms, bookings, pro-gallery guides remain. |
+| Deviation **9** listing cart/members alongside dashboard guides | **Partially** | Cart/members are no longer guide-shaped; stores, data, forms, bookings, pro-gallery guides remain. **wix-data** uses materialized contract headers (DL #39), not a separate agent-kit-only path. |
 | Design § “reply text via INSTRUCTIONS.md” for cart/members (lines ~132–134) | **No** | Never shipped that way; deviation 4 used package designer files, now dropped entirely for cart/members. |
+| DL #39 wix-data `editing-guides/` stubs (2026-11-03 ship) | **No** | Removed 2026-11-04; all wix-data contracts share one `editingGuide` reference path — see **wix DL #39** Authoritative summary. |
 
-Related same-day log: wix DL **#39** (2026-11-04) — wix-data `editingGuide` points at one copied reference guide, no per-contract stubs.
+Related: wix DL **#39** — wix-data `collectionId` + single shared `editingGuide` on each materialized contract.
