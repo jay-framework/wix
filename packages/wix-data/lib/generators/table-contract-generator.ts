@@ -70,7 +70,7 @@ function buildContract(schema: ProcessedSchema): string {
 
     return `name: ${toPascalCase(schema.collectionId)}Table
 description: Table widget for ${schema.displayName || schema.collectionId}
-${sourceEditingContractHeader(schema.collectionId, 'table')}
+${sourceEditingContractHeader(schema.collectionId)}
 tags:
 ${tags.join('\n')}`;
 }

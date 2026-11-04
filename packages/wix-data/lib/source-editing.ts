@@ -6,8 +6,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 
-export type DynamicContractPrefix = 'item' | 'list' | 'table' | 'card';
-
 /** Project-root-relative shared CMS editing procedure (copied on agent-kit). */
 export const SHARED_EDITING_GUIDE_PATH = 'agent-kit/references/wix-data/wix-data-dashboard-content.md';
 
@@ -25,10 +23,7 @@ function yamlScalar(value: string): string {
 }
 
 /** Top-level YAML lines inserted after `description` in generated contracts. */
-export function sourceEditingContractHeader(
-    collectionId: string,
-    _prefix: DynamicContractPrefix,
-): string {
+export function sourceEditingContractHeader(collectionId: string): string {
     return `collectionId: ${yamlScalar(collectionId)}
 editingGuide: ${SHARED_EDITING_GUIDE_PATH}`;
 }

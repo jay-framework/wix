@@ -121,7 +121,7 @@ function buildContract(schema: ProcessedSchema): string {
 
     return `name: ${toPascalCase(schema.collectionId)}List
 description: List page for ${schema.displayName || schema.collectionId}
-${sourceEditingContractHeader(schema.collectionId, 'list')}
+${sourceEditingContractHeader(schema.collectionId)}
 tags:
 ${tags.join('\n')}`;
 }

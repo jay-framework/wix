@@ -43,7 +43,7 @@ function buildContract(schema: ProcessedSchema): string {
 
     return `name: ${toPascalCase(schema.collectionId)}Item
 description: Item page for ${schema.displayName || schema.collectionId}
-${sourceEditingContractHeader(schema.collectionId, 'item')}
+${sourceEditingContractHeader(schema.collectionId)}
 params:
   slug: string
 tags:

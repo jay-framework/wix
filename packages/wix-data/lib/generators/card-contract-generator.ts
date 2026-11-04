@@ -28,7 +28,7 @@ function buildContract(schema: ProcessedSchema): string {
 
     return `name: ${toPascalCase(schema.collectionId)}Card
 description: Card widget for ${schema.displayName || schema.collectionId}
-${sourceEditingContractHeader(schema.collectionId, 'card')}
+${sourceEditingContractHeader(schema.collectionId)}
 tags:
 ${tags.join('\n')}`;
 }
