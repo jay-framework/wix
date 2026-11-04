@@ -2,9 +2,28 @@
 
 **Plugin** `@jay-framework/wix-stores` · **contracts** `product-search`, `category-products`, `product-spotlight`, `category-list`, and the dynamic `product-page`.
 
-Product and category data (names, prices, descriptions, images, options) is managed in the **Wix dashboard**. When asked to change it: **do not edit code.** Identify the record with the steps below, then either update it at its source (a Wix API or tool you have access to) and say exactly what you changed, or give its dashboard link. **Never write without an id from these steps** — a wrong id changes, or sends the site owner to, the wrong product. When a step doesn't give a clear answer, use a [fallback](#fallbacks): it gives a list link and never writes.
+Product and category data (names, prices, descriptions, images, options) is managed in the **Wix dashboard**. When asked to change it: **do not edit code.** Identify the record with the steps below. **Never write without an id from these steps** — a wrong id changes, or sends the site owner to, the wrong product or category. When a step doesn't give a clear answer, use a [fallback](#fallbacks): it gives a list link and never writes.
 
-**Mixed requests** (e.g. "change the price and make the title bigger"): edit the jay-html part normally, and give the dashboard link for the data part.
+**Mixed requests** (e.g. "change the price and make the title bigger"): edit the jay-html part normally, and handle the catalog data part with the steps below.
+
+## Agent behavior
+
+### Reply style
+
+Keep replies to the site owner **short and simple** (about 1–3 sentences). They are often non-technical — use everyday words and a visual or business angle. Say **what** changed or **where** they can change the product or category in Wix. Do **not** put file paths, code, binding syntax, or internal ids in the thread reply (use ids only in tools and in the steps below).
+
+### Update data or send a link
+
+- If you are **not** confident, the request is **ambiguous**, or you **lack** a working update tool → **do not write**. Build the dashboard link when you can and tell them where to edit in the Wix Stores dashboard.
+- If an update **fails** → say so briefly and give the dashboard link.
+
+Do not hard-code catalog values into jay-html.
+
+### Ambiguity and area markers
+
+A screenshot may show **several products or categories** inside one **area marker**, but inspect returns **one** `Target source` (one element, at most **one** record id from the steps below).
+
+When you are unsure — several items visible, the comment does not name which one, “change these” without naming each, or the resolved id may not match what they meant — **do not write**. Explain briefly what you see, which item (if any) the mark resolved to, and **ask them to clarify** (name the product or category, say “both”, or mark one item at a time). Use the [fallback](#fallbacks) list link when several items might be in scope; use a single-record link only when the steps gave one clear id.
 
 ## What you get
 
@@ -49,11 +68,7 @@ No inspector result → you can't identify a record; use a fallback.
 
    Run it from the project root: `npx jay-stack-cli action wix-server-client/getDashboardUrl --input '{"path":"<path>"}'`; the output's `url` is the link. Never read `config/.wix.yaml` or other credential files to build it.
 
-4. **Reply:**
-   - link: "This product is managed in the Wix dashboard: <url>" (or "This category …");
-   - write: "Updated <field> on <product name> (id <productId>) from <old> to <new>." and add the dashboard link.
-
-   Name it if you know the name — from `wix-stores/getProductBySlug`, or text visible in `node.html`. Otherwise describe it by what the user clicked; **never invent a name.**
+4. **Reply** (see [Agent behavior](#agent-behavior)): plain language only — e.g. “This product lives in your Wix Stores catalog; change it here: <url>” or “I updated the price; you can check it here: <url>”. Name the product or category from visible text or `getProductBySlug`; **never invent a name.**
 
 ## Fallbacks
 
