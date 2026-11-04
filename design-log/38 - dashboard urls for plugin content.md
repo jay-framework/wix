@@ -1,6 +1,6 @@
 # 38 - Dashboard URLs for Plugin Content
 
-**Status:** In progress — Phase A+B implemented; QA blocked on a product decision (see Implementation Results)
+**Status:** Implemented — all phases done; final QA recorded 2026-11-03 (see Implementation Results → Final status and decisions)
 
 ## Decisions for the Implementer (TL;DR)
 
@@ -205,7 +205,7 @@ The jay `dynamic_contracts` schema has no `editingGuide`/`readonly`. For now, ea
 
 ## Implementation Results
 
-**Status: Phase A + B implemented; Phase C QA done (5 ✓ / 1 partial / 2 ✗).** Product decision on finding 1 (allow writes) applied 2026-11-03; finding 2 (page-only overrides) needs the jay `editingGuide` follow-up.
+**Status: Phase A + B implemented; Phase C QA done (5 ✓ / 1 partial / 2 ✗).** Product decision on finding 1 (allow writes) applied 2026-11-03; finding 2 (page-only overrides) needs the jay `editingGuide` follow-up. _Superseded — see **Final status and decisions (2026-11-03)** below._
 
 ### Phase A — `getDashboardUrl` (wix-server-client)
 
@@ -297,8 +297,50 @@ Deviation 9: every `editingGuide` / readonly guide (stores-v1, forms, bookings, 
 
 Not live-tested yet; stores-v1 per-collection link still unverified.
 
+### Final status and decisions (2026-11-03)
+
+**Decisions taken (product, after implementation started):**
+
+1. **Writes are allowed.** An agent that knows how and has access may update the data at its source, even when the guide only describes the dashboard (replaces TL;DR #1's "no data" rule; deviation 6). It must never write without an id from the guide's steps.
+2. **One complete reply, then wait.** For dashboard-managed content the agent replies once, in 1–3 plain sentences: where the content comes from, the record's dashboard link, and — only when a tool that can make the change is available — an offer to do it, with the permission request in the same reply. No file paths, code or component names in the reply.
+3. **Links must come from `getDashboardUrl`.** The agent never constructs a dashboard URL; a link that no tool or guide returned is dropped. Guides give the exact command (`npx jay-stack-cli action wix-server-client/getDashboardUrl --input '{"path":"…"}'`) and forbid reading `config/.wix.yaml` or other credential files to build it.
+4. **Generated contracts name their guide themselves — no jay change.** A plugin that generates and materializes contracts writes `editingGuide:` (and, for wix-data, `collectionId:`) into the generated contract (wix DL #39). A jay-side alternative (guide fields in the plugins index for dynamic contracts) was drafted and dropped as unnecessary.
+5. **Pro Gallery has no dashboard page** → tier 3 (dashboard home) + "edit it in the Wix Editor's gallery manager"; never Media Manager.
+6. **Session state is readonly** (cart, members): explain, edit nothing, never replace a binding with a fixed value.
+
+**Implemented in this repo (local commits on `source-editing-dashboard-urls`):**
+
+| Change | Where |
+| --- | --- |
+| `getDashboardUrl` devOnly action, 23/23 tests | `packages/wix-server-client` |
+| Guides on the mechanical lookup for stores, stores-v1, forms, bookings, data, pro-gallery; readonly guides for cart, members | each package's `agent-kit/designer/` |
+| Generated wix-data contracts carry `collectionId` + `editingGuide`, per-contract guide stubs under `agent-kit/references/wix-data/editing-guides/` | `f8afb67` (wix DL #39) |
+| Exact `getDashboardUrl` command + no-credential-files rule in the CMS guide | `646926a` |
+| Generated wix-stores `product-page` contract carries `editingGuide: agent-kit/designer/wix-stores-dashboard-content.md` (repro test `test/product-page-contract-yaml.test.ts`); same command line in the stores guide | `f5b01d6` |
+| Rich-text form label `[object Object]` fixed | `1508ee4` |
+
+All generated contracts across the wix packages now name their guide (only wix-data and wix-stores generate contracts).
+
+**Final QA (real editor agent runs, recorded; plain user requests such as "Change this to …"):**
+
+| Case | Reply | Link |
+| --- | --- | --- |
+| Product page title | "The product name "Baseball Cap" comes from your Wix Stores catalog… You can change it to "Classic Field Cap" here: <link>" | ✓ product |
+| Store grid product name | one short reply | ✓ product |
+| Store grid product image ("Change this image to a photo of a blue tote bag") | one short reply | ✓ product |
+| Category chip | one short reply | ✓ category |
+| CMS article title | "This article title comes from your Wix CMS (the Articles collection)… rename it here: <link>" | ✓ collection |
+
+Each comment got one reply, the thread was idle afterwards, no code changed, and the workers followed the contract's `editingGuide` and ran `getDashboardUrl` without reading credentials. Live data unchanged (restored where a run wrote).
+
+**Open:**
+- Recording the write path after the user allows a tool needs a Wix MCP server configured for the project (`.mcp.json`) — a site-owner setup step.
+- The testbed API key appeared in agent transcripts during early QA runs (before the no-credential-files rule) — rotate it.
+- wix-forms / wix-bookings `build:types` wait on a jay release (below).
+- stores-v1 per-collection link and the forms / bookings / members / pro-gallery guides were not re-recorded after the mechanical-lookup rewrite.
+
 ### Other findings (outside this log)
 
-- jay: `<jay:…>` instance components render empty when a sibling element (e.g. `<header>`) precedes their container, and when a page mixes key-based and instance imports. Repro pages kept for a bug report.
+- jay: `<jay:…>` instance components render empty when a sibling element (e.g. `<header>`) precedes their container in `<body>`. **Fixed in jay** (coordinate assignment now numbers every body child; the "mixed keyed + instance imports" case was the same cause). Reaches wix with the next jay sync/release.
 - wix-forms: a rich-text field label renders `[object Object]`. **Fixed** in `1508ee4` — `projectFormFields` now flattens Ricos label content to plain text (repro: `packages/wix-forms/test/rich-text-label.test.ts`).
 - wix-forms / wix-bookings `build:types` fail on `main` (`ttl` not in `PhaseOutput` type of the installed jay). **Cause:** the wix code correctly uses jay's slow-phase `ttl`/`grace` (jay stale-while-revalidate feature), but the published `@jay-framework/*@0.25.5` on npm predates it; jay `main` declares it while still at version 0.25.5. **Fix needs a jay release** carrying that feature, then a dependency bump in wix (or `node sync-jay-packages.cjs ../jay` locally). No wix code change.
