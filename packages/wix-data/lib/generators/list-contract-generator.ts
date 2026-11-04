@@ -8,6 +8,7 @@ import { makeContractGenerator } from '@jay-framework/fullstack-component';
 import { WIX_DATA_SERVICE_MARKER } from '../services/wix-data-service';
 import { ProcessedSchema } from '../utils/processed-schema';
 import { getComponentFields, isComponentEnabled, ComponentConfig } from '../types';
+import { sourceEditingContractHeader } from '../source-editing.js';
 import {
     dataTag,
     dataTagWithPhase,
@@ -120,6 +121,7 @@ function buildContract(schema: ProcessedSchema): string {
 
     return `name: ${toPascalCase(schema.collectionId)}List
 description: List page for ${schema.displayName || schema.collectionId}
+${sourceEditingContractHeader(schema.collectionId)}
 tags:
 ${tags.join('\n')}`;
 }

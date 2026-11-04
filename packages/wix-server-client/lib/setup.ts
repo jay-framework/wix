@@ -11,6 +11,7 @@ import { execSync } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as yaml from 'js-yaml';
+import { readWixConfig } from './wix-config-file.js';
 import type { PluginSetupContext, PluginSetupResult } from '@jay-framework/stack-server-runtime';
 
 const CONFIG_FILE_NAME = '.wix.yaml';
@@ -95,18 +96,6 @@ function ensureWixSiteConnection(projectRoot: string): void {
     const wixConfigPath = path.join(projectRoot, 'wix.config.json');
     if (!fs.existsSync(wixConfigPath)) {
         execSync('npm create @wix/new@latest init', { cwd: projectRoot, stdio: 'inherit' });
-    }
-}
-
-function readWixConfig(projectRoot: string): { appId: string; siteId: string } | null {
-    const wixConfigPath = path.join(projectRoot, 'wix.config.json');
-    if (!fs.existsSync(wixConfigPath)) return null;
-
-    try {
-        const config = JSON.parse(fs.readFileSync(wixConfigPath, 'utf-8'));
-        return { appId: config.appId || '', siteId: config.siteId || '' };
-    } catch {
-        return null;
     }
 }
 

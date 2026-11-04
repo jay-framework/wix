@@ -1,0 +1,34 @@
+{
+  "fields": [
+    {
+      "target": "first_name",
+      "view": { "label": "First name", "fieldType": "TEXT_INPUT" }
+    },
+    {
+      "target": "message",
+      "view": {
+        "fieldType": "TEXT_AREA",
+        "label": {
+          "nodes": [
+            {
+              "type": "PARAGRAPH",
+              "id": "p1",
+              "nodes": [
+                {
+                  "type": "TEXT",
+                  "id": "",
+                  "textData": { "text": "Your ", "decorations": [] }
+                },
+                {
+                  "type": "TEXT",
+                  "id": "",
+                  "textData": { "text": "message", "decorations": [{ "type": "BOLD" }] }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

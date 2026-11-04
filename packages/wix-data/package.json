@@ -7,7 +7,8 @@
   "main": "dist/index.js",
   "files": [
     "dist",
-    "plugin.yaml"
+    "plugin.yaml",
+    "agent-kit"
   ],
   "exports": {
     ".": {
@@ -38,7 +39,7 @@
     "build:check-types": "tsc",
     "clean": "rimraf dist",
     "confirm": "npm run clean && npm run build && npm run test",
-    "test": ":"
+    "test": "node --experimental-strip-types --test test/source-editing.test.ts"
   },
   "dependencies": {
     "@jay-framework/component": "^0.25.5",

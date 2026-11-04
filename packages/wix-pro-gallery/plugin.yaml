@@ -6,6 +6,7 @@ contracts:
     contract: pro-gallery.jay-contract
     component: proGallery
     description: Wix Pro Gallery loaded live by gallery id, with slideshow navigation and autoplay
+    editingGuide: ./agent-kit/designer/wix-pro-gallery-dashboard-content.md
 
 services:
   - name: wix-pro-gallery
