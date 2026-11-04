@@ -13,6 +13,7 @@ import { WIX_FORMS_SERVICE, type WixFormsService } from './services/wix-forms-se
 import { computeFormSlugs } from './generators/form-slug.js';
 import { elementTypeFor } from './generators/contract-utils.js';
 import type { FormFieldView } from './types.js';
+import { SHARED_EDITING_GUIDE_PATH, writeSharedEditingGuideCopy } from './source-editing.js';
 
 /** The runtime value type a field submits (DL#41 4c) — a hint for agent-kit discovery. */
 function valueTypeFor(field: FormFieldView): 'string' | 'boolean' | 'string[]' {
@@ -134,8 +135,10 @@ export async function generateWixFormsAgentKit(
         'utf-8',
     );
 
+    writeSharedEditingGuideCopy(ctx.referencesDir);
+
     return {
-        agentKitCreated: [`agent-kit/references/${ctx.pluginName}/forms.yaml`],
-        message: `${formSummaries.length} forms discovered in namespace "${formsService.config.namespace}"`,
+        agentKitCreated: [`agent-kit/references/${ctx.pluginName}/forms.yaml`, SHARED_EDITING_GUIDE_PATH],
+        message: `${formSummaries.length} forms discovered in namespace "${formsService.config.namespace}", forms editing guide copied`,
     };
 }

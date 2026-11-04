@@ -405,3 +405,14 @@ Per the DL gate ("if core does NOT reject unknown sub-contract paths, the plugin
 - `yarn install` (VPN available) + `yarn build` → **27/27 packages built successfully**, including `@jay-framework/wix-forms` whose `build` ends in `jay-stack-cli validate-plugin` (passed). DL#179 leak scan: serve entries (`dist/index.js`, `dist/index.client.js`) import no compiler/html-parser packages; validator + agent-kit live only in `dist/tools.js`.
 - `wix-forms` unit tests: **31/31 passing** (6 files). `build:check-types` (tsc): clean.
 - Full workspace `yarn test` aborted early on a pre-existing, unrelated flake (`@jay-framework/wix-server-client` → wsrun "command not found: vitest"; vitest resolves fine when that package is run directly). `wix-bookings` (the only consumer touching this code, via the untouched `getFormSummary`): 36/37 — the one failure is a locale/timezone date-label test unrelated to forms.
+
+## Implementation Results — source-editing guide for per-form contracts (2026-11-04)
+
+`main` (Design Logs #38/#39) added a wix-forms dashboard editing guide written for the old static `wix-form` contract (form id from a `formId` prop / `defaultFormId`). Per-form contracts are dynamic, so — like wix-data in Design Log #39 — the pointer moves onto each materialized contract instead of `plugin.yaml`.
+
+- **Materialized header:** every generated `form/<slug>` `.jay-contract` now carries top-level `formId` (authoritative — never derived from the slug) and `editingGuide: agent-kit/references/wix-forms/wix-forms-dashboard-content.md` (`lib/source-editing.ts`, wired in `form-contract-generator.ts`).
+- **Agent-kit:** `generateWixFormsAgentKit` copies the plugin's `agent-kit/designer/wix-forms-dashboard-content.md` to that path, next to `forms.yaml`.
+- **Guide rewrite:** lookup is contract-based — `region` `form/…` or page script `contract="form/…"` → `plugins-index` → `.jay-contract` `formId`. The field is the named tag in the binding/ref (`{K.email.label}`), not a `forEach="fields"` item. `defaultFormId` / `formId` prop fallbacks removed.
+- **plugin.yaml:** no `editingGuide` on the dynamic contract entry (not supported there; resolved during the main merge).
+- **Tests:** generator fixtures expect the header (red first, then green); new `test/source-editing.test.ts` (header + guide copy). wix-forms 145 passed / 1 skipped.
+- **Not done:** the testbed's committed materialized contracts are not regenerated — re-run `jay-stack agent-kit` in a project (needs Wix credentials) to pick up the header and the guide copy.

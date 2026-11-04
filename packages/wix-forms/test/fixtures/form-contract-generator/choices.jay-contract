@@ -1,5 +1,7 @@
 name: ChoicesForm
 description: Wix form "Choices" (c1)
+formId: c1
+editingGuide: agent-kit/references/wix-forms/wix-forms-dashboard-content.md
 tags:
   - tag: consent
     type: sub-contract

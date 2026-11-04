@@ -13,6 +13,7 @@ import { WIX_FORMS_SERVICE } from '../services/wix-forms-service-marker.js';
 import type { ListedFormView } from '../types.js';
 import { fieldTag, hiddenFieldTag, reservedFormTags, toPascalCase } from './contract-utils.js';
 import { computeFormSlugs } from './form-slug.js';
+import { sourceEditingContractHeader } from '../source-editing.js';
 
 /**
  * Build one per-form contract YAML.
@@ -27,6 +28,7 @@ function buildContract(form: ListedFormView, slug: string): string {
     const tags = [...fieldTags, reservedFormTags()].join('\n');
     return `name: ${toPascalCase(slug)}Form
 description: ${describe(form)}
+${sourceEditingContractHeader(form.id)}
 tags:
 ${tags}`;
 }
