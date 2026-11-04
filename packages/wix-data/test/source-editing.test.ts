@@ -2,33 +2,27 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
-    generatorContractName,
-    materializedContractName,
     SHARED_EDITING_GUIDE_PATH,
     sourceEditingContractHeader,
-    toKebabCase,
+    type DynamicContractPrefix,
 } from '../lib/source-editing.ts';
 
-describe('wix-data source-editing (DL#39)', () => {
-    it('kebab-cases generator names like Jay materializer', () => {
-        assert.equal(toKebabCase('RecipesList'), 'recipes-list');
-        assert.equal(toKebabCase('ArticlesItem'), 'articles-item');
+describe('wix-data source-editing contract header (DL#39)', () => {
+    it('uses the shared CMS guide for every contract prefix', () => {
+        const prefixes: DynamicContractPrefix[] = ['item', 'list', 'table', 'card'];
+        for (const prefix of prefixes) {
+            const header = sourceEditingContractHeader('Articles', prefix);
+            assert.equal(
+                header,
+                `collectionId: Articles\neditingGuide: ${SHARED_EDITING_GUIDE_PATH}`,
+            );
+        }
     });
 
-    it('builds materialized contract names', () => {
-        assert.equal(materializedContractName('list', 'Recipes'), 'list/recipes-list');
-        assert.equal(generatorContractName('item', 'Articles'), 'ArticlesItem');
-    });
-
-    it('points every materialized contract at the shared CMS guide', () => {
-        const header = sourceEditingContractHeader('Recipes', 'list');
-        assert.match(header, /collectionId: Recipes/);
-        assert.match(header, new RegExp(`editingGuide: ${SHARED_EDITING_GUIDE_PATH.replace(/\//g, '\\/')}`));
-    });
-
-    it('quotes collection ids that contain slashes', () => {
-        const header = sourceEditingContractHeader('Bookings/Services', 'list');
-        assert.match(header, /collectionId: "Bookings\/Services"/);
-        assert.match(header, /editingGuide: agent-kit\/references\/wix-data\/wix-data-dashboard-content\.md/);
+    it('quotes collection ids that need YAML escaping', () => {
+        assert.equal(
+            sourceEditingContractHeader('Bookings/Services', 'list'),
+            `collectionId: "Bookings/Services"\neditingGuide: ${SHARED_EDITING_GUIDE_PATH}`,
+        );
     });
 });
