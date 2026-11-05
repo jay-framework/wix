@@ -6,15 +6,22 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 
-/** Project-root-relative shared forms editing procedure (copied on agent-kit). */
-export const SHARED_EDITING_GUIDE_PATH =
-    'agent-kit/references/wix-forms/wix-forms-dashboard-content.md';
+const PROJECT_REFERENCES_DIR = 'agent-kit/references/wix-forms';
 
-/** Plugin-shipped source of the shared guide (for copy into the project). */
-export function pluginSharedEditingGuidePath(): string {
-    const here = path.dirname(fileURLToPath(import.meta.url));
-    return path.join(here, '..', 'agent-kit', 'designer', 'wix-forms-dashboard-content.md');
-}
+/** Project-root-relative shared forms editing procedure (copied on agent-kit). */
+export const SHARED_EDITING_GUIDE_PATH = `${PROJECT_REFERENCES_DIR}/wix-forms-dashboard-content.md`;
+
+/** Project-root-relative guide to who owns each visitor-facing string (copied on agent-kit). */
+export const USER_VISIBLE_MESSAGES_GUIDE_PATH = `${PROJECT_REFERENCES_DIR}/user-visible-messages.md`;
+
+/**
+ * Plugin-shipped guides copied into the project, relative to the plugin's `agent-kit/`.
+ * The copies link to each other by their project paths, so they are always copied together.
+ */
+const COPIED_GUIDES = [
+    'designer/wix-forms-dashboard-content.md',
+    'plugin/user-visible-messages.md',
+];
 
 function yamlScalar(value: string): string {
     if (/[:[\]{}|>&*!%@`#\n]/.test(value) || value.includes('/') || /^\s/.test(value)) {
@@ -29,10 +36,17 @@ export function sourceEditingContractHeader(formId: string): string {
 editingGuide: ${SHARED_EDITING_GUIDE_PATH}`;
 }
 
-export function writeSharedEditingGuideCopy(referencesDir: string): string {
-    const dest = path.join(referencesDir, 'wix-forms-dashboard-content.md');
-    const src = pluginSharedEditingGuidePath();
+/** Copies the editing guides into the project's wix-forms references; returns the written paths. */
+export function writeEditingGuideCopies(referencesDir: string): string[] {
     fs.mkdirSync(referencesDir, { recursive: true });
-    fs.copyFileSync(src, dest);
-    return dest;
+    return COPIED_GUIDES.map((guide) => {
+        const dest = path.join(referencesDir, path.basename(guide));
+        fs.copyFileSync(path.join(pluginAgentKitDir(), guide), dest);
+        return dest;
+    });
+}
+
+function pluginAgentKitDir(): string {
+    const here = path.dirname(fileURLToPath(import.meta.url));
+    return path.join(here, '..', 'agent-kit');
 }

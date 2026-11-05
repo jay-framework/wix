@@ -4,7 +4,7 @@
 
 A form's fields, labels, placeholders, required flags, and options come from **Wix Forms** and are edited in the **Wix dashboard** form builder. When asked to change them: **do not edit code** — never hard-code a label or replace a `{…}` binding in jay-html, not even for one page. Identify the form with the steps below. **Never write without a form id from these steps.** When a step doesn't give a clear answer, use a [fallback](#fallbacks): it gives the forms-list link and never writes.
 
-Post-submit thank-you text, submit **button** label on Jay pages, and most validation wording are **not** dashboard fields — see `agent-kit/plugin/user-visible-messages.md`.
+Post-submit thank-you text, submit **button** label on Jay pages, and most validation wording are **not** dashboard fields — see `agent-kit/references/wix-forms/user-visible-messages.md`.
 
 **Mixed requests** (e.g. "rename this field and make it wider"): edit the jay-html part normally, and handle the form field part with the steps below.
 
@@ -71,5 +71,5 @@ If `wix-server-client/getDashboardUrl` itself fails, give no link: say the form 
 ## Not dashboard content
 
 - **Which** Wix form a block uses → the page script's `contract="form/<slug>"` (and `key` for bindings only).
-- Layout, CSS, submit button label, and customized success/thank-you copy → **jay-html** (plugin sets a default English `statusMessage` on success; localized sites should use `if="key.statusMessage"` with static page text — see `agent-kit/plugin/user-visible-messages.md`).
+- Layout, CSS, submit button label, and customized success/thank-you copy → **jay-html** (plugin sets a default English `statusMessage` on success; localized sites should use `if="key.statusMessage"` with static page text — see `agent-kit/references/wix-forms/user-visible-messages.md`).
 - Generic load/submit messages on `loadError` / `statusMessage` and client validation templates on `{key.field.error}` → mostly **plugin English**; field names inside errors still follow Wix labels when bound from `{key.field.label}`.

@@ -56,12 +56,33 @@ describe('WixFormsService.listForms', () => {
         expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('missing-id'));
     });
 
+    /**
+     * Bug: an empty List Forms result is not cached, so every listForms() call
+     *   (the contract generator and agent-kit setup both call it) re-queries Wix
+     *   and prints the "no forms" warning again.
+     * Found in: review of the empty-forms warning (DL #40 follow-up).
+     * Expected: one List Forms call and one warning per service instance.
+     * Actual: a query and a warning on every call.
+     */
+    it('should query and warn only once when List Forms returns no forms', async () => {
+        mockListForms.mockResolvedValue([]);
+        const service = provideWixFormsService(mockClient, testConfig);
+
+        await service.listForms();
+        await expect(service.listForms()).resolves.toEqual([]);
+
+        expect(mockListForms).toHaveBeenCalledTimes(1);
+        expect(console.warn).toHaveBeenCalledTimes(1);
+    });
+
     it('should cache a non-empty list across calls', async () => {
         mockListForms.mockResolvedValueOnce([
             {
                 id: 'form-1',
                 name: 'Contact',
-                formFields: [{ target: 'email', label: 'Email', type: 'EMAIL', required: true }],
+                formFields: [
+                    { target: 'email', view: { label: 'Email' }, validation: { required: true } },
+                ],
             },
         ]);
         const service = provideWixFormsService(mockClient, testConfig);

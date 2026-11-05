@@ -405,3 +405,17 @@ Per the DL gate ("if core does NOT reject unknown sub-contract paths, the plugin
 - `yarn install` (VPN available) + `yarn build` → **27/27 packages built successfully**, including `@jay-framework/wix-forms` whose `build` ends in `jay-stack-cli validate-plugin` (passed). DL#179 leak scan: serve entries (`dist/index.js`, `dist/index.client.js`) import no compiler/html-parser packages; validator + agent-kit live only in `dist/tools.js`.
 - `wix-forms` unit tests: **31/31 passing** (6 files). `build:check-types` (tsc): clean.
 - Full workspace `yarn test` aborted early on a pre-existing, unrelated flake (`@jay-framework/wix-server-client` → wsrun "command not found: vitest"; vitest resolves fine when that package is run directly). `wix-bookings` (the only consumer touching this code, via the untouched `getFormSummary`): 36/37 — the one failure is a locale/timezone date-label test unrelated to forms.
+
+## Implementation Results — source-editing guide and follow-ups (2026-11-05)
+
+**Source-editing pointers (wix DL #39 pattern).** Each generated `form/<slug>` contract now carries top-level `formId` and `editingGuide` (`agent-kit/references/wix-forms/wix-forms-dashboard-content.md`), the same shape as wix-data's materialized contracts. The contract-level `editingGuide` in `plugin.yaml` was removed, because the guide is now on every generated contract. The dashboard guide was rewritten for per-form contracts: contract → `formId` → named field tags.
+
+**Copied guides are self-contained.** On `jay-stack agent-kit`, setup copies **two** guides into `agent-kit/references/wix-forms/`: the dashboard guide and `user-visible-messages.md` (who owns each visitor-facing string). They link to each other by their project paths. A test checks that every `agent-kit/….md` path in the copied guides exists in the project, because copying only the dashboard guide left its links to `user-visible-messages.md` dangling.
+
+**Deviation from "Namespace confirmation" above.** An empty List Forms result no longer throws. `listForms()` returns `[]` and warns once: about the `formIds` whitelist when one is set, otherwise about the namespace (with "no forms yet" called out as normal). The empty result is cached like a non-empty one, so the generator and setup don't query and warn twice. Namespace confirmation against a live site is still pending, as above.
+
+**User-facing messages no longer cite design-log numbers** (validator findings, setup output).
+
+**Retired contract file.** `lib/contracts/wix-form.jay-contract` is deleted. The follow-up in deviation 2 above is done.
+
+**Tests.** `wix-forms`: 46/46 (9 files); `build:check-types` clean. `compiler-jay-html` (published 0.25.5 and jay `main`) declares `types: ./dist/index.d.ts` but ships only `index.d.cts`, so `parseContract` is untyped in tests. The one test that reads parsed tags gives the result a minimal local type; the packaging fix belongs in jay.

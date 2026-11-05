@@ -12,7 +12,11 @@ import { DEFAULT_FORMS_NAMESPACE } from './config-loader.js';
 import { WIX_FORMS_SERVICE, type WixFormsService } from './services/wix-forms-service-marker.js';
 import { computeFormSlugs } from './generators/form-slug.js';
 import { elementTypeFor } from './generators/contract-utils.js';
-import { SHARED_EDITING_GUIDE_PATH, writeSharedEditingGuideCopy } from './source-editing.js';
+import {
+    SHARED_EDITING_GUIDE_PATH,
+    USER_VISIBLE_MESSAGES_GUIDE_PATH,
+    writeEditingGuideCopies,
+} from './source-editing.js';
 
 const CONFIG_FILE = '.wix-forms.yaml';
 
@@ -117,17 +121,18 @@ export async function generateWixFormsAgentKit(
         'utf-8',
     );
 
-    writeSharedEditingGuideCopy(ctx.referencesDir);
+    writeEditingGuideCopies(ctx.referencesDir);
 
     const agentKitCreated = [
         `agent-kit/references/${ctx.pluginName}/forms.yaml`,
         SHARED_EDITING_GUIDE_PATH,
+        USER_VISIBLE_MESSAGES_GUIDE_PATH,
     ];
 
     return {
         agentKitCreated,
         message:
             `${formSummaries.length} forms discovered in namespace "${formsService.config.namespace}"` +
-            ', forms editing guide copied',
+            ', forms editing guides copied',
     };
 }

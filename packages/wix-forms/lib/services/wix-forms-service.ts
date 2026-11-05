@@ -29,7 +29,6 @@ export function provideWixFormsService(
             });
             if (!forms.length) {
                 warnNoFormsListed(config);
-                return [];
             }
             listCache = forms.map((form) => ({
                 id: form.id,

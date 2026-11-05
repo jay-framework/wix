@@ -83,7 +83,10 @@ describe('formContractGenerator', () => {
         };
 
         const [contract] = await formContractGenerator.generate(serviceWith([form]));
-        const parsed = checkValidationErrors(parseContract(contract.yaml, 'form-snake.jay-contract'));
+        // compiler-jay-html ships no index.d.ts (its declared types path), so parseContract is untyped here.
+        const parsed = checkValidationErrors(parseContract(contract.yaml, 'form-snake.jay-contract')) as {
+            tags: Array<{ tag: string }>;
+        };
         const fieldTags = parsed.tags.map((tag) => tag.tag);
 
         expect(fieldTags).toContain('firstName');
