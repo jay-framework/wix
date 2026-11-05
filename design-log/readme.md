@@ -46,6 +46,7 @@ Design documentation for the Jay Framework Wix integration packages.
 | 38  | [Dashboard URLs for Plugin Content](./38%20-%20dashboard%20urls%20for%20plugin%20content.md)               | Implemented (final QA 2026-11-03; Pro Gallery headless guide 2026-11-04)          |
 | 39  | [Materialized Contract Editing Guides](./39%20-%20materialized%20contract%20editing%20guides.md)           | Implemented                               |
 | 40  | [Per-Form Contracts for wix-forms](./40%20-%20per-form%20contracts%20for%20wix-forms.md)                       | Implemented                               |
+| 41  | [General Forms Infrastructure for wix-forms](./41%20-%20general%20forms%20infrastructure.md)        | Implemented (member prefill deferred; 4b not shipped) |
 
 ## Packages Covered
 
