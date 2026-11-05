@@ -91,6 +91,10 @@ After `jay-stack agent-kit`, read `forms.yaml` for each form’s exact
 See `per-form-contracts.md` for the full contract shape and binding rules, and
 `user-visible-messages.md` when changing success, error, or localized copy.
 
+For rich production forms — sent/thank-you state, live validation, hidden and
+page-provided values, custom-UI/multi-step, honeypot, and non-string fields — see
+`rich-forms.md`.
+
 ## Cross-plugin use: getFormSummary
 
 `wix-bookings` loads participant fields via `getFormSummary` — it does **not** use the `wix-form` UI on `/book`.
