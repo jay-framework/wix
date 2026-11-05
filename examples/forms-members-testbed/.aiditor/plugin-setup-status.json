@@ -1,0 +1,26 @@
+{
+  "wix-data": {
+    "setupStatus": "error",
+    "configFiles": [
+      "config/.wix-data.yaml"
+    ],
+    "message": "🔧 Setting up plugins...\n\n[buildStart] Vite detected: true\n[buildStart] Vite detected: true\n📦 wix-data\n   ❌ WixDataService not available. Check initialization.\n\nSetup complete: 1 error(s)",
+    "checkedAt": "2026-11-04T13:34:22.064Z"
+  },
+  "wix-members": {
+    "setupStatus": "configured",
+    "configFiles": [
+      "config/.wix-members.yaml"
+    ],
+    "message": "🔧 Setting up plugins...\n\n[buildStart] Vite detected: true\n[buildStart] Vite detected: true\n📦 wix-members\n   Wix Members configured (callback: /auth/callback)\n[wix-members] Initializing Wix Members service...\n   ⚠️  Init after setup: Service 'jay:service:WixClientService' not found. Did you register it in jay.init.ts?\nMake sure to call: registerService(JAY:SERVICE:WIXCLIENTSERVICE_SERVICE, ...)\n\nSetup complete: 1 configured",
+    "checkedAt": "2026-11-04T13:34:23.104Z"
+  },
+  "wix-server-client": {
+    "setupStatus": "configured",
+    "configFiles": [
+      "config/.wix.yaml"
+    ],
+    "message": "🔧 Setting up plugins...\n\n[buildStart] Vite detected: true\n[buildStart] Vite detected: true\n📦 wix-server-client\n   Wix client connected (site: f8f52542...)\n[wix-server-client] Initializing Wix client configuration...\n   ✅ Services initialized\n\nSetup complete: 1 configured",
+    "checkedAt": "2026-11-04T13:34:24.183Z"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "id": "36432462-641b-43c2-bf49-975b758c5fdc",
+  "title": "Untitled canvas 11",
+  "createdAt": "2026-11-04T11:30:23.764Z",
+  "updatedAt": "2026-11-04T11:30:24.302Z",
+  "activeArtboardId": "73c35eca-1d7c-4cd1-bfdb-9fe24df0e8bb",
+  "artboards": [
+    {
+      "id": "73c35eca-1d7c-4cd1-bfdb-9fe24df0e8bb",
+      "planePosition": {
+        "leftPx": 9332,
+        "topPx": 9710
+      },
+      "selectedPageUrl": "/contact",
+      "selectedPreviewPath": "/contact",
+      "stageWidthPx": 1280,
+      "previewBreakpoint": "desktop",
+      "freezeId": null,
+      "frozenPreviewPath": null,
+      "previewContentHeightPx": 446,
+      "visualAnnotations": []
+    }
+  ],
+  "threads": [
+    {
+      "id": "t_mw21c5v0_0",
+      "artboardId": "73c35eca-1d7c-4cd1-bfdb-9fe24df0e8bb",
+      "route": "/contact",
+      "previewPath": "/contact",
+      "placementSeq": 1,
+      "anchor": {
+        "kind": "point",
+        "x": 0.325508607198748,
+        "y": 0.8654708520179372
+      },
+      "commentPin": {
+        "x": 0.336446107198748,
+        "y": 0.8340807174887892
+      },
+      "anchorViewport": {
+        "widthPx": 1280,
+        "heightPx": 446
+      },
+      "status": "open",
+      "agentState": "error",
+      "lastReadAt": null,
+      "laneId": "lane_mw21ceyv_5",
+      "messages": [
+        {
+          "id": "m_mw21c5v0_0",
+          "role": "user",
+          "text": "Where can I see the messages people sent with this form?",
+          "createdAt": "2026-11-04T11:30:24.300Z",
+          "taskId": null
+        },
+        {
+          "id": "m_mw21cczm_4504068d",
+          "text": "Form submissions live in your Wix dashboard, not in this project — open the Wix site this project is connected to and go to Customer Management → Inbox / Form Submissions (or the Forms app) to read the messages.",
+          "taskId": null,
+          "createdAt": "2026-11-04T11:30:33.538Z",
+          "role": "agent"
+        }
+      ],
+      "attachmentPaths": [],
+      "createdAt": "2026-11-04T11:30:24.300Z",
+      "updatedAt": "2026-11-04T11:30:33.538Z"
+    }
+  ],
+  "agent": {
+    "managerSummary": "Failed to authenticate. API Error: 403 {\"type\":\"error\",\"error\":{\"type\":\"permission_error\",\"message\":\"Your IP address isn't in this organization's allowed range.\",\"details\":{\"error_code\":\"ip_not_in_allowed_range\"}},\"request_id\":\"req_011CghqKSCf8ssvwWzX1PMR4\"}\nAnswered in the thread — submissions are in the Wix dashboard (Customer Management → Inbox / Form Submissions) for the site this project is connected to.",
+    "lanes": [
+      {
+        "id": "lane_mw21ceyv_5",
+        "name": "Page /contact",
+        "summary": "Failed to authenticate. API Error: 403 {\"type\":\"error\",\"error\":{\"type\":\"permission_error\",\"message\":\"Your IP address isn't in this organization's allowed range.\",\"details\":{\"error_code\":\"ip_not_in_allowed_range\"}},\"request_id\":\"req_011CghqK8RZzY6oTvs9DMbd7\"}",
+        "filesTouched": [],
+        "archived": false,
+        "ephemeral": false,
+        "updatedAt": "2026-11-04T11:47:12.975Z"
+      }
+    ]
+  }
+}

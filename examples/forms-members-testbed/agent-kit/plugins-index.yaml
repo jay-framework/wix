@@ -85,6 +85,12 @@ plugins:
         description: Mirror the browser's Wix OAuth tokens into the httpOnly wix_session
           cookie after verifying them with token-info, or clear it.
         path: ./../../packages/wix-server-client/dist/actions/sync-session.jay-action
+      - name: getDashboardUrl
+        description: Dev-only. Build the Wix dashboard URL for a dashboard path (site id
+          read server-side), e.g. path
+          "wix-stores/products/product/<productId>". Use it to send the site
+          owner to dashboard-managed content instead of editing code or data.
+        path: ./../../packages/wix-server-client/dist/actions/get-dashboard-url.jay-action
     services:
       - name: wix-client
         marker: WIX_CLIENT_SERVICE

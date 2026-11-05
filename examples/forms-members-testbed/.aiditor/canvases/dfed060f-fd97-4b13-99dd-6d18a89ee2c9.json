@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "id": "dfed060f-fd97-4b13-99dd-6d18a89ee2c9",
+  "title": "Untitled canvas 6",
+  "createdAt": "2026-11-04T11:24:03.919Z",
+  "updatedAt": "2026-11-04T11:24:04.454Z",
+  "activeArtboardId": "2d1ee14e-3b98-4553-a2f3-7f26df09ddb4",
+  "artboards": [
+    {
+      "id": "2d1ee14e-3b98-4553-a2f3-7f26df09ddb4",
+      "planePosition": {
+        "leftPx": 9332,
+        "topPx": 9710
+      },
+      "selectedPageUrl": "/contact",
+      "selectedPreviewPath": "/contact",
+      "stageWidthPx": 1280,
+      "previewBreakpoint": "desktop",
+      "freezeId": null,
+      "frozenPreviewPath": null,
+      "previewContentHeightPx": 446,
+      "visualAnnotations": []
+    }
+  ],
+  "threads": [
+    {
+      "id": "t_mw2140ro_0",
+      "artboardId": "2d1ee14e-3b98-4553-a2f3-7f26df09ddb4",
+      "route": "/contact",
+      "previewPath": "/contact",
+      "placementSeq": 1,
+      "anchor": {
+        "kind": "point",
+        "x": 0.3435054773082942,
+        "y": 0.24887892376681614
+      },
+      "commentPin": {
+        "x": 0.3544429773082942,
+        "y": 0.21748878923766815
+      },
+      "anchorViewport": {
+        "widthPx": 1280,
+        "heightPx": 446
+      },
+      "status": "open",
+      "agentState": "replied",
+      "lastReadAt": null,
+      "laneId": "lane_mw214a6e_0",
+      "messages": [
+        {
+          "id": "m_mw2140ro_0",
+          "role": "user",
+          "text": "Rename this label to \"Your first name\"",
+          "createdAt": "2026-11-04T11:24:04.452Z",
+          "taskId": null
+        }
+      ],
+      "attachmentPaths": [],
+      "createdAt": "2026-11-04T11:24:04.452Z",
+      "updatedAt": "2026-11-04T11:24:04.452Z"
+    }
+  ],
+  "agent": {
+    "managerSummary": "The label lives in your Wix form, not in the page code — rename it in the Wix dashboard and the page will update automatically: https://manage.wix.com/dashboard/f8f52542-3846-4a9d-8f11-2e0c40ccfa99/wix-forms/form/e87b4d6f-6a0f-4b5b-b730-63b9fa236f35\nDispatched to a new /contact lane to rename the label to \"Your first name\".",
+    "lanes": [
+      {
+        "id": "lane_mw214a6e_0",
+        "name": "/contact",
+        "summary": "The \"First name\" label on the contact form isn't set in the page code — it comes from your Wix form in the dashboard. I didn't change anything in the project because hard-coding the label here would break the connection to your form.\n\nYou can rename it to \"Your first name\" directly in the Wix form builder:\nhttps://manage.wix.com/dashboard/f8f52542-3846-4a9d-8f11-2e0c40ccfa99/wix-forms/form/e87b4d6f-6a0f-4b5b-b730-63b9fa236f35\n\nOnce you save it there, the page will pick up the new label automatically.\n\nAIDITOR_USER_OUTCOME: {\"headline\":\"Rename the label in your Wix form builder\",\"bullets\":[\"The \\\"First name\\\" label is managed in your Wix form, not in the page code\",\"Changing it in the page would disconnect it from your form, so I left the code alone\",\"Open the form in the Wix dashboard and rename the field to \\\"Your first name\\\" — the page will update automatically\",\"Dashboard link: https://manage.wix.com/dashboard/f8f52542-3846-4a9d-8f11-2e0c40ccfa99/wix-forms/form/e87b4d6f-6a0f-4b5b-b730-63b9fa236f35\"]}",
+        "filesTouched": [],
+        "archived": false,
+        "ephemeral": false,
+        "updatedAt": "2026-11-04T11:25:16.918Z"
+      }
+    ]
+  }
+}

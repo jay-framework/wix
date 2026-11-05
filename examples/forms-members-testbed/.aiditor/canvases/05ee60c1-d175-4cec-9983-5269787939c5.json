@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "id": "05ee60c1-d175-4cec-9983-5269787939c5",
+  "title": "Untitled canvas 7",
+  "createdAt": "2026-11-04T11:26:00.099Z",
+  "updatedAt": "2026-11-04T11:26:00.631Z",
+  "activeArtboardId": "856992a2-4acd-4bf5-b4be-7d8ca9f56ffb",
+  "artboards": [
+    {
+      "id": "856992a2-4acd-4bf5-b4be-7d8ca9f56ffb",
+      "planePosition": {
+        "leftPx": 9332,
+        "topPx": 9710
+      },
+      "selectedPageUrl": "/contact",
+      "selectedPreviewPath": "/contact",
+      "stageWidthPx": 1280,
+      "previewBreakpoint": "desktop",
+      "freezeId": null,
+      "frozenPreviewPath": null,
+      "previewContentHeightPx": 446,
+      "visualAnnotations": []
+    }
+  ],
+  "threads": [
+    {
+      "id": "t_mw216ieu_0",
+      "artboardId": "856992a2-4acd-4bf5-b4be-7d8ca9f56ffb",
+      "route": "/contact",
+      "previewPath": "/contact",
+      "placementSeq": 1,
+      "anchor": {
+        "kind": "point",
+        "x": 0.325508607198748,
+        "y": 0.8654708520179372
+      },
+      "commentPin": {
+        "x": 0.336446107198748,
+        "y": 0.8340807174887892
+      },
+      "anchorViewport": {
+        "widthPx": 1280,
+        "heightPx": 446
+      },
+      "status": "open",
+      "agentState": "replied",
+      "lastReadAt": null,
+      "laneId": "lane_mw216rei_1",
+      "messages": [
+        {
+          "id": "m_mw216ieu_0",
+          "role": "user",
+          "text": "Where can I see the messages people sent with this form?",
+          "createdAt": "2026-11-04T11:26:00.630Z",
+          "taskId": null
+        },
+        {
+          "id": "m_mw216q0o_19db2d80",
+          "text": "Wix Forms submissions aren't stored in this codebase — they go to your Wix dashboard. Open the site in Wix and check **Dashboard → Customer Management → Inbox**, or **Marketing & SEO → Forms → Submissions**, to see the messages sent through this form.",
+          "taskId": null,
+          "createdAt": "2026-11-04T11:26:10.488Z",
+          "role": "agent"
+        }
+      ],
+      "attachmentPaths": [],
+      "createdAt": "2026-11-04T11:26:00.630Z",
+      "updatedAt": "2026-11-04T11:26:10.488Z"
+    }
+  ],
+  "agent": {
+    "managerSummary": "The worker found the exact dashboard link for this form's submissions and posted it on the thread — no code changes were made.\nForm submissions from Wix Forms land in the Wix dashboard, not in this codebase — open your site in Wix and go to **Dashboard → Customer Management → Inbox** (or **Marketing & SEO → Forms → Submissions**) to see the messages. If you'd like, I can add a link or admin shortcut on the page itself.",
+    "lanes": [
+      {
+        "id": "lane_mw216rei_1",
+        "name": "Page /contact",
+        "summary": "You can see all submissions for this form in your Wix dashboard here: https://manage.wix.com/dashboard/f8f52542-3846-4a9d-8f11-2e0c40ccfa99/wix-forms/form/e87b4d6f-6a0f-4b5b-b730-63b9fa236f35/submissions\n\nAIDITOR_USER_OUTCOME: {\"headline\":\"Here's where to see form submissions\",\"bullets\":[\"Form messages live in your Wix dashboard, not in the page code\",\"Opens the Submissions view for the Contact Us form\",\"Nothing on the page was changed\"]}",
+        "filesTouched": [],
+        "archived": false,
+        "ephemeral": false,
+        "updatedAt": "2026-11-04T11:26:51.561Z"
+      }
+    ]
+  }
+}

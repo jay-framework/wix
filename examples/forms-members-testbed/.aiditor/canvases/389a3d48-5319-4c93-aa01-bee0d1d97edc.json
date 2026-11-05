@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "id": "389a3d48-5319-4c93-aa01-bee0d1d97edc",
+  "title": "Untitled canvas 5",
+  "createdAt": "2026-11-04T11:08:24.215Z",
+  "updatedAt": "2026-11-04T11:08:24.742Z",
+  "activeArtboardId": "7f226b3d-da44-418b-b184-0baf7bb39728",
+  "artboards": [
+    {
+      "id": "7f226b3d-da44-418b-b184-0baf7bb39728",
+      "planePosition": {
+        "leftPx": 9332,
+        "topPx": 9710
+      },
+      "selectedPageUrl": "/contact",
+      "selectedPreviewPath": "/contact",
+      "stageWidthPx": 1280,
+      "previewBreakpoint": "desktop",
+      "freezeId": null,
+      "frozenPreviewPath": null,
+      "previewContentHeightPx": 446,
+      "visualAnnotations": []
+    }
+  ],
+  "threads": [
+    {
+      "id": "t_mw20jvol_0",
+      "artboardId": "7f226b3d-da44-418b-b184-0baf7bb39728",
+      "route": "/contact",
+      "previewPath": "/contact",
+      "placementSeq": 1,
+      "anchor": {
+        "kind": "point",
+        "x": 0.3435054773082942,
+        "y": 0.24887892376681614
+      },
+      "commentPin": {
+        "x": 0.3544429773082942,
+        "y": 0.21748878923766815
+      },
+      "anchorViewport": {
+        "widthPx": 1280,
+        "heightPx": 446
+      },
+      "status": "open",
+      "agentState": "replied",
+      "lastReadAt": null,
+      "laneId": "lane_mw20k2a5_2",
+      "messages": [
+        {
+          "id": "m_mw20jvol_0",
+          "role": "user",
+          "text": "Rename this label to \"Your first name\"",
+          "createdAt": "2026-11-04T11:08:24.741Z",
+          "taskId": null
+        }
+      ],
+      "attachmentPaths": [],
+      "createdAt": "2026-11-04T11:08:24.741Z",
+      "updatedAt": "2026-11-04T11:08:24.741Z"
+    }
+  ],
+  "agent": {
+    "managerSummary": "The label is pulled live from your Wix form, so it has to be renamed in the Wix dashboard — editing code would freeze the binding. Rename it [here](https://manage.wix.com/dashboard/f8f52542-3846-4a9d-8f11-2e0c40ccfa99/wix-forms/form/e87b4d6f-6a0f-4b5b-b730-63b9fa236f35) and the page will show \"Your first name\" automatically.\nDispatched to a new /contact lane to rename the label to \"Your first name\".",
+    "lanes": [
+      {
+        "id": "lane_mw20k2a5_2",
+        "name": "/contact",
+        "summary": "I'm not making any file changes. The \"First name\" label on `/contact` comes from the Wix Forms dashboard via the binding `{contact.firstNameD142.label}`, and the `wix-forms` contract's editing guide explicitly says never to replace that binding with a literal (it would freeze the content and break the form's data flow). There is no `wix-forms` update action exposed, so the correct action is to point you to the Wix dashboard to rename the label there — the page will then render \"Your first name\" automatically.\n\nRename the label here (First name field of the \"ContactMyForm\" form):\nhttps://manage.wix.com/dashboard/f8f52542-3846-4a9d-8f11-2e0c40ccfa99/wix-forms/form/e87b4d6f-6a0f-4b5b-b730-63b9fa236f35\n\nNo code was changed, so `yarn validate` isn't needed for this edit — but if you'd like, I can run it to confirm the page is still healthy.\n\nAIDITOR_USER_OUTCOME: {\"headline\":\"Rename the First name label in your Wix form, not in code\",\"bullets\":[\"The label on /contact is pulled live from your Wix form, so changing it in code would freeze it and break future edits.\",\"I didn't edit the page — rename it once in the Wix dashboard and the page will show \\\"Your first name\\\" automatically.\",\"Open the form here: https://manage.wix.com/dashboard/f8f52542-3846-4a9d-8f11-2e0c40ccfa99/wix-forms/form/e87b4d6f-6a0f-4b5b-b730-63b9fa236f35\"]}",
+        "filesTouched": [],
+        "archived": false,
+        "ephemeral": false,
+        "updatedAt": "2026-11-04T11:09:29.169Z"
+      }
+    ]
+  }
+}

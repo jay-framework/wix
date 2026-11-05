@@ -1,4 +1,4 @@
-_generated: '2026-11-02T13:20:09.411Z'
+_generated: '2026-11-04T11:03:57.980Z'
 _description: >-
   Wix Forms per-form contracts for agent discovery (DL#40). Bind explicit field tags, e.g. {contact.email.label},
   ref="contact.email.input".

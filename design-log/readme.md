@@ -49,6 +49,7 @@ Design documentation for the Jay Framework Wix integration packages.
 | 41  | [General Forms Infrastructure for wix-forms](./41%20-%20general%20forms%20infrastructure.md)                   | Approved — implementation in progress      |
 | 42  | [Server-Side Submission Hook for wix-forms](./42%20-%20server-side%20submission%20hook%20for%20wix-forms.md) | Implemented |
 | 43  | [Act as the Caller](./43%20-%20act%20as%20the%20caller.md) | Approved — implementation in progress (Phases 1–3 done; Phase 4 pending live checks) |
+| 44  | [Checkbox-Group Multiselect and Native Submit Guard](./44%20-%20checkbox-group%20multiselect%20and%20native%20submit%20guard.md) | Design |
 
 ## Packages Covered
 

@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "id": "df59d51c-d830-4fe3-abb1-39bb75c6874e",
+  "title": "Untitled canvas 14",
+  "createdAt": "2026-11-04T12:09:46.863Z",
+  "updatedAt": "2026-11-04T12:09:47.400Z",
+  "activeArtboardId": "b0bd5348-eb44-48fa-83dc-6a8f2251a0fd",
+  "artboards": [
+    {
+      "id": "b0bd5348-eb44-48fa-83dc-6a8f2251a0fd",
+      "planePosition": {
+        "leftPx": 9332,
+        "topPx": 9710
+      },
+      "selectedPageUrl": "/contact",
+      "selectedPreviewPath": "/contact",
+      "stageWidthPx": 1280,
+      "previewBreakpoint": "desktop",
+      "freezeId": null,
+      "frozenPreviewPath": null,
+      "previewContentHeightPx": 446,
+      "visualAnnotations": []
+    }
+  ],
+  "threads": [
+    {
+      "id": "t_mw22qt8n_0",
+      "artboardId": "b0bd5348-eb44-48fa-83dc-6a8f2251a0fd",
+      "route": "/contact",
+      "previewPath": "/contact",
+      "placementSeq": 1,
+      "anchor": {
+        "kind": "point",
+        "x": 0.5,
+        "y": 0.33856502242152464
+      },
+      "commentPin": {
+        "x": 0.5109375,
+        "y": 0.3071748878923767
+      },
+      "anchorViewport": {
+        "widthPx": 1280,
+        "heightPx": 446
+      },
+      "status": "open",
+      "agentState": "replied",
+      "lastReadAt": null,
+      "laneId": "lane_mw22r3tp_8",
+      "messages": [
+        {
+          "id": "m_mw22qt8n_0",
+          "role": "user",
+          "text": "Rename this field to \"Your first name\" and make this input half as wide",
+          "createdAt": "2026-11-04T12:09:47.399Z",
+          "taskId": null
+        }
+      ],
+      "attachmentPaths": [],
+      "createdAt": "2026-11-04T12:09:47.399Z",
+      "updatedAt": "2026-11-04T12:09:47.399Z"
+    }
+  ],
+  "agent": {
+    "managerSummary": "The input is now half-width. The label rename has to happen in your Wix form builder — [open the form here](https://manage.wix.com/dashboard/f8f52542-3846-4a9d-8f11-2e0c40ccfa99/wix-forms/form/e87b4d6f-6a0f-4b5b-b730-63b9fa236f35) and change the label to \"Your first name\".\nDispatched to a new /contact lane — a worker will rename the field to \"Your first name\" and halve its width.",
+    "lanes": [
+      {
+        "id": "lane_mw22r3tp_8",
+        "name": "/contact",
+        "summary": "The width change is applied. The first-name input now has `class=\"half-width\"` which gives it 50% width via the new CSS rule.\n\nFor the label rename: the first-name label comes from `{contact.firstNameD142.label}` — a binding that reads from the Wix Forms dashboard. Per the plugin's editing guide, labels must be renamed in the Wix form builder, not in jay-html code. Here's the direct dashboard link to edit this form:\n\nhttps://manage.wix.com/dashboard/f8f52542-3846-4a9d-8f11-2e0c40ccfa99/wix-forms/form/e87b4d6f-6a0f-4b5b-b730-63b9fa236f35\n\nAIDITOR_USER_OUTCOME: {\"headline\":\"First-name field is now half-width; label rename needs to be done in your Wix form\",\"bullets\":[\"The first-name input on /contact is now half as wide as before.\",\"The field's label comes from your Wix form, so to change it to \\\"Your first name\\\" please edit it in the Wix dashboard form builder: https://manage.wix.com/dashboard/f8f52542-3846-4a9d-8f11-2e0c40ccfa99/wix-forms/form/e87b4d6f-6a0f-4b5b-b730-63b9fa236f35\",\"Validation passed with no new warnings.\"]}",
+        "filesTouched": [
+          "src/pages/contact/page.jay-html"
+        ],
+        "archived": false,
+        "ephemeral": false,
+        "updatedAt": "2026-11-04T12:11:19.514Z"
+      }
+    ]
+  }
+}

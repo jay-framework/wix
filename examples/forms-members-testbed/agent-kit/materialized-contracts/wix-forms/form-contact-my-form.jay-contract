@@ -1,5 +1,7 @@
 name: ContactMyFormForm
 description: Wix form "ContactMyForm" (e87b4d6f-6a0f-4b5b-b730-63b9fa236f35)
+formId: e87b4d6f-6a0f-4b5b-b730-63b9fa236f35
+editingGuide: agent-kit/references/wix-forms/wix-forms-dashboard-content.md
 tags:
   - tag: firstNameD142
     type: sub-contract
