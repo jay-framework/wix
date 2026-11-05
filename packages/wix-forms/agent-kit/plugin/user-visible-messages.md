@@ -55,11 +55,11 @@ For multilingual sites, Wix-translated **labels** help required messages; format
 
 ## `getFormSummary` (bookings / participant fields)
 
-`validateFormSummaryField` uses the same English validation patterns. That path is separate from the page `wixForm` UI; see `wix-forms-setup.md` for bookings integration.
+`validateFormSummaryField` uses the same English validation patterns. That path is separate from the page `wixForm` UI; bookings integration is covered by the setup guide (`wix-forms-setup.md`) shipped in the `@jay-framework/wix-forms` package.
 
 ## Agent checklist
 
-- **Change a field label** → Wix dashboard (see `designer/wix-forms-dashboard-content.md`), keep `{key.field.label}` bindings.
+- **Change a field label** → Wix dashboard (see `agent-kit/references/wix-forms/wix-forms-dashboard-content.md`), keep `{key.field.label}` bindings.
 - **Change thank-you / success text** → jay-html; use `if="key.statusMessage"` + static local copy, not `{key.statusMessage}` for localized success.
 - **Change submit button text** → jay-html button content, not Wix.
 - **Do not** hard-code field labels in jay-html when they should stay dashboard-managed.
