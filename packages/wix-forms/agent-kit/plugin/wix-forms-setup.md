@@ -34,7 +34,7 @@ In [Wix API Keys Manager](https://manage.wix.com/account/api-keys), enable **Wix
 | Symptom | Fix |
 |---------|-----|
 | 403 on form schema or submit | Add **Wix Forms** permission to API key |
-| "No forms found in namespace …" | Confirm `namespace` in `config/.wix-forms.yaml` matches your site's forms |
+| Console: `[wix-forms] No forms listed for namespace …` | Often normal before any forms exist. If you expected contracts, check `namespace`, `formIds`, and `include` in `config/.wix-forms.yaml`, then re-run agent-kit |
 | Form loads but no fields | Form has no supported input fields in Wix schema |
 
 ### 4. Page form

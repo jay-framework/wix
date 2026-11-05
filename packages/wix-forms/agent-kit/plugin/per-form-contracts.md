@@ -63,7 +63,7 @@ Form-level tags stay at the top level: `isLoading`, `loadError`, `isSubmitting`,
 ## The generic `fields` tag is gone
 
 Never write `forEach="contact.fields"`, `{contact.fields...}`, or
-`ref="contact.fields.formInputs"`. These bind the generic repeated array removed
-in DL#40. The `wix-forms-bindings` validator flags leftover `.fields` bindings
-and unknown field tags used as refs, with a migration message. There is no
+`ref="contact.fields.formInputs"`. These bind the generic repeated array, which
+is no longer supported. The `wix-forms-bindings` validator flags leftover
+`.fields` bindings and unknown field tags used as refs. There is no
 `formId` prop and no `defaultFormId` — form identity is fixed by the contract.

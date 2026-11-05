@@ -1,6 +1,6 @@
 import type { WixClient } from '@wix/sdk';
 import { registerService } from '@jay-framework/stack-server-runtime';
-import type { WixFormsConfig } from '../config-loader.js';
+import { DEFAULT_FORMS_NAMESPACE, type WixFormsConfig } from '../config-loader.js';
 import { createFormSubmission } from '../wix-apis/create-submission.js';
 import { getFormSchema } from '../wix-apis/get-form.js';
 import { getFormSummary } from '../wix-apis/get-form-summary.js';
@@ -28,11 +28,8 @@ export function provideWixFormsService(
                 include: config.include,
             });
             if (!forms.length) {
-                throw new Error(
-                    `No forms found in namespace "${config.namespace}". ` +
-                        `Confirm the namespace in config/.wix-forms.yaml matches your site's forms ` +
-                        `(standalone Wix Forms use "wix.form_app.form").`,
-                );
+                warnNoFormsListed(config);
+                return [];
             }
             listCache = forms.map((form) => ({
                 id: form.id,
@@ -81,6 +78,27 @@ export function provideWixFormsService(
 
     registerService(WIX_FORMS_SERVICE, service);
     return service;
+}
+
+/** Empty List Forms is valid (no forms yet); warn when filters may be wrong. */
+function warnNoFormsListed(config: WixFormsConfig): void {
+    const scope =
+        `[wix-forms] No forms listed for namespace "${config.namespace}" ` +
+        `(include: ${config.include}). No per-form contracts were generated.`;
+
+    if (config.formIds.length > 0) {
+        console.warn(
+            `${scope} None of the formIds in config/.wix-forms.yaml matched: ` +
+                `${config.formIds.join(', ')}. Check ids, namespace, and include.`,
+        );
+        return;
+    }
+
+    console.warn(
+        `${scope} If you expected forms, confirm namespace in config/.wix-forms.yaml ` +
+            `(standalone Wix Forms use "${DEFAULT_FORMS_NAMESPACE}"). ` +
+            `If the site has no forms yet, this is normal — create forms in Wix and re-run agent-kit.`,
+    );
 }
 
 export { WIX_FORMS_SERVICE, type WixFormsService } from './wix-forms-service-marker.js';
