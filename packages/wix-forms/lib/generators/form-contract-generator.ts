@@ -3,7 +3,7 @@
  *
  * Runs in the jay agent-kit phase: enumerates every form in the configured
  * namespace via List Forms and emits one contract per form, with tags named
- * after that form's visible fields. One contract → the shared `wixForm`
+ * after that form's visible fields. contract → the shared `wixForm`
  * component, selected at runtime by `metadata.formId`. Mirrors wix-data's
  * `itemContractGenerator`.
  */
