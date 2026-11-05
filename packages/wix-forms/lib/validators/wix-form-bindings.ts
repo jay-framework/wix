@@ -1,22 +1,20 @@
 /**
- * wix-forms plugin validator (DL#40).
+ * wix-forms plugin validator — per-form contract bindings.
  *
- * Fires on jay-html pages that use per-form contracts. Two detectable cases,
- * both carrying the DL#40 migration message:
+ * Fires on jay-html pages that use per-form contracts. Two detectable cases:
  *
  *  1. Retired generic `fields` binding — a `form/<slug>` import that still binds
- *     `<key>.fields` (the generic repeated array removed in DL#40). This is the
- *     GUARANTEED case: the `form/` import resolves, so it appears in
+ *     `<key>.fields` (the generic repeated array is no longer supported). This is
+ *     the GUARANTEED case: the `form/` import resolves, so it appears in
  *     `headlessImports`. Detected across every binding form (data/forEach/if/ref).
  *  2. Unknown field tag used as a `ref` — `ref="<key>.<missingField>…"` whose
  *     first segment is not a tag of the form's contract. Core contract-binding
  *     validation already rejects unknown DATA bindings (`{<key>.x}`, `forEach`,
  *     `if`, attributes) but SILENTLY grafts unknown `ref=` sub-tags
- *     (`graftTemplateOnlyRefs`), so this check closes the one gap core misses
- *     (DL#40 hard gate; see Implementation Results for the core-vs-plugin finding).
+ *     (`graftTemplateOnlyRefs`), so this check closes the one gap core misses.
  *
- * Best-effort: a page still importing the deleted `contract="wix-form"` also
- * gets the migration message, IF the unresolved name surfaces in headlessImports.
+ * Best-effort: a page still importing the retired `contract="wix-form"` also
+ * gets a migration message, IF the unresolved name surfaces in headlessImports.
  */
 
 import type {
@@ -29,10 +27,10 @@ const RETIRED_CONTRACT_NAME = 'wix-form';
 const FORM_CONTRACT_PREFIX = 'form/';
 
 const MIGRATION_HINT =
-    'The generic `fields` tag was removed in DL#40. Bind explicit per-form field tags instead ' +
+    'The generic `.fields` binding is no longer supported. Bind explicit per-form field tags instead ' +
     '— e.g. `{contact.email.label}`, `ref="contact.email.input"`, ' +
-    '`<option forEach="contact.country.options" trackBy="value">`. Discover a form\'s real field ' +
-    'names in agent-kit/references/wix-forms/forms.yaml or the materialized form/<slug> contract.';
+    '`<option forEach="contact.country.options" trackBy="value">`. Field names come from the ' +
+    'materialized `form/<slug>` contract for that form (or your project\'s wix-forms forms reference).';
 
 export const validateWixFormBindings: JayHtmlValidatorFn = (ctx) => {
     const findings: JayHtmlValidationFinding[] = [];
@@ -41,7 +39,8 @@ export const validateWixFormBindings: JayHtmlValidatorFn = (ctx) => {
         if (imp.contractName === RETIRED_CONTRACT_NAME) {
             findings.push({
                 severity: 'error',
-                message: `Contract "wix-form" was removed in DL#40 — forms now use a per-form contract "form/<slug>".`,
+                message:
+                    'Contract "wix-form" is no longer supported — import a per-form contract "form/<slug>" instead.',
                 suggestion: MIGRATION_HINT,
             });
         }
@@ -72,7 +71,7 @@ function detectRetiredFieldsBindings(
         if (pattern.test(serialized)) {
             findings.push({
                 severity: 'error',
-                message: `Binding "${key}.fields" uses the generic form-fields array removed in DL#40.`,
+                message: `Binding "${key}.fields" is invalid — the generic ".fields" array was removed; use explicit field tags (e.g. "${key}.email.label").`,
                 suggestion: MIGRATION_HINT,
                 attribute: 'fields',
             });
@@ -107,8 +106,7 @@ function detectUnknownRefFieldTags(
                 message: `ref="${ref}" binds "${firstSegment}", which is not a field of contract "${info.contractName}".`,
                 suggestion:
                     `Available tags: ${[...info.tags].sort().join(', ')}. ` +
-                    'Check the field name against the materialized form/<slug> contract or ' +
-                    'agent-kit/references/wix-forms/forms.yaml.',
+                    'Use a field name from the materialized form/<slug> contract for this import.',
                 attribute: 'ref',
             });
         }
