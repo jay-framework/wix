@@ -2832,7 +2832,9 @@ __metadata:
     "@babel/core": "npm:^7.23.7"
     "@babel/preset-env": "npm:^7.23.8"
     "@babel/preset-typescript": "npm:^7.23.3"
+    "@jay-framework/compiler-jay-html": "npm:^0.25.5"
     "@jay-framework/compiler-jay-stack": "npm:^0.25.5"
+    "@jay-framework/compiler-shared": "npm:^0.25.5"
     "@jay-framework/component": "npm:^0.25.5"
     "@jay-framework/fullstack-component": "npm:^0.25.5"
     "@jay-framework/jay-cli": "npm:^0.25.5"
@@ -2846,7 +2848,9 @@ __metadata:
     "@jay-framework/wix-dev-environment": "workspace:^"
     "@jay-framework/wix-server-client": "npm:^0.25.5"
     "@wix/sdk": "npm:^1.21.5"
+    change-case: "npm:^4.1.2"
     js-yaml: "npm:^4.1.0"
+    node-html-parser: "npm:^6.1.0"
     nodemon: "npm:^3.0.3"
     rimraf: "npm:^5.0.5"
     tslib: "npm:^2.6.2"
@@ -8313,16 +8317,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"magic-string@npm:^0.30.17":
-  version: 0.30.21
-  resolution: "magic-string@npm:0.30.21"
-  dependencies:
-    "@jridgewell/sourcemap-codec": "npm:^1.5.5"
-  checksum: 10/57d5691f41ed40d962d8bd300148114f53db67fadbff336207db10a99f2bdf4a1be9cac3a68ee85dba575912ee1d4402e4396408196ec2d3afd043b076156221
-  languageName: node
-  linkType: hard
-
-"magic-string@npm:^0.30.21":
+"magic-string@npm:^0.30.17, magic-string@npm:^0.30.21":
   version: 0.30.21
   resolution: "magic-string@npm:0.30.21"
   dependencies:
@@ -8874,14 +8869,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"object-inspect@npm:^1.13.3":
-  version: 1.13.4
-  resolution: "object-inspect@npm:1.13.4"
-  checksum: 10/aa13b1190ad3e366f6c83ad8a16ed37a19ed57d267385aa4bfdccda833d7b90465c057ff6c55d035a6b2e52c1a2295582b294217a0a3a1ae7abdd6877ef781fb
-  languageName: node
-  linkType: hard
-
-"object-inspect@npm:^1.13.4":
+"object-inspect@npm:^1.13.3, object-inspect@npm:^1.13.4":
   version: 1.13.4
   resolution: "object-inspect@npm:1.13.4"
   checksum: 10/aa13b1190ad3e366f6c83ad8a16ed37a19ed57d267385aa4bfdccda833d7b90465c057ff6c55d035a6b2e52c1a2295582b294217a0a3a1ae7abdd6877ef781fb
