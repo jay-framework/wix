@@ -5,7 +5,8 @@ Wix Forms plugin setup — dynamic forms and shared getFormSummary action.
 Per-form headless contracts (one per Wix form) and two server actions:
 
 - **form/&lt;slug&gt;** — one contract generated per Wix form at agent-kit time, with
-  tags named after that form's fields. See `per-form-contracts.md`.
+  tags named after that form's fields. See `per-form-contracts.md` and
+  `user-visible-messages.md` (Wix vs plugin copy, success/i18n).
 - **getFormSummary** — returns participant field schema for other plugins (e.g. wix-bookings)
 - **submitForm** — submits form values to Wix Forms
 
@@ -73,7 +74,7 @@ on one page you typically keep distinct keys while each script points at its own
     <input ref="contact.email.input" placeholder="{contact.email.placeholder}" />
   </label>
   <button ref="contact.submitButton">Send</button>
-  <p if="contact.statusMessage">{contact.statusMessage}</p>
+  <p class="success" if="contact.statusMessage">Thank you — we received your message.</p>
 </form>
 
 <form>
@@ -87,7 +88,8 @@ on one page you typically keep distinct keys while each script points at its own
 After `jay-stack agent-kit`, read `forms.yaml` for each form’s exact
 `contract` value (the slug) and field `target` names — not the Wix form id.
 
-See `per-form-contracts.md` for the full contract shape and binding rules.
+See `per-form-contracts.md` for the full contract shape and binding rules, and
+`user-visible-messages.md` when changing success, error, or localized copy.
 
 ## Cross-plugin use: getFormSummary
 

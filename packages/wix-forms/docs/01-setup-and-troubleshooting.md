@@ -9,7 +9,7 @@
 3. Run `jay-stack agent-kit` so per-form contracts and `agent-kit/references/wix-forms/forms.yaml` are generated.
 4. Enable **Wix Forms** on your API key ([API Keys](https://manage.wix.com/account/api-keys)).
 
-Full walkthrough: `agent-kit/plugin/wix-forms-setup.md` and `agent-kit/plugin/per-form-contracts.md`.
+Full walkthrough: `agent-kit/plugin/wix-forms-setup.md` and `agent-kit/plugin/per-form-contracts.md`. User-visible copy (success message, i18n, validation): `agent-kit/plugin/user-visible-messages.md`.
 
 ## Rendering forms on a page
 

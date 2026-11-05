@@ -39,6 +39,10 @@ A field `email` becomes a `sub-contract` tag `email` carrying:
 Form-level tags stay at the top level: `isLoading`, `loadError`, `isSubmitting`,
 `statusMessage` (data/variant) and `submitButton` (interactive).
 
+See **`user-visible-messages.md`** for what copy comes from Wix vs the plugin,
+how to customize success/thank-you text (including multilingual pages), and
+how `loadError` / field `error` strings behave.
+
 ## Binding
 
 **Contract slug vs script `key`.** `contract="form/<slug>"` selects the
@@ -66,6 +70,8 @@ bindings that do not match the contract. Form identity is fixed by
     </select>
   </label>
   <button ref="contact.submitButton">Send</button>
-  <p if="contact.statusMessage">{contact.statusMessage}</p>
+  <!-- Success: static page copy; if="contact.statusMessage" means submit finished OK -->
+  <p class="success" if="contact.statusMessage">Thank you — we received your message.</p>
+  <p class="form-error" if="contact.loadError">{contact.loadError}</p>
 </form>
 ```
