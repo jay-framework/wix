@@ -1,4 +1,22 @@
-export type FormFieldInputType = 'text' | 'email' | 'tel' | 'url' | 'textarea' | 'select';
+export type FormFieldInputType =
+    | 'text'
+    | 'email'
+    | 'tel'
+    | 'url'
+    | 'textarea'
+    | 'select'
+    | 'checkbox'
+    | 'multiselect';
+
+/**
+ * A submitted form value (DL#41 4c). A plain checkbox carries a boolean, a
+ * multi-select carries a string array, every other field a string. This is the
+ * runtime TypeScript value type (NOT a contract `dataType`): it flows through the
+ * store, `readFormValues`, the submit action, the service, and the create-submission
+ * wrapper. The contract exposes these as supported primitives only (checkbox →
+ * boolean `value` variant; multiselect → per-option `selected` variant).
+ */
+export type FieldValue = string | string[] | boolean;
 
 export interface FormFieldOptionView {
     value: string;
@@ -15,6 +33,8 @@ export interface FormFieldView {
     maxLength?: number;
     pattern?: string;
     options: FormFieldOptionView[];
+    /** A Wix hidden field (DL#41 4a) — no visible input; a page populates it via `control`. */
+    hidden?: boolean;
 }
 
 export interface FormFieldSummaryView {
@@ -35,3 +55,17 @@ export interface ListedFormView {
     name: string;
     fields: FormFieldView[];
 }
+
+/** The `submitForm` action input (DL#41). */
+export interface SubmitRequestInput {
+    formId?: string;
+    values: Record<string, FieldValue>;
+}
+
+/**
+ * The `submitForm` action result (DL#41 planned fix). Outcomes are RETURNED, because the
+ * action transport keeps only `{ code, message }` of a thrown error.
+ */
+export type SubmitFormResult =
+    | { success: true }
+    | { success: false; fieldErrors: Record<string, string> };

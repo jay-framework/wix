@@ -17,10 +17,7 @@
  * gets a migration message, IF the unresolved name surfaces in headlessImports.
  */
 
-import type {
-    JayHtmlValidatorFn,
-    JayHtmlValidationFinding,
-} from '@jay-framework/compiler-shared';
+import type { JayHtmlValidatorFn, JayHtmlValidationFinding } from '@jay-framework/compiler-shared';
 import { walkElements } from '@jay-framework/compiler-shared';
 
 const RETIRED_CONTRACT_NAME = 'wix-form';
@@ -30,7 +27,7 @@ const MIGRATION_HINT =
     'The generic `.fields` binding is no longer supported. Bind explicit per-form field tags instead ' +
     '— e.g. `{contact.email.label}`, `ref="contact.email.input"`, ' +
     '`<option forEach="contact.country.options" trackBy="value">`. Field names come from the ' +
-    'materialized `form/<slug>` contract for that form (or your project\'s wix-forms forms reference).';
+    "materialized `form/<slug>` contract for that form (or your project's wix-forms forms reference).";
 
 export const validateWixFormBindings: JayHtmlValidatorFn = (ctx) => {
     const findings: JayHtmlValidationFinding[] = [];
@@ -79,24 +76,44 @@ function detectRetiredFieldsBindings(
     }
 }
 
+interface ContractTag {
+    tag: string;
+    tags?: ContractTag[];
+}
+
+interface FormImportInfo {
+    contractName: string;
+    tags: Set<string>;
+    /** Per-field sub-contract tag names, when the validation context carries nested tags (gate iv). */
+    subTagsByField: Map<string, Set<string>>;
+}
+
 function detectUnknownRefFieldTags(
     ctx: Parameters<JayHtmlValidatorFn>[0],
-    formImports: Array<{ key?: string; contractName: string; contract?: { tags: Array<{ tag: string }> } }>,
+    formImports: Array<{ key?: string; contractName: string; contract?: { tags?: ContractTag[] } }>,
     findings: JayHtmlValidationFinding[],
 ): void {
-    const tagsByKey = new Map<string, { contractName: string; tags: Set<string> }>();
+    const infoByKey = new Map<string, FormImportInfo>();
     for (const imp of formImports) {
-        tagsByKey.set(imp.key!, {
+        const topTags = imp.contract?.tags ?? [];
+        const subTagsByField = new Map<string, Set<string>>();
+        for (const tag of topTags) {
+            if (Array.isArray(tag.tags) && tag.tags.length) {
+                subTagsByField.set(tag.tag, new Set(tag.tags.map((sub) => sub.tag)));
+            }
+        }
+        infoByKey.set(imp.key!, {
             contractName: imp.contractName,
-            tags: new Set((imp.contract?.tags ?? []).map((tag) => tag.tag)),
+            tags: new Set(topTags.map((tag) => tag.tag)),
+            subTagsByField,
         });
     }
 
     walkElements(ctx.body, ctx, (el: any) => {
         const ref: string | undefined = el?.getAttribute?.('ref');
         if (!ref) return;
-        const [key, firstSegment] = ref.split('.');
-        const info = tagsByKey.get(key);
+        const [key, firstSegment, secondSegment] = ref.split('.');
+        const info = infoByKey.get(key);
         if (!info) return; // not a per-form import key
         if (!firstSegment || firstSegment === 'fields') return; // retired-fields handled above
         if (info.tags.size === 0) return; // contract tags unavailable — nothing to check against
@@ -107,6 +124,23 @@ function detectUnknownRefFieldTags(
                 suggestion:
                     `Available tags: ${[...info.tags].sort().join(', ')}. ` +
                     'Use a field name from the materialized form/<slug> contract for this import.',
+                attribute: 'ref',
+            });
+            return;
+        }
+        // Second-segment sub-tag check (DL#41 §Agent Feedback Loop — gate iv). Only runs when the
+        // validation context carries the field's nested sub-contract tags; otherwise the guaranteed
+        // first-segment check above plus the agent-kit guide cover it (the stated fallback).
+        if (!secondSegment) return;
+        const subTags = info.subTagsByField.get(firstSegment);
+        if (!subTags || subTags.size === 0) return; // nested tags unavailable — fallback holds
+        if (!subTags.has(secondSegment)) {
+            findings.push({
+                severity: 'error',
+                message: `ref="${ref}" binds "${firstSegment}.${secondSegment}", which is not a channel of field "${firstSegment}".`,
+                suggestion:
+                    `Available channels: ${[...subTags].sort().join(', ')}. ` +
+                    'A custom-UI field binds `.control`; a native field binds `.input`.',
                 attribute: 'ref',
             });
         }
