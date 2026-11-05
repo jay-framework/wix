@@ -37,16 +37,35 @@ In [Wix API Keys Manager](https://manage.wix.com/account/api-keys), enable **Wix
 | Console: `[wix-forms] No forms listed for namespace …` | Often normal before any forms exist. If you expected contracts, check `namespace`, `formIds`, and `include` in `config/.wix-forms.yaml`, then re-run agent-kit |
 | Form loads but no fields | Form has no supported input fields in Wix schema |
 
-### 4. Page form
+### 4. Bind forms in page markup
 
-Each form has its own contract `form/<slug>`. Discover slugs and field names in
-`agent-kit/references/wix-forms/forms.yaml`, then bind explicit field tags:
+A page can host **one or many** Wix forms. Each form you render needs its own
+headless script in the page (usually in `<head>`). Two names show up in that
+script — do not confuse them:
+
+| Attribute | Meaning | Who sets it |
+|-----------|---------|-------------|
+| `contract="form/<slug>"` | Which generated contract to load (which Wix form) | **Agent-kit**, from the form’s Wix name → kebab **slug** (see `forms.yaml`) |
+| `key="…"` | Prefix for bindings on **this page** (`{key.email.label}`, `ref="key.submitButton"`) | **You** — any valid identifier; must be **unique among scripts on the same page** |
+
+The slug in `contract` is **not** the same thing as `key`. They often look alike
+when a page has a single form (e.g. both `contact`), but with **multiple forms**
+on one page you typically keep distinct keys while each script points at its own
+`form/<slug>` from `agent-kit/references/wix-forms/forms.yaml`:
 
 ```html
+<!-- Form A: contract slug from forms.yaml; key is your page prefix -->
 <script type="application/jay-headless"
   plugin="@jay-framework/wix-forms"
   contract="form/contact"
   key="contact">
+</script>
+
+<!-- Form B on the same page: different contract + different key -->
+<script type="application/jay-headless"
+  plugin="@jay-framework/wix-forms"
+  contract="form/newsletter"
+  key="newsletter">
 </script>
 
 <form>
@@ -56,7 +75,17 @@ Each form has its own contract `form/<slug>`. Discover slugs and field names in
   <button ref="contact.submitButton">Send</button>
   <p if="contact.statusMessage">{contact.statusMessage}</p>
 </form>
+
+<form>
+  <label>{newsletter.email.label}
+    <input ref="newsletter.email.input" />
+  </label>
+  <button ref="newsletter.submitButton">Subscribe</button>
+</form>
 ```
+
+After `jay-stack agent-kit`, read `forms.yaml` for each form’s exact
+`contract` value (the slug) and field `target` names — not the Wix form id.
 
 See `per-form-contracts.md` for the full contract shape and binding rules.
 

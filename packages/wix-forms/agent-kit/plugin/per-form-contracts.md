@@ -42,6 +42,12 @@ Form-level tags stay at the top level: `isLoading`, `loadError`, `isSubmitting`,
 
 ## Binding is explicit
 
+**Contract slug vs script `key`.** `contract="form/<slug>"` selects the
+generated contract (slug comes from Wix form names in `forms.yaml`). `key` is
+only the binding prefix on that page (`{key.field…}`, `ref="key.field.input"`);
+you choose it. One page may include several forms — one headless script per
+form, each with its own `contract` and a **distinct** `key`.
+
 ```html
 <script type="application/jay-headless" plugin="@jay-framework/wix-forms"
         contract="form/contact" key="contact"></script>
