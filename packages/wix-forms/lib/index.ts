@@ -12,6 +12,7 @@ export {
     type WixFormsService,
 } from './services/wix-forms-service.js';
 export type {
+    FieldValue,
     FormFieldView,
     FormFieldSummaryView,
     FormFieldErrorView,
