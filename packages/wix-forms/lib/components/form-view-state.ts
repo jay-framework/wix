@@ -25,7 +25,7 @@ export interface FormViewStateOverrides {
     errorByTarget?: Record<string, string>;
 }
 
-export function fieldToViewState(field: FormFieldView, error: string): FieldViewState {
+function fieldToViewState(field: FormFieldView, error: string): FieldViewState {
     const viewState: FieldViewState = {
         label: field.label,
         required: field.required,
