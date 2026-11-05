@@ -64,15 +64,15 @@ describe('validateWixFormBindings', () => {
     });
 
     it('should flag a ref to an unknown field tag (the gap core does not catch)', async () => {
-        const ctx = contextWith(
-            `<form><input ref="contact.phoneNumber.input" /></form>`,
-            [contactImport],
-        );
+        const ctx = contextWith(`<form><input ref="contact.phoneNumber.input" /></form>`, [
+            contactImport,
+        ]);
         const findings = await validateWixFormBindings(ctx);
         expect(findings).toEqual([
             expect.objectContaining({
                 severity: 'error',
-                message: 'ref="contact.phoneNumber.input" binds "phoneNumber", which is not a field of contract "form/contact".',
+                message:
+                    'ref="contact.phoneNumber.input" binds "phoneNumber", which is not a field of contract "form/contact".',
                 attribute: 'ref',
             }),
         ]);
@@ -86,9 +86,7 @@ describe('validateWixFormBindings', () => {
     });
 
     it('should emit a migration message for the retired contract="wix-form" import', async () => {
-        const ctx = contextWith(`<form></form>`, [
-            { key: 'contact', contractName: 'wix-form' },
-        ]);
+        const ctx = contextWith(`<form></form>`, [{ key: 'contact', contractName: 'wix-form' }]);
         const findings = await validateWixFormBindings(ctx);
         expect(findings).toEqual([
             expect.objectContaining({
@@ -101,8 +99,72 @@ describe('validateWixFormBindings', () => {
 
     it('should ignore pages with no wix-forms imports', async () => {
         const ctx = contextWith(`<form><input ref="other.thing" /></form>`, [
-            { key: 'other', contractName: 'list/recipes', contract: { name: 'RecipesList', tags: [] } },
+            {
+                key: 'other',
+                contractName: 'list/recipes',
+                contract: { name: 'RecipesList', tags: [] },
+            },
         ]);
+        expect(await validateWixFormBindings(ctx)).toEqual([]);
+    });
+});
+
+describe('validateWixFormBindings — DL#41 second-segment ref check (gate iv)', () => {
+    // A contract whose field sub-contracts carry NESTED tags, as the real validation context may.
+    const nestedImport = {
+        key: 'contact',
+        contractName: 'form/contact',
+        contract: {
+            name: 'ContactForm',
+            tags: [
+                {
+                    tag: 'email',
+                    type: [] as number[],
+                    tags: [
+                        { tag: 'label' },
+                        { tag: 'value' },
+                        { tag: 'required' },
+                        { tag: 'error' },
+                        { tag: 'invalid' },
+                        { tag: 'input' },
+                        { tag: 'control' },
+                    ],
+                },
+                { tag: 'submitButton', type: [] as number[] },
+            ],
+        },
+    };
+
+    it('should flag an unknown second-segment channel when nested tags are present', async () => {
+        const ctx = contextWith(
+            `<form><button ref="contact.email.bogus" data-value="x"></button></form>`,
+            [nestedImport],
+        );
+        const findings = await validateWixFormBindings(ctx);
+        expect(findings).toEqual([
+            expect.objectContaining({
+                severity: 'error',
+                message:
+                    'ref="contact.email.bogus" binds "email.bogus", which is not a channel of field "email".',
+                attribute: 'ref',
+            }),
+        ]);
+    });
+
+    it('should accept a known .control second-segment channel', async () => {
+        const ctx = contextWith(
+            `<form><button ref="contact.email.control" data-value="x"></button></form>`,
+            [nestedImport],
+        );
+        expect(await validateWixFormBindings(ctx)).toEqual([]);
+    });
+
+    it('should NOT flag a second segment when nested tags are unavailable (first-segment fallback)', async () => {
+        // The flat CONTACT_TAGS import carries no nested tags → the fallback holds, no finding.
+        const ctx = contextWith(
+            `<form><button ref="contact.email.bogus" data-value="x"></button></form>`,
+            [contactImport],
+        );
         expect(await validateWixFormBindings(ctx)).toEqual([]);
     });
 });
