@@ -105,7 +105,7 @@ export async function generateWixFormsAgentKit(
             {
                 _generated: new Date().toISOString(),
                 _description:
-                    'Wix Forms per-form contracts for agent discovery (DL#40). ' +
+                    'Wix Forms per-form contracts for agent discovery. ' +
                     'Bind explicit field tags, e.g. {contact.email.label}, ref="contact.email.input".',
                 namespace: formsService.config.namespace,
                 totalForms: formSummaries.length,

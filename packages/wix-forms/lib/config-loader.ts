@@ -4,13 +4,13 @@ import yaml from 'js-yaml';
 import type { FormInclude } from './wix-apis/list-forms.js';
 
 /**
- * Wix Forms config (DL#40 §1).
+ * Wix Forms config for per-form contract generation.
  *
  * Optional filter/override for per-form contract generation — NOT a form list.
  * Absent config → generate every enabled form in the default namespace.
  */
 export interface WixFormsConfig {
-    /** List Forms namespace (OQ-8). Default: the standalone Wix Forms namespace. */
+    /** List Forms namespace. Default: the standalone Wix Forms namespace. */
     namespace: string;
     /** Optional whitelist — restrict generation to these form ids. */
     formIds: string[];
@@ -19,8 +19,9 @@ export interface WixFormsConfig {
 }
 
 /**
- * The standalone Wix Forms namespace (OQ-8).
- * ⚠️ Confirm against a live site's List Forms response — see DL#40 Implementation Results.
+ * Default List Forms namespace for standalone Wix Forms.
+ * If your site uses a different namespace, set `namespace` in `config/.wix-forms.yaml`
+ * after checking the List Forms API response for that site.
  */
 export const DEFAULT_FORMS_NAMESPACE = 'wix.form_app.form';
 

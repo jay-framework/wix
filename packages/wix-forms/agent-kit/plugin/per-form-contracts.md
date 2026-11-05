@@ -1,4 +1,4 @@
-Per-form contracts for wix-forms (DL#40).
+Per-form contracts for wix-forms.
 
 ## One contract per form, with field-named tags
 

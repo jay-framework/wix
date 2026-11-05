@@ -1,7 +1,7 @@
 name: wix-forms
 # No module field for NPM packages - uses package main export by default
 
-# Dynamic contracts — one contract generated per Wix form at agent-kit time (DL#40).
+# Dynamic contracts — one contract generated per Wix form at agent-kit time.
 # Materializes as form/<slug>, all served by the shared wixForm component.
 dynamic_contracts:
   - prefix: form

@@ -68,7 +68,7 @@ describe('formContractGenerator', () => {
      * contract tag into its ViewState accessor and ref name, so the generated
      * tag MUST be camelCased or the page's `{form.firstName...}` bindings and
      * `ref="form.firstName.input"` resolve to undefined.
-     * Found in: design-log/40 - per-form contracts for wix-forms.md
+     * Spec: agent-kit/plugin/per-form-contracts.md (field targets → camelCase tags).
      * Expected: generated tags are `firstName` / `phoneNumber`, never the raw
      * `first_name` / `phone-number`.
      */
