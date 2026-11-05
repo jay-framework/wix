@@ -11,6 +11,7 @@
 import { makeContractGenerator } from '@jay-framework/fullstack-component';
 import { WIX_FORMS_SERVICE } from '../services/wix-forms-service-marker.js';
 import type { ListedFormView } from '../types.js';
+import { sourceEditingContractHeader } from '../source-editing.js';
 import { fieldTag, reservedFormTags, toPascalCase } from './contract-utils.js';
 import { computeFormSlugs } from './form-slug.js';
 
@@ -25,6 +26,7 @@ function buildContract(form: ListedFormView, slug: string): string {
     const tags = [...fieldTags, reservedFormTags()].join('\n');
     return `name: ${toPascalCase(slug)}Form
 description: ${describe(form)}
+${sourceEditingContractHeader(form.id)}
 tags:
 ${tags}`;
 }

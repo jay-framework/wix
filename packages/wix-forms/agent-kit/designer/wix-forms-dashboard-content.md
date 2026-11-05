@@ -30,7 +30,7 @@ When you are unsure — several fields visible, the comment does not name which 
 
 1. Resolve the contract name from the inspector (wix-forms page script `contract="form/…"` and `key="K"` — see below).
 2. Read `agent-kit/plugins-index.yaml` → that contract's `path` (materialized `form-<slug>.jay-contract`).
-3. On that file, read **`metadata.formId`** and **`editingGuide`** (project-root path to this shared procedure). Open **`editingGuide`** and follow it, using **`formId`** from the contract — never guess from the slug alone.
+3. On that file, read **`formId`** and **`editingGuide`** (project-root path to this shared procedure). Open **`editingGuide`** and follow it, using **`formId`** from the contract — never guess from the slug alone.
 4. Fallback mapping: `agent-kit/references/wix-forms/forms.yaml` lists each `contract` with its `formId` and field `target` names.
 5. Do **not** rely on AIditor to paste the guide — follow the paths above.
 
@@ -48,7 +48,7 @@ No inspector result → fallback.
 ## Steps
 
 1. **Find the contract and script key.** In `file`, find wix-forms headless script(s): `plugin="@jay-framework/wix-forms"`, `contract="form/…"`, `key="K"`. If several scripts exist, use the one whose `K` matches the binding/ref prefix on the clicked element (e.g. `{newsletter.email.label}` → `key="newsletter"`). The **`contract`** slug is not the same as **`key`** — both are needed; form identity comes from the contract, not from `key`.
-2. **Form id** = `metadata.formId` on that contract's materialized `.jay-contract` (see [How to find this guide](#how-to-find-this-guide-materialized-contracts)). Fallback: the matching entry in `agent-kit/references/wix-forms/forms.yaml` (`contract` + `formId`). **Never** use `defaultFormId` or a `formId` attribute on markup — those are removed.
+2. **Form id** = top-level **`formId`** on that contract's materialized `.jay-contract` (see [How to find this guide](#how-to-find-this-guide-materialized-contracts)). Fallback: the matching entry in `agent-kit/references/wix-forms/forms.yaml` (`contract` + `formId`), or `metadata.formId` on the same contract in `plugins-index.yaml`. **Never** use `defaultFormId` or a `formId` attribute on markup — those are removed.
 3. **Find the field** (for naming only): read `file` at `node.lines` — bindings/refs use `K.<target>.…` (e.g. `{contact.email.label}`, `ref="contact.email.input"`). The **`<target>`** segment is the field's internal name; confirm label/type in `forms.yaml`. Do not use a generic `forEach="K.fields"` — it is no longer supported.
 4. **Build the link** with `wix-server-client/getDashboardUrl`:
    - edit the form → `{ "path": "wix-forms/form/<formId>" }`

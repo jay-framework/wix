@@ -7,7 +7,6 @@ dynamic_contracts:
   - prefix: form
     component: wixForm
     generator: formContractGenerator
-    editingGuide: ./agent-kit/designer/wix-forms-dashboard-content.md
 
 services:
   - name: wix-forms

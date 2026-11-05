@@ -2,10 +2,9 @@ Per-form contracts for wix-forms.
 
 ## One contract per form, with field-named tags
 
-wix-forms no longer ships a single generic `wix-form` contract. Instead, **one
-contract is generated per Wix form** during the agent-kit phase
-(`jay-stack agent-kit`), with tags named after that form's real fields. This is
-the same mechanism `wix-data` uses for collections.
+wix-forms generates **one contract per Wix form** during the agent-kit phase
+(`jay-stack agent-kit`). Each contract exposes tags named after that form's real
+fields — the same pattern `wix-data` uses for collections.
 
 - Forms are **auto-enumerated** from the site via the Wix List Forms API — there
   is no manual form list. `config/.wix-forms.yaml` only optionally filters
@@ -40,13 +39,18 @@ A field `email` becomes a `sub-contract` tag `email` carrying:
 Form-level tags stay at the top level: `isLoading`, `loadError`, `isSubmitting`,
 `statusMessage` (data/variant) and `submitButton` (interactive).
 
-## Binding is explicit
+## Binding
 
 **Contract slug vs script `key`.** `contract="form/<slug>"` selects the
 generated contract (slug comes from Wix form names in `forms.yaml`). `key` is
 only the binding prefix on that page (`{key.field…}`, `ref="key.field.input"`);
 you choose it. One page may include several forms — one headless script per
 form, each with its own `contract` and a **distinct** `key`.
+
+Bind **explicit field tags** from the materialized contract — not a generic
+fields array. The `wix-forms-bindings` validator rejects unknown field refs and
+bindings that do not match the contract. Form identity is fixed by
+`contract="form/<slug>"`; there is no `formId` prop and no `defaultFormId`.
 
 ```html
 <script type="application/jay-headless" plugin="@jay-framework/wix-forms"
@@ -65,11 +69,3 @@ form, each with its own `contract` and a **distinct** `key`.
   <p if="contact.statusMessage">{contact.statusMessage}</p>
 </form>
 ```
-
-## The generic `fields` tag is gone
-
-Never write `forEach="contact.fields"`, `{contact.fields...}`, or
-`ref="contact.fields.formInputs"`. These bind the generic repeated array, which
-is no longer supported. The `wix-forms-bindings` validator flags leftover
-`.fields` bindings and unknown field tags used as refs. There is no
-`formId` prop and no `defaultFormId` — form identity is fixed by the contract.

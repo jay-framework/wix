@@ -1,5 +1,7 @@
 name: ContactForm
 description: Wix form "Contact" (f1a2b3)
+formId: f1a2b3
+editingGuide: agent-kit/references/wix-forms/wix-forms-dashboard-content.md
 tags:
   - tag: firstName
     type: sub-contract
