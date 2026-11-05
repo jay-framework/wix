@@ -21,7 +21,11 @@ import { provideWixFormsService } from '../lib/services/wix-forms-service.js';
 const mockGetFormSummary = vi.mocked(getFormSummary);
 const mockListForms = vi.mocked(listForms);
 const mockClient = {} as Parameters<typeof provideWixFormsService>[0];
-const testConfig = { namespace: 'wix.form_app.form', formIds: [], include: 'enabled' as const };
+const testConfig = {
+    namespace: 'wix.form_app.form',
+    formIds: [],
+    include: 'enabled' as const,
+};
 
 describe('WixFormsService.listForms', () => {
     beforeEach(() => {
