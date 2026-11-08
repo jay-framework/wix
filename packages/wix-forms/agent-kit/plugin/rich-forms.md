@@ -35,15 +35,17 @@ submit errors. Use the `isSubmitted` variant. Note: a confirmation shown after a
 trip (below) does NOT imply the submission was stored — never treat "confirmation shown" as
 a persistence guarantee.
 
-**Submit/reset buttons and native form submission.** A `<button>` inside a `<form>`
-defaults to `type=submit`, so a click (or Enter in a field) triggers the browser's own form
-submission — a page navigation that reloads before the plugin's async submit can run. The
-`wixForm` component prevents this for you (it cancels the default on the button clicks and
-guards the owning `<form>`), so the markup above works as written. As defense-in-depth it is
-still good practice to make the intent explicit:
+**Submit/reset buttons and native form submission.** Keep the submit button a real submit
+button — leave `type` off (it defaults to `submit` inside a `<form>`) or write
+`type="submit"`. The `wixForm` component listens to the owning `<form>`'s `submit` event,
+cancels the browser's page-reloading navigation, and runs the plugin submit, so a click,
+Enter in a field, and `requestSubmit()` all work. Do **not** set `type="button"` on the
+submit button: it disables Enter-to-submit (a keyboard accessibility expectation) and hides
+the submission from password managers/autofill. The reset button is not a submit action, so
+mark it `type="button"`:
 
 ```html
-<button type="button" ref="contact.submitButton">Send</button>
+<button ref="contact.submitButton">Send</button>
 ...
 <button type="button" ref="contact.resetButton">Send another</button>
 ```

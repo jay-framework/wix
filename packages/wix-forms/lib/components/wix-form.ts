@@ -170,7 +170,7 @@ function WixFormInteractive(
     // mount, where the elements exist. (Event registration above is safe at construction —
     // listeners are deferred and attached when the element binds.)
     createEffect(() => {
-        preventNativeFormSubmit(refs);
+        wireNativeFormSubmit(refs, submit);
         void seedControlsIntoStore(refs, carryForward.fields, dirtyTargets, setValues);
     });
 
@@ -207,17 +207,21 @@ function WixFormInteractive(
         });
     }
 
-    // A <button> inside a <form> defaults to type=submit, so a click triggers the browser's
-    // native submission (a GET navigation that reloads the page before any async handler runs).
-    // Cancel that default on every form button; the <form> guard in the mount effect is the
-    // belt-and-suspenders for Enter-key / programmatic submits that bypass the button click.
     refs.resetButton?.onclick(({ event }: { event: Event }) => {
         event.preventDefault();
         resetForm();
     });
 
-    refs.submitButton?.onclick(async ({ event }: { event: Event }) => {
+    // Inside a <form>, a submit-type button's click becomes the form's `submit` event, which
+    // `wireNativeFormSubmit` handles — that single path also covers Enter-key implicit
+    // submission and `requestSubmit()`. The click drives the submit only when no form owns it.
+    refs.submitButton?.onclick(({ event }: { event: Event }) => {
+        if (isFormSubmitter(event.target)) return;
         event.preventDefault();
+        void submit();
+    });
+
+    async function submit(): Promise<void> {
         setStatusMessage('');
         setErrorByTarget({});
 
@@ -262,7 +266,7 @@ function WixFormInteractive(
         } finally {
             setIsSubmitting(false);
         }
-    });
+    }
 
     return {
         render: () =>
@@ -302,18 +306,31 @@ function wireFieldEvents(refs: any, fields: FormFieldView[], handlers: FieldEven
     }
 }
 
+/** True when clicking `target` makes its owning <form> fire a native `submit` event. */
+function isFormSubmitter(target: EventTarget | null): boolean {
+    const button = (target as Element | null)?.closest?.('button');
+    return !!button?.form && button.type === 'submit';
+}
+
+const wiredForms = new WeakSet<HTMLFormElement>();
+
 /**
- * Prevent a native <form> submission from navigating (Bug 1). A `<button>` inside a form
- * defaults to type=submit, so a click — or an Enter keypress, or a programmatic submit —
- * triggers the browser's own GET submission and reloads the page before the async submit
- * handler runs. Guard the owning <form> directly so no submission path can navigate,
- * regardless of button type. Must run on mount (`exec$` needs the bound element).
+ * Drive the plugin submit from the owning <form>'s `submit` event (Bug 1) — one path for
+ * button clicks, Enter-key implicit submission, and `requestSubmit()` — and cancel the
+ * browser's own GET navigation, which would reload the page before the async submit runs.
+ * Keeping the button `type=submit` preserves Enter-to-submit and autofill/password-manager
+ * submit detection. Must run on mount (`exec$` needs the bound element); the WeakSet keeps
+ * effect re-runs from attaching a second listener (a double submit).
  */
-function preventNativeFormSubmit(refs: any): void {
+function wireNativeFormSubmit(refs: any, submit: () => Promise<void>): void {
     void refs.submitButton?.exec$((button: HTMLButtonElement) => {
-        button.form?.addEventListener('submit', (nativeEvent: Event) =>
-            nativeEvent.preventDefault(),
-        );
+        const form = button.form;
+        if (!form || wiredForms.has(form)) return;
+        wiredForms.add(form);
+        form.addEventListener('submit', (nativeEvent: Event) => {
+            nativeEvent.preventDefault();
+            void submit();
+        });
     });
 }
 
