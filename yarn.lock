@@ -2985,6 +2985,7 @@ __metadata:
     typescript: "npm:^5.3.3"
     vite: "npm:^6.4.4"
     vite-plugin-inspect: "npm:^0.8.1"
+    vitest: "npm:^4.1.11"
   languageName: unknown
   linkType: soft
 

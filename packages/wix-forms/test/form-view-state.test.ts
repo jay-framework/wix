@@ -2,6 +2,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { buildFieldsViewState, buildFormViewState } from '../lib/components/form-view-state.js';
+import { SubmitFailure, SubmitState } from '../lib/components/submit-outcome.js';
 import type { FormFieldView } from '../lib/types.js';
 
 const fields: FormFieldView[] = [
@@ -91,6 +92,8 @@ describe('buildFormViewState', () => {
             isSubmitting: true,
             statusMessage: 'Form submitted successfully.',
             isSubmitted: false,
+            submitState: SubmitState.SUBMITTING,
+            submitFailure: SubmitFailure.NONE,
         });
     });
 
@@ -111,5 +114,39 @@ describe('buildFormViewState', () => {
         });
         expect(result.isLoading).toBe(false);
         expect(result.loadError).toEqual('Could not load the form.');
+    });
+});
+
+describe('buildFormViewState submit outcome (DL#45)', () => {
+    const idle = { isSubmitting: false, statusMessage: '', loadError: '' };
+
+    it('should be IDLE with no failure by default', () => {
+        const result = buildFormViewState(fields, idle);
+        expect(result.submitState).toEqual(SubmitState.IDLE);
+        expect(result.submitFailure).toEqual(SubmitFailure.NONE);
+    });
+
+    it('should be SUBMITTING while a submit is in flight', () => {
+        const result = buildFormViewState(fields, { ...idle, isSubmitting: true });
+        expect(result.submitState).toEqual(SubmitState.SUBMITTING);
+    });
+
+    it('should be SUCCEEDED once submitted, even while a redirect keeps isSubmitting set', () => {
+        const result = buildFormViewState(fields, {
+            ...idle,
+            isSubmitting: true,
+            isSubmitted: true,
+        });
+        expect(result.submitState).toEqual(SubmitState.SUCCEEDED);
+    });
+
+    it('should be FAILED with the failure reason, independent of statusMessage', () => {
+        const result = buildFormViewState(fields, {
+            ...idle,
+            submitFailure: SubmitFailure.NETWORK,
+        });
+        expect(result.submitState).toEqual(SubmitState.FAILED);
+        expect(result.submitFailure).toEqual(SubmitFailure.NETWORK);
+        expect(result.statusMessage).toEqual('');
     });
 });

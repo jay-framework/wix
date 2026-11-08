@@ -11,7 +11,16 @@ export {
     WIX_FORMS_SERVICE,
     type WixFormsService,
 } from './services/wix-forms-service.js';
+export {
+    WIX_FORMS_SUBMIT_HOOKS,
+    SubmitIgnoredError,
+    type SubmitHook,
+    type SubmitHooks,
+    type SubmitHookInput,
+    type SubmitHookOutcome,
+} from './services/wix-forms-submit-hooks.js';
 export type {
+    SubmitFormResult,
     FieldValue,
     FormFieldView,
     FormFieldSummaryView,

@@ -23,10 +23,17 @@ import {
 } from '@jay-framework/fullstack-component';
 import { createEffect, createSignal, Props } from '@jay-framework/component';
 import { WIX_FORMS_SERVICE, type WixFormsService } from '../services/wix-forms-service-marker.js';
-import type { FieldValue, FormFieldView } from '../types.js';
+import { ensureSessionFresh } from '@jay-framework/wix-server-client/client';
+import type { FieldValue, FormFieldView, SubmitFormResult } from '../types.js';
 import { submitForm } from '../actions/forms-actions.js';
 import { validateFormField } from '../utils/project-form-fields.js';
-import { presentSubmitRejection } from './submit-outcome.js';
+import {
+    presentSubmitRejection,
+    SUBMIT_FAILED_MESSAGE,
+    SubmitFailure,
+    toSitePath,
+    type SubmitRejection,
+} from './submit-outcome.js';
 import {
     emptyStoreFor,
     emptyValueFor,
@@ -42,6 +49,8 @@ import {
 } from '../slow-render-defaults.js';
 import { contractTagName } from '../generators/contract-utils.js';
 import { buildFormViewState } from './form-view-state.js';
+import { createSubmitFlight } from './form-submit-flight.js';
+import { runFormSubmit } from './form-submit-execution.js';
 
 interface WixFormMetadata {
     formId: string;
@@ -98,12 +107,14 @@ function WixFormInteractive(
     const [errorByTarget, setErrorByTarget] = createSignal<Record<string, string>>({});
     const [invalidByTarget, setInvalidByTarget] = createSignal<Record<string, boolean>>({});
     const [isSubmitted, setIsSubmitted] = createSignal(false);
+    const [submitFailure, setSubmitFailure] = createSignal(SubmitFailure.NONE);
     // The per-field value store — the one source of truth for each field's value (§0).
     const [values, setValues] = createSignal<Record<string, FieldValue>>({});
     // Fields the user has edited; page-provided control seeding never overwrites these.
     const dirtyTargets = new Set<string>();
     // Honeypot value is kept OUT of the store so it never reaches readFormValues (Q12).
     let honeypotValue = '';
+    const submitFlight = createSubmitFlight();
 
     function setFieldValue(target: string, value: FieldValue): void {
         setValues((current) => ({ ...current, [target]: value }));
@@ -175,11 +186,14 @@ function WixFormInteractive(
     });
 
     function resetForm(): void {
+        submitFlight.invalidate();
         setValues(emptyStoreFor(carryForward.fields));
         setErrorByTarget({});
         setInvalidByTarget({});
         setStatusMessage('');
+        setSubmitFailure(SubmitFailure.NONE);
         setIsSubmitted(false);
+        setIsSubmitting(false);
         dirtyTargets.clear();
         honeypotValue = '';
         clearNativeInputsAfterRemount();
@@ -233,11 +247,21 @@ function WixFormInteractive(
         void submit();
     });
 
+    // A bfcache Back restore must not leave the button disabled by a redirect (DL#42 §4).
+    if (typeof window !== 'undefined') {
+        window.addEventListener('pageshow', (event: PageTransitionEvent) => {
+            if (event.persisted) setIsSubmitting(false);
+        });
+    }
+
     async function submit(): Promise<void> {
+        // Early exit while a prior submit still seeds/validates; runFormSubmit owns the in-flight guard.
+        if (isSubmitting()) return;
         setStatusMessage('');
+        setSubmitFailure(SubmitFailure.NONE);
         setErrorByTarget({});
 
-        // Honeypot trip: fake success (a bot must not tell), never call the API (Q12).
+        // Honeypot trip: fake success (a bot must not tell), before validation or the API (Q12).
         if (honeypotValue.trim()) {
             showSubmitted();
             return;
@@ -256,30 +280,48 @@ function WixFormInteractive(
                 Object.fromEntries(Object.keys(clientErrors).map((target) => [target, true])),
             );
             showFieldErrors(clientErrors);
+            setSubmitFailure(SubmitFailure.VALIDATION);
             return;
         }
 
-        setIsSubmitting(true);
-        try {
-            const result = await submitForm({
-                formId: carryForward.formId,
-                values: submissionValues,
-            });
-            if (result.success) {
-                showSubmitted();
-                // The store is intentionally NOT cleared — the confirmation echoes it (Q2).
-            } else {
-                const rejection = presentSubmitRejection(result, carryForward.fields);
-                setErrorByTarget(rejection.errorByTarget);
-                setInvalidByTarget(rejection.invalidByTarget);
-                setStatusMessage(rejection.statusMessage);
-                showFieldErrors(rejection.errorByTarget);
-            }
-        } catch (error) {
-            setStatusMessage(describeSubmitError(error));
-        } finally {
-            setIsSubmitting(false);
+        await runFormSubmit({
+            flight: submitFlight,
+            isSubmitting,
+            setIsSubmitting,
+            ensureSessionFresh,
+            submitForm,
+            formId: carryForward.formId,
+            submissionValues,
+            presentSubmitResult,
+            navigate: (path) => window.location.assign(path),
+            onNetworkFailure: () => {
+                setStatusMessage(SUBMIT_FAILED_MESSAGE);
+                setSubmitFailure(SubmitFailure.NETWORK);
+            },
+        });
+    }
+
+    /** Applies a returned submit result; returns the site path to navigate to, if any. */
+    function presentSubmitResult(result: SubmitFormResult): string | undefined {
+        if (!result.success) {
+            const rejection = presentSubmitRejection(result, carryForward.fields);
+            setErrorByTarget(rejection.errorByTarget);
+            setInvalidByTarget(rejection.invalidByTarget);
+            setStatusMessage(rejection.statusMessage);
+            setSubmitFailure((result as SubmitRejection).reason ?? SubmitFailure.UNKNOWN);
+            showFieldErrors(rejection.errorByTarget);
+            return undefined;
         }
+        // The store is intentionally NOT cleared — the confirmation echoes it (Q2).
+        showSubmitted();
+        const redirectTo = (result as { redirectTo?: string }).redirectTo;
+        const redirectPath = toSitePath(redirectTo);
+        if (redirectTo !== undefined && !redirectPath) {
+            console.error('[wix-forms] dropped an unsafe redirectTo', {
+                formId: carryForward.formId,
+            });
+        }
+        return redirectPath;
     }
 
     return {
@@ -292,6 +334,7 @@ function WixFormInteractive(
                 invalidByTarget: invalidByTarget(),
                 valueByTarget: values(),
                 isSubmitted: isSubmitted(),
+                submitFailure: submitFailure(),
             }),
     };
 }
@@ -446,14 +489,6 @@ function describeLoadError(error: unknown): string {
     return rawMessage.includes('403')
         ? 'Forms API access denied. Add Wix Forms permission to your API key in the Wix dashboard.'
         : rawMessage || 'Could not load the form. Please try again later.';
-}
-
-function describeSubmitError(error: unknown): string {
-    const rawMessage =
-        error instanceof Error ? error.message : 'Something went wrong. Please try again.';
-    return rawMessage.includes('403')
-        ? 'Form submission denied. Add Wix Forms permission to your API key in the Wix dashboard.'
-        : rawMessage;
 }
 
 export const wixForm = makeJayStackComponent<any>()

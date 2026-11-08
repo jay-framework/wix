@@ -74,6 +74,31 @@ The Wix site must be **published** — hosted checkout uses the published site.
 </jay:booking-flow>
 ```
 
+## Outcomes — write your own copy
+
+The plugin reports **what happened** through enum variants; the string tags are English **defaults**. For your own wording or another language, branch on the variant and write the text in jay-html. Never detect an outcome by testing or matching a string.
+
+| Variant | Members | Default text in |
+| ------- | ------- | --------------- |
+| `servicesFailure` | `NONE`, `PERMISSION` (Bookings API 403), `UNKNOWN` | `servicesError` |
+| `slotsFailure` | `NONE`, `UNKNOWN` (loading availability failed) | `slotsMessage` |
+| `bookingState` | `IDLE`, `BOOKING`, `CONFIRMED`, `FAILED` | `bookingStatus` (on `CONFIRMED`) |
+| `bookingFailure` | `NONE`, `VALIDATION`, `FORM_UNAVAILABLE`, `CHECKOUT_PERMISSION`, `CHECKOUT_REDIRECT_REJECTED`, `SITE_NOT_PUBLISHED`, `UNKNOWN` | `bookingError` |
+
+- **No available times** is not a failure: `!hasSlots` with `slotsFailure === NONE` (and `!slotsLoading`).
+- `VALIDATION`: the participant form failed a check; `bookingError` names the field (English template, Wix label).
+- `CHECKOUT_PERMISSION`, `CHECKOUT_REDIRECT_REJECTED`, `SITE_NOT_PUBLISHED` are **setup** problems (see the troubleshooting guide). Show visitors a neutral line; the default text is a hint for the site owner.
+
+```html
+<p if="servicesFailure === PERMISSION">Les réservations sont momentanément indisponibles.</p>
+<p if="!slotsLoading && !hasSlots && slotsFailure === NONE">Aucun créneau dans les 14 prochains jours.</p>
+<p if="bookingState === CONFIRMED">Réservation confirmée !</p>
+<p if="bookingFailure === VALIDATION">Vérifiez vos informations.</p>
+<p if="bookingFailure === UNKNOWN">La réservation a échoué. Réessayez.</p>
+```
+
+With a page-script import (`key="booking"`), prefix the tags: `booking.bookingState`.
+
 ## Server flow
 
 ```

@@ -95,7 +95,8 @@ See `per-form-contracts.md` for the full contract shape and binding rules, and
 `user-visible-messages.md` when changing success, error, or localized copy.
 
 For rich production forms — sent/thank-you state, live validation, hidden and
-page-provided values, custom-UI/multi-step, honeypot, and non-string fields — see
+page-provided values, custom-UI/multi-step, honeypot, non-string fields, and a
+server-side submit hook (verify the caller, write your own record, redirect) — see
 `rich-forms.md`.
 
 ## Cross-plugin use: getFormSummary

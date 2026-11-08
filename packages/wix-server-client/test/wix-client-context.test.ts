@@ -18,10 +18,32 @@ vi.mock('@wix/sdk', () => ({
                 setTokens: client.setTokens,
                 getTokens: () => client.tokens,
                 renewToken: async () => ({ role: 'renewed' }),
+                // As the SDK's OAuthStrategy: an expired access token is renewed first.
+                getAuthHeaders: async () => {
+                    const tokens = client.tokens as { accessToken?: { expiresAt: number } };
+                    if (tokens?.accessToken && tokens.accessToken.expiresAt < nowInSeconds()) {
+                        client.tokens = memberTokens('renewed-access', nowInSeconds() + 3600);
+                    }
+                    return { headers: {} };
+                },
             },
         };
     },
 }));
+
+const syncSession = vi.fn(async (_input: unknown) => ({ ok: true }));
+vi.mock('../lib/actions/session-actions.js', () => ({ syncSession }));
+
+function nowInSeconds(): number {
+    return Math.floor(Date.now() / 1000);
+}
+
+function memberTokens(accessToken: string, expiresAt: number) {
+    return {
+        accessToken: { value: accessToken, expiresAt },
+        refreshToken: { value: 'r', role: 'member' },
+    };
+}
 
 const registered: Record<string, unknown> = {};
 vi.mock('@jay-framework/runtime', () => ({
@@ -39,13 +61,16 @@ vi.stubGlobal('localStorage', {
     clear: () => store.clear(),
 });
 
-const { provideWixClientContext, WIX_CLIENT_CONTEXT } = await import('../lib/wix-client-context');
+const { provideWixClientContext, ensureSessionFresh, WIX_CLIENT_CONTEXT } =
+    await import('../lib/wix-client-context');
 type Context = import('../lib/wix-client-context').WixClientContext;
 
 describe('wix client context tokens', () => {
     beforeEach(() => {
         localStorage.clear();
         created.length = 0;
+        syncSession.mockReset();
+        syncSession.mockImplementation(async () => ({ ok: true }));
     });
 
     it('keeps tokens set through the context (e.g. a member login) for the next page load', async () => {
@@ -72,5 +97,122 @@ describe('wix client context tokens', () => {
         expect(created.at(-1)!.tokens).toEqual({ role: 'visitor' });
         await provideWixClientContext('client-1');
         expect(created.at(-1)!.tokens).toEqual({ role: 'renewed' });
+    });
+});
+
+describe('wix session cookie sync (DL#42 V13, client)', () => {
+    beforeEach(() => {
+        localStorage.clear();
+        syncSession.mockReset();
+        syncSession.mockImplementation(async () => ({ ok: true }));
+    });
+
+    async function provideContext(): Promise<Context> {
+        await provideWixClientContext('client-sync');
+        return registered[WIX_CLIENT_CONTEXT as unknown as string] as Context;
+    }
+
+    it('should sync the session only when the stored access token changed', async () => {
+        const context = await provideContext();
+        const login = memberTokens('member-access', nowInSeconds() + 3600);
+
+        context.setTokens(login as never);
+        context.setTokens({ ...login } as never);
+        await Promise.resolve();
+
+        expect(syncSession.mock.calls).toEqual([[{ tokens: login }]]);
+    });
+
+    it('should renew an expired token, store it, and wait for its sync', async () => {
+        const context = await provideContext();
+        context.setTokens(memberTokens('expired-access', nowInSeconds() - 10) as never);
+        let finishSync: () => void = () => {};
+        let syncCalls = 0;
+        syncSession.mockImplementation(() => {
+            syncCalls++;
+            if (syncCalls === 1) {
+                return new Promise((resolve) => (finishSync = () => resolve({ ok: true })));
+            }
+            return Promise.resolve({ ok: true });
+        });
+
+        let fresh = false;
+        const ensuring = ensureSessionFresh().then(() => (fresh = true));
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        expect(fresh).toBe(false);
+        finishSync();
+        await ensuring;
+
+        expect((context.getTokens() as any).accessToken.value).toEqual('renewed-access');
+        expect(syncSession.mock.calls.at(-1)).toEqual([
+            {
+                tokens: memberTokens(
+                    'renewed-access',
+                    (context.getTokens() as any).accessToken.expiresAt,
+                ),
+            },
+        ]);
+        const stored = JSON.parse(localStorage.getItem('wix_visitor_tokensclient-sync')!);
+        expect(stored.tokens.accessToken.value).toEqual('renewed-access');
+    });
+
+    it('should sync a never-synced valid token before an action, once', async () => {
+        const restored = memberTokens('restored-access', nowInSeconds() + 3600);
+        localStorage.setItem(
+            'wix_visitor_tokensclient-sync',
+            JSON.stringify({ tokens: restored, oauthClientId: 'client-sync' }),
+        );
+        await provideContext(); // tokens restored from storage are not synced on load
+        expect(syncSession).not.toHaveBeenCalled();
+
+        await ensureSessionFresh();
+        await ensureSessionFresh();
+
+        expect(syncSession).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not start the second cookie sync until the first one finishes', async () => {
+        const context = await provideContext();
+        await ensureSessionFresh();
+        syncSession.mockClear();
+
+        const first = memberTokens('first-access', nowInSeconds() + 3600);
+        const second = memberTokens('second-access', nowInSeconds() + 7200);
+        let releaseFirst: () => void = () => {};
+        let syncCalls = 0;
+        syncSession.mockImplementation(() => {
+            syncCalls++;
+            if (syncCalls === 1) {
+                return new Promise((resolve) => {
+                    releaseFirst = () => resolve({ ok: true });
+                });
+            }
+            return Promise.resolve({ ok: true });
+        });
+
+        context.setTokens(first as never);
+        context.setTokens(second as never);
+        await Promise.resolve();
+        expect(syncSession).toHaveBeenCalledTimes(1);
+
+        releaseFirst();
+        await ensureSessionFresh();
+        expect(syncSession).toHaveBeenCalledTimes(2);
+        expect(syncSession.mock.calls.at(-1)).toEqual([{ tokens: second }]);
+    });
+
+    it('should not throw when the sync fails, and retry it next time', async () => {
+        const context = await provideContext();
+        syncSession.mockRejectedValue(new Error('network down'));
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        context.setTokens(memberTokens('member-access', nowInSeconds() + 3600) as never);
+
+        await expect(ensureSessionFresh()).resolves.toBeUndefined();
+        syncSession.mockResolvedValue({ ok: true });
+        await ensureSessionFresh();
+
+        expect(syncSession.mock.calls.length).toBeGreaterThanOrEqual(2);
+        expect(JSON.stringify(warn.mock.calls)).not.toMatch('member-access');
+        warn.mockRestore();
     });
 });

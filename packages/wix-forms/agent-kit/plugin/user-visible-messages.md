@@ -1,47 +1,61 @@
 User-visible copy on Wix Forms pages (headless `form/<slug>` contracts).
 
+**Rule:** the plugin tells the page **what happened** through variants; the **words** are the page's. Plugin strings are English **defaults**: bind them when English is fine, otherwise branch on the variants and write your own copy in jay-html.
+
 ## Who owns each string
 
 | What visitors see | Source | Edited where |
 | ----------------- | ------ | ------------ |
 | Field **labels**, **placeholders**, select **option** labels | Wix Forms API (form schema) | **Wix dashboard** form builder — bind `{key.<target>.label}`, `{key.<target>.placeholder}`, option `{label}` |
 | **Submit button** label | Page markup | **jay-html** — text inside `<button ref="key.submitButton">…</button>` (not read from Wix on the headless path) |
-| **Success** after submit | Plugin sets English on `statusMessage` | **Not** in Wix dashboard. Control in **jay-html** (see below) |
+| **Success** after submit | Page markup | **jay-html** — `if="key.submitState === SUCCEEDED"` (or `key.isSubmitted`) + your copy |
+| **Submit failure** | `submitFailure` variant (+ English default in `statusMessage`) | **jay-html** — branch on `key.submitFailure` |
 | **Load failure** (`loadError`) | Plugin (`wix-form` component) | English defaults; customize display in jay-html or hide the binding |
 | **Field validation** (`key.<target>.error`) | Plugin client validation + Wix API on submit | Message **templates** are English in the plugin; `{label}` inside messages comes from Wix |
 | Layout, CSS, surrounding copy | Page | **jay-html** |
 
-There is **no** setting in `config/.wix-forms.yaml` for success or validation message text today.
+There is **no** setting in `config/.wix-forms.yaml` for message text — copy lives in jay-html.
 
-## `statusMessage` — success and generic submit errors
+## Submit outcome — `submitState` and `submitFailure`
 
-After a successful submit, the shared component sets `statusMessage` to the fixed English string `Form submitted successfully.` Failed submits (when errors are not mapped to a field) set `statusMessage` to plugin English or the raw error message.
+| Tag | Values |
+| --- | ------ |
+| `submitState` | `IDLE`, `SUBMITTING`, `SUCCEEDED`, `FAILED` |
+| `submitFailure` | `NONE` (not failed), `VALIDATION`, `REJECTED`, `PERMISSION`, `NETWORK`, `UNKNOWN` |
 
-**Wix does not expose** a post-submit “thank you” message to this plugin via the form-schema API.
+| `submitFailure` | Meaning | Where details are |
+| --------------- | ------- | ----------------- |
+| `VALIDATION` | Client checks failed, or Wix rejected specific fields | `{key.<target>.error}` per visible field; hidden-field errors in `statusMessage` |
+| `REJECTED` | Wix refused the submission, or a server submit hook rejected it | A hook's `ActionError` message is in `statusMessage` |
+| `PERMISSION` | Wix denied the caller (401 / 403) | — |
+| `NETWORK` | The request did not complete (offline, timeout) | — |
+| `UNKNOWN` | Server-side failure (logged on the server) | — |
 
-### Recommended binding (English or default copy OK)
+### Localized / custom copy (recommended)
 
-Show the plugin string when you are fine with English:
+```html
+<section if="contact.submitState === SUCCEEDED" ref="contact.confirmation" tabindex="-1">
+  Merci — nous avons bien reçu votre message.
+</section>
+
+<p role="alert" if="contact.submitState === FAILED">
+  <span if="contact.submitFailure === VALIDATION">Vérifiez les champs en rouge.</span>
+  <span if="contact.submitFailure === NETWORK">Problème de connexion, réessayez.</span>
+  <span if="contact.submitFailure === REJECTED">{contact.statusMessage}</span>
+  <span if="contact.submitFailure === PERMISSION">Connectez-vous pour envoyer ce formulaire.</span>
+  <span if="contact.submitFailure === UNKNOWN">Une erreur est survenue. Réessayez plus tard.</span>
+</p>
+```
+
+Binding `{contact.statusMessage}` for `REJECTED` is a choice: it shows a hook's own message (which the hook author controls). Write static copy instead if hooks may return English.
+
+### English default (fine for English sites)
 
 ```html
 <p class="form-status" if="contact.statusMessage">{contact.statusMessage}</p>
 ```
 
-### Recommended binding (localized / custom thank-you)
-
-Treat `statusMessage` as a **non-empty = submit succeeded or a form-level error** signal. Write the visible text in jay-html (one locale per page or route):
-
-```html
-<!-- Success: plugin sets statusMessage; you choose the words -->
-<p class="success" if="contact.statusMessage">Thank you — we received your message.</p>
-
-<!-- French page, same form bindings -->
-<p class="success" if="contact.statusMessage">Merci — nous avons bien reçu votre message.</p>
-```
-
-Do **not** use `{contact.statusMessage}` for the thank-you line if you need non-English success text — that binding always includes the plugin’s English sentence on success.
-
-To show **only** success and not generic error text in the same element, split concerns: e.g. success paragraph with `if="contact.statusMessage"` and static copy (errors already appear on `{key.field.error}` or a dedicated error region you design).
+`statusMessage` is empty on success, and empty on a client-validation failure (errors are on the fields). Do **not** test `statusMessage` to detect a failure — use `submitState`.
 
 ## `loadError`
 
@@ -51,7 +65,7 @@ When the form schema fails to load, `loadError` is set (e.g. `Could not load the
 
 Client-side checks use English templates such as `Please enter a valid email address.` and `` `${label} is required.` `` (label from Wix). Server field violations use Wix’s `errorMessage` when present; otherwise the plugin may use `Invalid value`.
 
-For multilingual sites, Wix-translated **labels** help required messages; format/validation sentences stay English unless you replace validation UX (custom submit flow) or the plugin gains i18n later.
+For multilingual sites, Wix-translated **labels** help required messages. Use `if="key.<target>.invalid"` with your own copy when the English templates don't fit.
 
 ## `getFormSummary` (bookings / participant fields)
 
@@ -60,6 +74,7 @@ For multilingual sites, Wix-translated **labels** help required messages; format
 ## Agent checklist
 
 - **Change a field label** → Wix dashboard (see `agent-kit/references/wix-forms/wix-forms-dashboard-content.md`), keep `{key.field.label}` bindings.
-- **Change thank-you / success text** → jay-html; use `if="key.statusMessage"` + static local copy, not `{key.statusMessage}` for localized success.
+- **Change thank-you / success text** → jay-html under `if="key.submitState === SUCCEEDED"`.
+- **Change or translate a submit error** → jay-html branches on `key.submitFailure`; never match on `statusMessage` text.
 - **Change submit button text** → jay-html button content, not Wix.
 - **Do not** hard-code field labels in jay-html when they should stay dashboard-managed.

@@ -43,11 +43,13 @@ A field `email` becomes a `sub-contract` tag `email` carrying:
   (no `label`/`placeholder`/`input`).
 
 Form-level tags stay at the top level: `isLoading`, `loadError`, `isSubmitting`,
-`isSubmitted`, `statusMessage` (data/variant), `submitButton`,
-`resetButton`, `honeypot`, and `confirmation` interactive tags.
+`isSubmitted`, `statusMessage` (data/variant), the `submitState` / `submitFailure` enum
+variants (branch on these for your own or localized copy — see `user-visible-messages.md`),
+and the `submitButton`, `resetButton`, `honeypot`, and `confirmation` interactive tags.
 
 > **Rich production forms** (confirmation/sent state, prefill, live validation,
-> hidden/derived values, custom-UI/multi-step, honeypot, non-string fields) — see
+> hidden/derived values, custom-UI/multi-step, honeypot, non-string fields, server-side
+> submit hook) — see
 > [`rich-forms.md`](./rich-forms.md).
 
 See **`user-visible-messages.md`** for what copy comes from Wix vs the plugin,

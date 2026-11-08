@@ -1,0 +1,13 @@
+{
+  "status": 200,
+  "body": {
+    "active": true,
+    "subjectType": "VISITOR",
+    "subjectId": "<VISITOR_ID>",
+    "exp": 1793011200,
+    "iat": 1792996800,
+    "clientId": "<OAUTH_CLIENT_ID>",
+    "siteId": "<SITE_ID>",
+    "instanceId": "<INSTANCE_ID>"
+  }
+}

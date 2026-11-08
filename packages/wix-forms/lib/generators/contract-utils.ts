@@ -7,6 +7,7 @@
  */
 
 import type { FormFieldView } from '../types.js';
+import { SubmitFailure, SubmitState } from '../components/submit-outcome.js';
 import { camelCase } from './camel-case.js';
 
 const INDENT = '  ';
@@ -142,11 +143,19 @@ export function reservedFormTags(level = 1): string {
         `${item}- { tag: isSubmitting, type: variant, dataType: boolean, phase: fast+interactive }`,
         `${item}- { tag: isSubmitted, type: variant, dataType: boolean, phase: fast+interactive }`,
         `${item}- { tag: statusMessage, type: data, dataType: string, phase: fast+interactive }`,
+        `${item}- { tag: submitState, type: variant, dataType: ${enumDataType(SubmitState)}, phase: fast+interactive }`,
+        `${item}- { tag: submitFailure, type: variant, dataType: ${enumDataType(SubmitFailure)}, phase: fast+interactive }`,
         `${item}- { tag: submitButton, type: interactive, elementType: HTMLButtonElement }`,
         `${item}- { tag: resetButton, type: interactive, elementType: HTMLButtonElement }`,
         `${item}- { tag: honeypot, type: interactive, elementType: HTMLInputElement }`,
         `${item}- { tag: confirmation, type: interactive, elementType: HTMLElement }`,
     ].join('\n');
+}
+
+/** A numeric TS enum as a contract `"enum (A | B)"` dataType, in member order. */
+function enumDataType(members: Record<string, string | number>): string {
+    const names = Object.keys(members).filter((key) => Number.isNaN(Number(key)));
+    return JSON.stringify(`enum (${names.join(' | ')})`);
 }
 
 /** Names reserved for form-level tags — a field whose target collides is suffixed (DL#40 OQ-3). */
@@ -156,6 +165,8 @@ export const RESERVED_TAG_NAMES = new Set([
     'isSubmitting',
     'isSubmitted',
     'statusMessage',
+    'submitState',
+    'submitFailure',
     'submitButton',
     'resetButton',
     'honeypot',
