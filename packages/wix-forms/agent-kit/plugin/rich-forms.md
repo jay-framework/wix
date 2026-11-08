@@ -1,0 +1,150 @@
+Rich production forms with wix-forms.
+
+Builds on the per-form contracts (see `per-form-contracts.md`). Every form's
+contract already carries the tags below; a page uses only the ones it binds, and any it
+ignores are inert. Everything is driven by one per-field **value store** inside the shared
+`wixForm` component — the single source of truth for each field's current value.
+
+## 1. Confirmation / sent state (+ personalized echo)
+
+After a successful submit, `isSubmitted` becomes `true` and stays true until reset. Swap the
+form for a thank-you panel with `if`/`if="!"`. The store is NOT cleared on submit, so the
+confirmation can echo what was entered via each field's `value`. A `resetButton` clears the
+store and returns to a blank form (`isSubmitted=false`).
+
+```html
+<form novalidate if="!contact.isSubmitted">
+  <label for="contact-email">{contact.email.label}</label>
+  <input id="contact-email" ref="contact.email.input" autocomplete="email"
+         aria-required="{contact.email.required}" aria-invalid="{contact.email.invalid}"
+         aria-describedby="contact-email-error" placeholder="{contact.email.placeholder}" />
+  <span id="contact-email-error" class="error" aria-live="polite">{contact.email.error}</span>
+  <button ref="contact.submitButton" aria-busy="{contact.isSubmitting}">Send</button>
+</form>
+
+<section if="contact.isSubmitted" ref="contact.confirmation" tabindex="-1">
+  <h2>Thanks, {contact.firstName.value}!</h2>
+  <p>We'll reply to {contact.email.value} shortly.</p>
+  <button type="button" ref="contact.resetButton">Send another</button>
+</section>
+
+<p role="status" aria-live="polite">{contact.statusMessage}</p>
+```
+
+See **§6 Accessibility** for why each attribute is there.
+
+Do **not** gate the confirmation on `statusMessage` — it is a data tag that also carries
+submit errors. Use the `isSubmitted` variant. Note: a confirmation shown after a honeypot
+trip (below) does NOT imply the submission was stored — never treat "confirmation shown" as
+a persistence guarantee.
+
+**Submit/reset buttons and native form submission.** Keep the submit button a real submit
+button — leave `type` off (it defaults to `submit` inside a `<form>`) or write
+`type="submit"`. The `wixForm` component listens to the owning `<form>`'s `submit` event,
+cancels the browser's page-reloading navigation, and runs the plugin submit, so a click,
+Enter in a field, and `requestSubmit()` all work. Do **not** set `type="button"` on the
+submit button: it disables Enter-to-submit (a keyboard accessibility expectation) and hides
+the submission from password managers/autofill. The reset button is not a submit action, so
+mark it `type="button"`:
+
+```html
+<button ref="contact.submitButton">Send</button>
+...
+<button type="button" ref="contact.resetButton">Send another</button>
+```
+
+## 2. Prefill (page-provided defaults)
+
+Bind a value the page already has (route param, query, page data) through a hidden
+`control`; it seeds that field's store slot (on mount, and again at submit) and **never
+overwrites a field the user already edited**:
+`<input type="hidden" ref="contact.email.control" data-value="{defaultEmail}" />`.
+
+## 3. Live validation
+
+The plugin validates using the Wix field schema (required + email/tel/url format +
+min/max/pattern) — nothing to configure. Typing in a field only **clears** its error; new
+errors appear on blur, on a `control` change, and on submit, so a screen reader is not
+interrupted on every keystroke. Bind `aria-invalid="{contact.email.invalid}"` on the input
+and put the `error` in a polite live region linked by `aria-describedby` (see example
+above). The `invalid` variant also drives error styling.
+
+## 4a. Hidden values + honeypot spam protection
+
+- **Hidden page values** reuse the `control` channel on a Wix hidden field — one hidden input
+  populates it and it reaches the submission:
+  `<input type="hidden" ref="contact.propertyId.control" data-value="{propertyId}" />`.
+- **Honeypot** — bind a visually-hidden input to the reserved `honeypot` tag. A real user
+  never fills it; a bot that auto-fills every input trips it and the submit is silently
+  aborted (no `createSubmission`) while still showing the confirmation, so the bot cannot
+  tell:
+
+  ```html
+  <input ref="contact.honeypot" type="text" tabindex="-1" autocomplete="off"
+         aria-hidden="true" style="position:absolute;left:-9999px" />
+  ```
+
+## 4b. Non-string fields (checkbox / multiselect)
+
+A single **checkbox** submits its boolean `.checked` state (not a static string); bind its
+boolean `value` variant. A **multiselect** submits a `string[]` of all selected values; bind
+its `options[].selected` variants. No `dataType: array` exists — the repeated `options`
+sub-contract with per-option `selected` is the array representation.
+
+```html
+<label><input type="checkbox" ref="contact.consent.input" /> I agree</label>
+<label>{contact.interests.label}
+  <select multiple ref="contact.interests.input">
+    <option forEach="contact.interests.options" trackBy="value" value="{value}" selected="{selected}">{label}</option>
+  </select>
+</label>
+```
+
+## 5. Custom UI / multi-step
+
+Any element bound to a field's `control` feeds that field's store slot via its `data-value`
+(or `.value`), runs the same validation, and reconciles with a native `input` on the same
+field (the store is authoritative, last-wins). This covers date pickers, time-slot grids, and
+choosers. The store persists across steps (component state), so a multi-step flow collects
+fields across steps into one submission — **step navigation (which step is shown) is
+page-owned**, the plugin only holds and submits the values.
+
+```html
+<div class="slots">
+  <button type="button" forEach="availableSlots" trackBy="id"
+          ref="contact.slot.control" data-value="{id}">{label}</button>
+</div>
+```
+
+On a step change, move focus to the new step's heading (`tabindex="-1"`) — the plugin does
+not know which step is shown.
+
+## 6. Accessibility
+
+The plugin owns behavior; the page owns markup. `jay-stack validate` warns on the three
+mechanical mistakes marked ⚠️.
+
+**What the plugin does for you**
+- Submits from the `<form>`'s `submit` event, so click, Enter, and `requestSubmit()` all work.
+- On a failed submit (client or server field errors), focuses the first invalid field's `input`.
+- On success, focuses the element bound to `confirmation`; on reset, focuses the first field.
+
+**What the page must do**
+- ⚠️ **Label every field input**: wrap it in `<label>{k.f.label} …</label>`, or use
+  `<label for>` + `id`, or `aria-label`. A placeholder is not a label.
+- ⚠️ **Keep the error outside the `<label>`** (otherwise it becomes part of the field's name).
+  Link it with `aria-describedby` and keep the element always present with
+  `aria-live="polite"` — not `role="alert"`, which interrupts.
+- ⚠️ **No native `required`** without `novalidate` on the `<form>`: the browser's own
+  validation cancels the `submit` event, so the plugin never runs. Use
+  `aria-required="{k.f.required}"` + `<form novalidate>`.
+- **Status region always in the DOM**: `<p role="status" aria-live="polite">{k.statusMessage}</p>`,
+  outside the conditional form. A live region inserted together with its text is often not
+  announced.
+- **Confirmation is focusable**: `ref="k.confirmation" tabindex="-1"` on the thank-you panel.
+- **Busy state**: `aria-busy="{k.isSubmitting}"` on the submit button. Avoid `disabled` — it
+  drops the button out of tab order mid-submit.
+- **`autocomplete`** on personal-data fields (`name`, `given-name`, `email`, `tel`, …).
+- **Groups**: wrap a checkbox or radio group in `<fieldset><legend>{k.f.label}</legend> …`.
+- **Custom choosers** (`control` buttons): mark the chosen one with `aria-pressed="true"`
+  from page data.

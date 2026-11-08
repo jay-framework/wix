@@ -10,9 +10,12 @@ tags:
     tags:
       - { tag: label, type: data, dataType: string }
       - { tag: placeholder, type: data, dataType: string }
+      - { tag: value, type: data, dataType: string }
       - { tag: required, type: variant, dataType: boolean }
       - { tag: error, type: data, dataType: string }
+      - { tag: invalid, type: variant, dataType: boolean }
       - { tag: input, type: interactive, elementType: HTMLInputElement }
+      - { tag: control, type: interactive, elementType: HTMLElement }
   - tag: email
     type: sub-contract
     phase: fast+interactive
@@ -20,9 +23,12 @@ tags:
     tags:
       - { tag: label, type: data, dataType: string }
       - { tag: placeholder, type: data, dataType: string }
+      - { tag: value, type: data, dataType: string }
       - { tag: required, type: variant, dataType: boolean }
       - { tag: error, type: data, dataType: string }
+      - { tag: invalid, type: variant, dataType: boolean }
       - { tag: input, type: interactive, elementType: HTMLInputElement }
+      - { tag: control, type: interactive, elementType: HTMLElement }
   - tag: message
     type: sub-contract
     phase: fast+interactive
@@ -30,9 +36,12 @@ tags:
     tags:
       - { tag: label, type: data, dataType: string }
       - { tag: placeholder, type: data, dataType: string }
+      - { tag: value, type: data, dataType: string }
       - { tag: required, type: variant, dataType: boolean }
       - { tag: error, type: data, dataType: string }
+      - { tag: invalid, type: variant, dataType: boolean }
       - { tag: input, type: interactive, elementType: HTMLTextAreaElement }
+      - { tag: control, type: interactive, elementType: HTMLElement }
   - tag: country
     type: sub-contract
     phase: fast+interactive
@@ -41,7 +50,9 @@ tags:
       - { tag: label, type: data, dataType: string }
       - { tag: required, type: variant, dataType: boolean }
       - { tag: error, type: data, dataType: string }
+      - { tag: invalid, type: variant, dataType: boolean }
       - { tag: input, type: interactive, elementType: HTMLSelectElement }
+      - { tag: control, type: interactive, elementType: HTMLElement }
       - tag: options
         type: sub-contract
         repeated: true
@@ -52,5 +63,9 @@ tags:
   - { tag: isLoading, type: variant, dataType: boolean, phase: fast+interactive }
   - { tag: loadError, type: data, dataType: string, phase: fast+interactive }
   - { tag: isSubmitting, type: variant, dataType: boolean, phase: fast+interactive }
+  - { tag: isSubmitted, type: variant, dataType: boolean, phase: fast+interactive }
   - { tag: statusMessage, type: data, dataType: string, phase: fast+interactive }
   - { tag: submitButton, type: interactive, elementType: HTMLButtonElement }
+  - { tag: resetButton, type: interactive, elementType: HTMLButtonElement }
+  - { tag: honeypot, type: interactive, elementType: HTMLInputElement }
+  - { tag: confirmation, type: interactive, elementType: HTMLElement }

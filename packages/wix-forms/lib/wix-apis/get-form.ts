@@ -26,10 +26,19 @@ export interface RawFormField {
             maxLength?: number;
             pattern?: string;
         };
+        /** Present for a boolean (single-checkbox) field (DL#41 4c). */
+        boolean?: Record<string, unknown>;
     };
     inputOptions?: {
         stringOptions?: {
             textInputOptions?: { label?: RawFieldLabel; placeholder?: string };
+            componentType?: string;
+            options?: Array<{ value?: string; label?: string }>;
+        };
+        /** Present for a single-checkbox (boolean) field (DL#41 4c). */
+        booleanOptions?: Record<string, unknown>;
+        /** Present for a multi-selection (array) choice field (DL#41 4c). */
+        arrayOptions?: {
             componentType?: string;
             options?: Array<{ value?: string; label?: string }>;
         };

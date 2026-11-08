@@ -29,15 +29,26 @@ Run `jay-stack agent-kit`, then read:
 
 A field `email` becomes a `sub-contract` tag `email` carrying:
 
-- `label` (data), `placeholder` (data, text-like fields only), `required`
-  (variant), `error` (data), and one `input` interactive tag.
-- `input.elementType` is `HTMLInputElement` for text/email/tel/url,
-  `HTMLTextAreaElement` for multiline, `HTMLSelectElement` for choice fields.
-- Choice (select) fields also expose a repeated `options` sub-contract
-  (`value`, `label`).
+- `label` (data), `placeholder` (data, text-like fields only), `value`
+  (text-like: data string; checkbox: variant boolean), `required`
+  (variant), `error` (data), `invalid` (variant), one `input`
+  interactive tag, and one `control` interactive tag (custom UI).
+- `input.elementType` is `HTMLInputElement` for text/email/tel/url and single
+  checkboxes, `HTMLTextAreaElement` for multiline, `HTMLSelectElement` for
+  choice (select / multiselect) fields.
+- Choice fields expose a repeated `options` sub-contract (`value`, `label`); a
+  **multiselect** adds a per-option `selected` variant (the array
+  representation, since an array `dataType` is invalid).
+- **Hidden** Wix fields materialize a value+control channel only
+  (no `label`/`placeholder`/`input`).
 
 Form-level tags stay at the top level: `isLoading`, `loadError`, `isSubmitting`,
-`statusMessage` (data/variant) and `submitButton` (interactive).
+`isSubmitted`, `statusMessage` (data/variant), `submitButton`,
+`resetButton`, `honeypot`, and `confirmation` interactive tags.
+
+> **Rich production forms** (confirmation/sent state, prefill, live validation,
+> hidden/derived values, custom-UI/multi-step, honeypot, non-string fields) — see
+> [`rich-forms.md`](./rich-forms.md).
 
 See **`user-visible-messages.md`** for what copy comes from Wix vs the plugin,
 how to customize success/thank-you text (including multilingual pages), and
@@ -59,19 +70,22 @@ bindings that do not match the contract. Form identity is fixed by
 ```html
 <script type="application/jay-headless" plugin="@jay-framework/wix-forms"
         contract="form/contact" key="contact"></script>
-<form>
-  <label>{contact.firstName.label}
-    <input ref="contact.firstName.input" placeholder="{contact.firstName.placeholder}" />
-    <span class="error" if="contact.firstName.error">{contact.firstName.error}</span>
-  </label>
+<form novalidate if="!contact.isSubmitted">
+  <label for="firstName">{contact.firstName.label}</label>
+  <input id="firstName" ref="contact.firstName.input" autocomplete="given-name"
+         aria-required="{contact.firstName.required}" aria-describedby="firstName-error"
+         placeholder="{contact.firstName.placeholder}" />
+  <span id="firstName-error" class="error" aria-live="polite">{contact.firstName.error}</span>
   <label>{contact.country.label}
     <select ref="contact.country.input">
       <option forEach="contact.country.options" trackBy="value" value="{value}">{label}</option>
     </select>
   </label>
   <button ref="contact.submitButton">Send</button>
-  <!-- Success: static page copy; if="contact.statusMessage" means submit finished OK -->
-  <p class="success" if="contact.statusMessage">Thank you — we received your message.</p>
   <p class="form-error" if="contact.loadError">{contact.loadError}</p>
 </form>
+<!-- Success: gate on isSubmitted, never on statusMessage (it also carries errors) -->
+<p if="contact.isSubmitted" ref="contact.confirmation" tabindex="-1">Thank you — we received your message.</p>
 ```
+
+See `rich-forms.md` for the full accessible pattern (errors, status region, focus).

@@ -7,3 +7,4 @@ inputSchema:
 
 outputSchema:
   success: boolean
+  fieldErrors?: object
