@@ -13,22 +13,25 @@ confirmation can echo what was entered via each field's `value`. A `resetButton`
 store and returns to a blank form (`isSubmitted=false`).
 
 ```html
-<form if="!contact.isSubmitted">
-  <label>{contact.email.label}
-    <input ref="contact.email.input" aria-invalid="{contact.email.invalid}"
-           placeholder="{contact.email.placeholder}" />
-    <span role="alert" aria-live="polite" class="error" if="contact.email.error">{contact.email.error}</span>
-  </label>
-  <button ref="contact.submitButton">Send</button>
-  <p if="contact.statusMessage">{contact.statusMessage}</p>
+<form novalidate if="!contact.isSubmitted">
+  <label for="contact-email">{contact.email.label}</label>
+  <input id="contact-email" ref="contact.email.input" autocomplete="email"
+         aria-required="{contact.email.required}" aria-invalid="{contact.email.invalid}"
+         aria-describedby="contact-email-error" placeholder="{contact.email.placeholder}" />
+  <span id="contact-email-error" class="error" aria-live="polite">{contact.email.error}</span>
+  <button ref="contact.submitButton" aria-busy="{contact.isSubmitting}">Send</button>
 </form>
 
-<section if="contact.isSubmitted" role="status">
+<section if="contact.isSubmitted" ref="contact.confirmation" tabindex="-1">
   <h2>Thanks, {contact.firstName.value}!</h2>
   <p>We'll reply to {contact.email.value} shortly.</p>
-  <button ref="contact.resetButton">Send another</button>
+  <button type="button" ref="contact.resetButton">Send another</button>
 </section>
+
+<p role="status" aria-live="polite">{contact.statusMessage}</p>
 ```
+
+See **§6 Accessibility** for why each attribute is there.
 
 Do **not** gate the confirmation on `statusMessage` — it is a data tag that also carries
 submit errors. Use the `isSubmitted` variant. Note: a confirmation shown after a honeypot
@@ -59,11 +62,12 @@ overwrites a field the user already edited**:
 
 ## 3. Live validation
 
-The plugin validates on `input`/`blur` (not only on submit) using the Wix field schema
-(required + email/tel/url format + min/max/pattern) — nothing to configure. Bind the
-accessible pattern: `aria-invalid="{contact.email.invalid}"` on the input and the `error` in
-a `role="alert" aria-live="polite"` live region (see example above). The `invalid` variant
-also drives error styling.
+The plugin validates using the Wix field schema (required + email/tel/url format +
+min/max/pattern) — nothing to configure. Typing in a field only **clears** its error; new
+errors appear on blur, on a `control` change, and on submit, so a screen reader is not
+interrupted on every keystroke. Bind `aria-invalid="{contact.email.invalid}"` on the input
+and put the `error` in a polite live region linked by `aria-describedby` (see example
+above). The `invalid` variant also drives error styling.
 
 ## 4a. Hidden values + honeypot spam protection
 
@@ -89,9 +93,11 @@ sub-contract with per-option `selected` is the array representation.
 
 ```html
 <label><input type="checkbox" ref="contact.consent.input" /> I agree</label>
-<select multiple ref="contact.interests.input">
-  <option forEach="contact.interests.options" trackBy="value" value="{value}" selected="{selected}">{label}</option>
-</select>
+<label>{contact.interests.label}
+  <select multiple ref="contact.interests.input">
+    <option forEach="contact.interests.options" trackBy="value" value="{value}" selected="{selected}">{label}</option>
+  </select>
+</label>
 ```
 
 ## 5. Custom UI / multi-step
@@ -109,3 +115,36 @@ page-owned**, the plugin only holds and submits the values.
           ref="contact.slot.control" data-value="{id}">{label}</button>
 </div>
 ```
+
+On a step change, move focus to the new step's heading (`tabindex="-1"`) — the plugin does
+not know which step is shown.
+
+## 6. Accessibility
+
+The plugin owns behavior; the page owns markup. `jay-stack validate` warns on the three
+mechanical mistakes marked ⚠️.
+
+**What the plugin does for you**
+- Submits from the `<form>`'s `submit` event, so click, Enter, and `requestSubmit()` all work.
+- On a failed submit (client or server field errors), focuses the first invalid field's `input`.
+- On success, focuses the element bound to `confirmation`; on reset, focuses the first field.
+
+**What the page must do**
+- ⚠️ **Label every field input**: wrap it in `<label>{k.f.label} …</label>`, or use
+  `<label for>` + `id`, or `aria-label`. A placeholder is not a label.
+- ⚠️ **Keep the error outside the `<label>`** (otherwise it becomes part of the field's name).
+  Link it with `aria-describedby` and keep the element always present with
+  `aria-live="polite"` — not `role="alert"`, which interrupts.
+- ⚠️ **No native `required`** without `novalidate` on the `<form>`: the browser's own
+  validation cancels the `submit` event, so the plugin never runs. Use
+  `aria-required="{k.f.required}"` + `<form novalidate>`.
+- **Status region always in the DOM**: `<p role="status" aria-live="polite">{k.statusMessage}</p>`,
+  outside the conditional form. A live region inserted together with its text is often not
+  announced.
+- **Confirmation is focusable**: `ref="k.confirmation" tabindex="-1"` on the thank-you panel.
+- **Busy state**: `aria-busy="{k.isSubmitting}"` on the submit button. Avoid `disabled` — it
+  drops the button out of tab order mid-submit.
+- **`autocomplete`** on personal-data fields (`name`, `given-name`, `email`, `tel`, …).
+- **Groups**: wrap a checkbox or radio group in `<fieldset><legend>{k.f.label}</legend> …`.
+- **Custom choosers** (`control` buttons): mark the chosen one with `aria-pressed="true"`
+  from page data.

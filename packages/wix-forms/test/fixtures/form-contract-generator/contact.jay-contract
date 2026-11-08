@@ -68,3 +68,4 @@ tags:
   - { tag: submitButton, type: interactive, elementType: HTMLButtonElement }
   - { tag: resetButton, type: interactive, elementType: HTMLButtonElement }
   - { tag: honeypot, type: interactive, elementType: HTMLInputElement }
+  - { tag: confirmation, type: interactive, elementType: HTMLElement }

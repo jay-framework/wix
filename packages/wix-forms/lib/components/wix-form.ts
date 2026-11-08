@@ -183,6 +183,18 @@ function WixFormInteractive(
         dirtyTargets.clear();
         honeypotValue = '';
         clearNativeInputsAfterRemount();
+        afterRemount(() => focusFirstFieldInput(refs, carryForward.fields, () => true));
+    }
+
+    function showSubmitted(): void {
+        setIsSubmitted(true);
+        afterRemount(
+            () => void refs.confirmation?.exec$((element: HTMLElement) => element.focus()),
+        );
+    }
+
+    function showFieldErrors(errors: Record<string, string>): void {
+        focusFirstFieldInput(refs, carryForward.fields, (field) => Boolean(errors[field.target]));
     }
 
     /**
@@ -200,7 +212,7 @@ function WixFormInteractive(
      * reaches the visible input nodes before the browser paints (no flash).
      */
     function clearNativeInputsAfterRemount(): void {
-        queueMicrotask(() => {
+        afterRemount(() => {
             for (const field of carryForward.fields) {
                 reflectToInput(field, emptyValueFor(field));
             }
@@ -227,7 +239,7 @@ function WixFormInteractive(
 
         // Honeypot trip: fake success (a bot must not tell), never call the API (Q12).
         if (honeypotValue.trim()) {
-            setIsSubmitted(true);
+            showSubmitted();
             return;
         }
 
@@ -243,6 +255,7 @@ function WixFormInteractive(
             setInvalidByTarget(
                 Object.fromEntries(Object.keys(clientErrors).map((target) => [target, true])),
             );
+            showFieldErrors(clientErrors);
             return;
         }
 
@@ -253,13 +266,14 @@ function WixFormInteractive(
                 values: submissionValues,
             });
             if (result.success) {
-                setIsSubmitted(true);
+                showSubmitted();
                 // The store is intentionally NOT cleared — the confirmation echoes it (Q2).
             } else {
                 const rejection = presentSubmitRejection(result, carryForward.fields);
                 setErrorByTarget(rejection.errorByTarget);
                 setInvalidByTarget(rejection.invalidByTarget);
                 setStatusMessage(rejection.statusMessage);
+                showFieldErrors(rejection.errorByTarget);
             }
         } catch (error) {
             setStatusMessage(describeSubmitError(error));
@@ -304,6 +318,31 @@ function wireFieldEvents(refs: any, fields: FormFieldView[], handlers: FieldEven
             handlers.onControl(field, event),
         );
     }
+}
+
+/**
+ * Run `work` after the current reactive batch flushes. Toggling `isSubmitted` re-mounts a
+ * conditional branch only at the end of the event handler, and refs inside an unmounted branch
+ * are detached (`exec$` no-ops) — see `clearNativeInputsAfterRemount`.
+ */
+function afterRemount(work: () => void): void {
+    queueMicrotask(work);
+}
+
+/** Focus the first visible field (in form order) that matches and binds a native `input`. */
+function focusFirstFieldInput(
+    refs: any,
+    fields: FormFieldView[],
+    matches: (field: FormFieldView) => boolean,
+): void {
+    const field = fields.find(
+        (candidate) =>
+            !candidate.hidden &&
+            matches(candidate) &&
+            refs[contractTagName(candidate.target)]?.input,
+    );
+    if (!field) return;
+    void refs[contractTagName(field.target)].input.exec$((element: HTMLElement) => element.focus());
 }
 
 /** True when clicking `target` makes its owning <form> fire a native `submit` event. */

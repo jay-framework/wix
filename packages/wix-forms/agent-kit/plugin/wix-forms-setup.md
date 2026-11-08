@@ -69,21 +69,24 @@ on one page you typically keep distinct keys while each script points at its own
   key="newsletter">
 </script>
 
-<form>
+<form novalidate if="!contact.isSubmitted">
   <label>{contact.email.label}
-    <input ref="contact.email.input" placeholder="{contact.email.placeholder}" />
+    <input ref="contact.email.input" autocomplete="email"
+           aria-required="{contact.email.required}" placeholder="{contact.email.placeholder}" />
   </label>
   <button ref="contact.submitButton">Send</button>
-  <p class="success" if="contact.statusMessage">Thank you — we received your message.</p>
 </form>
+<p if="contact.isSubmitted" ref="contact.confirmation" tabindex="-1">Thank you — we received your message.</p>
 
-<form>
+<form novalidate>
   <label>{newsletter.email.label}
-    <input ref="newsletter.email.input" />
+    <input ref="newsletter.email.input" autocomplete="email" />
   </label>
   <button ref="newsletter.submitButton">Subscribe</button>
 </form>
 ```
+
+For errors, status announcements and focus, follow the accessible pattern in `rich-forms.md`.
 
 After `jay-stack agent-kit`, read `forms.yaml` for each form’s exact
 `contract` value (the slug) and field `target` names — not the Wix form id.

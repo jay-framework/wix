@@ -38,8 +38,8 @@ describe('validateWixFormBindings', () => {
     it('should pass a page that binds explicit per-form field tags', async () => {
         const ctx = contextWith(
             `<form>
-                <input ref="contact.email.input" />
-                <select ref="contact.country.input"></select>
+                <label>{contact.email.label} <input ref="contact.email.input" /></label>
+                <label>{contact.country.label} <select ref="contact.country.input"></select></label>
                 <button ref="contact.submitButton">Send</button>
             </form>`,
             [contactImport],
@@ -64,9 +64,10 @@ describe('validateWixFormBindings', () => {
     });
 
     it('should flag a ref to an unknown field tag (the gap core does not catch)', async () => {
-        const ctx = contextWith(`<form><input ref="contact.phoneNumber.input" /></form>`, [
-            contactImport,
-        ]);
+        const ctx = contextWith(
+            `<form><label>Phone <input ref="contact.phoneNumber.input" /></label></form>`,
+            [contactImport],
+        );
         const findings = await validateWixFormBindings(ctx);
         expect(findings).toEqual([
             expect.objectContaining({
@@ -166,5 +167,62 @@ describe('validateWixFormBindings — DL#41 second-segment ref check (gate iv)',
             [contactImport],
         );
         expect(await validateWixFormBindings(ctx)).toEqual([]);
+    });
+});
+
+describe('validateWixFormBindings — accessibility warnings (DL#41 Addendum A)', () => {
+    function warningsFor(html: string) {
+        return validateWixFormBindings(contextWith(html, [contactImport]));
+    }
+
+    it('should accept the accessible pattern', async () => {
+        expect(
+            await warningsFor(
+                `<form novalidate>
+                    <label for="email">{contact.email.label}</label>
+                    <input id="email" ref="contact.email.input" aria-required="{contact.email.required}"
+                           aria-describedby="email-error" />
+                    <span id="email-error" aria-live="polite">{contact.email.error}</span>
+                    <input ref="contact.firstName.input" aria-label="First name" required />
+                </form>`,
+            ),
+        ).toEqual([]);
+    });
+
+    it('should warn on a field input with no accessible label', async () => {
+        expect(await warningsFor(`<form><input ref="contact.email.input" /></form>`)).toEqual([
+            expect.objectContaining({
+                severity: 'warning',
+                message: 'ref="contact.email.input" has no accessible label.',
+            }),
+        ]);
+    });
+
+    it('should warn when a <label> contains the field error binding', async () => {
+        expect(
+            await warningsFor(
+                `<form><label>{contact.email.label} <input ref="contact.email.input" />
+                    <span>{contact.email.error}</span></label></form>`,
+            ),
+        ).toEqual([
+            expect.objectContaining({
+                severity: 'warning',
+                message:
+                    '<label> contains the error binding "{contact.email.error}", so the error text becomes part of the field\'s accessible name.',
+            }),
+        ]);
+    });
+
+    it('should warn on native required inside a <form> without novalidate', async () => {
+        expect(
+            await warningsFor(
+                `<form><label>{contact.email.label} <input ref="contact.email.input" required /></label></form>`,
+            ),
+        ).toEqual([
+            expect.objectContaining({
+                severity: 'warning',
+                attribute: 'required',
+            }),
+        ]);
     });
 });

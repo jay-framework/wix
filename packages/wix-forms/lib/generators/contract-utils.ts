@@ -145,6 +145,7 @@ export function reservedFormTags(level = 1): string {
         `${item}- { tag: submitButton, type: interactive, elementType: HTMLButtonElement }`,
         `${item}- { tag: resetButton, type: interactive, elementType: HTMLButtonElement }`,
         `${item}- { tag: honeypot, type: interactive, elementType: HTMLInputElement }`,
+        `${item}- { tag: confirmation, type: interactive, elementType: HTMLElement }`,
     ].join('\n');
 }
 
@@ -158,6 +159,7 @@ export const RESERVED_TAG_NAMES = new Set([
     'submitButton',
     'resetButton',
     'honeypot',
+    'confirmation',
 ]);
 
 /**

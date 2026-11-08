@@ -13,6 +13,9 @@
  *     `if`, attributes) but SILENTLY grafts unknown `ref=` sub-tags
  *     (`graftTemplateOnlyRefs`), so this check closes the one gap core misses.
  *
+ *  3. Accessibility warnings — unlabeled field input, error text inside a <label>, native
+ *     `required` without `novalidate` (DL#41 Addendum A).
+ *
  * Best-effort: a page still importing the retired `contract="wix-form"` also
  * gets a migration message, IF the unresolved name surfaces in headlessImports.
  */
@@ -52,8 +55,87 @@ export const validateWixFormBindings: JayHtmlValidatorFn = (ctx) => {
 
     detectRetiredFieldsBindings(ctx, formImports, findings);
     detectUnknownRefFieldTags(ctx, formImports, findings);
+    detectAccessibilityIssues(ctx, new Set(formImports.map((imp) => imp.key!)), findings);
     return findings;
 };
+
+/**
+ * Accessibility warnings (DL#41 Addendum A) — the mechanically detectable parts of the
+ * accessible form pattern; the rest lives in the rich-forms guide.
+ */
+function detectAccessibilityIssues(
+    ctx: Parameters<JayHtmlValidatorFn>[0],
+    formKeys: Set<string>,
+    findings: JayHtmlValidationFinding[],
+): void {
+    walkElements(ctx.body, ctx, (el: any) => {
+        if (tagNameOf(el) === 'label') {
+            const errorBinding = findErrorBinding(String(el.toString?.() ?? ''), formKeys);
+            if (errorBinding) {
+                findings.push({
+                    severity: 'warning',
+                    message: `<label> contains the error binding "{${errorBinding}}", so the error text becomes part of the field's accessible name.`,
+                    suggestion:
+                        'Place the error element after the <label> and link it from the input with aria-describedby.',
+                });
+            }
+            return;
+        }
+
+        const ref: string | undefined = el?.getAttribute?.('ref');
+        if (!ref) return;
+        const [key, field, channel] = ref.split('.');
+        if (!formKeys.has(key) || channel !== 'input') return;
+
+        if (!hasAccessibleLabel(el, ctx.body)) {
+            findings.push({
+                severity: 'warning',
+                message: `ref="${ref}" has no accessible label.`,
+                suggestion: `Wrap it in <label>{${key}.${field}.label} …</label>, or point a <label for> at its id, or add aria-label / aria-labelledby.`,
+                attribute: 'ref',
+            });
+        }
+
+        const form = closestAncestor(el, 'form');
+        if (el.hasAttribute?.('required') && form && !form.hasAttribute?.('novalidate')) {
+            findings.push({
+                severity: 'warning',
+                message: `ref="${ref}" uses native "required" inside a <form> without "novalidate" — the browser's own validation blocks the submit event, so wix-forms never submits or shows its errors.`,
+                suggestion: `Use aria-required="{${key}.${field}.required}" and add novalidate to the <form>.`,
+                attribute: 'required',
+            });
+        }
+    });
+}
+
+function findErrorBinding(html: string, formKeys: Set<string>): string | undefined {
+    for (const key of formKeys) {
+        const match = html.match(new RegExp(`\\{(${escapeRegExp(key)}\\.\\w+\\.error)\\}`));
+        if (match) return match[1];
+    }
+    return undefined;
+}
+
+function hasAccessibleLabel(el: any, body: any): boolean {
+    if (closestAncestor(el, 'label')) return true;
+    if (el.getAttribute?.('aria-label') || el.getAttribute?.('aria-labelledby')) return true;
+    const id = el.getAttribute?.('id');
+    if (!id) return false;
+    return (body?.querySelectorAll?.('label') ?? []).some(
+        (label: any) => label.getAttribute?.('for') === id,
+    );
+}
+
+function closestAncestor(el: any, tagName: string): any {
+    for (let node = el?.parentNode; node; node = node.parentNode) {
+        if (tagNameOf(node) === tagName) return node;
+    }
+    return undefined;
+}
+
+function tagNameOf(el: any): string {
+    return String(el?.rawTagName ?? el?.tagName ?? '').toLowerCase();
+}
 
 function detectRetiredFieldsBindings(
     ctx: Parameters<JayHtmlValidatorFn>[0],
