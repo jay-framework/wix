@@ -157,7 +157,7 @@ export function validateFormSummaryField(field: FormFieldSummaryView, value: str
 export function validateFormField(field: FormFieldView, value: FieldValue): string {
     // Non-string kinds (DL#41 4c): required means checked (boolean) / non-empty (array);
     // the string format/length/regex rules below apply only to string values.
-    if (field.inputType === 'checkbox') {   
+    if (field.inputType === 'checkbox') {
         return field.required && value !== true ? `${field.label} is required.` : '';
     }
     if (field.inputType === 'multiselect') {

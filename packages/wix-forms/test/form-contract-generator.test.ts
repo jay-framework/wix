@@ -26,9 +26,30 @@ const contactForm: ListedFormView = {
     id: 'f1a2b3',
     name: 'Contact',
     fields: [
-        { target: 'firstName', label: 'First name', inputType: 'text', required: true, placeholder: '', options: [] },
-        { target: 'email', label: 'Email', inputType: 'email', required: true, placeholder: '', options: [] },
-        { target: 'message', label: 'Message', inputType: 'textarea', required: false, placeholder: '', options: [] },
+        {
+            target: 'firstName',
+            label: 'First name',
+            inputType: 'text',
+            required: true,
+            placeholder: '',
+            options: [],
+        },
+        {
+            target: 'email',
+            label: 'Email',
+            inputType: 'email',
+            required: true,
+            placeholder: '',
+            options: [],
+        },
+        {
+            target: 'message',
+            label: 'Message',
+            inputType: 'textarea',
+            required: false,
+            placeholder: '',
+            options: [],
+        },
         {
             target: 'country',
             label: 'Country',
@@ -45,9 +66,14 @@ const contactForm: ListedFormView = {
 
 describe('formContractGenerator', () => {
     it('should generate one contract per form with field-named tags, keyed metadata, and form/<slug> name', async () => {
-        const expected = await readFile(path.join(fixturesDir, 'form-contract-generator', 'contact.jay-contract'), 'utf-8');
+        const expected = await readFile(
+            path.join(fixturesDir, 'form-contract-generator', 'contact.jay-contract'),
+            'utf-8',
+        );
 
-        const [contract, ...rest] = await formContractGenerator.generate(serviceWith([contactForm]));
+        const [contract, ...rest] = await formContractGenerator.generate(
+            serviceWith([contactForm]),
+        );
 
         expect(rest).toEqual([]);
         expect(contract.name).toEqual('contact');
@@ -75,7 +101,14 @@ describe('formContractGenerator', () => {
             id: 'c1',
             name: 'Choices',
             fields: [
-                { target: 'consent', label: 'I agree', inputType: 'checkbox', required: true, placeholder: '', options: [] },
+                {
+                    target: 'consent',
+                    label: 'I agree',
+                    inputType: 'checkbox',
+                    required: true,
+                    placeholder: '',
+                    options: [],
+                },
                 {
                     target: 'interests',
                     label: 'Interests',
@@ -121,14 +154,30 @@ describe('formContractGenerator', () => {
             id: 'f9',
             name: 'Snake Form',
             fields: [
-                { target: 'first_name', label: 'First name', inputType: 'text', required: true, placeholder: '', options: [] },
-                { target: 'phone-number', label: 'Phone', inputType: 'text', required: false, placeholder: '', options: [] },
+                {
+                    target: 'first_name',
+                    label: 'First name',
+                    inputType: 'text',
+                    required: true,
+                    placeholder: '',
+                    options: [],
+                },
+                {
+                    target: 'phone-number',
+                    label: 'Phone',
+                    inputType: 'text',
+                    required: false,
+                    placeholder: '',
+                    options: [],
+                },
             ],
         };
 
         const [contract] = await formContractGenerator.generate(serviceWith([form]));
         // compiler-jay-html ships no index.d.ts (its declared types path), so parseContract is untyped here.
-        const parsed = checkValidationErrors(parseContract(contract.yaml, 'form-snake.jay-contract')) as {
+        const parsed = checkValidationErrors(
+            parseContract(contract.yaml, 'form-snake.jay-contract'),
+        ) as {
             tags: Array<{ tag: string }>;
         };
         const fieldTags = parsed.tags.map((tag) => tag.tag);

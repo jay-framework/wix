@@ -4,6 +4,8 @@ import { describe, expect, it } from 'vitest';
 import {
     presentSubmitRejection,
     SUBMIT_FAILED_MESSAGE,
+    SUBMIT_NOT_ALLOWED_MESSAGE,
+    SUBMIT_SESSION_EXPIRED_MESSAGE,
     toSitePath,
 } from '../lib/components/submit-outcome.js';
 import type { FormFieldView } from '../lib/types.js';
@@ -84,6 +86,22 @@ describe('presentSubmitRejection with a form-level message (V10)', () => {
             errorByTarget: { email: 'Bad' },
             invalidByTarget: { email: true },
             statusMessage: 'Please check the form. Reference: is required',
+        });
+    });
+});
+
+describe('presentSubmitRejection with the DL#43 caller messages', () => {
+    it.each([
+        [SUBMIT_NOT_ALLOWED_MESSAGE, 'Please sign in to submit this form.'],
+        [
+            SUBMIT_SESSION_EXPIRED_MESSAGE,
+            'Your session expired. Please refresh the page and try again.',
+        ],
+    ])('should render %j as its exact copy', (message, copy) => {
+        expect(presentSubmitRejection({ success: false, message }, FIELDS)).toEqual({
+            errorByTarget: {},
+            invalidByTarget: {},
+            statusMessage: copy,
         });
     });
 });
