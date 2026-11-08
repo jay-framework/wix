@@ -47,7 +47,8 @@ Form-level tags stay at the top level: `isLoading`, `loadError`, `isSubmitting`,
 `resetButton`, `honeypot`, and `confirmation` interactive tags.
 
 > **Rich production forms** (confirmation/sent state, prefill, live validation,
-> hidden/derived values, custom-UI/multi-step, honeypot, non-string fields) — see
+> hidden/derived values, custom-UI/multi-step, honeypot, non-string fields, server-side
+> submit hook) — see
 > [`rich-forms.md`](./rich-forms.md).
 
 See **`user-visible-messages.md`** for what copy comes from Wix vs the plugin,

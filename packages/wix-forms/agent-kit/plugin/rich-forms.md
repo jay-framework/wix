@@ -148,3 +148,82 @@ mechanical mistakes marked ⚠️.
 - **Groups**: wrap a checkbox or radio group in `<fieldset><legend>{k.f.label}</legend> …`.
 - **Custom choosers** (`control` buttons): mark the chosen one with `aria-pressed="true"`
   from page data.
+
+## 7. Server-side submit hook (optional)
+
+Register **one hook per form** when the server must act around the submission: verify who is
+submitting, re-check availability, write your own record, add server-derived values (often into
+a hidden field), redirect to a confirmation page. Forms without a hook submit as before.
+
+**Register it inside `makeJayInit().withServer(...)`, never at the top level.** The project's
+`src/init.ts` is loaded into the browser, and only `.withServer(...)` is stripped from the client
+build, so a top-level `registerService` ships the hook (and everything it imports) to the browser.
+
+```ts
+// src/init.ts
+import { makeJayInit, ActionError } from '@jay-framework/fullstack-component';
+import { registerService } from '@jay-framework/stack-server-runtime';
+import { WIX_FORMS_SUBMIT_HOOKS } from '@jay-framework/wix-forms';
+
+export const init = makeJayInit().withServer(async () => {
+  registerService(WIX_FORMS_SUBMIT_HOOKS, {
+    [REQUEST_VISIT_FORM_ID]: async ({ values, caller, submit }) => {
+      if (caller?.type !== 'MEMBER')                                  // a VISITOR proves a session only
+        throw new ActionError('SIGN_IN_REQUIRED', 'Please sign in again to request a visit.');
+      const slot = parseSlot(values);                                 // values are UNTRUSTED: re-validate
+      const reservation = (await reservations.findOwn(caller.id, slot))   // a retry reuses it
+        ?? (await reservations.createIfFree({ ownerId: caller.id, slot }));
+      if (!reservation) throw new ActionError('SLOT_TAKEN', 'That time was just taken. Please pick another.');
+      try {
+        await submit({ ...values, reference: reservation.reference }); // hidden, required field
+      } catch (error) {
+        await reservations.remove(reservation.id);                    // compensate
+        throw error;                                                  // or swallow it: same result
+      }
+      return { redirectTo: `/visit/confirmed?ref=${encodeURIComponent(reservation.reference)}` };
+    },
+  });
+  return {};
+});
+```
+
+The form id is the `formId` in `agent-kit/references/wix-forms/forms.yaml` (also the generated
+contract's `formId` metadata). The hook receives `{ formId, values, caller, client, submit }`.
+
+**Trust.**
+- `caller` is verified with Wix (`{ type: 'VISITOR' | 'MEMBER', id }`, or `undefined` = no proof).
+  It comes from wix-server-client's server-set, httpOnly `wix_session` cookie. Key your records on
+  `caller.id`, never on an id from `values`.
+- A `VISITOR` caller proves a browser session only: anyone can mint one. It is not a person and not
+  spam protection. A flow that needs a person checks `caller?.type === 'MEMBER'`.
+- `values` come from the browser: re-validate them.
+- A Wix submission is **not** a trust boundary: a script can likely post to Wix directly, skipping
+  your hook. Your own server-written record is the source of truth; a hidden `reference` in a Wix
+  submission is display data, never proof that the hook ran.
+- Server-side Wix calls run as **the site** (elevated) by default. Use `client` (a Wix client acting
+  as the caller, `undefined` without a session cookie) for calls that must respect the caller's
+  permissions. Example: wix-data on the server ignores a collection's member-only rules; through
+  `client` (or in the browser) they apply.
+
+**Rejecting.** `throw new ActionError(code, message)` shows `message` to the user as the form-level
+error. Any other error is logged on the server and the user sees a generic message.
+
+**`submit(values?)`.** Call it **once**, and `await` or `return` it. `values` replaces the submitted
+values (default: the browser's). It posts with the site's client and rejects when Wix rejects. A
+second call, or a call after the hook settled (a timer, an un-awaited chain), does not post: it is
+logged and rejects with `SubmitIgnoredError`. Compensate in a `catch`. **Once `submit()` was
+called, Wix's outcome alone decides the result**: Wix's per-field errors still reach the fields,
+and an error you throw afterwards is logged, not shown (after a successful submit the user still
+sees success, without your `redirectTo`).
+
+**Speed and idempotency.** The browser gives up after 30 s, while the server may still finish; the
+user's retry runs the hook again. Keep hooks well within that, and make the write idempotent per
+caller + slot (reuse an existing reservation, as above). The duplicate Wix submission is harmless
+display data.
+
+**`redirectTo`.** A same-site path (`'/…'`) only. The browser drops an absolute URL or anything that
+could leave the site (`'//host'`, `'/..//host'`, control characters) and logs it.
+
+**Hidden fields.** Client validation skips hidden fields, so a required hidden field can be left empty
+in the page and filled by the hook through `submit({ ...values, reference })`. Wix re-validates it;
+a Wix error on a hidden field appears in the status message as `Label: message`.
