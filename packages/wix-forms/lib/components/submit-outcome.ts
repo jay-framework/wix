@@ -5,11 +5,33 @@
 
 import type { FormFieldView } from '../types.js';
 
+/** English default copy. Pages that need other words branch on `submitFailure` (DL#45). */
 export const SUBMIT_FAILED_MESSAGE = 'We could not complete your request. Please try again.';
+
+/**
+ * The `submitState` / `submitFailure` contract variants (DL#45). Member order IS the contract:
+ * jay compiles `enum (A | B)` to a numeric enum, and the generator renders these members.
+ */
+export enum SubmitState {
+    IDLE,
+    SUBMITTING,
+    SUCCEEDED,
+    FAILED,
+}
+
+export enum SubmitFailure {
+    NONE,
+    VALIDATION,
+    REJECTED,
+    PERMISSION,
+    NETWORK,
+    UNKNOWN,
+}
 
 /** The failure fields of a `SubmitFormResult` (structural: the base tsconfig is not strict). */
 export interface SubmitRejection {
     success: boolean;
+    reason?: SubmitFailure;
     message?: string;
     fieldErrors?: Record<string, string>;
 }

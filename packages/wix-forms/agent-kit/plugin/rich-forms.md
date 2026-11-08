@@ -34,7 +34,8 @@ store and returns to a blank form (`isSubmitted=false`).
 See **§6 Accessibility** for why each attribute is there.
 
 Do **not** gate the confirmation on `statusMessage` — it is a data tag that also carries
-submit errors. Use the `isSubmitted` variant. Note: a confirmation shown after a honeypot
+submit errors. Use the `isSubmitted` variant. To show your own failure copy, branch on
+`submitFailure` (see `user-visible-messages.md`). Note: a confirmation shown after a honeypot
 trip (below) does NOT imply the submission was stored — never treat "confirmation shown" as
 a persistence guarantee.
 

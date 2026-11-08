@@ -48,6 +48,7 @@ Design documentation for the Jay Framework Wix integration packages.
 | 40  | [Per-Form Contracts for wix-forms](./40%20-%20per-form%20contracts%20for%20wix-forms.md)                       | Implemented                               |
 | 41  | [General Forms Infrastructure for wix-forms](./41%20-%20general%20forms%20infrastructure.md)        | Implemented (member prefill deferred; 4b not shipped) |
 | 42  | [Server-Side Submission Hook for wix-forms](./42%20-%20server-side%20submission%20hook%20for%20wix-forms.md) | Implemented (browser demo pending) |
+| 45  | [Locale-Neutral Submit Outcome for wix-forms](./45%20-%20locale-neutral%20submit%20outcome%20for%20wix-forms.md) | Implemented (browser demo pending) |
 
 ## Packages Covered
 

@@ -71,5 +71,5 @@ If `wix-server-client/getDashboardUrl` itself fails, give no link: say the form 
 ## Not dashboard content
 
 - **Which** Wix form a block uses → the page script's `contract="form/<slug>"` (and `key` for bindings only).
-- Layout, CSS, submit button label, and customized success/thank-you copy → **jay-html** (plugin sets a default English `statusMessage` on success; localized sites should use `if="key.statusMessage"` with static page text — see `agent-kit/references/wix-forms/user-visible-messages.md`).
-- Generic load/submit messages on `loadError` / `statusMessage` and client validation templates on `{key.field.error}` → mostly **plugin English**; field names inside errors still follow Wix labels when bound from `{key.field.label}`.
+- Layout, CSS, submit button label, and customized success/thank-you copy → **jay-html** (gate it on `if="key.submitState === SUCCEEDED"` and write the text in the page — see `agent-kit/references/wix-forms/user-visible-messages.md`).
+- Submit errors → branch on the `key.submitFailure` variant and write your own copy; `statusMessage` is only the plugin's English default. Load errors (`loadError`) and client validation templates (`{key.field.error}`) are plugin English; field names inside errors still follow Wix labels when bound from `{key.field.label}`.

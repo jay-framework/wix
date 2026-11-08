@@ -7,7 +7,7 @@ import { ActionError } from '@jay-framework/fullstack-component';
 import { WixApiError, type VerifiedCaller } from '@jay-framework/wix-server-client';
 import { runSubmission, selectHook, type SubmitDeps } from '../../lib/submission/run-submission.js';
 import { SubmitIgnoredError, type SubmitHook } from '../../lib/services/wix-forms-submit-hooks.js';
-import { SUBMIT_FAILED_MESSAGE } from '../../lib/components/submit-outcome.js';
+import { SUBMIT_FAILED_MESSAGE, SubmitFailure } from '../../lib/components/submit-outcome.js';
 import type { FieldValue } from '../../lib/types.js';
 
 /**
@@ -22,6 +22,12 @@ const SUBMISSIONS_PATH = '/forms/v4/submissions';
 const FORM_ID = 'form-1';
 const MEMBER: VerifiedCaller = { type: 'MEMBER', id: 'member-1' };
 const CALLER_CLIENT = { marker: 'caller-client' } as never;
+
+const UNKNOWN_FAILURE = {
+    success: false,
+    reason: SubmitFailure.UNKNOWN,
+    message: SUBMIT_FAILED_MESSAGE,
+};
 
 const fieldViolation = () => new WixApiError(400, SUBMISSIONS_PATH, FIELD_VIOLATION_BODY);
 const forbidden = () => new WixApiError(403, SUBMISSIONS_PATH, '{"message":"forbidden"}');
@@ -128,12 +134,14 @@ describe('runSubmission — V2, row 2 (Wix field violations)', () => {
 
         expect(await submitWith(deps)).toEqual({
             success: false,
+            reason: SubmitFailure.VALIDATION,
             fieldErrors: { email_4b3a: 'must be a valid email' },
         });
     });
 
     const fieldErrorResult = {
         success: false,
+        reason: SubmitFailure.VALIDATION,
         fieldErrors: { email_4b3a: 'must be a valid email' },
     };
 
@@ -150,14 +158,23 @@ describe('runSubmission — V2, row 2 (Wix field violations)', () => {
 
 describe('runSubmission — V3, row 3 (other Wix failure)', () => {
     it.each([
-        ['a 403', forbidden],
-        ['a network TypeError', () => new TypeError('fetch failed')],
-    ])('should return the generic message for %s, and log it (L4)', async (_label, wixFails) => {
-        const { deps } = harness({ wixFails });
+        ['a 401', () => new WixApiError(401, SUBMISSIONS_PATH, '{}'), SubmitFailure.PERMISSION],
+        ['a 403', forbidden, SubmitFailure.PERMISSION],
+        ['a 500', () => new WixApiError(500, SUBMISSIONS_PATH, '{}'), SubmitFailure.REJECTED],
+        ['a network TypeError', () => new TypeError('fetch failed'), SubmitFailure.UNKNOWN],
+    ])(
+        'should return the generic message for %s, and log it (L4)',
+        async (_label, wixFails, reason) => {
+            const { deps } = harness({ wixFails });
 
-        expect(await submitWith(deps)).toEqual({ success: false, message: SUBMIT_FAILED_MESSAGE });
-        expect(loggedMessages()).toEqual(['[wix-forms] Wix rejected the submission']);
-    });
+            expect(await submitWith(deps)).toEqual({
+                success: false,
+                reason,
+                message: SUBMIT_FAILED_MESSAGE,
+            });
+            expect(loggedMessages()).toEqual(['[wix-forms] Wix rejected the submission']);
+        },
+    );
 
     it.each(parityHooks())(
         'should give the same generic result when the hook %s',
@@ -166,6 +183,7 @@ describe('runSubmission — V3, row 3 (other Wix failure)', () => {
 
             expect(await submitWith(deps)).toEqual({
                 success: false,
+                reason: SubmitFailure.PERMISSION,
                 message: SUBMIT_FAILED_MESSAGE,
             });
             expect(loggedMessages()).toEqual([...logs, '[wix-forms] Wix rejected the submission']);
@@ -210,6 +228,7 @@ describe('runSubmission — V4, rows 4–5 (no submit)', () => {
 
         expect(await submitWith(deps)).toEqual({
             success: false,
+            reason: SubmitFailure.REJECTED,
             message: 'That time was just taken.',
         });
         expect(posts).toEqual([]);
@@ -223,14 +242,14 @@ describe('runSubmission — V4, rows 4–5 (no submit)', () => {
             },
         });
 
-        expect(await submitWith(deps)).toEqual({ success: false, message: SUBMIT_FAILED_MESSAGE });
+        expect(await submitWith(deps)).toEqual(UNKNOWN_FAILURE);
         expect(loggedMessages()).toEqual(['[wix-forms] the submit hook failed before submitting']);
     });
 
     it('should fail a hook that returns without calling submit(), and log it (L5)', async () => {
         const { deps, posts } = harness({ hook: async () => ({ redirectTo: '/x' }) });
 
-        expect(await submitWith(deps)).toEqual({ success: false, message: SUBMIT_FAILED_MESSAGE });
+        expect(await submitWith(deps)).toEqual(UNKNOWN_FAILURE);
         expect(posts).toEqual([]);
         expect(loggedMessages()).toEqual([
             '[wix-forms] the submit hook returned without calling submit()',
@@ -264,7 +283,11 @@ describe('runSubmission — V5, attempt lifecycle', () => {
             },
         });
 
-        expect(await submitWith(deps)).toEqual({ success: false, message: SUBMIT_FAILED_MESSAGE });
+        expect(await submitWith(deps)).toEqual({
+            success: false,
+            reason: SubmitFailure.PERMISSION,
+            message: SUBMIT_FAILED_MESSAGE,
+        });
         await tick();
         expect(posts.length).toEqual(1);
         expect(unhandled).toEqual([]);
@@ -279,10 +302,7 @@ describe('runSubmission — V5, attempt lifecycle', () => {
                 },
             });
 
-            expect(await submitWith(deps)).toEqual({
-                success: false,
-                message: SUBMIT_FAILED_MESSAGE,
-            });
+            expect(await submitWith(deps)).toEqual(UNKNOWN_FAILURE);
             await vi.advanceTimersByTimeAsync(10);
         } finally {
             vi.useRealTimers();
@@ -347,7 +367,7 @@ describe('runSubmission — V6, hook selection and identity', () => {
         const { deps, posts, resolveIdentity } = harness({ hook });
         resolveIdentity.mockRejectedValue(new Error('Wix API 503: /oauth2/token-info'));
 
-        expect(await submitWith(deps)).toEqual({ success: false, message: SUBMIT_FAILED_MESSAGE });
+        expect(await submitWith(deps)).toEqual(UNKNOWN_FAILURE);
         expect(hook).not.toHaveBeenCalled();
         expect(posts).toEqual([]);
         expect(errorLog.mock.calls).toEqual([

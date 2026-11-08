@@ -27,7 +27,13 @@ import { ensureSessionFresh } from '@jay-framework/wix-server-client/client';
 import type { FieldValue, FormFieldView, SubmitFormResult } from '../types.js';
 import { submitForm } from '../actions/forms-actions.js';
 import { validateFormField } from '../utils/project-form-fields.js';
-import { presentSubmitRejection, SUBMIT_FAILED_MESSAGE, toSitePath } from './submit-outcome.js';
+import {
+    presentSubmitRejection,
+    SUBMIT_FAILED_MESSAGE,
+    SubmitFailure,
+    toSitePath,
+    type SubmitRejection,
+} from './submit-outcome.js';
 import {
     emptyStoreFor,
     emptyValueFor,
@@ -99,6 +105,7 @@ function WixFormInteractive(
     const [errorByTarget, setErrorByTarget] = createSignal<Record<string, string>>({});
     const [invalidByTarget, setInvalidByTarget] = createSignal<Record<string, boolean>>({});
     const [isSubmitted, setIsSubmitted] = createSignal(false);
+    const [submitFailure, setSubmitFailure] = createSignal(SubmitFailure.NONE);
     // The per-field value store — the one source of truth for each field's value (§0).
     const [values, setValues] = createSignal<Record<string, FieldValue>>({});
     // Fields the user has edited; page-provided control seeding never overwrites these.
@@ -180,6 +187,7 @@ function WixFormInteractive(
         setErrorByTarget({});
         setInvalidByTarget({});
         setStatusMessage('');
+        setSubmitFailure(SubmitFailure.NONE);
         setIsSubmitted(false);
         setIsSubmitting(false);
         dirtyTargets.clear();
@@ -245,6 +253,7 @@ function WixFormInteractive(
     async function submit(): Promise<void> {
         if (isSubmitting()) return; // a second submit while one is in flight
         setStatusMessage('');
+        setSubmitFailure(SubmitFailure.NONE);
         setErrorByTarget({});
 
         // Honeypot trip: fake success (a bot must not tell), never call the API (Q12).
@@ -269,6 +278,7 @@ function WixFormInteractive(
                 Object.fromEntries(Object.keys(clientErrors).map((target) => [target, true])),
             );
             showFieldErrors(clientErrors);
+            setSubmitFailure(SubmitFailure.VALIDATION);
             setIsSubmitting(false);
             return;
         }
@@ -280,6 +290,7 @@ function WixFormInteractive(
             result = await submitForm({ formId: carryForward.formId, values: submissionValues });
         } catch {
             setStatusMessage(SUBMIT_FAILED_MESSAGE);
+            setSubmitFailure(SubmitFailure.NETWORK);
             setIsSubmitting(false);
             return;
         }
@@ -298,6 +309,7 @@ function WixFormInteractive(
             setErrorByTarget(rejection.errorByTarget);
             setInvalidByTarget(rejection.invalidByTarget);
             setStatusMessage(rejection.statusMessage);
+            setSubmitFailure((result as SubmitRejection).reason ?? SubmitFailure.UNKNOWN);
             showFieldErrors(rejection.errorByTarget);
             return undefined;
         }
@@ -323,6 +335,7 @@ function WixFormInteractive(
                 invalidByTarget: invalidByTarget(),
                 valueByTarget: values(),
                 isSubmitted: isSubmitted(),
+                submitFailure: submitFailure(),
             }),
     };
 }

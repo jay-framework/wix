@@ -1,3 +1,5 @@
+import type { SubmitFailure } from './components/submit-outcome.js';
+
 export type FormFieldInputType =
     | 'text'
     | 'email'
@@ -68,4 +70,9 @@ export interface SubmitRequestInput {
  */
 export type SubmitFormResult =
     | { success: true; redirectTo?: string }
-    | { success: false; message?: string; fieldErrors?: Record<string, string> };
+    | {
+          success: false;
+          reason: SubmitFailure;
+          message?: string;
+          fieldErrors?: Record<string, string>;
+      };

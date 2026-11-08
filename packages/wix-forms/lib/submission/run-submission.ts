@@ -10,7 +10,7 @@
 
 import { WixApiError, type VerifiedCaller } from '@jay-framework/wix-server-client';
 import type { WixClient } from '@wix/sdk';
-import { SUBMIT_FAILED_MESSAGE } from '../components/submit-outcome.js';
+import { SUBMIT_FAILED_MESSAGE, SubmitFailure } from '../components/submit-outcome.js';
 import {
     SubmitIgnoredError,
     type SubmitHook,
@@ -48,7 +48,7 @@ export async function runSubmission(
             identity = await deps.resolveIdentity();
         } catch (error) {
             logFailure('could not resolve the caller identity', formId, error); // L1
-            return { success: false, message: SUBMIT_FAILED_MESSAGE };
+            return genericFailure(SubmitFailure.UNKNOWN);
         }
     }
     const attempt = createSubmitAttempt(formId, request.values, deps.createSubmission);
@@ -139,19 +139,33 @@ function settleSubmission(
     }
     if (attempt.state === 'failed') {
         const fieldErrors = fieldErrorsOf(attempt.failure);
-        if (Object.keys(fieldErrors).length) return { success: false, fieldErrors };
+        if (Object.keys(fieldErrors).length) {
+            return { success: false, reason: SubmitFailure.VALIDATION, fieldErrors };
+        }
         logFailure('Wix rejected the submission', formId, attempt.failure); // L4
-        return { success: false, message: SUBMIT_FAILED_MESSAGE };
+        return genericFailure(wixFailureReason(attempt.failure));
     }
     if (isActionError(thrown)) {
-        return { success: false, message: thrown.message };
+        return { success: false, reason: SubmitFailure.REJECTED, message: thrown.message };
     }
     if (thrown !== undefined) {
         logFailure('the submit hook failed before submitting', formId, thrown); // L5
     } else {
         logFailure('the submit hook returned without calling submit()', formId, undefined); // L5
     }
-    return { success: false, message: SUBMIT_FAILED_MESSAGE };
+    return genericFailure(SubmitFailure.UNKNOWN);
+}
+
+function genericFailure(reason: SubmitFailure): SubmitFormResult {
+    return { success: false, reason, message: SUBMIT_FAILED_MESSAGE };
+}
+
+/** A failure that is not a `WixApiError` never got an answer from Wix. */
+function wixFailureReason(error: unknown): SubmitFailure {
+    if (!(error instanceof WixApiError)) return SubmitFailure.UNKNOWN;
+    return error.status === 401 || error.status === 403
+        ? SubmitFailure.PERMISSION
+        : SubmitFailure.REJECTED;
 }
 
 function fieldErrorsOf(error: unknown): Record<string, string> {

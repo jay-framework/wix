@@ -12,6 +12,7 @@
  */
 
 import type { FieldValue, FormFieldView } from '../types.js';
+import { SubmitFailure, SubmitState } from './submit-outcome.js';
 import { contractTagName } from '../generators/contract-utils.js';
 
 export interface FieldViewState {
@@ -33,6 +34,7 @@ export interface FormViewStateOverrides {
     invalidByTarget?: Record<string, boolean>;
     valueByTarget?: Record<string, FieldValue>;
     isSubmitted?: boolean;
+    submitFailure?: SubmitFailure;
 }
 
 interface FieldState {
@@ -104,5 +106,15 @@ export function buildFormViewState(
         isSubmitting: overrides.isSubmitting,
         statusMessage: overrides.statusMessage,
         isSubmitted: overrides.isSubmitted ?? false,
+        submitState: submitStateOf(overrides),
+        submitFailure: overrides.submitFailure ?? SubmitFailure.NONE,
     };
+}
+
+/** Success wins over `isSubmitting`, which a redirect keeps set while the page navigates. */
+function submitStateOf(overrides: FormViewStateOverrides): SubmitState {
+    if (overrides.isSubmitted) return SubmitState.SUCCEEDED;
+    if (overrides.isSubmitting) return SubmitState.SUBMITTING;
+    if (overrides.submitFailure) return SubmitState.FAILED;
+    return SubmitState.IDLE;
 }

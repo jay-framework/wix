@@ -65,6 +65,8 @@ tags:
   - { tag: isSubmitting, type: variant, dataType: boolean, phase: fast+interactive }
   - { tag: isSubmitted, type: variant, dataType: boolean, phase: fast+interactive }
   - { tag: statusMessage, type: data, dataType: string, phase: fast+interactive }
+  - { tag: submitState, type: variant, dataType: "enum (IDLE | SUBMITTING | SUCCEEDED | FAILED)", phase: fast+interactive }
+  - { tag: submitFailure, type: variant, dataType: "enum (NONE | VALIDATION | REJECTED | PERMISSION | NETWORK | UNKNOWN)", phase: fast+interactive }
   - { tag: submitButton, type: interactive, elementType: HTMLButtonElement }
   - { tag: resetButton, type: interactive, elementType: HTMLButtonElement }
   - { tag: honeypot, type: interactive, elementType: HTMLInputElement }
