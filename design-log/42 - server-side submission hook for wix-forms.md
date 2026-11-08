@@ -1,6 +1,6 @@
 # 42 - Server-Side Submission Hook for wix-forms
 
-Status: Approved (2026-10-26)
+Status: Implemented (2026-11-08; browser demo pending, see Implementation Results)
 
 Builds on **DL#41 (General Forms Infrastructure)**: its value store, `control` channel, hidden fields, `submitForm` action, and the **structured submit result** that DL#41's own planned defect fix introduces (DL#41 → Implementation Results → *Known defect found in review + planned fix*). Generic: any Jay project, no downstream site named. Paths are relative to `packages/wix-forms/lib/` unless stated.
 
@@ -601,3 +601,66 @@ Build, demo, agent-kit:
 - **agent-kit: yes.** `packages/wix-forms/agent-kit/plugin/rich-forms.md` §4b, plus the testbed copy (Phase 3). This includes the `withServer` registration rule, the 30 s timeout with idempotent writes, and the hidden-required-field pattern.
 - **agent-kit (wix-server-client):** a short section on `resolveRequestIdentity` (`caller` vs `client`), the site-by-default rule, and calling `ensureSessionFresh()` before cookie-dependent actions.
 - **Framework: none in this DL.** The upstream need (request-cookie access for actions) is jay's own design.
+
+## Implementation Results
+
+Implemented in `packages/wix-server-client` and `packages/wix-forms` (2026-11-08), on top of DL#41 as merged. jay is untouched; its request-cookie access for actions (`.withRequest()`) is consumed from the synced build. Phase 0 (DL#41's per-field errors fix and `validateVisibleFields`) had already landed with DL#41.
+
+### Phase 1 findings (measured live on a test site, 2026-10-26)
+
+- **token-info.**
+  - Active member and active visitor access tokens: HTTP 200 with `{ active: true, subjectType, subjectId, exp, iat, clientId, siteId, instanceId }`. `clientId` is present and equals the site's OAuth client id, so the STOP condition did not trigger.
+  - A made-up JWT-shaped string, a non-JWT string, and an empty string: all HTTP **200** with `{ active: false, subjectType: 'UNKNOWN', subjectId: '', clientId: '' }`.
+  - So **`INVALID_TOKEN_STATUSES` is empty**: only a 200 with `active: false` means invalid, and any non-200 is a transport failure.
+  - Fixtures: `packages/wix-server-client/test/fixtures/token-info/*.json`, with every id replaced by a placeholder. **An expired token was not captured (untested).**
+- **Sizes (Q22).** The access token is about 1070 characters and the refresh token about 206. The cookie value (base64url JSON of both) is about 1828 characters, so **both tokens fit** and the access-token-only fallback is not needed. Access-token lifetime: 14400 s (4 h).
+- **Refresh.** The grant returns `{ access_token, token_type, expires_in, refresh_token }`. The refresh token **is rotated**, but the old one still worked immediately afterwards. The rule "the server never refreshes" stands.
+- **Refresh-token lifetime: not measurable.** The 30-day `Max-Age` remains an **assumption** (MUST-VERIFY still open).
+- **Logout.** wix-members' `logout()` → `keepTokens` → `wixClientContext.setTokens` → `storeTokens`, so a logout syncs the new visitor tokens.
+- **Same-origin check (Q25) — verified live on a dev server.** `POST /_jay/actions/wixServerClient.syncSession` with `Sec-Fetch-Site: cross-site` → **403**. With `same-origin`, `{ clear: true }` → 200, `Cache-Control: private, no-store`, `Set-Cookie: wix_session=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax`.
+
+### What was built
+
+- **wix-server-client** (`lib/session/`, `lib/actions/session-actions.ts`):
+  - `verifyAccessToken`: JSON POST, no `Authorization`, 5 s abort, the four checks, `WixApiError(status, '/oauth2/token-info', '')` with no token in it; nothing is logged.
+  - `encodeSessionCookie` / `decodeSessionCookie`; `resolveRequestIdentity`, whose lazy, memoised `caller` getter makes one token-info call.
+  - The `syncSession` action (`.withRequest()`), listed in `plugin.yaml` next to the existing `getDashboardUrl`, with `sync-session.jay-action`.
+  - The OAuth client id is read with `getClientInitDataForKey('wix-server-client')` (Q3).
+  - Client side: `storeTokens` mirrors a changed access token through `syncSession`; `ensureSessionFresh()` is exported from `index.client.ts`; a `storage` listener follows other tabs; `clearStoredTokens` also clears the cookie.
+  - `vitest` is declared in devDependencies, so the root `yarn test` runs this package's tests (it aborted before).
+- **wix-forms:**
+  - `services/wix-forms-submit-hooks.ts` (`WIX_FORMS_SUBMIT_HOOKS`, `SubmitIgnoredError`, the hook types);
+  - `runSubmission` with the explicit attempt, the seal, the 5-row `settleSubmission`, and log points L1–L5;
+  - `selectHook` (`Object.hasOwn`); `submitForm` with `.withRequest()`;
+  - `toSitePath`, and `presentSubmitRejection` now leads with `result.message`;
+  - the client handler per §Design 4: `isSubmitting` guard, `ensureSessionFresh`, transport-only catch, `presentSubmitResult`, L6, and `resetForm` / `pageshow` clearing `isSubmitting`;
+  - `describeSubmitError` is deleted.
+- **Agent-kit:**
+  - `packages/wix-forms/agent-kit/plugin/rich-forms.md` §7 "Server-side submit hook";
+  - new `packages/wix-server-client/agent-kit/plugin/wix-request-session.md` (`agent-kit` added to the package `files`).
+
+### Deviations
+
+- **No augmenter to remove (§Design 5).** DL#41 shipped without the 4b augmenter, so there is no `WIX_FORMS_SUBMISSION_AUGMENTER` to delete and no migration. The agent-kit guide has no migration section. The behaviour changes Q16 describes for augmenter code do not apply.
+- **The guide section is §7, not §4b.** DL#41's merged guide uses §4b for non-string fields and §6 for accessibility.
+- **The double-submit guard is set before the submit-time hidden seed.** DL#41 added an `await seedControlsIntoStore(...)` at the start of `submit()`, before any network call. `setIsSubmitting(true)` now runs before that await (right after the honeypot check), and client-validation failure clears it, so a second submit during the seed is ignored too.
+- **Accessibility is kept on every outcome.** The merged DL#41 component focuses the confirmation on success and the first invalid field on rejection; `presentSubmitResult` calls the same `showSubmitted()` / `showFieldErrors()`. A redirect still navigates after the confirmation is shown.
+- **`Secure` is left to jay's default** (set when the request is https) rather than "omitted only for `http://localhost`". `ActionRequest` does not expose the host, and jay's rule gives the same result on localhost and on https sites. A plain-http non-localhost site would get a non-`Secure` cookie.
+- **The `wix_session` value stores the SDK's `accessToken` / `refreshToken` objects** (`{ value, expiresAt }` / `{ value, role }`), not bare strings. `OAuthStrategy({ tokens })` needs that shape. This is within the Q22 size budget.
+- **`ensureSessionFresh` also syncs a valid token that was never synced in this page**, for example tokens restored from localStorage that predate the cookie. Otherwise the first hooked submit after deploy would carry no cookie. This costs at most one `syncSession` per page load, and only before a cookie-dependent action.
+- **`clearStoredTokens` also clears the cookie** (`syncSession({ clear: true })`), so the `{ clear: true }` input has a caller.
+- **`presentSubmitRejection` is pure.** It returns the view, and the component applies it.
+- **No example app.** The Phase 3 testbed copy and the Phase 4 demo app are not part of this change; the browser demo runs later against a consumer app.
+
+### Verification
+
+- **V1–V6** (`packages/wix-forms/test/submission/run-submission.test.ts`), **V9–V10** (`test/submit-outcome.test.ts`), **V7** (`packages/wix-server-client/test/session/verify-access-token.test.ts`), **V13** (`test/session/session.test.ts` and `test/wix-client-context.test.ts`): written red first (modules or functions missing), then green. DL#41's 403 companion test is flipped to a returned `SUBMIT_FAILED_MESSAGE` (V3).
+- **V11:** no `describeSubmitError` remains in `lib/`; no `components/`, `utils/` or `index.client.ts` file imports `submission/`; wix-server-client's `index.client.ts` exports nothing from `session/`; there is no `console.*` in wix-server-client's `session/` or `actions/`; `npm run build` passes `validate-plugin` for wix-server-client, wix-forms and wix-bookings.
+- **Test counts:** wix-server-client **52/52**, wix-forms **124/124**, wix-bookings **37/37**. `tsc --noEmit` exit 0 for all three. Root `yarn test` exits 0.
+- **No component harness:** the client-side changes in `components/wix-form.ts` (guard placement, `pageshow`, redirect) have no unit test (`vite.config.ts` environment: node).
+
+### Open
+
+- **V12 (browser demo): NOT DONE.** It needs a member login on a running site, and is planned for the end-to-end pass.
+- Refresh-token lifetime (the 30-day `Max-Age` is an assumption).
+- An expired-token token-info fixture.
