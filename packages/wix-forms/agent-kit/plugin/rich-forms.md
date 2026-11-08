@@ -154,7 +154,8 @@ mechanical mistakes marked ⚠️.
 
 Register **one hook per form** when the server must act around the submission: verify who is
 submitting, re-check availability, write your own record, add server-derived values (often into
-a hidden field), redirect to a confirmation page. Forms without a hook submit as before.
+a hidden field), redirect to a confirmation page. Forms without a hook submit the browser values
+unchanged (see "Who the submission posts as" below).
 
 **Register it inside `makeJayInit().withServer(...)`, never at the top level.** The project's
 `src/init.ts` is loaded into the browser, and only `.withServer(...)` is stripped from the client
@@ -201,21 +202,41 @@ contract's `formId` metadata). The hook receives `{ formId, values, caller, clie
 - A Wix submission is **not** a trust boundary: a script can likely post to Wix directly, skipping
   your hook. Your own server-written record is the source of truth; a hidden `reference` in a Wix
   submission is display data, never proof that the hook ran.
-- Server-side Wix calls run as **the site** (elevated) by default. Use `client` (a Wix client acting
-  as the caller, `undefined` without a session cookie) for calls that must respect the caller's
-  permissions. Example: wix-data on the server ignores a collection's member-only rules; through
-  `client` (or in the browser) they apply.
+- Your own server-side Wix calls run as **the site** (elevated) by default. Use `client` (a Wix
+  client acting as the caller, `undefined` without an active session) for calls that must respect
+  the caller's permissions. Example: wix-data on the server ignores a collection's member-only
+  rules; through `client` (or in the browser) they apply. On `client` only `client.use(module)`,
+  `client.graphql` and `wixFetch(..., { authorization })` work; `fetchWithAuth`, `fetch` and
+  `enableContext` throw.
 
 **Rejecting.** `throw new ActionError(code, message)` shows `message` to the user as the form-level
 error. Any other error is logged on the server and the user sees a generic message.
 
-**`submit(values?)`.** Call it **once**, and `await` or `return` it. `values` replaces the submitted
-values (default: the browser's). It posts with the site's client and rejects when Wix rejects. A
+**`submit(values?, options?)`.** Call it **once**, and `await` or `return` it. `values` replaces the
+submitted values (default: the browser's). It rejects when Wix rejects. A
 second call, or a call after the hook settled (a timer, an un-awaited chain), does not post: it is
 logged and rejects with `SubmitIgnoredError`. Compensate in a `catch`. **Once `submit()` was
 called, Wix's outcome alone decides the result**: Wix's per-field errors still reach the fields,
 and an error you throw afterwards is logged, not shown (after a successful submit the user still
 sees success, without your `redirectTo`).
+
+**Who the submission posts as.** Every form (with or without a hook) posts **as the caller** when
+the request has an active `wix_session` cookie, so Wix records the visitor or member as the
+submitter; without a session it posts as the site.
+- `submit(values, { as: 'site' })` forces the site. A form whose Wix settings restrict submitters
+  (for example, members only) and that visitors must still submit needs it. A form without a hook
+  that must post as the site registers a one-line hook:
+  `{ [FORM_ID]: ({ submit }) => submit(undefined, { as: 'site' }) }`.
+- **Expired is not "no session".** When a caller post's session has expired, nothing is posted:
+  `submit()` rejects with `SessionExpiredError` and the user sees "Your session expired. Please
+  refresh the page and try again." `{ as: 'site' }` is not blocked by an expired cookie. The page
+  sees `submitFailure: PERMISSION`, so it can write its own sign-in copy.
+- **No silent retry.** When Wix refuses a caller post, it is not retried as the site: the user sees
+  the generic message and the server logs the status. (A specific "Please sign in to submit this
+  form." message is pending: Wix's refusal status for forms is not yet verified.)
+- Captcha / spam-protected forms: pending verification. Whether `{ as: 'site' }` helps there is not
+  verified yet; do not rely on it.
+- Direct `WIX_FORMS_SERVICE.createSubmission(formId, values)` calls are unchanged and post as the site.
 
 **Speed and idempotency.** The browser gives up after 30 s, while the server may still finish; the
 user's retry runs the hook again. Keep hooks well within that, and make the write idempotent per
