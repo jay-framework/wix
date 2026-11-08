@@ -29,9 +29,13 @@ export {
     type WixCursorPaging,
 } from './wix-fetch.js';
 
-// Request session (DL#40): server-side Wix calls run as the site by default, and as the
+// Request session (DL#42): server-side Wix calls run as the site by default, and as the
 // caller when the request carries the `wix_session` cookie.
-export { syncSession, type SyncSessionInput, type SyncSessionResult } from './actions/session-actions.js';
+export {
+    syncSession,
+    type SyncSessionInput,
+    type SyncSessionResult,
+} from './actions/session-actions.js';
 export { resolveRequestIdentity, type RequestIdentity } from './session/request-identity.js';
 export { verifyAccessToken, type VerifiedCaller } from './session/verify-access-token.js';
 export { WIX_SESSION_COOKIE } from './session/session-cookie.js';

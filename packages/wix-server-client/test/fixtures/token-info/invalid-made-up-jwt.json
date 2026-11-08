@@ -1,4 +1,4 @@
 {
-    "status": 200,
-    "body": { "active": false, "subjectType": "UNKNOWN", "subjectId": "", "clientId": "" }
+  "status": 200,
+  "body": { "active": false, "subjectType": "UNKNOWN", "subjectId": "", "clientId": "" }
 }

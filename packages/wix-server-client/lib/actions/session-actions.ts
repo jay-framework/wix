@@ -1,5 +1,5 @@
 /**
- * Session action (DL#40 §Design 1): mirror the browser's OAuth tokens into the httpOnly
+ * Session action (DL#42 §Design 1): mirror the browser's OAuth tokens into the httpOnly
  * `wix_session` cookie, after verifying them with token-info.
  */
 
@@ -36,6 +36,10 @@ export const syncSession = makeJayAction('wixServerClient.syncSession')
             request.clearCookie(WIX_SESSION_COOKIE, SESSION_COOKIE_SCOPE);
             return { ok: false };
         }
-        request.setCookie(WIX_SESSION_COOKIE, encodeSessionCookie(input.tokens), SESSION_COOKIE_OPTIONS);
+        request.setCookie(
+            WIX_SESSION_COOKIE,
+            encodeSessionCookie(input.tokens),
+            SESSION_COOKIE_OPTIONS,
+        );
         return { ok: true, callerType: caller.type };
     });

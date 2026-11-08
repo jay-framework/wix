@@ -657,7 +657,8 @@ Implemented in `packages/wix-server-client` and `packages/wix-forms` (2026-11-08
 - **V1–V6** (`packages/wix-forms/test/submission/run-submission.test.ts`), **V9–V10** (`test/submit-outcome.test.ts`), **V7** (`packages/wix-server-client/test/session/verify-access-token.test.ts`), **V13** (`test/session/session.test.ts` and `test/wix-client-context.test.ts`): written red first (modules or functions missing), then green. DL#41's 403 companion test is flipped to a returned `SUBMIT_FAILED_MESSAGE` (V3).
 - **V11:** no `describeSubmitError` remains in `lib/`; no `components/`, `utils/` or `index.client.ts` file imports `submission/`; wix-server-client's `index.client.ts` exports nothing from `session/`; there is no `console.*` in wix-server-client's `session/` or `actions/`; `npm run build` passes `validate-plugin` for wix-server-client, wix-forms and wix-bookings.
 - **Test counts:** wix-server-client **52/52**, wix-forms **124/124**, wix-bookings **37/37**. `tsc --noEmit` exit 0 for all three. Root `yarn test` exits 0.
-- **No component harness:** the client-side changes in `components/wix-form.ts` (guard placement, `pageshow`, redirect) have no unit test (`vite.config.ts` environment: node).
+- **Client submit path:** `runFormSubmit` in `components/form-submit-execution.ts` is unit-tested (flight guard, session order, stale responses). The honeypot trip stays at the top of `submit()` before client validation (Q12).
+- **No full component harness:** `components/wix-form.ts` (DOM wiring, `pageshow`, redirect logging) is not mounted in tests (`vite.config.ts` environment: node).
 
 ### Open
 

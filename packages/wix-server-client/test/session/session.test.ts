@@ -102,7 +102,10 @@ describe('resolveRequestIdentity (V13)', () => {
     it.each([
         ['no cookie', {}],
         ['a garbled cookie', { [WIX_SESSION_COOKIE]: '%%%not-base64-json' }],
-        ['a cookie without an access token', { [WIX_SESSION_COOKIE]: Buffer.from('{}').toString('base64url') }],
+        [
+            'a cookie without an access token',
+            { [WIX_SESSION_COOKIE]: Buffer.from('{}').toString('base64url') },
+        ],
     ])('should give no caller and no client for %s, without fetching', async (_label, cookies) => {
         const fetchImpl = fetchReturning(tokenInfoFixture('active-member'));
 
@@ -118,7 +121,10 @@ describe('resolveRequestIdentity (V13)', () => {
     it('should build a client that sends the cookie access token as Authorization', async () => {
         const cookies = { [WIX_SESSION_COOKIE]: encodeSessionCookie(tokensFor('member-access')) };
 
-        const identity = resolveRequestIdentity(cookies, fetchReturning(tokenInfoFixture('active-member')));
+        const identity = resolveRequestIdentity(
+            cookies,
+            fetchReturning(tokenInfoFixture('active-member')),
+        );
         const authHeaders = await (identity.client!.auth as any).getAuthHeaders();
 
         expect(authHeaders.headers.Authorization).toEqual('member-access');
@@ -145,7 +151,10 @@ describe('resolveRequestIdentity (V13)', () => {
     it('should give an undefined caller but still a client for a token that fails a check', async () => {
         const cookies = { [WIX_SESSION_COOKIE]: encodeSessionCookie(tokensFor('expired')) };
 
-        const identity = resolveRequestIdentity(cookies, fetchReturning(tokenInfoFixture('invalid-non-jwt')));
+        const identity = resolveRequestIdentity(
+            cookies,
+            fetchReturning(tokenInfoFixture('invalid-non-jwt')),
+        );
 
         expect(await identity.caller).toBeUndefined();
         expect(identity.client).toBeDefined();

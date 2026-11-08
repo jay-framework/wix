@@ -10,3 +10,4 @@ outputSchema:
   redirectTo?: string
   message?: string
   fieldErrors?: object
+  reason?: number  # SubmitFailure enum index when success is false (NONE=0, VALIDATION=1, …); locale-neutral outcome for pages

@@ -1,5 +1,5 @@
 /**
- * Who is calling, read from the request's `wix_session` cookie (DL#40 §Design 1).
+ * Who is calling, read from the request's `wix_session` cookie (DL#42 §Design 1).
  * Server-only.
  */
 

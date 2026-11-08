@@ -49,6 +49,8 @@ import {
 } from '../slow-render-defaults.js';
 import { contractTagName } from '../generators/contract-utils.js';
 import { buildFormViewState } from './form-view-state.js';
+import { createSubmitFlight } from './form-submit-flight.js';
+import { runFormSubmit } from './form-submit-execution.js';
 
 interface WixFormMetadata {
     formId: string;
@@ -112,6 +114,7 @@ function WixFormInteractive(
     const dirtyTargets = new Set<string>();
     // Honeypot value is kept OUT of the store so it never reaches readFormValues (Q12).
     let honeypotValue = '';
+    const submitFlight = createSubmitFlight();
 
     function setFieldValue(target: string, value: FieldValue): void {
         setValues((current) => ({ ...current, [target]: value }));
@@ -183,6 +186,7 @@ function WixFormInteractive(
     });
 
     function resetForm(): void {
+        submitFlight.invalidate();
         setValues(emptyStoreFor(carryForward.fields));
         setErrorByTarget({});
         setInvalidByTarget({});
@@ -251,19 +255,17 @@ function WixFormInteractive(
     }
 
     async function submit(): Promise<void> {
-        if (isSubmitting()) return; // a second submit while one is in flight
+        // Early exit while a prior submit still seeds/validates; runFormSubmit owns the in-flight guard.
+        if (isSubmitting()) return;
         setStatusMessage('');
         setSubmitFailure(SubmitFailure.NONE);
         setErrorByTarget({});
 
-        // Honeypot trip: fake success (a bot must not tell), never call the API (Q12).
+        // Honeypot trip: fake success (a bot must not tell), before validation or the API (Q12).
         if (honeypotValue.trim()) {
             showSubmitted();
             return;
         }
-
-        // Synchronous, before the first await: the double-submit guard (DL#42 §4).
-        setIsSubmitting(true);
 
         // Seed page-provided control values (hidden fields) here too: the mount-time seed can
         // run before hydration binds the control elements, so its `exec$` reads nothing. At
@@ -279,27 +281,24 @@ function WixFormInteractive(
             );
             showFieldErrors(clientErrors);
             setSubmitFailure(SubmitFailure.VALIDATION);
-            setIsSubmitting(false);
             return;
         }
 
-        let result: SubmitFormResult;
-        try {
-            // Only the transport can throw here: NETWORK_ERROR, TIMEOUT, an unexpected server throw.
-            await ensureSessionFresh();
-            result = await submitForm({ formId: carryForward.formId, values: submissionValues });
-        } catch {
-            setStatusMessage(SUBMIT_FAILED_MESSAGE);
-            setSubmitFailure(SubmitFailure.NETWORK);
-            setIsSubmitting(false);
-            return;
-        }
-        const redirectPath = presentSubmitResult(result);
-        if (redirectPath) {
-            window.location.assign(redirectPath); // the button stays disabled while the page navigates
-        } else {
-            setIsSubmitting(false);
-        }
+        await runFormSubmit({
+            flight: submitFlight,
+            isSubmitting,
+            setIsSubmitting,
+            ensureSessionFresh,
+            submitForm,
+            formId: carryForward.formId,
+            submissionValues,
+            presentSubmitResult,
+            navigate: (path) => window.location.assign(path),
+            onNetworkFailure: () => {
+                setStatusMessage(SUBMIT_FAILED_MESSAGE);
+                setSubmitFailure(SubmitFailure.NETWORK);
+            },
+        });
     }
 
     /** Applies a returned submit result; returns the site path to navigate to, if any. */
@@ -320,7 +319,7 @@ function WixFormInteractive(
         if (redirectTo !== undefined && !redirectPath) {
             console.error('[wix-forms] dropped an unsafe redirectTo', {
                 formId: carryForward.formId,
-            }); // L6
+            });
         }
         return redirectPath;
     }

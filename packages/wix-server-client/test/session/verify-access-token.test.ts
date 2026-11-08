@@ -112,10 +112,16 @@ describe('verifyAccessToken (V7)', () => {
             vi.spyOn(console, method),
         );
 
-        await verifyAccessToken(TOKEN, SITE_CLIENT_ID, fetchReturning(tokenInfoFixture('active-member')));
-        await verifyAccessToken(TOKEN, SITE_CLIENT_ID, fetchReturning({ status: 500, body: {} })).catch(
-            () => {},
+        await verifyAccessToken(
+            TOKEN,
+            SITE_CLIENT_ID,
+            fetchReturning(tokenInfoFixture('active-member')),
         );
+        await verifyAccessToken(
+            TOKEN,
+            SITE_CLIENT_ID,
+            fetchReturning({ status: 500, body: {} }),
+        ).catch(() => {});
 
         expect(spies.map((spy) => spy.mock.calls.length)).toEqual([0, 0, 0, 0, 0]);
     });

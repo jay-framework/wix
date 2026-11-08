@@ -35,7 +35,7 @@ interface StoredTokens {
 
 /**
  * Store tokens in localStorage for session persistence — the only code that persists them —
- * and mirror a changed access token into the server's `wix_session` cookie (DL#40 Q4).
+ * and mirror a changed access token into the server's `wix_session` cookie (DL#42 Q4).
  */
 function storeTokens(tokens: Tokens, oauthClientId: string): void {
     try {
@@ -50,7 +50,7 @@ function storeTokens(tokens: Tokens, oauthClientId: string): void {
 }
 
 // ============================================================================
-// Session cookie mirror (DL#40): the browser owns the tokens, the cookie mirrors them.
+// Session cookie mirror (DL#42): the browser owns the tokens, the cookie mirrors them.
 // ============================================================================
 
 /** The client-bound OAuth strategy: `getAuthHeaders()` renews an expired access token. */
@@ -75,13 +75,18 @@ function syncSessionCookie(tokens: Tokens | null): Promise<void> {
     }
     const session = activeSession;
     session.syncedAccessToken = accessToken;
-    session.pendingSync = syncSession({ tokens: tokens! }).then(
-        () => undefined,
-        () => {
-            if (session.syncedAccessToken === accessToken) session.syncedAccessToken = undefined;
-            // Never log the error itself: it may carry the request body (the tokens).
-            console.warn('[WixClient] Could not sync the session cookie; retrying on the next change.');
-        },
+    session.pendingSync = session.pendingSync.then(() =>
+        syncSession({ tokens: tokens! }).then(
+            () => undefined,
+            () => {
+                if (session.syncedAccessToken === accessToken)
+                    session.syncedAccessToken = undefined;
+                // Never log the error itself: it may carry the request body (the tokens).
+                console.warn(
+                    '[WixClient] Could not sync the session cookie; retrying on the next change.',
+                );
+            },
+        ),
     );
     return session.pendingSync;
 }
@@ -144,16 +149,24 @@ export function clearStoredTokens(oauthClientId = ''): void {
     } catch (error) {
         console.warn('[WixClient] Failed to clear tokens:', error);
     }
-    if (activeSession) activeSession.syncedAccessToken = undefined;
-    syncSession({ clear: true }).catch(() =>
-        console.warn('[WixClient] Could not clear the session cookie.'),
-    );
+    if (activeSession) {
+        activeSession.syncedAccessToken = undefined;
+        activeSession.pendingSync = activeSession.pendingSync
+            .then(() => syncSession({ clear: true }))
+            .then(
+                () => undefined,
+                () => console.warn('[WixClient] Could not clear the session cookie.'),
+            );
+    } else {
+        syncSession({ clear: true }).catch(() =>
+            console.warn('[WixClient] Could not clear the session cookie.'),
+        );
+    }
 }
 
 export async function provideWixClientContext(oauthClientId: string) {
     const storedTokens = getStoredTokens(oauthClientId);
 
-    console.log('[wix-server-client] createClient with tokens: ', undefined);
     const wixClient = createClient({
         auth: OAuthStrategy({
             clientId: oauthClientId,
