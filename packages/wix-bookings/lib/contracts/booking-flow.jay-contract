@@ -37,6 +37,13 @@ tags:
     type: data
     dataType: string
     phase: fast+interactive
+    description: English default text; branch on servicesFailure for your own copy
+
+  - tag: servicesFailure
+    type: variant
+    dataType: enum (NONE | PERMISSION | UNKNOWN)
+    phase: fast+interactive
+    description: Why listing services failed (NONE when it did not)
 
   - tag: showServices
     type: variant
@@ -81,6 +88,13 @@ tags:
     type: data
     dataType: string
     phase: fast+interactive
+    description: English default text (a load error, or no available times)
+
+  - tag: slotsFailure
+    type: variant
+    dataType: enum (NONE | UNKNOWN)
+    phase: fast+interactive
+    description: Whether loading availability failed; no times with NONE means none are available
 
   - tag: formFields
     type: sub-contract
@@ -108,11 +122,24 @@ tags:
     type: data
     dataType: string
     phase: fast+interactive
+    description: English default text on confirmation; branch on bookingState for your own copy
 
   - tag: bookingError
     type: data
     dataType: string
     phase: fast+interactive
+    description: English default text on failure; branch on bookingFailure for your own copy
+
+  - tag: bookingState
+    type: variant
+    dataType: enum (IDLE | BOOKING | CONFIRMED | FAILED)
+    phase: fast+interactive
+
+  - tag: bookingFailure
+    type: variant
+    dataType: enum (NONE | VALIDATION | FORM_UNAVAILABLE | CHECKOUT_PERMISSION | CHECKOUT_REDIRECT_REJECTED | SITE_NOT_PUBLISHED | UNKNOWN)
+    phase: fast+interactive
+    description: Why the participant form or the booking failed (NONE when it did not)
 
   - tag: bookButton
     type: interactive

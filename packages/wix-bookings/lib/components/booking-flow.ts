@@ -5,14 +5,17 @@ import {
     type Signals,
 } from '@jay-framework/fullstack-component';
 import { createSignal, Props } from '@jay-framework/component';
-import type {
-    BookingFlowContract,
-    BookingFlowFastViewState,
-    BookingFlowRefs,
-    BookingFlowSlowViewState,
-    ServiceOfBookingFlowViewState,
-    SlotOfBookingFlowViewState,
-} from '../contracts/booking-flow.jay-contract.js';
+import {
+    BookingFailure,
+    ServicesFailure,
+    SlotsFailure,
+    type BookingFlowContract,
+    type BookingFlowFastViewState,
+    type BookingFlowRefs,
+    type BookingFlowSlowViewState,
+    type ServiceOfBookingFlowViewState,
+    type SlotOfBookingFlowViewState,
+} from '../contracts/booking-flow.jay-contract';
 import {
     WIX_BOOKINGS_SERVICE,
     type WixBookingsService,
@@ -30,6 +33,11 @@ import {
     SLOW_RENDER_GRACE,
     SLOW_RENDER_ERROR_TTL,
 } from '../slow-render-defaults.js';
+import {
+    bookingStateOf,
+    describeBookingError,
+    describeServicesError,
+} from '../utils/booking-outcome.js';
 
 const DEFAULT_PARTICIPANT_FIELDS: BookingFormFieldView[] = [
     { target: 'first_name', label: 'First Name', type: 'STRING', required: true },
@@ -40,6 +48,7 @@ const DEFAULT_PARTICIPANT_FIELDS: BookingFormFieldView[] = [
 interface BookingFlowCarryForward {
     services: BookingServiceView[];
     servicesError?: string;
+    servicesFailure?: ServicesFailure;
 }
 
 function toBookingService(service: ServiceOfBookingFlowViewState): BookingServiceView {
@@ -69,15 +78,11 @@ async function renderSlowlyChanging(_props: object, bookings: WixBookingsService
             { ttl: SLOW_RENDER_TTL, grace: SLOW_RENDER_GRACE },
         );
     } catch (error) {
-        const rawMessage =
-            error instanceof Error ? error.message : 'Could not load booking services.';
-        const message = rawMessage.includes('403')
-            ? 'Bookings API access denied. Add Wix Bookings permission to your API key in the Wix dashboard.'
-            : rawMessage || 'Could not load booking services.';
+        const { failure, message } = describeServicesError(error);
         console.error('[booking-flow] listServices failed:', error);
         return phaseOutput<BookingFlowSlowViewState, BookingFlowCarryForward>(
             { services: [] },
-            { services: [], servicesError: message },
+            { services: [], servicesError: message, servicesFailure: failure },
             { ttl: SLOW_RENDER_ERROR_TTL },
         );
     }
@@ -90,6 +95,7 @@ async function renderFastChanging(_props: object, carryForward: BookingFlowCarry
             services: carryForward.services,
             servicesLoading: false,
             servicesError: carryForward.servicesError ?? '',
+            servicesFailure: carryForward.servicesFailure ?? ServicesFailure.NONE,
             showNoServices: carryForward.services.length === 0 && !carryForward.servicesError,
             hasSlots: false,
             showServices: true,
@@ -99,16 +105,20 @@ async function renderFastChanging(_props: object, carryForward: BookingFlowCarry
             slots: [],
             slotsLoading: false,
             slotsMessage: '',
+            slotsFailure: SlotsFailure.NONE,
             formFields: [],
             formLoading: false,
             isBooking: false,
             bookingStatus: '',
             bookingError: '',
+            bookingState: bookingStateOf({
+                isBooking: false,
+                isConfirmed: false,
+                failure: BookingFailure.NONE,
+            }),
+            bookingFailure: BookingFailure.NONE,
         },
-        carryForward: {
-            services: carryForward.services,
-            servicesError: carryForward.servicesError,
-        },
+        carryForward,
     }));
 }
 
@@ -122,6 +132,7 @@ function BookingFlowInteractive(
     const [showServices, setShowServices] = createSignal(true);
     const showNoServices = _carryForward.services.length === 0 && !_carryForward.servicesError;
     const servicesError = _carryForward.servicesError ?? '';
+    const servicesFailure = _carryForward.servicesFailure ?? ServicesFailure.NONE;
     const [hasSlots, setHasSlots] = createSignal(false);
     const [showSlots, setShowSlots] = createSignal(false);
     const [showForm, setShowForm] = createSignal(false);
@@ -131,15 +142,25 @@ function BookingFlowInteractive(
     const [slots, setSlots] = createSignal<BookingSlotView[]>([]);
     const [slotsLoading, setSlotsLoading] = createSignal(false);
     const [slotsMessage, setSlotsMessage] = createSignal('');
+    const [slotsFailure, setSlotsFailure] = createSignal(SlotsFailure.NONE);
     const [formFields, setFormFields] = createSignal<BookingFormFieldView[]>([]);
     const [formLoading, setFormLoading] = createSignal(false);
     const [isBooking, setIsBooking] = createSignal(false);
     const [bookingStatus, setBookingStatus] = createSignal('');
     const [bookingError, setBookingError] = createSignal('');
+    const [bookingFailure, setBookingFailure] = createSignal(BookingFailure.NONE);
+    const [isConfirmed, setIsConfirmed] = createSignal(false);
 
     function resetBookingMessages() {
         setBookingStatus('');
         setBookingError('');
+        setBookingFailure(BookingFailure.NONE);
+        setIsConfirmed(false);
+    }
+
+    function failBooking(failure: BookingFailure, message: string) {
+        setBookingFailure(failure);
+        setBookingError(message);
     }
 
     async function onSelectService(service: BookingServiceView) {
@@ -152,6 +173,7 @@ function BookingFlowInteractive(
         setShowForm(false);
         setSlotsLoading(true);
         setSlotsMessage('');
+        setSlotsFailure(SlotsFailure.NONE);
         setSlots([]);
         setHasSlots(false);
 
@@ -167,6 +189,7 @@ function BookingFlowInteractive(
             setSlots(result.slots);
             setHasSlots(result.slots.length > 0);
         } catch (error) {
+            setSlotsFailure(SlotsFailure.UNKNOWN);
             setSlotsMessage(
                 error instanceof Error ? error.message : 'Could not load availability.',
             );
@@ -205,7 +228,7 @@ function BookingFlowInteractive(
         } catch (error) {
             const message =
                 error instanceof Error ? error.message : 'Could not load participant form fields.';
-            setBookingError(message);
+            failBooking(BookingFailure.FORM_UNAVAILABLE, message);
             setShowForm(false);
         } finally {
             setFormLoading(false);
@@ -235,15 +258,14 @@ function BookingFlowInteractive(
             return;
         }
 
-        setBookingError('');
-        setBookingStatus('');
+        resetBookingMessages();
 
         const formValues = await readFormValues();
         const fields = formFields();
         for (const field of fields) {
             const validationError = validateFormSummaryField(field, formValues[field.target] ?? '');
             if (validationError) {
-                setBookingError(validationError);
+                failBooking(BookingFailure.VALIDATION, validationError);
                 return;
             }
         }
@@ -271,23 +293,12 @@ function BookingFlowInteractive(
             }
 
             setBookingStatus('Booking confirmed!');
+            setIsConfirmed(true);
             setShowForm(false);
             setSelectedSlot(null);
         } catch (error) {
-            const rawMessage =
-                error instanceof Error ? error.message : 'Booking failed. Please try again.';
-            let message = rawMessage;
-            if (rawMessage.includes('/ecom/v2/carts') && rawMessage.includes('403')) {
-                message =
-                    'Checkout API access denied. Add Wix eCommerce (carts/checkout) permission to your API key in the Wix dashboard.';
-            } else if (rawMessage.includes('redirect-session') && rawMessage.includes('400')) {
-                message =
-                    'Checkout redirect rejected. In Wix Dashboard → Headless Settings → your client → Allowed redirect domains, add localhost:3000 for local dev (or your deployed domain).';
-            } else if (rawMessage.includes('get-checkout-url')) {
-                message =
-                    'Could not open Wix checkout. Publish your Wix site (hosted checkout requires a published site).';
-            }
-            setBookingError(message);
+            const { failure, message } = describeBookingError(error);
+            failBooking(failure, message);
         } finally {
             setIsBooking(false);
         }
@@ -303,6 +314,7 @@ function BookingFlowInteractive(
         setSelectedServiceName('');
         setSlots([]);
         setSlotsMessage('');
+        setSlotsFailure(SlotsFailure.NONE);
         setHasSlots(false);
         setFormFields([]);
     }
@@ -336,6 +348,7 @@ function BookingFlowInteractive(
             services: services(),
             servicesLoading: false,
             servicesError,
+            servicesFailure,
             showServices: showServices(),
             showNoServices,
             showSlots: showSlots(),
@@ -344,12 +357,19 @@ function BookingFlowInteractive(
             slots: slots().map(toContractSlot),
             slotsLoading: slotsLoading(),
             slotsMessage: slotsMessage(),
+            slotsFailure: slotsFailure(),
             hasSlots: hasSlots(),
             formFields: formFields(),
             formLoading: formLoading(),
             isBooking: isBooking(),
             bookingStatus: bookingStatus(),
             bookingError: bookingError(),
+            bookingState: bookingStateOf({
+                isBooking: isBooking(),
+                isConfirmed: isConfirmed(),
+                failure: bookingFailure(),
+            }),
+            bookingFailure: bookingFailure(),
         }),
     };
 }
