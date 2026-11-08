@@ -111,23 +111,40 @@ describe('resolveRequestIdentity (V13)', () => {
 
         const identity = resolveRequestIdentity(cookies, fetchImpl);
 
-        expect({ caller: await identity.caller, client: identity.client }).toEqual({
+        expect({
+            caller: await identity.caller,
+            client: identity.client,
+            session: identity.session,
+            authorization: identity.authorization,
+        }).toEqual({
             caller: undefined,
             client: undefined,
+            session: 'none',
+            authorization: undefined,
         });
         expect(fetchImpl).not.toHaveBeenCalled();
     });
 
-    it('should build a client that sends the cookie access token as Authorization', async () => {
-        const cookies = { [WIX_SESSION_COOKIE]: encodeSessionCookie(tokensFor('member-access')) };
+    it('should give an active session with the cookie access token as authorization and a headers-only client (DL#43)', async () => {
+        const tokens = tokensFor('member-access');
+        const cookies = { [WIX_SESSION_COOKIE]: encodeSessionCookie(tokens) };
 
         const identity = resolveRequestIdentity(
             cookies,
             fetchReturning(tokenInfoFixture('active-member')),
         );
-        const authHeaders = await (identity.client!.auth as any).getAuthHeaders();
 
-        expect(authHeaders.headers.Authorization).toEqual('member-access');
+        expect({
+            session: identity.session,
+            authorization: identity.authorization,
+            expiresAt: identity.expiresAt,
+            clientAuthHeaders: await (identity.client!.auth as any).getAuthHeaders(),
+        }).toEqual({
+            session: 'active',
+            authorization: 'member-access',
+            expiresAt: tokens.accessToken.expiresAt,
+            clientAuthHeaders: { headers: {} },
+        });
     });
 
     it('should verify the caller with exactly one token-info call, even when awaited twice', async () => {

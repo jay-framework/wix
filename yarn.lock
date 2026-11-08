@@ -2976,6 +2976,7 @@ __metadata:
     "@jay-framework/vite-plugin": "npm:^0.25.5"
     "@types/js-yaml": "npm:^4.0.9"
     "@types/node": "npm:^20.11.0"
+    "@wix/data": "npm:^1.0.433"
     "@wix/sdk": "npm:^1.21.5"
     js-yaml: "npm:^4.1.0"
     nodemon: "npm:^3.0.3"

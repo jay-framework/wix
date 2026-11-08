@@ -22,6 +22,7 @@ export { init } from './init.js';
 export {
     wixFetch,
     WixApiError,
+    isPermissionDenied,
     type WixFetchOptions,
     type WixFilter,
     type WixSort,
@@ -36,6 +37,12 @@ export {
     type SyncSessionInput,
     type SyncSessionResult,
 } from './actions/session-actions.js';
-export { resolveRequestIdentity, type RequestIdentity } from './session/request-identity.js';
+export {
+    resolveRequestIdentity,
+    isExpiringSoon,
+    EXPIRY_MARGIN_SECONDS,
+    type RequestIdentity,
+    type SessionState,
+} from './session/request-identity.js';
 export { verifyAccessToken, type VerifiedCaller } from './session/verify-access-token.js';
 export { WIX_SESSION_COOKIE } from './session/session-cookie.js';
