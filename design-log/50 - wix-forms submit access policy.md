@@ -1,6 +1,6 @@
 # 50 - wix-forms Submit Access Policy
 
-Status: Design
+Status: Implemented (manual `curl` and live end-to-end checks pending)
 
 Part of the wix-forms release security gate (**DL #47**, the umbrella). Closes **F1** (`submitForm` is an open write endpoint with site credentials) and **F4** (a non-canonical id skips the hook), rewords the honeypot guide and redefines `PERMISSION`. Builds on **DL#40** (per-form contracts, `config/.wix-forms.yaml`), **DL#41** (honeypot, submit chain), **DL#42** (submit hooks), **DL#43** (headers-only caller client, `{ as: 'site' }`, `session: 'none' | 'active' | 'expired'`) and **DL#45** (`SubmitFailure` reasons). Uses **DL #49 §2** (`canonicalFormId`); comes after DL #48 and DL #49. Package: `@jay-framework/wix-forms`. Paths are relative to `packages/wix-forms/` unless they name another package.
 
@@ -287,3 +287,33 @@ registerService(WIX_FORMS_SUBMIT_HOOKS, {
 - **Validation: no `jay-stack validate` rule in this repo.** The allowlist and the cookie-less refusal are runtime guarantees, not authoring mistakes visible in jay-html. A validator rule for hook keys is not possible: hooks are registered in TypeScript at runtime, and the bindings validator reads jay-html only. The deterministic substitute is the one-time runtime warning for a non-GUID hook key (Q10) and for a non-GUID `formIds` entry (Q2, Q11).
 - **Agent-kit (yes):** the honeypot rewording and the §7 session / allowlist / hook / `{ as: 'site' }` / `ensureSessionFresh()` rules in `rich-forms.md`; the `PERMISSION` meaning in `user-visible-messages.md`; `formIds` as the runtime allowlist in `wix-forms-setup.md` / `per-form-contracts.md`; the F1 residual-risk sentence, so agents do not present a visitor session or the honeypot as spam protection.
 - **Framework:** none here; the jay items are listed in DL #47.
+
+## Implementation Results
+
+Implemented 2026-11-09 per the plan, Phases 1–5. Out-of-gate items (rate limiting, a server honeypot, the bookings server query) and DL #47's final security re-check were not started.
+
+**Changed** (paths relative to `packages/wix-forms/`): `lib/services/submittable-forms.ts` (new: `createSubmittableFormCheck`, the two constants, per-check `loading` / `retryAfterMs`); `lib/services/wix-forms-service.ts` and `wix-forms-service-marker.ts` (`isSubmittableForm`, always `include: 'enabled'`); `lib/submission/run-submission.ts` (canonical id first, allowlist before identity and the hook, `selectHook` canonical with the one-time `WeakSet` warning, `NoCallerSessionError` refusal in `submit()`, extracted `failAttempt`, L7/L8/L9); `lib/services/wix-forms-submit-hooks.ts` (`NoCallerSessionError`, §3 doc comments); `lib/index.ts` (export); `lib/actions/forms-actions.ts` (passes `isSubmittableForm`); `lib/components/submit-outcome.ts` (`PERMISSION` comment); `lib/config-loader.ts`, `lib/setup.ts` (`CONFIG_TEMPLATE`); `agent-kit/plugin/rich-forms.md`, `user-visible-messages.md`, `wix-forms-setup.md`, `per-form-contracts.md`. Tests: new `test/submittable-forms.test.ts`; `test/wix-forms-service.test.ts`, `test/submission/run-submission.test.ts`, `test/form-contract-generator.test.ts` (its fake service gains `isSubmittableForm`, a type-only change).
+
+**Red → green:**
+- Phase 1: `submittable-forms.test.ts` failed (module missing, 10 cases); the service `isSubmittableForm` case failed (`not a function`). Green after §1: 20/20 in the two files.
+- Phase 2: the harness changes and moved tests stayed green on the old code (they pin unchanged paths). Of the new tests, 12 were red on the old code (unknown id, non-GUID id, L8, hooked-outside-allowlist, the Q3 pin, wrong-case hooked id, no cookie unhooked, no cookie hooked, `createSubmitAttempt` with `session: 'none'`, both `selectHook` case directions, the non-GUID key warning). Three new tests passed already because they pin behaviour this log keeps: a visitor cookie posts with the caller's authorization, a hook's `{ as: 'site' }` without a cookie posts with the site client, and `selectHook(undefined, …)` does not throw.
+- After §2: wix-forms **239/239** (22 files).
+
+**`forceSite` tests** (each still tests the site path, now reachable only through `{ as: 'site' }`):
+- V3 site 401/403/500/network → L4: the generic mapping of a site post's failure.
+- V3 parity hooks with a site 403: Wix's outcome decides for a site post whatever the hook does with the rejection.
+- V5 un-awaited `submit()` with a site 403: the attempt is awaited with no unhandled rejection; the wrapper returns the real `submit()` promise.
+- 428 `SITE_IS_A_TEMPLATE`, the `'site'` row: the generic L4 path for a site post (the `'caller'` row now uses the default active session).
+- 403 on a site post: keeps the generic message (not `SUBMIT_NOT_ALLOWED_MESSAGE`).
+
+No other test gained `forceSite`. Removed (replaced by the new refusal tests): "site client when there is no session" and "postedAs 'site' with no session".
+
+**Build and consumers:** `build:check-types` clean; `npm run build` including `validate-plugin` clean; wix-server-client 94/94, wix-bookings 49/49, wix-data 9/9; root `yarn test` green (all packages).
+
+**Deviations:**
+- `:569-596` ("a form without a hook does not call token-info") gained `isSubmittableForm` as planned but no longer serves as the old-cookie migration proof: DL #48 dropped its old-cookie migration requirement (that cookie format was never released). The test keeps its hand-built cookie only because `encodeSessionCookie` is not exported; it still proves token-info is not called. No other test was added for the old format.
+- `failAttempt` takes the attempt as a parameter (a module function) instead of being a closure; behaviour as designed.
+- The harness also gained an `isSubmittableForm` option, so allowlist cases reuse it.
+- `CONFIG_TEMPLATE` says `include` "affects generation only (the runtime allowlist never uses it)", because configured `formIds` are not limited to enabled forms (Q2).
+
+**Pending:** the manual `curl` check and the live end-to-end check (a fresh browser submits an unhooked allowlisted form on first load, no L9) before release.

@@ -27,7 +27,7 @@ There is **no** setting in `config/.wix-forms.yaml` for message text — copy li
 | --------------- | ------- | ----------------- |
 | `VALIDATION` | Client checks failed, or Wix rejected specific fields | `{key.<target>.error}` per visible field; hidden-field errors in `statusMessage` |
 | `REJECTED` | Wix refused the submission, or a server submit hook rejected it | A hook's `ActionError` message is in `statusMessage` |
-| `PERMISSION` | Wix denied the caller (401 / 403) | — |
+| `PERMISSION` | Wix denied the caller (401 / 403), the session expired, or the request had no session cookie | — |
 | `NETWORK` | The request did not complete (offline, timeout) | — |
 | `UNKNOWN` | Server-side failure (logged on the server) | — |
 
@@ -42,7 +42,7 @@ There is **no** setting in `config/.wix-forms.yaml` for message text — copy li
   <span if="contact.submitFailure === VALIDATION">Vérifiez les champs en rouge.</span>
   <span if="contact.submitFailure === NETWORK">Problème de connexion, réessayez.</span>
   <span if="contact.submitFailure === REJECTED">{contact.statusMessage}</span>
-  <span if="contact.submitFailure === PERMISSION">Connectez-vous pour envoyer ce formulaire.</span>
+  <span if="contact.submitFailure === PERMISSION">Impossible d'envoyer ce formulaire. Actualisez la page et réessayez.</span>
   <span if="contact.submitFailure === UNKNOWN">Une erreur est survenue. Réessayez plus tard.</span>
 </p>
 ```

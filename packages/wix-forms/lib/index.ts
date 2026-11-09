@@ -15,6 +15,7 @@ export {
     WIX_FORMS_SUBMIT_HOOKS,
     SubmitIgnoredError,
     SessionExpiredError,
+    NoCallerSessionError,
     type SubmitOptions,
     type SubmitHook,
     type SubmitHooks,

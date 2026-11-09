@@ -5,6 +5,7 @@ import { createFormSubmission } from '../wix-apis/create-submission.js';
 import { getFormSchema } from '../wix-apis/get-form.js';
 import { getFormSummary } from '../wix-apis/get-form-summary.js';
 import { listForms } from '../wix-apis/list-forms.js';
+import { createSubmittableFormCheck } from './submittable-forms.js';
 import { projectFormFields, projectFormSummaryFields } from '../utils/project-form-fields.js';
 import type { ListedFormView } from '../types.js';
 import { WIX_FORMS_SERVICE, type WixFormsService } from './wix-forms-service-marker.js';
@@ -14,6 +15,15 @@ export function provideWixFormsService(
     config: WixFormsConfig,
 ): WixFormsService {
     let listCache: ListedFormView[] | undefined;
+    // Always `enabled`, whatever `config.include` says: that flag is for generation (DL #50 §1).
+    const isSubmittableForm = createSubmittableFormCheck({
+        namespace: config.namespace,
+        configuredFormIds: config.formIds,
+        listEnabledFormIds: async () =>
+            (await listForms(wixClient, { namespace: config.namespace, include: 'enabled' })).map(
+                (form) => form.id,
+            ),
+    });
 
     const service: WixFormsService = {
         config,
@@ -66,6 +76,8 @@ export function provideWixFormsService(
             }
             return fields;
         },
+
+        isSubmittableForm,
 
         async createSubmission(formId, values, authorization) {
             if (!formId) {

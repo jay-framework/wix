@@ -28,6 +28,7 @@ export const submitForm = makeJayAction('wixForms.submitForm')
                 forms.createSubmission(formId, values, authorization),
             resolveClient,
             resolveIdentity,
+            isSubmittableForm: (formId) => forms.isSubmittableForm(formId),
             hook: selectHook(hooks, input.formId ?? ''),
         });
     });

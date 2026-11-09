@@ -55,7 +55,7 @@ Design documentation for the Jay Framework Wix integration packages.
 | 47  | [wix-forms Release Security Gate](./47%20-%20wix-forms%20release%20security%20gate.md) (umbrella for #48–#50)    | Design                                                                   |
 | 48  | [wix-server-client Session Cookie Hardening](./48%20-%20wix-server-client%20session%20cookie%20hardening.md)     | Implemented (live checks pending)                                        |
 | 49  | [Wix API Path Safety](./49%20-%20wix%20api%20path%20safety.md)                                                   | Implemented (live checks pending)                                        |
-| 50  | [wix-forms Submit Access Policy](./50%20-%20wix-forms%20submit%20access%20policy.md)                             | Design                                                                   |
+| 50  | [wix-forms Submit Access Policy](./50%20-%20wix-forms%20submit%20access%20policy.md)                             | Implemented (live checks pending)                                        |
 
 ## Packages Covered
 

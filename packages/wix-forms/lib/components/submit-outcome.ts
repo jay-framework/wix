@@ -28,6 +28,10 @@ export enum SubmitFailure {
     NONE,
     VALIDATION,
     REJECTED,
+    /**
+     * Wix denied the caller (401 / 403), the caller's session expired, or the request had no
+     * session cookie. Page copy must not assume sign-in.
+     */
     PERMISSION,
     NETWORK,
     UNKNOWN,

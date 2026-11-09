@@ -24,16 +24,20 @@ export interface SubmitHookInput {
     client: WixClient | undefined;
     /**
      * Submit to Wix, at most once, before the hook settles. `values` replaces the submitted
-     * values (default: `input.values`). Posts as the caller when the request has a session,
-     * else as the site; `{ as: 'site' }` forces the site. Rejects when Wix rejects, with
-     * `SessionExpiredError` when a caller post's session expired, or with `SubmitIgnoredError`
-     * when ignored. Await or return it.
+     * values (default: `input.values`). Posts as the caller when the request has a session;
+     * without a session cookie it is refused, unless `{ as: 'site' }` forces the site. Rejects
+     * when Wix rejects, with `SessionExpiredError` when a caller post's session expired, with
+     * `NoCallerSessionError` when the request has no session cookie, or with
+     * `SubmitIgnoredError` when ignored. Await or return it.
      */
     submit(values?: Record<string, FieldValue>, options?: SubmitOptions): Promise<void>;
 }
 
 export interface SubmitOptions {
-    /** Default: the caller when a session exists, else the site. */
+    /**
+     * Default: the caller; refused without a session cookie. `'site'` posts with the site's
+     * credentials for any caller, with or without a cookie.
+     */
     as?: 'site';
 }
 
@@ -62,5 +66,18 @@ export class SessionExpiredError extends Error {
     constructor(formId: string) {
         super(`submit() did not post form "${formId}": the caller's session expired`);
         this.name = 'SessionExpiredError';
+    }
+}
+
+/**
+ * The rejection of a caller `submit()` for a request without a session cookie: nothing was posted
+ * (DL #50). Same name as wix-data's class on purpose; this one names the form.
+ */
+export class NoCallerSessionError extends Error {
+    constructor(formId: string) {
+        super(
+            `submit() did not post form "${formId}": the request has no session cookie; use { as: 'site' } to post as the site`,
+        );
+        this.name = 'NoCallerSessionError';
     }
 }
