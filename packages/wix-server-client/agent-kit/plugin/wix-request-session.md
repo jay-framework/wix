@@ -11,11 +11,20 @@
 So server code that calls Wix through `WIX_CLIENT_SERVICE` bypasses member-only rules (for
 example, wix-data collection permissions). Use the request client when Wix must enforce them.
 
-The browser owns the OAuth tokens. wix-server-client mirrors them into an httpOnly `wix_session`
-cookie whenever the access token changes (login, renewal, logout), after verifying them with
-Wix's `oauth2/token-info`. Nothing to wire up: it happens inside the plugin.
+The browser owns the OAuth tokens. wix-server-client mirrors the **access token only** into an
+httpOnly, `Secure`, `SameSite=Lax` `wix_session` cookie whenever it changes (login, renewal,
+logout), after verifying it with Wix's `oauth2/token-info`. The refresh token never leaves the
+browser. A malformed token, or one whose cookie value would exceed 3072 characters, is refused
+and the cookie cleared. Nothing to wire up: it happens inside the plugin.
+
+`wix_session` is `Secure`: develop on `http://localhost` or over https. Over plain http on any
+other host (a LAN IP, a custom `.test` host) the session is never kept, and every caller-session
+feature (form submits, wix-data `asCaller`) behaves as signed-out.
 
 ## Reading it in an action
+
+Use `resolveRequestIdentity` only in POST actions (`makeJayAction`), never in `makeJayQuery`:
+`wix_session` is `SameSite=Lax`, so it rides on cross-site GET navigations.
 
 ```ts
 import { makeJayAction, ActionError } from '@jay-framework/fullstack-component';

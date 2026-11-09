@@ -8,18 +8,16 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { clearClientInitData, setClientInitData } from '@jay-framework/stack-server-runtime';
-import type { Tokens } from '@wix/sdk';
 import { items } from '@wix/data';
 import {
     EXPIRY_MARGIN_SECONDS,
     isExpiringSoon,
     resolveRequestIdentity,
 } from '../../lib/session/request-identity.js';
-import { encodeSessionCookie, WIX_SESSION_COOKIE } from '../../lib/session/session-cookie.js';
+import { WIX_SESSION_COOKIE } from '../../lib/session/session-cookie.js';
 import { fetchReturning, SITE_CLIENT_ID, tokenInfoFixture } from './fixtures.js';
 
 const ACCESS_TOKEN = 'member-access';
-const REFRESH_TOKEN = 'member-refresh';
 const UNSUPPORTED_SURFACE_MESSAGE =
     'Not supported on the caller client: use client.use(module), client.graphql or wixFetch(..., { authorization })';
 
@@ -28,11 +26,9 @@ function nowInSeconds(): number {
 }
 
 function cookiesWithExpiry(expiresAt: unknown): Record<string, string> {
-    const tokens = {
-        accessToken: { value: ACCESS_TOKEN, expiresAt },
-        refreshToken: { value: REFRESH_TOKEN, role: 'member' },
-    } as unknown as Tokens;
-    return { [WIX_SESSION_COOKIE]: encodeSessionCookie(tokens) };
+    // Raw base64url JSON: the decoder tests need a non-finite expiresAt, which encodeSessionCookie refuses.
+    const cookieJson = { accessToken: { value: ACCESS_TOKEN, expiresAt } };
+    return { [WIX_SESSION_COOKIE]: Buffer.from(JSON.stringify(cookieJson)).toString('base64url') };
 }
 
 function activeCookies(): Record<string, string> {
