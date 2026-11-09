@@ -1,5 +1,6 @@
 import type { WixClient } from '@wix/sdk';
 import { wixFetch } from '@jay-framework/wix-server-client';
+import { formIdPathSegment } from '../utils/form-id';
 
 /** A Ricos rich-content node — some field types (e.g. long answer) carry their label as rich content. */
 export interface RichContentNode {
@@ -54,7 +55,7 @@ export interface GetFormResponse {
 }
 
 export async function getFormSchema(client: WixClient, formId: string): Promise<GetFormResponse> {
-    return wixFetch<GetFormResponse>(client, `/form-schema-service/v4/forms/${formId}`, {
+    return wixFetch<GetFormResponse>(client, `/form-schema-service/v4/forms/${formIdPathSegment(formId)}`, {
         method: 'GET',
     });
 }
