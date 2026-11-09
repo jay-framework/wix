@@ -132,6 +132,24 @@ describe('createSubmittableFormCheck — enabled forms of the namespace', () => 
         expect(list).toHaveBeenCalledTimes(1);
     });
 
+    it('should list again after a timed-out load once the backoff has passed', async () => {
+        let hang = true;
+        const { source: slowThenHealthy, list } = source(() =>
+            hang ? new Promise<string[]>(() => {}) : Promise.resolve([FORM_A]),
+        );
+        const isSubmittable = createSubmittableFormCheck(slowThenHealthy);
+
+        const first = isSubmittable(FORM_A);
+        const firstRejected = expect(first).rejects.toThrow();
+        await vi.advanceTimersByTimeAsync(ALLOWLIST_LOAD_TIMEOUT_MS);
+        await firstRejected;
+        hang = false;
+        await vi.advanceTimersByTimeAsync(ALLOWLIST_RETRY_BACKOFF_MS);
+
+        expect(await isSubmittable(FORM_A)).toBe(true);
+        expect(list).toHaveBeenCalledTimes(2);
+    });
+
     it('should cache an empty list, refuse every id, and warn once naming the namespace', async () => {
         const { source: empty, list } = source(async () => []);
         const isSubmittable = createSubmittableFormCheck(empty);

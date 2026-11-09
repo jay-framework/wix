@@ -9,6 +9,7 @@ Per-form headless contracts (one per Wix form) and two server actions:
   `user-visible-messages.md` (Wix vs plugin copy, success/i18n).
 - **getFormSummary** — returns participant field schema for other plugins (e.g. wix-bookings)
 - **submitForm** — submits form values to Wix Forms. If you call it yourself (not through the `wixForm` component), `await ensureSessionFresh()` from `@jay-framework/wix-server-client/client` first: a submit without the session cookie is refused
+- **`WixFormsService.isSubmittableForm(formId)`** — the same allowlist check `submitForm` runs. It expects the canonical id, the form GUID in lowercase: trim and lowercase project input first, or a differently cased id reads as not submittable.
 
 ## Setup steps
 

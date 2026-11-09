@@ -317,3 +317,5 @@ No other test gained `forceSite`. Removed (replaced by the new refusal tests): "
 - `CONFIG_TEMPLATE` says `include` "affects generation only (the runtime allowlist never uses it)", because configured `formIds` are not limited to enabled forms (Q2).
 
 **Pending:** the manual `curl` check and the live end-to-end check (a fresh browser submits an unhooked allowlisted form on first load, no L9) before release.
+
+**Post-review additions:** a test that a timed-out allowlist load is retried and succeeds once the backoff has passed (it passed on first run: it pins existing behaviour, `onLoadFailure` already clears the in-flight load); and a line in `wix-forms-setup.md` that `WixFormsService.isSubmittableForm` expects the lowercase GUID. wix-forms 240/240.
