@@ -1,6 +1,6 @@
 # 48 - wix-server-client Session Cookie Hardening
 
-Status: Design
+Status: Implemented (live end-to-end checks 1 and 2 pending)
 
 Part of the wix-forms release security gate (**DL #47**, the umbrella). Closes **F3** (refresh token in the cookie), **F10** (the cookie keeps whatever the browser sent, at any size), **F11** (`Secure` depends on jay seeing https) and adds the **F7** guide line. Builds on **DL#42** (`wix_session`, `syncSession`, `resolveRequestIdentity`) and **DL#43** (headers-only caller client, `session: 'none' | 'active' | 'expired'`). Package: `@jay-framework/wix-server-client`; wix-forms and wix-data are readers of the cookie. Paths are relative to `packages/`. jay is referenced only through the public surface of `@jay-framework/fullstack-component` (`makeJayAction`, `makeJayQuery`, `.withRequest()`, `ActionRequest`, `CookieOptions`).
 
@@ -190,3 +190,24 @@ Red first in every phase: write the test with the correct expected behaviour, ru
 ## Open Questions
 
 - **OQ-1 (closed, was #47 OQ-1):** `Secure` unconditionally instead of "except on localhost"? **Answer: approved. `secure: true` always, no localhost exception** (Q2). Browser behaviour over `http://localhost` is verified live in Chrome, Firefox and Safari (end-to-end check 1).
+
+## Implementation Results
+
+Implemented per the plan, Phases 1–5. Paths relative to `packages/wix-server-client/`.
+
+**Changed:** `lib/session/session-cookie.ts` (`MAX_SESSION_COOKIE_LENGTH`, `secure: true`, `encodeSessionCookie(unknown)` / `decodeSessionCookie` → `AccessToken`, private `toAccessToken`, rewritten module and `Max-Age` comments); `lib/actions/session-actions.ts` (encode before token-info, `SyncSessionInput` uses `Pick<Tokens, 'accessToken'>`); `lib/actions/sync-session.jay-action` (description); `lib/session/request-identity.ts` (reads the decoded `AccessToken`); `lib/wix-client-context.ts` (sends `{ tokens: { accessToken } }`); `agent-kit/plugin/wix-request-session.md` (F7 line, cookie description, `Secure` dev-host rule). Tests: new `test/session/session-cookie.test.ts`; `test/session/session.test.ts`, `test/session/caller-client.test.ts`, `test/wix-client-context.test.ts` updated per Phase 2.
+
+**Red → green:**
+- Phase 1/2 against unchanged code: 17 failed / 65 passed in wix-server-client (all 10 new cookie tests, the 4 changed `session.test.ts` cases, the 3 changed `wix-client-context.test.ts` cases).
+- The new `syncSession` junk cases: the first malformed input (`value: ''`) passed on the old code, because `verifyAccessToken` already refuses an empty token without a fetch. Replaced by `{ value: 'member-access', expiresAt: NaN }`, which the old code sent to token-info: both junk cases (oversized, malformed) then red.
+- After Phase 3: wix-server-client **82/82**, `build:check-types` clean, `npm run build` (including `validate-plugin`) clean.
+- wix-data **9/9**, unchanged (old-format `{ accessToken, refreshToken }` cookies in `as-caller.test.ts` decode: the migration read); `tsc` clean once `wix-utils` was built (its missing dist was the only error, unrelated).
+- wix-forms (also a reader) **196/196**, unchanged.
+
+**Deviations:**
+- `caller-client.test.ts`: the now-unused `Tokens` import was removed; the raw cookie keeps `REFRESH_TOKEN`, so those decoder tests also exercise the old format.
+- `syncSession` short-circuits with `cookieValue && await verifyAccessToken(...)` rather than an early `if` return; both junk and unverified tokens share one clear-and-`{ ok: false }` branch. Behaviour as designed.
+
+**Pending (live, before release):** end-to-end check 1 (`http://localhost` in Chrome, Firefox, Safari; also `127.0.0.1`) and check 2 (member cookie encoded length, member submit). Not run in this session; the guide gains a per-browser line only if check 1 finds a failing browser (Q6).
+
+**Deviation (post-review): the migration requirement is dropped.** The session cookie was never released (no published package carries it), so no site holds an old `{ accessToken, refreshToken }` cookie. Removed: the old-cookie decode test, the "old cached bundles" comment on `SyncSessionInput`, and the old-cookie size from the `MAX_SESSION_COOKIE_LENGTH` comment. The hand-built cookies in `caller-client.test.ts` and wix-data's `as-caller.test.ts` now use the new `{ accessToken }` shape. No decoder logic changed: it never read the refresh token.

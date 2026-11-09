@@ -120,7 +120,7 @@ describe('wix session cookie sync (DL#42 V13, client)', () => {
         context.setTokens({ ...login } as never);
         await Promise.resolve();
 
-        expect(syncSession.mock.calls).toEqual([[{ tokens: login }]]);
+        expect(syncSession.mock.calls).toEqual([[{ tokens: { accessToken: login.accessToken } }]]);
     });
 
     it('should renew an expired token, store it, and wait for its sync', async () => {
@@ -146,10 +146,12 @@ describe('wix session cookie sync (DL#42 V13, client)', () => {
         expect((context.getTokens() as any).accessToken.value).toEqual('renewed-access');
         expect(syncSession.mock.calls.at(-1)).toEqual([
             {
-                tokens: memberTokens(
-                    'renewed-access',
-                    (context.getTokens() as any).accessToken.expiresAt,
-                ),
+                tokens: {
+                    accessToken: memberTokens(
+                        'renewed-access',
+                        (context.getTokens() as any).accessToken.expiresAt,
+                    ).accessToken,
+                },
             },
         ]);
         const stored = JSON.parse(localStorage.getItem('wix_visitor_tokensclient-sync')!);
@@ -198,7 +200,9 @@ describe('wix session cookie sync (DL#42 V13, client)', () => {
         releaseFirst();
         await ensureSessionFresh();
         expect(syncSession).toHaveBeenCalledTimes(2);
-        expect(syncSession.mock.calls.at(-1)).toEqual([{ tokens: second }]);
+        expect(syncSession.mock.calls.at(-1)).toEqual([
+            { tokens: { accessToken: second.accessToken } },
+        ]);
     });
 
     it('should not throw when the sync fails, and retry it next time', async () => {

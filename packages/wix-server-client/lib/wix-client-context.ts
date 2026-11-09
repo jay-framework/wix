@@ -76,7 +76,7 @@ function syncSessionCookie(tokens: Tokens | null): Promise<void> {
     const session = activeSession;
     session.syncedAccessToken = accessToken;
     session.pendingSync = session.pendingSync.then(() =>
-        syncSession({ tokens: tokens! }).then(
+        syncSession({ tokens: { accessToken: tokens!.accessToken } }).then(
             () => undefined,
             () => {
                 if (session.syncedAccessToken === accessToken)
