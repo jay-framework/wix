@@ -31,15 +31,6 @@ describe('session cookie (DL#48)', () => {
         expect(decodeSessionCookie(cookieValue)).toEqual(ACCESS_TOKEN);
     });
 
-    it('should decode an old { accessToken, refreshToken } cookie to its access token', () => {
-        const oldCookie = rawCookie({
-            accessToken: ACCESS_TOKEN,
-            refreshToken: { value: 'member-refresh', role: 'member' },
-        });
-
-        expect(decodeSessionCookie(oldCookie)).toEqual(ACCESS_TOKEN);
-    });
-
     it('should drop extra fields on the access token, both ways', () => {
         const withExtra = { ...ACCESS_TOKEN, injected: 'x'.repeat(10) };
 

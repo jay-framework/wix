@@ -14,7 +14,6 @@ import {
 import { siteOAuthClientId } from '../session/site-oauth-client-id.js';
 import { verifyAccessToken, type VerifiedCaller } from '../session/verify-access-token.js';
 
-/** Old cached bundles may still send the refresh token too; it is ignored. */
 export type SyncSessionInput = { tokens: Pick<Tokens, 'accessToken'> } | { clear: true };
 
 export interface SyncSessionResult {

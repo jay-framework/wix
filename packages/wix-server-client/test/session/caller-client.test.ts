@@ -18,7 +18,6 @@ import { WIX_SESSION_COOKIE } from '../../lib/session/session-cookie.js';
 import { fetchReturning, SITE_CLIENT_ID, tokenInfoFixture } from './fixtures.js';
 
 const ACCESS_TOKEN = 'member-access';
-const REFRESH_TOKEN = 'member-refresh';
 const UNSUPPORTED_SURFACE_MESSAGE =
     'Not supported on the caller client: use client.use(module), client.graphql or wixFetch(..., { authorization })';
 
@@ -28,10 +27,7 @@ function nowInSeconds(): number {
 
 function cookiesWithExpiry(expiresAt: unknown): Record<string, string> {
     // Raw base64url JSON: the decoder tests need a non-finite expiresAt, which encodeSessionCookie refuses.
-    const cookieJson = {
-        accessToken: { value: ACCESS_TOKEN, expiresAt },
-        refreshToken: { value: REFRESH_TOKEN, role: 'member' },
-    };
+    const cookieJson = { accessToken: { value: ACCESS_TOKEN, expiresAt } };
     return { [WIX_SESSION_COOKIE]: Buffer.from(JSON.stringify(cookieJson)).toString('base64url') };
 }
 

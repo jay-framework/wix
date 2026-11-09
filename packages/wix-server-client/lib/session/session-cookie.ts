@@ -9,7 +9,7 @@ import type { AccessToken } from '@wix/sdk';
 
 export const WIX_SESSION_COOKIE = 'wix_session';
 
-/** Max length of the encoded cookie value. DL#42 measured ~1070 characters for an access token and ~1828 for an old two-token cookie. */
+/** Max length of the encoded cookie value. DL#42 measured ~1070 characters for an access token. */
 export const MAX_SESSION_COOKIE_LENGTH = 3072;
 
 const THIRTY_DAYS_IN_SECONDS = 30 * 24 * 60 * 60;

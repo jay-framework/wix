@@ -209,3 +209,5 @@ Implemented per the plan, Phases 1–5. Paths relative to `packages/wix-server-c
 - `syncSession` short-circuits with `cookieValue && await verifyAccessToken(...)` rather than an early `if` return; both junk and unverified tokens share one clear-and-`{ ok: false }` branch. Behaviour as designed.
 
 **Pending (live, before release):** end-to-end check 1 (`http://localhost` in Chrome, Firefox, Safari; also `127.0.0.1`) and check 2 (member cookie encoded length, member submit). Not run in this session; the guide gains a per-browser line only if check 1 finds a failing browser (Q6).
+
+**Deviation (post-review): the migration requirement is dropped.** The session cookie was never released (no published package carries it), so no site holds an old `{ accessToken, refreshToken }` cookie. Removed: the old-cookie decode test, the "old cached bundles" comment on `SyncSessionInput`, and the old-cookie size from the `MAX_SESSION_COOKIE_LENGTH` comment. The hand-built cookies in `caller-client.test.ts` and wix-data's `as-caller.test.ts` now use the new `{ accessToken }` shape. No decoder logic changed: it never read the refresh token.
