@@ -2,7 +2,6 @@
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createClient, type WixClient } from '@wix/sdk';
-import { items } from '@wix/data';
 import { isPermissionDenied, WixApiError, wixFetch } from '../lib/wix-fetch.js';
 
 const PATH = '/form-submission-service/v4/submissions';
@@ -69,40 +68,20 @@ describe('wixFetch authorization (DL#43 §Design 0)', () => {
     });
 });
 
-/**
- * The SDK error for a refused data call, produced by driving `@wix/data` through the real SDK
- * against the WDE0027 / WDE0117 responses recorded in DL#43 V2 / V6.
- */
-async function sdkDataErrorFor(code: string, status: number, message: string): Promise<unknown> {
-    stubFetch(status, { message, details: { applicationError: { code, description: message } } });
-    const client = createClient({ modules: { items }, headers: { Authorization: 'caller-token' } });
-    try {
-        await client.items.insert('Notes', { title: 'x' });
-    } catch (error) {
-        return error;
-    } finally {
-        vi.unstubAllGlobals();
-    }
-    throw new Error('expected the SDK call to be refused');
-}
+describe('isPermissionDenied: HTTP 403 (DL#43 §Review 2026-11-09)', () => {
+    it('is true for a wixFetch refusal with status 403', async () => {
+        stubFetch(403, { message: 'forbidden' });
+        const { client } = siteClientWithAuth();
 
-describe('isPermissionDenied (DL#43 §Design 1)', () => {
-    it('is true for the WDE0027 SDK data error', async () => {
-        const error = await sdkDataErrorFor(
-            'WDE0027',
-            403,
-            'The current user does not have permissions to insert on the Notes collection.',
-        );
+        const refusal = await wixFetch(client, PATH, { method: 'POST' }).catch((error) => error);
 
-        expect(isPermissionDenied(error)).toEqual(true);
+        expect(isPermissionDenied(refusal)).toEqual(true);
     });
 
-    it('is false for WDE0117, 400, 428, 500 and network errors', async () => {
-        const invalidToken = await sdkDataErrorFor('WDE0117', 401, 'MetaSite not found');
-
+    it('is false for 401 (unauthenticated), 400, 428, 500 and network errors', () => {
         expect(
             [
-                invalidToken,
+                new WixApiError(401, PATH, '{}'),
                 new WixApiError(400, PATH, '{}'),
                 new WixApiError(
                     428,
@@ -115,6 +94,4 @@ describe('isPermissionDenied (DL#43 §Design 1)', () => {
             ].map(isPermissionDenied),
         ).toEqual([false, false, false, false, false, false]);
     });
-
-    it.skip('pending V2: WixApiError(401) / WixApiError(403) rows — not specified until forms-side V2 records the status', () => {});
 });

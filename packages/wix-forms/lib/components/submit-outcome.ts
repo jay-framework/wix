@@ -7,7 +7,7 @@ import type { FormFieldView } from '../types.js';
 
 /** English default copy. Pages that need other words branch on `submitFailure` (DL#45). */
 export const SUBMIT_FAILED_MESSAGE = 'We could not complete your request. Please try again.';
-/** A caller post Wix refused for permissions (DL#43; applies only once V2 records the status). */
+/** A caller post Wix refused for permissions, HTTP 403 (DL#43 §Review 2026-11-09). */
 export const SUBMIT_NOT_ALLOWED_MESSAGE = 'Please sign in to submit this form.';
 /** The caller's session cookie expired before the post (DL#43 Q5). */
 export const SUBMIT_SESSION_EXPIRED_MESSAGE =

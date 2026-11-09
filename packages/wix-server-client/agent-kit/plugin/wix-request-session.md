@@ -70,9 +70,10 @@ if (identity.session === 'active') {
 `wixFetch` uses the client's own auth (the site client) and **throws rather than send an
 unauthenticated request**, for example when given the caller client without `authorization`.
 
-`isPermissionDenied(error)` is true when Wix refused a call for the caller's permissions (a wix-data
-`WDE0027` error); map it to `ActionError('FORBIDDEN', ...)`. An invalid token (`WDE0117`) is not a
-permission refusal.
+`isPermissionDenied(error)` is true when Wix refused a `wixFetch` call for the caller's permissions
+(HTTP 403); map it to `ActionError('FORBIDDEN', ...)`. A 401 (invalid or expired token) is not a
+permission refusal. `@wix/data` errors carry no HTTP status: for Wix Data calls use wix-data's
+`isDataPermissionDenied`.
 
 ## Before a cookie-dependent action, in the browser
 

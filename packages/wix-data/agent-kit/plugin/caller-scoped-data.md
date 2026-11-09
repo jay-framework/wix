@@ -11,8 +11,12 @@ their own records), opt in per call with `asCaller`:
 
 ```ts
 import { makeJayAction, ActionError } from '@jay-framework/fullstack-component';
-import { resolveRequestIdentity, isPermissionDenied } from '@jay-framework/wix-server-client';
-import { WIX_DATA_SERVICE_MARKER, NoCallerSessionError } from '@jay-framework/wix-data';
+import { resolveRequestIdentity } from '@jay-framework/wix-server-client';
+import {
+  WIX_DATA_SERVICE_MARKER,
+  NoCallerSessionError,
+  isDataPermissionDenied,
+} from '@jay-framework/wix-data';
 
 export const saveFavourite = makeJayAction('app.saveFavourite')
   .withRequest()                                   // gives the handler `request.cookies`
@@ -22,7 +26,7 @@ export const saveFavourite = makeJayAction('app.saveFavourite')
       const items = wixData.asCaller(resolveRequestIdentity(request.cookies));
       return await items.insert('Favourites', { itemId: input.itemId });
     } catch (error) {
-      if (error instanceof NoCallerSessionError || isPermissionDenied(error))
+      if (error instanceof NoCallerSessionError || isDataPermissionDenied(error))
         throw new ActionError('FORBIDDEN', 'Sign in to save favourites.');
       throw error;
     }
@@ -42,7 +46,9 @@ export const saveFavourite = makeJayAction('app.saveFavourite')
   reaches the response and that nothing shared caches the page, so do not call `asCaller` in fast
   render yet. Load the caller's data in the interactive phase (`WIX_DATA_CONTEXT` already runs as the
   visitor/member).
-- Map `isPermissionDenied(error)` (Wix's `WDE0027`, "the current user does not have permissions")
-  to `ActionError('FORBIDDEN', ...)`.
+- Map `isDataPermissionDenied(error)` to `ActionError('FORBIDDEN', ...)`. It matches the documented
+  [Wix Data error codes](https://dev.wix.com/docs/api-reference/business-solutions/cms/wix-data-error-codes)
+  `WDE0027` and `WDE0177` ("the current user does not have permissions"). Do not use
+  wix-server-client's `isPermissionDenied` here: `@wix/data` errors carry no HTTP status.
 - The caller client supports only `client.use(module)`, `client.graphql` and
   `wixFetch(..., { authorization })`; `fetchWithAuth`, `fetch` and `enableContext` throw.

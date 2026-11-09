@@ -9,8 +9,13 @@ import {
     WIX_SESSION_COOKIE,
     type RequestIdentity,
 } from '@jay-framework/wix-server-client';
-import type { WixClient } from '@wix/sdk';
-import { NoCallerSessionError, provideWixDataService } from '../lib/services/wix-data-service';
+import { createClient, type WixClient } from '@wix/sdk';
+import { items } from '@wix/data';
+import {
+    isDataPermissionDenied,
+    NoCallerSessionError,
+    provideWixDataService,
+} from '../lib/services/wix-data-service';
 import type { WixDataConfig } from '../lib/types';
 
 const SITE_ITEMS = { marker: 'site-items' };
@@ -100,5 +105,46 @@ describe('WixDataService.asCaller (DL#43 §Design 3)', () => {
         const identity: RequestIdentity = resolveRequestIdentity(cookiesExpiringIn(3600));
 
         expect(typeof service.asCaller(identity).query).toEqual('function');
+    });
+});
+
+/** The error `@wix/data` throws when Wix answers with this status and Wix Data error code. */
+async function dataErrorFor(status: number, code: string): Promise<unknown> {
+    const body = { message: code, details: { applicationError: { code, description: code } } };
+    vi.stubGlobal(
+        'fetch',
+        vi.fn(
+            async () =>
+                new Response(JSON.stringify(body), {
+                    status,
+                    headers: { 'Content-Type': 'application/json' },
+                }),
+        ),
+    );
+    const client = createClient({ modules: { items }, headers: { Authorization: 'caller-token' } });
+    try {
+        await client.items.insert('Notes', { title: 'x' });
+    } catch (error) {
+        return error;
+    }
+    throw new Error('expected the data call to be refused');
+}
+
+describe('isDataPermissionDenied (DL#43 §Review 2026-11-09, documented Wix Data error codes)', () => {
+    it('is true for WDE0027 (no permission) and WDE0177 (no permission in sandbox)', async () => {
+        const refusals = [await dataErrorFor(403, 'WDE0027'), await dataErrorFor(403, 'WDE0177')];
+
+        expect(refusals.map(isDataPermissionDenied)).toEqual([true, true]);
+    });
+
+    it('is false for WDE0117 (site not resolved), other codes, plain errors and undefined', async () => {
+        const others = [
+            await dataErrorFor(401, 'WDE0117'),
+            await dataErrorFor(400, 'WDE0080'),
+            new TypeError('fetch failed'),
+            undefined,
+        ];
+
+        expect(others.map(isDataPermissionDenied)).toEqual([false, false, false, false]);
     });
 });

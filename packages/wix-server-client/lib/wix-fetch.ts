@@ -130,17 +130,14 @@ export class WixApiError extends Error {
     }
 }
 
-/** The Wix data error code for "the current user does not have permissions" (DL#43 V2). */
-const DATA_PERMISSION_DENIED_CODE = 'WDE0027';
+/** Wix's documented "authenticated, but not allowed" status (dev.wix.com "About Errors"). */
+const HTTP_PERMISSION_DENIED = 403;
 
 /**
- * True when Wix refused the call for the caller's permissions (DL#43 §Design 1).
- * SDK data errors: exactly WDE0027 (an invalid token, WDE0117, is not a permission refusal).
- * WixApiError: no status qualifies until the forms-side V2 check records one.
+ * True when Wix refused the call for the caller's permissions (DL#43 §Review 2026-11-09):
+ * HTTP 403 on a `WixApiError` or an SDK error. Per-service application codes are not matched,
+ * and 401 (unauthenticated, e.g. an invalid or expired token) is not a permission refusal.
  */
 export function isPermissionDenied(error: unknown): boolean {
-    if (error instanceof WixApiError) return false;
-    const code = (error as { details?: { applicationError?: { code?: unknown } } } | undefined)
-        ?.details?.applicationError?.code;
-    return code === DATA_PERMISSION_DENIED_CODE;
+    return (error as { status?: unknown } | undefined)?.status === HTTP_PERMISSION_DENIED;
 }

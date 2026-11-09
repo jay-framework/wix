@@ -232,8 +232,8 @@ submitter; without a session it posts as the site.
   refresh the page and try again." `{ as: 'site' }` is not blocked by an expired cookie. The page
   sees `submitFailure: PERMISSION`, so it can write its own sign-in copy.
 - **No silent retry.** When Wix refuses a caller post, it is not retried as the site: the user sees
-  the generic message and the server logs the status. (A specific "Please sign in to submit this
-  form." message is pending: Wix's refusal status for forms is not yet verified.)
+  "Please sign in to submit this form." when Wix answers 403 (permission denied), otherwise the
+  generic message; the server logs the status either way.
 - Captcha / spam-protected forms: pending verification. Whether `{ as: 'site' }` helps there is not
   verified yet; do not rely on it.
 - Direct `WIX_FORMS_SERVICE.createSubmission(formId, values)` calls are unchanged and post as the site.

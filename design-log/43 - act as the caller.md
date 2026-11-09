@@ -414,3 +414,41 @@ Phases 1–3 and the agent-kit guides were ported onto main after DL#41, DL#42 a
 - wix-data: 5/5 vitest + 2/2 `node --test`.
 - wix-bookings: 49/49. Root `yarn test` exits 0.
 - Typecheck is clean for wix-server-client, wix-forms and wix-bookings, and `npm run build` with `validate-plugin` succeeds for wix-server-client, wix-forms, wix-data and wix-bookings. wix-data's `tsc` fails on main's `test/source-editing.test.ts` (a `.ts` import extension); this predates the port and is not changed here.
+
+### Review: how `isPermissionDenied` detects a refusal (2026-11-09) — decided, implemented
+
+> **Outcome, read first.** `WDE0027` **is** an officially documented Wix Data error code: it is listed on [Wix Data Error Codes](https://dev.wix.com/docs/api-reference/business-solutions/cms/wix-data-error-codes), together with `WDE0177` (the same refusal in a sandbox environment). Matching it is safe. The owner chose to split the check by owner: wix-data's `isDataPermissionDenied` matches those codes, and wix-server-client's `isPermissionDenied` matches HTTP 403. The text below records how the review reached that decision.
+
+**Problem 1 (as first raised; it turned out to be wrong): "`WDE0027` is not a documented contract".** It was first thought to be known only from V2/V6 and Wix forums. It is in fact documented (see the outcome above). The remaining real issue was ownership (Problem 2).
+
+**Problem 2: a data-specific code lives in wix-server-client.** `WDE0027` is a Wix Data code, but the helper sits in the shared server-client package.
+
+**Findings.**
+- Wix documents the HTTP status as the error category: [About Errors](https://dev.wix.com/docs/api-reference/articles/work-with-wix-apis/troubleshooting/about-errors) says *403 – Permission denied: the system authenticated you, but you don't have permissions to call this API*, and *401 – Unauthorized: missing/incorrect Authorization or an expired token; occasionally returned when you don't have permissions*. The same page documents `details.applicationError.code` as a per-service identifier, not a shared vocabulary.
+- `@wix/sdk-runtime` `transformError` copies the HTTP status onto the thrown error (`error.status`) for application, validation and plain 4xx errors. Our own `WixApiError` already has `status`. (Corrected below: `@wix/data` does not go through `transformError` and throws an error with no `status`.)
+- Not yet measured: the HTTP status of the `WDE0027` refusal. The V2/V6 notes record only the code and message; the unit fixture's 403 (and 401 for `WDE0117`) is an assumption.
+
+**Proposed rule.** `isPermissionDenied(error)` is true when `error.status === 403`, for an SDK error or a `WixApiError`. No application code is matched.
+- 401 stays false. It means "not authenticated" (bad or expired token, like `WDE0117`) and keeps going to the generic or session-expired path. If Wix ever answers a permission refusal with 401, the user gets the generic message — the safe direction.
+- The helper is no longer data-specific, so it stays in wix-server-client as a general "Wix refused this caller" check. Moving it to wix-data would make wix-forms (which posts through `wixFetch` and gets a `WixApiError`) depend on wix-data. If the owner prefers keeping a code check instead, it belongs in wix-data and wix-forms gets its own status check.
+- Side effect: forms is covered as soon as Create Submission returns 403, so the skipped forms-side V2 rows become "403 → true, 401 → false" plus a live check.
+
+**Must verify before changing code (V2b, live).** With a visitor token on a collection where Everyone has no access, record the HTTP status of the `WDE0027` refusal and of the `WDE0117` made-up token. The 403 rule ships only if the refusal is 403. If it is not, keep the code match, move it to wix-data, and record why.
+
+**Tests (red-first once approved).** True for an SDK data error with status 403 (any application code) and for `WixApiError(403)`; false for 401 (`WDE0117`), 400, 428, 500, network and `undefined`. Fixtures use the V2b-recorded status. The two agent-kit guides drop the `WDE0027` wording and say "HTTP 403".
+
+**Owner approved the 403 rule (2026-11-09). Implementation found two facts that contradict this proposal; paused for a new decision.**
+- **`WDE0027` is documented.** [Wix Data Error Codes](https://dev.wix.com/docs/api-reference/business-solutions/cms/wix-data-error-codes) lists `WDE0027` ("The current user does not have permissions to {action} on the {collection} collection") and `WDE0177` (the same refusal in a sandbox environment). `WDE0117` is listed as "MetaSiteId can not be resolved", a system error. The `@wix/wix-data-items-sdk` source links to that page. So Problem 1 above was wrong.
+- **`@wix/data` drops the HTTP status.** A `@wix/data` `items.insert` refused with HTTP 403 throws an `Error` whose only own property is `details` (`details.applicationError.code`). It has no `status` and no `response` (measured with `@wix/data` 1.0.433 and a mocked `fetch`). The generic `@wix/sdk-runtime` `transformError` does set `status`, but the data module does not go through it. A 403-only rule therefore never matches a Wix Data refusal.
+
+**Decision (owner, 2026-11-09): split by owner.**
+- **wix-server-client `isPermissionDenied(error)`**: `error.status === 403`. It covers `wixFetch` refusals (`WixApiError`), which is what wix-forms gets. No Wix Data code remains in this package.
+- **wix-data `isDataPermissionDenied(error)`** (new export): `details.applicationError.code` is `WDE0027` or `WDE0177`, the documented permission codes. `WDE0117` and other codes are false.
+
+**Implementation results (2026-11-09).**
+- `wix-fetch.ts`: the 403 rule. The `@wix/data`-driven fixtures moved to wix-data's tests; wix-server-client tests a real `wixFetch` 403 (true) and 401 / 400 / 428 / 500 / network / `undefined` (false). The skipped "pending V2" row is removed.
+- wix-forms: a caller 403 now returns `SUBMIT_NOT_ALLOWED_MESSAGE` (`reason: PERMISSION`). The two caller-refusal tests were updated to that message, a caller 401 test keeps the generic message, and the skipped "pending V2" test is removed. A 403 on a site post keeps the generic message.
+- wix-data: `isDataPermissionDenied` in `wix-data-service.ts`, exported from `index.ts`; tests drive the real `@wix/data` client with a mocked `fetch`.
+- Guides: `wix-request-session.md` (403, and "use `isDataPermissionDenied` for Wix Data"), `caller-scoped-data.md` (the example uses `isDataPermissionDenied`, with the docs link), `rich-forms.md` (403 shows "Please sign in to submit this form.").
+- Tests: wix-server-client 70/70, wix-forms 164/164, wix-data 7/7 vitest + 2/2 `node --test`, wix-bookings 49/49. `npm run build` succeeds in all four; typecheck is clean except wix-data's existing `source-editing.test.ts` error.
+- **Still open (live):** forms-side V2. Wix's documentation says 403 means permission denied, but it has not been measured that Create Submission returns 403 to a refused caller. Until it is, a refused forms caller may still get the generic message.

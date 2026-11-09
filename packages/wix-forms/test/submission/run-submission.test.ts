@@ -25,6 +25,7 @@ import {
 } from '../../lib/services/wix-forms-submit-hooks.js';
 import {
     SUBMIT_FAILED_MESSAGE,
+    SUBMIT_NOT_ALLOWED_MESSAGE,
     SUBMIT_SESSION_EXPIRED_MESSAGE,
     SubmitFailure,
 } from '../../lib/components/submit-outcome.js';
@@ -595,13 +596,13 @@ describe('runSubmission — DL#43, resolving the caller session', () => {
 });
 
 describe('runSubmission — DL#43, Wix refuses a caller post', () => {
-    it('does not retry as the site when Wix refuses the caller', async () => {
+    it('a caller 403 returns SUBMIT_NOT_ALLOWED_MESSAGE and does not retry as the site', async () => {
         const { deps, authorizations } = harness({ session: activeSession(), wixFails: forbidden });
 
         expect(await submitWith(deps)).toEqual({
             success: false,
             reason: SubmitFailure.PERMISSION,
-            message: SUBMIT_FAILED_MESSAGE,
+            message: SUBMIT_NOT_ALLOWED_MESSAGE,
         });
         expect(authorizations).toEqual([CALLER_TOKEN]);
         expect(loggedMessages()).toEqual([L6]);
@@ -617,9 +618,23 @@ describe('runSubmission — DL#43, Wix refuses a caller post', () => {
         expect(await submitWith(deps)).toEqual({
             success: false,
             reason: SubmitFailure.PERMISSION,
-            message: SUBMIT_FAILED_MESSAGE,
+            message: SUBMIT_NOT_ALLOWED_MESSAGE,
         });
         expect(posts.length).toEqual(1);
+        expect(loggedMessages()).toEqual([L6]);
+    });
+
+    it('a caller 401 (invalid or expired token) keeps the generic message', async () => {
+        const { deps } = harness({
+            session: activeSession(),
+            wixFails: wixRefusal(401, 'UNAUTHENTICATED'),
+        });
+
+        expect(await submitWith(deps)).toEqual({
+            success: false,
+            reason: SubmitFailure.PERMISSION,
+            message: SUBMIT_FAILED_MESSAGE,
+        });
         expect(loggedMessages()).toEqual([L6]);
     });
 
@@ -684,8 +699,6 @@ describe('runSubmission — DL#43, Wix refuses a caller post', () => {
             false,
         ]);
     });
-
-    it.skip('pending V2: a caller refusal with the V2-recorded status returns SUBMIT_NOT_ALLOWED_MESSAGE (no forms status is recorded yet)', () => {});
 });
 
 describe('createSubmitAttempt — DL#43 postedAs', () => {

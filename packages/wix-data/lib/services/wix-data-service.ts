@@ -81,6 +81,20 @@ export class NoCallerSessionError extends Error {
     }
 }
 
+/**
+ * Wix Data's "the current user does not have permissions" codes, live and sandbox
+ * (https://dev.wix.com/docs/api-reference/business-solutions/cms/wix-data-error-codes).
+ * `@wix/data` errors carry no HTTP status, so the code is the only refusal signal.
+ */
+const DATA_PERMISSION_DENIED_CODES: ReadonlySet<unknown> = new Set(['WDE0027', 'WDE0177']);
+
+/** True when Wix Data refused a caller call for the collection's permissions (DL#43). */
+export function isDataPermissionDenied(error: unknown): boolean {
+    const code = (error as { details?: { applicationError?: { code?: unknown } } } | undefined)
+        ?.details?.applicationError?.code;
+    return DATA_PERMISSION_DENIED_CODES.has(code);
+}
+
 /** Built per call on the caller's headers-only client; never the module-level site singleton. */
 function callerItemsClient(identity: RequestIdentity): ItemsClient {
     if (identity.session !== 'active' || !identity.client) {
