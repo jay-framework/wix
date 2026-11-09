@@ -1,6 +1,6 @@
 # 49 - Wix API Path Safety
 
-Status: Design
+Status: Implemented (live end-to-end bookings check and manual curl check pending)
 
 Part of the wix-forms release security gate (**DL #47**, the umbrella). Closes **F2** (path injection in the public `getFormSummary` query) and defines the **canonical form id** that DL #50 uses to close **F4**. Packages: `@jay-framework/wix-server-client` (the `wixFetch` guard, for every plugin) and `@jay-framework/wix-forms` (the form-id helper and its two path builders); wix-bookings is read as a consumer only. Paths are relative to `packages/`.
 
@@ -148,3 +148,13 @@ Red first in every phase: write the test with the correct expected behaviour, ru
 ## Open Questions
 
 - **OQ-1 (was #47 OQ-2; measure before any allowlist on `getFormSummary`):** which Wix namespace do booking-service participant forms live in, and are their ids GUIDs? Measured in the end-to-end check. Until then `getFormSummary` keeps no allowlist, and the bookings Phase 2 query (outside the gate) is the long-term fix.
+
+## Implementation Results
+
+Implemented 2026-11-09 as planned (Phases 1 and 2). Bookings Phase 2 not started (outside the gate).
+
+- **Phase 1** (`wix-server-client/lib/wix-fetch.ts`): `assertSafeWixPath` runs first in `wixFetch`, before `authHeadersFor`. Red: 10 new tests failed against the unchanged code (the 9 refused paths plus "does not echo the refused path"); the 3 allowed paths passed. Green: wix-server-client 83/83; `build` and `build:check-types` clean.
+- **Phase 2** (`wix-forms/lib/utils/form-id.ts` new; `get-form-summary.ts`, `get-form.ts` use `formIdPathSegment`). Red: `test/form-id.test.ts` failed (module missing) and all 4 tests in the new `test/get-form-summary.test.ts` / `test/get-form.test.ts` failed. Green: wix-forms 215/215 (21 files); `build` (incl. `validate-plugin`) and `build:check-types` clean.
+- **Consumers:** wix-bookings 49/49; root `yarn test` green (all packages).
+- **Deviations:** none. Added beyond the plan: a test that the guard error does not echo the path, and `canonicalFormId` cases for a GUID followed by `\nx` or `/x`, `null` and `undefined`.
+- **Pending:** the manual `curl` check and the live end-to-end bookings participant-form check (OQ-1) before release.
