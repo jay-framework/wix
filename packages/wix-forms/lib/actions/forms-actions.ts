@@ -21,10 +21,13 @@ export const submitForm = makeJayAction('wixForms.submitForm')
         const hooks = hasService(WIX_FORMS_SUBMIT_HOOKS)
             ? getService(WIX_FORMS_SUBMIT_HOOKS)
             : undefined;
+        const requestIdentity = resolveRequestIdentity(request.cookies);
+        const { resolveClient, resolveIdentity } = identitySubmitDeps(requestIdentity);
         return runSubmission(input, {
             createSubmission: (formId, values, authorization) =>
                 forms.createSubmission(formId, values, authorization),
-            ...identitySubmitDeps(resolveRequestIdentity(request.cookies)),
+            resolveClient,
+            resolveIdentity,
             hook: selectHook(hooks, input.formId ?? ''),
         });
     });
