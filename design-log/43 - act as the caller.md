@@ -23,21 +23,23 @@ Builds on **DL#42** (session cookie `wix_session`, `resolveRequestIdentity`, the
 ## Background
 
 DL#42 added a server-set, httpOnly `wix_session` cookie that mirrors the browser's OAuth tokens. `resolveRequestIdentity(cookies)` (`packages/wix-server-client/lib/session/request-identity.ts:18-35`) returns:
+
 - `client`: today `createClient({ auth: OAuthStrategy({ clientId, tokens }) })` (:33); §Design 0 replaces it with a headers-only client;
 - `caller`: lazy `token-info` verification (:29-32).
 
 DL#42 deliberately kept the site client for `submit()` (DL#42 Q13) and switched no plugin default (DL#42 §Background table).
 
 **Current code paths.**
+
 - Forms: `submitForm` (`packages/wix-forms/lib/actions/forms-actions.ts:17-30`) resolves identity only inside `resolveIdentity` (:24-27), which `runSubmission` calls only for a hooked form (`submission/run-submission.ts:43-50`). `submit()` always calls `deps.createSubmission(formId, values)` (:102), which is `forms.createSubmission` (`services/wix-forms-service.ts:74-78`) → `createFormSubmission(wixClient, …)` (`wix-apis/create-submission.ts:17-31`) with the **site** client.
 - wix-data: `init.ts:30-36` builds `WixDataService` from `WIX_CLIENT_SERVICE` (site). `wix-data-service.ts:68-82` keeps the `items`/`collections` clients as **module-level singletons**, so a caller client must never go through `getItemsClient`. Browser: `WIX_DATA_CONTEXT` (`contexts/wix-data-context.ts:37-49`) already runs as the visitor/member.
 
 ### Observed evidence (2026-10-28, test site)
 
-| Call | Token | Result |
-|---|---|---|
+| Call                         | Token                      | Result                               |
+| ---------------------------- | -------------------------- | ------------------------------------ |
 | `POST /forms/v4/submissions` | visitor OAuth access token | accepted; `submitter: { visitorId }` |
-| `POST /forms/v4/submissions` | member OAuth access token | accepted; `submitter: { memberId }` |
+| `POST /forms/v4/submissions` | member OAuth access token  | accepted; `submitter: { memberId }`  |
 
 The member probe sent the member's access token as `Authorization` and got `submitter: { memberId }`, which proves the header alone carries the identity for forms. The calls were made from the browser; the server-side request sends the same `Authorization` header, so it is expected to be equivalent (confirmed by V6). `/forms/v4/submissions` is an alias of the documented `/form-submission-service/v4/submissions`, observed working; **this work switches `create-submission.ts` to the documented path.** Documented endpoint: [Create Submission](https://dev.wix.com/docs/rest/crm/forms/form-submissions/create-submission) / SDK [`submissions.createSubmission`](https://dev.wix.com/docs/sdk/backend-modules/forms/submissions/create-submission).
 
@@ -58,15 +60,15 @@ The member probe sent the member's access token as `Authorization` and got `subm
 
 ### Null hypothesis per new surface
 
-| New surface | Existing primitive | Why it doesn't suffice |
-|---|---|---|
-| `submit(values, { as: 'site' })` | none (site was the only mode) | Once the default flips, a form whose Wix permissions reject visitors needs a way back. A per-call option keeps it in the hook, where the decision is made. A per-form YAML flag was rejected: a second config surface for a rare case. |
-| `SUBMIT_NOT_ALLOWED_MESSAGE` | `SUBMIT_FAILED_MESSAGE` | A permission refusal is actionable ("sign in"); the generic message is not. One constant, same result shape. |
-| `WixDataService.asCaller(identity)` | hook `client` + `client.use(items)` by hand | Works, but every call site repeats it, and nothing stops `getItemsClient`'s singleton from being reused. One method that **throws** without a session is the guard. |
-| `isPermissionDenied(error)` | inline `status === 403` | Two error shapes exist (`WixApiError` from `wixFetch`; SDK errors from `items.*`). One helper owns the mapping. |
-| `SUBMIT_SESSION_EXPIRED_MESSAGE` | `SUBMIT_NOT_ALLOWED_MESSAGE` | "Sign in" is wrong advice to a signed-in member whose token expired; refreshing the page re-runs the browser's token renewal and `syncSession`. |
-| `session: 'expired'` on `RequestIdentity` | `client: undefined` | Indistinguishable from "no session", which falls back to the site. |
-| `NoCallerSessionError` (with `reason`) | return `undefined` | Callers would `?? siteItems`, which is the silent fallback the owner forbids. |
+| New surface                               | Existing primitive                          | Why it doesn't suffice                                                                                                                                                                                                                 |
+| ----------------------------------------- | ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `submit(values, { as: 'site' })`          | none (site was the only mode)               | Once the default flips, a form whose Wix permissions reject visitors needs a way back. A per-call option keeps it in the hook, where the decision is made. A per-form YAML flag was rejected: a second config surface for a rare case. |
+| `SUBMIT_NOT_ALLOWED_MESSAGE`              | `SUBMIT_FAILED_MESSAGE`                     | A permission refusal is actionable ("sign in"); the generic message is not. One constant, same result shape.                                                                                                                           |
+| `WixDataService.asCaller(identity)`       | hook `client` + `client.use(items)` by hand | Works, but every call site repeats it, and nothing stops `getItemsClient`'s singleton from being reused. One method that **throws** without a session is the guard.                                                                    |
+| `isPermissionDenied(error)`               | inline `status === 403`                     | Two error shapes exist (`WixApiError` from `wixFetch`; SDK errors from `items.*`). One helper owns the mapping.                                                                                                                        |
+| `SUBMIT_SESSION_EXPIRED_MESSAGE`          | `SUBMIT_NOT_ALLOWED_MESSAGE`                | "Sign in" is wrong advice to a signed-in member whose token expired; refreshing the page re-runs the browser's token renewal and `syncSession`.                                                                                        |
+| `session: 'expired'` on `RequestIdentity` | `client: undefined`                         | Indistinguishable from "no session", which falls back to the site.                                                                                                                                                                     |
+| `NoCallerSessionError` (with `reason`)    | return `undefined`                          | Callers would `?? siteItems`, which is the silent fallback the owner forbids.                                                                                                                                                          |
 
 ## Questions and Answers
 
@@ -125,13 +127,18 @@ export const EXPIRY_MARGIN_SECONDS = 60;
 /** The one expiry rule; wix-forms imports it. */
 export function isExpiringSoon(expiresAt: number | undefined, nowSeconds?: number): boolean;
 ```
+
 - `decodeSessionCookie`: a missing or non-finite `accessToken.expiresAt` → `undefined` → session `'none'`.
 - `resolveRequestIdentity`: no/invalid cookie → `'none'`. `isExpiringSoon(expiresAt)` → `'expired'`, `client: undefined`, `caller` resolves `undefined` with no fetch. Otherwise `'active'`, `client = createClient({ modules: {}, headers: { Authorization: tokens.accessToken.value } })` ([wix-client](https://dev.wix.com/docs/sdk/core-modules/sdk/wix-client)); the refresh token is never given to the SDK. Consumers add modules with `WixClient.use(...)` (`asCaller`); REST calls go through `wixFetch` with `authorization`.
 - **`wixFetch` options (additive signature change; existing callers unchanged):**
   ```ts
-  export interface WixFetchOptions { method?: string; body?: any; authorization?: string }
+  export interface WixFetchOptions {
+    method?: string;
+    body?: any;
+    authorization?: string;
+  }
   ```
-- **`wixFetch` with a headers-only client.** Module calls through `WixClient.use(...)` send the `createClient` `headers`, so `Authorization` is sent and `asCaller` works (V6). But a headers-only client's `client.auth` is the SDK's default strategy, whose `getAuthHeaders()` returns `{ headers: {} }`, so `wixFetch(identity.client, …)` (`packages/wix-server-client/lib/wix-fetch.ts:30`) would silently send an **unauthenticated** request. **Fix (chosen): `wixFetch` takes an `authorization` option, and throws `Error('wixFetch: no Authorization for <path>; pass the caller's authorization or use the site client')` whenever it would send no `Authorization`** (no option and empty auth headers). Chosen over a caller-bound fetch on the identity because the guard then protects *every* `wixFetch` call, not only those that remember to use the bound fetch, and the site path is unchanged. `createFormSubmission` only forwards `authorization`.
+- **`wixFetch` with a headers-only client.** Module calls through `WixClient.use(...)` send the `createClient` `headers`, so `Authorization` is sent and `asCaller` works (V6). But a headers-only client's `client.auth` is the SDK's default strategy, whose `getAuthHeaders()` returns `{ headers: {} }`, so `wixFetch(identity.client, …)` (`packages/wix-server-client/lib/wix-fetch.ts:30`) would silently send an **unauthenticated** request. **Fix (chosen): `wixFetch` takes an `authorization` option, and throws `Error('wixFetch: no Authorization for <path>; pass the caller's authorization or use the site client')` whenever it would send no `Authorization`** (no option and empty auth headers). Chosen over a caller-bound fetch on the identity because the guard then protects _every_ `wixFetch` call, not only those that remember to use the bound fetch, and the site path is unchanged. `createFormSubmission` only forwards `authorization`.
 - **Caller client surface.** `WixClient.fetchWithAuth` builds headers from `requestInit.headers` + auth headers only, never `createClient`'s `headers`; on this client the auth headers are empty, so it would send an **unauthenticated** request (new vs DL#42, where `client` was OAuthStrategy). **`graphql` is supported** (it sends the headers, like `use`). **`fetch` is stubbed** even though it would send the headers: it is deprecated, and the caller client keeps one supported surface. **Supported:** `client.use(module)`, `client.graphql` and `wixFetch(..., { authorization })`. **Stubbed (throw `Error("Not supported on the caller client: use client.use(module), client.graphql or wixFetch(..., { authorization })")`):** `fetchWithAuth` (unauthenticated), `fetch` (keeps one supported surface; deprecated), and `enableContext` (`enableContext('global')` would register the caller as the global context and leak identity beyond the request). Stubs are **assigned on the returned client** (`client.fetchWithAuth = stub; client.fetch = stub; client.enableContext = stub`), never by spreading into a copy, which would freeze the `auth` getter and break `this`.
 - `siteOAuthClientId()` is read inside the lazy `caller` getter only, not when building `client`.
 - `caller` verification (`verifyAccessToken`) already posts the token to `token-info` directly, with no strategy; unchanged.
@@ -143,6 +150,7 @@ export function isExpiringSoon(expiresAt: number | undefined, nowSeconds?: numbe
 /** True when Wix refused the call for authentication or permissions (V2). */
 export function isPermissionDenied(error: unknown): boolean;
 ```
+
 `WixApiError` → **no status until forms-side V2 records one** (decided fallback, Q4). An SDK/data error → exactly code `WDE0027` (V2, measured), read from `error.details.applicationError.code`; the exact thrown error shape is captured as a fixture in V2 (if it differs, `isPermissionDenied` reads the recorded field). `WDE0117` (invalid token, "MetaSite not found") is **not** permission-denied: it maps to the generic failure. Until then `isPermissionDenied` is false for every forms status; a restricted form's refusal gets the generic message, and the guide says to use `{ as: 'site' }`. Exported from the server `index.ts`.
 
 ### 2. wix-forms
@@ -160,8 +168,10 @@ export interface SubmitDeps {
 }
 function createSubmitAttempt(formId: string, values: Values, createSubmission: SubmitDeps['createSubmission'], callerSession: CallerSession): SubmitAttempt;
 ```
+
 - Hook JSDoc on `SubmitHookInput.client`: "Caller-scoped. Supported: `client.use(module)`, `client.graphql` and `wixFetch(..., { authorization })` only; `fetchWithAuth`/`fetch`/`enableContext` throw."
 - The expiry check uses wix-server-client's `isExpiringSoon(expiresAt)`; no second margin in wix-forms. The expired path sets `state = 'failed'` without posting and leaves `attempt.settled` resolved.
+
 ```ts
 interface SubmitAttempt {
   state: 'idle' | 'pending' | 'succeeded' | 'failed';
@@ -173,6 +183,7 @@ interface SubmitAttempt {
   submit(values?: Values, options?: SubmitOptions): Promise<void>;
 }
 ```
+
 - `runSubmission`: `const { session, authorization: callerAuthorization, expiresAt } = deps.resolveClient()` inside a try (throw → L1 + `SUBMIT_FAILED_MESSAGE`). `session === 'active'` without `authorization` → L1 + `SUBMIT_FAILED_MESSAGE` (never a silent site post). No pre-hook expired exit: for a form with no hook, the default `submit()` below handles it. In `submit`, in the same synchronous block that sets `state = 'pending'`: `const asCaller = options?.as !== 'site' && session !== 'none'`. If `asCaller` and (`session === 'expired'` or `isExpiringSoon(expiresAt)`): `state = 'failed'`, `failure = new SessionExpiredError(formId)`, `postedAs = 'caller'`, no post; returns a rejection with that error (handler attached). Otherwise `const authorization = asCaller ? callerAuthorization : undefined; attempt.postedAs = authorization ? 'caller' : 'site';` then `createSubmission(formId, values, authorization)`.
 - `settleSubmission` `failed` row, reading `attempt.failure` (so it holds whether the hook swallowed or rethrew, `run-submission.ts:126`): **`SessionExpiredError` first** → `SUBMIT_SESSION_EXPIRED_MESSAGE` (the attempt is consumed: a second `submit()` is ignored with L2 / `SubmitIgnoredError`); then field errors; then `postedAs === 'caller' && isPermissionDenied(failure)` (pending V2; false for every forms status until then) → L6 + `SUBMIT_NOT_ALLOWED_MESSAGE`; then any other caller refusal (including 428 `INVALID_CAPTCHA`) → L6 + `SUBMIT_FAILED_MESSAGE`; then any site refusal → L4 + `SUBMIT_FAILED_MESSAGE` (428s included).
 - **L6 reuses `logFailure`** (`run-submission.ts:165-169`) with `what = 'Wix refused the caller's submission'` and the `WixApiError` (its `name: message` carries the status); no new helper. `logFailure` never logs tokens, cookies or values.
@@ -191,6 +202,7 @@ export class NoCallerSessionError extends Error { constructor(readonly reason: '
 // WixDataService
 asCaller(identity: RequestIdentity): ItemsClient; // throws NoCallerSessionError(identity.session) unless 'active'
 ```
+
 - Returns `ItemsClient` directly (no wrapper: only `items` is caller-scoped, Q9). Built per call on the §Design 0 headers client: `identity.client.use(items)`. **Never** via `getItemsClient` (module singleton, `wix-data-service.ts:68-72`).
 - Error mapping, in the consumer's handler: `if (isPermissionDenied(e)) throw new ActionError('FORBIDDEN', '…')`. Documented in the guide; wix-data's own actions do not use `asCaller`.
 
@@ -216,6 +228,7 @@ asCaller(identity: RequestIdentity): ItemsClient; // throws NoCallerSessionError
 ### Red-first tests
 
 wix-server-client
+
 - "an expired member token never triggers the anonymous grant and never posts as a visitor" — cookie with `expiresAt` = now + 30 s; `session === 'expired'`, `client` undefined; the mocked `/oauth2/token` is never called (in particular never with `grantType: 'anonymous'`).
 - "a token that lapses mid-request never reaches /oauth2/token" — resolve an active identity; advance fake time by more than 61 s; call `identity.client.use(items).query(...)` with global `fetch` mocked: the outgoing `Authorization` equals the stored token, and no request goes to `/oauth2/token`.
 - "`identity.client.fetchWithAuth`, `fetch` and `enableContext` throw and never send a request or register a context" — the error text names the supported paths; mocked `fetch` never called.
@@ -228,10 +241,11 @@ wix-server-client
 - "building an identity does not read siteOAuthClientId; reading caller does".
 - "`wixFetch` with the authorization option sends exactly that header and does not mix in the site client's auth headers" — the site client's `getAuthHeaders` is never called.
 - `isPermissionDenied` true for the V2 `WDE0027` SDK error fixture; false for `WDE0117`, 400, 428, 500, network.
-- *pending V2:* `WixApiError(401)` / `WixApiError(403)` rows — not specified until forms-side V2 records the status.
+- _pending V2:_ `WixApiError(401)` / `WixApiError(403)` rows — not specified until forms-side V2 records the status.
 - "`wixFetch` on a headers-only client without `authorization` throws and never sends an unauthenticated request" — mocked `fetch` never called.
 
 wix-forms (`runSubmission`)
+
 - "posts with the caller client when the request has a session" — `createSubmission` called with the caller's `authorization`.
 - "posts with the site client when there is no session" — called with `undefined`.
 - "posts as the site when the hook passes `{ as: 'site' }`" — with a session present.
@@ -247,7 +261,7 @@ wix-forms (`runSubmission`)
 - regression: "`WixFormsService.createSubmission(formId, values)` with no `authorization` posts with the site client".
 - "a caller 428 INVALID_CAPTCHA returns SUBMIT_FAILED_MESSAGE, no retry".
 - "does not retry as the site when Wix refuses the caller" — `createSubmission` called exactly once; result `{ success: false, message: SUBMIT_FAILED_MESSAGE }`; L6 logged.
-- *pending V2:* "a caller refusal with the V2-recorded status returns SUBMIT_NOT_ALLOWED_MESSAGE".
+- _pending V2:_ "a caller refusal with the V2-recorded status returns SUBMIT_NOT_ALLOWED_MESSAGE".
 - "a 403 on a site post keeps the generic message" — `SUBMIT_FAILED_MESSAGE`.
 - "field violations on a caller post still return fieldErrors".
 - "no token appears in the logs" — a caller refusal (any non-2xx); the captured `console.error` output contains neither the access nor the refresh token value.
@@ -257,6 +271,7 @@ wix-forms (`runSubmission`)
 - Existing 5-row and call-once tests unchanged and green.
 
 wix-data
+
 - "`asCaller` throws NoCallerSessionError without a session".
 - "`asCaller` uses the caller client, not the site singleton" — `identity.client.use` called; `service.items` unchanged.
 - "`asCaller` with an expired session throws NoCallerSessionError('expired') and never triggers the anonymous grant".
@@ -299,7 +314,9 @@ async function renderFastChanging(props, carry, wixData) {
   } catch (error) {
     if (error instanceof NoCallerSessionError || isPermissionDenied(error)) {
       // missing/expired session or refused: render the signed-out state; the interactive phase loads the caller's data
-      return phaseOutput(signedOutViewState, carry, { responseHeaders: { 'Cache-Control': 'private' } });
+      return phaseOutput(signedOutViewState, carry, {
+        responseHeaders: { 'Cache-Control': 'private' },
+      });
     } else throw error;
   }
 }
@@ -331,7 +348,8 @@ async function renderFastChanging(props, carry, wixData) {
 
 ## Scope pre-mortem
 
-*"Six weeks later this failed. Why?"*
+_"Six weeks later this failed. Why?"_
+
 - **Forms broke for visitors** on forms configured for members only → generic message until V2 records a not-allowed status (then `SUBMIT_NOT_ALLOWED_MESSAGE`); guidance points to `{ as: 'site' }`.
 - **An expired member silently became a new visitor** (SDK anonymous grant) → §Design 0's headers client has no OAuth strategy (V6: 0 `/oauth2/token` calls), so it cannot happen even when a token lapses mid-request; V3, V6; red tests advance time and assert no `/oauth2/token` call.
 - **The headers client does not work with headless tokens** → retired: V6 PASSED for wix-data; forms covered by the `Authorization` probe.
@@ -367,6 +385,7 @@ async function renderFastChanging(props, carry, wixData) {
 **Agent-kit (pre-V4/V5 subset).** The three guides from §jay-feedback were written, along with the synced testbed copy. Content gated by V2/V4/V5 is marked "pending verification" rather than published: the not-allowed message, the captcha `{ as: 'site' }` guidance and `asCaller` in fast render. The wix-data guide limits `asCaller` to `.withRequest()` actions until V4. wix-data now ships `agent-kit` in `files`.
 
 **Test results.**
+
 - wix-server-client: 50/51 (1 skipped: pending V2 `WixApiError(401/403)` rows).
 - wix-forms: 142/143 (1 skipped: pending V2 not-allowed status).
 - wix-data: 5/5.
@@ -403,12 +422,14 @@ Phases 1–3 and the agent-kit guides were ported onto main after DL#41, DL#42 a
   - the new L1 path (`resolveClient` throws, or an active session without `authorization`) → `UNKNOWN`, the same as the existing L1 path.
 
   The Phase 2 tests expect these reasons. The two L1 tests had expected no `reason` and passed only because the code also omitted it; both now expect `UNKNOWN`.
+
 - **The guide notes `submitFailure: PERMISSION`** for an expired session, so a page can write its own sign-in copy (DL#45's variants).
 - **wix-data test tooling.** main's wix-data already runs a `node --test` file. Instead of switching the package's vite config to `node`, the `test` script runs `vitest run --environment node test/as-caller.test.ts` and then the `node --test` file; `vitest` is a devDependency (`^4.1.11`, as in the other packages). The vite config still names `jsdom`, which is not installed.
 - **wix-server-client** declares `@wix/data` (`^1.0.433`) as a devDependency for its caller-client tests.
 - **No testbed copy** of the wix-server-client guide (the example app is not part of this change).
 
 **Test results (port).**
+
 - wix-server-client: 70/71 (1 skipped: pending V2 `WixApiError(401/403)` rows).
 - wix-forms: 163/164 (1 skipped: pending V2 not-allowed status).
 - wix-data: 5/5 vitest + 2/2 `node --test`.
@@ -424,11 +445,13 @@ Phases 1–3 and the agent-kit guides were ported onto main after DL#41, DL#42 a
 **Problem 2: a data-specific code lives in wix-server-client.** `WDE0027` is a Wix Data code, but the helper sits in the shared server-client package.
 
 **Findings.**
-- Wix documents the HTTP status as the error category: [About Errors](https://dev.wix.com/docs/api-reference/articles/work-with-wix-apis/troubleshooting/about-errors) says *403 – Permission denied: the system authenticated you, but you don't have permissions to call this API*, and *401 – Unauthorized: missing/incorrect Authorization or an expired token; occasionally returned when you don't have permissions*. The same page documents `details.applicationError.code` as a per-service identifier, not a shared vocabulary.
+
+- Wix documents the HTTP status as the error category: [About Errors](https://dev.wix.com/docs/api-reference/articles/work-with-wix-apis/troubleshooting/about-errors) says _403 – Permission denied: the system authenticated you, but you don't have permissions to call this API_, and _401 – Unauthorized: missing/incorrect Authorization or an expired token; occasionally returned when you don't have permissions_. The same page documents `details.applicationError.code` as a per-service identifier, not a shared vocabulary.
 - `@wix/sdk-runtime` `transformError` copies the HTTP status onto the thrown error (`error.status`) for application, validation and plain 4xx errors. Our own `WixApiError` already has `status`. (Corrected below: `@wix/data` does not go through `transformError` and throws an error with no `status`.)
 - Not yet measured: the HTTP status of the `WDE0027` refusal. The V2/V6 notes record only the code and message; the unit fixture's 403 (and 401 for `WDE0117`) is an assumption.
 
 **Proposed rule.** `isPermissionDenied(error)` is true when `error.status === 403`, for an SDK error or a `WixApiError`. No application code is matched.
+
 - 401 stays false. It means "not authenticated" (bad or expired token, like `WDE0117`) and keeps going to the generic or session-expired path. If Wix ever answers a permission refusal with 401, the user gets the generic message — the safe direction.
 - The helper is no longer data-specific, so it stays in wix-server-client as a general "Wix refused this caller" check. Moving it to wix-data would make wix-forms (which posts through `wixFetch` and gets a `WixApiError`) depend on wix-data. If the owner prefers keeping a code check instead, it belongs in wix-data and wix-forms gets its own status check.
 - Side effect: forms is covered as soon as Create Submission returns 403, so the skipped forms-side V2 rows become "403 → true, 401 → false" plus a live check.
@@ -438,14 +461,17 @@ Phases 1–3 and the agent-kit guides were ported onto main after DL#41, DL#42 a
 **Tests (red-first once approved).** True for an SDK data error with status 403 (any application code) and for `WixApiError(403)`; false for 401 (`WDE0117`), 400, 428, 500, network and `undefined`. Fixtures use the V2b-recorded status. The two agent-kit guides drop the `WDE0027` wording and say "HTTP 403".
 
 **Owner approved the 403 rule (2026-11-09). Implementation found two facts that contradict this proposal; paused for a new decision.**
+
 - **`WDE0027` is documented.** [Wix Data Error Codes](https://dev.wix.com/docs/api-reference/business-solutions/cms/wix-data-error-codes) lists `WDE0027` ("The current user does not have permissions to {action} on the {collection} collection") and `WDE0177` (the same refusal in a sandbox environment). `WDE0117` is listed as "MetaSiteId can not be resolved", a system error. The `@wix/wix-data-items-sdk` source links to that page. So Problem 1 above was wrong.
 - **`@wix/data` drops the HTTP status.** A `@wix/data` `items.insert` refused with HTTP 403 throws an `Error` whose only own property is `details` (`details.applicationError.code`). It has no `status` and no `response` (measured with `@wix/data` 1.0.433 and a mocked `fetch`). The generic `@wix/sdk-runtime` `transformError` does set `status`, but the data module does not go through it. A 403-only rule therefore never matches a Wix Data refusal.
 
 **Decision (owner, 2026-11-09): split by owner.**
+
 - **wix-server-client `isPermissionDenied(error)`**: `error.status === 403`. It covers `wixFetch` refusals (`WixApiError`), which is what wix-forms gets. No Wix Data code remains in this package.
 - **wix-data `isDataPermissionDenied(error)`** (new export): `details.applicationError.code` is `WDE0027` or `WDE0177`, the documented permission codes. `WDE0117` and other codes are false.
 
 **Implementation results (2026-11-09).**
+
 - `wix-fetch.ts`: the 403 rule. The `@wix/data`-driven fixtures moved to wix-data's tests; wix-server-client tests a real `wixFetch` 403 (true) and 401 / 400 / 428 / 500 / network / `undefined` (false). The skipped "pending V2" row is removed.
 - wix-forms: a caller 403 now returns `SUBMIT_NOT_ALLOWED_MESSAGE` (`reason: PERMISSION`). The two caller-refusal tests were updated to that message, a caller 401 test keeps the generic message, and the skipped "pending V2" test is removed. A 403 on a site post keeps the generic message.
 - wix-data: `isDataPermissionDenied` in `wix-data-service.ts`, exported from `index.ts`; tests drive the real `@wix/data` client with a mocked `fetch`.

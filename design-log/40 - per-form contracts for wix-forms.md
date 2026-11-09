@@ -25,7 +25,7 @@ Status: Implemented
 - The service fetches a single form by ID via `getFormSchema(client, formId)` → raw `wixFetch` to `/form-schema-service/v4/forms/${formId}` (`wix-apis/get-form.ts:39-43`; `services/wix-forms-service.ts:15-29`).
 - Config is a single `defaultFormId` string (`config-loader.ts:5-22`, `setup.ts:8-12`).
 
-So the page author binds through anonymous positional loops: `forEach="contact.fields"`, `{target}`, `ref="contact.fields.formInputs"`. The design surface tells you *nothing* about which fields the form actually has.
+So the page author binds through anonymous positional loops: `forEach="contact.fields"`, `{target}`, `ref="contact.fields.formInputs"`. The design surface tells you _nothing_ about which fields the form actually has.
 
 ## Problem
 
@@ -57,20 +57,21 @@ We want **a separate contract per form, with tags named after that form's real f
 
 ### Null hypothesis: does `wix-data`'s mechanism already solve per-form generation?
 
-**Yes — and the precedent now extends to *enumeration* too, not just per-schema generation.** Per-form contracts are structurally identical to per-collection contracts: enumerate N site-specific schemas, emit N named contracts with field-named tags, serve them all from one schema-agnostic component selected by `metadata`. `wix-data` auto-seeds its collection set by listing from the platform API (`collections.listDataCollections({})`, `lib/config-loader.ts:160-263`); wix-forms does the direct analogue with **List Forms** (`GET /form-schema-service/v4/forms`, OQ-1). The one *intentional* deviation is the default scope: wix-data is opt-in (`visible: false` per collection) whereas wix-forms is **opt-out** — all enabled forms generate by default (Note A in OQ-1). Every primitive needed already exists and is exercised in-repo. **We invent no new surface** — we only add a thin `wix-apis/list-forms.ts` wrapper over an endpoint the plugin already talks to (`wix-apis/get-form.ts` hits the same `form-schema-service/v4`). Any proposal to add new framework/plugin surface beyond a generator + a List-Forms wrapper + a shared-component refactor must justify itself against this.
+**Yes — and the precedent now extends to _enumeration_ too, not just per-schema generation.** Per-form contracts are structurally identical to per-collection contracts: enumerate N site-specific schemas, emit N named contracts with field-named tags, serve them all from one schema-agnostic component selected by `metadata`. `wix-data` auto-seeds its collection set by listing from the platform API (`collections.listDataCollections({})`, `lib/config-loader.ts:160-263`); wix-forms does the direct analogue with **List Forms** (`GET /form-schema-service/v4/forms`, OQ-1). The one _intentional_ deviation is the default scope: wix-data is opt-in (`visible: false` per collection) whereas wix-forms is **opt-out** — all enabled forms generate by default (Note A in OQ-1). Every primitive needed already exists and is exercised in-repo. **We invent no new surface** — we only add a thin `wix-apis/list-forms.ts` wrapper over an endpoint the plugin already talks to (`wix-apis/get-form.ts` hits the same `form-schema-service/v4`). Any proposal to add new framework/plugin surface beyond a generator + a List-Forms wrapper + a shared-component refactor must justify itself against this.
 
 ## Questions and Answers (open where unanswered)
 
 **OQ-1 — How are the user's forms enumerated at build time?**
-`wix-data` lists collections via `collections.listDataCollections({})`. wix-forms today has **no list endpoint** — only `getFormSchema(client, formId)` by ID (`wix-apis/get-form.ts:39-43`). Design assumes a config-listed set of forms (`forms: [{ formId, name }]`) in `config/.wix-forms.yaml`, mirroring `wix-data.yaml`. ⚠️ **assumed**: a Wix Forms "list/query forms" REST endpoint exists to *auto-seed* that list on first init (as `wix-data` auto-seeds collections). If it does not, the list is authored manually. **Open: confirm the list-forms API (path/SDK) before building auto-seed; otherwise ship manual config and defer auto-seed to its own DL.**
+`wix-data` lists collections via `collections.listDataCollections({})`. wix-forms today has **no list endpoint** — only `getFormSchema(client, formId)` by ID (`wix-apis/get-form.ts:39-43`). Design assumes a config-listed set of forms (`forms: [{ formId, name }]`) in `config/.wix-forms.yaml`, mirroring `wix-data.yaml`. ⚠️ **assumed**: a Wix Forms "list/query forms" REST endpoint exists to _auto-seed_ that list on first init (as `wix-data` auto-seeds collections). If it does not, the list is authored manually. **Open: confirm the list-forms API (path/SDK) before building auto-seed; otherwise ship manual config and defer auto-seed to its own DL.**
 
 **ANSWER (RESOLVED — auto-enumerate; changes the design):** The platform **does** expose a list endpoint; the plugin simply hadn't wrapped it. Switch from "config-listed baseline, defer auto-seed" to **auto-enumeration at build time via List Forms**, the direct analogue of `wix-data`'s `listDataCollections` auto-seed.
+
 - **List Forms:** `GET https://www.wixapis.com/form-schema-service/v4/forms` — **required** query param `namespace` (minLength 10, see OQ-8); optional `enabled`/`disabled`, `formIds`, `nameFilter`, `order`, `paging` (CursorPaging, `limit` 0-100 + `cursor`), `fieldsets`. Scope `SCOPE.FORMS.VIEW-FORM`. ⚠️ assumed (API facts supplied by owner, not re-read from SDK types in this repo).
 - Response `ListFormsResponse`: `forms[]`, each `{ id, formFields[] }`, and **`formFields` carries the FULL field schema** (input types, validation, labels). So **List alone yields everything needed to generate every per-form contract** — the generator does **not** need a per-form `getFormSchema` call at generation time. Paging via cursor handles >100 forms. ⚠️ assumed.
 - Alternative: `POST …/v4/forms/query` (Query Forms) for filter/sort — same `{ id, formFields[] }` shape. ⚠️ assumed.
 - This is the **same `form-schema-service/v4`** the existing `wix-apis/get-form.ts:39-43` already calls via `wixFetch`. **Decision:** add a sibling `wix-apis/list-forms.ts` in that same `wixFetch` pattern (keep `getFormSchema` for the **runtime** component load by formId). Prefer this over the `@wix/crm` `formSchemas` SDK for consistency with the existing wixFetch approach, unless that SDK is already a dependency — it is not in `package.json` today, so `wixFetch` it is.
 - **Config role flips:** `config/.wix-forms.yaml` is now an **optional filter/override**, not the source of truth — it may restrict generation to specific `formIds`, carry the `namespace`, or toggle `enabled`/`disabled`. Absent config, all forms in the namespace are generated.
-- **Note A — enumeration is opt-OUT (conscious divergence from wix-data).** By default **every enabled form in the resolved namespace gets a contract**; the optional `formIds`/`include` config is the scope-*down*. This is a **deliberate divergence** from `wix-data`'s opt-*in* model (collections default `visible: false` and must be enabled one-by-one, `lib/config-loader.ts:233-238`). Rationale: forms are far fewer and lighter than collections and are almost always all wanted on the site, so opt-out is the lower-friction default; a stray contract costs little. **Possible future refinement:** an opt-in-per-form toggle (e.g. `include: []` whitelist as the default) if sites accumulate many unwanted forms — deferred, not v1.
+- **Note A — enumeration is opt-OUT (conscious divergence from wix-data).** By default **every enabled form in the resolved namespace gets a contract**; the optional `formIds`/`include` config is the scope-_down_. This is a **deliberate divergence** from `wix-data`'s opt-_in_ model (collections default `visible: false` and must be enabled one-by-one, `lib/config-loader.ts:233-238`). Rationale: forms are far fewer and lighter than collections and are almost always all wanted on the site, so opt-out is the lower-friction default; a stray contract costs little. **Possible future refinement:** an opt-in-per-form toggle (e.g. `include: []` whitelist as the default) if sites accumulate many unwanted forms — deferred, not v1.
 
 **OQ-2 — Auth/caching at generation time?**
 The generator runs in the same build context as `wix-data`'s (authenticated `WIX_CLIENT_SERVICE` available via `init`, `lib/init.ts:7-18`). It must fetch each listed form's schema. Decision: add schema caching to `WixFormsService` (map `formId → FormFieldView[]`) so the generator, the discovery reference, and the slow-phase render share one fetch — mirrors `wix-data`'s `processedSchemaCache`. ⚠️ assumed the build has network + credentials, same as `wix-data` today.
@@ -91,7 +92,7 @@ Form `name` is human-friendly but can change or duplicate; `formId` (GUID) is st
 **Note B — deterministic, ordering-independent dedup.** When **≥2 forms** produce the same `<kebab-name>`, **every colliding form gets an id suffix derived from its own form id** — none is left bare based on arrival order. So two "Contact" forms become `form/contact-a1b2` and `form/contact-9f3c` (never `form/contact` + `form/contact-9f3c`). This guarantees a given form's slug depends only on **its own** name+id, not on List-response order or on which other forms happen to exist that build — a page bound to `form/contact-a1b2` never silently re-points when the form set changes. Non-colliding names stay bare (`form/newsletter`). (Implementation note: group by kebab-name; for any group of size >1, suffix each member with a stable prefix of its own id; the suffix length is fixed/collision-checked. A name that collides in one build but not another would change slug — acceptable, and surfaced by re-running agent-kit + the downstream validate step.)
 
 **OQ-6 — Does the `formId` prop still override the contract's form?**
-Today `formId` is a free prop with `defaultFormId` fallback. With per-form contracts the form identity is fixed by the contract's `metadata.formId`. Decision: the selected contract *is* the form; the `formId` prop is **removed** from the per-form contract (the metadata carries it). The default-form escape hatch goes away. **Open: confirm no page relies on runtime form switching.**
+Today `formId` is a free prop with `defaultFormId` fallback. With per-form contracts the form identity is fixed by the contract's `metadata.formId`. Decision: the selected contract _is_ the form; the `formId` prop is **removed** from the per-form contract (the metadata carries it). The default-form escape hatch goes away. **Open: confirm no page relies on runtime form switching.**
 
 **ANSWER (RESOLVED):** Drop the runtime `formId` prop override **entirely**. The contract's `metadata.formId` is the sole source of form identity; there is no `formId` prop and no `defaultFormId` fallback. (Folded into §6 Migration.)
 
@@ -109,9 +110,9 @@ List Forms requires a `namespace` query param (minLength 10). Standalone Wix For
 - **`config/.wix-forms.yaml` is an optional filter/override, not a form list.** It is retired as the source of truth; the lone `defaultFormId` string is removed (OQ-6). Shape:
   ```yaml
   # Optional. Absent → generate every form in the default namespace.
-  namespace: "wix.form_app.form"   # OQ-8; omit to use the recommended default
-  formIds: []                       # optional whitelist — restrict generation to these
-  include: enabled                  # optional: enabled | disabled | all (maps to List Forms enabled/disabled)
+  namespace: 'wix.form_app.form' # OQ-8; omit to use the recommended default
+  formIds: [] # optional whitelist — restrict generation to these
+  include: enabled # optional: enabled | disabled | all (maps to List Forms enabled/disabled)
   ```
 - **The `namespace` query param is required** by List Forms; its value and multi-namespace scope are tracked in OQ-8 (recommended default `"wix.form_app.form"`, confirm before shipping).
 - **Generation runs in the jay agent-kit phase** — when `jay-stack agent-kit` runs, the contract-materializer invokes the plugin's `dynamic_contracts` generator (service-injected, authenticated client) and the `agentkit` handler emits the discovery reference. This is **the same phase/timing as `wix-data`**; there is no request-time generation and no generation during the plugin package's own `npm run build`.
@@ -216,11 +217,11 @@ tags:
 
 **Field type → contract mapping** (driven by the existing `FormFieldView` projection, `utils/project-form-fields.ts:20-68`; `types.ts:1-18`):
 
-| Wix / `FormFieldView` | `input.elementType` | extra |
-|---|---|---|
-| `text`, `email`, `tel`, `url` | `HTMLInputElement` | — |
-| `textarea` | `HTMLTextAreaElement` | — |
-| `select` (has options) | `HTMLSelectElement` | repeated `options` sub-contract |
+| Wix / `FormFieldView`         | `input.elementType`   | extra                           |
+| ----------------------------- | --------------------- | ------------------------------- |
+| `text`, `email`, `tel`, `url` | `HTMLInputElement`    | —                               |
+| `textarea`                    | `HTMLTextAreaElement` | —                               |
+| `select` (has options)        | `HTMLSelectElement`   | repeated `options` sub-contract |
 
 - **Required/optional** → a `required` **variant** tag per field (so the view can branch on it) plus server+client validation already in `validateFormField` (`utils/project-form-fields.ts:113-146`).
 - **Hidden fields** → excluded from the contract (OQ-4); still submitted by the component.
@@ -230,10 +231,11 @@ tags:
 ### 4. The generator (design, not code)
 
 `formContractGenerator = makeContractGenerator().withServices(WIX_FORMS_SERVICE).generateWith(async (forms) => …)`:
+
 1. **List** all forms via the service's List-Forms call (`namespace` from config/OQ-8; apply optional `formIds`/`enabled` filter from config), paging the cursor to completion (OQ-1). Each returned form already carries `formFields` — no per-form fetch.
 2. For each form, project `formFields` → `FormFieldView[]` (reuse the existing `projectFormFields`, `utils/project-form-fields.ts:38-68`), then slug the form `name`; resolve duplicate-name collisions by suffixing **every** colliding form with a stable prefix of its own id (ordering-independent — Note B in OQ-5).
 3. Emit `{ name: '<PascalName>Form', yaml: <built from fields>, description, metadata: { formId } }`.
-Returns one `GeneratedContractYaml` per form. The materializer writes `agent-kit/materialized-contracts/wix-forms/form-<slug>.jay-contract` and registers the name `form/<slug>`. (Reuse `contract-utils`-style tag builders; those live in `wix-data` — either port the small helpers into `wix-forms` or extract a shared util. Decision: **copy the few needed builders into wix-forms** to keep packages independent; do not cross-import `wix-data` internals.)
+   Returns one `GeneratedContractYaml` per form. The materializer writes `agent-kit/materialized-contracts/wix-forms/form-<slug>.jay-contract` and registers the name `form/<slug>`. (Reuse `contract-utils`-style tag builders; those live in `wix-data` — either port the small helpers into `wix-forms` or extract a shared util. Decision: **copy the few needed builders into wix-forms** to keep packages independent; do not cross-import `wix-data` internals.)
 
 ### 5. Shared component refactor
 
@@ -256,6 +258,7 @@ Returns one `GeneratedContractYaml` per form. The materializer writes `agent-kit
 ### agent-kit (what agents must learn)
 
 Add `packages/wix-forms/agent-kit/plugin/per-form-contracts.md` teaching:
+
 - Generation is **build-time, per form**; forms are **auto-enumerated** from the site via List Forms (no manual list). `config/.wix-forms.yaml` only optionally filters (namespace / formIds).
 - Contracts are named **`form/<slug>`**; discover available forms + their fields from the generated **`agent-kit/references/wix-forms/forms.yaml`** (emitted by the `agentkit:` handler — field names, types, required, element types) and from the materialized `form-<slug>.jay-contract`.
 - **Binding is explicit**: `{contact.email.label}`, `ref="contact.email.input"`, `<option forEach="contact.country.options" trackBy="value">`, `ref="contact.submitButton"`.
@@ -265,12 +268,13 @@ Also update `agent-kit/plugin/wix-forms-setup.md:41-54` (the "Page form" snippet
 
 ### jay validations (deterministic checks)
 
-**Decision: a wix-forms *plugin* validator** (`JayHtmlValidatorFn` exported from `./tools`, declared under `validators:` in `plugin.yaml`), named `wix-forms-bindings`. It fires in two detectable situations, both carrying the DL#40 migration message ("the generic `fields` tag was removed in DL#40; bind explicit field tags like `<key>.email.input`"):
+**Decision: a wix-forms _plugin_ validator** (`JayHtmlValidatorFn` exported from `./tools`, declared under `validators:` in `plugin.yaml`), named `wix-forms-bindings`. It fires in two detectable situations, both carrying the DL#40 migration message ("the generic `fields` tag was removed in DL#40; bind explicit field tags like `<key>.email.input`"):
 
-  1. **Leftover `.fields` binding on a migrated import (the reliably-detectable case):** a page that imports a per-form contract (`ctx.headlessImports[].contractName` starts with `form/`) and still binds `<key>.fields` / `forEach="<key>.fields"`. This is the case the validator is *guaranteed* to see, because the `form/` import resolves and appears in `headlessImports`. ✅ (mechanism verified: `headlessImports[].contractName` + `.contract.tags` are populated — `plugin-validators.ts:46-51`.)
-  2. **Direct reference to the retired name `wix-form` (best-effort):** a page still importing `contract="wix-form"`. After migration the static `wix-form` contract no longer exists, so core resolution raises a generic "unknown contract" with **no** migration hint. To emit the friendlier DL#40 message here, the plugin validator keys on the **literal string `wix-form`** appearing as a `contractName` in `ctx.headlessImports[]`. ⚠️ **assumed**: that an *unresolved* contract name still surfaces in `headlessImports[].contractName` (not dropped before plugin validators run) — **not confirmed**. If it does not surface, case 2 is not achievable from a plugin validator and the user sees only core's generic "unknown contract `wix-form`" error; case 1 remains the guaranteed migration path.
+1. **Leftover `.fields` binding on a migrated import (the reliably-detectable case):** a page that imports a per-form contract (`ctx.headlessImports[].contractName` starts with `form/`) and still binds `<key>.fields` / `forEach="<key>.fields"`. This is the case the validator is _guaranteed_ to see, because the `form/` import resolves and appears in `headlessImports`. ✅ (mechanism verified: `headlessImports[].contractName` + `.contract.tags` are populated — `plugin-validators.ts:46-51`.)
+2. **Direct reference to the retired name `wix-form` (best-effort):** a page still importing `contract="wix-form"`. After migration the static `wix-form` contract no longer exists, so core resolution raises a generic "unknown contract" with **no** migration hint. To emit the friendlier DL#40 message here, the plugin validator keys on the **literal string `wix-form`** appearing as a `contractName` in `ctx.headlessImports[]`. ⚠️ **assumed**: that an _unresolved_ contract name still surfaces in `headlessImports[].contractName` (not dropped before plugin validators run) — **not confirmed**. If it does not surface, case 2 is not achievable from a plugin validator and the user sees only core's generic "unknown contract `wix-form`" error; case 1 remains the guaranteed migration path.
 
-  Retired-`fields` detection is **plugin-specific knowledge** (it knows the old shape) → belongs in the plugin, not core.
+Retired-`fields` detection is **plugin-specific knowledge** (it knows the old shape) → belongs in the plugin, not core.
+
 - **Unknown-field-tag binding (deferred, with a gate):** a binding to `<key>.<missingField>` where `<missingField>` is not a tag of the selected form's contract. `ctx.headlessImports[].contract.tags` carries the generated field tags, so the check is feasible in the plugin validator. **Decision: prefer core contract-binding validation.** The implementer **MUST verify** — before closing this item — whether core `validate` already rejects a binding to a non-existent contract sub-tag (e.g. `<key>.notAField` / `<key>.email.notATag`). **If core does NOT reject unknown sub-contract paths, the wix-forms plugin validator MUST add this check** (iterate bound paths under each `form/` import's key against `contract.tags`). Do not close as "covered" without that verification.
 
 Rationale (jay prevention order: validation → agent-kit → framework): both additions are validation+docs; **no framework code**.
@@ -290,34 +294,52 @@ Rationale (jay prevention order: validation → agent-kit → framework): both a
 ## Examples
 
 **Before (generic, opaque):**
+
 ```html
-<script type="application/jay-headless" plugin="@jay-framework/wix-forms"
-        contract="wix-form" key="contact"></script>
+<script
+  type="application/jay-headless"
+  plugin="@jay-framework/wix-forms"
+  contract="wix-form"
+  key="contact"
+></script>
 <form>
   <label forEach="contact.fields" trackBy="target">
     {label}
-    <input ref="contact.fields.formInputs" placeholder="{placeholder}" if="!isTextarea && !hasOptions"/>
+    <input
+      ref="contact.fields.formInputs"
+      placeholder="{placeholder}"
+      if="!isTextarea && !hasOptions"
+    />
   </label>
   <button ref="contact.submitButton">Send</button>
 </form>
 ```
 
 **After (per-form, explicit):**
+
 ```html
-<script type="application/jay-headless" plugin="@jay-framework/wix-forms"
-        contract="form/contact" key="contact"></script>
+<script
+  type="application/jay-headless"
+  plugin="@jay-framework/wix-forms"
+  contract="form/contact"
+  key="contact"
+></script>
 <form>
-  <label>{contact.firstName.label}
-    <input ref="contact.firstName.input" placeholder="{contact.firstName.placeholder}"/>
+  <label
+    >{contact.firstName.label}
+    <input ref="contact.firstName.input" placeholder="{contact.firstName.placeholder}" />
     <span class="error" if="contact.firstName.error">{contact.firstName.error}</span>
   </label>
-  <label>{contact.email.label}
-    <input ref="contact.email.input" placeholder="{contact.email.placeholder}"/>
+  <label
+    >{contact.email.label}
+    <input ref="contact.email.input" placeholder="{contact.email.placeholder}" />
   </label>
-  <label>{contact.message.label}
+  <label
+    >{contact.message.label}
     <textarea ref="contact.message.input"></textarea>
   </label>
-  <label>{contact.country.label}
+  <label
+    >{contact.country.label}
     <select ref="contact.country.input">
       <option forEach="contact.country.options" trackBy="value" value="{value}">{label}</option>
     </select>
@@ -339,7 +361,7 @@ Rationale (jay prevention order: validation → agent-kit → framework): both a
 1. A site with ≥2 forms in the target namespace **auto-enumerates** (no manual config) and materializes ≥2 contracts `form/<a>`, `form/<b>` under `agent-kit/materialized-contracts/wix-forms/`, each with **tags named after that form's fields** and correct `input.elementType` per type. Two forms sharing a `name` each produce a distinct, ordering-independent slug via an id suffix on **both** (Note B / OQ-5) — neither is left bare.
 2. A page binding `{contact.email.label}` / `ref="contact.email.input"` / `forEach="contact.country.options"` validates clean and renders + submits end-to-end (values keyed by `target`).
 3. `agent-kit/references/wix-forms/forms.yaml` lists each form's fields (name, type, required).
-4. A page that imports a per-form contract (`contract="form/<slug>"`) but still binds the removed generic tag (`<key>.fields` / `forEach="<key>.fields"`) produces the plugin validator's **error** finding with the DL#40 migration message. (Best-effort: a page still importing the deleted `contract="wix-form"` *also* yields the migration message **if** the unresolved name surfaces in `headlessImports[].contractName` — ⚠️assumed; otherwise core emits a generic "unknown contract" error.)
+4. A page that imports a per-form contract (`contract="form/<slug>"`) but still binds the removed generic tag (`<key>.fields` / `forEach="<key>.fields"`) produces the plugin validator's **error** finding with the DL#40 migration message. (Best-effort: a page still importing the deleted `contract="wix-form"` _also_ yields the migration message **if** the unresolved name surfaces in `headlessImports[].contractName` — ⚠️assumed; otherwise core emits a generic "unknown contract" error.)
 5. No `jay` repo change is required to achieve 1-4.
 6. Enumeration uses a single List Forms call (cursor-paged) and does **not** issue a per-form `getFormSchema` at generation time; the resolved `namespace` returns the expected forms (OQ-8 confirmed against a real site).
 7. The **consuming site**, after syncing the new wix-forms version and regenerating agent-kit, **builds and `validate`s clean**, its migrated pages bind per-form field tags (no generic `fields` loops remain), and its forms render + submit via the per-form contracts in the running site (QA'd with a demo video).
@@ -363,6 +385,7 @@ Implemented in `packages/wix-forms` only (wix plugin scope; downstream/Starkdale
 ### What changed
 
 **Added**
+
 - `lib/wix-apis/list-forms.ts` — `GET /form-schema-service/v4/forms?namespace=…` via `wixFetch` (sibling of `get-form.ts`), cursor-paged, `enabled`/`disabled`/`formIds` query filter.
 - `lib/generators/contract-utils.ts` — self-contained YAML tag builders (`fieldTag`, `optionsSubContract`, `reservedFormTags`, `contractTagName`, `toPascalCase`/`toKebabCase`, `elementTypeFor`). Not cross-imported from wix-data (§4 decision).
 - `lib/generators/form-slug.ts` — `computeFormSlugs`: kebab slug + ordering-independent id-suffix dedup (Note B).
@@ -373,6 +396,7 @@ Implemented in `packages/wix-forms` only (wix plugin scope; downstream/Starkdale
 - Tests: `test/form-slug.test.ts`, `test/form-contract-generator.test.ts` (+ fixture `test/fixtures/form-contract-generator/contact.jay-contract`), `test/form-view-state.test.ts`, `test/wix-form-bindings-validator.test.ts`.
 
 **Changed**
+
 - `plugin.yaml` — static `contracts:` → `dynamic_contracts` (`prefix: form`, `generator: formContractGenerator`); added `validators:` (`wix-forms-bindings`) and `agentkit: generateWixFormsAgentKit`.
 - `lib/components/wix-form.ts` — refactored to `makeJayStackComponent<any>().withProps<PageProps & DynamicContractProps<{ formId }>>()`; reads `props.metadata.formId`; view-state keyed by field `target`; submission errors mapped per-field by target into each field's `error` slot. `getFormSchema`/slow-phase load kept.
 - `lib/config-loader.ts` — `{ defaultFormId }` → optional `{ namespace?, formIds?, include? }` with default namespace `wix.form_app.form`.
@@ -395,6 +419,7 @@ Implemented with default `namespace: "wix.form_app.form"`; `listForms()` throws 
 ### Core-vs-plugin validator finding (the hard gate)
 
 Investigated whether core `jay-stack validate` already rejects a binding to a non-existent contract sub-tag. **Finding: core covers it PARTIALLY.**
+
 - **Covered by core:** unknown **data** bindings — `{key.notAField}`, `forEach="key.fields"`, `if=`, attribute expressions — including keyed headless imports (the import key is merged into the page ViewState; accessor resolution emits `the data field [key.x] not found in Jay data` as a generate-stage **error** surfaced by `jay-stack validate` and the plugin-validator runner). So `forEach="contact.fields"` is already a core error.
 - **NOT covered by core:** unknown **`ref=`** sub-tags — template refs absent from the contract's ref tree are silently grafted in (no error), and the ref element-type check early-returns when the tag does not resolve.
 

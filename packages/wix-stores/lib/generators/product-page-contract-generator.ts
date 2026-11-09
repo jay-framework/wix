@@ -155,6 +155,10 @@ export const generator = makeContractGenerator()
     });
 
 /** The base contract, with the site's extended fields sub-contract appended when there is one. */
-export function buildProductPageContractYaml(extendedFieldsBlock: string | null | undefined): string {
-    return extendedFieldsBlock ? BASE_CONTRACT_YAML + '\n\n' + extendedFieldsBlock : BASE_CONTRACT_YAML;
+export function buildProductPageContractYaml(
+    extendedFieldsBlock: string | null | undefined,
+): string {
+    return extendedFieldsBlock
+        ? BASE_CONTRACT_YAML + '\n\n' + extendedFieldsBlock
+        : BASE_CONTRACT_YAML;
 }

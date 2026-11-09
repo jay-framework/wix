@@ -1,5 +1,7 @@
 name: RecipesList
 description: List page for Recipes
+collectionId: Recipes
+editingGuide: agent-kit/references/wix-data/wix-data-dashboard-content.md
 tags:
   - tag: items
     type: sub-contract

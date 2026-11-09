@@ -1,5 +1,6 @@
 name: product-page
 description: Full product detail page with variants, options, media gallery, and add-to-cart. Use for individual product pages.
+editingGuide: agent-kit/designer/wix-stores-dashboard-content.md
 params:
   slug: string
   prefix: string?

@@ -6371,7 +6371,7 @@ items:
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
 
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:devanco-12-18-2020-035-jpg
+  - id: wix-media:devanco-12-18-2020-035-jpg-2
     title: Devanco-12.18.2020-035.jpg
     category: Media
     folderPath:
@@ -6391,7 +6391,7 @@ items:
 
       Media id: 19cb78_113fa80024d645039bbb6118695cd52f~mv2.jpg
 
-      Slug: devanco-12-18-2020-035-jpg
+      Slug: devanco-12-18-2020-035-jpg-2
 
       Type: image · -
 
@@ -7623,6 +7623,31 @@ items:
       - Headshots
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_1e3f8ebc049c4e8297d7294d698bd477~mv2.jpg
+    interaction:
+      mode: stage-place
+      stagePromptTemplate: |-
+        Place this image at the marker location on the page.
+        URL: https://static.wixstatic.com/media/19cb78_1e3f8ebc049c4e8297d7294d698bd477~mv2.jpg
+    prompt: |-
+      Use this Wix Media Manager asset in jay-html (do not copy to public/):
+      URL: https://static.wixstatic.com/media/19cb78_1e3f8ebc049c4e8297d7294d698bd477~mv2.jpg
+      Media id: 19cb78_1e3f8ebc049c4e8297d7294d698bd477~mv2.jpg
+      Slug: eloy-garcia
+      Type: image · -
+      Folder: Images / People / Headshots
+      Labels: Smile, Beard, Sleeve, Audio equipment, Mesh, Jacket, Eyewear, Facial hair, Flash photography, Space
+      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
+      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
+  - id: wix-media:eloy-garcia-2
+    title: Eloy Garcia
+    category: Media
+    folderPath:
+      - Images
+      - People
+      - Headshots
+    pluginName: wix-media
+    packageName: '@jay-framework/wix-media'
     thumbnail: https://static.wixstatic.com/media/19cb78_ebc06f4d79b64736ae3ede0d9fd4d28c~mv2.jpg
     interaction:
       mode: stage-place
@@ -7633,13 +7658,13 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_ebc06f4d79b64736ae3ede0d9fd4d28c~mv2.jpg
       Media id: 19cb78_ebc06f4d79b64736ae3ede0d9fd4d28c~mv2.jpg
-      Slug: eloy-garcia
+      Slug: eloy-garcia-2
       Type: image · -
       Folder: Images / People / Headshots
       Labels: Outerwear, Sleeve, Beard, Grey, Collar, Jacket, Flash photography, Audio equipment, Mesh, Street fashion
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:eloy-garcia-2
+  - id: wix-media:eloy-garcia-2-2
     title: Eloy Garcia
     category: Media
     folderPath:
@@ -7662,31 +7687,6 @@ items:
       Type: image · -
       Folder: Images / People / Headshots
       Labels: Flash photography, Textile, Sleeve, Grey, Jacket, Eyewear, Cool, Fun, Audio equipment, Beard
-      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
-      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:eloy-garcia-2-2
-    title: Eloy Garcia
-    category: Media
-    folderPath:
-      - Images
-      - People
-      - Headshots
-    pluginName: wix-media
-    packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/19cb78_1e3f8ebc049c4e8297d7294d698bd477~mv2.jpg
-    interaction:
-      mode: stage-place
-      stagePromptTemplate: |-
-        Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/19cb78_1e3f8ebc049c4e8297d7294d698bd477~mv2.jpg
-    prompt: |-
-      Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://static.wixstatic.com/media/19cb78_1e3f8ebc049c4e8297d7294d698bd477~mv2.jpg
-      Media id: 19cb78_1e3f8ebc049c4e8297d7294d698bd477~mv2.jpg
-      Slug: eloy-garcia-2
-      Type: image · -
-      Folder: Images / People / Headshots
-      Labels: Smile, Beard, Sleeve, Audio equipment, Mesh, Jacket, Eyewear, Facial hair, Flash photography, Space
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
   - id: wix-media:evan-bartzis
@@ -9386,7 +9386,7 @@ items:
       Folder: Icons
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:zacca-logo-20-r-01-edited-png
+  - id: wix-media:zacca-logo-20-r-01-edited-png-2
     title: Zacca_Logo%20(R)-01_edited.png
     category: Media
     folderPath:
@@ -9403,7 +9403,7 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_efe55b72be864ed597b48677651ea90f~mv2.png
       Media id: 19cb78_efe55b72be864ed597b48677651ea90f~mv2.png
-      Slug: zacca-logo-20-r-01-edited-png
+      Slug: zacca-logo-20-r-01-edited-png-2
       Type: image · -
       Folder: Icons
       Labels: Font, Art
@@ -9442,7 +9442,7 @@ items:
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
 
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:external-file-edited-png
+  - id: wix-media:external-file-edited-png-2
     title: external-file_edited.png
     category: Media
     folderPath:
@@ -9462,7 +9462,7 @@ items:
 
       Media id: 725c6a_00e19ab742124d2fa85788981d485556~mv2.png
 
-      Slug: external-file-edited-png
+      Slug: external-file-edited-png-2
 
       Type: image · -
 
@@ -16654,7 +16654,7 @@ items:
       Folder: Images / Logo
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:zacca-logo-20-r-01-edited-png-2
+  - id: wix-media:zacca-logo-20-r-01-edited-png
     title: Zacca_Logo%20(R)-01_edited.png
     category: Media
     folderPath:
@@ -16672,7 +16672,7 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_3226e4ff171946e3a2631af4aadac78c~mv2.png
       Media id: 19cb78_3226e4ff171946e3a2631af4aadac78c~mv2.png
-      Slug: zacca-logo-20-r-01-edited-png-2
+      Slug: zacca-logo-20-r-01-edited-png
       Type: image · -
       Folder: Images / Logo
       Labels: Font, Electric blue
@@ -17442,86 +17442,6 @@ items:
     category: Media
     pluginName: wix-media
     packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/19cb78_d4e6e0cfa00e45b092c3b698966faec2~mv2.jpg
-    interaction:
-      mode: stage-place
-      stagePromptTemplate: |-
-        Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/19cb78_d4e6e0cfa00e45b092c3b698966faec2~mv2.jpg
-    prompt: |-
-      Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://static.wixstatic.com/media/19cb78_d4e6e0cfa00e45b092c3b698966faec2~mv2.jpg
-      Media id: 19cb78_d4e6e0cfa00e45b092c3b698966faec2~mv2.jpg
-      Slug: external-file-edited-jpg
-      Type: image · -
-      Folder: Media Root
-      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
-      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:external-file-edited-jpg-2
-    title: external-file_edited.jpg
-    category: Media
-    pluginName: wix-media
-    packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/19cb78_32afe1627e284cd2a4ddf9f38ed26383~mv2.jpg
-    interaction:
-      mode: stage-place
-      stagePromptTemplate: |-
-        Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/19cb78_32afe1627e284cd2a4ddf9f38ed26383~mv2.jpg
-    prompt: |-
-      Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://static.wixstatic.com/media/19cb78_32afe1627e284cd2a4ddf9f38ed26383~mv2.jpg
-      Media id: 19cb78_32afe1627e284cd2a4ddf9f38ed26383~mv2.jpg
-      Slug: external-file-edited-jpg-2
-      Type: image · -
-      Folder: Media Root
-      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
-      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:external-file-edited-jpg-2-2
-    title: external-file_edited.jpg
-    category: Media
-    pluginName: wix-media
-    packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/19cb78_2aa7e821278b451fa2d45dcec5f33af7~mv2.jpg
-    interaction:
-      mode: stage-place
-      stagePromptTemplate: |-
-        Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/19cb78_2aa7e821278b451fa2d45dcec5f33af7~mv2.jpg
-    prompt: |-
-      Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://static.wixstatic.com/media/19cb78_2aa7e821278b451fa2d45dcec5f33af7~mv2.jpg
-      Media id: 19cb78_2aa7e821278b451fa2d45dcec5f33af7~mv2.jpg
-      Slug: external-file-edited-jpg-2
-      Type: image · -
-      Folder: Media Root
-      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
-      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:external-file-edited-jpg-2-3
-    title: external-file_edited.jpg
-    category: Media
-    pluginName: wix-media
-    packageName: '@jay-framework/wix-media'
-    thumbnail: https://static.wixstatic.com/media/19cb78_ac48dcc9d69d4be7b6ffb3c48da7c9e7~mv2.jpg
-    interaction:
-      mode: stage-place
-      stagePromptTemplate: |-
-        Place this image at the marker location on the page.
-        URL: https://static.wixstatic.com/media/19cb78_ac48dcc9d69d4be7b6ffb3c48da7c9e7~mv2.jpg
-    prompt: |-
-      Use this Wix Media Manager asset in jay-html (do not copy to public/):
-      URL: https://static.wixstatic.com/media/19cb78_ac48dcc9d69d4be7b6ffb3c48da7c9e7~mv2.jpg
-      Media id: 19cb78_ac48dcc9d69d4be7b6ffb3c48da7c9e7~mv2.jpg
-      Slug: external-file-edited-jpg-2
-      Type: image · -
-      Folder: Media Root
-      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
-      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:external-file-edited-jpg-2-4
-    title: external-file_edited.jpg
-    category: Media
-    pluginName: wix-media
-    packageName: '@jay-framework/wix-media'
     thumbnail: https://static.wixstatic.com/media/19cb78_54a4bafefc2e42afb5cdb574a7981a23~mv2.jpg
     interaction:
       mode: stage-place
@@ -17532,12 +17452,12 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_54a4bafefc2e42afb5cdb574a7981a23~mv2.jpg
       Media id: 19cb78_54a4bafefc2e42afb5cdb574a7981a23~mv2.jpg
-      Slug: external-file-edited-jpg-2
+      Slug: external-file-edited-jpg
       Type: image · -
       Folder: Media Root
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:external-file-edited-jpg-2-5
+  - id: wix-media:external-file-edited-jpg-2
     title: external-file_edited.jpg
     category: Media
     pluginName: wix-media
@@ -17557,7 +17477,7 @@ items:
       Folder: Media Root
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:external-file-edited-jpg-2-6
+  - id: wix-media:external-file-edited-jpg-2-2
     title: external-file_edited.jpg
     category: Media
     pluginName: wix-media
@@ -17577,7 +17497,7 @@ items:
       Folder: Media Root
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:external-file-edited-jpg-2-7
+  - id: wix-media:external-file-edited-jpg-2-3
     title: external-file_edited.jpg
     category: Media
     pluginName: wix-media
@@ -17608,7 +17528,7 @@ items:
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
 
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:external-file-edited-jpg-2-8
+  - id: wix-media:external-file-edited-jpg-2-4
     title: external-file_edited.jpg
     category: Media
     pluginName: wix-media
@@ -17628,7 +17548,7 @@ items:
       Folder: Media Root
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:external-file-edited-jpg-2-9
+  - id: wix-media:external-file-edited-jpg-2-5
     title: external-file_edited.jpg
     category: Media
     pluginName: wix-media
@@ -17648,7 +17568,87 @@ items:
       Folder: Media Root
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:external-file-edited-png-2
+  - id: wix-media:external-file-edited-jpg-2-6
+    title: external-file_edited.jpg
+    category: Media
+    pluginName: wix-media
+    packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_d4e6e0cfa00e45b092c3b698966faec2~mv2.jpg
+    interaction:
+      mode: stage-place
+      stagePromptTemplate: |-
+        Place this image at the marker location on the page.
+        URL: https://static.wixstatic.com/media/19cb78_d4e6e0cfa00e45b092c3b698966faec2~mv2.jpg
+    prompt: |-
+      Use this Wix Media Manager asset in jay-html (do not copy to public/):
+      URL: https://static.wixstatic.com/media/19cb78_d4e6e0cfa00e45b092c3b698966faec2~mv2.jpg
+      Media id: 19cb78_d4e6e0cfa00e45b092c3b698966faec2~mv2.jpg
+      Slug: external-file-edited-jpg-2
+      Type: image · -
+      Folder: Media Root
+      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
+      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
+  - id: wix-media:external-file-edited-jpg-2-7
+    title: external-file_edited.jpg
+    category: Media
+    pluginName: wix-media
+    packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_32afe1627e284cd2a4ddf9f38ed26383~mv2.jpg
+    interaction:
+      mode: stage-place
+      stagePromptTemplate: |-
+        Place this image at the marker location on the page.
+        URL: https://static.wixstatic.com/media/19cb78_32afe1627e284cd2a4ddf9f38ed26383~mv2.jpg
+    prompt: |-
+      Use this Wix Media Manager asset in jay-html (do not copy to public/):
+      URL: https://static.wixstatic.com/media/19cb78_32afe1627e284cd2a4ddf9f38ed26383~mv2.jpg
+      Media id: 19cb78_32afe1627e284cd2a4ddf9f38ed26383~mv2.jpg
+      Slug: external-file-edited-jpg-2
+      Type: image · -
+      Folder: Media Root
+      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
+      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
+  - id: wix-media:external-file-edited-jpg-2-8
+    title: external-file_edited.jpg
+    category: Media
+    pluginName: wix-media
+    packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_2aa7e821278b451fa2d45dcec5f33af7~mv2.jpg
+    interaction:
+      mode: stage-place
+      stagePromptTemplate: |-
+        Place this image at the marker location on the page.
+        URL: https://static.wixstatic.com/media/19cb78_2aa7e821278b451fa2d45dcec5f33af7~mv2.jpg
+    prompt: |-
+      Use this Wix Media Manager asset in jay-html (do not copy to public/):
+      URL: https://static.wixstatic.com/media/19cb78_2aa7e821278b451fa2d45dcec5f33af7~mv2.jpg
+      Media id: 19cb78_2aa7e821278b451fa2d45dcec5f33af7~mv2.jpg
+      Slug: external-file-edited-jpg-2
+      Type: image · -
+      Folder: Media Root
+      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
+      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
+  - id: wix-media:external-file-edited-jpg-2-9
+    title: external-file_edited.jpg
+    category: Media
+    pluginName: wix-media
+    packageName: '@jay-framework/wix-media'
+    thumbnail: https://static.wixstatic.com/media/19cb78_ac48dcc9d69d4be7b6ffb3c48da7c9e7~mv2.jpg
+    interaction:
+      mode: stage-place
+      stagePromptTemplate: |-
+        Place this image at the marker location on the page.
+        URL: https://static.wixstatic.com/media/19cb78_ac48dcc9d69d4be7b6ffb3c48da7c9e7~mv2.jpg
+    prompt: |-
+      Use this Wix Media Manager asset in jay-html (do not copy to public/):
+      URL: https://static.wixstatic.com/media/19cb78_ac48dcc9d69d4be7b6ffb3c48da7c9e7~mv2.jpg
+      Media id: 19cb78_ac48dcc9d69d4be7b6ffb3c48da7c9e7~mv2.jpg
+      Slug: external-file-edited-jpg-2
+      Type: image · -
+      Folder: Media Root
+      Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
+      See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
+  - id: wix-media:external-file-edited-png
     title: external-file_edited.png
     category: Media
     pluginName: wix-media
@@ -17663,7 +17663,7 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_d9689238093d4b80811dbfcb5bb23ce8~mv2.png
       Media id: 19cb78_d9689238093d4b80811dbfcb5bb23ce8~mv2.png
-      Slug: external-file-edited-png-2
+      Slug: external-file-edited-png
       Type: image · -
       Folder: Media Root
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
@@ -26696,7 +26696,7 @@ items:
       Labels: Food, Tableware, Ingredient, Recipe, Plate, Cuisine, Gyro, Tortilla, Dish, Taco
       Full media index: agent-kit/references/wix-media/MEDIA-INDEX.md
       See agent-kit/designer/wix-media.md for fit/fill/crop transforms.
-  - id: wix-media:devanco-12-18-2020-035-jpg-2
+  - id: wix-media:devanco-12-18-2020-035-jpg
     title: Devanco-12.18.2020-035.jpg
     category: Media
     folderPath:
@@ -26715,7 +26715,7 @@ items:
       Use this Wix Media Manager asset in jay-html (do not copy to public/):
       URL: https://static.wixstatic.com/media/19cb78_3c03b55b15934d43aaf880a0e4a2591f~mv2.jpg
       Media id: 19cb78_3c03b55b15934d43aaf880a0e4a2591f~mv2.jpg
-      Slug: devanco-12-18-2020-035-jpg-2
+      Slug: devanco-12-18-2020-035-jpg
       Type: image · -
       Folder: Images / Devanco Food Items / Traditional Gyro
       Labels: Food, Mettwurst, Ingredient, Tableware, Recipe, Gyro, Sausage, Plate, Serveware, Cuisine

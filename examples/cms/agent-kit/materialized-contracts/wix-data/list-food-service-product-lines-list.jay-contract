@@ -1,5 +1,7 @@
 name: FoodServiceProductLinesList
 description: List page for Product_lines
+collectionId: Food_Service--Product_lines
+editingGuide: agent-kit/references/wix-data/wix-data-dashboard-content.md
 tags:
   - tag: items
     type: sub-contract
