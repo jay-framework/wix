@@ -7,7 +7,7 @@ On the server, `WIX_DATA_SERVICE_MARKER`'s `items` and every wix-data action (`q
 permissions to them, and an item the site inserts is owned by the site, not the member.
 
 When Wix must apply the caller's permissions, or `_owner` must be the member (a member's favourites,
-their own records), opt in per call with `forCaller`:
+their own records), opt in per call with `asCaller`:
 
 ```ts
 import { makeJayAction, ActionError } from '@jay-framework/fullstack-component';
@@ -19,7 +19,7 @@ export const saveFavourite = makeJayAction('app.saveFavourite')
   .withServices(WIX_DATA_SERVICE_MARKER)
   .withHandler(async (input: { itemId: string }, request, wixData) => {
     try {
-      const items = wixData.forCaller(resolveRequestIdentity(request.cookies));
+      const items = wixData.asCaller(resolveRequestIdentity(request.cookies));
       return await items.insert('Favourites', { itemId: input.itemId });
     } catch (error) {
       if (error instanceof NoCallerSessionError || isPermissionDenied(error))
@@ -31,7 +31,7 @@ export const saveFavourite = makeJayAction('app.saveFavourite')
 
 ## Rules
 
-- `forCaller(identity)` returns the Wix Data **items** client acting as the caller. Collections and
+- `asCaller(identity)` returns the Wix Data **items** client acting as the caller. Collections and
   schemas stay site-scoped.
 - It **throws** `NoCallerSessionError` unless the session is active. `error.reason` is `'none'` (no
   session cookie, or a handler called outside an HTTP request) or `'expired'`. It never falls back to
@@ -39,7 +39,7 @@ export const saveFavourite = makeJayAction('app.saveFavourite')
 - Use it only in `.withRequest()` actions. **Never** with `.withCaching()` (jay refuses that
   combination) and **never** in slow render (no cookies; its output is shared).
 - Fast render: **pending verification**. It is not yet verified that a private `Cache-Control` header
-  reaches the response and that nothing shared caches the page, so do not call `forCaller` in fast
+  reaches the response and that nothing shared caches the page, so do not call `asCaller` in fast
   render yet. Load the caller's data in the interactive phase (`WIX_DATA_CONTEXT` already runs as the
   visitor/member).
 - Map `isPermissionDenied(error)` (Wix's `WDE0027`, "the current user does not have permissions")

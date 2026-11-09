@@ -39,7 +39,7 @@
     "build:check-types": "tsc",
     "clean": "rimraf dist",
     "confirm": "npm run clean && npm run build && npm run test",
-    "test": "vitest run --environment node test/for-caller.test.ts && node --experimental-strip-types --test test/source-editing.test.ts"
+    "test": "vitest run --environment node test/as-caller.test.ts && node --experimental-strip-types --test test/source-editing.test.ts"
   },
   "dependencies": {
     "@jay-framework/component": "^0.25.5",

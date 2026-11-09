@@ -1,6 +1,6 @@
 // @vitest-environment node
 
-/** DL#43 §Design 3: `WixDataService.forCaller(identity)` — opt-in caller-scoped items, never the site. */
+/** DL#43 §Design 3: `WixDataService.asCaller(identity)` — opt-in caller-scoped items, never the site. */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { clearClientInitData, setClientInitData } from '@jay-framework/stack-server-runtime';
@@ -46,11 +46,11 @@ afterEach(() => {
     vi.unstubAllGlobals();
 });
 
-describe('WixDataService.forCaller (DL#43 §Design 3)', () => {
+describe('WixDataService.asCaller (DL#43 §Design 3)', () => {
     it('throws NoCallerSessionError without a session', () => {
         const service = provideWixDataService(siteClient(), CONFIG);
 
-        expect(noCallerReasonOf(() => service.forCaller(resolveRequestIdentity({})))).toEqual(
+        expect(noCallerReasonOf(() => service.asCaller(resolveRequestIdentity({})))).toEqual(
             'none',
         );
     });
@@ -61,7 +61,7 @@ describe('WixDataService.forCaller (DL#43 §Design 3)', () => {
         const callerItems = { marker: 'caller-items' };
         const use = vi.spyOn(identity.client!, 'use').mockReturnValue(callerItems as never);
 
-        const items = service.forCaller(identity);
+        const items = service.asCaller(identity);
 
         expect({ items, siteItems: service.items, useCalls: use.mock.calls.length }).toEqual({
             items: callerItems,
@@ -77,7 +77,7 @@ describe('WixDataService.forCaller (DL#43 §Design 3)', () => {
 
         expect(
             noCallerReasonOf(() =>
-                service.forCaller(resolveRequestIdentity(cookiesExpiringIn(30))),
+                service.asCaller(resolveRequestIdentity(cookiesExpiringIn(30))),
             ),
         ).toEqual('expired');
         expect(fetchMock).not.toHaveBeenCalled();
@@ -89,7 +89,7 @@ describe('WixDataService.forCaller (DL#43 §Design 3)', () => {
 
         expect(
             noCallerReasonOf(() =>
-                service.forCaller(resolveRequestIdentity(detachedRequestCookies)),
+                service.asCaller(resolveRequestIdentity(detachedRequestCookies)),
             ),
         ).toEqual('none');
     });
@@ -99,6 +99,6 @@ describe('WixDataService.forCaller (DL#43 §Design 3)', () => {
         const service = provideWixDataService(siteClient(), CONFIG);
         const identity: RequestIdentity = resolveRequestIdentity(cookiesExpiringIn(3600));
 
-        expect(typeof service.forCaller(identity).query).toEqual('function');
+        expect(typeof service.asCaller(identity).query).toEqual('function');
     });
 });

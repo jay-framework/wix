@@ -33,7 +33,7 @@ export interface WixDataService {
      * `resolveRequestIdentity(cookies)`. Throws `NoCallerSessionError` unless the session is
      * active; it never falls back to the site.
      */
-    forCaller(identity: RequestIdentity): ItemsClient;
+    asCaller(identity: RequestIdentity): ItemsClient;
 
     /** Wix Data Collections API client */
     collections: CollectionsClient;
@@ -69,13 +69,13 @@ export interface WixDataService {
  */
 export const WIX_DATA_SERVICE_MARKER = createJayService<WixDataService>('Wix Data Service');
 
-/** `forCaller` without an active caller session: 'none' (no cookie) or 'expired'. */
+/** `asCaller` without an active caller session: 'none' (no cookie) or 'expired'. */
 export class NoCallerSessionError extends Error {
     constructor(readonly reason: 'none' | 'expired') {
         super(
             reason === 'expired'
-                ? "wix-data forCaller: the caller's session expired"
-                : 'wix-data forCaller: the request has no caller session',
+                ? "wix-data asCaller: the caller's session expired"
+                : 'wix-data asCaller: the request has no caller session',
         );
         this.name = 'NoCallerSessionError';
     }
@@ -157,7 +157,7 @@ export function provideWixDataService(wixClient: WixClient, config: WixDataConfi
     }
     const service: WixDataService = {
         items: itemsClient,
-        forCaller: callerItemsClient,
+        asCaller: callerItemsClient,
         collections: collectionsClient,
         config,
 
