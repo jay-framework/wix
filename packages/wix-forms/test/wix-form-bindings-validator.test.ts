@@ -65,7 +65,7 @@ describe('validateWixFormBindings', () => {
 
     it('should flag a ref to an unknown field tag (the gap core does not catch)', async () => {
         const ctx = contextWith(
-            `<form><label>Phone <input ref="contact.phoneNumber.input" /></label></form>`,
+            `<form><label>Phone <input ref="contact.phoneNumber.input" /></label><button ref="contact.submitButton">Send</button></form>`,
             [contactImport],
         );
         const findings = await validateWixFormBindings(ctx);
@@ -138,7 +138,7 @@ describe('validateWixFormBindings — DL#41 second-segment ref check (gate iv)',
 
     it('should flag an unknown second-segment channel when nested tags are present', async () => {
         const ctx = contextWith(
-            `<form><button ref="contact.email.bogus" data-value="x"></button></form>`,
+            `<form><button ref="contact.email.bogus" data-value="x"></button><button ref="contact.submitButton">Send</button></form>`,
             [nestedImport],
         );
         const findings = await validateWixFormBindings(ctx);
@@ -154,7 +154,7 @@ describe('validateWixFormBindings — DL#41 second-segment ref check (gate iv)',
 
     it('should accept a known .control second-segment channel', async () => {
         const ctx = contextWith(
-            `<form><button ref="contact.email.control" data-value="x"></button></form>`,
+            `<form><button ref="contact.email.control" data-value="x"></button><button ref="contact.submitButton">Send</button></form>`,
             [nestedImport],
         );
         expect(await validateWixFormBindings(ctx)).toEqual([]);
@@ -163,7 +163,7 @@ describe('validateWixFormBindings — DL#41 second-segment ref check (gate iv)',
     it('should NOT flag a second segment when nested tags are unavailable (first-segment fallback)', async () => {
         // The flat CONTACT_TAGS import carries no nested tags → the fallback holds, no finding.
         const ctx = contextWith(
-            `<form><button ref="contact.email.bogus" data-value="x"></button></form>`,
+            `<form><button ref="contact.email.bogus" data-value="x"></button><button ref="contact.submitButton">Send</button></form>`,
             [contactImport],
         );
         expect(await validateWixFormBindings(ctx)).toEqual([]);
@@ -184,13 +184,17 @@ describe('validateWixFormBindings — accessibility warnings (DL#41 Addendum A)'
                            aria-describedby="email-error" />
                     <span id="email-error" aria-live="polite">{contact.email.error}</span>
                     <input ref="contact.firstName.input" aria-label="First name" required />
-                </form>`,
+                <button ref="contact.submitButton">Send</button></form>`,
             ),
         ).toEqual([]);
     });
 
     it('should warn on a field input with no accessible label', async () => {
-        expect(await warningsFor(`<form><input ref="contact.email.input" /></form>`)).toEqual([
+        expect(
+            await warningsFor(
+                `<form><input ref="contact.email.input" /><button ref="contact.submitButton">Send</button></form>`,
+            ),
+        ).toEqual([
             expect.objectContaining({
                 severity: 'warning',
                 message: 'ref="contact.email.input" has no accessible label.',
@@ -202,7 +206,7 @@ describe('validateWixFormBindings — accessibility warnings (DL#41 Addendum A)'
         expect(
             await warningsFor(
                 `<form><label>{contact.email.label} <input ref="contact.email.input" />
-                    <span>{contact.email.error}</span></label></form>`,
+                    <span>{contact.email.error}</span></label><button ref="contact.submitButton">Send</button></form>`,
             ),
         ).toEqual([
             expect.objectContaining({
@@ -216,7 +220,7 @@ describe('validateWixFormBindings — accessibility warnings (DL#41 Addendum A)'
     it('should warn on native required inside a <form> without novalidate', async () => {
         expect(
             await warningsFor(
-                `<form><label>{contact.email.label} <input ref="contact.email.input" required /></label></form>`,
+                `<form><label>{contact.email.label} <input ref="contact.email.input" required /></label><button ref="contact.submitButton">Send</button></form>`,
             ),
         ).toEqual([
             expect.objectContaining({
@@ -224,5 +228,48 @@ describe('validateWixFormBindings — accessibility warnings (DL#41 Addendum A)'
                 attribute: 'required',
             }),
         ]);
+    });
+});
+
+describe('validateWixFormBindings — unguarded <form> (DL#44 rule 3)', () => {
+    const unguardedWarning = expect.objectContaining({
+        severity: 'warning',
+        message:
+            'A <form> holds "contact" refs but no ref="contact.submitButton", so its native submit is not intercepted and reloads the page.',
+    });
+
+    it('should warn when a <form> holds contact.firstName.input but no contact.submitButton', async () => {
+        const ctx = contextWith(
+            `<form novalidate><label>{contact.firstName.label} <input ref="contact.firstName.input" /></label><button>Send</button></form>`,
+            [contactImport],
+        );
+        expect(await validateWixFormBindings(ctx)).toEqual([unguardedWarning]);
+    });
+
+    it('should stay silent when the <form> contains ref="contact.submitButton"', async () => {
+        const ctx = contextWith(
+            `<form novalidate><label>{contact.firstName.label} <input ref="contact.firstName.input" /></label><button ref="contact.submitButton">Send</button></form>`,
+            [contactImport],
+        );
+        expect(await validateWixFormBindings(ctx)).toEqual([]);
+    });
+
+    it('should stay silent when the key refs have no enclosing <form>', async () => {
+        const ctx = contextWith(
+            `<div><label>{contact.firstName.label} <input ref="contact.firstName.input" /></label><button ref="contact.submitButton">Send</button></div>`,
+            [contactImport],
+        );
+        expect(await validateWixFormBindings(ctx)).toEqual([]);
+    });
+
+    it('should warn once for several contact refs in the same <form>', async () => {
+        const ctx = contextWith(
+            `<form novalidate>
+                <label>{contact.firstName.label} <input ref="contact.firstName.input" /></label>
+                <label>{contact.email.label} <input ref="contact.email.input" /></label>
+            </form>`,
+            [contactImport],
+        );
+        expect(await validateWixFormBindings(ctx)).toEqual([unguardedWarning]);
     });
 });

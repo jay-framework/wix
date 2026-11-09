@@ -15,9 +15,15 @@ store and returns to a blank form (`isSubmitted=false`).
 ```html
 <form novalidate if="!contact.isSubmitted">
   <label for="contact-email">{contact.email.label}</label>
-  <input id="contact-email" ref="contact.email.input" autocomplete="email"
-         aria-required="{contact.email.required}" aria-invalid="{contact.email.invalid}"
-         aria-describedby="contact-email-error" placeholder="{contact.email.placeholder}" />
+  <input
+    id="contact-email"
+    ref="contact.email.input"
+    autocomplete="email"
+    aria-required="{contact.email.required}"
+    aria-invalid="{contact.email.invalid}"
+    aria-describedby="contact-email-error"
+    placeholder="{contact.email.placeholder}"
+  />
   <span id="contact-email-error" class="error" aria-live="polite">{contact.email.error}</span>
   <button ref="contact.submitButton" aria-busy="{contact.isSubmitting}">Send</button>
 </form>
@@ -43,7 +49,10 @@ a persistence guarantee.
 button — leave `type` off (it defaults to `submit` inside a `<form>`) or write
 `type="submit"`. The `wixForm` component listens to the owning `<form>`'s `submit` event,
 cancels the browser's page-reloading navigation, and runs the plugin submit, so a click,
-Enter in a field, and `requestSubmit()` all work. Do **not** set `type="button"` on the
+Enter in a field, and `requestSubmit()` all work. The component finds that `<form>` through the
+button, so the submit button inside it must carry `ref="<key>.submitButton"`; a `<form>` with
+only a plain `<button>` (or Enter-only) is not intercepted and reloads the page (the validator
+warns). Do **not** set `type="button"` on the
 submit button: it disables Enter-to-submit (a keyboard accessibility expectation) and hides
 the submission from password managers/autofill. The reset button is not a submit action, so
 mark it `type="button"`:
@@ -81,8 +90,14 @@ above). The `invalid` variant also drives error styling.
   tell:
 
   ```html
-  <input ref="contact.honeypot" type="text" tabindex="-1" autocomplete="off"
-         aria-hidden="true" style="position:absolute;left:-9999px" />
+  <input
+    ref="contact.honeypot"
+    type="text"
+    tabindex="-1"
+    autocomplete="off"
+    aria-hidden="true"
+    style="position:absolute;left:-9999px"
+  />
   ```
 
 ## 4b. Non-string fields (checkbox / multiselect)
@@ -94,9 +109,17 @@ sub-contract with per-option `selected` is the array representation.
 
 ```html
 <label><input type="checkbox" ref="contact.consent.input" /> I agree</label>
-<label>{contact.interests.label}
+<label
+  >{contact.interests.label}
   <select multiple ref="contact.interests.input">
-    <option forEach="contact.interests.options" trackBy="value" value="{value}" selected="{selected}">{label}</option>
+    <option
+      forEach="contact.interests.options"
+      trackBy="value"
+      value="{value}"
+      selected="{selected}"
+    >
+      {label}
+    </option>
   </select>
 </label>
 ```
@@ -112,8 +135,15 @@ page-owned**, the plugin only holds and submits the values.
 
 ```html
 <div class="slots">
-  <button type="button" forEach="availableSlots" trackBy="id"
-          ref="contact.slot.control" data-value="{id}">{label}</button>
+  <button
+    type="button"
+    forEach="availableSlots"
+    trackBy="id"
+    ref="contact.slot.control"
+    data-value="{id}"
+  >
+    {label}
+  </button>
 </div>
 ```
 
@@ -126,11 +156,13 @@ The plugin owns behavior; the page owns markup. `jay-stack validate` warns on th
 mechanical mistakes marked ⚠️.
 
 **What the plugin does for you**
+
 - Submits from the `<form>`'s `submit` event, so click, Enter, and `requestSubmit()` all work.
 - On a failed submit (client or server field errors), focuses the first invalid field's `input`.
 - On success, focuses the element bound to `confirmation`; on reset, focuses the first field.
 
 **What the page must do**
+
 - ⚠️ **Label every field input**: wrap it in `<label>{k.f.label} …</label>`, or use
   `<label for>` + `id`, or `aria-label`. A placeholder is not a label.
 - ⚠️ **Keep the error outside the `<label>`** (otherwise it becomes part of the field's name).
@@ -170,17 +202,20 @@ import { WIX_FORMS_SUBMIT_HOOKS } from '@jay-framework/wix-forms';
 export const init = makeJayInit().withServer(async () => {
   registerService(WIX_FORMS_SUBMIT_HOOKS, {
     [REQUEST_VISIT_FORM_ID]: async ({ values, caller, submit }) => {
-      if (caller?.type !== 'MEMBER')                                  // a VISITOR proves a session only
+      if (caller?.type !== 'MEMBER')
+        // a VISITOR proves a session only
         throw new ActionError('SIGN_IN_REQUIRED', 'Please sign in again to request a visit.');
-      const slot = parseSlot(values);                                 // values are UNTRUSTED: re-validate
-      const reservation = (await reservations.findOwn(caller.id, slot))   // a retry reuses it
-        ?? (await reservations.createIfFree({ ownerId: caller.id, slot }));
-      if (!reservation) throw new ActionError('SLOT_TAKEN', 'That time was just taken. Please pick another.');
+      const slot = parseSlot(values); // values are UNTRUSTED: re-validate
+      const reservation =
+        (await reservations.findOwn(caller.id, slot)) ?? // a retry reuses it
+        (await reservations.createIfFree({ ownerId: caller.id, slot }));
+      if (!reservation)
+        throw new ActionError('SLOT_TAKEN', 'That time was just taken. Please pick another.');
       try {
         await submit({ ...values, reference: reservation.reference }); // hidden, required field
       } catch (error) {
-        await reservations.remove(reservation.id);                    // compensate
-        throw error;                                                  // or swallow it: same result
+        await reservations.remove(reservation.id); // compensate
+        throw error; // or swallow it: same result
       }
       return { redirectTo: `/visit/confirmed?ref=${encodeURIComponent(reservation.reference)}` };
     },
@@ -193,6 +228,7 @@ The form id is the `formId` in `agent-kit/references/wix-forms/forms.yaml` (also
 contract's `formId` metadata). The hook receives `{ formId, values, caller, client, submit }`.
 
 **Trust.**
+
 - `caller` is verified with Wix (`{ type: 'VISITOR' | 'MEMBER', id }`, or `undefined` = no proof).
   It comes from wix-server-client's server-set, httpOnly `wix_session` cookie. Key your records on
   `caller.id`, never on an id from `values`.
@@ -223,6 +259,7 @@ sees success, without your `redirectTo`).
 **Who the submission posts as.** Every form (with or without a hook) posts **as the caller** when
 the request has an active `wix_session` cookie, so Wix records the visitor or member as the
 submitter; without a session it posts as the site.
+
 - `submit(values, { as: 'site' })` forces the site. A form whose Wix settings restrict submitters
   (for example, members only) and that visitors must still submit needs it. A form without a hook
   that must post as the site registers a one-line hook:
