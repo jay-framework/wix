@@ -39,9 +39,12 @@ const CONFIG_TEMPLATE = `# Wix Forms configuration (optional).
 namespace: "${DEFAULT_FORMS_NAMESPACE}"
 
 # Restrict generation to these form ids (empty = all forms in the namespace).
+# Also the runtime allowlist: when set, only these forms accept submissions
+# (empty = the namespace's enabled forms accept submissions).
 formIds: []
 
 # Which forms to generate: enabled | disabled | all
+# Affects generation only (the runtime allowlist never uses it).
 include: enabled
 `;
 

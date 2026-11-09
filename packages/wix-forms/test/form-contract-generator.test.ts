@@ -18,6 +18,7 @@ function serviceWith(forms: ListedFormView[]): WixFormsService {
         listForms: async () => forms,
         getFormFields: async () => [],
         getFormSummaryFields: async () => [],
+        isSubmittableForm: async () => true,
         createSubmission: async () => {},
     };
 }

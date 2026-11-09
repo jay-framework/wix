@@ -15,6 +15,11 @@ export interface WixFormsService {
     getFormFields(formId: string): Promise<FormFieldView[]>;
     getFormSummaryFields(formId?: string): Promise<FormFieldSummaryView[]>;
     /**
+     * Whether the public `submitForm` action accepts this canonical form id (DL #50): the
+     * configured `formIds`, else the namespace's enabled forms. Rejects when the list cannot load.
+     */
+    isSubmittableForm(formId: string): Promise<boolean>;
+    /**
      * Posts a submission. `authorization` (DL#43): the caller's access token
      * (`RequestIdentity.authorization`); omitted, it posts as the site.
      */

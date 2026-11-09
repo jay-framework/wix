@@ -42,8 +42,8 @@ See **§6 Accessibility** for why each attribute is there.
 Do **not** gate the confirmation on `statusMessage` — it is a data tag that also carries
 submit errors. Use the `isSubmitted` variant. To show your own failure copy, branch on
 `submitFailure` (see `user-visible-messages.md`). Note: a confirmation shown after a honeypot
-trip (below) does NOT imply the submission was stored — never treat "confirmation shown" as
-a persistence guarantee.
+trip (below, a browser-only check against naive bots) does NOT imply the submission was stored —
+never treat "confirmation shown" as a persistence guarantee.
 
 **Submit/reset buttons and native form submission.** Keep the submit button a real submit
 button — leave `type` off (it defaults to `submit` inside a `<form>`) or write
@@ -79,7 +79,7 @@ interrupted on every keystroke. Bind `aria-invalid="{contact.email.invalid}"` on
 and put the `error` in a polite live region linked by `aria-describedby` (see example
 above). The `invalid` variant also drives error styling.
 
-## 4a. Hidden values + honeypot spam protection
+## 4a. Hidden values + honeypot
 
 - **Hidden page values** reuse the `control` channel on a Wix hidden field — one hidden input
   populates it and it reaches the submission:
@@ -99,6 +99,10 @@ above). The `invalid` variant also drives error styling.
     style="position:absolute;left:-9999px"
   />
   ```
+
+  The honeypot stops naive bots that fill every input in the DOM. It is not spam protection: it
+  runs in the browser only, and a script that calls the action directly skips it. For spam
+  control, use Wix's form settings, your edge, or a submit hook.
 
 ## 4b. Non-string fields (checkbox / multiselect)
 
@@ -258,6 +262,13 @@ export const init = makeJayInit().withServer(async () => {
 
 The form id is the `formId` in `agent-kit/references/wix-forms/forms.yaml` (also the generated
 contract's `formId` metadata). The hook receives `{ formId, values, caller, client, submit }`.
+Hook keys are the form id, in any case; a key that is not a form id (such as `'contact-us'`) never
+matches and is warned about once on the server.
+
+**Which forms accept submissions.** Only forms in `formIds` (`config/.wix-forms.yaml`), or else the
+namespace's enabled forms, accept submissions; any other id is refused (`submitFailure: REJECTED`).
+**Registering a hook does not make a form submittable:** a hooked form outside that list is refused
+before its hook runs. A form created after deploy is refused until the server restarts.
 
 **Trust.**
 
@@ -265,7 +276,8 @@ contract's `formId` metadata). The hook receives `{ formId, values, caller, clie
   It comes from wix-server-client's server-set, httpOnly `wix_session` cookie. Key your records on
   `caller.id`, never on an id from `values`.
 - A `VISITOR` caller proves a browser session only: anyone can mint one. It is not a person and not
-  spam protection. A flow that needs a person checks `caller?.type === 'MEMBER'`.
+  spam protection. A flow that needs a person checks `caller?.type === 'MEMBER'`. A visitor session
+  proves a browser session, not a person: rate-limit in the hook or at the edge.
 - `values` come from the browser: re-validate them.
 - A Wix submission is **not** a trust boundary: a script can likely post to Wix directly, skipping
   your hook. Your own server-written record is the source of truth; a hidden `reference` in a Wix
@@ -290,16 +302,27 @@ sees success, without your `redirectTo`).
 
 **Who the submission posts as.** Every form (with or without a hook) posts **as the caller** when
 the request has an active `wix_session` cookie, so Wix records the visitor or member as the
-submitter; without a session it posts as the site.
+submitter. **Without a session cookie the submission is refused** (`submitFailure: PERMISSION`,
+generic message; `submit()` rejects with `NoCallerSessionError`), unless the hook calls
+`submit(values, { as: 'site' })`.
 
 - `submit(values, { as: 'site' })` forces the site. A form whose Wix settings restrict submitters
-  (for example, members only) and that visitors must still submit needs it. A form without a hook
-  that must post as the site registers a one-line hook:
-  `{ [FORM_ID]: ({ submit }) => submit(undefined, { as: 'site' }) }`.
+  (for example, members only) and that visitors must still submit needs it.
+- A `{ as: 'site' }` hook posts with the site's credentials for every caller, cookie or not,
+  scripts included: it opts the form out of Wix's submitter restriction (such as members-only).
+  For a members-only form that visitors must submit, require a session first
+  (`if (!client) throw new ActionError(…)`, then `submit(undefined, { as: 'site' })`). Use the
+  unconditional one-liner `{ [FORM_ID]: ({ submit }) => submit(undefined, { as: 'site' }) }` only
+  for a form that is truly public.
+- If you call `submitForm` yourself (not through the `wixForm` component),
+  `await ensureSessionFresh()` from `@jay-framework/wix-server-client/client` first. On a new
+  visitor's first page the session sync may still be in flight, and a submit without the cookie
+  is refused.
 - **Expired is not "no session".** When a caller post's session has expired, nothing is posted:
   `submit()` rejects with `SessionExpiredError` and the user sees "Your session expired. Please
   refresh the page and try again." `{ as: 'site' }` is not blocked by an expired cookie. The page
-  sees `submitFailure: PERMISSION`, so it can write its own sign-in copy.
+  sees `submitFailure: PERMISSION`, so it can write its own copy; `PERMISSION` does not always mean
+  signed out.
 - **No silent retry.** When Wix refuses a caller post, it is not retried as the site: the user sees
   "Please sign in to submit this form." when Wix answers 403 (permission denied), otherwise the
   generic message; the server logs the status either way.

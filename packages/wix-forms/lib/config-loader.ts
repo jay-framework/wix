@@ -4,17 +4,22 @@ import yaml from 'js-yaml';
 import type { FormInclude } from './wix-apis/list-forms.js';
 
 /**
- * Wix Forms config for per-form contract generation.
- *
- * Optional filter/override for per-form contract generation — NOT a form list.
- * Absent config → generate every enabled form in the default namespace.
+ * Wix Forms config: per-form contract generation and, through `formIds`, the runtime submit
+ * allowlist. Absent config → generate every enabled form in the default namespace, and accept
+ * submissions for those forms.
  */
 export interface WixFormsConfig {
     /** List Forms namespace. Default: the standalone Wix Forms namespace. */
     namespace: string;
-    /** Optional whitelist — restrict generation to these form ids. */
+    /**
+     * Optional form ids: restricts generation to these forms and is the runtime submit allowlist
+     * (`submitForm` refuses other forms).
+     */
     formIds: string[];
-    /** Which forms to enumerate. Default: `enabled`. */
+    /**
+     * Which forms to enumerate for generation. Default: `enabled`. The runtime allowlist always
+     * uses enabled forms.
+     */
     include: FormInclude;
 }
 

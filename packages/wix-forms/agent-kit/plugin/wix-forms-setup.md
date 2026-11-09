@@ -8,7 +8,8 @@ Per-form headless contracts (one per Wix form) and two server actions:
   tags named after that form's fields. See `per-form-contracts.md` and
   `user-visible-messages.md` (Wix vs plugin copy, success/i18n).
 - **getFormSummary** — returns participant field schema for other plugins (e.g. wix-bookings)
-- **submitForm** — submits form values to Wix Forms
+- **submitForm** — submits form values to Wix Forms. If you call it yourself (not through the `wixForm` component), `await ensureSessionFresh()` from `@jay-framework/wix-server-client/client` first: a submit without the session cookie is refused
+- **`WixFormsService.isSubmittableForm(formId)`** — the same allowlist check `submitForm` runs. It expects the canonical id, the form GUID in lowercase: trim and lowercase project input first, or a differently cased id reads as not submittable.
 
 ## Setup steps
 
@@ -24,7 +25,7 @@ form in the namespace whether or not this file exists:
 
 ```yaml
 namespace: "wix.form_app.form"   # List Forms namespace (default shown)
-formIds: []                       # restrict to specific form ids (empty = all)
+formIds: []                       # restrict to specific form ids (empty = all); also the runtime submit allowlist
 include: enabled                  # enabled | disabled | all
 ```
 
@@ -116,5 +117,5 @@ Flow: user selects a booking service → `getFormSummary({ formId: service.formI
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `namespace` | string | No | List Forms namespace. Default `wix.form_app.form` (standalone Wix Forms) |
-| `formIds` | string[] | No | Restrict generation to these form ids (empty = all forms in namespace) |
+| `formIds` | string[] | No | Restrict generation to these form ids (empty = all forms in namespace). Also the runtime submit allowlist: when set, `submitForm` refuses other forms (empty = the namespace's enabled forms) |
 | `include` | enum | No | `enabled` (default) \| `disabled` \| `all` |

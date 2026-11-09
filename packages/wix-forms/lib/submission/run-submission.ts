@@ -23,6 +23,7 @@ import {
     SubmitFailure,
 } from '../components/submit-outcome.js';
 import {
+    NoCallerSessionError,
     SessionExpiredError,
     SubmitIgnoredError,
     type SubmitHook,
@@ -31,6 +32,7 @@ import {
     type SubmitOptions,
 } from '../services/wix-forms-submit-hooks.js';
 import type { FieldValue, SubmitFormResult, SubmitRequestInput } from '../types.js';
+import { canonicalFormId } from '../utils/form-id.js';
 import { parseSubmissionFieldErrors } from '../utils/project-form-fields.js';
 
 type Values = Record<string, FieldValue>;
@@ -52,6 +54,8 @@ export interface SubmitDeps {
     }>;
     /** Called for every form; synchronous, no network. */
     resolveClient(): CallerSession;
+    /** The submit allowlist (DL #50 §1), for a canonical id; rejects when it cannot load. */
+    isSubmittableForm(formId: string): Promise<boolean>;
     hook?: SubmitHook;
 }
 
@@ -75,7 +79,42 @@ export async function runSubmission(
     request: SubmitRequestInput,
     deps: SubmitDeps,
 ): Promise<SubmitFormResult> {
-    const formId = request.formId ?? '';
+    const formId = canonicalFormId(request.formId);
+    if (!formId) {
+        logFailure(NOT_SUBMITTABLE, NOT_A_FORM_ID, undefined); // L7
+        return genericFailure(SubmitFailure.REJECTED);
+    }
+    const refusal = await allowlistRefusal(formId, deps);
+    if (refusal) return refusal;
+    return submitSubmittableForm(formId, request.values, deps);
+}
+
+const NOT_SUBMITTABLE = 'refused a submission for a form that is not submittable';
+const NOT_A_FORM_ID = '<not a form id>';
+
+/**
+ * Runs before the hook and identity (DL #50 §2): registering a hook does not make a form
+ * submittable. A refusal has the shape of Wix's 404 for a nonexistent form.
+ */
+async function allowlistRefusal(
+    formId: string,
+    deps: SubmitDeps,
+): Promise<SubmitFormResult | undefined> {
+    try {
+        if (await deps.isSubmittableForm(formId)) return undefined;
+    } catch (error) {
+        logFailure('could not load the submittable forms', formId, error); // L8
+        return genericFailure(SubmitFailure.UNKNOWN);
+    }
+    logFailure(NOT_SUBMITTABLE, formId, undefined); // L7
+    return genericFailure(SubmitFailure.REJECTED);
+}
+
+async function submitSubmittableForm(
+    formId: string,
+    values: Values,
+    deps: SubmitDeps,
+): Promise<SubmitFormResult> {
     let callerSession: CallerSession;
     try {
         callerSession = deps.resolveClient();
@@ -98,18 +137,13 @@ export async function runSubmission(
             return genericFailure(SubmitFailure.UNKNOWN);
         }
     }
-    const attempt = createSubmitAttempt(
-        formId,
-        request.values,
-        deps.createSubmission,
-        callerSession,
-    );
+    const attempt = createSubmitAttempt(formId, values, deps.createSubmission, callerSession);
     let outcome: SubmitHookOutcome | void = undefined;
     let thrown: unknown = undefined;
     try {
         outcome = await (deps.hook ?? submitWithoutChanges)({
             formId,
-            values: request.values,
+            values,
             ...identity,
             submit: attempt.submit,
         });
@@ -121,14 +155,40 @@ export async function runSubmission(
     return settleSubmission(formId, attempt, thrown, outcome);
 }
 
-/** Own properties only: `formId` comes from the browser, so 'constructor' must not resolve. */
-export function selectHook(hooks: SubmitHooks | undefined, formId: string): SubmitHook | undefined {
-    return hooks && Object.hasOwn(hooks, formId) ? hooks[formId] : undefined;
+/**
+ * Compares canonical ids, so a key matches the form id in any case (DL #50 F4). `Object.keys`
+ * lists own properties only: `formId` comes from the browser, so 'constructor' must not resolve.
+ * The first key in `Object.keys` order wins when two keys canonicalise to the same id.
+ */
+export function selectHook(
+    hooks: SubmitHooks | undefined,
+    rawFormId: string,
+): SubmitHook | undefined {
+    if (!hooks) return undefined;
+    warnAboutNonFormIdKeys(hooks);
+    const formId = canonicalFormId(rawFormId);
+    if (!formId) return undefined;
+    const key = Object.keys(hooks).find((candidate) => canonicalFormId(candidate) === formId);
+    return key === undefined ? undefined : hooks[key];
+}
+
+const hooksWarnedAbout = new WeakSet<SubmitHooks>();
+
+/** Hooks are registered in TypeScript at runtime, so no validator sees them: warn once instead (Q10). */
+function warnAboutNonFormIdKeys(hooks: SubmitHooks): void {
+    if (hooksWarnedAbout.has(hooks)) return;
+    hooksWarnedAbout.add(hooks);
+    for (const key of Object.keys(hooks)) {
+        if (canonicalFormId(key)) continue;
+        console.warn(
+            `[wix-forms] submit hook key "${key}" is not a form id and never matches; key hooks by the form's id`,
+        );
+    }
 }
 
 export interface SubmitAttempt {
     state: 'idle' | 'pending' | 'succeeded' | 'failed';
-    /** Set synchronously with state = 'pending'. 'site' when forced or when there is no session. */
+    /** Set synchronously with state = 'pending'. 'site' only when forced with `{ as: 'site' }`. */
     postedAs?: 'caller' | 'site';
     sealed: boolean;
     failure?: unknown;
@@ -159,15 +219,16 @@ export function createSubmitAttempt(
                 return handledRejection(ignored);
             }
             attempt.state = 'pending';
-            const asCaller = options?.as !== 'site' && callerSession.session !== 'none';
-            if (asCaller && isCallerSessionExpired(callerSession)) {
-                attempt.state = 'failed';
-                attempt.postedAs = 'caller';
-                attempt.failure = new SessionExpiredError(formId);
-                return handledRejection(attempt.failure);
+            const asCaller = options?.as !== 'site';
+            if (asCaller && callerSession.session === 'none') {
+                return failAttempt(attempt, new NoCallerSessionError(formId));
             }
+            if (asCaller && isCallerSessionExpired(callerSession)) {
+                return failAttempt(attempt, new SessionExpiredError(formId));
+            }
+            // An 'active' session always has `authorization` (checked in submitSubmittableForm).
             const authorization = asCaller ? callerSession.authorization : undefined;
-            attempt.postedAs = authorization ? 'caller' : 'site';
+            attempt.postedAs = asCaller ? 'caller' : 'site';
             const posting = createSubmission(formId, values, authorization).then(
                 () => {
                     attempt.state = 'succeeded';
@@ -183,6 +244,14 @@ export function createSubmitAttempt(
         },
     };
     return attempt;
+}
+
+/** A caller post refused before posting: the attempt is consumed, so no `{ as: 'site' }` retry. */
+function failAttempt(attempt: SubmitAttempt, failure: Error): Promise<never> {
+    attempt.state = 'failed';
+    attempt.postedAs = 'caller';
+    attempt.failure = failure;
+    return handledRejection(failure);
 }
 
 function isCallerSessionExpired({ session, expiresAt }: CallerSession): boolean {
@@ -238,8 +307,12 @@ function wixFailureReason(error: unknown): SubmitFailure {
 /** The `failed` row (DL#43 §Design 2): reads the attempt's own failure, swallowed or rethrown. */
 function failedSubmissionResult(formId: string, attempt: SubmitAttempt): SubmitFormResult {
     const failure = attempt.failure;
+    if (failure instanceof NoCallerSessionError) {
+        logFailure('refused a submission without a session cookie', formId, undefined); // L9
+        return genericFailure(SubmitFailure.PERMISSION);
+    }
     if (failure instanceof SessionExpiredError) {
-        // A sign-in problem, like a 401 (DL#45 PERMISSION): the page can ask the user to sign in.
+        // An expired session: the page can ask the user to refresh.
         return {
             success: false,
             reason: SubmitFailure.PERMISSION,

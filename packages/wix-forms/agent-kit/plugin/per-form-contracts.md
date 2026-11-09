@@ -8,7 +8,8 @@ fields — the same pattern `wix-data` uses for collections.
 
 - Forms are **auto-enumerated** from the site via the Wix List Forms API — there
   is no manual form list. `config/.wix-forms.yaml` only optionally filters
-  (namespace / formIds / include); absent config, every enabled form is generated.
+  (namespace / formIds / include); absent config, every enabled form is generated. `formIds` is also
+  the runtime submit allowlist (`submitForm` refuses other forms).
 - Each form materializes as a contract named **`form/<slug>`**, where `<slug>` is
   the kebab-cased form name (e.g. `form/contact`). When two forms share a name,
   each gets a short id suffix (`form/contact-a1b2`, `form/contact-9f3c`).
