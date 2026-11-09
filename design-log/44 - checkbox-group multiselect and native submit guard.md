@@ -1,6 +1,6 @@
 # 44 - Checkbox-Group Multiselect and Native Submit Guard
 
-Status: Design
+Status: Implemented Phase 1 (Phases 2–5 pending)
 
 Builds on **DL#40** (per-form contracts, repeated `options` sub-contract), **DL#41** (value store §0, Capability 4c non-string fields, Capability 5 `control`, Addendum A "submit runs from the `<form>`'s `submit` event"), **DL#42** (server-side submit hook) and **DL#45** (locale-neutral submit outcome; unchanged here). Package: `@jay-framework/wix-forms`; paths are relative to `packages/wix-forms/` unless stated. jay is referenced only through its public packages (`@jay-framework/component`, `@jay-framework/runtime`, `@jay-framework/reactive`, `@jay-framework/stack-client-runtime`, all 0.25.5 as installed), cited by built file and line.
 
