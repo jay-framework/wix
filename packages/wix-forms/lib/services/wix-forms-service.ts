@@ -67,11 +67,11 @@ export function provideWixFormsService(
             return fields;
         },
 
-        async createSubmission(formId, values) {
+        async createSubmission(formId, values, authorization) {
             if (!formId) {
                 throw new Error('Form ID is missing.');
             }
-            await createFormSubmission(wixClient, formId, values);
+            await createFormSubmission(wixClient, formId, values, authorization);
         },
     };
 

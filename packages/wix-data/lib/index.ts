@@ -30,7 +30,10 @@ export {
 export {
     provideWixDataService,
     WIX_DATA_SERVICE_MARKER,
+    NoCallerSessionError,
+    isDataPermissionDenied,
     type WixDataService,
+    type ItemsClient,
 } from './services/wix-data-service';
 
 // Export client context types (for type-only imports on server)

@@ -39,7 +39,7 @@
     "build:check-types": "tsc",
     "clean": "rimraf dist",
     "confirm": "npm run clean && npm run build && npm run test",
-    "test": "node --experimental-strip-types --test test/source-editing.test.ts"
+    "test": "vitest run --environment node test/as-caller.test.ts && node --experimental-strip-types --test test/source-editing.test.ts"
   },
   "dependencies": {
     "@jay-framework/component": "^0.25.5",
@@ -70,6 +70,7 @@
     "tsup": "^8.5.1",
     "typescript": "^5.3.3",
     "vite": "^6.4.4",
-    "vite-plugin-inspect": "^0.8.1"
+    "vite-plugin-inspect": "^0.8.1",
+    "vitest": "^4.1.11"
   }
 }

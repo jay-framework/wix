@@ -137,3 +137,62 @@ describe('WixFormsService.getFormSummaryFields', () => {
         ]);
     });
 });
+
+describe('WixFormsService.createSubmission (DL#43)', () => {
+    const SUBMISSIONS_URL = 'https://www.wixapis.com/form-submission-service/v4/submissions';
+
+    function stubFetch() {
+        const fetchMock = vi.fn(
+            async (_url: string, _init?: RequestInit) => new Response('{}', { status: 200 }),
+        );
+        vi.stubGlobal('fetch', fetchMock);
+        return fetchMock;
+    }
+
+    function siteClient() {
+        const getAuthHeaders = vi.fn(async () => ({ headers: { Authorization: 'site-api-key' } }));
+        const client = { auth: { getAuthHeaders } } as unknown as Parameters<
+            typeof provideWixFormsService
+        >[0];
+        return { client, getAuthHeaders };
+    }
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    it("caller submission sends the caller's access token as Authorization and never calls client.auth", async () => {
+        const fetchMock = stubFetch();
+        const { client, getAuthHeaders } = siteClient();
+
+        await provideWixFormsService(client, testConfig).createSubmission(
+            'form-1',
+            { email: 'a@b.co' },
+            'caller-token',
+        );
+
+        expect(fetchMock.mock.calls.map(([url, init]) => [url, init!.headers])).toEqual([
+            [
+                SUBMISSIONS_URL,
+                { Authorization: 'caller-token', 'Content-Type': 'application/json' },
+            ],
+        ]);
+        expect(getAuthHeaders).not.toHaveBeenCalled();
+    });
+
+    it('with no authorization posts with the site client (regression)', async () => {
+        const fetchMock = stubFetch();
+        const { client } = siteClient();
+
+        await provideWixFormsService(client, testConfig).createSubmission('form-1', {
+            email: 'a@b.co',
+        });
+
+        expect(fetchMock.mock.calls.map(([url, init]) => [url, init!.headers])).toEqual([
+            [
+                SUBMISSIONS_URL,
+                { Authorization: 'site-api-key', 'Content-Type': 'application/json' },
+            ],
+        ]);
+    });
+});

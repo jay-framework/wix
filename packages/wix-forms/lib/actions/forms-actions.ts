@@ -3,7 +3,7 @@ import { hasService, getService } from '@jay-framework/stack-server-runtime';
 import { resolveRequestIdentity } from '@jay-framework/wix-server-client';
 import { WIX_FORMS_SERVICE } from '../services/wix-forms-service-marker.js';
 import { WIX_FORMS_SUBMIT_HOOKS } from '../services/wix-forms-submit-hooks.js';
-import { runSubmission, selectHook } from '../submission/run-submission.js';
+import { identitySubmitDeps, runSubmission, selectHook } from '../submission/run-submission.js';
 import type { SubmitFormResult, SubmitRequestInput } from '../types.js';
 
 export const getFormSummary = makeJayQuery('wixForms.getFormSummary')
@@ -21,12 +21,13 @@ export const submitForm = makeJayAction('wixForms.submitForm')
         const hooks = hasService(WIX_FORMS_SUBMIT_HOOKS)
             ? getService(WIX_FORMS_SUBMIT_HOOKS)
             : undefined;
+        const requestIdentity = resolveRequestIdentity(request.cookies);
+        const { resolveClient, resolveIdentity } = identitySubmitDeps(requestIdentity);
         return runSubmission(input, {
-            createSubmission: (formId, values) => forms.createSubmission(formId, values),
-            resolveIdentity: async () => {
-                const identity = resolveRequestIdentity(request.cookies);
-                return { caller: await identity.caller, client: identity.client };
-            },
+            createSubmission: (formId, values, authorization) =>
+                forms.createSubmission(formId, values, authorization),
+            resolveClient,
+            resolveIdentity,
             hook: selectHook(hooks, input.formId ?? ''),
         });
     });

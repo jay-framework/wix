@@ -19,6 +19,11 @@ const WIX_API_BASE = 'https://www.wixapis.com';
 export interface WixFetchOptions {
     method?: string;
     body?: any;
+    /**
+     * The caller's access token (`RequestIdentity.authorization`, DL#43). When set, it is the only
+     * credential sent; the client's own auth headers are not read.
+     */
+    authorization?: string;
 }
 
 export async function wixFetch<T = any>(
@@ -26,13 +31,13 @@ export async function wixFetch<T = any>(
     path: string,
     options: WixFetchOptions = {},
 ): Promise<T> {
-    const { method = 'GET', body } = options;
-    const auth = await (client.auth as any).getAuthHeaders();
+    const { method = 'GET', body, authorization } = options;
+    const authHeaders = await authHeadersFor(client, path, authorization);
 
     const response = await fetch(`${WIX_API_BASE}${path}`, {
         method,
         headers: {
-            ...auth.headers,
+            ...authHeaders,
             'Content-Type': 'application/json',
         },
         body: body ? JSON.stringify(body) : undefined,
@@ -45,6 +50,22 @@ export async function wixFetch<T = any>(
 
     const text = await response.text();
     return (text ? JSON.parse(text) : {}) as T;
+}
+
+/** Never sends an unauthenticated request: a headers-only caller client has empty auth headers. */
+async function authHeadersFor(
+    client: WixClient,
+    path: string,
+    authorization: string | undefined,
+): Promise<Record<string, string>> {
+    if (authorization) return { Authorization: authorization };
+    const { headers } = await (client.auth as any).getAuthHeaders();
+    if (!headers?.Authorization) {
+        throw new Error(
+            `wixFetch: no Authorization for ${path}; pass the caller's authorization or use the site client`,
+        );
+    }
+    return headers;
 }
 
 /**
@@ -107,4 +128,16 @@ export class WixApiError extends Error {
         super(`Wix API ${status}: ${path}`);
         this.name = 'WixApiError';
     }
+}
+
+/** Wix's documented "authenticated, but not allowed" status (dev.wix.com "About Errors"). */
+const HTTP_PERMISSION_DENIED = 403;
+
+/**
+ * True when Wix refused the call for the caller's permissions (DL#43 §Review 2026-11-09):
+ * HTTP 403 on a `WixApiError` or an SDK error. Per-service application codes are not matched,
+ * and 401 (unauthenticated, e.g. an invalid or expired token) is not a permission refusal.
+ */
+export function isPermissionDenied(error: unknown): boolean {
+    return (error as { status?: unknown } | undefined)?.status === HTTP_PERMISSION_DENIED;
 }

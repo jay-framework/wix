@@ -3,7 +3,11 @@ import { wixFetch } from '@jay-framework/wix-server-client';
 import type { FieldValue } from '../types.js';
 
 /**
- * POST a form submission to the Wix `/forms/v4/submissions` API.
+ * POST a form submission to the documented Wix Create Submission API
+ * (`/form-submission-service/v4/submissions`).
+ *
+ * `authorization` (DL#43): the caller's access token, then the only credential sent;
+ * undefined posts with `client`'s own auth (the site).
  *
  * `submissions` is a JSON map keyed by field target. DL#41 4c widened the value type
  * to `FieldValue` so a checkbox submits its boolean `.checked` and a multiselect its
@@ -18,9 +22,11 @@ export async function createFormSubmission(
     client: WixClient,
     formId: string,
     submissions: Record<string, FieldValue>,
+    authorization?: string,
 ): Promise<void> {
-    await wixFetch(client, '/forms/v4/submissions', {
+    await wixFetch(client, '/form-submission-service/v4/submissions', {
         method: 'POST',
+        authorization,
         body: {
             submission: {
                 formId,
