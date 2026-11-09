@@ -56,6 +56,27 @@ export function emptyStoreFor(fields: FormFieldView[]): FieldStore {
     return store;
 }
 
+/** One checkbox change in a multiselect's option group (DL#44 §2). */
+export interface OptionToggle {
+    current: FieldValue;
+    optionValue: string;
+    checked: boolean;
+}
+
+/**
+ * Next multiselect selection after one option is checked or unchecked (DL#44 §2), in option
+ * order, without duplicates; values that are not options of the field are dropped.
+ */
+export function toggleSelection(
+    field: FormFieldView,
+    { current, optionValue, checked }: OptionToggle,
+): string[] {
+    const selected = new Set(Array.isArray(current) ? current : []);
+    if (checked) selected.add(optionValue);
+    else selected.delete(optionValue);
+    return field.options.map((option) => option.value).filter((value) => selected.has(value));
+}
+
 /** One page-provided control value read from the DOM, with the field's dirty state (DL#41 4a). */
 export interface ControlSeed {
     target: string;

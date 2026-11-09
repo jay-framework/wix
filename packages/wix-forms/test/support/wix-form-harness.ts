@@ -3,14 +3,19 @@
  * refs are created by a `ReferencesManager`, bound to fake elements during render, and joined
  * to their collections only at `element.mount()` — after the interactive constructor has run.
  *
+ * A multiselect passed as `chipField` gets a `refs.<field>.options.toggle` collection whose
+ * per-option item refs are bound to fake checkboxes (DL#44 Phase 4), as a `forEach` would. Its
+ * `input` ref exists, as in every generated contract, but is never bound.
+ *
  * Test files must mock `../lib/actions/forms-actions.js` and
  * `@jay-framework/wix-server-client/client` before importing this module.
  */
 
 import { vi } from 'vitest';
-import { ConstructContext, ReferencesManager } from '@jay-framework/runtime';
+import { ConstructContext, defaultEventWrapper, ReferencesManager } from '@jay-framework/runtime';
 import { createSignal, makeJayComponent } from '@jay-framework/component';
 import { wixForm } from '../../lib/components/wix-form.js';
+import { contractTagName } from '../../lib/generators/contract-utils.js';
 import type { FormFieldView } from '../../lib/types.js';
 
 export interface FakeForm {
@@ -22,6 +27,22 @@ export interface FakeButton {
     type: string;
     addEventListener: ReturnType<typeof vi.fn>;
     removeEventListener: ReturnType<typeof vi.fn>;
+}
+
+export interface FakeCheckbox {
+    checked: boolean;
+    focus: ReturnType<typeof vi.fn>;
+    addEventListener: ReturnType<typeof vi.fn>;
+    removeEventListener: ReturnType<typeof vi.fn>;
+}
+
+export function fakeCheckbox(): FakeCheckbox {
+    return {
+        checked: false,
+        focus: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+    };
 }
 
 export function fakeForm(): FakeForm {
@@ -63,21 +84,60 @@ export interface WixFormHarness {
     resetButton: FakeButton;
     /** The bound submit-button ref, so a test can re-bind it as a re-mount would. */
     submitRef: BoundRef;
+    /** One fake checkbox per option of the chip field, in option order. */
+    chips: FakeCheckbox[];
 }
 
-export function mountWixForm(fields: FormFieldView[] = [optionalTextField]): WixFormHarness {
+interface ChipGroup {
+    manager: ReferencesManager;
+    bind(): BoundRef[];
+}
+
+/**
+ * `refs.<field>.options.toggle` for a multiselect. jay gives each `forEach` item its own
+ * construction context; the harness does what the ref factory does with an item `currData`.
+ */
+function chipGroup(options: any, field: FormFieldView, chips: FakeCheckbox[]): ChipGroup {
+    const [optionsManager] = ReferencesManager.for(options, [], ['toggle'], [], []);
+    // Every generated field also has an `input` ref; a chip page never binds it.
+    const [manager] = ReferencesManager.for(options, ['input'], [], [], [], {
+        options: optionsManager,
+    });
+    const toggle = optionsManager.get('toggle') as any;
+    const bind = () =>
+        field.options.map((option, index) => {
+            const item = { ...option, selected: false };
+            const ref = toggle.mkManagedRef(
+                item,
+                [field.target, option.value, 'toggle'],
+                options?.eventWrapper ?? defaultEventWrapper,
+            ) as BoundRef;
+            ref.set(chips[index]);
+            return ref;
+        });
+    return { manager, bind };
+}
+
+export function mountWixForm(
+    fields: FormFieldView[] = [optionalTextField],
+    chipField?: FormFieldView,
+): WixFormHarness {
+    const chips = chipField ? chipField.options.map(() => fakeCheckbox()) : [];
     const submitForm = fakeForm();
     const submitButton = fakeButton(submitForm);
     const resetButton = fakeButton(null);
     let submitRef!: BoundRef;
 
     const preRender = (options: any) => {
+        const group = chipField && chipGroup(options, chipField, chips);
+        const children = group ? { [contractTagName(chipField!.target)]: group.manager } : {};
         const [refManager, [submitButtonRef, resetButtonRef]] = ReferencesManager.for(
             options,
             ['submitButton', 'resetButton'],
             [],
             [],
             [],
+            children,
         );
         const render = (viewState: any) =>
             ConstructContext.withRootContext(viewState, refManager, () => {
@@ -85,17 +145,12 @@ export function mountWixForm(fields: FormFieldView[] = [optionalTextField]): Wix
                 submitRef.set(submitButton);
                 const resetRef = resetButtonRef() as BoundRef;
                 resetRef.set(resetButton);
+                const boundRefs = [submitRef, resetRef, ...(group?.bind() ?? [])];
                 return {
                     dom: undefined as any,
-                    mount: () => {
-                        submitRef.mount();
-                        resetRef.mount();
-                    },
+                    mount: () => boundRefs.forEach((ref) => ref.mount()),
                     update: () => {},
-                    unmount: () => {
-                        submitRef.unmount();
-                        resetRef.unmount();
-                    },
+                    unmount: () => boundRefs.forEach((ref) => ref.unmount()),
                 };
             });
         return [refManager.getPublicAPI(), render] as const;
@@ -113,6 +168,7 @@ export function mountWixForm(fields: FormFieldView[] = [optionalTextField]): Wix
         submitForm,
         submitButton,
         resetButton,
+        chips,
         get submitRef() {
             return submitRef;
         },

@@ -17,6 +17,9 @@
  *     `required` without `novalidate` (DL#41 Addendum A).
  *  4. Unguarded <form> warning — a <form> holding a key's refs but no `<key>.submitButton`, so
  *     the native submit is never intercepted and reloads the page (DL#44 rule 3).
+ *  5. Option refs (DL#44 rules 1, 2) — `<key>.<field>.options.<child>` must be a tag of that
+ *     field's options (`toggle` exists only on a multiselect), and a `.control` inside
+ *     `forEach` over a multiselect's options is warned: it stores one value, not a selection.
  *
  * Best-effort: a page still importing the retired `contract="wix-form"` also
  * gets a migration message, IF the unresolved name surfaces in headlessImports.
@@ -56,7 +59,9 @@ export const validateWixFormBindings: JayHtmlValidatorFn = (ctx) => {
     }
 
     detectRetiredFieldsBindings(ctx, formImports, findings);
-    detectUnknownRefFieldTags(ctx, formImports, findings);
+    const infoByKey = collectFormImportInfo(formImports);
+    detectUnknownRefFieldTags(ctx, infoByKey, findings);
+    detectScalarControlOverOptions(ctx, infoByKey, findings);
     detectAccessibilityIssues(ctx, new Set(formImports.map((imp) => imp.key!)), findings);
     detectUnguardedForms(ctx, new Set(formImports.map((imp) => imp.key!)), findings);
     return findings;
@@ -207,33 +212,45 @@ interface FormImportInfo {
     tags: Set<string>;
     /** Per-field sub-contract tag names, when the validation context carries nested tags (gate iv). */
     subTagsByField: Map<string, Set<string>>;
+    /** Per-field `options` item tag names, when nested tags reach that deep (DL#44 rule 1). */
+    optionTagsByField: Map<string, Set<string>>;
 }
 
-function detectUnknownRefFieldTags(
-    ctx: Parameters<JayHtmlValidatorFn>[0],
-    formImports: Array<{ key?: string; contractName: string; contract?: { tags?: ContractTag[] } }>,
-    findings: JayHtmlValidationFinding[],
-): void {
+type FormImport = { key?: string; contractName: string; contract?: { tags?: ContractTag[] } };
+
+function collectFormImportInfo(formImports: FormImport[]): Map<string, FormImportInfo> {
     const infoByKey = new Map<string, FormImportInfo>();
     for (const imp of formImports) {
         const topTags = imp.contract?.tags ?? [];
         const subTagsByField = new Map<string, Set<string>>();
+        const optionTagsByField = new Map<string, Set<string>>();
         for (const tag of topTags) {
-            if (Array.isArray(tag.tags) && tag.tags.length) {
-                subTagsByField.set(tag.tag, new Set(tag.tags.map((sub) => sub.tag)));
+            if (!Array.isArray(tag.tags) || !tag.tags.length) continue;
+            subTagsByField.set(tag.tag, new Set(tag.tags.map((sub) => sub.tag)));
+            const options = tag.tags.find((sub) => sub.tag === 'options');
+            if (options?.tags?.length) {
+                optionTagsByField.set(tag.tag, new Set(options.tags.map((child) => child.tag)));
             }
         }
         infoByKey.set(imp.key!, {
             contractName: imp.contractName,
             tags: new Set(topTags.map((tag) => tag.tag)),
             subTagsByField,
+            optionTagsByField,
         });
     }
+    return infoByKey;
+}
 
+function detectUnknownRefFieldTags(
+    ctx: Parameters<JayHtmlValidatorFn>[0],
+    infoByKey: Map<string, FormImportInfo>,
+    findings: JayHtmlValidationFinding[],
+): void {
     walkElements(ctx.body, ctx, (el: any) => {
         const ref: string | undefined = el?.getAttribute?.('ref');
         if (!ref) return;
-        const [key, firstSegment, secondSegment] = ref.split('.');
+        const [key, firstSegment, secondSegment, thirdSegment] = ref.split('.');
         const info = infoByKey.get(key);
         if (!info) return; // not a per-form import key
         if (!firstSegment || firstSegment === 'fields') return; // retired-fields handled above
@@ -261,11 +278,59 @@ function detectUnknownRefFieldTags(
                 message: `ref="${ref}" binds "${firstSegment}.${secondSegment}", which is not a channel of field "${firstSegment}".`,
                 suggestion:
                     `Available channels: ${[...subTags].sort().join(', ')}. ` +
-                    'A custom-UI field binds `.control`; a native field binds `.input`.',
+                    'A custom-UI field binds `.control`; a native field binds `.input`; ' +
+                    'multi-choice checkboxes bind `.options.toggle`.',
+                attribute: 'ref',
+            });
+            return;
+        }
+        if (secondSegment !== 'options' || !thirdSegment) return;
+        const optionTags = info.optionTagsByField.get(firstSegment);
+        if (!optionTags || optionTags.size === 0) return; // nested option tags unavailable
+        if (!optionTags.has(thirdSegment)) {
+            findings.push({
+                severity: 'error',
+                message: `ref="${ref}" binds "${firstSegment}.options.${thirdSegment}", which is not a tag of the options of field "${firstSegment}".`,
+                suggestion:
+                    `Available option tags: ${[...optionTags].sort().join(', ')}. ` +
+                    "Only a multiselect's options carry `toggle`; a single select binds `.input`.",
                 attribute: 'ref',
             });
         }
     });
+}
+
+/**
+ * `.control` inside `forEach="<key>.<field>.options"` of a multiselect (DL#44 rule 2): control
+ * stores one value, so each chip click replaces the selection. Only the absolute `forEach`
+ * spelling is matched; anything else stays silent (a missed warning, never a false one).
+ */
+function detectScalarControlOverOptions(
+    ctx: Parameters<JayHtmlValidatorFn>[0],
+    infoByKey: Map<string, FormImportInfo>,
+    findings: JayHtmlValidationFinding[],
+): void {
+    walkElements(ctx.body, ctx, (el: any) => {
+        const ref: string | undefined = el?.getAttribute?.('ref');
+        const [key, field, channel, extra] = ref?.split('.') ?? [];
+        if (channel !== 'control' || extra) return;
+        if (!infoByKey.get(key)?.optionTagsByField.get(field)?.has('toggle')) return;
+        const loop = `${key}.${field}.options`;
+        if (!selfOrAncestorLoopsOver(el, loop)) return;
+        findings.push({
+            severity: 'warning',
+            message: `ref="${ref}" inside forEach="${loop}" stores a single value, so each click replaces the selection instead of toggling one option.`,
+            suggestion: `Bind each checkbox with ref="${loop}.toggle".`,
+            attribute: 'ref',
+        });
+    });
+}
+
+function selfOrAncestorLoopsOver(el: any, loop: string): boolean {
+    for (let node = el; node; node = node.parentNode) {
+        if (node.getAttribute?.('forEach') === loop) return true;
+    }
+    return false;
 }
 
 function serializeBody(body: unknown): string {

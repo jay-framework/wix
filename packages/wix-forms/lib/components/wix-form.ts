@@ -39,8 +39,10 @@ import {
     emptyValueFor,
     projectSubmissionValues,
     seedControlValues,
+    toggleSelection,
     validateVisibleFields,
     type ControlSeed,
+    type OptionToggle,
 } from './submission-values.js';
 import {
     SLOW_RENDER_TTL,
@@ -139,7 +141,8 @@ function WixFormInteractive(
 
     /** Push a store value back into a native input for visual consistency (Q5, Q6). */
     function reflectToInput(field: FormFieldView, value: FieldValue): void {
-        refs[contractTagName(field.target)]?.input?.exec$((element: HTMLElement) => {
+        const fieldRef = refs[contractTagName(field.target)];
+        fieldRef?.input?.exec$((element: HTMLElement) => {
             if (field.inputType === 'checkbox') {
                 (element as HTMLInputElement).checked = value === true;
             } else if (field.inputType === 'multiselect') {
@@ -151,6 +154,16 @@ function WixFormInteractive(
                 (element as HTMLInputElement).value = typeof value === 'string' ? value : '';
             }
         });
+        // A chip page binds per-option checkboxes and no `input`; set each one's `checked` (DL#44 §3).
+        if (field.inputType === 'multiselect') {
+            const selected = Array.isArray(value) ? value : [];
+            fieldRef?.options?.toggle?.map(
+                (option: any, item: { value: string }) =>
+                    void option.exec$((element: HTMLInputElement) => {
+                        element.checked = selected.includes(item.value);
+                    }),
+            );
+        }
     }
 
     function handleNativeInput(field: FormFieldView, event: Event): void {
@@ -167,10 +180,21 @@ function WixFormInteractive(
         validateField(field);
     }
 
+    /** A chip change is a commit, like `control`: store the new selection and validate. */
+    function handleOptionToggle(field: FormFieldView, change: Omit<OptionToggle, 'current'>): void {
+        dirtyTargets.add(field.target);
+        setFieldValue(
+            field.target,
+            toggleSelection(field, { current: values()[field.target], ...change }),
+        );
+        validateField(field);
+    }
+
     wireFieldEvents(refs, carryForward.fields, {
         onNativeInput: handleNativeInput,
         onNativeBlur: validateField,
         onControl: handleControl,
+        onOptionToggle: handleOptionToggle,
     });
     wireHoneypot(refs, (value) => {
         honeypotValue = value;
@@ -352,9 +376,13 @@ interface FieldEventHandlers {
     onNativeInput(field: FormFieldView, event: Event): void;
     onNativeBlur(field: FormFieldView): void;
     onControl(field: FormFieldView, event: Event): void;
+    onOptionToggle(field: FormFieldView, change: Omit<OptionToggle, 'current'>): void;
 }
 
-/** Wire the native `input` (store + live validation) and the `control` channel per field. */
+/**
+ * Wire the native `input` (store + live validation), the `control` channel and, for a
+ * multiselect, the per-option `options.toggle` checkboxes per field.
+ */
 function wireFieldEvents(refs: any, fields: FormFieldView[], handlers: FieldEventHandlers): void {
     for (const field of fields) {
         const fieldRef = refs[contractTagName(field.target)];
@@ -369,6 +397,16 @@ function wireFieldEvents(refs: any, fields: FormFieldView[], handlers: FieldEven
         fieldRef.control?.oninput(({ event }: { event: Event }) =>
             handlers.onControl(field, event),
         );
+        if (field.inputType === 'multiselect') {
+            // The option comes from the item's view state, never the DOM (DL#44 §3).
+            fieldRef.options?.toggle?.onchange(
+                ({ event, viewState }: { event: Event; viewState: { value: string } }) =>
+                    handlers.onOptionToggle(field, {
+                        optionValue: viewState.value,
+                        checked: (event.target as HTMLInputElement).checked,
+                    }),
+            );
+        }
     }
 }
 
@@ -381,20 +419,35 @@ function afterRemount(work: () => void): void {
     queueMicrotask(work);
 }
 
-/** Focus the first visible field (in form order) that matches and binds a native `input`. */
+/**
+ * Focus the first visible field (in form order) that matches and binds a native `input` or a
+ * multiselect's `options.toggle` — a chip group focuses its first bound checkbox (DL#44 §3).
+ */
 function focusFirstFieldInput(
     refs: any,
     fields: FormFieldView[],
     matches: (field: FormFieldView) => boolean,
 ): void {
     const field = fields.find(
-        (candidate) =>
-            !candidate.hidden &&
-            matches(candidate) &&
-            refs[contractTagName(candidate.target)]?.input,
+        (candidate) => !candidate.hidden && matches(candidate) && focusableRef(refs, candidate),
     );
     if (!field) return;
-    void refs[contractTagName(field.target)].input.exec$((element: HTMLElement) => element.focus());
+    void focusableRef(refs, field).exec$((element: HTMLElement) => element.focus());
+}
+
+/**
+ * The element ref that takes focus for `field`. A multiselect prefers its first bound chip
+ * checkbox: a chip page still has the contract's `input` ref, unbound, and focusing it no-ops.
+ * Otherwise (or a `<select multiple>` page) the field's `input`.
+ */
+function focusableRef(refs: any, field: FormFieldView): any {
+    const fieldRef = refs[contractTagName(field.target)];
+    if (field.inputType === 'multiselect') {
+        // A collection ref has only `map`/`find`; `find` returns a bound item's ref, with `exec$`.
+        const firstChip = fieldRef?.options?.toggle?.find(() => true);
+        if (firstChip) return firstChip;
+    }
+    return fieldRef?.input;
 }
 
 /** The <form> a click on `target` submits natively, if any (a submit-type button it owns). */

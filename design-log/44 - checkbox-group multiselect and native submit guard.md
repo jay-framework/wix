@@ -1,6 +1,6 @@
 # 44 - Checkbox-Group Multiselect and Native Submit Guard
 
-Status: Implemented Phase 1 (Phases 2–5 pending)
+Status: Implemented (browser and live Wix checks pending in the final end-to-end pass)
 
 Builds on **DL#40** (per-form contracts, repeated `options` sub-contract), **DL#41** (value store §0, Capability 4c non-string fields, Capability 5 `control`, Addendum A "submit runs from the `<form>`'s `submit` event"), **DL#42** (server-side submit hook) and **DL#45** (locale-neutral submit outcome; unchanged here). Package: `@jay-framework/wix-forms`; paths are relative to `packages/wix-forms/` unless stated. jay is referenced only through its public packages (`@jay-framework/component`, `@jay-framework/runtime`, `@jay-framework/reactive`, `@jay-framework/stack-client-runtime`, all 0.25.5 as installed), cited by built file and line.
 
@@ -253,3 +253,31 @@ Priority: validation → agent-kit → framework.
 - **Addition — `rich-forms.md` §1** now says the submit button inside the `<form>` must carry `ref="<key>.submitButton"`, because rule 3's warning sends authors there.
 - Existing validator tests: exactly the 8 listed fixtures gained `<button ref="contact.submitButton">Send</button>`; no expected finding changed.
 - Tests: wix-forms 175/175 (unit 173, interactive 2; +5 guard, +2 bug-repro, +4 rule 3). `build:check-types` clean; `build` + `validate-plugin` green. Browser item (c) remains for the final end-to-end pass.
+
+### Phases 2–5 — checkbox-chip multiselect (branch `wix-forms-step-8`)
+
+- **Phase 2:** `toggleSelection(field, { current, optionValue, checked })` in `lib/components/submission-values.ts`, with its argument named `OptionToggle`. Six cases (eight runs) were red first.
+- **Phase 3:** `optionsSubContract` emits `{ tag: toggle, type: interactive, elementType: HTMLInputElement }` after `selected`, for a multiselect only. The `choices` fixture gained a single-select `country`, and the test was renamed as planned. A parsed-contract test asserts `toggle` on `interests.options` and its absence on `country.options`. Both tests were red first; the `country` block alone passes on the old code, as the plan notes.
+- **Phase 4:** implemented as §3 describes: `onOptionToggle`/`handleOptionToggle`, the toggle `onchange` wiring behind `inputType === 'multiselect'`, the multiselect reflect over `options.toggle.map`, and the focus fallback.
+  - The focus fallback is a small `focusableRef(refs, field)` helper: `input`, else `options.toggle.find(() => true)`.
+  - The Phase 1 harness gained an optional `chipField` that builds `refs.<field>.options.toggle` from nested `ReferencesManager`s, with per-item refs made by `mkManagedRef(item, …)`.
+  - Tests (a), (b) and (c) are in `test/wix-form-multiselect.interactive.test.ts`. All three were red first ("no change listener registered" / focus not called).
+- **Phase 5:** validator rules 1 and 2 in `wix-form-bindings.ts`.
+  - The per-import tag info is now built once (`collectFormImportInfo`), adding `optionTagsByField`.
+  - Rule 1 checks the fourth ref segment under `options`.
+  - Rule 2 (`detectScalarControlOverOptions`) matches the element's own `forEach` or an ancestor's.
+  - The second-segment suggestion now mentions `.options.toggle`.
+  - Three rule cases were red first; the silent cases (✅ example, nested tags unavailable, `.control` outside the loop) passed before and after.
+- **Guide:** `rich-forms.md` §4b has the checkbox-chip example and the `$parent.` / `aria-invalid` / sr-only notes.
+  - **Deviation:** the example lives once, in `test/fixtures/checkbox-chips/chip-group.jay-html.fragment`. A test asserts the guide contains it verbatim, so the validator case and the compile case test exactly what the guide shows.
+- **Mandatory jay compile (`test/rich-forms-chip-example.test.ts`):** runs `parseJayFile` and then `generateElementFile(…, RuntimeMode.MainTrusted)` against `choices.jay-contract`. The example compiles with no validations. Without `$parent.`, jay reports `the data field [contact.interests.invalid] not found in Jay data`, and the test asserts that message.
+  - Finding: jay accepts an unknown `options.bogus` ref without complaint. Rule 1 is the only check for it.
+- Tests: wix-forms 196/196 (+8 `toggleSelection`, +1 generator, +3 interactive, +6 validator, +3 compile/guide). `build:check-types` clean; `build` and `validate-plugin` green.
+- **Still pending** (final end-to-end pass, unchanged): browser items (a)–(e) and the live Wix check that closes DL#41 MUST-VERIFY #1.
+
+### Code review fix (`wix-forms-step-8`)
+
+- **Bug:** `focusableRef` returned the field's `input` ref whenever it existed. Every generated multiselect contract has `input`, and a chip page never binds it, so focus on a failed submit or reset called `exec$` on an unbound ref and did nothing. The harness had hidden this because its chip field had no `input` ref.
+- **Fix:** a multiselect focuses its first bound chip (`options.toggle.find(() => true)`) if one exists, and falls back to `input` (`<select multiple>`). The harness chip field now also carries an unbound `input` ref, like a generated contract. With that change, Phase 4 tests (b) and (c) went red on the old code and green after the fix.
+- Known limit, unchanged: a non-multiselect field whose `input` exists in the refs but is unbound still qualifies for focus.
+- Tests: wix-forms 196/196; `build:check-types` clean.

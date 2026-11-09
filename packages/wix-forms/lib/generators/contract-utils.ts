@@ -127,9 +127,11 @@ function optionsSubContract(field: FormFieldView, level: number): string[] {
         `${child}- { tag: label, type: data, dataType: string }`,
     ];
     // A multiselect exposes its selection as a per-option boolean `selected` variant —
-    // the sanctioned array representation (an array `dataType` is invalid) (DL#41 4c).
+    // the sanctioned array representation (an array `dataType` is invalid) (DL#41 4c) —
+    // and a per-option `toggle` checkbox ref for chip groups (DL#44 §1).
     if (field.inputType === 'multiselect') {
         lines.push(`${child}- { tag: selected, type: variant, dataType: boolean }`);
+        lines.push(`${child}- { tag: toggle, type: interactive, elementType: HTMLInputElement }`);
     }
     return lines;
 }
