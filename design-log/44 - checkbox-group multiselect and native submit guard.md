@@ -241,3 +241,15 @@ Priority: validation → agent-kit → framework.
 - **Agent-kit (yes):** `rich-forms.md` §4b — add the checkbox-chip example (with its `.sr-only` CSS) and the lines "multi-choice checkboxes bind `options.toggle`; `control` is single-value" and "inside `forEach` over `options`, bindings are relative to the option; reach the field with `$parent.`". §1 already describes the (now working) native submit; no page code is needed for it.
 - **Framework (no):** recorded only — a supported after-mount hook in `@jay-framework/component` would let the guard and the hidden-control seed run at mount without a microtask.
 - **On ship (with the Phase 1 PR):** append one line to DL#41 Implementation Results: the mount-time guard from Addendum A never attached (construction-time effect); fixed by DL#44.
+
+## Implementation Results
+
+### Phase 1 — submit guard (bug fix)
+
+- Shipped as designed: `lib/components/form-submit-guard.ts` (`guardNativeFormSubmit`, the WeakSet moved there); `wix-form.ts` installs the guard from the construction microtask, the reset re-mount microtask and the submit click (`owningSubmitForm`), and the effect keeps only the seed. Both stale comments were rewritten. Validator rule 3 is in `wix-form-bindings.ts` (`detectUnguardedForms`), and the DL#41 "on ship" line is appended.
+- Red first: both bug-repros failed on the unchanged code ("expected [] to have a length of 1"; no `submit` listener on load or after the reset re-mount). The guard unit test failed because the module did not exist. Rule 3's two warning cases failed before the rule.
+- **Deviation — the harness needs a vitest project without the jay-stack plugin.** Under vitest the package's `vite.config.ts` runs `jayStackCompiler`, whose SSR code split replaces `withInteractive(...)` with `withInteractiveMark()`, so `wixForm.comp` was the builder's default no-op. A custom environment with `viteEnvironment: 'client'` / `transformMode: 'web'` did not change the transform. Fix: `vite.config.ts` defines two projects, `unit` (extends the config, plugin included) and `interactive` (no plugins) for `test/**/*.interactive.test.ts`. The bug-repro file is therefore `test/wix-form-native-submit.interactive.test.ts`, and the harness is shared in `test/support/wix-form-harness.ts` for Phase 4. `wix-form.ts` imports no jay-html, so it needs no jay compilation.
+- **Deviation — `isFormSubmitter` removed**, not kept as `!!owningSubmitForm(target)`: the click handler was its only caller.
+- **Addition — `rich-forms.md` §1** now says the submit button inside the `<form>` must carry `ref="<key>.submitButton"`, because rule 3's warning sends authors there.
+- Existing validator tests: exactly the 8 listed fixtures gained `<button ref="contact.submitButton">Send</button>`; no expected finding changed.
+- Tests: wix-forms 175/175 (unit 173, interactive 2; +5 guard, +2 bug-repro, +4 rule 3). `build:check-types` clean; `build` + `validate-plugin` green. Browser item (c) remains for the final end-to-end pass.

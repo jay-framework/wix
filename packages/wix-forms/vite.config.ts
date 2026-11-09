@@ -1,8 +1,9 @@
 import { resolve } from 'path';
-import { defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
 import { JayRollupConfig, jayStackCompiler } from '@jay-framework/compiler-jay-stack';
 
 const root = resolve(__dirname);
+const INTERACTIVE_TESTS = 'test/**/*.interactive.test.ts';
 const jayOptions: JayRollupConfig = {
     tsConfigFilePath: resolve(root, 'tsconfig.json'),
     outputDir: 'build',
@@ -42,7 +43,26 @@ export default defineConfig(({ isSsrBuild }) => ({
         },
     },
     test: {
-        globals: true,
-        environment: 'node',
+        projects: [
+            {
+                extends: true,
+                test: {
+                    name: 'unit',
+                    globals: true,
+                    environment: 'node',
+                    exclude: [...configDefaults.exclude, INTERACTIVE_TESTS],
+                },
+            },
+            // No jay-stack plugin: its SSR code-split replaces `withInteractive(...)`, removing
+            // the interactive constructor these component tests drive (DL#44 Phase 1 harness).
+            {
+                test: {
+                    name: 'interactive',
+                    globals: true,
+                    environment: 'node',
+                    include: [INTERACTIVE_TESTS],
+                },
+            },
+        ],
     },
 }));

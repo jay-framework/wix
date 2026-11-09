@@ -51,6 +51,7 @@ import { contractTagName } from '../generators/contract-utils.js';
 import { buildFormViewState } from './form-view-state.js';
 import { createSubmitFlight } from './form-submit-flight.js';
 import { runFormSubmit } from './form-submit-execution.js';
+import { guardNativeFormSubmit } from './form-submit-guard.js';
 
 interface WixFormMetadata {
     formId: string;
@@ -175,15 +176,15 @@ function WixFormInteractive(
         honeypotValue = value;
     });
 
-    // Element-bound work must wait for mount. `exec$` reads a ref's element, which is bound
-    // only AFTER component construction; a construction-time `exec$` resolves to `undefined`.
-    // So both the <form>-navigation guard and the page-provided control seeding run here, on
-    // mount, where the elements exist. (Event registration above is safe at construction —
-    // listeners are deferred and attached when the element binds.)
+    // This effect runs synchronously during construction, BEFORE render binds the refs, and
+    // never re-runs, so its `exec$` sees no elements (DL#44). The seed is kept as a best effort
+    // only; the submit-time seed is the guarantee. (Event registration above is safe at
+    // construction — listeners are deferred and attached when the element binds.)
     createEffect(() => {
-        wireNativeFormSubmit(refs, submit);
         void seedControlsIntoStore(refs, carryForward.fields, dirtyTargets, setValues);
     });
+    // Render and mount run synchronously after construction, so this microtask sees bound refs.
+    afterRemount(() => wireNativeFormSubmit(refs, submit));
 
     function resetForm(): void {
         submitFlight.invalidate();
@@ -230,6 +231,8 @@ function WixFormInteractive(
             for (const field of carryForward.fields) {
                 reflectToInput(field, emptyValueFor(field));
             }
+            // The re-shown branch may hold a new <form> node; a reused node is a no-op.
+            wireNativeFormSubmit(refs, submit);
         });
     }
 
@@ -239,10 +242,16 @@ function WixFormInteractive(
     });
 
     // Inside a <form>, a submit-type button's click becomes the form's `submit` event, which
-    // `wireNativeFormSubmit` handles — that single path also covers Enter-key implicit
-    // submission and `requestSubmit()`. The click drives the submit only when no form owns it.
+    // the guard handles — that single path also covers Enter-key implicit submission and
+    // `requestSubmit()`. Guarding here too covers a <form> created after the last install
+    // point: the native `submit` fires after this click dispatch, so it reaches the listener.
+    // The click drives the submit only when no form owns it.
     refs.submitButton?.onclick(({ event }: { event: Event }) => {
-        if (isFormSubmitter(event.target)) return;
+        const form = owningSubmitForm(event.target);
+        if (form) {
+            guardNativeFormSubmit(form, submit);
+            return;
+        }
         event.preventDefault();
         void submit();
     });
@@ -388,32 +397,23 @@ function focusFirstFieldInput(
     void refs[contractTagName(field.target)].input.exec$((element: HTMLElement) => element.focus());
 }
 
-/** True when clicking `target` makes its owning <form> fire a native `submit` event. */
-function isFormSubmitter(target: EventTarget | null): boolean {
+/** The <form> a click on `target` submits natively, if any (a submit-type button it owns). */
+function owningSubmitForm(target: EventTarget | null): HTMLFormElement | undefined {
     const button = (target as Element | null)?.closest?.('button');
-    return !!button?.form && button.type === 'submit';
+    return button?.type === 'submit' ? (button.form ?? undefined) : undefined;
 }
 
-const wiredForms = new WeakSet<HTMLFormElement>();
-
 /**
- * Drive the plugin submit from the owning <form>'s `submit` event (Bug 1) — one path for
- * button clicks, Enter-key implicit submission, and `requestSubmit()` — and cancel the
- * browser's own GET navigation, which would reload the page before the async submit runs.
- * Keeping the button `type=submit` preserves Enter-to-submit and autofill/password-manager
- * submit detection. Must run on mount (`exec$` needs the bound element); the WeakSet keeps
- * effect re-runs from attaching a second listener (a double submit).
+ * Guard the submit button's owning <form> (`guardNativeFormSubmit`). Keeping the button
+ * `type=submit` preserves Enter-to-submit and autofill/password-manager submit detection.
+ * Must run after the refs are bound — in a microtask after construction or after a re-mount —
+ * because `exec$` on an unbound ref resolves `undefined`. The guard's WeakSet makes the
+ * install points idempotent per <form> node.
  */
 function wireNativeFormSubmit(refs: any, submit: () => Promise<void>): void {
-    void refs.submitButton?.exec$((button: HTMLButtonElement) => {
-        const form = button.form;
-        if (!form || wiredForms.has(form)) return;
-        wiredForms.add(form);
-        form.addEventListener('submit', (nativeEvent: Event) => {
-            nativeEvent.preventDefault();
-            void submit();
-        });
-    });
+    void refs.submitButton?.exec$((button: HTMLButtonElement) =>
+        guardNativeFormSubmit(button.form, submit),
+    );
 }
 
 /**

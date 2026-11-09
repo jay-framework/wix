@@ -15,6 +15,8 @@
  *
  *  3. Accessibility warnings — unlabeled field input, error text inside a <label>, native
  *     `required` without `novalidate` (DL#41 Addendum A).
+ *  4. Unguarded <form> warning — a <form> holding a key's refs but no `<key>.submitButton`, so
+ *     the native submit is never intercepted and reloads the page (DL#44 rule 3).
  *
  * Best-effort: a page still importing the retired `contract="wix-form"` also
  * gets a migration message, IF the unresolved name surfaces in headlessImports.
@@ -56,8 +58,45 @@ export const validateWixFormBindings: JayHtmlValidatorFn = (ctx) => {
     detectRetiredFieldsBindings(ctx, formImports, findings);
     detectUnknownRefFieldTags(ctx, formImports, findings);
     detectAccessibilityIssues(ctx, new Set(formImports.map((imp) => imp.key!)), findings);
+    detectUnguardedForms(ctx, new Set(formImports.map((imp) => imp.key!)), findings);
     return findings;
 };
+
+/**
+ * A <form> holding a key's refs but no `<key>.submitButton` (DL#44 rule 3): the runtime finds
+ * the <form> to guard only through that button, so the native submit reloads the page.
+ * Known false positive: a submit button outside the <form>, associated with `form="<id>"`.
+ */
+function detectUnguardedForms(
+    ctx: Parameters<JayHtmlValidatorFn>[0],
+    formKeys: Set<string>,
+    findings: JayHtmlValidationFinding[],
+): void {
+    const keysByForm = new Map<any, Map<string, { guarded: boolean }>>();
+    walkElements(ctx.body, ctx, (el: any) => {
+        const ref: string | undefined = el?.getAttribute?.('ref');
+        const key = ref?.split('.')[0];
+        if (!key || !formKeys.has(key)) return;
+        const form = closestAncestor(el, 'form');
+        if (!form) return;
+        const keys = keysByForm.get(form) ?? new Map<string, { guarded: boolean }>();
+        keysByForm.set(form, keys);
+        const entry = keys.get(key) ?? { guarded: false };
+        keys.set(key, entry);
+        if (ref === `${key}.submitButton`) entry.guarded = true;
+    });
+
+    for (const keys of keysByForm.values()) {
+        for (const [key, { guarded }] of keys) {
+            if (guarded) continue;
+            findings.push({
+                severity: 'warning',
+                message: `A <form> holds "${key}" refs but no ref="${key}.submitButton", so its native submit is not intercepted and reloads the page.`,
+                suggestion: `Add ref="${key}.submitButton" to the form's submit button.`,
+            });
+        }
+    }
+}
 
 /**
  * Accessibility warnings (DL#41 Addendum A) — the mechanically detectable parts of the
