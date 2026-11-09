@@ -37,7 +37,7 @@ The plugin participates in four CLI commands, each running different hooks:
 | File                                                   | Topic                                                                        |
 | ------------------------------------------------------ | ---------------------------------------------------------------------------- |
 | [Contract Authoring Guide](../contracts/GUIDE.md)      | Writing contracts: syntax, page/component/linked contracts, examples         |
-| [contracts-guide.md](contracts-guide.md)               | Plugin-specific contract concerns                                            |
+| [contracts-guide.md](contracts-guide.md)               | Plugin-specific contract concerns; outcomes as variants, text as defaults    |
 | [plugin-structure.md](plugin-structure.md)             | plugin.yaml, package layout, exports                                         |
 | [component-structure.md](component-structure.md)       | makeJayStackComponent, builder API, three-phase rendering                    |
 | [design-system-guide.md](design-system-guide.md)       | Shipping a template designers flatten; upgrades via `jay-stack sync`         |
@@ -73,3 +73,4 @@ The plugin participates in four CLI commands, each running different hooks:
 | File | Plugin | Description |
 | --- | --- | --- |
 | [wix-members-setup.md](wix-members-setup.md) | wix-members |  |
+| [wix-request-session.md](wix-request-session.md) | wix-server-client | ## Site by default, the caller when the request carries a session |

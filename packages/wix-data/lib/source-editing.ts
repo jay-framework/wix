@@ -7,7 +7,8 @@ import * as path from 'path';
 import { fileURLToPath } from 'url';
 
 /** Project-root-relative shared CMS editing procedure (copied on agent-kit). */
-export const SHARED_EDITING_GUIDE_PATH = 'agent-kit/references/wix-data/wix-data-dashboard-content.md';
+export const SHARED_EDITING_GUIDE_PATH =
+    'agent-kit/references/wix-data/wix-data-dashboard-content.md';
 
 /** Plugin-shipped source of the shared guide (for copy into the project). */
 export function pluginSharedEditingGuidePath(): string {

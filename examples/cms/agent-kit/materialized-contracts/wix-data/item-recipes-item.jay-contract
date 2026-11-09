@@ -1,5 +1,7 @@
 name: RecipesItem
 description: Item page for Recipes
+collectionId: Recipes
+editingGuide: agent-kit/references/wix-data/wix-data-dashboard-content.md
 params:
   slug: string
 tags:

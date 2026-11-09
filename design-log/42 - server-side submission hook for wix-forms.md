@@ -2,11 +2,11 @@
 
 Status: Implemented (2026-11-08; browser demo pending, see Implementation Results)
 
-Builds on **DL#41 (General Forms Infrastructure)**: its value store, `control` channel, hidden fields, `submitForm` action, and the **structured submit result** that DL#41's own planned defect fix introduces (DL#41 → Implementation Results → *Known defect found in review + planned fix*). Generic: any Jay project, no downstream site named. Paths are relative to `packages/wix-forms/lib/` unless stated.
+Builds on **DL#41 (General Forms Infrastructure)**: its value store, `control` channel, hidden fields, `submitForm` action, and the **structured submit result** that DL#41's own planned defect fix introduces (DL#41 → Implementation Results → _Known defect found in review + planned fix_). Generic: any Jay project, no downstream site named. Paths are relative to `packages/wix-forms/lib/` unless stated.
 
 ## Decisions for the Implementer (TL;DR)
 
-- **Server-side Wix calls run as the site by default, and as the caller when the request carries the session cookie.** See *Jay Wix plugins: site by default, the caller when the request carries a session*.
+- **Server-side Wix calls run as the site by default, and as the caller when the request carries the session cookie.** See _Jay Wix plugins: site by default, the caller when the request carries a session_.
 - **Wix's documented headless session pattern, one path everywhere (localhost included).** The browser's OAuth tokens are mirrored into an **httpOnly, server-set** cookie, as in Wix's headless Quick Start ([quick-start](https://dev.wix.com/docs/go-headless/tutorials-templates/java-script-sdk-tutorials/quick-start)). No undocumented endpoint, no dev-only path.
 - **Session action (wix-server-client):** `wixServerClient.syncSession({ tokens } | { clear: true })`. It verifies `tokens.accessToken` with the documented `oauth2/token-info` ([token-info](https://dev.wix.com/docs/api-reference/app-management/oauth-2/token-info)): all four checks (`active`, `clientId` = this site's, `subjectType` ∈ {VISITOR, MEMBER}, non-empty `subjectId`). Then it sets cookie `wix_session` (access + refresh tokens; `HttpOnly; SameSite=Lax; Path=/; Secure` except on `http://localhost`; `Max-Age` 30 days, MUST-VERIFY against the refresh-token lifetime). A failed check clears the cookie.
 - **The browser syncs from one place:** wix-server-client's `storeTokens` (the only code that persists tokens) calls `syncSession` whenever the access token changed. That covers login (wix-members' callback), SDK renewal, and logout (fresh visitor tokens). localStorage stays the client-side source; the cookie mirrors it.
@@ -45,11 +45,11 @@ A temporary probe in `examples/forms-members-testbed` (to be removed; nothing de
 
 ### Jay Wix plugins: site by default, the caller when the request carries a session
 
-| Where the Wix call runs | Credential | Whose permissions apply |
-|---|---|---|
-| Server, default (actions, slow/fast render, plugin services) | `WIX_CLIENT_SERVICE`, built once at init from the API key / app config | **The site** (elevated) |
-| Server, request with a `wix_session` cookie | `resolveRequestIdentity(request.cookies).client` | **The visitor/member**; Wix's permissions apply |
-| Browser (interactive phase) | `WIX_CLIENT_CONTEXT`, the OAuth tokens in localStorage | **The visitor/member** |
+| Where the Wix call runs                                      | Credential                                                             | Whose permissions apply                         |
+| ------------------------------------------------------------ | ---------------------------------------------------------------------- | ----------------------------------------------- |
+| Server, default (actions, slow/fast render, plugin services) | `WIX_CLIENT_SERVICE`, built once at init from the API key / app config | **The site** (elevated)                         |
+| Server, request with a `wix_session` cookie                  | `resolveRequestIdentity(request.cookies).client`                       | **The visitor/member**; Wix's permissions apply |
+| Browser (interactive phase)                                  | `WIX_CLIENT_CONTEXT`, the OAuth tokens in localStorage                 | **The visitor/member**                          |
 
 **Worked example — wix-data.** On the server, `WIX_DATA_SERVICE` uses `WIX_CLIENT_SERVICE` (`packages/wix-data/lib/init.ts`), so collection member-only rules are **not** applied. In the browser, `WIX_DATA_CONTEXT` (`lib/contexts/wix-data-context.ts`) runs as the visitor/member and they **do** apply. Server code that wants Wix to enforce them uses the request client explicitly; this DL adds the primitive and switches no plugin's default.
 
@@ -94,12 +94,12 @@ A **"request a visit"** form backed by a Wix Form. Custom UI writes the visitor'
 
 ### Null hypothesis per new surface
 
-| New surface | Existing primitive | Why it doesn't suffice |
-|---|---|---|
-| `syncSession` + `resolveRequestIdentity` (wix-server-client) | `WIX_CLIENT_SERVICE`; Quick Start middleware | The site client is not the caller. The Quick Start mints tokens server-side, but here the browser already owns them (localStorage); the server only mirrors them. Every wix-* plugin can use it, so it lives in wix-server-client; plain functions + one action, no service marker. |
-| `token-info` verifier (in wix-server-client) | `@wix/sdk` internal `getTokenInfo` | Not exported; can't classify statuses. |
-| `WIX_FORMS_SUBMIT_HOOKS` | augmenter | No submit handle, no failure path, not per form. It **replaces** the augmenter, so the net count of markers is 0. |
-| `redirectTo` | `createEvent`; `isSubmitted` | Events don't reach the page. `isSubmitted` carries no data. |
+| New surface                                                  | Existing primitive                           | Why it doesn't suffice                                                                                                                                                                                                                                                               |
+| ------------------------------------------------------------ | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `syncSession` + `resolveRequestIdentity` (wix-server-client) | `WIX_CLIENT_SERVICE`; Quick Start middleware | The site client is not the caller. The Quick Start mints tokens server-side, but here the browser already owns them (localStorage); the server only mirrors them. Every wix-\* plugin can use it, so it lives in wix-server-client; plain functions + one action, no service marker. |
+| `token-info` verifier (in wix-server-client)                 | `@wix/sdk` internal `getTokenInfo`           | Not exported; can't classify statuses.                                                                                                                                                                                                                                               |
+| `WIX_FORMS_SUBMIT_HOOKS`                                     | augmenter                                    | No submit handle, no failure path, not per form. It **replaces** the augmenter, so the net count of markers is 0.                                                                                                                                                                    |
+| `redirectTo`                                                 | `createEvent`; `isSubmitted`                 | Events don't reach the page. `isSubmitted` carries no data.                                                                                                                                                                                                                          |
 
 ## Questions and Answers
 
@@ -117,6 +117,7 @@ A: **The browser owns them** (localStorage); the cookie mirrors. `storeTokens` c
 
 **Q5 — What happens when identity resolution fails?**
 A:
+
 - **No cookie / unparsable cookie** → `{ caller: undefined, client: undefined }`, no fetch.
 - **`token-info` 200 failing a check, or an invalid-token status** (Phase 1 fixtures) → `caller: undefined`; `client` is still returned (Wix rejects a bad token on use).
 - **Any other non-200, network error, 5 s timeout** → `caller` rejects; `runSubmission` logs L1 and returns the generic message without running the hook.
@@ -154,7 +155,7 @@ A: The consumer's own write, for example with a unique key on slot + date. **Ans
 **Q15** — Withdrawn — merged into Q4.
 
 **Q16 — What changes for code that threw from the augmenter?**
-A: An `ActionError` is still shown as the message. **Any other error is logged and shown as `SUBMIT_FAILED_MESSAGE`.** This is a user-visible change for an augmenter that threw a plain `Error` (its text used to reach the user), and a Wix 403 no longer shows the permission hint (the server log keeps it). An `ActionError` thrown by the hook *after* `submit()` was called is logged, not shown (Q17). The Phase 3 migration snippet and DL#41's Implementation Results state this. **Answered.**
+A: An `ActionError` is still shown as the message. **Any other error is logged and shown as `SUBMIT_FAILED_MESSAGE`.** This is a user-visible change for an augmenter that threw a plain `Error` (its text used to reach the user), and a Wix 403 no longer shows the permission hint (the server log keeps it). An `ActionError` thrown by the hook _after_ `submit()` was called is logged, not shown (Q17). The Phase 3 migration snippet and DL#41's Implementation Results state this. **Answered.**
 
 **Q17 — What if the hook throws after `submit()` succeeded?**
 A: The submission stands. The throw is logged, and the result is `{ success: true }` with no `redirectTo`. A failure result would invite a retry that duplicates the submission. **Answered.**
@@ -190,7 +191,10 @@ A: jay's same-origin check on actions, plus `SameSite=Lax`. Without the same-ori
 **Server: `lib/session/`.**
 
 ```ts
-export interface VerifiedCaller { type: 'VISITOR' | 'MEMBER'; id: string }
+export interface VerifiedCaller {
+  type: 'VISITOR' | 'MEMBER';
+  id: string;
+}
 export interface RequestIdentity {
   /** Verified lazily with token-info on first await; memoised. */
   readonly caller: Promise<VerifiedCaller | undefined>;
@@ -198,11 +202,20 @@ export interface RequestIdentity {
   client: WixClient | undefined;
 }
 export const WIX_SESSION_COOKIE = 'wix_session';
-export function resolveRequestIdentity(cookies: Record<string, string>, fetchImpl = fetch): RequestIdentity;
-export function verifyAccessToken(accessToken: string, oauthClientId: string, fetchImpl = fetch): Promise<VerifiedCaller | undefined>;
+export function resolveRequestIdentity(
+  cookies: Record<string, string>,
+  fetchImpl = fetch,
+): RequestIdentity;
+export function verifyAccessToken(
+  accessToken: string,
+  oauthClientId: string,
+  fetchImpl = fetch,
+): Promise<VerifiedCaller | undefined>;
 export const syncSession = makeJayAction('wixServerClient.syncSession')
   .withRequest()
-  .withHandler(async (input: { tokens: Tokens } | { clear: true }, request) => { /* verify → setCookie | clearCookie */ });
+  .withHandler(async (input: { tokens: Tokens } | { clear: true }, request) => {
+    /* verify → setCookie | clearCookie */
+  });
 ```
 
 - `verifyAccessToken`: JSON `POST { token }` to `https://www.wixapis.com/oauth2/token-info`, no `Authorization`, 5 s timeout (shape typed after `@wix/sdk`'s internal `getTokenInfo`); 200 → the four checks; status in `INVALID_TOKEN_STATUSES` (= Phase 1 fixtures) → `undefined`; other non-200 → `WixApiError(status, '/oauth2/token-info')`; network/abort propagates; never logs.
@@ -229,7 +242,9 @@ export interface SubmitHookInput {
    */
   submit(values?: Record<string, FieldValue>): Promise<void>;
 }
-export interface SubmitHookOutcome { /** Site path ('/…') to navigate to after success. */ redirectTo?: string }
+export interface SubmitHookOutcome {
+  /** Site path ('/…') to navigate to after success. */ redirectTo?: string;
+}
 export type SubmitHook = (input: SubmitHookInput) => Promise<SubmitHookOutcome | void>;
 export type SubmitHooks = Record<string, SubmitHook>; // formId → hook
 export const WIX_FORMS_SUBMIT_HOOKS = createJayService<SubmitHooks>('WixFormsSubmitHooks');
@@ -248,14 +263,20 @@ export interface SubmitDeps {
   resolveIdentity(): Promise<{ caller: VerifiedCaller | undefined; client: WixClient | undefined }>;
   hook?: SubmitHook;
 }
-export async function runSubmission(request: SubmitRequestInput, deps: SubmitDeps): Promise<SubmitFormResult>;
+export async function runSubmission(
+  request: SubmitRequestInput,
+  deps: SubmitDeps,
+): Promise<SubmitFormResult>;
 export function selectHook(hooks: SubmitHooks | undefined, formId: string): SubmitHook | undefined; // Object.hasOwn
 ```
 
 In `types.ts`:
 
 ```ts
-export interface SubmitRequestInput { formId?: string; values: Record<string, FieldValue> }
+export interface SubmitRequestInput {
+  formId?: string;
+  values: Record<string, FieldValue>;
+}
 export type SubmitFormResult =
   | { success: true; redirectTo?: string }
   | { success: false; message?: string; fieldErrors?: Record<string, string> };
@@ -272,15 +293,24 @@ export type SubmitFormResult =
 
 ```ts
 function submit(values = request.values): Promise<void> {
-  if (attempt.sealed || attempt.state !== 'idle') {              // second call, or after the hook settled: no POST
+  if (attempt.sealed || attempt.state !== 'idle') {
+    // second call, or after the hook settled: no POST
     const ignored = Promise.reject(logIgnored(new SubmitIgnoredError(formId))); // L2; returns the error
-    ignored.catch(noop); return ignored;
+    ignored.catch(noop);
+    return ignored;
   }
   attempt.state = 'pending';
   const posting = createSubmission(formId, values).then(
-    () => { attempt.state = 'succeeded'; },
-    (error) => { attempt.state = 'failed'; attempt.failure = error; throw error; });
-  attempt.settled = posting.then(noop, noop);                      // also gives `posting` a handler
+    () => {
+      attempt.state = 'succeeded';
+    },
+    (error) => {
+      attempt.state = 'failed';
+      attempt.failure = error;
+      throw error;
+    },
+  );
+  attempt.settled = posting.then(noop, noop); // also gives `posting` a handler
   return posting;
 }
 ```
@@ -297,13 +327,13 @@ So the promise returned by `submit()` always has a handler, and an un-awaited `s
 
 **`settleSubmission`.** The first matching row wins. After step 4, `state` is `idle`, `succeeded`, or `failed`.
 
-| # | Condition | Result | Logged |
-|---|---|---|---|
-| 1 | `succeeded` | `{ success: true, redirectTo }`. `redirectTo` is set only if the hook **returned** it | `thrown`, if any (L3) |
-| 2 | `failed`, and `fieldErrorsOf(failure)` is non-empty | `{ success: false, fieldErrors }` | `thrown`, if any and `!== failure` (L3) |
-| 3 | `failed`, otherwise | `{ success: false, message: SUBMIT_FAILED_MESSAGE }`, a 403 included | `failure` (L4, which carries a 403's detail for the admin); `thrown` as in row 2 |
-| 4 | `idle`, and `thrown` is an `ActionError` | `{ success: false, message: thrown.message }` | nothing |
-| 5 | anything else: `idle` with no throw, or with another throw | `{ success: false, message: SUBMIT_FAILED_MESSAGE }` | `thrown`, or "returned without calling `submit()`" (L5) |
+| #   | Condition                                                  | Result                                                                                | Logged                                                                           |
+| --- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| 1   | `succeeded`                                                | `{ success: true, redirectTo }`. `redirectTo` is set only if the hook **returned** it | `thrown`, if any (L3)                                                            |
+| 2   | `failed`, and `fieldErrorsOf(failure)` is non-empty        | `{ success: false, fieldErrors }`                                                     | `thrown`, if any and `!== failure` (L3)                                          |
+| 3   | `failed`, otherwise                                        | `{ success: false, message: SUBMIT_FAILED_MESSAGE }`, a 403 included                  | `failure` (L4, which carries a 403's detail for the admin); `thrown` as in row 2 |
+| 4   | `idle`, and `thrown` is an `ActionError`                   | `{ success: false, message: thrown.message }`                                         | nothing                                                                          |
+| 5   | anything else: `idle` with no throw, or with another throw | `{ success: false, message: SUBMIT_FAILED_MESSAGE }`                                  | `thrown`, or "returned without calling `submit()`" (L5)                          |
 
 - **Parity.** In rows 1–3, `thrown` never changes the result. A hook that swallows the `submit()` rejection and returns, one that rethrows it, and one that throws something else all get the same result. Only the log differs.
 - `fieldErrorsOf(failure)` returns `parseSubmissionFieldErrors(failure.responseBody)` for a `WixApiError` (`utils/project-form-fields.ts:191-215`), and `{}` otherwise.
@@ -325,7 +355,9 @@ export const submitForm = makeJayAction('wixForms.submitForm')
   .withRequest()
   .withServices(WIX_FORMS_SERVICE)
   .withHandler((input: SubmitRequestInput, request, forms) => {
-    const hooks = hasService(WIX_FORMS_SUBMIT_HOOKS) ? getService(WIX_FORMS_SUBMIT_HOOKS) : undefined;
+    const hooks = hasService(WIX_FORMS_SUBMIT_HOOKS)
+      ? getService(WIX_FORMS_SUBMIT_HOOKS)
+      : undefined;
     return runSubmission(input, {
       createSubmission: (id, values) => forms.createSubmission(id, values),
       resolveIdentity: async () => {
@@ -343,22 +375,32 @@ export const submitForm = makeJayAction('wixForms.submitForm')
 
 ```ts
 event.preventDefault();
-if (isSubmitting()) return;                        // a second click while one is in flight
-setStatusMessage(''); setErrorByTarget({});
-if (honeypotValue.trim()) { setIsSubmitted(true); return; }   // unchanged: no POST, no token read
+if (isSubmitting()) return; // a second click while one is in flight
+setStatusMessage('');
+setErrorByTarget({});
+if (honeypotValue.trim()) {
+  setIsSubmitted(true);
+  return;
+} // unchanged: no POST, no token read
 const submissionValues = readFormValues();
 const clientErrors = validateVisibleFields(carryForward.fields, submissionValues); // DL#41 fix: skips hidden
-if (Object.keys(clientErrors).length) { /* set errors + invalid, return */ }
-setIsSubmitting(true);                             // synchronous: before the first await
+if (Object.keys(clientErrors).length) {
+  /* set errors + invalid, return */
+}
+setIsSubmitting(true); // synchronous: before the first await
 let result: SubmitFormResult;
-try {                                              // only the transport: NETWORK_ERROR, TIMEOUT, unexpected server throw
-  await ensureSessionFresh();                      // logs and continues on failure; never throws
+try {
+  // only the transport: NETWORK_ERROR, TIMEOUT, unexpected server throw
+  await ensureSessionFresh(); // logs and continues on failure; never throws
   result = await submitForm({ formId: carryForward.formId, values: submissionValues });
 } catch {
-  setStatusMessage(SUBMIT_FAILED_MESSAGE); setIsSubmitting(false); return;
+  setStatusMessage(SUBMIT_FAILED_MESSAGE);
+  setIsSubmitting(false);
+  return;
 }
-const redirectPath = presentSubmitResult(result);  // outside the try: a Wix success never shows "could not complete"
-if (redirectPath) window.location.assign(redirectPath);  // the button stays disabled while the page navigates
+const redirectPath = presentSubmitResult(result); // outside the try: a Wix success never shows "could not complete"
+if (redirectPath)
+  window.location.assign(redirectPath); // the button stays disabled while the page navigates
 else setIsSubmitting(false);
 ```
 
@@ -379,13 +421,20 @@ else setIsSubmitting(false);
 const PROBE_ORIGIN = 'https://site.invalid';
 /** A same-site path ('/a?b#c') or undefined. Never throws. Idempotent. */
 export function toSitePath(candidate: unknown): string | undefined {
-  if (typeof candidate !== 'string' || !candidate.startsWith('/') || /[\u0000-\u001F\u007F\\]/.test(candidate)) return undefined;
+  if (
+    typeof candidate !== 'string' ||
+    !candidate.startsWith('/') ||
+    /[\u0000-\u001F\u007F\\]/.test(candidate)
+  )
+    return undefined;
   try {
     const url = new URL(candidate, PROBE_ORIGIN);
     if (url.origin !== PROBE_ORIGIN) return undefined;
     const path = url.pathname + url.search + url.hash;
-    return path.startsWith('//') ? undefined : path;   // dot-segments can normalize to '//host'
-  } catch { return undefined; }
+    return path.startsWith('//') ? undefined : path; // dot-segments can normalize to '//host'
+  } catch {
+    return undefined;
+  }
 }
 ```
 
@@ -402,7 +451,9 @@ Both checks were tested against Node's URL implementation: the control-character
 // after:
 export const init = makeJayInit().withServer(async () => {
   registerService(WIX_FORMS_SUBMIT_HOOKS, {
-    [FORM_ID]: async ({ values, submit }) => { await submit({ ...values, source: 'web' }); },
+    [FORM_ID]: async ({ values, submit }) => {
+      await submit({ ...values, source: 'web' });
+    },
   });
   return {};
 });
@@ -484,17 +535,20 @@ Then run `npm run agent-kit` to regenerate the testbed copy, `examples/forms-mem
 export const init = makeJayInit().withServer(async () => {
   registerService(WIX_FORMS_SUBMIT_HOOKS, {
     [REQUEST_VISIT_FORM_ID]: async ({ values, caller, submit }) => {
-      if (caller?.type !== 'MEMBER')                                    // a VISITOR proves a session only
+      if (caller?.type !== 'MEMBER')
+        // a VISITOR proves a session only
         throw new ActionError('SIGN_IN_REQUIRED', 'Please sign in again to request a visit.');
-      const slot = parseSlot(values);                                   // re-validate (untrusted)
-      const reservation = (await reservations.findOwn(caller.id, slot)) // a retry after a client timeout reuses it
-        ?? (await reservations.createIfFree({ ownerId: caller.id, slot })); // source of truth; undefined if taken
-      if (!reservation) throw new ActionError('SLOT_TAKEN', 'That time was just taken. Please pick another.');
+      const slot = parseSlot(values); // re-validate (untrusted)
+      const reservation =
+        (await reservations.findOwn(caller.id, slot)) ?? // a retry after a client timeout reuses it
+        (await reservations.createIfFree({ ownerId: caller.id, slot })); // source of truth; undefined if taken
+      if (!reservation)
+        throw new ActionError('SLOT_TAKEN', 'That time was just taken. Please pick another.');
       try {
         await submit({ ...values, [REFERENCE_FIELD]: reservation.reference }); // hidden, required field
       } catch (error) {
-        await reservations.remove(reservation.id);                      // compensate
-        throw error;                                                    // or swallow: same result
+        await reservations.remove(reservation.id); // compensate
+        throw error; // or swallow: same result
       }
       return { redirectTo: `/visit/confirmed?ref=${encodeURIComponent(reservation.reference)}` };
     },
@@ -514,7 +568,7 @@ export const init = makeJayInit().withServer(async () => {
 ## Trade-offs
 
 - **(+)** Documented Wix APIs only; one path everywhere, localhost included; render-time code can use it too.
-- **(+)** Lives once in wix-server-client; every wix-* plugin can reuse `client` / `caller`. No net new service marker.
+- **(+)** Lives once in wix-server-client; every wix-\* plugin can reuse `client` / `caller`. No net new service marker.
 - **(−)** Needs an upstream jay change (request-cookie access for actions).
 - **(−)** Two token copies (localStorage + cookie). A failed sync leaves the server one change behind until the next sync; `ensureSessionFresh` narrows it for actions.
 - **(−)** One extra `syncSession` round trip per token change.

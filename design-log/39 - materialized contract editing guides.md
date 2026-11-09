@@ -42,8 +42,7 @@ name: RecipesList
 description: List page for Recipes
 collectionId: Recipes
 editingGuide: agent-kit/references/wix-data/wix-data-dashboard-content.md
-tags:
-  ...
+tags: ...
 ```
 
 - `collectionId` — Wix Data collection `_id` (same value as `plugins-index.metadata.collectionId`).
@@ -58,12 +57,12 @@ tags:
 
 ### Code (wix-data package)
 
-| File | Role |
-|------|------|
-| `lib/source-editing.ts` | `SHARED_EDITING_GUIDE_PATH`, `sourceEditingContractHeader(collectionId)`, copy shared guide into references |
-| `lib/generators/*-contract-generator.ts` | Insert `collectionId` + `editingGuide` in `buildContract()` |
-| `lib/setup.ts` `generateWixDataAgentKit` | Write `collections.yaml`; copy shared guide to `agent-kit/references/wix-data/wix-data-dashboard-content.md` |
-| `agent-kit/designer/wix-data-dashboard-content.md` | Lookup workflow + CMS steps (source of copy in references) |
+| File                                               | Role                                                                                                         |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `lib/source-editing.ts`                            | `SHARED_EDITING_GUIDE_PATH`, `sourceEditingContractHeader(collectionId)`, copy shared guide into references  |
+| `lib/generators/*-contract-generator.ts`           | Insert `collectionId` + `editingGuide` in `buildContract()`                                                  |
+| `lib/setup.ts` `generateWixDataAgentKit`           | Write `collections.yaml`; copy shared guide to `agent-kit/references/wix-data/wix-data-dashboard-content.md` |
+| `agent-kit/designer/wix-data-dashboard-content.md` | Lookup workflow + CMS steps (source of copy in references)                                                   |
 
 ### Verification (current)
 

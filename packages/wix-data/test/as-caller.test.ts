@@ -81,9 +81,7 @@ describe('WixDataService.asCaller (DL#43 §Design 3)', () => {
         const service = provideWixDataService(siteClient(), CONFIG);
 
         expect(
-            noCallerReasonOf(() =>
-                service.asCaller(resolveRequestIdentity(cookiesExpiringIn(30))),
-            ),
+            noCallerReasonOf(() => service.asCaller(resolveRequestIdentity(cookiesExpiringIn(30)))),
         ).toEqual('expired');
         expect(fetchMock).not.toHaveBeenCalled();
     });

@@ -23,10 +23,10 @@ There is no generic `wix-form` contract, no `formId` prop, and no `defaultFormId
 
 ## Common errors
 
-| Symptom | Fix |
-| ------- | --- |
-| 403 on form schema or submit | Add **Wix Forms** permission to API key |
+| Symptom                                                | Fix                                                                                                                              |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| 403 on form schema or submit                           | Add **Wix Forms** permission to API key                                                                                          |
 | Console: `[wix-forms] No forms listed for namespace …` | Often normal before forms exist; else check `namespace`, `formIds`, `include` in `config/.wix-forms.yaml`, then re-run agent-kit |
-| Validator: retired `contract="wix-form"` | Switch to `contract="form/<slug>"` from `forms.yaml` |
-| Unknown field in bindings | Use field `target` names from `forms.yaml`; no `forEach` on a generic `fields` list |
-| Form loads but no fields | Form has no supported input fields in Wix schema |
+| Validator: retired `contract="wix-form"`               | Switch to `contract="form/<slug>"` from `forms.yaml`                                                                             |
+| Unknown field in bindings                              | Use field `target` names from `forms.yaml`; no `forEach` on a generic `fields` list                                              |
+| Form loads but no fields                               | Form has no supported input fields in Wix schema                                                                                 |

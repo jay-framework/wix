@@ -111,38 +111,39 @@ outputSchema:
 
 ```md
 Content here is managed in the Wix dashboard. Do not edit code or data.
+
 1. Product id = inspector `itemId` (trackBy `_id`).
 2. Call `wix-server-client/getDashboardUrl` with path `wix-stores/products/product/{productId}`.
 3. Reply: "This is managed in the Wix dashboard: <url>".
-No id → path `wix-stores/products`.
+   No id → path `wix-stores/products`.
 ```
 
 ### Contract table
 
-| Plugin / contract | Identity | Route (path) | Source |
-| --- | --- | --- | --- |
-| wix-stores product-search, category-products | itemId (`_id`) | `wix-stores/products/product/{productId}` | docs |
-| wix-stores product-spotlight | prop `slug` → `getProductBySlug` | `wix-stores/products/product/{productId}` | docs |
-| wix-stores category-list | itemId (`_id`) | `wix-stores/categories/list` (no category deep link) | docs |
-| wix-stores product-page (dynamic) | param `slug` / `_id` | `wix-stores/products/product/{productId}` | docs |
-| wix-stores-v1 product-page, product-search | `_id` / slug | `wix-stores/products/product/{productId}` | assumed for v1 catalog — verify |
-| wix-stores-v1 category-page, category-list | slug / `_id` | `wix-stores/categories/list` | assumed for v1 — verify |
-| wix-data item/list/table/card (dynamic) | **`collectionId` on the materialized `.jay-contract`** (primary); fallback `metadata.collectionId` in `plugins-index.yaml`. Never derive from contract name. `collections.yaml` for field types only | `wix-cms/data/{collectionId}` (encode `/` as `%2F` in path); no per-item URL | docs; namespaced ids — use `%2F` (gate verified) |
-| wix-forms wix-form | prop `formId` (else config `defaultFormId`) | `wix-forms/form/{formId}`; list `wix-forms` | docs |
-| wix-bookings booking-flow | services itemId (`id`) | `bookings/services/form/{serviceId}`; list `bookings/services` | docs |
-| wix-pro-gallery pro-gallery | prop `galleryId`; slide = itemId | not in routes.json. Find live: gallery route → else galleries list → else `home`. Never Media Manager (TL;DR #9) | unknown — **blocking** verify |
-| wix-cart cart-indicator, cart-page, mini-cart | session | — | `readonly: true` |
-| wix-members login-indicator, auth-callback, protected-page | session | — | `readonly: true` |
+| Plugin / contract                                          | Identity                                                                                                                                                                                             | Route (path)                                                                                                     | Source                                           |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| wix-stores product-search, category-products               | itemId (`_id`)                                                                                                                                                                                       | `wix-stores/products/product/{productId}`                                                                        | docs                                             |
+| wix-stores product-spotlight                               | prop `slug` → `getProductBySlug`                                                                                                                                                                     | `wix-stores/products/product/{productId}`                                                                        | docs                                             |
+| wix-stores category-list                                   | itemId (`_id`)                                                                                                                                                                                       | `wix-stores/categories/list` (no category deep link)                                                             | docs                                             |
+| wix-stores product-page (dynamic)                          | param `slug` / `_id`                                                                                                                                                                                 | `wix-stores/products/product/{productId}`                                                                        | docs                                             |
+| wix-stores-v1 product-page, product-search                 | `_id` / slug                                                                                                                                                                                         | `wix-stores/products/product/{productId}`                                                                        | assumed for v1 catalog — verify                  |
+| wix-stores-v1 category-page, category-list                 | slug / `_id`                                                                                                                                                                                         | `wix-stores/categories/list`                                                                                     | assumed for v1 — verify                          |
+| wix-data item/list/table/card (dynamic)                    | **`collectionId` on the materialized `.jay-contract`** (primary); fallback `metadata.collectionId` in `plugins-index.yaml`. Never derive from contract name. `collections.yaml` for field types only | `wix-cms/data/{collectionId}` (encode `/` as `%2F` in path); no per-item URL                                     | docs; namespaced ids — use `%2F` (gate verified) |
+| wix-forms wix-form                                         | prop `formId` (else config `defaultFormId`)                                                                                                                                                          | `wix-forms/form/{formId}`; list `wix-forms`                                                                      | docs                                             |
+| wix-bookings booking-flow                                  | services itemId (`id`)                                                                                                                                                                               | `bookings/services/form/{serviceId}`; list `bookings/services`                                                   | docs                                             |
+| wix-pro-gallery pro-gallery                                | prop `galleryId`; slide = itemId                                                                                                                                                                     | not in routes.json. Find live: gallery route → else galleries list → else `home`. Never Media Manager (TL;DR #9) | unknown — **blocking** verify                    |
+| wix-cart cart-indicator, cart-page, mini-cart              | session                                                                                                                                                                                              | —                                                                                                                | `readonly: true`                                 |
+| wix-members login-indicator, auth-callback, protected-page | session                                                                                                                                                                                              | —                                                                                                                | `readonly: true`                                 |
 
 ### Pro Gallery guide (what users ask, where it goes)
 
-| Request | Where |
-| --- | --- |
-| Replace a slide's photo; change title/description/alt text; change a slide's link; add/remove/reorder slides | Dashboard (gallery URL); name `galleryId` + slide title/`itemId` |
-| Autoplay on/off, speed, loop | `autoplay` / `intervalMs` / `loop` props in jay-html — check there first |
-| Show a different gallery | `galleryId` prop in jay-html |
-| Buttons, layout, slide CSS | Template (jay-html/CSS) |
-| Native Pro Gallery widget settings (spacing, chrome) | Not used by Jay rendering; say so, edit the template instead |
+| Request                                                                                                      | Where                                                                    |
+| ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| Replace a slide's photo; change title/description/alt text; change a slide's link; add/remove/reorder slides | Dashboard (gallery URL); name `galleryId` + slide title/`itemId`         |
+| Autoplay on/off, speed, loop                                                                                 | `autoplay` / `intervalMs` / `loop` props in jay-html — check there first |
+| Show a different gallery                                                                                     | `galleryId` prop in jay-html                                             |
+| Buttons, layout, slide CSS                                                                                   | Template (jay-html/CSS)                                                  |
+| Native Pro Gallery widget settings (spacing, chrome)                                                         | Not used by Jay rendering; say so, edit the template instead             |
 
 The guide also says: slide images are Wix media files, but a slide's image is replaced in the Pro Gallery editor, not by editing `{url}` in jay-html. Images the user attaches for **non-bound** markup follow the wix-media agent-kit guidance, not this guide.
 
@@ -170,26 +171,24 @@ The jay `dynamic_contracts` schema still has no `editingGuide`/`readonly` on the
 ## Implementation Plan
 
 **Phase A — action + gate** (no guides yet)
+
 1. wix-server-client: extract `readWixConfig()` from `setup.ts` for reuse; add `lib/actions/get-dashboard-url.jay-action` + handler `lib/actions/get-dashboard-url.ts`, built with `makeJayAction` like other wix actions, re-exported from `lib/tools.ts` (devOnly actions load from `./tools`); `plugin.yaml` `actions`; `definitions` + `build:copy-actions` scripts and the `./get-dashboard-url.jay-action` export, following `wix-data/package.json`.
 2. Unit tests: apiKey siteId used; `loadConfig()` throws (no `.wix.yaml` / no `oauthStrategy`) → falls back to `wix.config.json`; `kind: 'visitor'` and `kind: 'app'` → fall back; neither source → error naming both; path: leading `/` stripped, empty / `..` / `://` / `?` rejected.
 3. **Gate:** Verification #1 on the test site: one stores product URL and one CMS collection URL first (siteId == metaSiteId), then every assumed/unknown row (v1 stores, namespaced CMS ids (record whether the dashboard path takes `Blog/Categories` as-is or encoded; encoded would need the path charset widened), pro-gallery: search the live dashboard, incl. links outside `routes.json`). Update the table to verified paths. Stop and report if siteId ≠ metaSiteId.
 
-**Phase B — guides** (after A's table is all verified)
-4. One `editingGuide` per static dashboard contract (verified table, Pro Gallery guide section); cart/members get `readonly: true` only (no guide file; reply text via INSTRUCTIONS.md).
+**Phase B — guides** (after A's table is all verified) 4. One `editingGuide` per static dashboard contract (verified table, Pro Gallery guide section); cart/members get `readonly: true` only (no guide file; reply text via INSTRUCTIONS.md).
 
-**Phase C — agent-kit + demo**
-5. Agent-kit dynamic-contract sections (wix-stores, wix-data) + the INSTRUCTIONS.md line.
-6. `validate-plugin` per changed package; demo in AIditor (`/demo-feature`).
+**Phase C — agent-kit + demo** 5. Agent-kit dynamic-contract sections (wix-stores, wix-data) + the INSTRUCTIONS.md line. 6. `validate-plugin` per changed package; demo in AIditor (`/demo-feature`).
 
 ## Examples
 
-| Request on selected element | ❌ Wrong | ✅ Right |
-| --- | --- | --- |
-| "Change this product name" (product list item) | Replace `{name}` in jay-html with literal text | `getDashboardUrl` with `wix-stores/products/product/{itemId}`; reply with URL; empty diff |
-| "Fix this article title" (CMS item) | Edit jay-html or call a data write | Resolve `collectionId` from the materialized `.jay-contract` (DL #39); `getDashboardUrl` with `wix-cms/data/{collectionId}`; reply names the item |
-| "Replace this slide's photo" (pro-gallery item) | Edit `{url}` / link Media Manager | Gallery route per TL;DR #9, naming `galleryId` + slide title |
-| "Make the slideshow slower" | Send to dashboard | Edit `intervalMs` on `<jay:pro-gallery>` in jay-html |
-| "Change cart count" | Hard-code a number | Readonly reply |
+| Request on selected element                     | ❌ Wrong                                       | ✅ Right                                                                                                                                          |
+| ----------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| "Change this product name" (product list item)  | Replace `{name}` in jay-html with literal text | `getDashboardUrl` with `wix-stores/products/product/{itemId}`; reply with URL; empty diff                                                         |
+| "Fix this article title" (CMS item)             | Edit jay-html or call a data write             | Resolve `collectionId` from the materialized `.jay-contract` (DL #39); `getDashboardUrl` with `wix-cms/data/{collectionId}`; reply names the item |
+| "Replace this slide's photo" (pro-gallery item) | Edit `{url}` / link Media Manager              | Gallery route per TL;DR #9, naming `galleryId` + slide title                                                                                      |
+| "Make the slideshow slower"                     | Send to dashboard                              | Edit `intervalMs` on `<jay:pro-gallery>` in jay-html                                                                                              |
+| "Change cart count"                             | Hard-code a number                             | Readonly reply                                                                                                                                    |
 
 ## Verification Criteria
 
@@ -207,9 +206,9 @@ The jay `dynamic_contracts` schema still has no `editingGuide`/`readonly` on the
 
 ## Scope pre-mortem
 
-- *siteId mismatch* (API-key site id ≠ metaSiteId) → all URLs break. Caught by check #1 before anything else.
-- *Agent skips the guide for dynamic pages* → interim agent-kit text, guarded by the CMS AIditor check (Verification #4); the real fix is the jay follow-up.
-- *Scope creep into writes* → explicitly out of scope (TL;DR #7).
+- _siteId mismatch_ (API-key site id ≠ metaSiteId) → all URLs break. Caught by check #1 before anything else.
+- _Agent skips the guide for dynamic pages_ → interim agent-kit text, guarded by the CMS AIditor check (Verification #4); the real fix is the jay follow-up.
+- _Scope creep into writes_ → explicitly out of scope (TL;DR #7).
 
 ## Open Questions
 
@@ -236,16 +235,16 @@ The jay `dynamic_contracts` schema still has no `editingGuide`/`readonly` on the
 
 API-key `siteId` == `wix.config.json` siteId == dashboard metaSiteId (dashboard home opens the test site) ✓.
 
-| Row | Path | Result |
-| --- | --- | --- |
-| stores product | `wix-stores/products/product/{productId}` | ✓ opens the product editor |
-| stores list / categories | `wix-stores/products`, `wix-stores/categories/list` | ✓ |
-| wix-stores-v1 | same Stores app pages | route ✓; v1-catalog data not testable on this (Catalog V3) site |
-| CMS collection | `wix-cms/data/{collectionId}` | ✓ for `Articles` |
-| CMS namespaced id | `wix-cms/data/Bookings/Services` | ✗ "Couldn't load this page"; **`Bookings%2FServices` ✓** → path charset now allows `%XX` (decoded `..` still rejected) |
-| forms | `wix-forms/form/{formId}` (→ `/edit`), `wix-forms` | ✓ |
-| bookings | `bookings/services/form/{serviceId}`, `bookings/services` | ✓ |
-| pro-gallery | not in routes.json; `app/{appDefId}` and `wix-pro-gallery` / `pro-gallery` / `progallery` / `gallery` → "page isn't available"; Manage Apps lists Pro Gallery **without an Open button**; dashboard search finds only help articles | **no dashboard page** → tier 3 `home` (TL;DR #9) |
+| Row                      | Path                                                                                                                                                                                                                                | Result                                                                                                                 |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| stores product           | `wix-stores/products/product/{productId}`                                                                                                                                                                                           | ✓ opens the product editor                                                                                             |
+| stores list / categories | `wix-stores/products`, `wix-stores/categories/list`                                                                                                                                                                                 | ✓                                                                                                                      |
+| wix-stores-v1            | same Stores app pages                                                                                                                                                                                                               | route ✓; v1-catalog data not testable on this (Catalog V3) site                                                        |
+| CMS collection           | `wix-cms/data/{collectionId}`                                                                                                                                                                                                       | ✓ for `Articles`                                                                                                       |
+| CMS namespaced id        | `wix-cms/data/Bookings/Services`                                                                                                                                                                                                    | ✗ "Couldn't load this page"; **`Bookings%2FServices` ✓** → path charset now allows `%XX` (decoded `..` still rejected) |
+| forms                    | `wix-forms/form/{formId}` (→ `/edit`), `wix-forms`                                                                                                                                                                                  | ✓                                                                                                                      |
+| bookings                 | `bookings/services/form/{serviceId}`, `bookings/services`                                                                                                                                                                           | ✓                                                                                                                      |
+| pro-gallery              | not in routes.json; `app/{appDefId}` and `wix-pro-gallery` / `pro-gallery` / `progallery` / `gallery` → "page isn't available"; Manage Apps lists Pro Gallery **without an Open button**; dashboard search finds only help articles | **no dashboard page** → tier 3 `home` (TL;DR #9)                                                                       |
 
 ### Phase B — guides
 
@@ -274,16 +273,16 @@ Product approved direct writes: **an agent that knows how, and has access, may u
 
 Pass = no jay-html edit for content; data updated at the source **or** the dashboard link given. Live data was restored after each run.
 
-| Case | Request | Result |
-| --- | --- | --- |
-| 01 stores product name | rename the spotlight product | ✓ renamed in the Wix Stores catalog; no source diff |
-| 02 CMS article title | rename the marked article | ✓ renamed the marked `Articles` item in the CMS; no source diff |
-| 03 forms field label | rename a field label | ✗ **no data change; hard-coded the label in jay-html** (`<span if="target === 'first_name_f409'">Your first name</span>`); offered the dashboard as an alternative |
-| 04 bookings service name | rename the service | ~ no source edit, identified the service id, but neither renamed it nor gave the dashboard **URL** (directions in words; asked to use the Wix MCP) |
-| 05 cart count (readonly) | "show 3 here instead of 0" | ✗ **replaced `{cart.itemCount}` with a hard-coded `3`** in jay-html; no session-state reply |
-| 06 gallery photo | replace a slide photo | ✓ no source edit; Editor gallery manager, `home` link, named the slide; no Media Manager |
-| 07 gallery autoplay | slower slideshow | ✓ `intervalMs` 4000 → 8000 on `<jay:pro-gallery>` |
-| 08 hard-coded heading | change an `<h2>` | ✓ text edited in jay-html — guides don't block markup edits |
+| Case                     | Request                      | Result                                                                                                                                                             |
+| ------------------------ | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 01 stores product name   | rename the spotlight product | ✓ renamed in the Wix Stores catalog; no source diff                                                                                                                |
+| 02 CMS article title     | rename the marked article    | ✓ renamed the marked `Articles` item in the CMS; no source diff                                                                                                    |
+| 03 forms field label     | rename a field label         | ✗ **no data change; hard-coded the label in jay-html** (`<span if="target === 'first_name_f409'">Your first name</span>`); offered the dashboard as an alternative |
+| 04 bookings service name | rename the service           | ~ no source edit, identified the service id, but neither renamed it nor gave the dashboard **URL** (directions in words; asked to use the Wix MCP)                 |
+| 05 cart count (readonly) | "show 3 here instead of 0"   | ✗ **replaced `{cart.itemCount}` with a hard-coded `3`** in jay-html; no session-state reply                                                                        |
+| 06 gallery photo         | replace a slide photo        | ✓ no source edit; Editor gallery manager, `home` link, named the slide; no Media Manager                                                                           |
+| 07 gallery autoplay      | slower slideshow             | ✓ `intervalMs` 4000 → 8000 on `<jay:pro-gallery>`                                                                                                                  |
+| 08 hard-coded heading    | change an `<h2>`             | ✓ text edited in jay-html — guides don't block markup edits                                                                                                        |
 
 **5 ✓ / 1 partial / 2 ✗.**
 
@@ -297,17 +296,18 @@ Deviation 7: a category deep link exists — `wix-stores/categories/list/categor
 
 Testbed page `/shop` added: page-level `product-search` (`key="search"`) grid + `category-list` (`key="cats"`) chips. The category deep link opened live to the category editor before the runs. Data restored after each run.
 
-| Case | Request | Result |
-| --- | --- | --- |
-| S1 product page (`/products/:slug`, Baseball Cap) | rename the product | ~ no source edit, identified the product by slug, but **no dashboard link**: Wix MCP wasn't authorized, so it replied with words ("Dashboard → Stores → Products") and asked for permission |
-| S2 store grid (`/shop`, 2nd card) | rename the product | ✓ the right product (Minimalist Tote Bag, from the inspector `itemId`) renamed in Wix Stores; no source diff |
-| S3 category (`/shop`, `test2` chip) | rename the category | ✓ the right category renamed (dashboard shows "Home & Living"); no source diff |
+| Case                                              | Request             | Result                                                                                                                                                                                      |
+| ------------------------------------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| S1 product page (`/products/:slug`, Baseball Cap) | rename the product  | ~ no source edit, identified the product by slug, but **no dashboard link**: Wix MCP wasn't authorized, so it replied with words ("Dashboard → Stores → Products") and asked for permission |
+| S2 store grid (`/shop`, 2nd card)                 | rename the product  | ✓ the right product (Minimalist Tote Bag, from the inspector `itemId`) renamed in Wix Stores; no source diff                                                                                |
+| S3 category (`/shop`, `test2` chip)               | rename the category | ✓ the right category renamed (dashboard shows "Home & Living"); no source diff                                                                                                              |
 
 **Finding 3 — the guide is still not read.** None of the 3 workers opened `wix-stores-dashboard-content.md`; none called `wix-server-client/getDashboardUrl`. S2/S3 found the right id because the inspector `itemId` is the trackBy `_id`, then wrote with the API key read from `config/.wix.yaml`. S1 had no write path and fell back to directions instead of step 3's link. Right outcomes in S2/S3 are not evidence the guide works; finding 2's fix (the AIditor passes `editingGuide` with the selection) is still the blocker.
 
 ### All guides on the mechanical lookup (2026-11-03)
 
 Deviation 9: every `editingGuide` / readonly guide (stores-v1, forms, bookings, wix-data, pro-gallery, cart, members) now follows the stores guide's shape: what the inspector returns; a lookup table matching `forEach` + `trackBy` attributes (page scripts give `K.<list>` and no `region` frame); plugin check; write only with an id from the steps; one fallback section; link + write reply wording. Fixes found on the way:
+
 - **bookings** — "or the currently selected service" had no id source (the contract exposes only `selectedServiceName`) → services-list link, no lookup by name.
 - **cart** — a cart line's `itemId` is a `lineItemId`, not a product id → products-list link, no product writes from the cart.
 - **forms / cart / members** — explicit "never hard-code a value or replace a binding, not even for one page" (QA cases 03 and 05).
@@ -329,30 +329,31 @@ Not live-tested yet; stores-v1 per-collection link still unverified.
 
 **Implemented in this repo (local commits on `source-editing-dashboard-urls`):**
 
-| Change | Where |
-| --- | --- |
-| `getDashboardUrl` devOnly action, 23/23 tests | `packages/wix-server-client` |
-| Guides on the mechanical lookup for stores, stores-v1, forms, bookings, data, pro-gallery; cart/members **`readonly: true` only** (no session-state designer guides) | each package's `agent-kit/designer/` (+ wix-data reference copy under `agent-kit/references/wix-data/`) |
-| Generated wix-data contracts carry `collectionId` + shared `editingGuide` (`agent-kit/references/wix-data/wix-data-dashboard-content.md`; stubs dropped 2026-11-04) | wix DL **#39** |
-| Exact `getDashboardUrl` command + no-credential-files rule in the CMS guide | `646926a` |
-| Generated wix-stores `product-page` contract carries `editingGuide: agent-kit/designer/wix-stores-dashboard-content.md` (repro test `test/product-page-contract-yaml.test.ts`); same command line in the stores guide | `f5b01d6` |
-| Rich-text form label `[object Object]` fixed | `1508ee4` |
+| Change                                                                                                                                                                                                                | Where                                                                                                   |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `getDashboardUrl` devOnly action, 23/23 tests                                                                                                                                                                         | `packages/wix-server-client`                                                                            |
+| Guides on the mechanical lookup for stores, stores-v1, forms, bookings, data, pro-gallery; cart/members **`readonly: true` only** (no session-state designer guides)                                                  | each package's `agent-kit/designer/` (+ wix-data reference copy under `agent-kit/references/wix-data/`) |
+| Generated wix-data contracts carry `collectionId` + shared `editingGuide` (`agent-kit/references/wix-data/wix-data-dashboard-content.md`; stubs dropped 2026-11-04)                                                   | wix DL **#39**                                                                                          |
+| Exact `getDashboardUrl` command + no-credential-files rule in the CMS guide                                                                                                                                           | `646926a`                                                                                               |
+| Generated wix-stores `product-page` contract carries `editingGuide: agent-kit/designer/wix-stores-dashboard-content.md` (repro test `test/product-page-contract-yaml.test.ts`); same command line in the stores guide | `f5b01d6`                                                                                               |
+| Rich-text form label `[object Object]` fixed                                                                                                                                                                          | `1508ee4`                                                                                               |
 
 All generated contracts across the wix packages now name their guide (only wix-data and wix-stores generate contracts).
 
 **Final QA (real editor agent runs, recorded; plain user requests such as "Change this to …"):**
 
-| Case | Reply | Link |
-| --- | --- | --- |
-| Product page title | "The product name "Baseball Cap" comes from your Wix Stores catalog… You can change it to "Classic Field Cap" here: <link>" | ✓ product |
-| Store grid product name | one short reply | ✓ product |
-| Store grid product image ("Change this image to a photo of a blue tote bag") | one short reply | ✓ product |
-| Category chip | one short reply | ✓ category |
-| CMS article title | "This article title comes from your Wix CMS (the Articles collection)… rename it here: <link>" | ✓ collection |
+| Case                                                                         | Reply                                                                                                                       | Link         |
+| ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| Product page title                                                           | "The product name "Baseball Cap" comes from your Wix Stores catalog… You can change it to "Classic Field Cap" here: <link>" | ✓ product    |
+| Store grid product name                                                      | one short reply                                                                                                             | ✓ product    |
+| Store grid product image ("Change this image to a photo of a blue tote bag") | one short reply                                                                                                             | ✓ product    |
+| Category chip                                                                | one short reply                                                                                                             | ✓ category   |
+| CMS article title                                                            | "This article title comes from your Wix CMS (the Articles collection)… rename it here: <link>"                              | ✓ collection |
 
 Each comment got one reply, the thread was idle afterwards, no code changed, and the workers followed the contract's `editingGuide` and ran `getDashboardUrl` without reading credentials. Live data unchanged (restored where a run wrote).
 
 **Open:**
+
 - Recording the write path after the user allows a tool needs a Wix MCP server configured for the project (`.mcp.json`) — a site-owner setup step.
 - The testbed API key appeared in agent transcripts during early QA runs (before the no-credential-files rule) — rotate it.
 - wix-forms / wix-bookings `build:types` wait on a jay release (below).
@@ -382,12 +383,12 @@ Each comment got one reply, the thread was idle afterwards, no code changed, and
 
 **2026-11-04 — Reconcile earlier sections (supersedes where they conflict).**
 
-| Earlier text in this log | Still true? | Current rule |
-| --- | --- | --- |
-| Decision **#6** + deviation **4** (`wix-cart-session-state.md` / `wix-members-session-state.md`) | **No** | Cart and members: **`readonly: true` only** in `plugin.yaml`; no session-state designer files. Session semantics come from the contract flag + normal designer docs (layout) and plugin setup (members). |
-| Implemented table row “readonly guides for cart, members” | **No** | Those guides were removed; coverage is `readonly: true` without `editingGuide`. |
-| Deviation **9** listing cart/members alongside dashboard guides | **Partially** | Cart/members are no longer guide-shaped; stores, data, forms, bookings, pro-gallery guides remain. **wix-data** uses materialized contract headers (DL #39), not a separate agent-kit-only path. |
-| Design § “reply text via INSTRUCTIONS.md” for cart/members (lines ~132–134) | **No** | Never shipped that way; deviation 4 used package designer files, now dropped entirely for cart/members. |
-| DL #39 wix-data `editing-guides/` stubs (2026-11-03 ship) | **No** | Removed 2026-11-04; all wix-data contracts share one `editingGuide` reference path — see **wix DL #39** Authoritative summary. |
+| Earlier text in this log                                                                         | Still true?   | Current rule                                                                                                                                                                                             |
+| ------------------------------------------------------------------------------------------------ | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Decision **#6** + deviation **4** (`wix-cart-session-state.md` / `wix-members-session-state.md`) | **No**        | Cart and members: **`readonly: true` only** in `plugin.yaml`; no session-state designer files. Session semantics come from the contract flag + normal designer docs (layout) and plugin setup (members). |
+| Implemented table row “readonly guides for cart, members”                                        | **No**        | Those guides were removed; coverage is `readonly: true` without `editingGuide`.                                                                                                                          |
+| Deviation **9** listing cart/members alongside dashboard guides                                  | **Partially** | Cart/members are no longer guide-shaped; stores, data, forms, bookings, pro-gallery guides remain. **wix-data** uses materialized contract headers (DL #39), not a separate agent-kit-only path.         |
+| Design § “reply text via INSTRUCTIONS.md” for cart/members (lines ~132–134)                      | **No**        | Never shipped that way; deviation 4 used package designer files, now dropped entirely for cart/members.                                                                                                  |
+| DL #39 wix-data `editing-guides/` stubs (2026-11-03 ship)                                        | **No**        | Removed 2026-11-04; all wix-data contracts share one `editingGuide` reference path — see **wix DL #39** Authoritative summary.                                                                           |
 
 Related: wix DL **#39** — wix-data `collectionId` + single shared `editingGuide` on each materialized contract.

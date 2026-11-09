@@ -458,6 +458,7 @@ Ported onto `main` as one change, on top of per-form contracts (DL #40) and its 
 ## Addendum A (2026-11-08): Accessibility — submit path, focus, errors
 
 ### Decisions for the Implementer
+
 - **Submit runs from the `<form>`'s `submit` event**, not the button click. Keep the submit button `type=submit` so Enter-to-submit and autofill/password-manager detection work. The button click submits only when no `<form>` owns it. (Replaces "Native form submission never navigates" above.)
 - **Focus moves on outcome:** client or server field errors → focus the first invalid field's `input`; success → focus the new optional reserved `confirmation` ref; reset → focus the first visible field's `input`. Success/reset focus runs in a microtask, after the conditional branch re-mounts (same reason as the reset clear).
 - **New reserved tag `confirmation`** (`interactive`, `HTMLElement`). Optional: pages that don't bind it just don't get success focus. Added to `RESERVED_TAG_NAMES`, so a field target `confirmation` becomes `confirmationField`.
@@ -466,19 +467,23 @@ Ported onto `main` as one change, on top of per-form contracts (DL #40) and its 
 - **Validator warnings** (`wix-form-bindings.ts`, severity `warning`): (1) a field `input` with no accessible label — not inside a `<label>`, no `label[for]` matching its `id`, no `aria-label`/`aria-labelledby`; (2) a `<label>` that contains a `{k.<field>.error}` binding; (3) a field `input` with a native `required` attribute inside a `<form>` without `novalidate`.
 
 ### Why
+
 Headless plugin: the page author owns markup, so the plugin's levers are runtime behavior (focus), contract surface (`confirmation`), guides, and validation. Validation first for what's mechanically detectable; the rest goes in the guide.
 
 ### Out of scope
+
 - `autocomplete` derived into the contract from field type (wait for a second consumer).
 - `aria-pressed`/selected state for `control`-driven option buttons (needs a per-option selected state on `control`).
 - Multi-step step-change focus (page-owned; mentioned in the guide).
 
 ### Verification
+
 - Validator: unit tests for each warning, plus no-warning cases for the correct pattern.
 - Contract: generator fixtures include `confirmation`.
 - Component focus behavior: no interactive harness exists (see Fixes above) — verified in a browser demo.
 
 ### Addendum A — Implementation Results
+
 - Shipped as designed: `wix-form.ts` (form `submit` path, `afterRemount`, `focusFirstFieldInput`, `showSubmitted`, `showFieldErrors`), reserved `confirmation` tag in `contract-utils.ts` (+ both generator fixtures), three warnings in `wix-form-bindings.ts`, guides (`rich-forms.md` §1/§3/§5/new §6, `wix-forms-setup.md`, `per-form-contracts.md`).
 - Folded in: the short examples in `wix-forms-setup.md` and `per-form-contracts.md` gated success on `statusMessage`; they now gate on `isSubmitted`.
 - Deviation: none. Note — the review assumed errors re-announce on every keystroke; the code already only clears on `input`, so no runtime change was needed there.
