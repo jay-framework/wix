@@ -1,6 +1,6 @@
 /**
- * Session action (DL#42 §Design 1): mirror the browser's OAuth tokens into the httpOnly
- * `wix_session` cookie, after verifying them with token-info.
+ * Session action (DL#42 §Design 1, DL#48): mirror the browser's access token into the httpOnly
+ * `wix_session` cookie, after verifying it with token-info.
  */
 
 import { makeJayAction } from '@jay-framework/fullstack-component';
@@ -14,7 +14,8 @@ import {
 import { siteOAuthClientId } from '../session/site-oauth-client-id.js';
 import { verifyAccessToken, type VerifiedCaller } from '../session/verify-access-token.js';
 
-export type SyncSessionInput = { tokens: Tokens } | { clear: true };
+/** Old cached bundles may still send the refresh token too; it is ignored. */
+export type SyncSessionInput = { tokens: Pick<Tokens, 'accessToken'> } | { clear: true };
 
 export interface SyncSessionResult {
     ok: boolean;
@@ -28,18 +29,15 @@ export const syncSession = makeJayAction('wixServerClient.syncSession')
             request.clearCookie(WIX_SESSION_COOKIE, SESSION_COOKIE_SCOPE);
             return { ok: true };
         }
-        const caller = await verifyAccessToken(
-            input.tokens?.accessToken?.value ?? '',
-            siteOAuthClientId(),
-        );
+        // Junk is refused before token-info, so it costs no outbound call.
+        const cookieValue = encodeSessionCookie(input.tokens?.accessToken);
+        const caller =
+            cookieValue &&
+            (await verifyAccessToken(input.tokens.accessToken.value, siteOAuthClientId()));
         if (!caller) {
             request.clearCookie(WIX_SESSION_COOKIE, SESSION_COOKIE_SCOPE);
             return { ok: false };
         }
-        request.setCookie(
-            WIX_SESSION_COOKIE,
-            encodeSessionCookie(input.tokens),
-            SESSION_COOKIE_OPTIONS,
-        );
+        request.setCookie(WIX_SESSION_COOKIE, cookieValue, SESSION_COOKIE_OPTIONS);
         return { ok: true, callerType: caller.type };
     });

@@ -6,7 +6,11 @@ import type { CookieOptions } from '@jay-framework/fullstack-component';
 import type { Tokens } from '@wix/sdk';
 import { syncSession } from '../../lib/actions/session-actions.js';
 import { resolveRequestIdentity } from '../../lib/session/request-identity.js';
-import { encodeSessionCookie, WIX_SESSION_COOKIE } from '../../lib/session/session-cookie.js';
+import {
+    encodeSessionCookie,
+    MAX_SESSION_COOKIE_LENGTH,
+    WIX_SESSION_COOKIE,
+} from '../../lib/session/session-cookie.js';
 import { fetchReturning, SITE_CLIENT_ID, tokenInfoFixture } from './fixtures.js';
 
 const THIRTY_DAYS_IN_SECONDS = 30 * 24 * 60 * 60;
@@ -58,8 +62,14 @@ describe('syncSession (V13)', () => {
             {
                 setCookie: [
                     WIX_SESSION_COOKIE,
-                    encodeSessionCookie(tokens),
-                    { httpOnly: true, sameSite: 'Lax', path: '/', maxAge: THIRTY_DAYS_IN_SECONDS },
+                    encodeSessionCookie(tokens.accessToken),
+                    {
+                        httpOnly: true,
+                        secure: true,
+                        sameSite: 'Lax',
+                        path: '/',
+                        maxAge: THIRTY_DAYS_IN_SECONDS,
+                    },
                 ],
             },
         ]);
@@ -86,6 +96,27 @@ describe('syncSession (V13)', () => {
         expect(calls).toEqual([{ clearCookie: [WIX_SESSION_COOKIE, { path: '/' }] }]);
         expect(fetchImpl).not.toHaveBeenCalled();
     });
+
+    it.each([
+        ['an oversized token', { value: 'a'.repeat(MAX_SESSION_COOKIE_LENGTH), expiresAt: 1 }],
+        ['a malformed token', { value: 'member-access', expiresAt: NaN }],
+    ])(
+        'should refuse %s before token-info: clear the cookie, { ok: false } (DL#48)',
+        async (_label, accessToken) => {
+            const fetchImpl = fetchReturning(tokenInfoFixture('active-member'));
+            vi.stubGlobal('fetch', fetchImpl);
+            const { request, calls } = fakeRequest();
+
+            const result = await syncSession.handler(
+                { tokens: { accessToken } as Tokens },
+                request,
+            );
+
+            expect(result).toEqual({ ok: false });
+            expect(calls).toEqual([{ clearCookie: [WIX_SESSION_COOKIE, { path: '/' }] }]);
+            expect(fetchImpl).not.toHaveBeenCalled();
+        },
+    );
 
     it('should propagate a token-info outage and set no cookie', async () => {
         vi.stubGlobal('fetch', fetchReturning({ status: 503, body: {} }));
@@ -127,7 +158,7 @@ describe('resolveRequestIdentity (V13)', () => {
 
     it('should give an active session with the cookie access token as authorization and a headers-only client (DL#43)', async () => {
         const tokens = tokensFor('member-access');
-        const cookies = { [WIX_SESSION_COOKIE]: encodeSessionCookie(tokens) };
+        const cookies = { [WIX_SESSION_COOKIE]: encodeSessionCookie(tokens.accessToken) };
 
         const identity = resolveRequestIdentity(
             cookies,
@@ -149,7 +180,9 @@ describe('resolveRequestIdentity (V13)', () => {
 
     it('should verify the caller with exactly one token-info call, even when awaited twice', async () => {
         const fetchImpl = fetchReturning(tokenInfoFixture('active-member'));
-        const cookies = { [WIX_SESSION_COOKIE]: encodeSessionCookie(tokensFor('member-access')) };
+        const cookies = {
+            [WIX_SESSION_COOKIE]: encodeSessionCookie(tokensFor('member-access').accessToken),
+        };
 
         const identity = resolveRequestIdentity(cookies, fetchImpl);
         expect(fetchImpl).not.toHaveBeenCalled(); // lazy: nothing until `caller` is read
@@ -166,7 +199,9 @@ describe('resolveRequestIdentity (V13)', () => {
     });
 
     it('should give an undefined caller but still a client for a token that fails a check', async () => {
-        const cookies = { [WIX_SESSION_COOKIE]: encodeSessionCookie(tokensFor('expired')) };
+        const cookies = {
+            [WIX_SESSION_COOKIE]: encodeSessionCookie(tokensFor('expired').accessToken),
+        };
 
         const identity = resolveRequestIdentity(
             cookies,

@@ -1,22 +1,27 @@
 /**
- * The `wix_session` cookie: a server-set mirror of the browser's OAuth tokens (DL#42 Q22).
- * Value: base64url JSON of `{ accessToken, refreshToken }`.
+ * The `wix_session` cookie: a server-set mirror of the browser's access token (DL#42 Q22, DL#48).
+ * Value: base64url JSON of `{ accessToken: { value, expiresAt } }`. The refresh token stays in the
+ * browser: the server never renews (DL#43), so it has no reader for it.
  */
 
 import type { CookieOptions } from '@jay-framework/fullstack-component';
-import type { Tokens } from '@wix/sdk';
+import type { AccessToken } from '@wix/sdk';
 
 export const WIX_SESSION_COOKIE = 'wix_session';
+
+/** Max length of the encoded cookie value. DL#42 measured ~1070 characters for an access token and ~1828 for an old two-token cookie. */
+export const MAX_SESSION_COOKIE_LENGTH = 3072;
 
 const THIRTY_DAYS_IN_SECONDS = 30 * 24 * 60 * 60;
 
 /**
- * `Secure` is left to jay's default (set when the request is https), so the cookie also
- * works on `http://localhost`. Max-Age is an assumption: the refresh-token lifetime was not
- * measurable (DL#42 Implementation Results).
+ * `Secure` always (DL#48 Q2): browsers still accept it on `http://localhost`; other plain-http
+ * hosts never keep the session. Max-Age outlives the 4 h access token on purpose: an expired
+ * cookie reads as `session: 'expired'` (precise "refresh the page" copy, DL#43) instead of `'none'`.
  */
 export const SESSION_COOKIE_OPTIONS: CookieOptions = {
     httpOnly: true,
+    secure: true,
     sameSite: 'Lax',
     path: '/',
     maxAge: THIRTY_DAYS_IN_SECONDS,
@@ -25,26 +30,28 @@ export const SESSION_COOKIE_OPTIONS: CookieOptions = {
 /** clearCookie must use the same path the cookie was set with. */
 export const SESSION_COOKIE_SCOPE = { path: SESSION_COOKIE_OPTIONS.path };
 
-export function encodeSessionCookie(tokens: Tokens): string {
-    const { accessToken, refreshToken } = tokens;
-    return Buffer.from(JSON.stringify({ accessToken, refreshToken })).toString('base64url');
+/** The cookie value for an access token; undefined when the token is malformed or the encoded value is too long. */
+export function encodeSessionCookie(accessToken: unknown): string | undefined {
+    const token = toAccessToken(accessToken);
+    if (!token) return undefined;
+    const value = Buffer.from(JSON.stringify({ accessToken: token })).toString('base64url');
+    return value.length <= MAX_SESSION_COOKIE_LENGTH ? value : undefined;
 }
 
-/**
- * The tokens in a cookie value, or undefined for a missing or unreadable one — including an
- * access token without a finite `expiresAt` (DL#43 §Design 0).
- */
-export function decodeSessionCookie(value: string | undefined): Tokens | undefined {
-    if (!value) return undefined;
+/** The access token in a cookie value (a refresh token is ignored); undefined when missing, malformed or too long. */
+export function decodeSessionCookie(value: string | undefined): AccessToken | undefined {
+    if (!value || value.length > MAX_SESSION_COOKIE_LENGTH) return undefined;
     try {
-        const tokens = JSON.parse(Buffer.from(value, 'base64url').toString('utf8')) as Tokens;
-        const accessToken = tokens?.accessToken;
-        const isReadable =
-            typeof accessToken?.value === 'string' &&
-            accessToken.value !== '' &&
-            Number.isFinite(accessToken.expiresAt);
-        return isReadable ? tokens : undefined;
+        const json = JSON.parse(Buffer.from(value, 'base64url').toString('utf8'));
+        return toAccessToken(json?.accessToken);
     } catch {
         return undefined;
     }
+}
+
+/** A fresh `{ value, expiresAt }`, so no other field the browser sent survives (F10). */
+function toAccessToken(raw: unknown): AccessToken | undefined {
+    const { value, expiresAt } = (raw ?? {}) as Partial<Record<keyof AccessToken, unknown>>;
+    const isReadable = typeof value === 'string' && value !== '' && Number.isFinite(expiresAt);
+    return isReadable ? { value, expiresAt: expiresAt as number } : undefined;
 }
