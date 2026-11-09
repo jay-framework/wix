@@ -274,3 +274,10 @@ Priority: validation → agent-kit → framework.
   - Finding: jay accepts an unknown `options.bogus` ref without complaint. Rule 1 is the only check for it.
 - Tests: wix-forms 196/196 (+8 `toggleSelection`, +1 generator, +3 interactive, +6 validator, +3 compile/guide). `build:check-types` clean; `build` and `validate-plugin` green.
 - **Still pending** (final end-to-end pass, unchanged): browser items (a)–(e) and the live Wix check that closes DL#41 MUST-VERIFY #1.
+
+### Code review fix (`wix-forms-step-8`)
+
+- **Bug:** `focusableRef` returned the field's `input` ref whenever it existed. Every generated multiselect contract has `input`, and a chip page never binds it, so focus on a failed submit or reset called `exec$` on an unbound ref and did nothing. The harness had hidden this because its chip field had no `input` ref.
+- **Fix:** a multiselect focuses its first bound chip (`options.toggle.find(() => true)`) if one exists, and falls back to `input` (`<select multiple>`). The harness chip field now also carries an unbound `input` ref, like a generated contract. With that change, Phase 4 tests (b) and (c) went red on the old code and green after the fix.
+- Known limit, unchanged: a non-multiselect field whose `input` exists in the refs but is unbound still qualifies for focus.
+- Tests: wix-forms 196/196; `build:check-types` clean.

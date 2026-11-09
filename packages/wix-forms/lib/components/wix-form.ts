@@ -435,13 +435,19 @@ function focusFirstFieldInput(
     void focusableRef(refs, field).exec$((element: HTMLElement) => element.focus());
 }
 
-/** The element ref that takes focus for `field`: its `input`, else its first chip checkbox. */
+/**
+ * The element ref that takes focus for `field`. A multiselect prefers its first bound chip
+ * checkbox: a chip page still has the contract's `input` ref, unbound, and focusing it no-ops.
+ * Otherwise (or a `<select multiple>` page) the field's `input`.
+ */
 function focusableRef(refs: any, field: FormFieldView): any {
     const fieldRef = refs[contractTagName(field.target)];
-    if (fieldRef?.input) return fieldRef.input;
-    if (field.inputType !== 'multiselect') return undefined;
-    // A collection ref has only `map`/`find`; `find` returns the per-item ref, which has `exec$`.
-    return fieldRef?.options?.toggle?.find(() => true);
+    if (field.inputType === 'multiselect') {
+        // A collection ref has only `map`/`find`; `find` returns a bound item's ref, with `exec$`.
+        const firstChip = fieldRef?.options?.toggle?.find(() => true);
+        if (firstChip) return firstChip;
+    }
+    return fieldRef?.input;
 }
 
 /** The <form> a click on `target` submits natively, if any (a submit-type button it owns). */

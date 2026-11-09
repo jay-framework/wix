@@ -4,7 +4,8 @@
  * to their collections only at `element.mount()` — after the interactive constructor has run.
  *
  * A multiselect passed as `chipField` gets a `refs.<field>.options.toggle` collection whose
- * per-option item refs are bound to fake checkboxes (DL#44 Phase 4), as a `forEach` would.
+ * per-option item refs are bound to fake checkboxes (DL#44 Phase 4), as a `forEach` would. Its
+ * `input` ref exists, as in every generated contract, but is never bound.
  *
  * Test files must mock `../lib/actions/forms-actions.js` and
  * `@jay-framework/wix-server-client/client` before importing this module.
@@ -98,7 +99,10 @@ interface ChipGroup {
  */
 function chipGroup(options: any, field: FormFieldView, chips: FakeCheckbox[]): ChipGroup {
     const [optionsManager] = ReferencesManager.for(options, [], ['toggle'], [], []);
-    const [manager] = ReferencesManager.for(options, [], [], [], [], { options: optionsManager });
+    // Every generated field also has an `input` ref; a chip page never binds it.
+    const [manager] = ReferencesManager.for(options, ['input'], [], [], [], {
+        options: optionsManager,
+    });
     const toggle = optionsManager.get('toggle') as any;
     const bind = () =>
         field.options.map((option, index) => {
