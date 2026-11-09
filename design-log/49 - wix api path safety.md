@@ -151,7 +151,7 @@ Red first in every phase: write the test with the correct expected behaviour, ru
 
 ## Implementation Results
 
-Implemented 2026-11-09 as planned (Phases 1 and 2). Bookings Phase 2 not started (outside the gate).
+Implemented 2026-11-09 as planned: all of this log's phases are done (Phase 1, the `wixFetch` path guard; Phase 2, the form-id helper with GUID validation and encoding). The separate wix-bookings follow-up in §4, a server query that resolves the participant form id so `getFormSummary` can stop being public, was never part of this log's plan; it is a later task outside the security gate.
 
 - **Phase 1** (`wix-server-client/lib/wix-fetch.ts`): `assertSafeWixPath` runs first in `wixFetch`, before `authHeadersFor`. Red: 10 new tests failed against the unchanged code (the 9 refused paths plus "does not echo the refused path"); the 3 allowed paths passed. Green: wix-server-client 83/83; `build` and `build:check-types` clean.
 - **Phase 2** (`wix-forms/lib/utils/form-id.ts` new; `get-form-summary.ts`, `get-form.ts` use `formIdPathSegment`). Red: `test/form-id.test.ts` failed (module missing) and all 4 tests in the new `test/get-form-summary.test.ts` / `test/get-form.test.ts` failed. Green: wix-forms 215/215 (21 files); `build` (incl. `validate-plugin`) and `build:check-types` clean.
