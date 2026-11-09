@@ -52,6 +52,10 @@ Design documentation for the Jay Framework Wix integration packages.
 | 44  | [Checkbox-Group Multiselect and Native Submit Guard](./44%20-%20checkbox-group%20multiselect%20and%20native%20submit%20guard.md) | Implemented (browser and live Wix checks pending) |
 | 45  | [Locale-Neutral Submit Outcome for wix-forms](./45%20-%20locale-neutral%20submit%20outcome%20for%20wix-forms.md) | Implemented (browser demo pending)                                       |
 | 46  | [Locale-Neutral Outcomes for wix-bookings](./46%20-%20locale-neutral%20outcomes%20for%20wix-bookings.md)         | Implemented (browser demo pending)                                       |
+| 47  | [wix-forms Release Security Gate](./47%20-%20wix-forms%20release%20security%20gate.md) (umbrella for #48–#50)    | Design                                                                   |
+| 48  | [wix-server-client Session Cookie Hardening](./48%20-%20wix-server-client%20session%20cookie%20hardening.md)     | Design                                                                   |
+| 49  | [Wix API Path Safety](./49%20-%20wix%20api%20path%20safety.md)                                                   | Design                                                                   |
+| 50  | [wix-forms Submit Access Policy](./50%20-%20wix-forms%20submit%20access%20policy.md)                             | Design                                                                   |
 
 ## Packages Covered
 
