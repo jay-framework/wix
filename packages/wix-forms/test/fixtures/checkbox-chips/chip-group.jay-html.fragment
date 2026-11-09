@@ -1,0 +1,16 @@
+<style>
+  /* Visually hidden but focusable and clickable through its <label> — never display:none. */
+  .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+             overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+</style>
+<form novalidate>
+<fieldset aria-describedby="contact-interests-error">
+  <legend>{contact.interests.label}<span if="contact.interests.required"> (required)</span></legend>
+  <label forEach="contact.interests.options" trackBy="value" class="chip {selected ? on}">
+    <input type="checkbox" class="sr-only" ref="contact.interests.options.toggle" value="{value}" checked="{selected}" aria-invalid="{$parent.contact.interests.invalid}" /> {label}
+  </label>
+  <span id="contact-interests-error" class="error" aria-live="polite">{contact.interests.error}</span>
+</fieldset>
+<label><input type="checkbox" ref="contact.consent.input" /> I agree</label>
+<button ref="contact.submitButton">Send</button>
+</form>

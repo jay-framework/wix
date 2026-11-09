@@ -5,6 +5,7 @@ import {
     emptyStoreFor,
     projectSubmissionValues,
     seedControlValues,
+    toggleSelection,
     validateVisibleFields,
     type ControlSeed,
 } from '../lib/components/submission-values.js';
@@ -201,5 +202,59 @@ describe('validateVisibleFields', () => {
         expect(validateVisibleFields(fields, { first_name: '', reference: '' })).toEqual({
             first_name: 'first_name is required.',
         });
+    });
+});
+
+describe('toggleSelection (DL#44 §2)', () => {
+    const interests: FormFieldView = {
+        ...multiselectField('interests'),
+        options: [
+            { value: 'a', label: 'A' },
+            { value: 'b', label: 'B' },
+            { value: 'c', label: 'C' },
+        ],
+    };
+
+    it('should add a checked option', () => {
+        expect(
+            toggleSelection(interests, { current: ['a'], optionValue: 'b', checked: true }),
+        ).toEqual(['a', 'b']);
+    });
+
+    it('should remove an unchecked option', () => {
+        expect(
+            toggleSelection(interests, { current: ['a', 'b'], optionValue: 'a', checked: false }),
+        ).toEqual(['b']);
+    });
+
+    it('should return the selection in option order, not click order', () => {
+        expect(
+            toggleSelection(interests, { current: ['c'], optionValue: 'a', checked: true }),
+        ).toEqual(['a', 'c']);
+    });
+
+    it('should drop values that are not options of the field', () => {
+        expect(
+            toggleSelection(interests, {
+                current: ['stale'],
+                optionValue: 'unknown',
+                checked: true,
+            }),
+        ).toEqual([]);
+    });
+
+    it.each(['', true, false])(
+        'should start from an empty selection when current is %j',
+        (current) => {
+            expect(
+                toggleSelection(interests, { current, optionValue: 'b', checked: true }),
+            ).toEqual(['b']);
+        },
+    );
+
+    it('should not duplicate an option that is checked twice', () => {
+        expect(
+            toggleSelection(interests, { current: ['a'], optionValue: 'a', checked: true }),
+        ).toEqual(['a']);
     });
 });

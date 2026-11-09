@@ -124,6 +124,38 @@ sub-contract with per-option `selected` is the array representation.
 </label>
 ```
 
+**Checkbox chips.** To draw a multiselect as a group of checkboxes, bind each option's
+checkbox to `options.toggle`. Each change adds or removes that option, and the submission
+stays a `string[]` in option order. Multi-choice checkboxes bind `options.toggle`; `control`
+is single-value, so each click would replace the whole selection (the validator warns).
+`toggle` exists only on a multiselect's options, not on a single `select`.
+
+```html
+<style>
+  /* Visually hidden but focusable and clickable through its <label> — never display:none. */
+  .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+             overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+</style>
+<form novalidate>
+<fieldset aria-describedby="contact-interests-error">
+  <legend>{contact.interests.label}<span if="contact.interests.required"> (required)</span></legend>
+  <label forEach="contact.interests.options" trackBy="value" class="chip {selected ? on}">
+    <input type="checkbox" class="sr-only" ref="contact.interests.options.toggle" value="{value}" checked="{selected}" aria-invalid="{$parent.contact.interests.invalid}" /> {label}
+  </label>
+  <span id="contact-interests-error" class="error" aria-live="polite">{contact.interests.error}</span>
+</fieldset>
+<label><input type="checkbox" ref="contact.consent.input" /> I agree</label>
+<button ref="contact.submitButton">Send</button>
+</form>
+```
+
+- Inside `forEach` over `options`, bindings are relative to the option (`{value}`, `{label}`,
+  `{selected}`); reach the field with `$parent.` (`{$parent.contact.interests.invalid}`). A
+  plain `{contact.interests.invalid}` there fails to compile ("data field not found").
+- Put `aria-invalid` on each chip `<input>`, not on the `<fieldset>` (the `group` role does
+  not support it). Hide the input visually with clipping, never `display:none`, so it stays
+  focusable; a failed submit focuses the first chip of an invalid group.
+
 ## 5. Custom UI / multi-step
 
 Any element bound to a field's `control` feeds that field's store slot via its `data-value`

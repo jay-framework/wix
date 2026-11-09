@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { parseContract } from '@jay-framework/compiler-jay-html';
+import { ContractTagType, parseContract } from '@jay-framework/compiler-jay-html';
 import { checkValidationErrors } from '@jay-framework/compiler-shared';
 import { generator as formContractGenerator } from '../lib/generators/form-contract-generator.js';
 import type { ListedFormView } from '../lib/types.js';
@@ -64,6 +64,43 @@ const contactForm: ListedFormView = {
     ],
 };
 
+const choicesForm: ListedFormView = {
+    id: 'c1',
+    name: 'Choices',
+    fields: [
+        {
+            target: 'consent',
+            label: 'I agree',
+            inputType: 'checkbox',
+            required: true,
+            placeholder: '',
+            options: [],
+        },
+        {
+            target: 'interests',
+            label: 'Interests',
+            inputType: 'multiselect',
+            required: false,
+            placeholder: '',
+            options: [
+                { value: 'news', label: 'News' },
+                { value: 'offers', label: 'Offers' },
+            ],
+        },
+        {
+            target: 'country',
+            label: 'Country',
+            inputType: 'select',
+            required: false,
+            placeholder: '',
+            options: [
+                { value: 'il', label: 'Israel' },
+                { value: 'us', label: 'United States' },
+            ],
+        },
+    ],
+};
+
 describe('formContractGenerator', () => {
     it('should generate one contract per form with field-named tags, keyed metadata, and form/<slug> name', async () => {
         const expected = await readFile(
@@ -92,37 +129,11 @@ describe('formContractGenerator', () => {
      *   HTMLInputElement for the multiselect, and no `selected` variant — this fails red as
      *   a fixture diff until 4c lands.
      */
-    it('should model a checkbox as a boolean value variant and a multiselect via options.selected', async () => {
+    it('should model a checkbox as a boolean value variant, a multiselect via options.selected and options.toggle, and a single select via options without toggle', async () => {
         const expected = await readFile(
             path.join(fixturesDir, 'form-contract-generator', 'choices.jay-contract'),
             'utf-8',
         );
-        const choicesForm: ListedFormView = {
-            id: 'c1',
-            name: 'Choices',
-            fields: [
-                {
-                    target: 'consent',
-                    label: 'I agree',
-                    inputType: 'checkbox',
-                    required: true,
-                    placeholder: '',
-                    options: [],
-                },
-                {
-                    target: 'interests',
-                    label: 'Interests',
-                    inputType: 'multiselect',
-                    required: false,
-                    placeholder: '',
-                    options: [
-                        { value: 'news', label: 'News' },
-                        { value: 'offers', label: 'Offers' },
-                    ],
-                },
-            ],
-        };
-
         const [contract] = await formContractGenerator.generate(serviceWith([choicesForm]));
         expect(contract.yaml.trim()).toEqual(expected.trim());
         // The shape must parse — confirms the nested per-option `selected` variant inside a
@@ -130,6 +141,22 @@ describe('formContractGenerator', () => {
         expect(() =>
             checkValidationErrors(parseContract(contract.yaml, 'form-choices.jay-contract')),
         ).not.toThrow();
+    });
+
+    it('should give only a multiselect a per-option toggle checkbox ref (DL#44 §1)', async () => {
+        const [contract] = await formContractGenerator.generate(serviceWith([choicesForm]));
+        const parsed = checkValidationErrors(
+            parseContract(contract.yaml, 'form-choices.jay-contract'),
+        ) as { tags: ParsedTag[] };
+
+        expect(optionChildren(parsed, 'interests')).toContainEqual(
+            expect.objectContaining({
+                tag: 'toggle',
+                type: [ContractTagType.interactive],
+                elementType: ['HTMLInputElement'],
+            }),
+        );
+        expect(optionChildren(parsed, 'country').map((tag) => tag.tag)).not.toContain('toggle');
     });
 
     it('should produce a contract that parses without validation errors', async () => {
@@ -188,3 +215,13 @@ describe('formContractGenerator', () => {
         expect(fieldTags).not.toContain('phone-number');
     });
 });
+
+interface ParsedTag {
+    tag: string;
+    tags?: ParsedTag[];
+}
+
+function optionChildren(parsed: { tags: ParsedTag[] }, field: string): ParsedTag[] {
+    const fieldTag = parsed.tags.find((tag) => tag.tag === field);
+    return fieldTag?.tags?.find((tag) => tag.tag === 'options')?.tags ?? [];
+}
