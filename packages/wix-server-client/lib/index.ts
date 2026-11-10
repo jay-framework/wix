@@ -46,3 +46,9 @@ export {
 } from './session/request-identity.js';
 export { verifyAccessToken, type VerifiedCaller } from './session/verify-access-token.js';
 export { WIX_SESSION_COOKIE } from './session/session-cookie.js';
+
+// For dependent plugins' setup handlers: skip cleanly when the Wix client is not configured.
+export {
+    serverClientSetupBlocker,
+    SERVER_CLIENT_NOT_CONFIGURED_MESSAGE,
+} from './setup-dependency.js';
