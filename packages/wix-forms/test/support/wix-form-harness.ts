@@ -7,6 +7,10 @@
  * per-option item refs are bound to fake checkboxes (DL#44 Phase 4), as a `forEach` would. Its
  * `input` ref exists, as in every generated contract, but is never bound.
  *
+ * The `confirmation` ref sits inside `if="…isSubmitted"`, as in the guides: it is bound and
+ * mounted only when a render `update` first sees `isSubmitted: true`, as jay mounts a
+ * conditional branch during the reactive flush.
+ *
  * Test files must mock `../lib/actions/forms-actions.js` and
  * `@jay-framework/wix-server-client/client` before importing this module.
  */
@@ -27,6 +31,10 @@ export interface FakeButton {
     type: string;
     addEventListener: ReturnType<typeof vi.fn>;
     removeEventListener: ReturnType<typeof vi.fn>;
+}
+
+export interface FakeFocusable {
+    focus: ReturnType<typeof vi.fn>;
 }
 
 export interface FakeCheckbox {
@@ -86,6 +94,8 @@ export interface WixFormHarness {
     submitRef: BoundRef;
     /** One fake checkbox per option of the chip field, in option order. */
     chips: FakeCheckbox[];
+    /** The confirmation element; its ref binds only once `isSubmitted` renders. */
+    confirmation: FakeFocusable;
 }
 
 interface ChipGroup {
@@ -126,30 +136,40 @@ export function mountWixForm(
     const submitForm = fakeForm();
     const submitButton = fakeButton(submitForm);
     const resetButton = fakeButton(null);
+    const confirmation: FakeFocusable = { focus: vi.fn() };
     let submitRef!: BoundRef;
 
     const preRender = (options: any) => {
         const group = chipField && chipGroup(options, chipField, chips);
         const children = group ? { [contractTagName(chipField!.target)]: group.manager } : {};
-        const [refManager, [submitButtonRef, resetButtonRef]] = ReferencesManager.for(
-            options,
-            ['submitButton', 'resetButton'],
-            [],
-            [],
-            [],
-            children,
-        );
+        const [refManager, [submitButtonRef, resetButtonRef, confirmationRefFactory]] =
+            ReferencesManager.for(
+                options,
+                ['submitButton', 'resetButton', 'confirmation'],
+                [],
+                [],
+                [],
+                children,
+            );
         const render = (viewState: any) =>
             ConstructContext.withRootContext(viewState, refManager, () => {
                 submitRef = submitButtonRef() as BoundRef;
                 submitRef.set(submitButton);
                 const resetRef = resetButtonRef() as BoundRef;
                 resetRef.set(resetButton);
+                const confirmationRef = confirmationRefFactory() as BoundRef;
+                let isConfirmationMounted = false;
                 const boundRefs = [submitRef, resetRef, ...(group?.bind() ?? [])];
                 return {
                     dom: undefined as any,
                     mount: () => boundRefs.forEach((ref) => ref.mount()),
-                    update: () => {},
+                    update: (next: any) => {
+                        if (next.isSubmitted && !isConfirmationMounted) {
+                            confirmationRef.set(confirmation);
+                            confirmationRef.mount();
+                            isConfirmationMounted = true;
+                        }
+                    },
                     unmount: () => boundRefs.forEach((ref) => ref.unmount()),
                 };
             });
@@ -169,6 +189,7 @@ export function mountWixForm(
         submitButton,
         resetButton,
         chips,
+        confirmation,
         get submitRef() {
             return submitRef;
         },
