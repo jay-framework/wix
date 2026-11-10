@@ -1,6 +1,6 @@
 # 41 - General Forms Infrastructure for wix-forms
 
-Status: Implemented — except Capability 2 member prefill (deferred) and Capability 4b (not shipped; see Implementation Results)
+Status: Implemented — except Capability 2 member prefill (deferred) and Capability 4b (not shipped); QA 2026-11-10 passed with the confirmation-focus fix (Safari not covered)
 
 Builds directly on **DL#40 (Per-Form Contracts for wix-forms)**. DL#40 gave each Wix form its own contract with field-named tags, one shared `wixForm` component, and a plugin validator. DL#41 turns that into a **general forms-infrastructure plugin**: rich production forms (success/confirmation state, prefill, live validation, hidden/derived values, custom step UI) adopt the plugin instead of hand-rolling a page contract + interactive component + a bespoke server action over the Wix `createSubmission` API. Reusable by **any** Jay project — the design is described generically and names no downstream site.
 
@@ -490,3 +490,15 @@ Headless plugin: the page author owns markup, so the plugin's levers are runtime
 - Known limit: `focusFirstFieldInput` picks the first matching field whose `input` ref exists in the contract; if the page binds that field only through `control`, focus is not moved.
 - Tests: `wix-forms` 78/78 (4 new validator tests; two existing tests now use labelled inputs). `build` + `validate-plugin` + `build:check-types` clean. Focus behavior not yet verified in a browser.
 - Correction (DL#44): the mount-time `submit` guard above never attached. `wireNativeFormSubmit` ran inside a construction-time `createEffect`, which in jay 0.25.5 runs before the refs bind and never re-runs, so a wired submit button inside a `<form>` did a native GET reload. DL#44 installs the guard from microtasks (after construction and after a reset re-mount) and from the submit click.
+
+## QA Results and Fixes (2026-11-10)
+
+End-to-end QA run 2026-11-10 (local builds of `main`, fresh `create jay` project, throwaway headless Wix site; Chromium recorded, Firefox for the cookie check).
+
+- **MUST-VERIFY #1 — closed.** Wix accepts a `string[]` (multiselect) and a boolean (checkbox) in `submission.submissions[target]`: the dashboard shows Interests as tags and consent as ✓. No serialization fallback needed.
+- **Browser checks passed:** empty submit (no request, every required error, focus on the first invalid field); reset clears fields; confirmation echo (`Thanks, Ada!`).
+- **Bug — confirmation focus (Addendum A).** After a successful submit focus stayed on `BODY`. Cause: the success path runs after `await`, outside any reactive batch, so jay schedules the flush that mounts the `if="…isSubmitted"` branch with `setTimeout(0)`; the `queueMicrotask` focus ran first, while the `confirmation` ref was unbound, and `exec$` no-oped. **Fix:** `afterRemount` now waits for the component's `useReactive().toBeClean()` (resolves after the flush, in a batch or after one), `lib/components/wix-form.ts`. Repro `test/wix-form-confirmation-focus.interactive.test.ts` (harness binds the `confirmation` ref only when an update renders `isSubmitted`): red → green.
+- **Bug — §4b `<select multiple>` example.** `selected="{selected}"` renders `selected="false"` (= selected). The guide now uses jay's boolean condition syntax `selected="selected"`; verbatim fixture `test/fixtures/checkbox-chips/select-multiple.jay-html.fragment` with a compile test asserting `selected: ba(vs1 => vs1.selected)` (green on jay 0.26.0).
+- **Tests:** wix-forms 251/252 (the one red test is DL #44's chip `checked` check, red until jay treats `checked` as a boolean attribute).
+
+**Re-check on the fix branches (2026-11-10, video `qa-09`):** with jay `wix-forms-step-11` the guide's exact chip pattern (`checked="selected"`) renders unchecked in SSR, the DOM `checked` follows each click, the payload is `["News","Events"]` in option order, and focus moves to the confirmation after a successful submit. wix-forms 252/252.

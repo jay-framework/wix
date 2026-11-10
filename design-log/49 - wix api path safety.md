@@ -1,6 +1,6 @@
 # 49 - Wix API Path Safety
 
-Status: Implemented (live end-to-end bookings check and manual curl check pending)
+Status: Implemented — live bookings and curl checks passed 2026-11-10; invalid-id refusal is now a 4xx
 
 Part of the wix-forms release security gate (**DL #47**, the umbrella). Closes **F2** (path injection in the public `getFormSummary` query) and defines the **canonical form id** that DL #50 uses to close **F4**. Packages: `@jay-framework/wix-server-client` (the `wixFetch` guard, for every plugin) and `@jay-framework/wix-forms` (the form-id helper and its two path builders); wix-bookings is read as a consumer only. Paths are relative to `packages/`.
 
@@ -158,3 +158,17 @@ Implemented 2026-11-09 as planned: all of this log's phases are done (Phase 1, t
 - **Consumers:** wix-bookings 49/49; root `yarn test` green (all packages).
 - **Deviations:** none. Added beyond the plan: a test that the guard error does not echo the path, and `canonicalFormId` cases for a GUID followed by `\nx` or `/x`, `null` and `undefined`.
 - **Pending:** the manual `curl` check and the live end-to-end bookings participant-form check (OQ-1) before release.
+
+## Live Checks Results and Fix (2026-11-10)
+
+End-to-end QA run 2026-11-10 (local builds of `main`, fresh `create jay` project, throwaway headless Wix site; Chromium recorded, Firefox for the cookie check).
+
+- Curl: `getFormSummary` with `../` and `%2e` traversal ids was refused with no outbound call; a valid id returns fields.
+- **OQ-1 answered (in part):** booking participant form ids are GUIDs, so the GUID check does not break bookings — the participant form (First/Last/Email) loads through Wix checkout. The namespace itself was not recorded.
+- **Refusal is now 4xx.** The refusal surfaced as HTTP 500 `INTERNAL_ERROR`. The `getFormSummary` query now checks the id first and throws `ActionError('INVALID_INPUT', …)` for a missing or non-GUID id, before any Wix call (`lib/actions/forms-actions.ts`). Deviation from Q4: the text is unchanged (still no generic shim), only the error class/status changed. Test `test/forms-actions.test.ts`: red (4 cases) → green.
+- **`required` is always false in summaries.** The Wix Form Summary `Field` has no `required` property (target, label, type, options, deleted, id, fields), so `getFormSummary` cannot report it. Documented in `wix-forms-setup.md` and the bookings troubleshooting guide; Wix still enforces required fields on `createBooking`.
+
+### wix-bookings setup (QA 2026-11-10)
+
+- With wix-server-client not configured, setup said "wix-bookings requires the wix-forms plugin"; it now returns "skipped: wix-server-client not configured" (`serverClientSetupBlocker`), and the wix-forms message only appears when the client exists and wix-forms does not.
+- `staffResourceTypeId` is filled automatically when empty: the `typeId` of a staff member's resource (`POST /bookings/v2/staff-members/query` → `resourceId`, joined with `POST /bookings/v2/resources/query`) is written into `config/.wix-bookings.yaml`, keeping its comments. With no staff, setup says where to find it. `bookingAppId` already defaults to the Wix Bookings app id; the template now says each service's `appId` holds it. Tests `wix-bookings/test/setup.test.ts` (mocked `wixFetch`): 3 red → green; wix-bookings 54/54. Not run against the live site.

@@ -1,6 +1,6 @@
 # 44 - Checkbox-Group Multiselect and Native Submit Guard
 
-Status: Implemented (browser and live Wix checks pending in the final end-to-end pass)
+Status: Implemented — browser and live Wix checks passed 2026-11-10; chip example fixed (compile check red until the jay boolean-attribute fix); Safari not covered
 
 Builds on **DL#40** (per-form contracts, repeated `options` sub-contract), **DL#41** (value store §0, Capability 4c non-string fields, Capability 5 `control`, Addendum A "submit runs from the `<form>`'s `submit` event"), **DL#42** (server-side submit hook) and **DL#45** (locale-neutral submit outcome; unchanged here). Package: `@jay-framework/wix-forms`; paths are relative to `packages/wix-forms/` unless stated. jay is referenced only through its public packages (`@jay-framework/component`, `@jay-framework/runtime`, `@jay-framework/reactive`, `@jay-framework/stack-client-runtime`, all 0.25.5 as installed), cited by built file and line.
 
@@ -281,3 +281,13 @@ Priority: validation → agent-kit → framework.
 - **Fix:** a multiselect focuses its first bound chip (`options.toggle.find(() => true)`) if one exists, and falls back to `input` (`<select multiple>`). The harness chip field now also carries an unbound `input` ref, like a generated contract. With that change, Phase 4 tests (b) and (c) went red on the old code and green after the fix.
 - Known limit, unchanged: a non-multiselect field whose `input` exists in the refs but is unbound still qualifies for focus.
 - Tests: wix-forms 196/196; `build:check-types` clean.
+
+## QA Results and Fixes (2026-11-10)
+
+End-to-end QA run 2026-11-10 (local builds of `main`, fresh `create jay` project, throwaway headless Wix site; Chromium recorded, Firefox for the cookie check).
+
+- **Browser items a–e passed:** chips submit in option order (`["News","Events"]`); consent submits boolean `true`; a wired submit inside `<form>` does not navigate, double Enter sends one request, `form.requestSubmit()` works; Enter with empty required chips focuses the first chip; reset unchecks all chips and focuses the first field. Live Wix accepts the `string[]`.
+- **Bug — the §4b chip example started every chip checked.** `checked="{selected}"` renders `checked="false"`, which is checked; the first click inverted the selection. The unit tests (fake DOM) and the "compiles" test could not catch it. **Fix (guide):** `checked="selected"` (jay's boolean condition syntax), plus a note that the store starts empty and wix-forms reflects `checked` itself on toggle and reset. Fixture `chip-group.jay-html.fragment` updated (verbatim test green). Grep of every wix guide/example/agent-kit for `checked="{` / `selected="{` / `disabled="{`: no other occurrence.
+- **Red until jay:** the strengthened compile test asserts `checked: ba(vs1 => vs1.selected)`. jay 0.26.0's boolean-attribute set lacks `checked`, so `checked="selected"` still compiles to the string `'selected'`. The test stays red until the jay fix (add `checked` to boolean attributes; render boolean conditions for headless data in SSR) is synced in. Until then the QA workaround — omit the `checked` binding — is the safe page pattern.
+
+**Re-check on the fix branches (2026-11-10, video `qa-09`):** with jay `wix-forms-step-11` the guide's exact chip pattern (`checked="selected"`) renders unchecked in SSR, the DOM `checked` follows each click, the payload is `["News","Events"]` in option order, and focus moves to the confirmation after a successful submit. wix-forms 252/252.
