@@ -38,6 +38,7 @@ flowchart LR
     G -- safe --> OK["GET the form summary"]
   end
 ```
+
 _Before, a crafted form id reaches any Wix GET endpoint with the site's credentials. After, the path builder refuses it, and the guard refuses any traversal that a caller forgot to encode._
 
 ## Prior Art / Adjacent Mechanisms
@@ -48,11 +49,11 @@ _Before, a crafted form id reaches any Wix GET endpoint with the site's credenti
 
 **`wixFetch(` call sites, all in `packages/*` (grep 2026-11-09).** Every path starts with `/`. None contains `#`, a control character, `..` or `%2e`.
 
-| Kind | Call sites | Effect of the guard |
-| --- | --- | --- |
-| Encoded, or a `URLSearchParams` / `encodeURIComponent` query | wix-bookings orders, wix-pro-gallery, wix-stores `query-schemas.ts` (`?fqdn=…`), `get-product.ts` / `get-product-by-slug.ts` / wix-stores-v1 `get-product.ts` (query via `URLSearchParams`), wix-forms `list-forms.ts` (`?…`) | none |
-| **Unencoded ids in the path portion** | wix-stores `get-product.ts`, `get-product-by-slug.ts` (`${slug}`), `get-category.ts`, `list-customizations.ts`; wix-stores-v1 `get-product.ts`; wix-bookings `calculate-cart.ts`, `get-checkout-url.ts`, `place-order.ts` (`${cartId}`); wix-forms `get-form.ts`, `get-form-summary.ts` | none for real Wix ids and slugs (they never contain `..`, `#` or `%2e`); a traversal through any of them is now refused. Encoding the wix-stores / wix-bookings segments is outside this gate (tracked). |
-| Static paths | wix-cart, wix-members `'/members/v1/members/my?fieldsets=FULL'`, wix-bookings `'/_api/…?fields=…&fields=…'`, the rest | none |
+| Kind                                                         | Call sites                                                                                                                                                                                                                                                                              | Effect of the guard                                                                                                                                                                                      |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Encoded, or a `URLSearchParams` / `encodeURIComponent` query | wix-bookings orders, wix-pro-gallery, wix-stores `query-schemas.ts` (`?fqdn=…`), `get-product.ts` / `get-product-by-slug.ts` / wix-stores-v1 `get-product.ts` (query via `URLSearchParams`), wix-forms `list-forms.ts` (`?…`)                                                           | none                                                                                                                                                                                                     |
+| **Unencoded ids in the path portion**                        | wix-stores `get-product.ts`, `get-product-by-slug.ts` (`${slug}`), `get-category.ts`, `list-customizations.ts`; wix-stores-v1 `get-product.ts`; wix-bookings `calculate-cart.ts`, `get-checkout-url.ts`, `place-order.ts` (`${cartId}`); wix-forms `get-form.ts`, `get-form-summary.ts` | none for real Wix ids and slugs (they never contain `..`, `#` or `%2e`); a traversal through any of them is now refused. Encoding the wix-stores / wix-bookings segments is outside this gate (tracked). |
+| Static paths                                                 | wix-cart, wix-members `'/members/v1/members/my?fieldsets=FULL'`, wix-bookings `'/_api/…?fields=…&fields=…'`, the rest                                                                                                                                                                   | none                                                                                                                                                                                                     |
 
 ## Questions and Answers
 
@@ -100,11 +101,13 @@ A wix-bookings server query that takes the booking service id and resolves its p
 Red first in every phase: write the test with the correct expected behaviour, run it against the unchanged code, record the red result, then implement.
 
 **Phase 1: wix-server-client guard.**
+
 1. `test/wix-fetch.test.ts`: refused, with `fetch` and `getAuthHeaders` never called: `/a/../b`, `/a/%2E%2e/b`, `/a/%2e/b`, `/a#x`, `/a?b=c#d`, `/a/.\t./b`, `/a\nb`, `@evil.example/x`, `.evil.example/x`. Allowed: `/a?b=c`, `/a?q=a..b` (dots after `?`), `/members/v1/members/my?fieldsets=FULL`.
 2. Implement §1.
 3. `npm run build`, `build:check-types` and the tests in `packages/wix-server-client`.
 
 **Phase 2: wix-forms form id and path builders** (after Phase 1 is built; sync is via the Yarn workspace dependency).
+
 1. `test/form-id.test.ts`: upper case and padded GUIDs canonicalise; `'form-1'`, `''`, `'../x'`, `'%2e%2e'`, numbers and objects → `undefined`; `formIdPathSegment` throws on a non-GUID.
 2. A new `test/get-form-summary.test.ts` (mocks `wixFetch`): `getFormSummary(client, '../../../members/v1/members?x=1#')` rejects and `wixFetch` is not called; `getFormSummary(client, '<UPPER-CASE GUID>')` calls `wixFetch` with `/form-schema-service/v4/forms/<lowercase guid>/summary`. **No allowlist assertion** (`isSubmittableForm`, DL #50, is never consulted by this path). The same two cases for `getFormSchema` in a new `test/get-form.test.ts`.
 3. Implement §2–§3.
@@ -113,10 +116,10 @@ Red first in every phase: write the test with the correct expected behaviour, ru
 ## Examples
 
 ✅ `wixFetch(client, '/progallery/v2/galleries/abc?offset=0&limit=50')`.
-❌ `wixFetch(client, \`/stores/v3/products/slug/${'../x'}\`)` throws before reading credentials.
-✅ `wixFetch(client, '/a?q=a..b')`: dots after `?` are query.
-❌ `GET …/wixForms.getFormSummary?formId=../../../members/v1/members` → rejected before any Wix call.
-✅ `getFormSummary(client, '3F2A9C1E-5B7D-4E8F-9A0B-1C2D3E4F5A6B')` → `/form-schema-service/v4/forms/3f2a9c1e-5b7d-4e8f-9a0b-1c2d3e4f5a6b/summary`.
+❌ `wixFetch(client, \`/stores/v3/products/slug/${'../x'}\`)`throws before reading credentials.
+✅`wixFetch(client, '/a?q=a..b')`: dots after `?`are query.
+❌`GET …/wixForms.getFormSummary?formId=../../../members/v1/members`→ rejected before any Wix call.
+✅`getFormSummary(client, '3F2A9C1E-5B7D-4E8F-9A0B-1C2D3E4F5A6B')`→`/form-schema-service/v4/forms/3f2a9c1e-5b7d-4e8f-9a0b-1c2d3e4f5a6b/summary`.
 
 ## Trade-offs
 
@@ -130,13 +133,13 @@ Red first in every phase: write the test with the correct expected behaviour, ru
 - **Unit** (each red first, then green): the `wixFetch` guard; `canonicalFormId` / `formIdPathSegment`; the `getFormSummary` / `getFormSchema` traversal rejected and a valid GUID encoded (no allowlist assertion).
 - Build, type check and `validate-plugin` clean in wix-server-client and wix-forms; wix-bookings and root `yarn test` green.
 - **Manual** (`curl` without a cookie against a dev server): `getFormSummary?formId=../x` → error, with no Wix call in the server log.
-- **End-to-end, live, before release:** *The bookings participant form still loads after the F2 hardening.* Open a booking flow whose service has a participant form. Expected: its fields render, which confirms that booking participant form ids are GUIDs (OQ-1: record the form's namespace).
+- **End-to-end, live, before release:** _The bookings participant form still loads after the F2 hardening._ Open a booking flow whose service has a participant form. Expected: its fields render, which confirms that booking participant form ids are GUIDs (OQ-1: record the form's namespace).
 
 ## Scope Pre-mortem
 
-- *Booking participant forms are not GUIDs* → `getFormSummary` would reject them: the end-to-end check catches it before release. Fall back to "reject only `/`, `?`, `#`, `%` and dots" if so.
-- *A wix-stores slug or id contains `..` or `#`* → the guard throws for that product; not expected for Wix ids (§Prior Art); visible in logs.
-- *A browser caller of `wixFetch` builds an odd path* → the guard throws there too; every current call site passes (§Prior Art).
+- _Booking participant forms are not GUIDs_ → `getFormSummary` would reject them: the end-to-end check catches it before release. Fall back to "reject only `/`, `?`, `#`, `%` and dots" if so.
+- _A wix-stores slug or id contains `..` or `#`_ → the guard throws for that product; not expected for Wix ids (§Prior Art); visible in logs.
+- _A browser caller of `wixFetch` builds an odd path_ → the guard throws there too; every current call site passes (§Prior Art).
 - Scope creep refused: an allowlist on `getFormSummary`, the bookings Phase 2 query, encoding the wix-stores / wix-bookings path ids, an abort signal in `wixFetch`.
 
 ## jay-feedback
@@ -172,3 +175,12 @@ End-to-end QA run 2026-11-10 (local builds of `main`, fresh `create jay` project
 
 - With wix-server-client not configured, setup said "wix-bookings requires the wix-forms plugin"; it now returns "skipped: wix-server-client not configured" (`serverClientSetupBlocker`), and the wix-forms message only appears when the client exists and wix-forms does not.
 - `staffResourceTypeId` is filled automatically when empty: the `typeId` of a staff member's resource (`POST /bookings/v2/staff-members/query` → `resourceId`, joined with `POST /bookings/v2/resources/query`) is written into `config/.wix-bookings.yaml`, keeping its comments. With no staff, setup says where to find it. `bookingAppId` already defaults to the Wix Bookings app id; the template now says each service's `appId` holds it. Tests `wix-bookings/test/setup.test.ts` (mocked `wixFetch`): 3 red → green; wix-bookings 54/54. Not run against the live site.
+
+### Correction (QA re-check 2026-11-10, `qa-10`)
+
+- **OQ-1 was not answered.** The earlier line above ("booking participant form ids are GUIDs … loads through Wix checkout") is wrong: `getFormSummary` was never called. wix-bookings read `form._id`, but Wix REST returns `form: { id }`, so `formId` was always empty and the flow used its built-in First/Last/Email fields. On the QA site every service's form id is `00000000-0000-0000-0000-000000000000` (the site default form).
+- **Fix:** `participantFormId` (`wix-bookings/lib/utils/format.ts`) reads `form.id` (falling back to `_id`) and maps the all-zero id to `''`, so default-form services keep the built-in fields and never send the zero id to `getFormSummary`. Used by the runtime (`mapService`) and the agent-kit `services.yaml`. Tests `format.test.ts`, `bookings-references.test.ts`: 3 red → green; wix-bookings 61/61.
+- **Still open (OQ-1):** a service with a real custom participant form has not been tested, so whether its id is a GUID that `getFormSummary` accepts, and its namespace, are still unmeasured.
+- **OQ-1 answered (custom form, `qa-13`):** a custom booking form's id is a GUID, `getFormSummary` accepts it (200) with no allowlist, and the form's namespace is `wix.bookings.v2.bookings`.
+- **Wrong claim above:** "Wix still enforces required fields on `createBooking`" is false. A custom form with a required Address booked with 200 and no address. The summary also drops non-text fields (Address) entirely: 7 fields in Wix, 5 in the summary.
+- **Staff path:** the staff query above is documented as `POST /bookings/v1/staff-members/query` (not v2); the code now uses v1 and reads every cursor page.

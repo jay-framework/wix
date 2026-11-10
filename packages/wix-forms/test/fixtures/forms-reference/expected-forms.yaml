@@ -1,0 +1,42 @@
+_description: >-
+  Wix Forms per-form contracts for agent discovery. Bind explicit field tags, e.g. {contact.email.label},
+  ref="contact.email.input". Tag names come from Wix field targets, which Wix often auto-generates (firstName_5820,
+  formFieldAa5f): find a field by its label in tagByLabel, then bind its tag. Tags are stable; never rename them.
+namespace: wix.form_app.form
+totalForms: 1
+forms:
+  - contract: form/qa-contact
+    formId: 0b1c2d3e-0000-4000-8000-000000000001
+    name: QA Contact
+    tagByLabel:
+      First name: firstName_5820
+      Email: email_7e06
+      I agree to be contacted: formFieldAa5f
+    fields:
+      - tag: firstName_5820
+        label: First name
+        type: text
+        target: first_name_5820
+        required: true
+        elementType: HTMLInputElement
+        hidden: false
+        hasControl: true
+        valueType: string
+      - tag: email_7e06
+        label: Email
+        type: email
+        target: email_7e06
+        required: true
+        elementType: HTMLInputElement
+        hidden: false
+        hasControl: true
+        valueType: string
+      - tag: formFieldAa5f
+        label: I agree to be contacted
+        type: checkbox
+        target: form_field_aa5f
+        required: false
+        elementType: HTMLInputElement
+        hidden: false
+        hasControl: true
+        valueType: boolean

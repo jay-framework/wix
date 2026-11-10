@@ -7,6 +7,7 @@ export interface FormSummaryField {
     id?: string;
     label?: string;
     type?: string;
+    /** Not returned by the Wix Form Summary API (QA 2026-11-10) — always undefined in practice. */
     required?: boolean;
     deleted?: boolean;
 }

@@ -1,0 +1,14 @@
+<label><input type="checkbox" ref="contact.consent.input" /> I agree</label>
+<label
+  >{contact.interests.label}
+  <select multiple ref="contact.interests.input">
+    <option
+      forEach="contact.interests.options"
+      trackBy="value"
+      value="{value}"
+      selected="selected"
+    >
+      {label}
+    </option>
+  </select>
+</label>
