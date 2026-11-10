@@ -35,6 +35,24 @@ oauthStrategy:
 
 - `clientId`: OAuth client ID for visitor authentication
 
+**appStrategy** (alternative to `apiKeyStrategy`):
+
+- `appId`, `appSecret`, and `instanceId` (the app instance installed on the site). Without
+  `instanceId`, `@wix/sdk` cannot produce auth headers ("Missing refresh token or instance
+  ID"). For a headless site, **`apiKeyStrategy` is the supported server credential**.
+
+### Running setup (`jay-stack-cli setup`)
+
+- Setup proves the credentials work: it asks `@wix/sdk` for auth headers and reports
+  `error` (not "connected") when they cannot authenticate.
+- A `config/.wix.yaml` that is not valid YAML is reported with its path and the parse
+  error; setup does not overwrite it or start a Wix login.
+- With no config, interactive setup runs the Wix CLI login. **The Wix CLI needs Node ≥ 24**
+  (setup itself needs Node ≥ 20); on an older Node, write `config/.wix.yaml` by hand.
+- Steps that need a human: creating an API key in the Wix API Keys Manager sends a
+  verification code by email, and site-member sign-up on the Wix hosted login page shows a
+  reCAPTCHA.
+
 ## Server-Side Usage
 
 ```typescript

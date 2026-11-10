@@ -21,7 +21,7 @@ import {
     type DynamicContractProps,
     type Signals,
 } from '@jay-framework/fullstack-component';
-import { createEffect, createSignal, Props } from '@jay-framework/component';
+import { createEffect, createSignal, Props, useReactive } from '@jay-framework/component';
 import { WIX_FORMS_SERVICE, type WixFormsService } from '../services/wix-forms-service-marker.js';
 import { ensureSessionFresh } from '@jay-framework/wix-server-client/client';
 import type { FieldValue, FormFieldView, SubmitFormResult } from '../types.js';
@@ -207,7 +207,17 @@ function WixFormInteractive(
     createEffect(() => {
         void seedControlsIntoStore(refs, carryForward.fields, dirtyTargets, setValues);
     });
-    // Render and mount run synchronously after construction, so this microtask sees bound refs.
+    const reactive = useReactive();
+    /**
+     * Run `work` after the component's pending reactive flush, when a toggled conditional
+     * branch has re-mounted and its refs are bound. Inside an event handler the flush ends the
+     * batch; after an `await` (a submit's success path) jay schedules it with `setTimeout(0)`,
+     * so a bare microtask would run before it (confirmation-focus bug, DL#41 QA 2026-11-10).
+     */
+    function afterRemount(work: () => void): void {
+        void reactive.toBeClean().then(work);
+    }
+    // Render and mount run synchronously after construction, so this sees bound refs.
     afterRemount(() => wireNativeFormSubmit(refs, submit));
 
     function resetForm(): void {
@@ -408,15 +418,6 @@ function wireFieldEvents(refs: any, fields: FormFieldView[], handlers: FieldEven
             );
         }
     }
-}
-
-/**
- * Run `work` after the current reactive batch flushes. Toggling `isSubmitted` re-mounts a
- * conditional branch only at the end of the event handler, and refs inside an unmounted branch
- * are detached (`exec$` no-ops) — see `clearNativeInputsAfterRemount`.
- */
-function afterRemount(work: () => void): void {
-    queueMicrotask(work);
 }
 
 /**

@@ -1,6 +1,6 @@
 # 50 - wix-forms Submit Access Policy
 
-Status: Implemented (manual `curl` and live end-to-end checks pending)
+Status: Implemented — curl and live end-to-end checks passed 2026-11-10
 
 Part of the wix-forms release security gate (**DL #47**, the umbrella). Closes **F1** (`submitForm` is an open write endpoint with site credentials) and **F4** (a non-canonical id skips the hook), rewords the honeypot guide and redefines `PERMISSION`. Builds on **DL#40** (per-form contracts, `config/.wix-forms.yaml`), **DL#41** (honeypot, submit chain), **DL#42** (submit hooks), **DL#43** (headers-only caller client, `{ as: 'site' }`, `session: 'none' | 'active' | 'expired'`) and **DL#45** (`SubmitFailure` reasons). Uses **DL #49 §2** (`canonicalFormId`); comes after DL #48 and DL #49. Package: `@jay-framework/wix-forms`. Paths are relative to `packages/wix-forms/` unless they name another package.
 
@@ -319,3 +319,20 @@ No other test gained `forceSite`. Removed (replaced by the new refusal tests): "
 **Pending:** the manual `curl` check and the live end-to-end check (a fresh browser submits an unhooked allowlisted form on first load, no L9) before release.
 
 **Post-review additions:** a test that a timed-out allowlist load is retried and succeeds once the backoff has passed (it passed on first run: it pins existing behaviour, `onLoadFailure` already clears the in-flight load); and a line in `wix-forms-setup.md` that `WixFormsService.isSubmittableForm` expects the lowercase GUID. wix-forms 240/240.
+
+## Live Checks Results (2026-11-10)
+
+End-to-end QA run 2026-11-10 (local builds of `main`, fresh `create jay` project, throwaway headless Wix site; Chromium recorded, Firefox for the cookie check).
+
+Curl against the dev server — all passed:
+
+| Check | Result |
+| --- | --- |
+| submitForm with no cookie, listed form | `PERMISSION` (`reason:3`), nothing posted, refusal logged |
+| Unlisted GUID | `REJECTED` (`reason:2`) before any Wix call |
+| Non-GUID `formId` (`../../x`) | `REJECTED`, logged as `<not a form id>` |
+| Upper-case listed id | canonical match (PERMISSION, not REJECTED) |
+| syncSession junk token | `{ok:false}`, no token-info call |
+| Cross-site POST | 403 `CROSS_ORIGIN_REQUEST` |
+
+Browser: a real visitor submits after a cookie-less refusal; a member's submit is attributed to `submitter.memberId`.

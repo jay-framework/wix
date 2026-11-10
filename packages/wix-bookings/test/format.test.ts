@@ -27,7 +27,7 @@ describe('mapService', () => {
             schedule: {
                 availabilityConstraints: { sessionDurations: [30] },
             },
-            form: { _id: 'form-1' },
+            form: { id: 'form-1' },
         });
 
         expect(result).toEqual({
@@ -39,6 +39,26 @@ describe('mapService', () => {
             durationLabel: '30 min',
             formId: 'form-1',
         });
+    });
+
+    /**
+     * Bug: formId was always empty — Wix REST returns `form: { id }`, the code read `form._id`.
+     * Found in: QA run 2026-11-10 (qa-10 review).
+     */
+    it('should read the participant form id from form.id', () => {
+        expect(mapService({ _id: 'svc-1', form: { id: 'form-1' } }).formId).toBe('form-1');
+    });
+
+    /**
+     * Gap: every service on the QA site has form id 00000000-0000-0000-0000-000000000000
+     * (the site default form). Sending it to getFormSummary would fail the booking flow.
+     * Expected: the zero id means "no form", so the default participant fields are used.
+     */
+    it('should treat the all-zero form id as no form', () => {
+        expect(
+            mapService({ _id: 'svc-1', form: { id: '00000000-0000-0000-0000-000000000000' } })
+                .formId,
+        ).toBe('');
     });
 
     it('should label free services without price', () => {

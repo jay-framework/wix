@@ -30,12 +30,40 @@ postCheckoutUrl: "/book"
 
 | Field | Purpose |
 |-------|---------|
-| `bookingAppId` | Wix Bookings app ID on the site |
-| `staffResourceTypeId` | Resource type for `ANY_RESOURCE` staff selection |
+| `bookingAppId` | Wix Bookings app ID on the site (empty = default Wix Bookings app) |
+| `staffResourceTypeId` | Site-specific resource **typeId** for staff — required when slot queries use `ANY_RESOURCE` staff selection |
 | `slotWindowDays` | How far ahead to query slots (default 14) |
 | `postCheckoutUrl` | Relative path after paid checkout (e.g. `/book`) |
 
-### 2. API key permissions
+#### `staffResourceTypeId` — setup auto-fill
+
+Each Wix site has its own staff resource type. `jay-stack setup wix-bookings` tries to fill an empty value from live Bookings data:
+
+1. `POST /bookings/v1/staff-members/query` — collect each service-provider staff member's `resourceId`
+2. `POST /bookings/v2/resources/query` — find a resource in that set and take its `typeId`
+
+`POST /bookings/v2/resources/resource-types/query` is **not** used (it can return an empty list on a fresh site).
+
+| Outcome | What to do |
+|---------|------------|
+| Setup writes `staffResourceTypeId` | Re-run `jay-stack setup` only when staff or resource types change on the site |
+| Setup returns `needs-config` (no staff) | Add at least one staff member in the Wix Bookings dashboard, run setup again, **or** copy a staff resource's `typeId` from `POST /bookings/v2/resources/query` into `config/.wix-bookings.yaml` |
+| Value already in YAML | Setup leaves it unchanged (no Wix calls) |
+
+### 2. Agent-kit references (`jay-stack agent-kit`)
+
+After setup and a working API key, run `jay-stack agent-kit` to refresh:
+
+| File | Contents |
+|------|----------|
+| `agent-kit/references/wix-bookings/services.yaml` | Visible services — `serviceId`, `name`, `type`, `formId`, `dashboardPath` (`bookings/services/form/<id>`) |
+| `agent-kit/references/wix-bookings/site.yaml` | `staffResourceTypeId`, staff members (`id`, `resourceId`), config vs discovered type for troubleshooting |
+
+Same pattern as `wix-forms` → `forms.yaml` and `wix-data` → `collections.yaml`: agents resolve **which service** or **which staff resource type** without guessing from page markup alone.
+
+Staff and services are **not** edited in Jay — the index is for discovery and dashboard links. Service field changes stay in the Wix dashboard (see `wix-bookings-dashboard-content.md`).
+
+### 3. API key permissions
 
 Configure in [Wix API Keys Manager](https://manage.wix.com/account/api-keys). Each step needs its own permission; Wix returns **403** until the right scope is granted.
 
@@ -47,7 +75,7 @@ Configure in [Wix API Keys Manager](https://manage.wix.com/account/api-keys). Ea
 
 Also enable **Wix Forms** on the API key (via `wix-forms` plugin) for participant field schema.
 
-### 3. Headless settings (not API key)
+### 4. Headless settings (not API key)
 
 Under **Dashboard → Settings → Development & integrations → Headless Settings → your client** (same `clientId` as `config/.wix.yaml`):
 
@@ -60,7 +88,7 @@ For local dev, add **`localhost:3000`** under **Allowed redirect domains** (doma
 
 The Wix site must be **published** — hosted checkout uses the published site.
 
-### 4. Booking page
+### 5. Booking page
 
 ```html
 <script type="application/jay-headless"

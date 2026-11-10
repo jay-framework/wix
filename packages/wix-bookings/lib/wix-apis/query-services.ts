@@ -1,6 +1,7 @@
 import type { WixClient } from '@wix/sdk';
 import { wixFetch } from '@jay-framework/wix-server-client/client';
 import { SERVICES_PAGE_SIZE } from '../constants.js';
+import type { ServiceForm } from '../utils/format.js';
 
 export interface RawBookingService {
     _id?: string;
@@ -16,7 +17,7 @@ export interface RawBookingService {
     schedule?: {
         availabilityConstraints?: { sessionDurations?: number[] };
     };
-    form?: { _id?: string };
+    form?: ServiceForm;
 }
 
 export interface QueryServicesResponse {

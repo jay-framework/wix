@@ -1,6 +1,6 @@
 # 48 - wix-server-client Session Cookie Hardening
 
-Status: Implemented (live end-to-end checks 1 and 2 pending)
+Status: Implemented — live checks passed 2026-11-10 (Chromium localhost + 127.0.0.1, Firefox localhost; member cookie 1671 chars); Safari pending
 
 Part of the wix-forms release security gate (**DL #47**, the umbrella). Closes **F3** (refresh token in the cookie), **F10** (the cookie keeps whatever the browser sent, at any size), **F11** (`Secure` depends on jay seeing https) and adds the **F7** guide line. Builds on **DL#42** (`wix_session`, `syncSession`, `resolveRequestIdentity`) and **DL#43** (headers-only caller client, `session: 'none' | 'active' | 'expired'`). Package: `@jay-framework/wix-server-client`; wix-forms and wix-data are readers of the cookie. Paths are relative to `packages/`. jay is referenced only through the public surface of `@jay-framework/fullstack-component` (`makeJayAction`, `makeJayQuery`, `.withRequest()`, `ActionRequest`, `CookieOptions`).
 
@@ -211,3 +211,20 @@ Implemented per the plan, Phases 1–5. Paths relative to `packages/wix-server-c
 **Pending (live, before release):** end-to-end check 1 (`http://localhost` in Chrome, Firefox, Safari; also `127.0.0.1`) and check 2 (member cookie encoded length, member submit). Not run in this session; the guide gains a per-browser line only if check 1 finds a failing browser (Q6).
 
 **Deviation (post-review): the migration requirement is dropped.** The session cookie was never released (no published package carries it), so no site holds an old `{ accessToken, refreshToken }` cookie. Removed: the old-cookie decode test, the "old cached bundles" comment on `SyncSessionInput`, and the old-cookie size from the `MAX_SESSION_COOKIE_LENGTH` comment. The hand-built cookies in `caller-client.test.ts` and wix-data's `as-caller.test.ts` now use the new `{ accessToken }` shape. No decoder logic changed: it never read the refresh token.
+
+## Live Checks Results (2026-11-10)
+
+End-to-end QA run 2026-11-10 (local builds of `main`, fresh `create jay` project, throwaway headless Wix site; Chromium recorded, Firefox for the cookie check).
+
+- Fresh visitor gets `wix_session` — HttpOnly, SameSite=Lax, **Secure on `http://localhost`** — 1150 chars: Chromium ✅, Firefox ✅ (submit succeeded).
+- Chromium on `http://127.0.0.1`: the Secure cookie is kept and the submit succeeds (Playwright's `cookies(url)` hides it; the unfiltered list shows it).
+- Member cookie: **1671** encoded chars (< 3072 cap), Secure, HttpOnly (Q5).
+- Safari: not covered (no Safari automation).
+
+## Setup fixes from QA (2026-11-10)
+
+- An unparsable `config/.wix.yaml` was treated as "no credentials" and setup ran `npx @wix/cli@latest login` (which fails below Node 24). Setup now returns `error` with the file path and the YAML error, and makes no CLI call.
+- `appStrategy { appId, appSecret }` (the shape setup writes) was reported "connected", but `@wix/sdk` AppStrategy throws "Missing refresh token or instance ID" on `getAuthHeaders()`. Setup now calls `getAuthHeaders()` (`lib/server-auth.ts` `verifyServerAuth`, sharing the strategy builder with the service) and returns `error` naming `apiKeyStrategy` (the supported headless server credential) or `appStrategy.instanceId` (now read from the config and passed to AppStrategy). The setup that writes `appStrategy` therefore now reports the failure rather than "connected"; fetching the `instanceId` automatically was not attempted.
+- Dependent plugins: `serverClientSetupBlocker(initError)` (exported) returns `needs-config` "skipped: wix-server-client not configured" when no Wix client is registered, replacing the "Service … not found" symptom in wix-forms, wix-bookings and wix-data setup.
+- README: Node ≥ 24 for the Wix CLI login, the emailed verification code for API keys, the member sign-up reCAPTCHA.
+- Tests: `test/setup.test.ts` (parse error, appStrategy without instance: red → green; apiKey connected), `test/setup-dependency.test.ts`. wix-server-client 99/99.

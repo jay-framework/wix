@@ -40,7 +40,20 @@ For local smoke tests, **All site permissions** is acceptable temporarily.
 Bookings loads participant fields via `getFormSummary` from `@jay-framework/wix-forms`:
 
 - Ensure `wix-forms` is set up and API key has **Wix Forms** permission
-- Service must have a `form._id` in the Wix Bookings schema
+- A service's participant form is `form.id` in the Wix Bookings service. The all-zero id
+  (`00000000-0000-0000-0000-000000000000`) means the site default form: the plugin then shows its
+  built-in First name / Last name / Email fields and does not call `getFormSummary`
+- `formId` in `agent-kit/references/wix-bookings/services.yaml` is empty for those default-form services
+- Changed a service in the dashboard (e.g. assigned a custom form) and the page still shows the old
+  data: the services list is slow-rendered and stays fresh for 10 minutes. Restart the dev server,
+  or wait, before re-testing
+- Fields show `required: false` even when Wix requires them: the Form Summary API does not
+  carry `required`. **`createBooking` does not enforce it either** — QA 2026-11-10 booked a form
+  with a required Address and got 200 without one
+- **Known gap — fields are dropped:** only text, email, phone, number and URL fields are shown.
+  Address (and other non-text fields) are silently left out of the participant form, even when
+  required. Wix checkout does not ask for them either, so the booking is confirmed without them.
+  Do not put address or other non-text fields on a booking form until this is fixed
 
 ## Do not assume success from redirect alone
 
@@ -50,6 +63,19 @@ Bookings loads participant fields via `getFormSummary` from `@jay-framework/wix-
 
 | Symptom | Check |
 |---------|-------|
-| No services | `bookingAppId` in `config/.wix-bookings.yaml` |
-| Slot query fails | `staffResourceTypeId` matches site resource type |
+| No services | `bookingAppId` in `config/.wix-bookings.yaml`; API key **Wix Bookings** permission |
+| Slot query fails / no availability | `staffResourceTypeId` in config — must be the staff resource's `typeId` on this site |
+| Setup could not fill `staffResourceTypeId` | No staff on site — add staff in Bookings dashboard and re-run `jay-stack setup wix-bookings` |
+| `staffResourceTypeId` looks wrong | Compare `staffResourceTypeIdFromConfig` vs `staffResourceTypeIdDiscovered` in `agent-kit/references/wix-bookings/site.yaml` after `jay-stack agent-kit` |
+| Agent cannot name a service | Refresh `agent-kit/references/wix-bookings/services.yaml` (`jay-stack agent-kit`) |
 | Wrong return URL after checkout | `postCheckoutUrl` in config |
+
+### `staffResourceTypeId` manual recovery
+
+When setup returns `needs-config` for staff:
+
+1. In Wix Bookings, ensure at least one **staff member** exists.
+2. Re-run `jay-stack setup wix-bookings`, **or**
+3. Call `POST /bookings/v2/resources/query`, find a resource linked to staff, and set `staffResourceTypeId` to that resource's `typeId` in `config/.wix-bookings.yaml`.
+
+Runtime slot queries pass this value as `resourceTypeId` when the service allows any staff member (`ANY_RESOURCE`). An empty or wrong value causes Wix to reject the slot request.

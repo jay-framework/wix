@@ -120,7 +120,7 @@ sub-contract with per-option `selected` is the array representation.
       forEach="contact.interests.options"
       trackBy="value"
       value="{value}"
-      selected="{selected}"
+      selected="selected"
     >
       {label}
     </option>
@@ -144,7 +144,7 @@ is single-value, so each click would replace the whole selection (the validator 
 <fieldset aria-describedby="contact-interests-error">
   <legend>{contact.interests.label}<span if="contact.interests.required"> (required)</span></legend>
   <label forEach="contact.interests.options" trackBy="value" class="chip {selected ? on}">
-    <input type="checkbox" class="sr-only" ref="contact.interests.options.toggle" value="{value}" checked="{selected}" aria-invalid="{$parent.contact.interests.invalid}" /> {label}
+    <input type="checkbox" class="sr-only" ref="contact.interests.options.toggle" value="{value}" checked="selected" aria-invalid="{$parent.contact.interests.invalid}" /> {label}
   </label>
   <span id="contact-interests-error" class="error" aria-live="polite">{contact.interests.error}</span>
 </fieldset>
@@ -153,6 +153,13 @@ is single-value, so each click would replace the whole selection (the validator 
 </form>
 ```
 
+- Boolean attributes (`checked`, `selected`, `disabled`, …) take jay's **condition syntax**
+  without braces: `checked="selected"`, `selected="selected"`. Never `checked="{selected}"`:
+  that renders the string `checked="false"`, and any present `checked`/`selected` attribute
+  means checked/selected, so every chip would start checked and the first click would
+  invert the selection. The store starts empty and wix-forms reflects each input's
+  `checked` property itself on toggle and on reset, so the binding only matters for the
+  first render.
 - Inside `forEach` over `options`, bindings are relative to the option (`{value}`, `{label}`,
   `{selected}`); reach the field with `$parent.` (`{$parent.contact.interests.invalid}`). A
   plain `{contact.interests.invalid}` there fails to compile ("data field not found").

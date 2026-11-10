@@ -110,11 +110,13 @@ In ecom Cart v2, **cart ID is the checkout ID** (no separate create-checkout ste
 
 `config/.wix-bookings.yaml`:
 
-| Field                 | Purpose                                          |
-| --------------------- | ------------------------------------------------ |
-| `bookingAppId`        | Wix Bookings app ID on the site                  |
-| `staffResourceTypeId` | Resource type for `ANY_RESOURCE` staff selection |
-| `slotWindowDays`      | How far ahead to query slots (default 14)        |
-| `postCheckoutUrl`     | Relative path after paid checkout (e.g. `/book`) |
+| Field                 | Purpose                                                                                                                                    |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `bookingAppId`        | Wix Bookings app ID on the site                                                                                                            |
+| `staffResourceTypeId` | Staff resource **typeId** on this site — required for `ANY_RESOURCE` slot queries; setup auto-fills from staff → resources APIs when empty |
+| `slotWindowDays`      | How far ahead to query slots (default 14)                                                                                                  |
+| `postCheckoutUrl`     | Relative path after paid checkout (e.g. `/book`)                                                                                           |
+
+Run `jay-stack agent-kit` to generate `agent-kit/references/wix-bookings/services.yaml` (service catalog) and `site.yaml` (`staffResourceTypeId`, staff members).
 
 See also `agent-kit/plugin/wix-bookings-setup.md` and `wix-bookings-troubleshooting.md`.

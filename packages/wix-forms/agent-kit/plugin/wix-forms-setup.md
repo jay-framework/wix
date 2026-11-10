@@ -90,7 +90,10 @@ on one page you typically keep distinct keys while each script points at its own
 For errors, status announcements and focus, follow the accessible pattern in `rich-forms.md`.
 
 After `jay-stack agent-kit`, read `forms.yaml` for each form’s exact
-`contract` value (the slug) and field `target` names — not the Wix form id.
+`contract` value (the slug) and each field's contract `tag` — not the Wix form id. Tags come
+from Wix field targets, which Wix often auto-generates (`firstName_5820`, `formFieldAa5f` for a
+consent checkbox): look the field up by its label in the form's `tagByLabel` map, then bind
+that tag (`{contact.formFieldAa5f.label}`). Never rename a tag — it is the contract.
 
 See `per-form-contracts.md` for the full contract shape and binding rules, and
 `user-visible-messages.md` when changing success, error, or localized copy.
@@ -109,6 +112,15 @@ import { getFormSummary } from '@jay-framework/wix-forms';
 ```
 
 Flow: user selects a booking service → `getFormSummary({ formId: service.formId })` → user fills participant fields → `createBooking`.
+
+- **`required` is always `false`.** Wix's Form Summary API returns each field's `target`,
+  `label`, `type`, and options — not whether it is required — so `getFormSummary` cannot
+  report it, and `createBooking` does not enforce it either. Mark fields you know are required
+  (e.g. first name, email) in your jay-html.
+- **Only text-like fields are returned** (string, email, phone, number, URL). Address and other
+  non-text fields are dropped, even when required.
+- An invalid or missing `formId` is refused with an `ActionError` `INVALID_INPUT` (a 4xx),
+  before any Wix call.
 
 ## Config reference
 

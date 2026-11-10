@@ -12,6 +12,8 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as yaml from 'js-yaml';
 import { readWixConfig } from './wix-config-file.js';
+import { loadConfigFrom } from './config-loader.js';
+import { verifyServerAuth } from './server-auth.js';
 import type { PluginSetupContext, PluginSetupResult } from '@jay-framework/stack-server-runtime';
 
 const CONFIG_FILE_NAME = '.wix.yaml';
@@ -19,7 +21,7 @@ const CONFIG_FILE_NAME = '.wix.yaml';
 const GITIGNORE_ENTRIES = ['config/.wix.yaml', 'wix.config.json'];
 
 type CredentialCheck =
-    | { valid: false }
+    | { valid: false; unreadable?: string }
     | { valid: true; strategy: 'apiKey'; siteId: string }
     | { valid: true; strategy: 'app'; appId: string };
 
@@ -28,36 +30,53 @@ function hasValidCredentials(configPath: string): CredentialCheck {
         return { valid: false };
     }
 
+    let config: Record<string, Record<string, string>> | null;
     try {
-        const content = fs.readFileSync(configPath, 'utf-8');
-        const config = yaml.load(content) as Record<string, Record<string, string>> | null;
-        if (!config) return { valid: false };
-
-        const clientId = config.oauthStrategy?.clientId || '';
-        if (!clientId || clientId.startsWith('<')) return { valid: false };
-
-        if (config.apiKeyStrategy) {
-            const apiKey = config.apiKeyStrategy.apiKey || '';
-            const siteId = config.apiKeyStrategy.siteId || '';
-            if (!apiKey || !siteId || apiKey.startsWith('<') || siteId.startsWith('<')) {
-                return { valid: false };
-            }
-            return { valid: true, strategy: 'apiKey', siteId };
-        }
-
-        if (config.appStrategy) {
-            const appId = config.appStrategy.appId || '';
-            const appSecret = config.appStrategy.appSecret || '';
-            if (!appId || !appSecret || appId.startsWith('<') || appSecret.startsWith('<')) {
-                return { valid: false };
-            }
-            return { valid: true, strategy: 'app', appId };
-        }
-
-        return { valid: false };
-    } catch {
-        return { valid: false };
+        config = yaml.load(fs.readFileSync(configPath, 'utf-8')) as typeof config;
+    } catch (error) {
+        return { valid: false, unreadable: error instanceof Error ? error.message : String(error) };
     }
+    if (!config) return { valid: false };
+
+    const clientId = config.oauthStrategy?.clientId || '';
+    if (!clientId || clientId.startsWith('<')) return { valid: false };
+
+    if (config.apiKeyStrategy) {
+        const apiKey = config.apiKeyStrategy.apiKey || '';
+        const siteId = config.apiKeyStrategy.siteId || '';
+        if (!apiKey || !siteId || apiKey.startsWith('<') || siteId.startsWith('<')) {
+            return { valid: false };
+        }
+        return { valid: true, strategy: 'apiKey', siteId };
+    }
+
+    if (config.appStrategy) {
+        const appId = config.appStrategy.appId || '';
+        const appSecret = config.appStrategy.appSecret || '';
+        if (!appId || !appSecret || appId.startsWith('<') || appSecret.startsWith('<')) {
+            return { valid: false };
+        }
+        return { valid: true, strategy: 'app', appId };
+    }
+
+    return { valid: false };
+}
+
+/** The setup result once credentials exist: connected only if they can actually authenticate. */
+async function connectionResult(
+    configPath: string,
+    summary: string,
+    extra: Partial<PluginSetupResult> = {},
+): Promise<PluginSetupResult> {
+    try {
+        await verifyServerAuth(loadConfigFrom(configPath));
+    } catch (error) {
+        return {
+            status: 'error',
+            message: `${configPath}: ${error instanceof Error ? error.message : String(error)}`,
+        };
+    }
+    return { status: 'configured', ...extra, message: `Wix client connected (${summary})` };
 }
 
 function ensureGitignore(projectRoot: string): void {
@@ -133,6 +152,12 @@ export async function setupWixServerClient(ctx: PluginSetupContext): Promise<Plu
     const configPath = path.join(ctx.configDir, CONFIG_FILE_NAME);
 
     const creds = hasValidCredentials(configPath);
+    if (!creds.valid && 'unreadable' in creds && creds.unreadable) {
+        return {
+            status: 'error',
+            message: `${configPath} could not be parsed: ${creds.unreadable}. Fix the YAML (or move the file away to start over) and run setup again.`,
+        };
+    }
     if (creds.valid) {
         if (ctx.initError) {
             return {
@@ -144,10 +169,7 @@ export async function setupWixServerClient(ctx: PluginSetupContext): Promise<Plu
             creds.strategy === 'apiKey'
                 ? `site: ${creds.siteId.substring(0, 8)}...`
                 : `app: ${creds.appId.substring(0, 8)}...`;
-        return {
-            status: 'configured',
-            message: `Wix client connected (${summary})`,
-        };
+        return connectionResult(configPath, summary);
     }
 
     // Wix login requires a TTY for the browser-based OAuth flow
@@ -182,9 +204,7 @@ export async function setupWixServerClient(ctx: PluginSetupContext): Promise<Plu
 
     ensureGitignore(ctx.projectRoot);
 
-    return {
-        status: 'configured',
+    return connectionResult(configPath, `app: ${wixConfig.appId.substring(0, 8)}...`, {
         configCreated: [`config/${CONFIG_FILE_NAME}`],
-        message: `Wix client connected (app: ${wixConfig.appId.substring(0, 8)}...)`,
-    };
+    });
 }
