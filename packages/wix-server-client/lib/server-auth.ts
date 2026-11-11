@@ -32,9 +32,9 @@ export async function verifyServerAuth(config: WixConfig): Promise<void> {
         const reason = error instanceof Error ? error.message : String(error);
         throw new Error(
             `Wix server credentials (${config.auth.kind}Strategy) cannot authenticate: ${reason}. ` +
-                'For a headless site use apiKeyStrategy { apiKey, siteId } (an API key from the ' +
-                'Wix API Keys Manager), or add appStrategy.instanceId (the app instance installed ' +
-                'on the site) to appStrategy.',
+                'For appStrategy, move config/.wix.yaml away and run jay-stack-cli setup --interactive ' +
+                'to regenerate appId, appSecret, siteId and instanceId (DL #54); or use ' +
+                'apiKeyStrategy { apiKey, siteId } (an API key from the Wix API Keys Manager).',
         );
     }
 }

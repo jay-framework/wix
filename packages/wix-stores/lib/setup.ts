@@ -1,7 +1,8 @@
 /**
  * Setup handler for wix-stores plugin (Design Log #87, #10).
  *
- * Validates that wix-server-client is configured.
+ * Validates that wix-server-client is configured, and installs Wix Stores on the site when the catalog
+ * check fails and it is missing (DL #54).
  * Creates config/.wix-stores.yaml with example category prefix config if missing.
  * Generates category tree reference for agent discovery.
  */
@@ -17,6 +18,8 @@ import type {
     PluginAgentKitResult,
 } from '@jay-framework/stack-server-runtime';
 import { getService } from '@jay-framework/stack-server-runtime';
+import { WIX_CLIENT_SERVICE, type WixClientService } from '@jay-framework/wix-server-client';
+import { ensureSiteAppInstalled } from '@jay-framework/wix-server-client/tools';
 import { WIX_STORES_SERVICE_MARKER, type WixStoresService } from './services/wix-stores-service';
 import { queryCategories as queryCategoriesApi } from './wix-apis/index.js';
 import { searchProducts as searchProductsApi } from './wix-apis/search-products.js';
@@ -27,6 +30,11 @@ import { fetchCategorySlugs } from './catalog-category-slugs.js';
 import { loadWixStoresConfig, WIX_STORES_CONFIG_FILE_NAME } from './config-loader.js';
 import type { ConfigValidationIssue } from './validate-config.js';
 import { validateWixStoresConfigValue } from './validate-config.js';
+const WIX_STORES_APP_DEF_ID = '215238eb-22a5-4c36-9e7b-e7c08025e04e';
+const CATALOG_VERSION_URL = 'https://www.wixapis.com/stores/v3/provision/version';
+const CATALOG_READY_TIMEOUT_MS = 60_000;
+const CATALOG_POLL_INTERVAL_MS = 3_000;
+
 const ADD_MENU_OUTPUT_REL = 'agent-kit/aiditor/add-menu/wix-stores.yaml';
 const ADD_MENU_GENERATED_REL = 'agent-kit/aiditor/add-menu/wix-stores.generated.yaml';
 
@@ -122,6 +130,44 @@ function formatConfigIssues(issues: ConfigValidationIssue[]): string {
     return `\n\nConfig (${WIX_STORES_CONFIG_FILE_NAME}):\n${lines.join('\n')}`;
 }
 
+/** The V3 catalog check: null when the catalog answers, else the error message for setup. */
+async function checkCatalog(wixClient: WixClientService): Promise<string | null> {
+    try {
+        await searchProductsApi(wixClient, {});
+        return null;
+    } catch (e: any) {
+        const msg = e.message || '';
+        const hint =
+            msg.includes('404') || msg.includes('not found')
+                ? 'Wix Stores may not be installed on this site'
+                : msg.includes('428')
+                  ? 'the Stores catalog is not ready yet (just installed?) — re-run setup in a minute'
+                  : msg.includes('403') || msg.includes('permission')
+                    ? 'the API key or app may lack Wix Stores permissions'
+                    : 'This package requires the Stores Catalog V3 API — if using Catalog V1, use @jay-framework/wix-stores-v1 instead';
+        return `Wix Stores V3 API check failed: ${hint}. (${msg})`;
+    }
+}
+
+/** A fresh install answers the catalog APIs with 428 until the catalog is provisioned. */
+async function waitForCatalog(siteToken: string): Promise<void> {
+    const deadline = Date.now() + CATALOG_READY_TIMEOUT_MS;
+    while (Date.now() < deadline) {
+        const response = await fetch(CATALOG_VERSION_URL, {
+            headers: { Authorization: siteToken, 'Content-Type': 'application/json' },
+        });
+        if (response.ok) {
+            const data: { catalogVersion?: string } = await response.json();
+            if (data.catalogVersion) {
+                console.log(`[wix-stores] Catalog ready: ${data.catalogVersion}`);
+                return;
+            }
+        }
+        await new Promise((resolve) => setTimeout(resolve, CATALOG_POLL_INTERVAL_MS));
+    }
+    console.log('[wix-stores] Catalog not reported ready yet; continuing');
+}
+
 export async function setupWixStores(ctx: PluginSetupContext): Promise<PluginSetupResult> {
     if (ctx.initError) {
         return {
@@ -130,13 +176,14 @@ export async function setupWixStores(ctx: PluginSetupContext): Promise<PluginSet
         };
     }
 
-    // Verify the stores service is available
+    // The stores service is registered by this plugin's init, which runs only after this setup succeeds
+    let wixClient: WixClientService;
     try {
-        getService(WIX_STORES_SERVICE_MARKER);
+        wixClient = getService(WIX_CLIENT_SERVICE);
     } catch {
         return {
             status: 'error',
-            message: 'WixStoresService not available. Run setup for wix-server-client first.',
+            message: 'Wix client not available. Run setup for wix-server-client first.',
         };
     }
 
@@ -152,22 +199,29 @@ export async function setupWixStores(ctx: PluginSetupContext): Promise<PluginSet
         configCreated.push(`config/${WIX_STORES_CONFIG_FILE_NAME}`);
     }
 
-    const service = getService(WIX_STORES_SERVICE_MARKER) as WixStoresService;
-
-    try {
-        await searchProductsApi(service.wixClient, {});
-    } catch (e: any) {
-        const msg = e.message || '';
-        const hint =
-            msg.includes('404') || msg.includes('not found')
-                ? 'Wix Stores may not be installed on this site'
-                : msg.includes('403') || msg.includes('permission')
-                  ? 'API key may lack Wix Stores permissions'
-                  : 'This package requires the Stores Catalog V3 API — if using Catalog V1, use @jay-framework/wix-stores-v1 instead';
-        return {
-            status: 'error',
-            message: `Wix Stores V3 API check failed: ${hint}. (${msg})`,
-        };
+    // Only a failing catalog needs the Wix user: installing Stores requires the Wix CLI login (DL #54)
+    let catalogError = await checkCatalog(wixClient);
+    if (catalogError && ctx.interactive) {
+        try {
+            const { status, siteToken } = await ensureSiteAppInstalled(
+                ctx.projectRoot,
+                WIX_STORES_APP_DEF_ID,
+                { appName: 'Wix Stores', interactive: true },
+            );
+            if (status === 'installed') {
+                configCreated.push('Wix Stores app');
+                await waitForCatalog(siteToken);
+                catalogError = await checkCatalog(wixClient);
+            }
+        } catch (e) {
+            return {
+                status: 'error',
+                message: `Installing Wix Stores failed: ${e instanceof Error ? e.message : e}`,
+            };
+        }
+    }
+    if (catalogError) {
+        return { status: 'error', message: catalogError };
     }
 
     const config = loadWixStoresConfig(ctx.projectRoot);
@@ -175,7 +229,7 @@ export async function setupWixStores(ctx: PluginSetupContext): Promise<PluginSet
 
     if (config.defaultCategory) {
         try {
-            categorySlugs = await fetchCategorySlugs(service.wixClient);
+            categorySlugs = await fetchCategorySlugs(wixClient);
         } catch {
             // Best-effort: setup still succeeds when categories cannot be loaded.
         }
@@ -184,7 +238,7 @@ export async function setupWixStores(ctx: PluginSetupContext): Promise<PluginSet
     const configIssues = validateWixStoresConfigValue(config, { categorySlugs });
     const hasConfigErrors = configIssues.some((issue) => issue.severity === 'error');
 
-    let message = `Wix Stores configured (product URL: ${service.urls.product})`;
+    let message = `Wix Stores configured (product URL: ${config.urls.product})`;
     message += formatConfigIssues(configIssues);
 
     return {

@@ -7,11 +7,13 @@ export interface ApiKeyConfig {
     siteId: string;
 }
 
+/** The headless companion app's instance on one site: its token reaches only that site (DL #54). */
 export interface AppConfig {
     appId: string;
     appSecret: string;
+    siteId: string;
     /** The app instance on the site; @wix/sdk's AppStrategy cannot authenticate without it. */
-    instanceId?: string;
+    instanceId: string;
 }
 
 export interface OAuthConfig {
@@ -67,7 +69,8 @@ function parseServerAuth(config: Record<string, Record<string, string>>): Server
         app: {
             appId: requireNonEmptyString(strategy.appId, 'appStrategy.appId'),
             appSecret: requireNonEmptyString(strategy.appSecret, 'appStrategy.appSecret'),
-            ...(strategy.instanceId ? { instanceId: String(strategy.instanceId) } : {}),
+            siteId: requireNonEmptyString(strategy.siteId, 'appStrategy.siteId'),
+            instanceId: requireNonEmptyString(strategy.instanceId, 'appStrategy.instanceId'),
         },
     };
 }

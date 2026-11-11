@@ -4,7 +4,8 @@
  * Automates the full Wix credential flow:
  * 1. Wix CLI login + site connection (creates wix.config.json with appId)
  * 2. Fetches appSecret from Dev Center API automatically
- * 3. Writes .wix.yaml with appStrategy — no manual credential entry needed
+ * 3. Finds the app's instance on the site (the token scope, DL #54)
+ * 4. Writes .wix.yaml with appStrategy — no manual credential entry needed
  */
 
 import { execSync } from 'node:child_process';
@@ -12,6 +13,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as yaml from 'js-yaml';
 import { readWixConfig } from './wix-config-file.js';
+import { ensureWixLogin, getWixToken, listSiteAppInstances } from './wix-cli.js';
 import { loadConfigFrom } from './config-loader.js';
 import { verifyServerAuth } from './server-auth.js';
 import type { PluginSetupContext, PluginSetupResult } from '@jay-framework/stack-server-runtime';
@@ -21,7 +23,7 @@ const CONFIG_FILE_NAME = '.wix.yaml';
 const GITIGNORE_ENTRIES = ['config/.wix.yaml', 'wix.config.json'];
 
 type CredentialCheck =
-    | { valid: false; unreadable?: string }
+    | { valid: false; unreadable?: string; missingAppFields?: string[] }
     | { valid: true; strategy: 'apiKey'; siteId: string }
     | { valid: true; strategy: 'app'; appId: string };
 
@@ -51,12 +53,13 @@ function hasValidCredentials(configPath: string): CredentialCheck {
     }
 
     if (config.appStrategy) {
-        const appId = config.appStrategy.appId || '';
-        const appSecret = config.appStrategy.appSecret || '';
-        if (!appId || !appSecret || appId.startsWith('<') || appSecret.startsWith('<')) {
-            return { valid: false };
-        }
-        return { valid: true, strategy: 'app', appId };
+        const appStrategy = config.appStrategy;
+        const missingAppFields = ['appId', 'appSecret', 'siteId', 'instanceId'].filter((field) => {
+            const value = appStrategy[field] || '';
+            return !value || value.startsWith('<');
+        });
+        if (missingAppFields.length > 0) return { valid: false, missingAppFields };
+        return { valid: true, strategy: 'app', appId: appStrategy.appId };
     }
 
     return { valid: false };
@@ -88,27 +91,6 @@ function ensureGitignore(projectRoot: string): void {
         }
         fs.writeFileSync(gitignorePath, content.trimEnd() + '\n', 'utf-8');
     }
-}
-
-function ensureWixLogin(projectRoot: string): void {
-    try {
-        execSync('npx @wix/cli@latest whoami', { cwd: projectRoot, stdio: 'pipe' });
-    } catch {
-        execSync('npx @wix/cli@latest login', { cwd: projectRoot, stdio: 'inherit' });
-    }
-}
-
-function getWixToken(projectRoot: string): string {
-    const token = execSync('npx @wix/cli@latest token', {
-        cwd: projectRoot,
-        encoding: 'utf-8',
-        stdio: ['pipe', 'pipe', 'pipe'],
-    }).trim();
-
-    if (!token) {
-        throw new Error('Empty token from wix cli. Are you logged in?');
-    }
-    return token;
 }
 
 function ensureWixSiteConnection(projectRoot: string): void {
@@ -148,6 +130,15 @@ async function fetchAppSecret(
     return data.app.appSecrets;
 }
 
+/** The instance id of `appId` on the site `siteToken` is scoped to. */
+async function fetchAppInstanceId(siteToken: string, appId: string): Promise<string> {
+    const instance = (await listSiteAppInstances(siteToken)).find((app) => app.appDefId === appId);
+    if (!instance) {
+        throw new Error(`App ${appId} is not installed on the site in wix.config.json`);
+    }
+    return instance.id;
+}
+
 export async function setupWixServerClient(ctx: PluginSetupContext): Promise<PluginSetupResult> {
     const configPath = path.join(ctx.configDir, CONFIG_FILE_NAME);
 
@@ -173,6 +164,12 @@ export async function setupWixServerClient(ctx: PluginSetupContext): Promise<Plu
     }
 
     // Wix login requires a TTY for the browser-based OAuth flow
+    if (!ctx.interactive && 'missingAppFields' in creds && creds.missingAppFields) {
+        return {
+            status: 'needs-config',
+            message: `appStrategy in ${configPath} is missing ${creds.missingAppFields.join(', ')}. Run: jay-stack-cli setup --interactive to regenerate it (DL #54)`,
+        };
+    }
     if (!ctx.interactive) {
         return {
             status: 'needs-config',
@@ -180,7 +177,7 @@ export async function setupWixServerClient(ctx: PluginSetupContext): Promise<Plu
         };
     }
 
-    ensureWixLogin(ctx.projectRoot);
+    ensureWixLogin(ctx.projectRoot, ctx.interactive);
     ensureWixSiteConnection(ctx.projectRoot);
 
     const wixConfig = readWixConfig(ctx.projectRoot);
@@ -191,11 +188,21 @@ export async function setupWixServerClient(ctx: PluginSetupContext): Promise<Plu
         };
     }
 
+    console.log(
+        `[wix-server-client] Fetching app secret and instance for site ${wixConfig.siteId}...`,
+    );
     const token = getWixToken(ctx.projectRoot);
     const { appSecret } = await fetchAppSecret(token, wixConfig.appId);
+    const siteToken = getWixToken(ctx.projectRoot, wixConfig.siteId);
+    const instanceId = await fetchAppInstanceId(siteToken, wixConfig.appId);
 
     const configData = {
-        appStrategy: { appId: wixConfig.appId, appSecret },
+        appStrategy: {
+            appId: wixConfig.appId,
+            appSecret,
+            siteId: wixConfig.siteId,
+            instanceId,
+        },
         oauthStrategy: { clientId: wixConfig.appId },
     };
 

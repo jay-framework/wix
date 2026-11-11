@@ -33,11 +33,19 @@ describe('resolveDashboardSiteId', () => {
         expect(resolveDashboardSiteId(dir)).toBe('api-site');
     });
 
+    it('uses the app-strategy siteId over wix.config.json', () => {
+        const dir = project({
+            wixYaml: `${OAUTH}appStrategy:\n  appId: a\n  appSecret: x\n  siteId: app-site\n  instanceId: i\n`,
+            wixConfigJson: '{"appId":"a","siteId":"cli-site"}',
+        });
+        expect(resolveDashboardSiteId(dir)).toBe('app-site');
+    });
+
     it.each([
         ['no config/.wix.yaml', undefined],
         ['.wix.yaml without oauthStrategy', 'apiKeyStrategy:\n  apiKey: k\n  siteId: s\n'],
         ['visitor-only config', OAUTH],
-        ['app strategy (no siteId)', `${OAUTH}appStrategy:\n  appId: a\n  appSecret: x\n`],
+        ['incomplete app strategy', `${OAUTH}appStrategy:\n  appId: a\n  appSecret: x\n`],
     ])('falls back to wix.config.json siteId with %s', (_case, wixYaml) => {
         const dir = project({ wixYaml, wixConfigJson: '{"appId":"a","siteId":"cli-site"}' });
         expect(resolveDashboardSiteId(dir)).toBe('cli-site');

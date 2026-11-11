@@ -29,4 +29,22 @@ describe('loadConfig', () => {
         );
         expect(() => loadConfig()).toThrow('not both');
     });
+
+    it('keeps an app strategy scoped to one site instance', () => {
+        withConfig(
+            'oauthStrategy:\n  clientId: a\nappStrategy:\n  appId: a\n  appSecret: x\n  siteId: s\n  instanceId: i\n',
+        );
+        expect(loadConfig().auth).toEqual({
+            kind: 'app',
+            app: { appId: 'a', appSecret: 'x', siteId: 's', instanceId: 'i' },
+        });
+    });
+
+    it.each([
+        ['siteId', 'appStrategy:\n  appId: a\n  appSecret: x\n  instanceId: i\n'],
+        ['instanceId', 'appStrategy:\n  appId: a\n  appSecret: x\n  siteId: s\n'],
+    ])('rejects an app strategy without %s', (field, appYaml) => {
+        withConfig(`oauthStrategy:\n  clientId: a\n${appYaml}`);
+        expect(() => loadConfig()).toThrow(`appStrategy.${field}`);
+    });
 });

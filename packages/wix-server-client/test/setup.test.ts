@@ -42,19 +42,23 @@ describe('setupWixServerClient', () => {
      * Bug: appStrategy { appId, appSecret } (the shape setup writes) was reported "Wix client
      * connected", but @wix/sdk's AppStrategy cannot produce auth headers without an instance.
      * Found in: QA run 2026-11-10 (FEEDBACK #7).
-     * Expected: setup tries getAuthHeaders() and reports the failure with a way forward.
+     * Expected (DL #54): the config is incomplete, not connected; setup names the missing fields
+     * and, without a TTY, asks for an interactive run that regenerates them.
      */
-    it('should report an appStrategy without instanceId as unable to authenticate', async () => {
-        const ctx = projectWithConfig(
-            'oauthStrategy:\n  clientId: c1\nappStrategy:\n  appId: app-1\n  appSecret: secret-1\n',
-        );
+    it('should report an appStrategy without siteId and instanceId as incomplete', async () => {
+        const ctx = {
+            ...projectWithConfig(
+                'oauthStrategy:\n  clientId: c1\nappStrategy:\n  appId: app-1\n  appSecret: secret-1\n',
+            ),
+            interactive: false,
+        };
 
         const result = await setupWixServerClient(ctx);
 
-        expect(result.status).toBe('error');
-        expect(result.message).toMatch(/cannot authenticate/);
-        expect(result.message).toContain('apiKeyStrategy');
-        expect(result.message).toContain('instanceId');
+        expect(result.status).toBe('needs-config');
+        expect(result.message).toContain('missing siteId, instanceId');
+        expect(result.message).toContain('setup --interactive');
+        expect(execSync).not.toHaveBeenCalled();
     });
 
     it('should report an apiKeyStrategy as connected', async () => {
