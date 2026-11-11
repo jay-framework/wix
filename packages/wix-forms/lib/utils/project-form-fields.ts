@@ -7,6 +7,7 @@ import type {
     FormFieldSummaryView,
     FormFieldView,
 } from '../types.js';
+import { FieldRule, type FieldCheckResult } from '../components/field-rule.js';
 
 const MULTI_SELECT_TYPES = new Set(['CHECKBOX_GROUP', 'MULTI_SELECT', 'TAGS']);
 
@@ -154,49 +155,74 @@ export function validateFormSummaryField(field: FormFieldSummaryView, value: str
     return '';
 }
 
+/** The default (English) message of the first built-in rule `value` fails; '' when valid. */
 export function validateFormField(field: FormFieldView, value: FieldValue): string {
+    return checkFormField(field, value).message;
+}
+
+/** The first built-in (Wix schema) rule `value` fails, with its default message (DL#53 G1). */
+export function checkFormField(field: FormFieldView, value: FieldValue): FieldCheckResult {
     // Non-string kinds (DL#41 4c): required means checked (boolean) / non-empty (array);
     // the string format/length/regex rules below apply only to string values.
     if (field.inputType === 'checkbox') {
-        return field.required && value !== true ? `${field.label} is required.` : '';
+        return field.required && value !== true ? requiredFailure(field) : PASSED;
     }
     if (field.inputType === 'multiselect') {
         const empty = !Array.isArray(value) || value.length === 0;
-        return field.required && empty ? `${field.label} is required.` : '';
+        return field.required && empty ? requiredFailure(field) : PASSED;
     }
 
     const trimmed = (typeof value === 'string' ? value : '').trim();
     if (field.required && !trimmed) {
-        return `${field.label} is required.`;
+        return requiredFailure(field);
     }
     if (!trimmed) {
-        return '';
+        return PASSED;
     }
+    return checkTextRules(field, trimmed);
+}
+
+const PASSED: FieldCheckResult = { rule: FieldRule.NONE, message: '' };
+
+function requiredFailure(field: FormFieldView): FieldCheckResult {
+    return { rule: FieldRule.REQUIRED, message: `${field.label} is required.` };
+}
+
+function checkTextRules(field: FormFieldView, trimmed: string): FieldCheckResult {
     if (field.minLength !== undefined && trimmed.length < field.minLength) {
-        return `${field.label} must be at least ${field.minLength} characters.`;
+        return {
+            rule: FieldRule.MIN_LENGTH,
+            message: `${field.label} must be at least ${field.minLength} characters.`,
+        };
     }
     if (field.maxLength !== undefined && trimmed.length > field.maxLength) {
-        return `${field.label} must be at most ${field.maxLength} characters.`;
+        return {
+            rule: FieldRule.MAX_LENGTH,
+            message: `${field.label} must be at most ${field.maxLength} characters.`,
+        };
     }
     if (field.inputType === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-        return 'Please enter a valid email address.';
+        return { rule: FieldRule.EMAIL, message: 'Please enter a valid email address.' };
     }
     if (field.inputType === 'url' && !/^https?:\/\/.+/.test(trimmed)) {
-        return 'Please enter a valid URL.';
+        return { rule: FieldRule.URL, message: 'Please enter a valid URL.' };
     }
     if (field.inputType === 'tel' && !/^[+()\-\s\d]{7,}$/.test(trimmed)) {
-        return 'Please enter a valid phone number.';
+        return { rule: FieldRule.PHONE, message: 'Please enter a valid phone number.' };
     }
-    if (field.pattern) {
-        try {
-            if (!new RegExp(field.pattern).test(trimmed)) {
-                return `${field.label} is not in the expected format.`;
-            }
-        } catch {
-            return '';
-        }
+    return checkPattern(field, trimmed);
+}
+
+/** An invalid `pattern` regex passes, as before (the site owner's typo must not block submit). */
+function checkPattern(field: FormFieldView, trimmed: string): FieldCheckResult {
+    if (!field.pattern) return PASSED;
+    try {
+        return new RegExp(field.pattern).test(trimmed)
+            ? PASSED
+            : { rule: FieldRule.PATTERN, message: `${field.label} is not in the expected format.` };
+    } catch {
+        return PASSED;
     }
-    return '';
 }
 
 export function parseSubmissionFieldErrors(responseBody: string): Record<string, string> {

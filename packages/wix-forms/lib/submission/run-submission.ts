@@ -86,7 +86,15 @@ export async function runSubmission(
     }
     const refusal = await allowlistRefusal(formId, deps);
     if (refusal) return refusal;
-    return submitSubmittableForm(formId, request.values, deps);
+    return submitSubmittableForm(
+        { formId, values: request.values, honeypot: honeypotOf(request) },
+        deps,
+    );
+}
+
+/** The `honeypot` input is untrusted (DL#53 H): a non-string counts as absent. */
+function honeypotOf(request: SubmitRequestInput): string {
+    return typeof request.honeypot === 'string' ? request.honeypot.trim() : '';
 }
 
 const NOT_SUBMITTABLE = 'refused a submission for a form that is not submittable';
@@ -110,11 +118,22 @@ async function allowlistRefusal(
     return genericFailure(SubmitFailure.REJECTED);
 }
 
+interface SubmittableRequest {
+    formId: string;
+    values: Values;
+    honeypot: string;
+}
+
 async function submitSubmittableForm(
-    formId: string,
-    values: Values,
+    { formId, values, honeypot }: SubmittableRequest,
     deps: SubmitDeps,
 ): Promise<SubmitFormResult> {
+    // With a hook, the hook owns the decision (DL#53 H); without one, a filled honeypot is dropped
+    // here: after the allowlist, before any identity resolution or Wix call.
+    if (!deps.hook && honeypot !== '') {
+        logDrop('dropped a submission (honeypot, no hook)', formId);
+        return { success: true };
+    }
     let callerSession: CallerSession;
     try {
         callerSession = deps.resolveClient();
@@ -144,6 +163,7 @@ async function submitSubmittableForm(
         outcome = await (deps.hook ?? submitWithoutChanges)({
             formId,
             values,
+            honeypot,
             ...identity,
             submit: attempt.submit,
         });
@@ -275,14 +295,36 @@ function settleSubmission(
         logFailure('the submit hook threw after submit() was called', formId, thrown); // L3
     }
     if (attempt.state === 'succeeded') {
+        if (thrown === undefined && (outcome || undefined)?.dropped === true) {
+            logFailure(
+                'the submit hook returned dropped after submit() was called',
+                formId,
+                undefined,
+            ); // L3
+        }
         const redirectTo = thrown === undefined ? (outcome || undefined)?.redirectTo : undefined;
         return redirectTo === undefined ? { success: true } : { success: true, redirectTo };
     }
     if (attempt.state === 'failed') {
         return failedSubmissionResult(formId, attempt);
     }
+    const dropped = thrown === undefined ? outcome || undefined : undefined;
+    if (dropped?.dropped === true) {
+        logDrop('dropped a submission (hook)', formId);
+        return dropped.redirectTo === undefined
+            ? { success: true }
+            : { success: true, redirectTo: dropped.redirectTo };
+    }
+    if (isFieldRejection(thrown) && Object.keys(thrown.fieldErrors).length) {
+        return fieldRejectionResult(thrown);
+    }
     if (isActionError(thrown)) {
-        return { success: false, reason: SubmitFailure.REJECTED, message: thrown.message };
+        return {
+            success: false,
+            reason: SubmitFailure.REJECTED,
+            message: thrown.message,
+            code: thrown.code,
+        };
     }
     if (thrown !== undefined) {
         logFailure('the submit hook failed before submitting', formId, thrown); // L5
@@ -354,14 +396,44 @@ function fieldErrorsOf(error: unknown): Record<string, string> {
     return error instanceof WixApiError ? parseSubmissionFieldErrors(error.responseBody) : {};
 }
 
+type FieldRejectionLike = Error & {
+    fieldErrors: Record<string, string>;
+    options?: { code?: string };
+};
+
+/** A hook's per-field rejection (DL#53 G4); `code` only when the hook gave one. */
+function fieldRejectionResult(rejection: FieldRejectionLike): SubmitFormResult {
+    const code = rejection.options?.code;
+    const fieldErrors = rejection.fieldErrors;
+    return code === undefined
+        ? { success: false, reason: SubmitFailure.VALIDATION, fieldErrors }
+        : { success: false, reason: SubmitFailure.VALIDATION, fieldErrors, code };
+}
+
+/** Recognised by name, like `ActionError`, so it survives duplicate module instances. */
+function isFieldRejection(error: unknown): error is FieldRejectionLike {
+    if (typeof error !== 'object' || error === null) return false;
+    const candidate = error as { name?: unknown; fieldErrors?: unknown };
+    return (
+        candidate.name === 'FieldRejection' &&
+        typeof candidate.fieldErrors === 'object' &&
+        candidate.fieldErrors !== null
+    );
+}
+
 /** Recognised as jay's ActionRegistry does, so it survives duplicate module instances. */
-function isActionError(error: unknown): error is Error {
+function isActionError(error: unknown): error is Error & { code: string } {
     return (
         typeof error === 'object' &&
         error !== null &&
-        'code' in error &&
+        typeof (error as { code?: unknown }).code === 'string' &&
         (error as { name?: unknown }).name === 'ActionError'
     );
+}
+
+/** A drop is expected behaviour, not a failure: info level, the form id only. */
+function logDrop(what: string, formId: string): void {
+    console.info(`[wix-forms] ${what}`, { formId });
 }
 
 /** Logs `name: message` only: never the cookie, the tokens, or the submitted values. */

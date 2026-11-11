@@ -11,6 +11,10 @@
  * mounted only when a render `update` first sees `isSubmitted: true`, as jay mounts a
  * conditional branch during the reactive flush.
  *
+ * `fieldElements` binds a fake native `input` and/or a fake `control` element per field target
+ * (DL#53 P1), so a test can drive a page-owned `data-value` and read what is reflected.
+ * `formId` defaults to a non-GUID id; page-check tests (DL#53 P3) pass a real form id.
+ *
  * Test files must mock `../lib/actions/forms-actions.js` and
  * `@jay-framework/wix-server-client/client` before importing this module.
  */
@@ -80,6 +84,49 @@ export const optionalTextField: FormFieldView = {
     options: [],
 };
 
+/** A fake native input: the component writes `.value` when it reflects a store value. */
+export interface FakeInput {
+    value: string;
+    focus: ReturnType<typeof vi.fn>;
+    addEventListener: ReturnType<typeof vi.fn>;
+    removeEventListener: ReturnType<typeof vi.fn>;
+}
+
+/** A fake page-owned `control` element whose `data-value` the page re-renders. */
+export interface FakeControl {
+    setAttribute(name: string, value: string): void;
+    removeAttribute(name: string): void;
+    getAttribute(name: string): string | null;
+    addEventListener: ReturnType<typeof vi.fn>;
+    removeEventListener: ReturnType<typeof vi.fn>;
+}
+
+export interface FakeFieldElements {
+    input?: FakeInput;
+    control?: FakeControl;
+}
+
+export function fakeInput(): FakeInput {
+    return {
+        value: '',
+        focus: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+    };
+}
+
+export function fakeControl(dataValue?: string): FakeControl {
+    const attributes = new Map<string, string>();
+    if (dataValue !== undefined) attributes.set('data-value', dataValue);
+    return {
+        setAttribute: (name, value) => void attributes.set(name, value),
+        removeAttribute: (name) => void attributes.delete(name),
+        getAttribute: (name) => attributes.get(name) ?? null,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+    };
+}
+
 interface BoundRef {
     set(element: unknown): void;
     mount(): void;
@@ -96,6 +143,10 @@ export interface WixFormHarness {
     chips: FakeCheckbox[];
     /** The confirmation element; its ref binds only once `isSubmitted` renders. */
     confirmation: FakeFocusable;
+    /** The page's honeypot input, bound to the reserved `honeypot` ref (DL#53 P5). */
+    honeypot: FakeInput;
+    /** The view state of the latest render or update (DL#53 P2), as the page would see it. */
+    viewState(): Record<string, any>;
 }
 
 interface ChipGroup {
@@ -128,42 +179,91 @@ function chipGroup(options: any, field: FormFieldView, chips: FakeCheckbox[]): C
     return { manager, bind };
 }
 
+/** `refs.<field>.input` / `.control` for one field, bound to the given fakes during render. */
+function fieldGroup(options: any, elements: FakeFieldElements): ChipGroup {
+    const [manager, [inputRef, controlRef]] = ReferencesManager.for(
+        options,
+        ['input', 'control'],
+        [],
+        [],
+        [],
+    );
+    const bind = () => {
+        const bound: BoundRef[] = [];
+        if (elements.input) {
+            const ref = inputRef() as BoundRef;
+            ref.set(elements.input);
+            bound.push(ref);
+        }
+        if (elements.control) {
+            const ref = controlRef() as BoundRef;
+            ref.set(elements.control);
+            bound.push(ref);
+        }
+        return bound;
+    };
+    return { manager, bind };
+}
+
 export function mountWixForm(
     fields: FormFieldView[] = [optionalTextField],
     chipField?: FormFieldView,
+    fieldElements: Record<string, FakeFieldElements> = {},
+    formId = 'form-1',
 ): WixFormHarness {
     const chips = chipField ? chipField.options.map(() => fakeCheckbox()) : [];
     const submitForm = fakeForm();
     const submitButton = fakeButton(submitForm);
     const resetButton = fakeButton(null);
     const confirmation: FakeFocusable = { focus: vi.fn() };
+    const honeypot = fakeInput();
     let submitRef!: BoundRef;
+    let latestViewState: Record<string, any> = {};
 
     const preRender = (options: any) => {
         const group = chipField && chipGroup(options, chipField, chips);
-        const children = group ? { [contractTagName(chipField!.target)]: group.manager } : {};
-        const [refManager, [submitButtonRef, resetButtonRef, confirmationRefFactory]] =
-            ReferencesManager.for(
-                options,
-                ['submitButton', 'resetButton', 'confirmation'],
-                [],
-                [],
-                [],
-                children,
-            );
-        const render = (viewState: any) =>
-            ConstructContext.withRootContext(viewState, refManager, () => {
+        const children: Record<string, ReferencesManager> = group
+            ? { [contractTagName(chipField!.target)]: group.manager }
+            : {};
+        const fieldGroups = Object.entries(fieldElements).map(([target, elements]) => {
+            const fieldRefs = fieldGroup(options, elements);
+            children[contractTagName(target)] = fieldRefs.manager;
+            return fieldRefs;
+        });
+        const [
+            refManager,
+            [submitButtonRef, resetButtonRef, confirmationRefFactory, honeypotRefFactory],
+        ] = ReferencesManager.for(
+            options,
+            ['submitButton', 'resetButton', 'confirmation', 'honeypot'],
+            [],
+            [],
+            [],
+            children,
+        );
+        const render = (viewState: any) => {
+            latestViewState = viewState;
+            return ConstructContext.withRootContext(viewState, refManager, () => {
                 submitRef = submitButtonRef() as BoundRef;
                 submitRef.set(submitButton);
                 const resetRef = resetButtonRef() as BoundRef;
                 resetRef.set(resetButton);
+                const honeypotRef = honeypotRefFactory() as BoundRef;
+                honeypotRef.set(honeypot);
                 const confirmationRef = confirmationRefFactory() as BoundRef;
                 let isConfirmationMounted = false;
-                const boundRefs = [submitRef, resetRef, ...(group?.bind() ?? [])];
+                const boundRefs = [
+                    submitRef,
+                    resetRef,
+                    honeypotRef,
+                    ...(group?.bind() ?? []),
+                    ...fieldGroups.flatMap((fieldRefs) => fieldRefs.bind()),
+                ];
                 return {
                     dom: undefined as any,
                     mount: () => boundRefs.forEach((ref) => ref.mount()),
                     update: (next: any) => {
+                        latestViewState = next;
                         if (next.isSubmitted && !isConfirmationMounted) {
                             confirmationRef.set(confirmation);
                             confirmationRef.mount();
@@ -173,10 +273,11 @@ export function mountWixForm(
                     unmount: () => boundRefs.forEach((ref) => ref.unmount()),
                 };
             });
+        };
         return [refManager.getPublicAPI(), render] as const;
     };
 
-    const carryForward = { formId: 'form-1', fields };
+    const carryForward = { formId, fields };
     const component = makeJayComponent(preRender as any, (props: any, refs: any) => {
         // makeSignals' shape; signals need the component context, so they are built here.
         const fastViewState = { isSubmitting: createSignal(false) };
@@ -190,6 +291,8 @@ export function mountWixForm(
         resetButton,
         chips,
         confirmation,
+        honeypot,
+        viewState: () => latestViewState,
         get submitRef() {
             return submitRef;
         },

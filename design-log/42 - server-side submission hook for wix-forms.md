@@ -723,3 +723,7 @@ Implemented in `packages/wix-server-client` and `packages/wix-forms` (2026-11-08
 ### Follow-up (2026-10-28): OAuthStrategy caller client replaced by DL #43 §Design 0
 
 `resolveRequestIdentity(cookies).client` was an `OAuthStrategy` client. On an expired access token that strategy renews it and, failing that, falls back to an anonymous grant, so an expired member could silently become a new visitor. It is now a headers-only `createClient({ modules: {}, headers: { Authorization } })` with no OAuth strategy. The identity also gains `session` (`'none' | 'active' | 'expired'`, 60 s margin), `authorization` and `expiresAt`. `siteOAuthClientId()` is read only inside the lazy `caller` getter. The V13 session tests were updated to this shape. See DL #43 for the design and its tests.
+
+### Remark (2026-11-11): the double-submit guard claim above was not true in code
+
+The Deviations entry "The double-submit guard is set before the submit-time hidden seed" did not hold at `1159cb7`: `setIsSubmitting(true)` ran only inside `runFormSubmit`, after the seed. No visible bug followed (exactly one `submitForm` call). DL #53 §2 (Phase P2) now implements it: `submit()` sets the flag and begins the flight generation before its first `await`, and `runFormSubmit` no longer checks or sets the flag. See DL #53.

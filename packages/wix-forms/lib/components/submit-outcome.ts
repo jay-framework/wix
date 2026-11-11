@@ -43,6 +43,8 @@ export interface SubmitRejection {
     reason?: SubmitFailure;
     message?: string;
     fieldErrors?: Record<string, string>;
+    /** A hook's code (DL#53 G3), reported to page code through `onSubmitOutcome`. */
+    code?: string;
 }
 
 export interface SubmitRejectionView {

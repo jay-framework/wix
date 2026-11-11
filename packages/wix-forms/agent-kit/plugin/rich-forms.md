@@ -42,8 +42,9 @@ See **§6 Accessibility** for why each attribute is there.
 Do **not** gate the confirmation on `statusMessage` — it is a data tag that also carries
 submit errors. Use the `isSubmitted` variant. To show your own failure copy, branch on
 `submitFailure` (see `user-visible-messages.md`). Note: a confirmation shown after a honeypot
-trip (below, a browser-only check against naive bots) does NOT imply the submission was stored —
-never treat "confirmation shown" as a persistence guarantee.
+trip (below, a browser-only check against naive bots), or a success after a server-side honeypot
+drop (§4a), does NOT imply the submission was stored — never treat "confirmation shown" (or a
+successful result) as a persistence guarantee.
 
 **Submit/reset buttons and native form submission.** Keep the submit button a real submit
 button — leave `type` off (it defaults to `submit` inside a `<form>`) or write
@@ -66,18 +67,95 @@ mark it `type="button"`:
 ## 2. Prefill (page-provided defaults)
 
 Bind a value the page already has (route param, query, page data) through a hidden
-`control`; it seeds that field's store slot (on mount, and again at submit) and **never
-overwrites a field the user already edited**:
+`control`; it seeds that field's store slot after mount, after a reset ("send another"), and
+again at submit. The slot **follows the page** while the user has not edited the field: change
+`data-value` and the next submit sends the new value (also after a failed submit); render
+`data-value=""` and the slot is cleared. It **never overwrites a field the user already
+edited**. A seeded visible field shows the value in its input:
 `<input type="hidden" ref="contact.email.control" data-value="{defaultEmail}" />`.
+
+A bound `control` with neither `data-value` nor `.value` (e.g. a `<div>`) reads as `''` and
+clears the slot on every seed until the user interacts with it — widgets that seed a value
+must render `data-value`.
 
 ## 3. Live validation
 
 The plugin validates using the Wix field schema (required + email/tel/url format +
-min/max/pattern) — nothing to configure. Typing in a field only **clears** its error; new
-errors appear on blur, on a `control` change, and on submit, so a screen reader is not
-interrupted on every keystroke. Bind `aria-invalid="{contact.email.invalid}"` on the input
+min/max/pattern) — nothing to configure. Timing is "late to complain, early to forgive":
+
+- **Blur** validates a field only if the user changed it (since mount or reset) or it already
+  shows an error. Tabbing past an untouched empty field shows nothing.
+- **Typing** in a field that shows an error clears it as soon as the value is valid, and
+  otherwise leaves the text alone (one error, no re-announcement per keystroke). This also
+  clears a `SERVER` error (from Wix or the hook) once the built-in rules and page checks pass,
+  because the browser cannot re-check a server rule — but **submit re-validates**: the next
+  submit asks the server again, and a still-bad value comes back as `SERVER`.
+- **A `control` change** (or a chip toggle) is a commit and validates immediately.
+- **Submit** validates every visible field and focuses the first invalid one, so a skipped
+  required field is reported there.
+- **Autofill:** at submit the plugin reads each visible text-like input and single `<select>`
+  from the DOM, because some browsers autofill without an `input` event; what the user sees is
+  what is posted. For a `<select>` that needs an unselected state, add a first
+  `<option value="">` (e.g. "Choose…"): without it the browser shows the first option, but the
+  form posts `''` until the user or autofill changes the select.
+- **Busy from the first click:** `isSubmitting` is set as soon as submit starts, so a second
+  click or Enter is ignored, and a reset during submit cancels it.
+
+Bind `aria-invalid="{contact.email.invalid}"` on the input
 and put the `error` in a polite live region linked by `aria-describedby` (see example
 above). The `invalid` variant also drives error styling.
+
+### Which rule failed — `errorRule`
+
+Every visible field has an `errorRule` variant:
+`NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE | URL | PATTERN | CUSTOM | SERVER`.
+`error` keeps the English default text; for your own wording (or another language) branch on
+`errorRule` — never match the `error` text.
+
+```html
+<span id="c-email-err" aria-live="polite">
+  <span if="contact.email.errorRule === REQUIRED">Email is required.</span>
+  <span if="contact.email.errorRule === EMAIL">That email doesn't look right.</span>
+  <span if="contact.email.errorRule === CUSTOM">{contact.email.error}</span>
+  <span if="contact.email.errorRule === SERVER">{contact.email.error}</span>
+</span>
+```
+
+- `CUSTOM` is a page check's own message; `SERVER` is Wix's (or the hook's) text — print `error`.
+- **Write `REQUIRED` copy that still reads correctly while the field holds text.** Typing never
+  swaps one error for another, so a field showing `REQUIRED` that receives a partial value
+  (e.g. `a` in an email field) keeps `REQUIRED` until it becomes valid (cleared) or is
+  blurred/submitted (re-checked to `EMAIL`). Say "Email is required", not "The field is empty".
+
+### Page checks — your own rules
+
+Rules the Wix schema cannot express (a real TLD, a phone valid for the chosen country, a
+cross-field rule) are **page checks**: functions registered per form on `WIX_FORMS_CONTEXT`
+(import it from `@jay-framework/wix-forms/client`; the plugin's client init creates it).
+
+```ts
+import { WIX_FORMS_CONTEXT } from '@jay-framework/wix-forms/client';
+
+// In a page component's interactive phase, declared with .withContexts(WIX_FORMS_CONTEXT):
+const forms = useContext(WIX_FORMS_CONTEXT);
+const unregister = forms.registerFieldChecks(BOOKING_FORM_ID, {
+  phone: [
+    (value) =>
+      isValidPhone(String(value)) ? undefined : 'Use an international number, e.g. +44 20 …',
+  ],
+});
+```
+
+- A check gets `(value, values)` and returns a message to fail, nothing to pass. Checks run in
+  order, **only after the built-in rules pass** (a field has one `errorRule` at a time), on the
+  same triggers as the built-ins (blur / typing above, and submit with the submitted values).
+  The first message wins and shows as `errorRule === CUSTOM`.
+- Key by the form's **id** (any case). A key that is not a form id, or a target the form does
+  not show as a visible field, is warned about once in the console and never runs.
+- A check that throws is logged once and treated as passing — a page bug must not block submit.
+- Checks are synchronous; checks registered after the form mounted still run.
+- **A page check is not a security check.** It is browser UX; re-validate on the server in the
+  form's submit hook (§7).
 
 ## 4a. Hidden values + honeypot
 
@@ -100,9 +178,14 @@ above). The `invalid` variant also drives error styling.
   />
   ```
 
-  The honeypot stops naive bots that fill every input in the DOM. It is not spam protection: it
-  runs in the browser only, and a script that calls the action directly skips it. For spam
-  control, use Wix's form settings, your edge, or a submit hook.
+  The honeypot stops naive bots that fill every input in the DOM: the browser check drops them
+  **without any request**. Direct posts are covered on the server too: the `submitForm` action
+  has an optional `honeypot` input (the plugin component never sends it). A direct post with a
+  non-empty `honeypot` is **dropped by default** when the form has no hook (fake success, no Wix
+  call). With a hook, the hook receives `honeypot` and decides: drop with `return { dropped: true }`
+  (§7). Absent ≠ human: any script can omit the input, and a replay of the plugin's own request
+  carries none. It is not spam protection: for spam control, use Wix's form settings, your edge,
+  or rate limits in a submit hook.
 
 ## 4b. Non-string fields (checkbox / multiselect)
 
@@ -170,7 +253,7 @@ is single-value, so each click would replace the whole selection (the validator 
 ## 5. Custom UI / multi-step
 
 Any element bound to a field's `control` feeds that field's store slot via its `data-value`
-(or `.value`), runs the same validation, and reconciles with a native `input` on the same
+(or `.value`; render `data-value`, see §2), runs the same validation, and reconciles with a native `input` on the same
 field (the store is authoritative, last-wins). This covers date pickers, time-slot grids, and
 choosers. The store persists across steps (component state), so a multi-step flow collects
 fields across steps into one submission — **step navigation (which step is shown) is
@@ -202,6 +285,8 @@ mechanical mistakes marked ⚠️.
 
 - Submits from the `<form>`'s `submit` event, so click, Enter, and `requestSubmit()` all work.
 - On a failed submit (client or server field errors), focuses the first invalid field's `input`.
+- Errors appear on blur only for fields the user changed (§3), so tabbing through an empty
+  form announces nothing; submit reports every invalid field.
 - On success, focuses the element bound to `confirmation`; on reset, focuses the first field.
 
 **What the page must do**
@@ -240,11 +325,12 @@ build, so a top-level `registerService` ships the hook (and everything it import
 // src/init.ts
 import { makeJayInit, ActionError } from '@jay-framework/fullstack-component';
 import { registerService } from '@jay-framework/stack-server-runtime';
-import { WIX_FORMS_SUBMIT_HOOKS } from '@jay-framework/wix-forms';
+import { WIX_FORMS_SUBMIT_HOOKS, FieldRejection } from '@jay-framework/wix-forms';
 
 export const init = makeJayInit().withServer(async () => {
   registerService(WIX_FORMS_SUBMIT_HOOKS, {
-    [REQUEST_VISIT_FORM_ID]: async ({ values, caller, submit }) => {
+    [REQUEST_VISIT_FORM_ID]: async ({ values, caller, honeypot, submit }) => {
+      if (honeypot) return { dropped: true }; // first line of every hook (§4a)
       if (caller?.type !== 'MEMBER')
         // a VISITOR proves a session only
         throw new ActionError('SIGN_IN_REQUIRED', 'Please sign in again to request a visit.');
@@ -268,7 +354,7 @@ export const init = makeJayInit().withServer(async () => {
 ```
 
 The form id is the `formId` in `agent-kit/references/wix-forms/forms.yaml` (also the generated
-contract's `formId` metadata). The hook receives `{ formId, values, caller, client, submit }`.
+contract's `formId` metadata). The hook receives `{ formId, values, caller, client, honeypot, submit }`.
 Hook keys are the form id, in any case; a key that is not a form id (such as `'contact-us'`) never
 matches and is warned about once on the server.
 
@@ -298,6 +384,65 @@ before its hook runs. A form created after deploy is refused until the server re
 
 **Rejecting.** `throw new ActionError(code, message)` shows `message` to the user as the form-level
 error. Any other error is logged on the server and the user sees a generic message.
+
+**Dropping (honeypot).** `honeypot` is the trimmed `honeypot` action input (`''` when absent). It is
+untrusted and advisory: the plugin's own component never sends it, so `''` does not mean human.
+Make `if (honeypot) return { dropped: true };` the first line of every hook: a hook that ignores it
+posts honeypot-filled direct submissions (without a hook the plugin drops them for you). Return
+`{ dropped: true }` **without** calling `submit()`: the caller sees a plain success (your
+`redirectTo` is honoured), nothing reaches Wix, and the server logs the drop at info level. After a
+successful `submit()`, `dropped` is ignored (the post happened) and logged.
+
+**Rejecting specific fields.** Validate first, then `throw new FieldRejection(fieldErrors, { code? })`
+(from `@jay-framework/wix-forms`) **before** calling `submit()`: `fieldErrors` maps field target →
+your own message. The page gets `submitFailure: VALIDATION`; each visible target shows its message
+on the field with `errorRule: SERVER` and focus moves to the first one; a hidden or unknown target
+goes to the status message. This is the server half of page checks (§3): re-validate here what the
+page checked in the browser.
+
+```ts
+[BOOKING_FORM_ID]: async ({ values, submit }) => {
+  if (!isValidPhone(String(values.phone)))
+    throw new FieldRejection({ phone: 'Please check the phone number.' }, { code: 'BAD_PHONE' });
+  await submit();
+},
+```
+
+Throwing `FieldRejection` **after** `submit()` does nothing visible: the post already happened, Wix's
+outcome decides, and the rejection is only logged. An empty `fieldErrors` is treated as an
+unexpected error (generic message).
+
+**Reacting to the outcome in page code — `code` and `onSubmitOutcome`.** A hook's rejection code
+(`ActionError(code, …)` or `FieldRejection(…, { code })`) is returned as `code` and delivered to
+page code by the plugin's client context: subscribe with `onSubmitOutcome` (it fires once per settled
+submit of any plugin form; the handler gets `{ event }`). It returns an unsubscribe function. The
+context is global and outlives the page, so subscribe inside `createEffect` and return it: jay runs
+the cleanup on unmount, and without it a left page's handler keeps firing for later submits. There is no contract variant
+for your codes: they are your vocabulary. For markup-only copy per code, keep your own page
+variant and set it from the event. The plugin outcome stays `submitFailure` (`REJECTED`,
+`VALIDATION`, …).
+
+```ts
+// page component, interactive phase; the page declared .withContexts(WIX_FORMS_CONTEXT)
+const forms = useContext(WIX_FORMS_CONTEXT); // from '@jay-framework/wix-forms/client'
+createEffect(() =>
+  forms.onSubmitOutcome(({ event }) => {
+    if (event.formId !== BOOKING_FORM_ID || event.outcome !== 'failed') return;
+    if (event.code === 'SLOT_TAKEN') {
+      setSelectedSlot(undefined); // hidden data-value → "", refreshed at the next submit (§2)
+      void reloadAvailability();
+    }
+  }),
+); // the returned unsubscribe is the effect's cleanup
+```
+
+`event` is `{ formId, outcome: 'succeeded', redirectTo? }` or `{ formId, outcome: 'failed', reason,
+code?, fieldErrors? }`; `formId` is canonical (lower case), so filter on it when a page has two
+forms. Client validation reports `reason: VALIDATION` with the client messages, a lost request
+`reason: NETWORK`; only hook failures carry a `code`. **The event reports what the visitor was
+shown, never what was stored:** a honeypot trip and a server-side drop both read `succeeded`, like a
+real success. It is not a persistence signal; get that from your own server-side state. Without
+the plugin's client init nothing is emitted.
 
 **`submit(values?, options?)`.** Call it **once**, and `await` or `return` it. `values` replaces the
 submitted values (default: the browser's). It rejects when Wix rejects. A
@@ -344,6 +489,10 @@ display data.
 
 **`redirectTo`.** A same-site path (`'/…'`) only. The browser drops an absolute URL or anything that
 could leave the site (`'//host'`, `'/..//host'`, control characters) and logs it.
+On a redirect the form does **not** show its confirmation: `isSubmitted` stays false and
+`submitState` reads `SUBMITTING` (the button stays busy) until the page unloads, so nothing flashes
+or takes focus. Page code sees the redirect through `onSubmitOutcome` (`succeeded` + `redirectTo`).
+A dropped unsafe `redirectTo` shows the confirmation as usual.
 
 **Hidden fields.** Client validation skips hidden fields, so a required hidden field can be left empty
 in the page and filled by the hook through `submit({ ...values, reference })`. Wix re-validates it;

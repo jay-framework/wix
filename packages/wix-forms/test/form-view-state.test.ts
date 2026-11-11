@@ -3,6 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildFieldsViewState, buildFormViewState } from '../lib/components/form-view-state.js';
 import { SubmitFailure, SubmitState } from '../lib/components/submit-outcome.js';
+import { FieldRule } from '../lib/components/field-rule.js';
 import type { FormFieldView } from '../lib/types.js';
 
 const fields: FormFieldView[] = [
@@ -32,6 +33,7 @@ describe('buildFieldsViewState', () => {
                 required: true,
                 error: '',
                 invalid: false,
+                errorRule: FieldRule.NONE,
                 placeholder: 'you@site.com',
                 value: '',
             },
@@ -40,6 +42,7 @@ describe('buildFieldsViewState', () => {
                 required: false,
                 error: '',
                 invalid: false,
+                errorRule: FieldRule.NONE,
                 options: [{ value: 'us', label: 'United States' }],
             },
         });
@@ -64,6 +67,25 @@ describe('buildFieldsViewState', () => {
     });
 });
 
+describe('buildFormViewState errorRule (DL#53 G1)', () => {
+    const base = { isSubmitting: false, statusMessage: '', loadError: '' };
+
+    it('should default every field errorRule to NONE', () => {
+        const result = buildFormViewState(fields, base) as Record<string, any>;
+        expect(result.email.errorRule).toBe(FieldRule.NONE);
+        expect(result.country.errorRule).toBe(FieldRule.NONE);
+    });
+
+    it('should set errorRule by target from ruleByTarget', () => {
+        const result = buildFormViewState(fields, {
+            ...base,
+            ruleByTarget: { email: FieldRule.EMAIL },
+        }) as Record<string, any>;
+        expect(result.email.errorRule).toBe(FieldRule.EMAIL);
+        expect(result.country.errorRule).toBe(FieldRule.NONE);
+    });
+});
+
 describe('buildFormViewState', () => {
     it('should add the reserved form-level tags alongside the per-field slots', () => {
         const result = buildFormViewState(fields, {
@@ -77,6 +99,7 @@ describe('buildFormViewState', () => {
                 required: true,
                 error: '',
                 invalid: false,
+                errorRule: FieldRule.NONE,
                 placeholder: 'you@site.com',
                 value: '',
             },
@@ -85,6 +108,7 @@ describe('buildFormViewState', () => {
                 required: false,
                 error: '',
                 invalid: false,
+                errorRule: FieldRule.NONE,
                 options: [{ value: 'us', label: 'United States' }],
             },
             isLoading: false,

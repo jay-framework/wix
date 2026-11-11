@@ -62,6 +62,7 @@
     "@jay-framework/compiler-jay-stack": "^0.26.1",
     "@jay-framework/jay-cli": "^0.26.1",
     "@jay-framework/jay-stack-cli": "^0.26.1",
+    "@jay-framework/ssr-runtime": "^0.26.1",
     "@jay-framework/vite-plugin": "^0.26.1",
     "@jay-framework/wix-dev-environment": "workspace:^",
     "node-html-parser": "^6.1.0",

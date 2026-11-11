@@ -4,9 +4,15 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { ContractTagType, parseContract } from '@jay-framework/compiler-jay-html';
+import {
+    compileContract,
+    ContractTagType,
+    JAY_IMPORT_RESOLVER,
+    parseContract,
+} from '@jay-framework/compiler-jay-html';
 import { checkValidationErrors } from '@jay-framework/compiler-shared';
 import { generator as formContractGenerator } from '../lib/generators/form-contract-generator.js';
+import { FieldRule } from '../lib/components/field-rule.js';
 import type { ListedFormView } from '../lib/types.js';
 import type { WixFormsService } from '../lib/services/wix-forms-service-marker.js';
 
@@ -158,6 +164,31 @@ describe('formContractGenerator', () => {
             }),
         );
         expect(optionChildren(parsed, 'country').map((tag) => tag.tag)).not.toContain('toggle');
+    });
+
+    it('should give every visible field an errorRule enum that jay compiles to the FieldRule members (DL#53 G1)', async () => {
+        const [contract] = await formContractGenerator.generate(serviceWith([contactForm]));
+        const parsed = parseContract(contract.yaml, 'form-contact.jay-contract');
+        const compiled = await compileContract(
+            parsed,
+            'form-contact.jay-contract',
+            JAY_IMPORT_RESOLVER,
+        );
+        const enums = [
+            ...(compiled.val ?? '').matchAll(/export enum (\w*ErrorRule\w*) \{([^}]*)\}/g),
+        ];
+        const fieldRuleNames = Object.keys(FieldRule).filter((key) => Number.isNaN(Number(key)));
+
+        expect(compiled.validations).toEqual([]);
+        expect(enums).toHaveLength(contactForm.fields.length);
+        for (const [, , body] of enums) {
+            expect(
+                body
+                    .split(',')
+                    .map((member) => member.trim())
+                    .filter(Boolean),
+            ).toEqual(fieldRuleNames);
+        }
     });
 
     it('should produce a contract that parses without validation errors', async () => {

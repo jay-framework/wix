@@ -19,6 +19,7 @@ import {
     type SubmitDeps,
 } from '../../lib/submission/run-submission.js';
 import {
+    FieldRejection,
     NoCallerSessionError,
     SessionExpiredError,
     SubmitIgnoredError,
@@ -285,6 +286,7 @@ describe('runSubmission — V4, rows 4–5 (no submit)', () => {
             success: false,
             reason: SubmitFailure.REJECTED,
             message: 'That time was just taken.',
+            code: 'SLOT_TAKEN', // DL#53 G3
         });
         expect(posts).toEqual([]);
         expect(loggedMessages()).toEqual([]);
@@ -932,5 +934,283 @@ describe('selectHook — DL #50, canonical keys', () => {
 
     it('should not throw without hooks', () => {
         expect(() => selectHook(undefined, FORM_ID)).not.toThrow();
+    });
+});
+
+/**
+ * DL#53 G4 (P4): a hook rejects specific fields with `FieldRejection` before `submit()`.
+ * Expected: `{ success: false, reason: VALIDATION, fieldErrors, code? }`. Before P4 the throw is a
+ * plain Error, so it settles to the generic UNKNOWN failure (L5) and the field errors are lost.
+ */
+describe('runSubmission — DL#53 G4, FieldRejection', () => {
+    it('should return VALIDATION with the field errors and the code when thrown before submit()', async () => {
+        const { deps, posts } = harness({
+            hook: async () => {
+                throw new FieldRejection(
+                    { phone: 'Please check the phone number.' },
+                    { code: 'BAD_PHONE' },
+                );
+            },
+        });
+
+        expect(await submitWith(deps)).toEqual({
+            success: false,
+            reason: SubmitFailure.VALIDATION,
+            fieldErrors: { phone: 'Please check the phone number.' },
+            code: 'BAD_PHONE',
+        });
+        expect(posts).toEqual([]);
+        expect(loggedMessages()).toEqual([]);
+    });
+
+    it('should omit the code when the rejection has none', async () => {
+        const { deps } = harness({
+            hook: async () => {
+                throw new FieldRejection({ phone: 'Please check the phone number.' });
+            },
+        });
+
+        const result = await submitWith(deps);
+        expect(result).toEqual({
+            success: false,
+            reason: SubmitFailure.VALIDATION,
+            fieldErrors: { phone: 'Please check the phone number.' },
+        });
+        expect('code' in result).toBe(false);
+    });
+
+    it('should keep the success when thrown after a successful submit(), and log it (L3)', async () => {
+        const { deps, posts } = harness({
+            hook: async ({ submit }) => {
+                await submit();
+                throw new FieldRejection({ phone: 'too late' });
+            },
+        });
+
+        expect(await submitWith(deps)).toEqual({ success: true });
+        expect(posts).toHaveLength(1);
+        expect(loggedMessages()).toEqual([
+            '[wix-forms] the submit hook threw after submit() was called',
+        ]);
+    });
+
+    it('should treat an empty field map as an unexpected failure (UNKNOWN, L5)', async () => {
+        const { deps } = harness({
+            hook: async () => {
+                throw new FieldRejection({}, { code: 'EMPTY' });
+            },
+        });
+
+        expect(await submitWith(deps)).toEqual(UNKNOWN_FAILURE);
+        expect(loggedMessages()).toEqual(['[wix-forms] the submit hook failed before submitting']);
+    });
+
+    it('should recognise a FieldRejection from a duplicate module instance by its name', async () => {
+        const fromAnotherCopy = Object.assign(new Error('rejected'), {
+            name: 'FieldRejection',
+            fieldErrors: { email: 'Use your work email.' },
+            options: { code: 'WORK_EMAIL' },
+        });
+        const { deps } = harness({
+            hook: async () => {
+                throw fromAnotherCopy;
+            },
+        });
+
+        expect(await submitWith(deps)).toEqual({
+            success: false,
+            reason: SubmitFailure.VALIDATION,
+            fieldErrors: { email: 'Use your work email.' },
+            code: 'WORK_EMAIL',
+        });
+    });
+
+    it('should export FieldRejection with its name, field errors and default options', () => {
+        const rejection = new FieldRejection({ a: 'x', b: 'y' });
+        expect(rejection).toBeInstanceOf(Error);
+        expect(rejection.name).toBe('FieldRejection');
+        expect(rejection.fieldErrors).toEqual({ a: 'x', b: 'y' });
+        expect(rejection.options).toEqual({});
+        expect(rejection.message).toBe('the submit hook rejected fields: a, b');
+    });
+});
+
+/**
+ * DL#53 H (P5, Q10 option (a)): an optional `honeypot` action input for direct / scripted posts.
+ * Expected: with no hook a non-empty honeypot is dropped (fake success, no Wix call, info log);
+ * with a hook, the hook gets `honeypot` (trimmed, '' when absent) and can return `{ dropped: true }`.
+ * Before P5 the input is ignored, so a honeypot-filled post reaches Wix.
+ */
+describe('runSubmission — DL#53 H, server honeypot', () => {
+    let info: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(() => {
+        info = vi.spyOn(console, 'info').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+        info.mockRestore();
+    });
+
+    function postWithHoneypot(deps: SubmitDeps, honeypot: unknown) {
+        return runSubmission(
+            { formId: FORM_ID, values: { email_4b3a: 'a@b.co' }, honeypot } as never,
+            deps,
+        );
+    }
+
+    it('should drop a filled honeypot without a hook: fake success, no Wix call, info log', async () => {
+        const { deps, posts, resolveClient } = harness();
+
+        expect(await postWithHoneypot(deps, 'x')).toEqual({ success: true });
+        expect(posts).toEqual([]);
+        expect(resolveClient).not.toHaveBeenCalled();
+        expect(info.mock.calls).toEqual([
+            ['[wix-forms] dropped a submission (honeypot, no hook)', { formId: FORM_ID }],
+        ]);
+        expect(loggedMessages()).toEqual([]);
+    });
+
+    it.each([
+        ['empty', ''],
+        ['whitespace only', '   '],
+        ['absent', undefined],
+        ['not a string', 42],
+    ])('should post as today without a hook when the honeypot is %s', async (_, honeypot) => {
+        const { deps, posts } = harness();
+
+        expect(await postWithHoneypot(deps, honeypot)).toEqual({ success: true });
+        expect(posts).toEqual([[FORM_ID, { email_4b3a: 'a@b.co' }]]);
+        expect(info).not.toHaveBeenCalled();
+    });
+
+    it.each([
+        ['trimmed', '  x  ', 'x'],
+        ["'' when absent", undefined, ''],
+        ["'' when not a string", { a: 1 }, ''],
+    ])('should pass the honeypot to the hook, %s', async (_, honeypot, expected) => {
+        const seen: unknown[] = [];
+        const { deps } = harness({
+            hook: async (input) => {
+                seen.push(input.honeypot);
+                await input.submit();
+            },
+        });
+
+        await postWithHoneypot(deps, honeypot);
+
+        expect(seen).toEqual([expected]);
+    });
+
+    it('should not drop by default when a hook is registered: the hook decides', async () => {
+        const { deps, posts } = harness({ hook: async ({ submit }) => submit() });
+
+        expect(await postWithHoneypot(deps, 'x')).toEqual({ success: true });
+        expect(posts).toHaveLength(1);
+    });
+
+    it('should settle a hook { dropped: true } without submit() as a success, logged at info, no L5', async () => {
+        const { deps, posts } = harness({
+            hook: async ({ honeypot }) => (honeypot ? { dropped: true } : undefined),
+        });
+
+        expect(await postWithHoneypot(deps, 'x')).toEqual({ success: true });
+        expect(posts).toEqual([]);
+        expect(info.mock.calls).toEqual([
+            ['[wix-forms] dropped a submission (hook)', { formId: FORM_ID }],
+        ]);
+        expect(loggedMessages()).toEqual([]);
+    });
+
+    it('should honour redirectTo on a hook drop', async () => {
+        const { deps } = harness({
+            hook: async () => ({ dropped: true, redirectTo: '/thanks' }),
+        });
+
+        expect(await postWithHoneypot(deps, 'x')).toEqual({
+            success: true,
+            redirectTo: '/thanks',
+        });
+    });
+
+    it('should keep the real success when dropped is returned after a successful submit(), logged L3', async () => {
+        const { deps, posts } = harness({
+            hook: async ({ submit }) => {
+                await submit();
+                return { dropped: true };
+            },
+        });
+
+        expect(await postWithHoneypot(deps, 'x')).toEqual({ success: true });
+        expect(posts).toHaveLength(1);
+        expect(loggedMessages()).toEqual([
+            '[wix-forms] the submit hook returned dropped after submit() was called',
+        ]);
+        expect(info).not.toHaveBeenCalled();
+    });
+
+    /** Regression guard: the honeypot is separate from `values` and never reaches Wix. */
+    it('should never put the honeypot into the values posted to Wix, also with default submit() values', async () => {
+        const { deps, posts } = harness({ hook: async ({ submit }) => submit() });
+
+        await postWithHoneypot(deps, 'x');
+
+        expect(posts).toEqual([[FORM_ID, { email_4b3a: 'a@b.co' }]]);
+    });
+
+    /** Regression guard: the allowlist runs first, so a drop reveals nothing about which ids exist. */
+    it('should refuse a non-submittable id before dropping', async () => {
+        const { deps, posts } = harness({ isSubmittableForm: async () => false });
+
+        expect(await postWithHoneypot(deps, 'x')).toEqual({
+            success: false,
+            reason: SubmitFailure.REJECTED,
+            message: SUBMIT_FAILED_MESSAGE,
+        });
+        expect(posts).toEqual([]);
+        expect(info).not.toHaveBeenCalled();
+    });
+});
+
+/**
+ * Bug (DL#53 G3): a hook's `ActionError` code is dropped on the way to the page.
+ * Found in: `lib/submission/run-submission.ts`, the ActionError settle row.
+ * Expected: `{ success: false, reason: REJECTED, message, code: 'SLOT_TAKEN' }`.
+ * Actual: `code` is missing, so the page cannot tell "slot taken" from any other rejection.
+ */
+describe('runSubmission — DL#53 G3, the hook code reaches the result', () => {
+    it("should keep an ActionError's code in the REJECTED result", async () => {
+        const { deps } = harness({
+            hook: async () => {
+                throw new ActionError('SLOT_TAKEN', 'That time was just booked.');
+            },
+        });
+
+        const result = await submitWith(deps);
+
+        expect(result).toEqual({
+            success: false,
+            reason: SubmitFailure.REJECTED,
+            message: 'That time was just booked.',
+            code: 'SLOT_TAKEN',
+        });
+    });
+
+    /** Regression guard (green since P4): a FieldRejection's code reaches the result. */
+    it("should keep a FieldRejection's code in the VALIDATION result", async () => {
+        const { deps } = harness({
+            hook: async () => {
+                throw new FieldRejection({ phone: 'Check it.' }, { code: 'BAD_PHONE' });
+            },
+        });
+
+        expect(await submitWith(deps)).toMatchObject({ code: 'BAD_PHONE' });
+    });
+
+    /** Regression guard: plugin and Wix failures carry no code (their reason is the code). */
+    it('should carry no code for a Wix failure', async () => {
+        const { deps } = harness({ wixFails: forbidden });
+
+        expect('code' in (await submitWith(deps))).toBe(false);
     });
 });

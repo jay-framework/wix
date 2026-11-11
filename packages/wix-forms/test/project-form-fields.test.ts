@@ -2,13 +2,15 @@
 
 import { describe, expect, it } from 'vitest';
 import {
+    checkFormField,
     parseSubmissionFieldErrors,
     projectFormFields,
     projectFormSummaryFields,
     validateFormField,
     validateFormSummaryField,
 } from '../lib/utils/project-form-fields.js';
-import type { FormFieldView } from '../lib/types.js';
+import type { FieldValue, FormFieldView } from '../lib/types.js';
+import { FieldRule } from '../lib/components/field-rule.js';
 
 describe('projectFormFields', () => {
     /**
@@ -231,6 +233,93 @@ describe('validateFormField', () => {
             'Please enter a valid email address.',
         );
         expect(validateFormField(emailField, 'user@example.com')).toBe('');
+    });
+});
+
+describe('checkFormField (DL#53 G1)', () => {
+    function fieldOf(overrides: Partial<FormFieldView>): FormFieldView {
+        return {
+            target: 'f',
+            label: 'Field',
+            inputType: 'text',
+            required: false,
+            placeholder: '',
+            options: [],
+            ...overrides,
+        };
+    }
+
+    const cases: Array<[string, Partial<FormFieldView>, FieldValue, FieldRule, string]> = [
+        ['a valid value', { required: true }, 'ok', FieldRule.NONE, ''],
+        ['an empty optional value', {}, '', FieldRule.NONE, ''],
+        [
+            'an empty required value',
+            { required: true },
+            '  ',
+            FieldRule.REQUIRED,
+            'Field is required.',
+        ],
+        [
+            'an unchecked required checkbox',
+            { inputType: 'checkbox', required: true },
+            false,
+            FieldRule.REQUIRED,
+            'Field is required.',
+        ],
+        [
+            'an empty required multiselect',
+            { inputType: 'multiselect', required: true },
+            [],
+            FieldRule.REQUIRED,
+            'Field is required.',
+        ],
+        [
+            'a too-short value',
+            { minLength: 3 },
+            'ab',
+            FieldRule.MIN_LENGTH,
+            'Field must be at least 3 characters.',
+        ],
+        [
+            'a too-long value',
+            { maxLength: 2 },
+            'abc',
+            FieldRule.MAX_LENGTH,
+            'Field must be at most 2 characters.',
+        ],
+        [
+            'a malformed email',
+            { inputType: 'email' },
+            'x@y',
+            FieldRule.EMAIL,
+            'Please enter a valid email address.',
+        ],
+        [
+            'a malformed phone',
+            { inputType: 'tel' },
+            'abc',
+            FieldRule.PHONE,
+            'Please enter a valid phone number.',
+        ],
+        [
+            'a malformed url',
+            { inputType: 'url' },
+            'site.com',
+            FieldRule.URL,
+            'Please enter a valid URL.',
+        ],
+        [
+            'a pattern mismatch',
+            { pattern: '^[0-9]+$' },
+            'abc',
+            FieldRule.PATTERN,
+            'Field is not in the expected format.',
+        ],
+        ['an invalid pattern regex', { pattern: '(' }, 'abc', FieldRule.NONE, ''],
+    ];
+
+    it.each(cases)('should report %s', (_name, overrides, value, rule, message) => {
+        expect(checkFormField(fieldOf(overrides), value)).toEqual({ rule, message });
     });
 });
 
