@@ -40,6 +40,7 @@ export default defineConfig(({ isSsrBuild }) => ({
                 '@jay-framework/wix-cart/client',
                 '@jay-framework/wix-server-client',
                 '@jay-framework/wix-server-client/client',
+                '@jay-framework/wix-server-client/tools',
                 '@wix/sdk',
             ],
         },

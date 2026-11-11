@@ -51,6 +51,7 @@ Design documentation for the Jay Framework Wix integration packages.
 | 43  | [Act as the Caller](./43%20-%20act%20as%20the%20caller.md)                                                       | Implemented Phases 1–3 (Phase 4 live checks pending)                     |
 | 45  | [Locale-Neutral Submit Outcome for wix-forms](./45%20-%20locale-neutral%20submit%20outcome%20for%20wix-forms.md) | Implemented (browser demo pending)                                       |
 | 46  | [Locale-Neutral Outcomes for wix-bookings](./46%20-%20locale-neutral%20outcomes%20for%20wix-bookings.md)         | Implemented (browser demo pending)                                       |
+| 47  | [Site-Scoped App Strategy](./47%20-%20site-scoped%20app%20strategy.md)                                           | Implemented (live setup + store-light pending)                           |
 
 ## Packages Covered
 

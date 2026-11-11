@@ -21,6 +21,7 @@ export function provideWixClientService(config: WixConfig) {
               : AppStrategy({
                     appId: config.auth.app.appId,
                     appSecret: config.auth.app.appSecret,
+                    instanceId: config.auth.app.instanceId,
                 });
 
     const instance = createClient({ auth, modules: {} });

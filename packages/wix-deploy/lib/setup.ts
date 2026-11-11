@@ -1,17 +1,15 @@
 /**
  * wix-deploy setup hook
  *
- * Runs after wix-server-client setup. Reads wix.config.json to populate
- * clientId and siteId in config/.wix.yaml (if they're still placeholders),
- * then validates the data collection exists.
+ * Runs after wix-server-client setup, which owns config/.wix.yaml (API key or app strategy, DL #47).
+ * Reads wix.config.json for the deploy target, then validates the data collection exists.
  */
 
 import fs from 'node:fs';
 import path from 'node:path';
-import yaml from 'js-yaml';
 // @ts-ignore — no type declarations
 import { getService } from '@jay-framework/stack-server-runtime';
-import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
+import { WIX_CLIENT_SERVICE, type WixClientService } from '@jay-framework/wix-server-client';
 import { items, collections } from '@wix/data';
 import { DEFAULT_COLLECTION_ID } from './constants.js';
 
@@ -36,7 +34,6 @@ export async function setupWixDeploy(ctx: SetupContext): Promise<SetupResult> {
     }
 
     const wixConfigPath = path.join(ctx.projectRoot, 'wix.config.json');
-    const wixYamlPath = path.join(ctx.configDir, '.wix.yaml');
 
     if (!fs.existsSync(wixConfigPath)) {
         return {
@@ -47,7 +44,6 @@ export async function setupWixDeploy(ctx: SetupContext): Promise<SetupResult> {
 
     const wixConfig = JSON.parse(fs.readFileSync(wixConfigPath, 'utf8'));
     const appId = wixConfig.appId;
-    const siteId = wixConfig.siteId;
 
     if (!appId) {
         return {
@@ -57,52 +53,18 @@ export async function setupWixDeploy(ctx: SetupContext): Promise<SetupResult> {
     }
 
     const configCreated: string[] = [];
-    if (fs.existsSync(wixYamlPath)) {
-        const content = fs.readFileSync(wixYamlPath, 'utf8');
-        const config = yaml.load(content) as any;
-
-        if (config) {
-            let changed = false;
-
-            const currentClientId = config.oauthStrategy?.clientId || '';
-            if (!currentClientId || currentClientId.startsWith('<')) {
-                if (!config.oauthStrategy) config.oauthStrategy = {};
-                config.oauthStrategy.clientId = appId;
-                changed = true;
-                configCreated.push('clientId');
-            }
-
-            const currentSiteId = config.apiKeyStrategy?.siteId || '';
-            if (siteId && (!currentSiteId || currentSiteId.startsWith('<'))) {
-                if (!config.apiKeyStrategy) config.apiKeyStrategy = {};
-                config.apiKeyStrategy.siteId = siteId;
-                changed = true;
-                configCreated.push('siteId');
-            }
-
-            if (changed) {
-                fs.writeFileSync(wixYamlPath, yaml.dump(config, { lineWidth: -1 }), 'utf8');
-            }
-        }
-    }
-
-    // Check if API key is configured
-    if (fs.existsSync(wixYamlPath)) {
-        const config = yaml.load(fs.readFileSync(wixYamlPath, 'utf8')) as any;
-        const apiKey = config?.apiKeyStrategy?.apiKey || '';
-        if (!apiKey || apiKey.startsWith('<')) {
-            return {
-                status: 'needs-config',
-                configCreated,
-                message:
-                    'API key required — create one at https://manage.wix.com/ and add to config/.wix.yaml',
-            };
-        }
-    }
 
     // Validate data collection exists, create if missing
     let collectionOk = false;
-    const wixClient = getService(WIX_CLIENT_SERVICE);
+    let wixClient: WixClientService;
+    try {
+        wixClient = getService(WIX_CLIENT_SERVICE);
+    } catch {
+        return {
+            status: 'needs-config',
+            message: 'Wix client not available. Run setup for wix-server-client first.',
+        };
+    }
     if (wixClient) {
         const dataClient = wixClient.use({ items, collections });
         try {

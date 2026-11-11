@@ -29,21 +29,23 @@ export function buildDashboardUrl(siteId: string, dashboardPath: string): string
     return `${DASHBOARD_BASE}/${siteId}/${relativePath}`;
 }
 
-/** API-key siteId from `config/.wix.yaml`, else `wix.config.json` siteId (visitor/app configs carry none). */
+/** API-key or app siteId from `config/.wix.yaml`, else `wix.config.json` siteId (visitor configs carry none). */
 export function resolveDashboardSiteId(projectRoot: string): string {
-    const siteId = apiKeySiteId() || readWixConfig(projectRoot)?.siteId;
+    const siteId = configSiteId() || readWixConfig(projectRoot)?.siteId;
     if (!siteId) {
         throw new Error(
-            'No Wix site id in config/.wix.yaml (apiKeyStrategy.siteId) or wix.config.json (siteId). Ask the site owner to configure the Wix site.',
+            'No Wix site id in config/.wix.yaml (apiKeyStrategy.siteId or appStrategy.siteId) or wix.config.json (siteId). Ask the site owner to configure the Wix site.',
         );
     }
     return siteId;
 }
 
-function apiKeySiteId(): string | undefined {
+function configSiteId(): string | undefined {
     try {
         const { auth } = loadConfig();
-        return auth.kind === 'apiKey' ? auth.apiKey.siteId : undefined;
+        if (auth.kind === 'apiKey') return auth.apiKey.siteId;
+        if (auth.kind === 'app') return auth.app.siteId;
+        return undefined;
     } catch {
         return undefined;
     }
