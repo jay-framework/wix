@@ -57,7 +57,6 @@ Design documentation for the Jay Framework Wix integration packages.
 | 49  | [Wix API Path Safety](./49%20-%20wix%20api%20path%20safety.md)                                                                                                                                       | Implemented; live checks passed 2026-11-10; refusal now 4xx                                                           |
 | 50  | [wix-forms Submit Access Policy](./50%20-%20wix-forms%20submit%20access%20policy.md)                                                                                                                 | Implemented; curl + live checks passed 2026-11-10                                                                     |
 | 53  | [Page-Owned Validation, Hook Outcomes and Fresh Control Values for wix-forms](./53%20-%20page-owned%20validation,%20hook%20outcomes%20and%20fresh%20control%20values%20for%20wix-forms.md)           | Implemented                                                                                                           |
-| 54  | [Format Opt-Out, Trimmed Echo, Hook Field Errors and Submit Start for wix-forms](./54%20-%20format%20opt-out,%20trimmed%20echo,%20hook%20field%20errors%20and%20submit%20start%20for%20wix-forms.md) | Approved                                                                                                              |
 
 ## Packages Covered
 
