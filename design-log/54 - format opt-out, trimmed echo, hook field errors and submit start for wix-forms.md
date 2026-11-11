@@ -42,20 +42,20 @@ After DL#53 (this branch, `package.json` version `0.26.1`, changes listed under 
 
 ## Prior Art / Adjacent Mechanisms
 
-| Primitive | Item | Verdict |
-| --- | --- | --- |
-| Page checks, `registerFieldChecks` (`wix-forms-context.ts:61-69,106-119`; `page-checks.ts`) | F1 | **Solves the replacement, constrains the order.** Checks run after built-ins by design (DL#53 Q4). F1 extends the same registration. |
-| Wix field format (`readInputType`, `project-form-fields.ts:73-77`) | F1 | **Partial.** The site owner could change the Wix field to plain text, removing the `tel` kind. That also changes the Wix field type the dashboard and contact mapping use (unverified, Q2), and it is a site-settings change, not a page decision. |
-| Wix `pattern` (`project-form-fields.ts:216-226`) | F1 | **No.** Adds a regex after the format rule; it cannot relax it. Kept running under F1 (the owner's rule). |
-| `config/.wix-forms.yaml` (`lib/config-loader.ts:11-24`) | F1 | **No.** Server-loaded generation/allowlist config; a client opt-out would need new carry-forward plumbing, and it would disable a rule even when no page check replaces it. |
-| `checkFormField` trims (`project-form-fields.ts:175`) | F2 | **Sets the semantics.** Validation already treats `" Ann "` as `Ann`; F2 makes the post and the echo agree. |
-| `projectSubmissionValues` (`submission-values.ts:32-41`) | F2 | **Solves the place.** The one projection used for the post and for page checks' `values` (`wix-form.ts:136-138,416`). |
-| Store kept on success for the echo (`wix-form.ts:496-498`) | F2 | **Solves the echo channel.** F2 writes trimmed values into it at confirmation time; no new tag. |
-| `FieldRule` + `enumDataType` (`lib/components/field-rule.ts:9-20`, `lib/generators/contract-utils.ts:87,160-163`) | F3 | **Solves the pattern.** Appending a member is the DL#45 additive rule. |
-| `fieldRejectionResult` (`run-submission.ts:405-411`) | F3 | **Solves the provenance point.** The only place a hook field error is built; it sets the flag. |
-| `onSubmitOutcome` (`wix-forms-context.ts:64-68,134-143`), reporter (`submit-outcome-events.ts:25-38`) | F4 | **Solves the pattern.** `onSubmitStart` copies it: own `Set`, unsubscribe, `{ event }`, symbol-keyed emit, a throwing handler logged. |
-| `isSubmitting` / `submitState` (`contract-utils.ts:147,150`; `form-view-state.ts:124-129`) | F4 | **Partial.** Declarative "busy" for markup; set before client validation (`wix-form.ts:405`), so not "handed off"; not readable by page code. |
-| wix-cart `WIX_CART_CONTEXT` events (`packages/wix-cart/lib/contexts/wix-cart-context.ts`) | F4 | **Precedent** for plugin→page events (already followed by DL#53). |
+| Primitive                                                                                                         | Item | Verdict                                                                                                                                                                                                                                            |
+| ----------------------------------------------------------------------------------------------------------------- | ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Page checks, `registerFieldChecks` (`wix-forms-context.ts:61-69,106-119`; `page-checks.ts`)                       | F1   | **Solves the replacement, constrains the order.** Checks run after built-ins by design (DL#53 Q4). F1 extends the same registration.                                                                                                               |
+| Wix field format (`readInputType`, `project-form-fields.ts:73-77`)                                                | F1   | **Partial.** The site owner could change the Wix field to plain text, removing the `tel` kind. That also changes the Wix field type the dashboard and contact mapping use (unverified, Q2), and it is a site-settings change, not a page decision. |
+| Wix `pattern` (`project-form-fields.ts:216-226`)                                                                  | F1   | **No.** Adds a regex after the format rule; it cannot relax it. Kept running under F1 (the owner's rule).                                                                                                                                          |
+| `config/.wix-forms.yaml` (`lib/config-loader.ts:11-24`)                                                           | F1   | **No.** Server-loaded generation/allowlist config; a client opt-out would need new carry-forward plumbing, and it would disable a rule even when no page check replaces it.                                                                        |
+| `checkFormField` trims (`project-form-fields.ts:175`)                                                             | F2   | **Sets the semantics.** Validation already treats `" Ann "` as `Ann`; F2 makes the post and the echo agree.                                                                                                                                        |
+| `projectSubmissionValues` (`submission-values.ts:32-41`)                                                          | F2   | **Solves the place.** The one projection used for the post and for page checks' `values` (`wix-form.ts:136-138,416`).                                                                                                                              |
+| Store kept on success for the echo (`wix-form.ts:496-498`)                                                        | F2   | **Solves the echo channel.** F2 writes trimmed values into it at confirmation time; no new tag.                                                                                                                                                    |
+| `FieldRule` + `enumDataType` (`lib/components/field-rule.ts:9-20`, `lib/generators/contract-utils.ts:87,160-163`) | F3   | **Solves the pattern.** Appending a member is the DL#45 additive rule.                                                                                                                                                                             |
+| `fieldRejectionResult` (`run-submission.ts:405-411`)                                                              | F3   | **Solves the provenance point.** The only place a hook field error is built; it sets the flag.                                                                                                                                                     |
+| `onSubmitOutcome` (`wix-forms-context.ts:64-68,134-143`), reporter (`submit-outcome-events.ts:25-38`)             | F4   | **Solves the pattern.** `onSubmitStart` copies it: own `Set`, unsubscribe, `{ event }`, symbol-keyed emit, a throwing handler logged.                                                                                                              |
+| `isSubmitting` / `submitState` (`contract-utils.ts:147,150`; `form-view-state.ts:124-129`)                        | F4   | **Partial.** Declarative "busy" for markup; set before client validation (`wix-form.ts:405`), so not "handed off"; not readable by page code.                                                                                                      |
+| wix-cart `WIX_CART_CONTEXT` events (`packages/wix-cart/lib/contexts/wix-cart-context.ts`)                         | F4   | **Precedent** for plugin→page events (already followed by DL#53).                                                                                                                                                                                  |
 
 ## Questions and Answers
 
@@ -68,9 +68,10 @@ After DL#53 (this branch, `package.json` version `0.26.1`, changes listed under 
 **Q4 — F1: which built-ins does `replacesFormat` skip?** Only the kind's format regex: EMAIL (`:204`), URL (`:207`), PHONE (`:210`). `required` is a presence rule the Wix schema enforces, min/max length are explicit owner limits, and `pattern` is the owner's own regex; all keep running. A `replacesFormat` on a kind with no format rule (`text`, `textarea`, `select`, `checkbox`, `multiselect`) is warned about once and has no effect. **Answered.**
 
 **Q5 — F1: does Wix's server validate the phone / email / URL format too? (open, Phase 0 live check, gates F1)** The code does not depend on the answer, but the feature does: if Wix enforces a kind's format, F1 for that kind only moves the error from the client (`PHONE`) to Wix (`SERVER`) after a round trip, and the visitor is still blocked. **Phase 0** (before any F1 code) posts, through `submitForm` on the QA testbed, one value the built-in rejects per kind (`+44 20 7946 0958 ext. 12` to a Phone field, `ann@localhost` to an Email field, `example` to a URL field) and records accepted/refused and the stored value in Implementation Results.
+
 - **If Wix accepts** a kind: F1 ships as designed for it.
 - **If Wix enforces** a kind: `replacesFormat` is not offered for that kind (treated like a kind with no format rule: one-time warning, no effect), and the guide documents "change the Wix field to plain text" (Q2) as the only fix. If Wix enforces all three, F1 is dropped from this DL and the decision returns to product.
-**Open.**
+  **Open.**
 
 **Q6 — F2: trim the post, or only the display?** Both. Validation already decided that surrounding whitespace is not part of the value (`project-form-fields.ts:175`), so posting the raw text means Wix stores something other than what was validated (e.g. an email with a trailing space that the client accepted). Trimming only the echo would show `Ann` while the dashboard holds `Ann `. **Answered: trim the post for visible text-like kinds; hidden, select, checkbox and multiselect values are never changed** (hidden values are page-provided identifiers and select values are Wix option values; both are exact). The hook receives the trimmed values (they are the posted values). Direct `submitForm` posts that bypass the component are not trimmed on the server: the server does not normalise caller input today and the hook already sees exactly what was sent (Scope pre-mortem). Edge cases, by design: a `textarea` loses leading indentation and leading/trailing newlines (inner whitespace and newlines kept); a non-required field holding only whitespace posts `''`, matching `checkFormField`'s PASSED on empty.
 
@@ -85,10 +86,11 @@ After DL#53 (this branch, `package.json` version `0.26.1`, changes listed under 
 **Q10 — F3: how does the client learn the provenance?** The result. `fieldRejectionResult` (`run-submission.ts:405-411`) adds `fromHook: true`; Wix's row (`:364-366`) does not. A boolean is enough: there are two sources, and DL#53 already keeps hook codes in `code`. Using "has a `code`" as the signal is rejected: `FieldRejection`'s code is optional. **Answered.**
 
 **Q11 — F4: which needs can declarations serve? (product guidance: prefer declarations over JavaScript)** Taken need by need:
+
 - **"Sending…" without a flash on a client stop.** Today `submitState` is `SUBMITTING` whenever `isSubmitting` is true (`submitStateOf`, `form-view-state.ts:124-129`), and DL#53 G2 sets `isSubmitting` at the first click (`wix-form.ts:405`), so the label shows during reconcile/seed and on a client-validation stop. Alternatives: (A) **`SUBMITTING` only after hand-off**: a new internal `isHandedOff` signal set at `:427` and cleared where `isSubmitting` is cleared; `submitStateOf` returns `SUBMITTING` only when handed off, `IDLE` during the pre-hand-off window. (B) **append `VALIDATING`** to `SubmitState` (index 4, DL#45 additive) for the pre-hand-off window. **Chosen: A.** It fixes the flash with no contract change and no markup change, and the pre-hand-off window is a few ticks, too short for its own copy, so B adds a member nobody would bind. `isSubmitting` keeps its DL#53 meaning (busy guard; `disabled` on the button). B stays available later as an additive member.
 - **Clearing a page-owned error line on a new send.** Already declarative, no event needed: `submit()` clears `submitFailure` and `statusMessage` at the very start (`:390-391`), so markup that nests the page's own error copy under `if="booking.submitState === FAILED"` (or binds `statusMessage`) disappears on the next send. The page variant (e.g. a hook `code` mapped by `onSubmitOutcome`) can stay set; it is hidden by its parent. Dropped from F4's motivation.
 - **Pausing a page clock.** A page-state write (stop a timer); only code can do it, and page code cannot read the plugin's view state (DL#53 G3). This alone justifies `onSubmitStart`.
-**Behaviour change (A):** released 0.26.1 set `isSubmitting` inside `runFormSubmit`, after validation, so 0.26.x pages already saw `SUBMITTING` only after hand-off; A restores that. Only DL#53's unreleased timing changes. During the pre-hand-off window `isSubmitting` is true while `submitState` is `IDLE`; the guide says to bind `disabled` to `isSubmitting` and the label to `submitState`. **Answered (product/architecture decision 2026-11-11): option A.** `submitState` is `SUBMITTING` only after hand-off; `isSubmitting` stays early for `disabled` and the double-submit guard; no `VALIDATING` member; clearing a page error line is declarative; `onSubmitStart` is only for imperative page state (for example a page clock).
+  **Behaviour change (A):** released 0.26.1 set `isSubmitting` inside `runFormSubmit`, after validation, so 0.26.x pages already saw `SUBMITTING` only after hand-off; A restores that. Only DL#53's unreleased timing changes. During the pre-hand-off window `isSubmitting` is true while `submitState` is `IDLE`; the guide says to bind `disabled` to `isSubmitting` and the label to `submitState`. **Answered (product/architecture decision 2026-11-11): option A.** `submitState` is `SUBMITTING` only after hand-off; `isSubmitting` stays early for `disabled` and the double-submit guard; no `VALIDATING` member; clearing a page error line is declarative; `onSubmitStart` is only for imperative page state (for example a page clock).
 
 **Q14 — F4: do pages need a correlation id between start and outcome?** No. The busy guard allows one flight per form (`:389`), so for one form at most one start is unmatched at a time. The documented page pattern is a per-form boolean: set on start, and on any outcome act only if it is set, then clear it. That makes outcomes without a start (client stop, honeypot) harmless, and a later start after a reset mid-flight simply sets it again. A `handedOff` flag or submit id on the outcome was considered and not added: it would duplicate what the boolean already gives, on a union every outcome handler reads. **Answered.**
 
@@ -116,9 +118,9 @@ The arrows are the recommended order only; no phase needs another. F1 and F4 bot
 ```ts
 /** Checks that also take over the field's built-in format rule (email / phone / URL). */
 export interface FormatReplacingChecks {
-    checks: FieldCheck[];
-    /** Skip the built-in format rule of this field's kind; required, length and pattern still run. */
-    replacesFormat: true;
+  checks: FieldCheck[];
+  /** Skip the built-in format rule of this field's kind; required, length and pattern still run. */
+  replacesFormat: true;
 }
 
 /** Field target → checks, run in order after the built-in rules pass; the first message wins. */
@@ -131,13 +133,18 @@ export type FieldChecks = Record<string, FieldCheck[] | FormatReplacingChecks>;
 
 ```ts
 export interface PageCheckRunner {
-    run(field: FormFieldView, value: FieldValue, values: Readonly<Record<string, FieldValue>>): FieldCheckResult;
-    /** True when a registration replaces this field's format rule with at least one check. */
-    replacesFormat(field: FormFieldView): boolean;
+  run(
+    field: FormFieldView,
+    value: FieldValue,
+    values: Readonly<Record<string, FieldValue>>,
+  ): FieldCheckResult;
+  /** True when a registration replaces this field's format rule with at least one check. */
+  replacesFormat(field: FormFieldView): boolean;
 }
 ```
 
 Both read the context **at call time** (`useGlobalContext`, as `page-checks.ts:73`). A helper `checksOf(entry)` normalises an entry: an array → itself; a `FormatReplacingChecks` with an array `checks` → `checks`; anything else → `[]` (today's `Array.isArray` guard, `:81`, generalised). `replacesFormat(field)` is true when any registration for the form has an entry for `field.target` with `replacesFormat === true` **and** a non-empty `checks`. One-time warnings (same `console.warn` style as `:45-47`):
+
 - `replacesFormat` with an empty or missing `checks`: "…replacesFormat needs at least one check; the built-in format rule still runs".
 - `replacesFormat` on a field whose kind has no format rule (not `email`/`tel`/`url`): "…has no built-in format rule; replacesFormat has no effect".
 
@@ -146,11 +153,12 @@ Both read the context **at call time** (`useGlobalContext`, as `page-checks.ts:7
 ```ts
 const builtIn = checkFormField(field, value, { format: !pageChecks.replacesFormat(field) });
 return builtIn.rule === FieldRule.NONE
-    ? pageChecks.run(field, value, allValues) // P2 wraps value in submittedValueOf (F2)
-    : builtIn;
+  ? pageChecks.run(field, value, allValues) // P2 wraps value in submittedValueOf (F2)
+  : builtIn;
 ```
 
 Trace — tel field `phone`, page registers `{ phone: { checks: [acceptsExtensions], replacesFormat: true } }`, user types `+44 20 7946 0958 ext. 12`, submits:
+
 1. `submit()` → `validateVisibleFields(..., (f, v) => checkField(f, v, submissionValues))` (`wix-form.ts:417-421`).
 2. `checkField` → `replacesFormat(phone)` true → `checkFormField(phone, v, { format: false })`: not required-empty (`:176`), no min/max, tel branch skipped, no pattern → `NONE`.
 3. `run` → `acceptsExtensions(v)` returns `undefined` → `NONE` → no client failure → hand-off (`:427`). Today: step 2 returns `PHONE` at `:210-211` and submit stops at `:422-425`.
@@ -186,7 +194,19 @@ Trace — `firstName` = `"Ann "`, submit, success: store `{ firstName: 'Ann ' }`
 ### 3. F3 — `FieldRule.HOOK` (`lib/components/field-rule.ts`, `lib/types.ts`, `lib/actions/submit-form.jay-action`, `lib/submission/run-submission.ts`, `lib/components/submit-outcome.ts`, `lib/components/wix-form.ts`, `lib/contexts/wix-forms-context.ts`)
 
 ```ts
-export enum FieldRule { NONE, REQUIRED, MIN_LENGTH, MAX_LENGTH, EMAIL, PHONE, URL, PATTERN, CUSTOM, SERVER, HOOK }
+export enum FieldRule {
+  NONE,
+  REQUIRED,
+  MIN_LENGTH,
+  MAX_LENGTH,
+  EMAIL,
+  PHONE,
+  URL,
+  PATTERN,
+  CUSTOM,
+  SERVER,
+  HOOK,
+}
 ```
 
 - `SERVER` is narrowed in its doc comment to "Wix refused this value"; `HOOK` is "the form's submit hook rejected this field (`FieldRejection`); `error` holds the hook's text".
@@ -205,25 +225,27 @@ Trace — hook `throw new FieldRejection({ phone: 'We cannot reach this number.'
 
 ```ts
 /** A submit the form handed to the server (DL#54 F4). `formId` is canonical. */
-export interface SubmitStartEvent { formId: string }
+export interface SubmitStartEvent {
+  formId: string;
+}
 export type SubmitStartHandler = (args: { event: SubmitStartEvent }) => void;
 
 export interface WixFormsContext {
-    registerFieldChecks(formId: string, checks: FieldChecks): () => void;
-    onSubmitOutcome(handler: SubmitOutcomeHandler): () => void;
-    /**
-     * Fires once per submit handed to the server, before the request. Not for a busy click, a
-     * honeypot trip, a client-validation stop, or a reset before hand-off.
-     * Start → outcome: followed by one onSubmitOutcome for the same form unless the form is
-     * reset or the page unloads meanwhile (no outcome then; this gap is by design, there is
-     * no 'abandoned' outcome). Clear your started flag on any outcome or on the next start.
-     * Outcome → start: not every outcome has a start. A client-validation stop
-     * (failed/VALIDATION) and a honeypot trip (succeeded) emit an outcome with no start.
-     * Keep a per-form "started" flag: set it here, act on an outcome only when it is set.
-     * Display needs no code: bind submitState (SUBMITTING = handed off) in markup.
-     * Returns an unsubscribe function: subscribe inside createEffect and return it.
-     */
-    onSubmitStart(handler: SubmitStartHandler): () => void;
+  registerFieldChecks(formId: string, checks: FieldChecks): () => void;
+  onSubmitOutcome(handler: SubmitOutcomeHandler): () => void;
+  /**
+   * Fires once per submit handed to the server, before the request. Not for a busy click, a
+   * honeypot trip, a client-validation stop, or a reset before hand-off.
+   * Start → outcome: followed by one onSubmitOutcome for the same form unless the form is
+   * reset or the page unloads meanwhile (no outcome then; this gap is by design, there is
+   * no 'abandoned' outcome). Clear your started flag on any outcome or on the next start.
+   * Outcome → start: not every outcome has a start. A client-validation stop
+   * (failed/VALIDATION) and a honeypot trip (succeeded) emit an outcome with no start.
+   * Keep a per-form "started" flag: set it here, act on an outcome only when it is set.
+   * Display needs no code: bind submitState (SUBMITTING = handed off) in markup.
+   * Returns an unsubscribe function: subscribe inside createEffect and return it.
+   */
+  onSubmitStart(handler: SubmitStartHandler): () => void;
 }
 ```
 
@@ -240,20 +262,22 @@ Trace — the stops that must **not** fire, against `submit()` (`wix-form.ts:388
 
 ### Generated contract and action impact
 
-| Item | Contract | `submitForm` action | Client exports |
-| --- | --- | --- | --- |
-| F1 | none | none | `FormatReplacingChecks`; `FieldChecks` widened; `checkFormField` optional 3rd parameter |
-| F2 | none | none (values are trimmed, schema unchanged) | `trimTextValues` stays internal |
-| F3 | `errorRule` enum gains `HOOK` on every visible field | output `fromHook?: boolean` | `FieldRule.HOOK` |
-| F4 | none (`submitState` members unchanged; `SUBMITTING` timing changes) | none | `onSubmitStart`, `SubmitStartEvent`, `SubmitStartHandler` |
+| Item | Contract                                                            | `submitForm` action                         | Client exports                                                                          |
+| ---- | ------------------------------------------------------------------- | ------------------------------------------- | --------------------------------------------------------------------------------------- |
+| F1   | none                                                                | none                                        | `FormatReplacingChecks`; `FieldChecks` widened; `checkFormField` optional 3rd parameter |
+| F2   | none                                                                | none (values are trimmed, schema unchanged) | `trimTextValues` stays internal                                                         |
+| F3   | `errorRule` enum gains `HOOK` on every visible field                | output `fromHook?: boolean`                 | `FieldRule.HOOK`                                                                        |
+| F4   | none (`submitState` members unchanged; `SUBMITTING` timing changes) | none                                        | `onSubmitStart`, `SubmitStartEvent`, `SubmitStartHandler`                               |
 
 ### Backward compatibility
 
 **0.26.x pages (released; no DL#53 surface):**
+
 - No markup change is required by any item. F3's contract change adds an enum member to a tag those pages do not bind; the DL#53 `test/old-contract-compat.test.ts` fixture (a 0.26.1 contract without `errorRule`) keeps covering "extra view-state data is ignored".
 - **Behaviour change (F2):** submissions store trimmed text for visible text-like fields, and the confirmation echo is trimmed. A site that relied on surrounding whitespace (none known) loses it. Release-notes item.
 
 **DL#53 surface (unreleased on this branch):**
+
 - `registerFieldChecks` with arrays behaves as before; `FieldChecks` accepts the new object form in addition.
 - `checkFormField(field, value)` unchanged; the option is optional.
 - `FieldRule` indices `NONE…SERVER` unchanged (`HOOK` is index 10).
@@ -261,9 +285,8 @@ Trace — the stops that must **not** fire, against `submit()` (`wix-form.ts:388
 - `onSubmitOutcome` unchanged except the optional `fromHook` on `failed`, and a throwing handler no longer skips later handlers (L1).
 - `submitState === SUBMITTING` now starts at hand-off, not at the first click (Q11 A). For 0.26.x pages this is no change (0.26.1 set busy inside `runFormSubmit`, after validation); for DL#53's unreleased timing, "Sending…" no longer shows during reconcile/seed or on a client-validation stop. `isSubmitting` (the busy guard) is unchanged.
 
-**Release-notes items (CHANGELOG `## Unreleased`, appended after DL#53's five):**
-6. **Text values are trimmed** before they are sent and in the confirmation echo (`text`, `textarea`, `email`, `tel`, `url`; hidden, select, checkbox and multiselect values unchanged). Before: `"Ann "` was stored and shown as "Thank you, Ann ."; after: `Ann`. Reason: validation already ignored the spaces.
-7. **Hook field errors are `errorRule: HOOK`**, Wix's own field refusals stay `SERVER` (listed under API additions; same release as DL#53).
+**Release-notes items (CHANGELOG `## Unreleased`, appended after DL#53's five):** 6. **Text values are trimmed** before they are sent and in the confirmation echo (`text`, `textarea`, `email`, `tel`, `url`; hidden, select, checkbox and multiselect values unchanged). Before: `"Ann "` was stored and shown as "Thank you, Ann ."; after: `Ann`. Reason: validation already ignored the spaces. 7. **Hook field errors are `errorRule: HOOK`**, Wix's own field refusals stay `SERVER` (listed under API additions; same release as DL#53).
+
 - API additions: `replacesFormat` registration entries, `checkFormField(…, { format })`, `FieldRule.HOOK`, result/event `fromHook`, `onSubmitStart`.
 
 ## Examples
@@ -292,7 +315,9 @@ Trace — the stops that must **not** fire, against `submit()` (`wix-form.ts:388
   <span if="booking.phone.errorRule === PHONE">Please enter a phone number.</span>
   <span if="booking.phone.errorRule === CUSTOM">{booking.phone.error}</span>
   <span if="booking.phone.errorRule === HOOK">{booking.phone.error}</span>
-  <span if="booking.phone.errorRule === SERVER">We could not accept this number. Please check it.</span>
+  <span if="booking.phone.errorRule === SERVER"
+    >We could not accept this number. Please check it.</span
+  >
 </span>
 ```
 
@@ -309,23 +334,26 @@ Trace — the stops that must **not** fire, against `submit()` (`wix-form.ts:388
 ```ts
 const forms = useContext(WIX_FORMS_CONTEXT); // page declared .withContexts(WIX_FORMS_CONTEXT)
 const unregister = forms.registerFieldChecks(BOOKING_FORM_ID, {
-    phone: { checks: [(value) => (isDialable(String(value)) ? undefined : 'Please check the number.')], replacesFormat: true },
+  phone: {
+    checks: [(value) => (isDialable(String(value)) ? undefined : 'Please check the number.')],
+    replacesFormat: true,
+  },
 });
 // Outcomes without a start (client stop, honeypot) must not resume a clock that never paused.
 let isClockPausedForSubmit = false;
 createEffect(() =>
-    forms.onSubmitStart(({ event }) => {
-        if (event.formId !== BOOKING_FORM_ID) return;
-        isClockPausedForSubmit = true;
-        pauseHoldClock();
-    }),
+  forms.onSubmitStart(({ event }) => {
+    if (event.formId !== BOOKING_FORM_ID) return;
+    isClockPausedForSubmit = true;
+    pauseHoldClock();
+  }),
 );
 createEffect(() =>
-    forms.onSubmitOutcome(({ event }) => {
-        if (event.formId !== BOOKING_FORM_ID || !isClockPausedForSubmit) return;
-        isClockPausedForSubmit = false;
-        resumeHoldClock();
-    }),
+  forms.onSubmitOutcome(({ event }) => {
+    if (event.formId !== BOOKING_FORM_ID || !isClockPausedForSubmit) return;
+    isClockPausedForSubmit = false;
+    resumeHoldClock();
+  }),
 );
 // A reset mid-flight emits no outcome; the next start sets the flag again (Q12).
 ```
@@ -347,16 +375,19 @@ Each phase: failing tests first (doc comments cite this DL; bug-repro style for 
 **Phase 0 — Q5 live check (no code; gates Phase 1).** On the QA testbed, post through `submitForm` one built-in-rejected value per kind (`+44 20 7946 0958 ext. 12` → Phone, `ann@localhost` → Email, `example` → URL). Record per kind: accepted or refused (Wix violation text), and the stored value in the dashboard. Write the result to Implementation Results and re-scope Phase 1 per Q5 before writing its tests.
 
 **Phase 1 — F1** (for the kinds Phase 0 found unenforced).
+
 - `test/project-form-fields.test.ts`: `checkFormField(tel, 'ext. 12345', { format: false })` → `NONE` (red: `PHONE`, the option is ignored); same for `email` `'not-an-email'` and `url` `'example.com'` (red); with `{ format: false }`, required-empty still `REQUIRED`, `minLength` still `MIN_LENGTH`, `pattern` still `PATTERN` (regression guards); `validateFormField` unchanged (existing tests).
 - `test/wix-form-page-checks.interactive.test.ts`: tel field, registration `{ phone: { checks: [accept], replacesFormat: true } }`, value `+44 20 7946 0958 ext. 12`, submit → one `submitForm` call, `errorRule` `NONE` (red: blocked with `PHONE`); same registration with a check that fails → `CUSTOM` + its message (red: `PHONE`); `replacesFormat` with `checks: []` → `PHONE` and one warning (red on the warning; the `PHONE` part is green today); `replacesFormat` on a `text` field → one warning, no effect (red on the warning); unregister → built-in `PHONE` again (red: the object form is never registered as a replacement today, so the "after" assertion passes, but the "before unregister" assertion is `NONE` and fails); no context → `PHONE` (regression guard).
 - Guide `rich-forms.md` §3 "Page checks": `replacesFormat`, what it keeps, Q5's live answer, the Wix-field alternative (Q2).
 
 **Phase 2 — F2.**
+
 - `test/submission-values.test.ts`: one table drives `submittedValueOf`, `projectSubmissionValues` and `trimTextValues` (red: `submittedValueOf`/`trimTextValues` are not functions; projection returns raw): `text`/`textarea`/`email`/`tel`/`url` strings trimmed; a textarea `'\n  Hello\n\n  world  \n'` → `'Hello\n\n  world'` (inner newlines kept, red); whitespace-only `'   '` in an optional text field → `''` (red); a hidden `' id '`, a select value, a checkbox and a multiselect untouched (regression guards).
 - New `test/wix-form-trimmed-values.interactive.test.ts`: type `' Ann '` and `'ann@example.com '`, submit → `submitForm` values `{ firstName: 'Ann', email: 'ann@example.com' }` (red); after success the view state `firstName.value === 'Ann'` (red); a page check receives the trimmed value in `values` (red); **blur path (M1):** tel field with a strict page check `/^\+?\d[\d ]*\d$/` (rejects a trailing space), type `'+44 20 7946 0958 '`, blur → no error, `errorRule` `NONE` (red: the check gets the raw value and returns `CUSTOM`); **typing path:** with that `CUSTOM` error shown (set via a first invalid value), typing `'+44 20 7946 0958 '` clears it (red: raw value keeps it failing); **submit path:** same value submits once (regression guard: already projected); a server rejection keeps the store raw (`' Ann '`, regression guard); honeypot trip → echo trimmed (red); send another after a trimmed success → the next post is the new input, not the old raw text (regression guard for the reconcile interaction).
 - Guide `rich-forms.md` §1 (echo is trimmed; which kinds), `CHANGELOG.md` item 6.
 
 **Phase 3 — F3.**
+
 - `test/submission/run-submission.test.ts`: **rewrite, not duplicate (round 2 M1)** the existing exact `toEqual` assertions on the `FieldRejection` result: with `code` (`:956-961`), without `code` (`:974-978`) and the duplicate-module case (around `:1020`). Each expected object gains `fromHook: true` (red: absent today). Wix field violation result has no `fromHook` (regression guard).
 - Generator fixtures `test/fixtures/form-contract-generator/contact.jay-contract` and `choices.jay-contract`: `errorRule` enum ends `| SERVER | HOOK` (hand-written from this DL; red). The existing "jay compiles `errorRule` to the `FieldRule` members" test (`test/form-contract-generator.test.ts:169-192`) builds its expectation from `Object.keys(FieldRule)` (`:179`), so it cannot fail on a member change. It is rewritten to assert a **hard-coded** list written from this DL: `['NONE', 'REQUIRED', 'MIN_LENGTH', 'MAX_LENGTH', 'EMAIL', 'PHONE', 'URL', 'PATTERN', 'CUSTOM', 'SERVER', 'HOOK']` (red: the compiled enum ends at `SERVER`). A second assertion, compiled members equal `Object.keys(FieldRule)`, is kept as a regression guard.
 - `test/wix-form-page-checks.interactive.test.ts`: result `{ fromHook: true, fieldErrors: { phone } }` → `errorRule = HOOK` (red: `SERVER`); the existing test at `:163-164` ("should mark fields from a hook FieldRejection result as SERVER") is **renamed** to "should mark fields from a VALIDATION result without fromHook (Wix) as SERVER" with its doc comment updated; it is the without-`fromHook` regression guard (no duplicate added); typing a valid value clears a `HOOK` error (red only through its `HOOK` precondition assertion; the clear itself is today's behaviour).
@@ -364,6 +395,7 @@ Each phase: failing tests first (doc comments cite this DL; bug-repro style for 
 - Guides `rich-forms.md` §3 (`errorRule` table: `HOOK` vs `SERVER`) and §7 ("Rejecting specific fields" → `HOOK`), `user-visible-messages.md` (field `errorRule`), CHANGELOG.
 
 **Phase 4 — F4.**
+
 - `test/contexts/wix-forms-context.test.ts`: `onSubmitStart` returns an unsubscribe and delivers `{ event }` (red: not a function); unsubscribe stops delivery (red).
 - New tests in `test/wix-form-submit-outcome.interactive.test.ts`: a valid submit fires exactly one start, before `submitForm` is called, with the canonical form id from an upper-case id (red); start then `succeeded` order (red); network failure → start then `failed`/`NETWORK` (red); a second click while in flight → still one start (red: zero today); a throwing start handler → the submit still posts once and the form ends idle (red: reading the missing member throws today); honeypot trip, client-validation stop, reset during the pre-hand-off window → zero starts (regression guards: trivially zero today, kept to pin the rule); client-validation stop and honeypot trip → one outcome and zero starts, asserted together (pins "outcomes without a start", M3); no context → submit completes, no throw (regression guard).
 - **L1** in `test/contexts/wix-forms-context.test.ts`: two `onSubmitOutcome` handlers, the first throws → the second is still called and one error is logged (red: the single outer `try` skips it); same for two `onSubmitStart` handlers (red: not a function).
@@ -389,6 +421,7 @@ Each phase: failing tests first (doc comments cite this DL; bug-repro style for 
 Unit / interactive (per phase, above): every new test red before the change for the stated reason, green after, except those labelled regression guard; the existing suite stays green except the listed rewrites: P3 generator fixtures and the compile test; P3 `run-submission.test.ts` `FieldRejection` assertions (`:956-961`, `:974-978`, ~`:1020`) and the rename at `wix-form-page-checks.interactive.test.ts:163-164`; P4 `form-view-state.test.ts:90-122` and `:153-156` (with `isHandedOff: true`). Any other existing test going red is a regression. Baseline on this branch after DL#53: **354/355** (`npx vitest run`, the only failure the pre-existing `test/rich-forms-chip-example.test.ts`). A phase may not add failures; `tsc`, `npm run build` (plugin validation) clean; `wix-bookings` 61/61 and `tsc --noEmit` clean after P1 and P3 (it imports `checkFormField`'s neighbours `getFormSummary` / `validateFormSummaryField` and `WIX_FORMS_SERVICE`, not `SubmitFormResult`; the gate guards the shared module whose `checkFormField` gains a parameter in P1).
 
 Live browser checks (the QA testbed site and project used for DL#53, Chromium + Firefox + WebKit, demo video at the workspace root):
+
 - [ ] Phase 0 (before P1): Wix server accepts/refuses a built-in-rejected Phone, Email and URL value; result recorded and F1 re-scoped per Q5.
 - [ ] F2: a strict page check on a tel field shows no error on blur for `'+44 20 7946 0958 '` and the same value submits.
 - [ ] F4: "Sending…" (`submitState === SUBMITTING`) never shows on a client-validation stop; a page error line nested under `FAILED` disappears on the next send.
@@ -413,12 +446,13 @@ Live browser checks (the QA testbed site and project used for DL#53, Chromium + 
 ## Agent Feedback Loop (jay-feedback)
 
 Priority validation → guide → feature:
+
 - **Validation:** none new. `errorRule === HOOK` literals are checked by jay's variant validation once contracts are regenerated. `replacesFormat` misuse is caught by one-time runtime warnings (registrations are runtime TypeScript; no build-time validator sees them, as DL#53 and DL#50 Q10).
 - **Guides (plugin agent-kit, this repo):** `agent-kit/plugin/rich-forms.md` §1 (echo trimmed), §3 (`replacesFormat`; `HOOK` vs `SERVER`), §7 (`FieldRejection` → `HOOK`, `onSubmitStart` with pairing and the reset caveat, declarative `submitState` first); `agent-kit/plugin/user-visible-messages.md` (the `errorRule` table gains `HOOK`; "show your own copy for `SERVER`, the hook's text for `HOOK`").
 - **jay agent-kit:** no change.
 
-
 ## Review History
+
 - Rounds 1–4 by independent reviewers: round 1 shared trim, false-red compile test, start/outcome pairing, declarations-first (Q11 A), Phase 0; round 2 listed test rewrites + no-fallback rule, phase independence, isHandedOff clearing; round 3 server-rejection busy test; round 4 READY-FOR-DEVELOPMENT.
 - Architecture review: approve; Q12 no `abandoned`, keep `HOOK`, release with DL #53, Q11 A.
 - **Approved for implementation** by the product owner, 2026-11-11.
@@ -429,17 +463,17 @@ Priority validation → guide → feature:
 
 Method: Wix REST API directly on the QA testbed site (not through the component, so no hook ran). A new form "QA Test DL54" (`15381943-348c-4ee7-8aa2-974a8a224536`) has `name` (no format), `email` (`EMAIL`), `phone` (`PHONE`) and `website` (`URL`). Each value below fails the plugin's built-in rule and was posted with `POST /form-submission-service/v4/submissions`.
 
-| Kind | Value | Wix response |
-| --- | --- | --- |
-| PHONE | `050.123.4567` | **accepted**, stored as sent |
-| PHONE | `020.7946.0958` | **accepted**, stored as sent |
-| PHONE | `(050) 123/4567` | 400 `FORMAT_ERROR` "must match format \"phone\"" |
-| PHONE | `０５０１２３４５６７` (full-width) | 400 `FORMAT_ERROR` (phone) |
-| PHONE | `+44 20 7946 0958 ext. 12` | 400 `FORMAT_ERROR` (phone) |
-| PHONE | `050-123-4567 x12`, `tel 0501234567` | 400 `FORMAT_ERROR` (phone) |
+| Kind  | Value                                                               | Wix response                                     |
+| ----- | ------------------------------------------------------------------- | ------------------------------------------------ |
+| PHONE | `050.123.4567`                                                      | **accepted**, stored as sent                     |
+| PHONE | `020.7946.0958`                                                     | **accepted**, stored as sent                     |
+| PHONE | `(050) 123/4567`                                                    | 400 `FORMAT_ERROR` "must match format \"phone\"" |
+| PHONE | `０５０１２３４５６７` (full-width)                                 | 400 `FORMAT_ERROR` (phone)                       |
+| PHONE | `+44 20 7946 0958 ext. 12`                                          | 400 `FORMAT_ERROR` (phone)                       |
+| PHONE | `050-123-4567 x12`, `tel 0501234567`                                | 400 `FORMAT_ERROR` (phone)                       |
 | EMAIL | `ann@localhost`, `not-an-email`, `ann@example`, `"a b"@example.com` | 400 `FORMAT_ERROR` "must match format \"email\"" |
-| URL | `example`, `not a url`, `example.com`, `www.example.com` | 400 `FORMAT_ERROR` "must match format \"url\"" |
-| URL | `ftp://example.com` | **accepted**, stored as sent |
+| URL   | `example`, `not a url`, `example.com`, `www.example.com`            | 400 `FORMAT_ERROR` "must match format \"url\""   |
+| URL   | `ftp://example.com`                                                 | **accepted**, stored as sent                     |
 
 (Also seen: phone `050 123`, which the built-in accepts, is accepted by Wix too, so Wix's phone rule is not a superset of the built-in.)
 

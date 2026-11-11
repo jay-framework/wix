@@ -32,7 +32,7 @@
 ### API additions (all optional / additive)
 
 - Per-field contract variant `errorRule` (`NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE
-  | URL | PATTERN | CUSTOM | SERVER`) and the `FieldRule` enum, so pages write their own wording per
+| URL | PATTERN | CUSTOM | SERVER`) and the `FieldRule` enum, so pages write their own wording per
   rule. Regenerate contracts to bind it.
 - Client context `WIX_FORMS_CONTEXT` (`@jay-framework/wix-forms/client`):
   `registerFieldChecks(formId, checks)` for page-owned rules (reported as `CUSTOM`), and the

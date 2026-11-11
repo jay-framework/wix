@@ -33,7 +33,7 @@ The plugin today (v0.26.1, `main` = `1159cb7`):
 
 Verified against the source:
 
-**G1 — page-owned rules and wording.** The field sub-contract has `error` (string) and `invalid` (boolean) only (`contract-utils.ts:84-85`); nothing says *which* rule failed, so a page that needs its own wording (or another language) must match English text. `validateFormField` returns text only (`project-form-fields.ts:157-200`). There is no way for a page to add a rule: the only source is the Wix schema (`project-form-fields.ts:105-107` projects `minLength`/`maxLength`/`pattern`), and one regex cannot express e.g. "email with a real TLD and no role address" or "phone valid for the selected country". DL#41 §3 deferred custom messages/validators; DL#45 §Trade-offs deferred a per-field code.
+**G1 — page-owned rules and wording.** The field sub-contract has `error` (string) and `invalid` (boolean) only (`contract-utils.ts:84-85`); nothing says _which_ rule failed, so a page that needs its own wording (or another language) must match English text. `validateFormField` returns text only (`project-form-fields.ts:157-200`). There is no way for a page to add a rule: the only source is the Wix schema (`project-form-fields.ts:105-107` projects `minLength`/`maxLength`/`pattern`), and one regex cannot express e.g. "email with a real TLD and no role address" or "phone valid for the selected country". DL#41 §3 deferred custom messages/validators; DL#45 §Trade-offs deferred a per-field code.
 
 **G2 — validation timing.** `onblur` always validates (`wix-form.ts:193-198`, `:403`), so tabbing through empty required fields paints every one red before the user typed anything. `oninput` only **clears** (`handleNativeInput`, `:169-173`), so after an error the field shows no error while still invalid, until the next blur. There is no autofill guard: the store is written only from `input` events (`:400-402`), and the submit path reads the store, never the DOM (`readFormValues`, `:127-129`), so a browser that autofills without firing `input` submits empty values that the user can see filled. Announcements: Addendum A puts each `error` in a polite region (`agent-kit/plugin/rich-forms.md:27`); whether a blur-found error is announced once focus has moved to the next field is unverified.
 
@@ -42,6 +42,7 @@ Verified against the source:
 **G4 — hook can't return per-field errors.** `SubmitHookOutcome` is `{ redirectTo? }` only (`wix-forms-submit-hooks.ts:44-47`). Per-field errors exist only for Wix's own violations (`run-submission.ts:322-325`). DL#42 deferred a hook-raised per-field rejection (DL#42 §Trade-offs, "`SubmitRejection(fieldErrors)`").
 
 **G5 — stale hidden/control values.** `seedControlValues` skips any target already in the store (`lib/components/submission-values.ts:99`, `target in seeded`). It also skips empty values (`!hasValue(value)`, `:99`, `:107-111`), so a control that was cleared can never clear its slot. Two consequences:
+
 1. The store starts `{}` (`wix-form.ts:115`) and the mount seed is dead (below), so the **first** submit seeds the current value correctly. Staleness starts at the **second** submit after any failure (client validation, a rejection, a network error). That second submit sends the value seeded by the first one, because the submit-time seed (`wix-form.ts:316`) skips the stored target. This is exactly the SLOT_TAKEN retry in §5: the page clears or changes the slot, and the resubmit still sends the old one.
 2. After a reset, `emptyStoreFor` stores **every** field as empty (`wix-form.ts:225`, `submission-values.ts:51-57`), so no control seeds ever again: "send another" submits hidden fields empty.
 
@@ -53,21 +54,21 @@ And changing `data-value` fires no event, so nothing runs between seeds. The mou
 
 ## Prior Art / Adjacent Mechanisms
 
-| Primitive | Gap | Verdict |
-| --- | --- | --- |
-| `error` data + `invalid` variant (`contract-utils.ts:84-85`) | G1 | **Partial.** Shows that a field failed, not which rule. Kept; `errorRule` sits beside it. |
-| `validateFormField` (`project-form-fields.ts:157-200`) | G1 | **Partial.** Knows the rule at each branch but returns text. Refactored to return `{ rule, message }` internally; the exported text function wraps it. |
-| DL#45 enums + `enumDataType` (`submit-outcome.ts:20-38`, `contract-utils.ts:157-161`) | G1 | **Solves the pattern.** `FieldRule` is defined and rendered the same way. |
-| Wix `pattern` (`project-form-fields.ts:107`) | G1 | **Constrains.** Site owners can set a regex in Wix, but not page wording, cross-field rules or rules a regex cannot express. |
-| `config/.wix-forms.yaml` (`lib/config-loader.ts:11-24`) | G1, G3 | **No.** YAML holds no functions; message copy belongs in jay-html (DL#45 §Trade-offs). |
-| `dirtyTargets` (`wix-form.ts:117`) | G2, G5 | **Solves the state.** Already marks user-edited fields; G2 reads it for blur, G5 for seeding. |
-| `afterRemount` (`wix-form.ts:217-221`) | G5 | **Solves the timing.** Runs after refs bind; already used for the submit guard and focus. |
-| `seedControlValues` (`submission-values.ts:96-105`) | G5 | **Constrains / the bug.** One guard (`:99`) changes. |
-| wix-cart `WIX_CART_CONTEXT` with `createEvent` / `EventEmitter` and `registerReactiveGlobalContext` (`packages/wix-cart/lib/contexts/wix-cart-context.ts:19-24,197,203,217-226`, registered in `.withClient`, `packages/wix-cart/lib/init.ts:42-47`) | G1, G3 | **Solves the channel.** The in-repo way for a plugin to give page code a client API and events. `WIX_FORMS_CONTEXT` copies it. |
-| `ActionError(code, message)` (jay `@jay-framework/fullstack-component`), recognised by name (`run-submission.ts:358-365`) | G3, G4 | **Partial.** Carries a code (dropped today); form-level only. `FieldRejection` copies the name-based recognition. |
-| `fieldErrors` result + `presentSubmitRejection` (`types.ts:77`, `submit-outcome.ts:58-78`) | G4 | **Solves the client side.** Hook field errors reuse the exact path Wix's violations use, including hidden/unknown targets → `statusMessage`. |
-| `SubmitHookOutcome.redirectTo` (`wix-forms-submit-hooks.ts:44-47`) | G4 | **No.** Success-only; a field error is a failure. |
-| `WIX_FORMS_SUBMIT_HOOKS` keyed by form id, warn-once on bad keys (`run-submission.ts:163-187`) | G1 | **Solves the keying.** Page checks are keyed by form id and warned about the same way. |
+| Primitive                                                                                                                                                                                                                                            | Gap    | Verdict                                                                                                                                                |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `error` data + `invalid` variant (`contract-utils.ts:84-85`)                                                                                                                                                                                         | G1     | **Partial.** Shows that a field failed, not which rule. Kept; `errorRule` sits beside it.                                                              |
+| `validateFormField` (`project-form-fields.ts:157-200`)                                                                                                                                                                                               | G1     | **Partial.** Knows the rule at each branch but returns text. Refactored to return `{ rule, message }` internally; the exported text function wraps it. |
+| DL#45 enums + `enumDataType` (`submit-outcome.ts:20-38`, `contract-utils.ts:157-161`)                                                                                                                                                                | G1     | **Solves the pattern.** `FieldRule` is defined and rendered the same way.                                                                              |
+| Wix `pattern` (`project-form-fields.ts:107`)                                                                                                                                                                                                         | G1     | **Constrains.** Site owners can set a regex in Wix, but not page wording, cross-field rules or rules a regex cannot express.                           |
+| `config/.wix-forms.yaml` (`lib/config-loader.ts:11-24`)                                                                                                                                                                                              | G1, G3 | **No.** YAML holds no functions; message copy belongs in jay-html (DL#45 §Trade-offs).                                                                 |
+| `dirtyTargets` (`wix-form.ts:117`)                                                                                                                                                                                                                   | G2, G5 | **Solves the state.** Already marks user-edited fields; G2 reads it for blur, G5 for seeding.                                                          |
+| `afterRemount` (`wix-form.ts:217-221`)                                                                                                                                                                                                               | G5     | **Solves the timing.** Runs after refs bind; already used for the submit guard and focus.                                                              |
+| `seedControlValues` (`submission-values.ts:96-105`)                                                                                                                                                                                                  | G5     | **Constrains / the bug.** One guard (`:99`) changes.                                                                                                   |
+| wix-cart `WIX_CART_CONTEXT` with `createEvent` / `EventEmitter` and `registerReactiveGlobalContext` (`packages/wix-cart/lib/contexts/wix-cart-context.ts:19-24,197,203,217-226`, registered in `.withClient`, `packages/wix-cart/lib/init.ts:42-47`) | G1, G3 | **Solves the channel.** The in-repo way for a plugin to give page code a client API and events. `WIX_FORMS_CONTEXT` copies it.                         |
+| `ActionError(code, message)` (jay `@jay-framework/fullstack-component`), recognised by name (`run-submission.ts:358-365`)                                                                                                                            | G3, G4 | **Partial.** Carries a code (dropped today); form-level only. `FieldRejection` copies the name-based recognition.                                      |
+| `fieldErrors` result + `presentSubmitRejection` (`types.ts:77`, `submit-outcome.ts:58-78`)                                                                                                                                                           | G4     | **Solves the client side.** Hook field errors reuse the exact path Wix's violations use, including hidden/unknown targets → `statusMessage`.           |
+| `SubmitHookOutcome.redirectTo` (`wix-forms-submit-hooks.ts:44-47`)                                                                                                                                                                                   | G4     | **No.** Success-only; a field error is a failure.                                                                                                      |
+| `WIX_FORMS_SUBMIT_HOOKS` keyed by form id, warn-once on bad keys (`run-submission.ts:163-187`)                                                                                                                                                       | G1     | **Solves the keying.** Page checks are keyed by form id and warned about the same way.                                                                 |
 
 ## Questions and Answers
 
@@ -86,6 +87,7 @@ And changing `data-value` fires no event, so nothing runs between seeds. The mou
 **Q7 — Should project rejection codes also be a contract variant?** Default **no**: the event plus a page-owned variant covers the downstream cases (each needs page code anyway — refresh a calendar, reselect). The alternative, a `rejectionCode: enum (NONE | OTHER | …)` with members declared per form in `config/.wix-forms.yaml`, adds config, generator input and an ordering contract between config and runtime. **Answered (product decision): no contract variant.** Codes reach the page through `onSubmitOutcome`, and the page keeps its own variant. Rationale: this matches prior art (wix-cart's context events, and DL#45's split between plugin-defined outcomes and project vocabulary), and it keeps per-site vocabulary out of the plugin.
 
 **Q8 — Does the plugin's client init run before page components construct?** The wix-cart context is used from page components the same way (`wix-cart-context.ts:7-16`), so yes in practice. The design does not depend on it:
+
 - **Created:** once, in `init.ts` `.withClient` (`lib/init.ts:17-19`), by `provideWixFormsContext()` → `registerReactiveGlobalContext(WIX_FORMS_CONTEXT, …)` (jay `runtime/component/lib/context-api.ts:65-71`, which calls `registerGlobalContext`, `runtime/runtime/lib/context.ts:49-54`). Nothing creates it lazily.
 - **Plugin component:** does **not** declare `.withContexts` (that resolves through `useContext`, which throws when the context is absent, `context.ts:92-96`). It calls `useGlobalContext(WIX_FORMS_CONTEXT)` (`context.ts:68-72`, returns `undefined` when absent) **at call time**: at each validation and at each settled submit, never at construction.
 - **Init has not run** (unit tests, the harness, a project without client init): `undefined` → built-in rules only, no page checks, no event, no warning. Interactive tests that need it call `provideWixFormsContext()` before mounting and `clearGlobalContextRegistry()` (`context.ts:60-62`) after each test.
@@ -94,10 +96,12 @@ And changing `data-value` fires no event, so nothing runs between seeds. The mou
 **Q9 — On a redirect, should `submitState` read `SUCCEEDED`?** No: it reads `SUBMITTING` until the page unloads (the button stays busy, which is what a user sees during navigation). The `onSubmitOutcome` event carries `succeeded` with `redirectTo`, for page code. A bfcache Back restore clears `isSubmitting` (`wix-form.ts:294-298`) and shows the filled form. **Answered.**
 
 **Q10 — How does the server-side honeypot work, and which bots does it target? Answered (product decision, 2026-11-11): option (a).** Product requirement: a per-form submit hook must be able to drop a submission whose honeypot is filled. Options:
+
 - (a) keep the client short-circuit and add an optional `honeypot` action input for direct or scripted posts;
 - (b) the client always posts, and the server alone decides.
 
 **Default: (a)**, specified in §5a.
+
 - The client keeps the short-circuit (`wix-form.ts:308-311`). A bot that fills the page's honeypot never posts, so no Wix call happens and no hook runs. The DL#41 Q12 and DL#42 V-demo ("honeypot run with no POST") guarantees still hold.
 - The component **never sends** `honeypot`. When the short-circuit does not trip, the value is `''`, and `''` would tell the server nothing (absent ≠ human either way). Sending it would only make absent and empty look different when they mean the same thing.
 - The server reads `honeypot` only from direct posts that set it: callers that fill every input of the action schema (schema-driven bots, scripts built from the `.jay-action`). A replay of the plugin's own request carries no `honeypot` and is **not** dropped; if the product requirement includes stopping replays, neither (a) nor (b) does it.
@@ -127,6 +131,7 @@ flowchart LR
 ```
 
 Arrows are the recommended order. These are the **hard** dependencies:
+
 - **P3 owns `WIX_FORMS_CONTEXT`.** It creates `lib/contexts/wix-forms-context.ts`, `provideWixFormsContext()` and the `init.ts` registration. The interface has only `registerFieldChecks`, which is complete for P3. **P6 depends on P3** and adds the `onSubmitOutcome` member, an additive interface change. No phase ships a member that does nothing.
 - P4 sets `errorRule = SERVER`, which needs P3's tag. Without P3, P4 still sets `error`/`invalid`. P4's `code` is in the action result, but **page code can read it only after P6** (the event). Until then only the network response carries it.
 - P5 adds a settle-table row next to P4's row, so it lands after P4. It does not need P3.
@@ -138,18 +143,21 @@ Arrows are the recommended order. These are the **hard** dependencies:
 `ControlSeed.value` becomes `FieldValue | undefined`, where `undefined` means the control is not bound (`exec$` resolved `undefined`); today `value ?? ''` (`wix-form.ts:497`) erases that difference.
 
 ```ts
-export interface SeedResult { store: FieldStore; changedTargets: string[] }
+export interface SeedResult {
+  store: FieldStore;
+  changedTargets: string[];
+}
 
 /** Page-provided control values win over the store for every field the user has not edited. */
 export function seedControlValues(store: FieldStore, seeds: ControlSeed[]): SeedResult {
-    const seeded = { ...store };
-    const changedTargets: string[] = [];
-    for (const { target, value, dirty } of seeds) {
-        if (dirty || value === undefined) continue;
-        if (!sameFieldValue(seeded[target], value)) changedTargets.push(target);
-        seeded[target] = value; // '' from a bound control clears the slot
-    }
-    return { store: seeded, changedTargets };
+  const seeded = { ...store };
+  const changedTargets: string[] = [];
+  for (const { target, value, dirty } of seeds) {
+    if (dirty || value === undefined) continue;
+    if (!sameFieldValue(seeded[target], value)) changedTargets.push(target);
+    seeded[target] = value; // '' from a bound control clears the slot
+  }
+  return { store: seeded, changedTargets };
 }
 ```
 
@@ -160,6 +168,7 @@ New signature: `seedControlsIntoStore(refs, fields, dirtyTargets, setValues): Pr
 **Custom widgets without `data-value`:** `readControlValue` (`:531-539`) returns `''` for a bound element that has neither `data-value` nor `.value` (e.g. `<div ref="x.control">`). Under the new rule, that `''` **clears** the slot on every seed while the field is not dirty. A widget whose `control` event fired is dirty, so its value is kept. Widgets that seed must render `data-value`. The guide (§2, §5) says so.
 
 Call sites:
+
 - **Mount:** replace the `createEffect` (`:207-209`) with `afterRemount(() => seedAndReflect())`, next to the existing `afterRemount(() => wireNativeFormSubmit(...))` (`:221`).
 - **Reset:** in `clearNativeInputsAfterRemount` (`:263-271`), after clearing inputs, `seedAndReflect()`, so "send another" carries the page's current hidden values and visible defaults.
 - **Submit:** same place in the order (after the honeypot check, before `readFormValues`), now refreshing, and it calls **`seedAndReflect()`**, not the bare seed. Otherwise a visible field whose `control` `data-value` the page changed after mount (and the user never edited) would post the new value while its input still shows the old one, breaking "what the user sees wins": the reconcile sees DOM = store (both old), does not mark it dirty, then the seed writes the new value. Reflecting makes the input show exactly what is sent. It runs **after** the G2 autofill reconcile: busy flag → `reconcileNativeInputs()` → seed → `readFormValues()` → validate. The reconcile marks a field dirty when it writes the DOM value, so the seed then skips that field. With the opposite order, a non-dirty visible field bound to a `control` could be seeded first and then overwritten by the DOM, or the reverse, depending on which value differed. A fixed order makes the result deterministic: what the user sees wins, and the page value wins only for fields the user has not touched and the browser did not fill.
@@ -167,6 +176,7 @@ Call sites:
 `seedAndReflect` = `seedControlsIntoStore(...)` then `reflectToInput(field, value)` (`:143-167`) for each changed **visible** field, so a visible prefill shows in its input. `seedAndReflect` awaits the seed but does **not** await the reflect `exec$` promises: `reflectToInput` stays fire-and-forget as today (`:143-167`), so a throw inside a reflect callback is an unhandled rejection that never reaches `submit()` and is outside the busy-flag guarantee.
 
 Trace — selected slot changes after mount, then reset (**new** behaviour; today's behaviour is noted per step):
+
 1. Page renders `<input type="hidden" ref="book.slotId.control" data-value="{selectedSlotId}">`, initially `""`. New mount seed: bound, value `''` → store `slotId: ''`. Today: the mount seed is dead and the store stays `{}`.
 2. User picks a slot in the page's own calendar; page signal → jay re-renders the attribute to `"s-42"`. No plugin event (expected).
 3. Submit: `:316` reads `"s-42"`; `slotId` not dirty (hidden inputs receive no `input`/`click`, so `handleControl` `:175-181` never ran) → store `s-42` → `readFormValues` (`:127-129`) → submitted. Today: correct on the **first** submit (the store was `{}`). If that submit fails and the page then changes the slot, the second submit skips it at `submission-values.ts:99` and sends the first value.
@@ -178,13 +188,14 @@ Trace — selected slot changes after mount, then reset (**new** behaviour; toda
 
 ```ts
 function handleNativeBlur(field: FormFieldView): void {
-    if (dirtyTargets.has(field.target) || errorByTarget()[field.target]) validateField(field);
+  if (dirtyTargets.has(field.target) || errorByTarget()[field.target]) validateField(field);
 }
 
 function handleNativeInput(field: FormFieldView, event: Event): void {
-    dirtyTargets.add(field.target);
-    setFieldValue(field.target, readNativeValue(field, event.target));
-    if (errorByTarget()[field.target] && checkField(field).rule === FieldRule.NONE) clearFieldError(field);
+  dirtyTargets.add(field.target);
+  setFieldValue(field.target, readNativeValue(field, event.target));
+  if (errorByTarget()[field.target] && checkField(field).rule === FieldRule.NONE)
+    clearFieldError(field);
 }
 ```
 
@@ -229,19 +240,33 @@ Trace — tab through an empty form: focus first → Tab: blur, not dirty, no er
 
 ```ts
 /** The per-field `errorRule` contract variant. Member order IS the contract (DL#45). */
-export enum FieldRule { NONE, REQUIRED, MIN_LENGTH, MAX_LENGTH, EMAIL, PHONE, URL, PATTERN, CUSTOM, SERVER }
+export enum FieldRule {
+  NONE,
+  REQUIRED,
+  MIN_LENGTH,
+  MAX_LENGTH,
+  EMAIL,
+  PHONE,
+  URL,
+  PATTERN,
+  CUSTOM,
+  SERVER,
+}
 
-export interface FieldCheckResult { rule: FieldRule; message: string }
+export interface FieldCheckResult {
+  rule: FieldRule;
+  message: string;
+}
 ```
 
 **Validation** — `lib/utils/project-form-fields.ts`: new `checkFormField(field, value): FieldCheckResult` holds today's branches (`:157-200`), each returning its rule (`required` → `REQUIRED`, `minLength` → `MIN_LENGTH`, …, `tel` → `PHONE`, invalid `pattern` regex → `NONE` as today). `validateFormField(field, value)` becomes `checkFormField(field, value).message` — same exported signature (`lib/index.client.ts:7`). `validateVisibleFields` (`lib/components/submission-values.ts:117-128`) stays pure and gains the check as a parameter:
 
 ```ts
 export function validateVisibleFields(
-    fields: FormFieldView[],
-    values: Record<string, FieldValue>,
-    check: (field: FormFieldView, value: FieldValue) => FieldCheckResult = checkFormField,
-): Record<string, FieldCheckResult>
+  fields: FormFieldView[],
+  values: Record<string, FieldValue>,
+  check: (field: FormFieldView, value: FieldValue) => FieldCheckResult = checkFormField,
+): Record<string, FieldCheckResult>;
 ```
 
 It still skips hidden fields and passes `values[field.target] ?? emptyValueFor(field)` as today (`:124`). At submit the component calls `validateVisibleFields(carryForward.fields, submissionValues, checkField)`, so page checks see the **submitted** value (`submissionValues`, the projection from `readFormValues`). Visible fields are always in the projection, so no key is lost; hidden fields are never checked. The default `check` keeps the pure function usable (and unit-testable) without a context.
@@ -249,21 +274,25 @@ It still skips hidden fields and passes `values[field.target] ?? emptyValueFor(f
 **Contract** — `fieldTag` (`contract-utils.ts:67-94`), visible fields only, after `invalid` (`:85`):
 
 ```yaml
-- { tag: errorRule, type: variant, dataType: "enum (NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE | URL | PATTERN | CUSTOM | SERVER)" }
+- {
+    tag: errorRule,
+    type: variant,
+    dataType: 'enum (NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE | URL | PATTERN | CUSTOM | SERVER)',
+  }
 ```
 
 rendered with `enumDataType(FieldRule)` (`:157-161`). Field-level, so no `RESERVED_TAG_NAMES` change. Hidden fields have no error tags today (`hiddenFieldTag`, `:101-114`) and get none.
 
 **View state** — `FieldViewState` (`lib/components/form-view-state.ts:18-27`) gains `errorRule: FieldRule`; `FormViewStateOverrides` gains `ruleByTarget?: Record<string, FieldRule>`; `fieldToViewState` (`:46-72`) sets it, default `NONE`. The component keeps one more signal, `ruleByTarget`. It is written wherever `errorByTarget` is written, and cleared wherever it is cleared:
 
-| Site | `errorByTarget` | `invalidByTarget` | `ruleByTarget` |
-| --- | --- | --- | --- |
-| `validateField` (`:131-135`) | set | set | set from `checkField` |
-| `clearFieldError` (`:137-140`) | `''` | `false` | `NONE` |
-| submit start (`:305`) | `{}` | **`{}` (new: not cleared today)** | `{}` |
-| client validation failure (`:321-324`) | set | set | set |
-| `presentSubmitResult` rejection (`:351-352`) | set | set | `SERVER` for each visible target |
-| reset (`:226-227`) | `{}` | `{}` | `{}` |
+| Site                                         | `errorByTarget` | `invalidByTarget`                 | `ruleByTarget`                   |
+| -------------------------------------------- | --------------- | --------------------------------- | -------------------------------- |
+| `validateField` (`:131-135`)                 | set             | set                               | set from `checkField`            |
+| `clearFieldError` (`:137-140`)               | `''`            | `false`                           | `NONE`                           |
+| submit start (`:305`)                        | `{}`            | **`{}` (new: not cleared today)** | `{}`                             |
+| client validation failure (`:321-324`)       | set             | set                               | set                              |
+| `presentSubmitResult` rejection (`:351-352`) | set             | set                               | `SERVER` for each visible target |
+| reset (`:226-227`)                           | `{}`            | `{}`                              | `{}`                             |
 
 `invalidByTarget` is not cleared at submit start today. As a result, a network failure after a field error leaves `aria-invalid="true"` with an empty message. This DL fixes that in P3. An empty `ruleByTarget` entry reads as `NONE` in `fieldToViewState`.
 
@@ -271,15 +300,18 @@ rendered with `enumDataType(FieldRule)` (`:157-161`). Field-level, so no `RESERV
 
 ```ts
 /** A page's own rule. Return a message to fail (the page's own wording), nothing to pass. */
-export type FieldCheck = (value: FieldValue, values: Readonly<Record<string, FieldValue>>) => string | undefined;
+export type FieldCheck = (
+  value: FieldValue,
+  values: Readonly<Record<string, FieldValue>>,
+) => string | undefined;
 
 /** Field target → checks, run in order after the Wix rules pass; the first message wins. */
 export type FieldChecks = Record<string, FieldCheck[]>;
 
 export interface WixFormsContext {
-    /** Register checks for one form (keyed by form id, any case); returns an unregister function. */
-    registerFieldChecks(formId: string, checks: FieldChecks): () => void;
-    // P6 adds: onSubmitOutcome: EventEmitter<SubmitOutcomeEvent, any>  (§5)
+  /** Register checks for one form (keyed by form id, any case); returns an unregister function. */
+  registerFieldChecks(formId: string, checks: FieldChecks): () => void;
+  // P6 adds: onSubmitOutcome: EventEmitter<SubmitOutcomeEvent, any>  (§5)
 }
 
 export const WIX_FORMS_CONTEXT = createJayContext<WixFormsContext>('wix:forms');
@@ -300,10 +332,13 @@ export function provideWixFormsContext(): WixFormsContext;
 ```ts
 /** Thrown by a hook to reject specific fields: target → message (the hook's own wording). */
 export class FieldRejection extends Error {
-    constructor(readonly fieldErrors: Record<string, string>, readonly options: { code?: string } = {}) {
-        super('the submit hook rejected fields: ' + Object.keys(fieldErrors).join(', '));
-        this.name = 'FieldRejection';
-    }
+  constructor(
+    readonly fieldErrors: Record<string, string>,
+    readonly options: { code?: string } = {},
+  ) {
+    super('the submit hook rejected fields: ' + Object.keys(fieldErrors).join(', '));
+    this.name = 'FieldRejection';
+  }
 }
 ```
 
@@ -311,7 +346,12 @@ export class FieldRejection extends Error {
 
 ```ts
 if (isFieldRejection(thrown) && Object.keys(thrown.fieldErrors).length) {
-    return { success: false, reason: SubmitFailure.VALIDATION, fieldErrors: thrown.fieldErrors, code: thrown.options?.code };
+  return {
+    success: false,
+    reason: SubmitFailure.VALIDATION,
+    fieldErrors: thrown.fieldErrors,
+    code: thrown.options?.code,
+  };
 }
 ```
 
@@ -321,8 +361,9 @@ if (isFieldRejection(thrown) && Object.keys(thrown.fieldErrors).length) {
 - Messages are text from the hook (server code, owned by the project, may localize). Per DL#45, the plugin outcome is the variant (`VALIDATION`, `SERVER`); the text is the project's.
 
 **Null hypothesis.** Three cheaper alternatives were considered:
+
 1. **Honour a `fieldErrors` property on a thrown `ActionError`-named object.** Rejected. `ActionError` is jay's public class with constructor `(code, message)`. Reading an extra property from it is an undocumented contract on another package's type, and projects would have to mutate or hand-build `ActionError`s to use it. jay's transport keeps only `{ code, message }` of a thrown error (`lib/types.ts:67-68`), so the same object would mean different things in a hook and in any other action.
-2. **`SubmitHookOutcome.fieldErrors` returned as a failure.** Rejected. The outcome is the *success* return (`wix-forms-submit-hooks.ts:44-47`; `settleSubmission` reads it only when `submit()` succeeded, `run-submission.ts:277-279`). A returned field map would need precedence rules against a successful `submit()`. It would also break the rule this DL keeps: **returns describe how a success looks (`redirectTo`, `dropped`), throws describe failures.**
+2. **`SubmitHookOutcome.fieldErrors` returned as a failure.** Rejected. The outcome is the _success_ return (`wix-forms-submit-hooks.ts:44-47`; `settleSubmission` reads it only when `submit()` succeeded, `run-submission.ts:277-279`). A returned field map would need precedence rules against a successful `submit()`. It would also break the rule this DL keeps: **returns describe how a success looks (`redirectTo`, `dropped`), throws describe failures.**
 3. **Reuse `ActionError` with a project code and parse fields from `message`.** Rejected: string parsing is the text matching that G1 removes.
 
 An exported error class mirrors `SubmitIgnoredError` / `NoCallerSessionError` (`wix-forms-submit-hooks.ts:57-83`) and costs one class plus one settle row.
@@ -337,8 +378,14 @@ An exported error class mirrors `SubmitIgnoredError` / `NoCallerSessionError` (`
 
 ```ts
 export type SubmitOutcomeEvent =
-    | { formId: string; outcome: 'succeeded'; redirectTo?: string }
-    | { formId: string; outcome: 'failed'; reason: SubmitFailure; code?: string; fieldErrors?: Record<string, string> };
+  | { formId: string; outcome: 'succeeded'; redirectTo?: string }
+  | {
+      formId: string;
+      outcome: 'failed';
+      reason: SubmitFailure;
+      code?: string;
+      fieldErrors?: Record<string, string>;
+    };
 ```
 
 The component emits it once per settled submit: from `presentSubmitResult` (`wix-form.ts:348-368`), from a client validation failure (`:320-327`, `reason: VALIDATION`), from `onNetworkFailure` (`:340-343`), and from the honeypot trip (`:308-311`, `outcome: 'succeeded'`).
@@ -374,21 +421,23 @@ honeypot?: string;
 
 ```ts
 export interface SubmitHookOutcome {
-    /** Site path ('/…') to navigate to after success. */
-    redirectTo?: string;
-    /** Settle as a success without posting to Wix (e.g. a filled honeypot). Return it without calling submit(). */
-    dropped?: true;
+  /** Site path ('/…') to navigate to after success. */
+  redirectTo?: string;
+  /** Settle as a success without posting to Wix (e.g. a filled honeypot). Return it without calling submit(). */
+  dropped?: true;
 }
 ```
 
-**Null hypothesis for `dropped` over an exported `SubmissionDropped` error.** Both are one line for the hook author. A drop *looks like a success* to the caller, and this DL's rule is "returns describe how a success looks, throws describe failures" (§4). An error class would also need name-based recognition and a settle row that turns a throw into a success, which is the opposite of every other throw row. The existing return path (`outcome`, `run-submission.ts:141-155`) already carries success-shaped data.
+**Null hypothesis for `dropped` over an exported `SubmissionDropped` error.** Both are one line for the hook author. A drop _looks like a success_ to the caller, and this DL's rule is "returns describe how a success looks, throws describe failures" (§4). An error class would also need name-based recognition and a settle row that turns a throw into a success, which is the opposite of every other throw row. The existing return path (`outcome`, `run-submission.ts:141-155`) already carries success-shaped data.
 
 **Settle table** (`settleSubmission`, `run-submission.ts:268-293`). A new row comes **after** the `succeeded` / `failed` rows (`:277-283`) and **before** the `FieldRejection` / `ActionError` rows:
 
 ```ts
 if (thrown === undefined && (outcome || undefined)?.dropped === true) {
-    logDrop(formId); // info level: "[wix-forms] dropped a submission (hook)", form id only
-    return outcome.redirectTo === undefined ? { success: true } : { success: true, redirectTo: outcome.redirectTo };
+  logDrop(formId); // info level: "[wix-forms] dropped a submission (hook)", form id only
+  return outcome.redirectTo === undefined
+    ? { success: true }
+    : { success: true, redirectTo: outcome.redirectTo };
 }
 ```
 
@@ -423,7 +472,12 @@ Trace — scripted post `{ formId: F, values: {...}, honeypot: 'x' }`, no hook �
 ✅ Page wording per rule (G1):
 
 ```html
-<input id="c-email" ref="contact.email.input" aria-invalid="{contact.email.invalid}" aria-describedby="c-email-err" />
+<input
+  id="c-email"
+  ref="contact.email.input"
+  aria-invalid="{contact.email.invalid}"
+  aria-describedby="c-email-err"
+/>
 <span id="c-email-err" aria-live="polite">
   <span if="contact.email.errorRule === REQUIRED">Please tell us your email.</span>
   <span if="contact.email.errorRule === EMAIL">That email doesn't look right.</span>
@@ -437,13 +491,16 @@ Trace — scripted post `{ formId: F, values: {...}, honeypot: 'x' }`, no hook �
 ```ts
 const forms = useContext(WIX_FORMS_CONTEXT); // page declared .withContexts(WIX_FORMS_CONTEXT)
 const unregister = forms.registerFieldChecks(BOOKING_FORM_ID, {
-    phone: [(value) => (isValidPhone(String(value)) ? undefined : 'Use an international number, e.g. +44 20 …')],
+  phone: [
+    (value) =>
+      isValidPhone(String(value)) ? undefined : 'Use an international number, e.g. +44 20 …',
+  ],
 });
 forms.onSubmitOutcome(({ formId, outcome, code }) => {
-    if (formId === BOOKING_FORM_ID && outcome === 'failed' && code === 'SLOT_TAKEN') {
-        setSelectedSlot(undefined); // hidden data-value → "", refreshed at next submit (G5)
-        void reloadAvailability();
-    }
+  if (formId === BOOKING_FORM_ID && outcome === 'failed' && code === 'SLOT_TAKEN') {
+    setSelectedSlot(undefined); // hidden data-value → "", refreshed at next submit (G5)
+    void reloadAvailability();
+  }
 });
 ```
 
@@ -473,6 +530,7 @@ Each phase: write the failing tests first (bug-repro for G2/G3/G5, with doc comm
 **Phase 4 — G4.** Tests (the result's `code` is visible to page code only after P6) in `test/submission/` (run-submission table): `FieldRejection` before `submit()` → `VALIDATION` + `fieldErrors` + `code`; after a successful `submit()` → success; empty map → `UNKNOWN`; duplicate-module instance (plain object with `name`) recognised. Interactive: fields marked `SERVER`. Guide `rich-forms.md` §7.
 
 **Phase 5 — H (server honeypot).** Tests in `test/submission/` (the run-submission table, written red first):
+
 - no hook + `honeypot: 'x'` → `{ success: true }`, `createSubmission` not called, info log, no L5;
 - no hook + `honeypot: ''`, absent, or non-string → posts as today (regression guard);
 - a hook receives `honeypot` trimmed (`''` when absent — always set, although the type is optional);
@@ -506,6 +564,7 @@ Interactive: an in-page honeypot trip makes no `submitForm` call (the DL#42 demo
 Unit / interactive (per phase, above): all new tests red before the change, green after, except tests explicitly labelled **regression guard** (green today, kept to pin behaviour the change must not break) and one explicit exception: P2's "busy flag released on a throw" test is green today (the flag is not set on the seed path before the move) and is written with the `finally` to pin the moved flag's release; the current suite stays green except the tests a phase lists as intentional rewrites (P1: `seedControlValues`; P2: `form-submit-execution.test.ts`), with X/Y recorded per phase. Baseline at `1159cb7` in this workspace (`npx vitest run` in `packages/wix-forms`, 2026-11-11): **250/252**. The 2 failures predate this DL and are outside its scope: `test/setup-skip.test.ts` (`serverClientSetupBlocker is not a function`) and `test/rich-forms-chip-example.test.ts` (a compiled-output mismatch). Both are likely jay dist drift in the workspace. A phase may not add failures; `yarn build`, `build:check-types`, `validate-plugin` clean; generated contract parses with `errorRule` as an enum and jay compiles it to `export enum FieldRule { NONE, … }` matching `field-rule.ts`.
 
 Live browser checks (a real headless Wix site with the testbed project, Chromium + Firefox + Safari; demo video at the workspace root):
+
 - [ ] G5: change a hidden slot value after load, submit → the Wix dashboard submission shows the new value; "send another" → second submission also has it.
 - [ ] G5 fail-then-resubmit: a hook rejects with `ActionError('SLOT_TAKEN')`, the page clears and reselects a slot, resubmit → the dashboard shows the **reselected** slot.
 - [ ] G5: a visible field prefilled through `control` shows its value in the input on load.
@@ -536,11 +595,13 @@ Live browser checks (a real headless Wix site with the testbed project, Chromium
 ## Agent Feedback Loop (jay-feedback)
 
 Priority validation → guide → feature:
+
 - **Validation:** none new. Enum literal checks for `errorRule` already come from jay's variant validation. Page checks and hooks are TypeScript registered at runtime, so the plugin warns once at runtime (bad form id, unknown target), as for hook keys (DL#50 Q10). Considered and rejected: warning when a page compares `{k.f.error}` text in a condition (rare; a legitimate English site may print it).
 - **Guides (plugin agent-kit, this repo):** `agent-kit/plugin/rich-forms.md` §2 (fix "on mount, and again at submit" to the real behaviour: after mount, after reset, at submit; follows the page while the user has not edited the field), §3 (timing, `errorRule`, page checks, "not a security check", and a short note: for a `<select>` that needs an unselected state, add a first `<option value="">` (for example "Choose…"); without it the browser shows the first option, but the form still posts `''` until the user or autofill changes the select), §6 (blur behaviour), §4a (lines 103-105 rewritten: the client check stops in-page bots without a request; the server drops honeypot-filled direct posts by default; hooks get `honeypot` and drop with `{ dropped: true }`; absent ≠ human), §7 (`FieldRejection`, `code`, `onSubmitOutcome` and "the event is not a persistence signal", `honeypot` / `dropped` with the check as every hook example's first line, redirect does not show the confirmation); `agent-kit/plugin/user-visible-messages.md` (per-field `errorRule`, the outcome-vs-text rule applied to fields).
 - **jay agent-kit:** no change; DL#45 already added the general "outcomes as variants" rule there.
 
 ## Review History
+
 - Rounds 1–6 by independent reviewers (`reviews/` in the workspace, not in the repo): round 1 server honeypot, context lifecycle, double-submit and G5 diagnosis; round 2 busy flag on throw, honeypot claim, page checks at submit; rounds 3–4 false-red tests, phase independence, unbound-field autofill; round 5 empty-default comparison and the single-select baseline; round 6 READY-FOR-DEVELOPMENT (one type-check note folded in).
 - Team review (PM, UX, architecture, engineering): approve. Notes: P2 is the integration hinge (keep busy → reconcile → seed → read → validate fixed; pause for a short design check if its interactive tests flap). Guide §3 must say that typing clears a SERVER error but submit re-validates.
 - **Approved for implementation** at design review, 2026-11-11, with Q10 = (a).
@@ -552,6 +613,7 @@ Priority validation → guide → feature:
 Implemented as designed (§1, Phase 1). Files: `lib/components/submission-values.ts` (`ControlSeed.value: FieldValue | undefined`, `SeedResult`, `seedControlValues` skips only dirty/unbound, `sameFieldValue`), `lib/components/wix-form.ts` (dead construction-time `createEffect` removed; `seedAndReflect` runs via `afterRemount` at mount, after reset inside `clearNativeInputsAfterRemount`, and at submit in place of the bare seed; `seedControlsIntoStore` resolves to `changedTargets` and passes `undefined` through), `test/support/wix-form-harness.ts` (optional `fieldElements` binds fake `input`/`control` refs per field), guide `agent-kit/plugin/rich-forms.md` §2 (after mount / after reset / at submit, follows the page, `''` clears, widgets must render `data-value`) and a one-line pointer in §5.
 
 **Red before (on `1159cb7` code, new tests + intentional rewrites), 15/15 failing for the stated reason:**
+
 - `test/wix-form-control-refresh.interactive.test.ts`: (a) `expected { slotId: 's-1' } to deeply equal { slotId: 's-42' }`; (a2) `expected { slotId: 's-1' } to deeply equal { slotId: '' }`; (a3) same as (a2); (b) `expected { slotId: '' } to deeply equal { slotId: 's-1' }`; (c) `expected '' to be 'Ada'`; (d) `expected '' to be 'Grace'` (the posted value was already right; the input was not reflected).
 - `test/submission-values.test.ts`: the four rewritten tests (old return type `FieldStore`, e.g. `expected {} to deeply equal { store: { propertyId: '' }, … }` for the flipped "should clear the slot for an empty bound control value") and five new ones (overwrite a stored non-dirty value; `''` clears a stored value; unbound skipped; dirty kept; unchanged array not reported as changed). The unbound/dirty/unchanged cases fail today only on the return shape; their store expectations hold today.
 
@@ -576,6 +638,7 @@ Implemented as designed (§2, Phase 2), submit order busy → reconcile → seed
 ### P3 Implementation Results (G1 — `errorRule`, `FieldRule`, page checks, 2026-11-11)
 
 Implemented as designed (§3, Phase 3). P2's `validateFormField(...) === ''` call sites are now `checkField(...).rule === FieldRule.NONE` (typing clear) and `validateVisibleFields(..., checkField)` (submit). Files:
+
 - New `lib/components/field-rule.ts` (`FieldRule`, `FieldCheckResult`), `lib/contexts/wix-forms-context.ts` (`WIX_FORMS_CONTEXT`, `provideWixFormsContext`, `FieldCheck`/`FieldChecks`, `registerFieldChecks` with unregister, canonical keys, warn-once on non-form-id keys), `lib/components/page-checks.ts` (`createPageCheckRunner`: `useGlobalContext` at call time, first failing check → `CUSTOM`, a throwing check logged once and passing, warn-once on a target that is not a visible field).
 - `lib/utils/project-form-fields.ts` (`checkFormField`; `validateFormField` = its `.message`, signature unchanged), `lib/components/submission-values.ts` (`validateVisibleFields` gains `check`, returns `Record<target, FieldCheckResult>`), `lib/components/form-view-state.ts` (`errorRule`, `ruleByTarget`), `lib/generators/contract-utils.ts` (`errorRule` tag on visible fields via `enumDataType(FieldRule)`; hidden fields unchanged), `lib/components/wix-form.ts` (`checkField`, `ruleByTarget` per the §3 table; `invalidByTarget` and `ruleByTarget` now cleared at submit start; rejection → `SERVER` per visible target), `lib/init.ts` (`provideWixFormsContext()` in `.withClient`), `lib/index.client.ts` + `lib/index.ts` (export `FieldRule`, `checkFormField`, the context and its types — both entries, as wix-cart).
 - Guides: `rich-forms.md` §3 (`errorRule` example; REQUIRED copy that reads correctly while the field holds text; page checks, keying, warnings, throw = pass, "not a security check"; typing clears a `SERVER` error but submit re-validates), `user-visible-messages.md` (`errorRule` table and example, never match `error` text, agent checklist line).
@@ -587,6 +650,7 @@ Implemented as designed (§3, Phase 3). P2's `validateFormField(...) === ''` cal
 **Intentional rewrites:** the two exact-shape `form-view-state` tests gain `errorRule: FieldRule.NONE`; "should report an empty required visible field" expects `{ rule: REQUIRED, message }` (new return type of `validateVisibleFields`).
 
 **Deviations:**
+
 1. `validateVisibleFields`'s `check` takes `(field, value)` as designed; the component passes `(field, value) => checkField(field, value, submissionValues)` so a page check's `values` argument is the submitted projection (at blur/typing it is the store projection, `readFormValues()`).
 2. The component's read side is `registeredFieldChecks(context, formId)`, reading a symbol-keyed member, not a public interface member (the interface still has only `registerFieldChecks`). A symbol, because jay's context proxy throws on access to a missing member.
 3. The unknown-target warning lives in the component's runner (only it knows the form's fields); a hidden field's target counts as unknown, since checks run on visible fields only.
@@ -625,6 +689,7 @@ Implemented as designed (§5, Phase 6). Files: `lib/submission/run-submission.ts
 **Intentional rewrite:** V4 "should return an ActionError message thrown before submit(), unlogged" now also expects `code: 'SLOT_TAKEN'`.
 
 **Deviations:**
+
 1. **Example correction (not a design change):** jay's `createEvent` calls each handler with `{ event }` (`emitter.emit = (event) => handlers.forEach((h) => h({ event }))`, as wix-cart's `onItemAddedToCart`). The §Examples snippet `forms.onSubmitOutcome(({ formId, outcome, code }) => …)` would read `undefined`s; page code writes `({ event }) => { event.formId … }`. The interface type (`EventEmitter<SubmitOutcomeEvent, any>`) is as designed; the guide and the context's doc comment use the correct shape.
 2. Through the reactive context, `onSubmitOutcome` is a subscribe function only (no `.emit` reachable), so the component emits through a symbol-keyed member (`emitSubmitOutcome`), the same pattern P3 used for the checks' read side.
 3. Additive hardening: a throwing page handler is caught and logged (`[wix-forms] an onSubmitOutcome handler threw`), so page code cannot leave the form busy.
@@ -648,6 +713,7 @@ Implemented as designed (§6, Phase 7). `lib/components/wix-form.ts` `presentSub
 **Still required before `[Implemented]`:** every live browser check in §Verification Criteria, including Q5 (VoiceOver result recorded here).
 
 ### Product decision (2026-11-11): NVDA dropped from the Q5 gate
+
 NVDA runs only on Windows and no Windows machine is available. The product owner removed it as a blocker: Q5 and the `[Implemented]` gate now require the **VoiceOver (Safari)** recording only. NVDA (Firefox or Chrome) remains an untested screen reader, tracked as a follow-up for whoever next has a Windows machine; it is not a release gate.
 
 ### Live verification (2026-11-11)
@@ -656,42 +722,42 @@ NVDA runs only on Windows and no Windows machine is available. The product owner
 
 **Test-page deviation.** The page code (page checks, the event subscriber, the slot picker that rewrites the `control`'s `data-value`) runs in the project's client init, not in a page component. This is the alternative the guide allows. The reason: on jay 0.26.1, any `page.jay-contract` next to the wix-forms headless import stops the plugin's text and `if` bindings from updating (`aria-invalid` still updates), even with no `page.ts` and even with a slow-only contract. A page without a page contract works. This is a jay-side issue, outside this DL. It is recorded in the testbed QA report.
 
-| Check | Result | Evidence |
-| --- | --- | --- |
-| G5: page changes the hidden slot after load (10:00 → 11:00), submit; "send another", submit | ✅ Wix stored `slot: s-11` for both submissions | `dl53-g5-slot-change-and-send-another-2026-11-11.webm` |
-| G5 fail-then-resubmit: hook `SLOT_TAKEN`, page clears the slot, reselects 11:00, resubmits | ✅ first post `s-taken` → `REJECTED` + message; the page cleared `data-value`; second post `s-11`; Wix stored only `s-11` | `dl53-g5-g3-slot-taken-reselect-2026-11-11.webm` |
-| G5: visible field prefilled through `control` | ✅ input shows `WELCOME10` on load; after the page changed `data-value` to `SPRING25` (field untouched), `SPRING25` was posted and stored | `dl53-g5-visible-prefill-2026-11-11.webm` |
-| G2: Tab through the empty form; submit; type to fix | ✅ Chromium, Firefox, WebKit: no errors after Tab; submit shows name + email `REQUIRED` copy, focus on `full-name`, no request; typing `qa` keeps "Email is required." unchanged, `qa@example.com` clears it | `dl53-g2-tab-submit-typing-{chromium,firefox,webkit}-2026-11-11.webm` |
-| G2: autofill (DOM values set with no `input`/`change` event: name, email, phone, country select) | ✅ the posted values equal what is shown in all three engines; Chromium and Firefox stored them in Wix. WebKit's post was refused by the server ("without a session cookie"): WebKit drops the `Secure` `wix_session` cookie on `http://localhost`. That predates this DL (security-gate cookie). A real saved-address autofill is not scriptable in Playwright, so this simulates it. | `dl53-g2-autofill-{chromium,firefox,webkit}-2026-11-11.webm` |
-| G2 double submit / reset during submit | ✅ `aria-busy="true"`, `SUBMITTING` on the first frame after the first click; double click → 1 request; Enter twice → 1 request; invalid form double submit → focus moved once; submit + immediate reset → 0 requests, nothing stored, form idle | `dl53-g2-double-submit-and-reset-2026-11-11.webm` |
-| G1: page wording per `errorRule`; a page check blocks submit | ✅ `REQUIRED` / `EMAIL` page copy rendered; phone `0207 123` → "Page check: Start the phone with + …" (`CUSTOM`), focus on `phone`, 0 requests, nothing stored | `dl53-g1-errorrule-wording-and-page-check-2026-11-11.webm` |
-| G4: hook `FieldRejection` | ✅ phone shows "Server: The server could not reach this phone number." (`SERVER`), `aria-invalid=true`, focused; `submitFailure=VALIDATION`; event `failed` with `code: BAD_PHONE` + `fieldErrors`; nothing stored | `dl53-g4-field-rejection-2026-11-11.webm` |
-| G3: `ActionError('SLOT_TAKEN')` reaches page code | ✅ one event `{ outcome: failed, reason: REJECTED, code: SLOT_TAKEN }`; the page ran its "reload availability" (counter 0 → 1) and cleared the slot | same video as the G5 fail-then-resubmit row |
-| Redirect: success with `redirectTo` | ✅ navigated to `/dl53/thanks`. A `MutationObserver` saw no confirmation element and no confirmation focus before the navigation. Stored `slot: s-redirect`. | `dl53-redirect-no-confirmation-flash-2026-11-11.webm` |
-| H: scripted `submitForm` with `honeypot: 'x'`, no hook (QA Contact) | ✅ `{ success: true }`, server log "dropped a submission (honeypot, no hook)", nothing stored | `dl53-h-scripted-honeypot-posts-2026-11-11.webm` |
-| H: the same with the hook returning `{ dropped: true }` (DL53 form) | ✅ `{ success: true }`, hook received `honeypot: "x"`, log "dropped a submission (hook)", nothing stored | same |
-| H: the same post without `honeypot` (QA Contact) | ✅ `{ success: true }`, stored | same |
-| H: in-page honeypot filled | ✅ confirmation shown, 0 `submitForm` requests, event `succeeded`, nothing stored | `dl53-h-inpage-honeypot-no-request-2026-11-11.webm` |
-| Old contract: `/contact`, a page written for 0.26.0 that binds no `errorRule` | ✅ renders, validates, submits; Wix stored chips `["News"]` + consent `true`; no console errors. Caveat: the dev server generates per-form contracts at startup, so the page compiled against a freshly generated contract (with `errorRule`). The page markup was not regenerated. The committed-0.26.1-contract compile is covered by `test/old-contract-compat.test.ts`. | `dl53-old-contract-contact-page-2026-11-11.webm` |
-| Q5 VoiceOver (Safari) | ⚠️ **not observed. A human VoiceOver listen is still required before `[Implemented]`.** VoiceOver could not be driven here: its AppleScript control is off and Apple Events are not authorised. What WebKit exposes: after blurring a dirty invalid email, the polite live region (`aria-describedby` of the input, `aria-invalid=true`) changed **once** to "That email doesn't look right."; typing more invalid characters caused **no further** change. The accessibility tree shows `textbox "Email" [invalid]` with that description. | `dl53-q5-a11y-live-region-webkit-2026-11-11.webm` |
+| Check                                                                                            | Result                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Evidence                                                              |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| G5: page changes the hidden slot after load (10:00 → 11:00), submit; "send another", submit      | ✅ Wix stored `slot: s-11` for both submissions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | `dl53-g5-slot-change-and-send-another-2026-11-11.webm`                |
+| G5 fail-then-resubmit: hook `SLOT_TAKEN`, page clears the slot, reselects 11:00, resubmits       | ✅ first post `s-taken` → `REJECTED` + message; the page cleared `data-value`; second post `s-11`; Wix stored only `s-11`                                                                                                                                                                                                                                                                                                                                                                                                                   | `dl53-g5-g3-slot-taken-reselect-2026-11-11.webm`                      |
+| G5: visible field prefilled through `control`                                                    | ✅ input shows `WELCOME10` on load; after the page changed `data-value` to `SPRING25` (field untouched), `SPRING25` was posted and stored                                                                                                                                                                                                                                                                                                                                                                                                   | `dl53-g5-visible-prefill-2026-11-11.webm`                             |
+| G2: Tab through the empty form; submit; type to fix                                              | ✅ Chromium, Firefox, WebKit: no errors after Tab; submit shows name + email `REQUIRED` copy, focus on `full-name`, no request; typing `qa` keeps "Email is required." unchanged, `qa@example.com` clears it                                                                                                                                                                                                                                                                                                                                | `dl53-g2-tab-submit-typing-{chromium,firefox,webkit}-2026-11-11.webm` |
+| G2: autofill (DOM values set with no `input`/`change` event: name, email, phone, country select) | ✅ the posted values equal what is shown in all three engines; Chromium and Firefox stored them in Wix. WebKit's post was refused by the server ("without a session cookie"): WebKit drops the `Secure` `wix_session` cookie on `http://localhost`. That predates this DL (security-gate cookie). A real saved-address autofill is not scriptable in Playwright, so this simulates it.                                                                                                                                                      | `dl53-g2-autofill-{chromium,firefox,webkit}-2026-11-11.webm`          |
+| G2 double submit / reset during submit                                                           | ✅ `aria-busy="true"`, `SUBMITTING` on the first frame after the first click; double click → 1 request; Enter twice → 1 request; invalid form double submit → focus moved once; submit + immediate reset → 0 requests, nothing stored, form idle                                                                                                                                                                                                                                                                                            | `dl53-g2-double-submit-and-reset-2026-11-11.webm`                     |
+| G1: page wording per `errorRule`; a page check blocks submit                                     | ✅ `REQUIRED` / `EMAIL` page copy rendered; phone `0207 123` → "Page check: Start the phone with + …" (`CUSTOM`), focus on `phone`, 0 requests, nothing stored                                                                                                                                                                                                                                                                                                                                                                              | `dl53-g1-errorrule-wording-and-page-check-2026-11-11.webm`            |
+| G4: hook `FieldRejection`                                                                        | ✅ phone shows "Server: The server could not reach this phone number." (`SERVER`), `aria-invalid=true`, focused; `submitFailure=VALIDATION`; event `failed` with `code: BAD_PHONE` + `fieldErrors`; nothing stored                                                                                                                                                                                                                                                                                                                          | `dl53-g4-field-rejection-2026-11-11.webm`                             |
+| G3: `ActionError('SLOT_TAKEN')` reaches page code                                                | ✅ one event `{ outcome: failed, reason: REJECTED, code: SLOT_TAKEN }`; the page ran its "reload availability" (counter 0 → 1) and cleared the slot                                                                                                                                                                                                                                                                                                                                                                                         | same video as the G5 fail-then-resubmit row                           |
+| Redirect: success with `redirectTo`                                                              | ✅ navigated to `/dl53/thanks`. A `MutationObserver` saw no confirmation element and no confirmation focus before the navigation. Stored `slot: s-redirect`.                                                                                                                                                                                                                                                                                                                                                                                | `dl53-redirect-no-confirmation-flash-2026-11-11.webm`                 |
+| H: scripted `submitForm` with `honeypot: 'x'`, no hook (QA Contact)                              | ✅ `{ success: true }`, server log "dropped a submission (honeypot, no hook)", nothing stored                                                                                                                                                                                                                                                                                                                                                                                                                                               | `dl53-h-scripted-honeypot-posts-2026-11-11.webm`                      |
+| H: the same with the hook returning `{ dropped: true }` (DL53 form)                              | ✅ `{ success: true }`, hook received `honeypot: "x"`, log "dropped a submission (hook)", nothing stored                                                                                                                                                                                                                                                                                                                                                                                                                                    | same                                                                  |
+| H: the same post without `honeypot` (QA Contact)                                                 | ✅ `{ success: true }`, stored                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | same                                                                  |
+| H: in-page honeypot filled                                                                       | ✅ confirmation shown, 0 `submitForm` requests, event `succeeded`, nothing stored                                                                                                                                                                                                                                                                                                                                                                                                                                                           | `dl53-h-inpage-honeypot-no-request-2026-11-11.webm`                   |
+| Old contract: `/contact`, a page written for 0.26.0 that binds no `errorRule`                    | ✅ renders, validates, submits; Wix stored chips `["News"]` + consent `true`; no console errors. Caveat: the dev server generates per-form contracts at startup, so the page compiled against a freshly generated contract (with `errorRule`). The page markup was not regenerated. The committed-0.26.1-contract compile is covered by `test/old-contract-compat.test.ts`.                                                                                                                                                                 | `dl53-old-contract-contact-page-2026-11-11.webm`                      |
+| Q5 VoiceOver (Safari)                                                                            | ⚠️ **not observed. A human VoiceOver listen is still required before `[Implemented]`.** VoiceOver could not be driven here: its AppleScript control is off and Apple Events are not authorised. What WebKit exposes: after blurring a dirty invalid email, the polite live region (`aria-describedby` of the input, `aria-invalid=true`) changed **once** to "That email doesn't look right."; typing more invalid characters caused **no further** change. The accessibility tree shows `textbox "Email" [invalid]` with that description. | `dl53-q5-a11y-live-region-webkit-2026-11-11.webm`                     |
 
 Not covered: Firefox/WebKit for the G1/G3/G4/G5/H rows (Chromium only); a real browser-saved autofill profile. Release notes: `CHANGELOG.md` was checked in P7 (quieter blur first); it was not re-checked live.
 
-
 ### Q5 VoiceOver (Safari) result (2026-11-11)
+
 **Pass.** A human listen by the product owner on the QA testbed (`/dl53`, Safari, VoiceOver on): leaving the email field with an invalid value announced "That email doesn't look right." exactly once; it was not announced again. Procedure: the workspace VoiceOver checklist. Automated backup evidence: the WebKit live-region recording from §Live verification. NVDA (Windows) remains untested — a non-blocking follow-up.
 
 **Follow-up (not a gate for this log):** the live-check pages used a testbed-only client-init stand-in because of a jay bug (a page's own `.jay-contract` next to a headless import freezes the plugin's bindings). Once that framework bug is fixed and released, the live checks are re-run with a declarative page (`page.jay-contract` + `page.ts`).
 
 **Declarative re-check (2026-11-11).** The QA testbed ran published jay 0.26.1 with a locally built `@jay-framework/compiler-jay-html` that carries the page-contract fix (the only jay package the fix changes in library code). The `/dl53` test page was rewritten the Jay way: a `page.jay-contract` (`selectedSlot`, `promoDefault`, `outcomeLog`, `reloads` + button refs) and a `page.ts` that uses `.withContexts(WIX_FORMS_CONTEXT)`, ref `onclick` handlers, signals rendered to ViewState (hidden slot `control` and promo `control` bound to `data-value="{…}"`), and `registerFieldChecks` / `onSubmitOutcome` each inside `createEffect` that returns the cleanup. The page has no `document.*`, no `window` state and no global listeners. `src/init.ts` now keeps only the server submit hook. Results (Chromium):
 
-| Check | Result | Video |
-| --- | --- | --- |
-| Page contract next to the headless import (`/dl53b`) | ✅ text (`submitState`) and errorRule `if` spans update | `dl53-declarative-dl53b-page-contract-bindings-2026-11-11.webm` |
-| G5 slot changed after load + send another | ✅ both posted and stored `s-11` | `dl53-declarative-g5-slot-change-and-send-another-2026-11-11.webm` |
-| G5 SLOT_TAKEN → page clears → reselect (+ G3) | ✅ event `code: SLOT_TAKEN`, the page cleared its slot (`reloads=1`), only `s-11` stored | `dl53-declarative-g5-g3-slot-taken-reselect-2026-11-11.webm` |
-| G5 visible prefill | ✅ `WELCOME10` on load; the changed default `SPRING25` was posted and stored | `dl53-declarative-g5-visible-prefill-2026-11-11.webm` |
-| G1 page check | ✅ REQUIRED copy; the CUSTOM page check blocks submit and focuses phone, 0 stored | `dl53-declarative-g1-page-check-2026-11-11.webm` |
-| G4 FieldRejection | ✅ SERVER on phone, focused, event `BAD_PHONE`, 0 stored | `dl53-declarative-g4-field-rejection-2026-11-11.webm` |
+| Check                                                | Result                                                                                   | Video                                                              |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Page contract next to the headless import (`/dl53b`) | ✅ text (`submitState`) and errorRule `if` spans update                                  | `dl53-declarative-dl53b-page-contract-bindings-2026-11-11.webm`    |
+| G5 slot changed after load + send another            | ✅ both posted and stored `s-11`                                                         | `dl53-declarative-g5-slot-change-and-send-another-2026-11-11.webm` |
+| G5 SLOT_TAKEN → page clears → reselect (+ G3)        | ✅ event `code: SLOT_TAKEN`, the page cleared its slot (`reloads=1`), only `s-11` stored | `dl53-declarative-g5-g3-slot-taken-reselect-2026-11-11.webm`       |
+| G5 visible prefill                                   | ✅ `WELCOME10` on load; the changed default `SPRING25` was posted and stored             | `dl53-declarative-g5-visible-prefill-2026-11-11.webm`              |
+| G1 page check                                        | ✅ REQUIRED copy; the CUSTOM page check blocks submit and focuses phone, 0 stored        | `dl53-declarative-g1-page-check-2026-11-11.webm`                   |
+| G4 FieldRejection                                    | ✅ SERVER on phone, focused, event `BAD_PHONE`, 0 stored                                 | `dl53-declarative-g4-field-rejection-2026-11-11.webm`              |
 
 Observation, not a regression (the first run behaved the same): after the page changes the promo `control` default, the visible promo `<input>` still shows `WELCOME10`, but `SPRING25` is posted. The store is authoritative (§5, last-wins), so a user sees a different value from the one that is sent. Product may want to decide whether a `control` change should also update a native input that is bound to the same field. Evidence: `qa-testbed/evidence/dl53/declarative-*.json`. Script: `qa-testbed/testbed/qa-dl53/checks-declarative.mjs`.
