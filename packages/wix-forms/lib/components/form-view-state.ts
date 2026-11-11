@@ -13,6 +13,7 @@
 
 import type { FieldValue, FormFieldView } from '../types.js';
 import { SubmitFailure, SubmitState } from './submit-outcome.js';
+import { FieldRule } from './field-rule.js';
 import { contractTagName } from '../generators/contract-utils.js';
 
 export interface FieldViewState {
@@ -21,6 +22,8 @@ export interface FieldViewState {
     required: boolean;
     error: string;
     invalid: boolean;
+    /** Which rule the shown `error` comes from (DL#53 G1); `NONE` when there is none. */
+    errorRule: FieldRule;
     /** Text-like fields expose a string `value`; a checkbox exposes a boolean `value` variant. */
     value?: string | boolean;
     options?: Array<{ value: string; label: string; selected?: boolean }>;
@@ -32,6 +35,7 @@ export interface FormViewStateOverrides {
     loadError: string;
     errorByTarget?: Record<string, string>;
     invalidByTarget?: Record<string, boolean>;
+    ruleByTarget?: Record<string, FieldRule>;
     valueByTarget?: Record<string, FieldValue>;
     isSubmitted?: boolean;
     submitFailure?: SubmitFailure;
@@ -40,6 +44,7 @@ export interface FormViewStateOverrides {
 interface FieldState {
     error: string;
     invalid: boolean;
+    errorRule: FieldRule;
     value: FieldValue;
 }
 
@@ -49,6 +54,7 @@ function fieldToViewState(field: FormFieldView, state: FieldState): FieldViewSta
         required: field.required,
         error: state.error,
         invalid: state.invalid,
+        errorRule: state.errorRule,
     };
     if (field.inputType === 'checkbox') {
         viewState.value = state.value === true; // the boolean `value` variant
@@ -77,12 +83,14 @@ export function buildFieldsViewState(
     errorByTarget: Record<string, string> = {},
     invalidByTarget: Record<string, boolean> = {},
     valueByTarget: Record<string, FieldValue> = {},
+    ruleByTarget: Record<string, FieldRule> = {},
 ): Record<string, FieldViewState> {
     const viewState: Record<string, FieldViewState> = {};
     for (const field of fields) {
         viewState[contractTagName(field.target)] = fieldToViewState(field, {
             error: errorByTarget[field.target] ?? '',
             invalid: invalidByTarget[field.target] ?? false,
+            errorRule: ruleByTarget[field.target] ?? FieldRule.NONE,
             value: valueByTarget[field.target] ?? '',
         });
     }
@@ -100,6 +108,7 @@ export function buildFormViewState(
             overrides.errorByTarget,
             overrides.invalidByTarget,
             overrides.valueByTarget,
+            overrides.ruleByTarget,
         ),
         isLoading: fields.length === 0 && !overrides.loadError,
         loadError: overrides.loadError,

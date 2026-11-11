@@ -444,3 +444,7 @@ Per the DL gate ("if core does NOT reject unknown sub-contract paths, the plugin
 **Retired contract file.** `lib/contracts/wix-form.jay-contract` is deleted. The follow-up in deviation 2 above is done.
 
 **Tests.** `wix-forms`: 46/46 (9 files); `build:check-types` clean. `compiler-jay-html` (published 0.25.5 and jay `main`) declares `types: ./dist/index.d.ts` but ships only `index.d.cts`, so `parseContract` is untyped in tests. The one test that reads parsed tags gives the result a minimal local type; the packaging fix belongs in jay.
+
+## QA Follow-up (2026-11-10): label → tag in forms.yaml
+
+QA found tags derived from Wix auto-generated targets unreadable (`firstName_5820`, `email_7e06`, `formFieldAa5f` for "I agree to be contacted"). Tags are **not** renamed (that would break every page). The agent-kit `forms.yaml` (now built by `lib/generators/forms-reference.ts` `buildFormsReference`) lists each field's contract `tag` first, beside its `label`, `type` and `target`, and each form has a `tagByLabel` map; the description and `wix-forms-setup.md` say to find a field by label and bind its tag. Fixture test `test/forms-reference.test.ts` (`fixtures/forms-reference/`). Two fields with the same label: the later one wins in `tagByLabel` (both stay in `fields`).

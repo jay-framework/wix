@@ -13,6 +13,7 @@ tags:
       - { tag: required, type: variant, dataType: boolean }
       - { tag: error, type: data, dataType: string }
       - { tag: invalid, type: variant, dataType: boolean }
+      - { tag: errorRule, type: variant, dataType: "enum (NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE | URL | PATTERN | CUSTOM | SERVER)" }
       - { tag: input, type: interactive, elementType: HTMLInputElement }
       - { tag: control, type: interactive, elementType: HTMLElement }
   - tag: interests
@@ -24,6 +25,7 @@ tags:
       - { tag: required, type: variant, dataType: boolean }
       - { tag: error, type: data, dataType: string }
       - { tag: invalid, type: variant, dataType: boolean }
+      - { tag: errorRule, type: variant, dataType: "enum (NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE | URL | PATTERN | CUSTOM | SERVER)" }
       - { tag: input, type: interactive, elementType: HTMLSelectElement }
       - { tag: control, type: interactive, elementType: HTMLElement }
       - tag: options
@@ -34,6 +36,26 @@ tags:
           - { tag: value, type: data, dataType: string }
           - { tag: label, type: data, dataType: string }
           - { tag: selected, type: variant, dataType: boolean }
+          - { tag: toggle, type: interactive, elementType: HTMLInputElement }
+  - tag: country
+    type: sub-contract
+    phase: fast+interactive
+    description: Country
+    tags:
+      - { tag: label, type: data, dataType: string }
+      - { tag: required, type: variant, dataType: boolean }
+      - { tag: error, type: data, dataType: string }
+      - { tag: invalid, type: variant, dataType: boolean }
+      - { tag: errorRule, type: variant, dataType: "enum (NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE | URL | PATTERN | CUSTOM | SERVER)" }
+      - { tag: input, type: interactive, elementType: HTMLSelectElement }
+      - { tag: control, type: interactive, elementType: HTMLElement }
+      - tag: options
+        type: sub-contract
+        repeated: true
+        trackBy: value
+        tags:
+          - { tag: value, type: data, dataType: string }
+          - { tag: label, type: data, dataType: string }
   - { tag: isLoading, type: variant, dataType: boolean, phase: fast+interactive }
   - { tag: loadError, type: data, dataType: string, phase: fast+interactive }
   - { tag: isSubmitting, type: variant, dataType: boolean, phase: fast+interactive }

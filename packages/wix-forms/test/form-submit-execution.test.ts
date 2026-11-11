@@ -9,9 +9,13 @@ import {
 
 type TestDeps = RunFormSubmitParams & { flight: ReturnType<typeof createSubmitFlight> };
 
-function deps(overrides: Partial<RunFormSubmitParams> = {}): TestDeps {
-    let submitting = false;
+type FlagTestDeps = TestDeps & { isSubmitting: () => boolean };
+
+/** The component has already set the busy flag and begun the flight (DL#53 G2). */
+function deps(overrides: Partial<RunFormSubmitParams> = {}): FlagTestDeps {
+    let submitting = true;
     const flight = createSubmitFlight();
+    const generation = flight.begin();
     const ensureSessionFresh = vi.fn(async () => undefined);
     const submitForm = vi.fn(async () => ({ success: true as const }));
     const navigate = vi.fn();
@@ -20,6 +24,7 @@ function deps(overrides: Partial<RunFormSubmitParams> = {}): TestDeps {
 
     return {
         flight,
+        generation,
         isSubmitting: () => submitting,
         setIsSubmitting: (value: boolean) => {
             submitting = value;
@@ -36,11 +41,20 @@ function deps(overrides: Partial<RunFormSubmitParams> = {}): TestDeps {
 }
 
 describe('runFormSubmit', () => {
-    it('should not call submitForm when a submit is already in flight', async () => {
-        const submitForm = vi.fn(async () => ({ success: true as const }));
-        const d = deps({ isSubmitting: () => true, submitForm });
+    it('should not apply the result when the given generation is no longer current', async () => {
+        const presentSubmitResult = vi.fn(() => undefined);
+        const d = deps({ presentSubmitResult });
+        d.flight.begin();
         await runFormSubmit(d);
-        expect(submitForm).not.toHaveBeenCalled();
+        expect(presentSubmitResult).not.toHaveBeenCalled();
+    });
+
+    it('should leave the busy flag to the component while the request is pending', async () => {
+        let submitting = false;
+        const d = deps({ setIsSubmitting: (value) => void (submitting = value) });
+        const presentSubmitResult = vi.fn(() => '/thanks');
+        await runFormSubmit({ ...d, presentSubmitResult });
+        expect(submitting).toBe(false);
     });
 
     it('should call ensureSessionFresh before submitForm', async () => {
@@ -119,19 +133,15 @@ describe('runFormSubmit', () => {
         d.flight.invalidate();
         d.setIsSubmitting(false);
 
-        const second = runFormSubmit(d);
+        d.setIsSubmitting(true);
+        const second = runFormSubmit({ ...d, generation: d.flight.begin() });
         await Promise.resolve();
         expect(submitForm).toHaveBeenCalledTimes(2);
-        expect(d.isSubmitting()).toBe(true);
 
         resolvers[0]({ success: true });
         await first;
         expect(presentSubmitResult).not.toHaveBeenCalled();
         expect(d.isSubmitting()).toBe(true);
-
-        const blocker = vi.fn(async () => ({ success: true as const }));
-        await runFormSubmit({ ...d, submitForm: blocker });
-        expect(blocker).not.toHaveBeenCalled();
 
         resolvers[1]({ success: true });
         await second;

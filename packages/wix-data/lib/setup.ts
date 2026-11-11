@@ -15,34 +15,18 @@ import type {
     PluginAgentKitResult,
 } from '@jay-framework/stack-server-runtime';
 import { getService } from '@jay-framework/stack-server-runtime';
+import { serverClientSetupBlocker } from '@jay-framework/wix-server-client';
 import { WIX_DATA_SERVICE_MARKER, type WixDataService } from './services/wix-data-service';
 import { SHARED_EDITING_GUIDE_PATH, writeSharedEditingGuideCopy } from './source-editing.js';
-
-const CONFIG_FILE_NAME = 'wix-data.yaml';
 
 // ============================================================================
 // Setup handler (jay-stack setup) — config + validation only
 // ============================================================================
 
 export async function setupWixData(ctx: PluginSetupContext): Promise<PluginSetupResult> {
-    const configPath = path.join(ctx.configDir, CONFIG_FILE_NAME);
-
     // wix-data depends on wix-server-client for credentials
-    if (ctx.initError) {
-        if (!fs.existsSync(configPath)) {
-            return {
-                status: 'needs-config',
-                message:
-                    'wix-data requires wix-server-client to be configured first. ' +
-                    'Run: jay-stack setup wix-server-client',
-            };
-        }
-
-        return {
-            status: 'error',
-            message: `Service init failed: ${ctx.initError.message}`,
-        };
-    }
+    const blocker = serverClientSetupBlocker(ctx.initError);
+    if (blocker) return blocker;
 
     // Verify the data service is available
     try {

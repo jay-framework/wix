@@ -28,7 +28,6 @@ function siteClient(): WixClient {
 function cookiesExpiringIn(seconds: number): Record<string, string> {
     const tokens = {
         accessToken: { value: 'member-access', expiresAt: Math.floor(Date.now() / 1000) + seconds },
-        refreshToken: { value: 'member-refresh', role: 'member' },
     };
     return { [WIX_SESSION_COOKIE]: Buffer.from(JSON.stringify(tokens)).toString('base64url') };
 }

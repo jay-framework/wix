@@ -46,7 +46,7 @@ No inspector result → fallback.
    | `K.services` (or `services` inside a `booking-flow` region) | `id` | service id |
 
    Use the first match. `slots` and `formFields` frames are **not** services — skip them and keep going outward.
-2. **No match** — the click is on the slot picker, the booking form, or the selected service's name (`{K.selectedServiceName}`): there is **no service id** in the inspector result. Don't look one up by name. Use the services-list link and name the service from the visible text.
+2. **No match** — the click is on the slot picker, the booking form, or the selected service's name (`{K.selectedServiceName}`): there is **no service id** in the inspector result. Don't guess from markup alone. If the user **named** a service in chat, you may match `name` → `serviceId` in `agent-kit/references/wix-bookings/services.yaml` (from `jay-stack agent-kit`) and then build the single-service link; otherwise use the services-list link and name the service from the visible text.
 3. **Build the link** with `wix-server-client/getDashboardUrl`: service → `{ "path": "bookings/services/form/<serviceId>" }`. Run from the project root: `npx jay-stack-cli action wix-server-client/getDashboardUrl --input '{"path":"bookings/services/form/<serviceId>"}'`; the output's `url` is the link. Never read `config/.wix.yaml` or other credential files to build it.
 4. **Reply** (see [Agent behavior](#agent-behavior)): plain language only — e.g. “This service is set up in your Wix Bookings dashboard; you can change the name here: <url>” or “I updated the service name to …; you can review it here: <url>”.
 

@@ -11,7 +11,8 @@
  */
 
 import type { FieldValue, FormFieldView } from '../types.js';
-import { validateFormField } from '../utils/project-form-fields.js';
+import { checkFormField } from '../utils/project-form-fields.js';
+import { FieldRule, type FieldCheckResult } from './field-rule.js';
 
 /** The per-field value store, keyed by `field.target`. */
 export type FieldStore = Record<string, FieldValue>;
@@ -56,52 +57,86 @@ export function emptyStoreFor(fields: FormFieldView[]): FieldStore {
     return store;
 }
 
-/** One page-provided control value read from the DOM, with the field's dirty state (DL#41 4a). */
-export interface ControlSeed {
-    target: string;
-    value: FieldValue;
-    dirty: boolean;
+/** One checkbox change in a multiselect's option group (DL#44 §2). */
+export interface OptionToggle {
+    current: FieldValue;
+    optionValue: string;
+    checked: boolean;
 }
 
 /**
- * Seed page-provided control values into the store (DL#41 4a — hidden fields and
- * custom-UI defaults). A control seeds its slot only when it carries a non-empty value
- * and the user has not already edited that field; values already in the store are kept.
- *
- * This is the pure decision behind the hydration-time seeding (the impure DOM read of
- * each control's `data-value` lives in the component). It exists so a hidden required
- * field's value reliably reaches the submission store before client validation runs.
+ * Next multiselect selection after one option is checked or unchecked (DL#44 §2), in option
+ * order, without duplicates; values that are not options of the field are dropped.
  */
-export function seedControlValues(store: FieldStore, seeds: ControlSeed[]): FieldStore {
-    const seeded = { ...store };
-    for (const { target, value, dirty } of seeds) {
-        if (dirty || target in seeded || !hasValue(value)) {
-            continue;
-        }
-        seeded[target] = value;
-    }
-    return seeded;
+export function toggleSelection(
+    field: FormFieldView,
+    { current, optionValue, checked }: OptionToggle,
+): string[] {
+    const selected = new Set(Array.isArray(current) ? current : []);
+    if (checked) selected.add(optionValue);
+    else selected.delete(optionValue);
+    return field.options.map((option) => option.value).filter((value) => selected.has(value));
 }
 
-function hasValue(value: FieldValue): boolean {
-    if (typeof value === 'string') return value.length > 0;
-    if (Array.isArray(value)) return value.length > 0;
-    return value === true;
+/**
+ * One page-provided control value read from the DOM, with the field's dirty state (DL#41 4a).
+ * `value` is `undefined` when the control is not bound (its `exec$` resolved nothing).
+ */
+export interface ControlSeed {
+    target: string;
+    value: FieldValue | undefined;
+    dirty: boolean;
+}
+
+/** The seeded store and the targets whose value the seed changed (DL#53 G5). */
+export interface SeedResult {
+    store: FieldStore;
+    changedTargets: string[];
+}
+
+/**
+ * Page-provided control values win over the store for every field the user has not edited
+ * (DL#53 G5 — hidden fields and custom-UI defaults follow the page). Dirty fields and unbound
+ * controls are skipped; '' from a bound control clears the slot.
+ *
+ * This is the pure decision behind the mount, reset and submit seeds (the impure DOM read of
+ * each control's `data-value` lives in the component).
+ */
+export function seedControlValues(store: FieldStore, seeds: ControlSeed[]): SeedResult {
+    const seeded = { ...store };
+    const changedTargets: string[] = [];
+    for (const { target, value, dirty } of seeds) {
+        if (dirty || value === undefined) continue;
+        if (!sameFieldValue(seeded[target], value)) changedTargets.push(target);
+        seeded[target] = value;
+    }
+    return { store: seeded, changedTargets };
+}
+
+function sameFieldValue(current: FieldValue | undefined, next: FieldValue): boolean {
+    if (Array.isArray(current) && Array.isArray(next)) {
+        return (
+            current.length === next.length && current.every((item, index) => item === next[index])
+        );
+    }
+    return current === next;
 }
 
 /**
  * Submit-time client validation (DL#41 planned fix). Hidden fields are skipped: they have
- * no error tag to show a message, and Wix re-validates them on the server.
+ * no error tag to show a message, and Wix re-validates them on the server. `check` defaults to
+ * the built-in rules; the component passes its own, which adds the page checks (DL#53 G1).
  */
 export function validateVisibleFields(
     fields: FormFieldView[],
     values: Record<string, FieldValue>,
-): Record<string, string> {
-    const errors: Record<string, string> = {};
+    check: (field: FormFieldView, value: FieldValue) => FieldCheckResult = checkFormField,
+): Record<string, FieldCheckResult> {
+    const failures: Record<string, FieldCheckResult> = {};
     for (const field of fields) {
         if (field.hidden) continue;
-        const message = validateFormField(field, values[field.target] ?? emptyValueFor(field));
-        if (message) errors[field.target] = message;
+        const result = check(field, values[field.target] ?? emptyValueFor(field));
+        if (result.rule !== FieldRule.NONE) failures[field.target] = result;
     }
-    return errors;
+    return failures;
 }

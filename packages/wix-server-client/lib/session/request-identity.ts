@@ -48,11 +48,11 @@ export function resolveRequestIdentity(
     cookies: Record<string, string>,
     fetchImpl: typeof fetch = fetch,
 ): RequestIdentity {
-    const tokens = decodeSessionCookie(cookies[WIX_SESSION_COOKIE]);
-    if (!tokens) {
+    const accessToken = decodeSessionCookie(cookies[WIX_SESSION_COOKIE]);
+    if (!accessToken) {
         return { caller: Promise.resolve(undefined), client: undefined, session: 'none' };
     }
-    const expiresAt = tokens.accessToken.expiresAt;
+    const expiresAt = accessToken.expiresAt;
     if (isExpiringSoon(expiresAt)) {
         return {
             caller: Promise.resolve(undefined),
@@ -61,7 +61,7 @@ export function resolveRequestIdentity(
             expiresAt,
         };
     }
-    const authorization = tokens.accessToken.value;
+    const authorization = accessToken.value;
     let verifiedCaller: Promise<VerifiedCaller | undefined> | undefined;
     return {
         get caller() {

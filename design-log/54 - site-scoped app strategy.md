@@ -1,4 +1,4 @@
-# 47 - Site-Scoped App Strategy
+# 54 - Site-Scoped App Strategy
 
 ## Background
 
@@ -157,3 +157,14 @@ Installing a Wix app is a setup need that other plugins will share, and it needs
 - wix-stores setup checks the catalog first and calls `ensureSiteAppInstalled` only when that check fails. A site that already has Stores needs no Wix login for setup. After an install it waits for the catalog and checks again.
 
 Tests: wix-server-client 74/74, wix-stores 42/42. Builds clean. Not verified live.
+
+## Merge with remote main (2026-11-11)
+
+Remote `main` already used #47 (wix-forms release security gate), #48–#50 and #53, so this log is now **#54**. Its code references were renumbered. 51–52 are left free.
+
+`2adbdcd` (qa cycle bug fixes) fixed the same `instanceId` gap independently: optional `AppConfig.instanceId`, `serverAuthStrategy()` in `server-auth.ts`, and `verifyServerAuth()`, which makes a real token request during setup. Resolution:
+
+- `config-loader.ts`: `siteId` and `instanceId` stay required (this log). The remote doc comment was kept.
+- `wix-client-service.ts`: the remote `serverAuthStrategy(config)` was taken (it passes `instanceId`).
+- `setup.ts`: the remote structure was taken (`unreadable` YAML, `connectionResult` → `verifyServerAuth`), with this log's four-field `appStrategy` check and generation.
+- `server-auth.ts`: the failure hint says to regenerate `appStrategy` with setup, since a missing `instanceId` is now rejected by the loader.

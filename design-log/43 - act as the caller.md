@@ -1,6 +1,6 @@
 # 43 - Act as the Caller
 
-Status: Approved — Phases 1–3 implemented (2026-11-08); Phase 4 live checks pending
+Status: Approved — Phases 1–3 implemented; Phase 4 live: submitter attribution verified 2026-11-10; forms-403 measurement and captcha forms pending
 
 Builds on **DL#42** (session cookie `wix_session`, `resolveRequestIdentity`, the submit hook), **DL#41** (forms submit chain) and **DL#05** (wix-data, its 2026-10-26 auth note). Generic: any Jay project, no downstream site named. Uses only Wix's documented headless APIs and SDK.
 
@@ -478,3 +478,10 @@ Phases 1–3 and the agent-kit guides were ported onto main after DL#41, DL#42 a
 - Guides: `wix-request-session.md` (403, and "use `isDataPermissionDenied` for Wix Data"), `caller-scoped-data.md` (the example uses `isDataPermissionDenied`, with the docs link), `rich-forms.md` (403 shows "Please sign in to submit this form.").
 - Tests: wix-server-client 70/70, wix-forms 164/164, wix-data 7/7 vitest + 2/2 `node --test`, wix-bookings 49/49. `npm run build` succeeds in all four; typecheck is clean except wix-data's existing `source-editing.test.ts` error.
 - **Still open (live):** forms-side V2. Wix's documentation says 403 means permission denied, but it has not been measured that Create Submission returns 403 to a refused caller. Until it is, a refused forms caller may still get the generic message.
+
+## QA Results (2026-11-10)
+
+End-to-end QA run 2026-11-10 (local builds of `main`, fresh `create jay` project, throwaway headless Wix site; Chromium recorded, Firefox for the cookie check).
+
+- **Submitter attribution verified live:** a visitor's submission carries `submitter.visitorId` (after a cookie-less refusal, the real visitor still submits); a signed-in member's submission carries `submitter.memberId` (queried through the submissions API).
+- **Still pending:** the forms-403 measurement (a members-only form refusing a visitor) and captcha-protected forms (V5) were not set up in this run.

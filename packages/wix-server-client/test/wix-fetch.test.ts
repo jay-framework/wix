@@ -95,3 +95,43 @@ describe('isPermissionDenied: HTTP 403 (DL#43 §Review 2026-11-09)', () => {
         ).toEqual([false, false, false, false, false, false]);
     });
 });
+
+describe('wixFetch path guard (DL#49)', () => {
+    const refusedPaths = [
+        '/a/../b',
+        '/a/%2E%2e/b',
+        '/a/%2e/b',
+        '/a#x',
+        '/a?b=c#d',
+        '/a/.\t./b',
+        '/a\nb',
+        '@evil.example/x',
+        '.evil.example/x',
+    ];
+
+    it.each(refusedPaths)('refuses %j before reading credentials or fetching', async (path) => {
+        const fetchMock = stubFetch();
+        const { client, getAuthHeaders } = siteClientWithAuth();
+
+        await expect(wixFetch(client, path)).rejects.toThrow(/unsafe request path/);
+        expect(getAuthHeaders).not.toHaveBeenCalled();
+        expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('does not echo the refused path in the error', async () => {
+        stubFetch();
+        const { client } = siteClientWithAuth();
+
+        await expect(wixFetch(client, '/secret/../x')).rejects.not.toThrow(/secret/);
+    });
+
+    const allowedPaths = ['/a?b=c', '/a?q=a..b', '/members/v1/members/my?fieldsets=FULL'];
+
+    it.each(allowedPaths)('allows %j', async (path) => {
+        const fetchMock = stubFetch();
+        const { client } = siteClientWithAuth();
+
+        await wixFetch(client, path);
+        expect(fetchMock).toHaveBeenCalledWith(`https://www.wixapis.com${path}`, expect.anything());
+    });
+});

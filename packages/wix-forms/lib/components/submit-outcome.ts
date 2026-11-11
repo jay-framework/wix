@@ -28,6 +28,10 @@ export enum SubmitFailure {
     NONE,
     VALIDATION,
     REJECTED,
+    /**
+     * Wix denied the caller (401 / 403), the caller's session expired, or the request had no
+     * session cookie. Page copy must not assume sign-in.
+     */
     PERMISSION,
     NETWORK,
     UNKNOWN,
@@ -39,6 +43,8 @@ export interface SubmitRejection {
     reason?: SubmitFailure;
     message?: string;
     fieldErrors?: Record<string, string>;
+    /** A hook's code (DL#53 G3), reported to page code through `onSubmitOutcome`. */
+    code?: string;
 }
 
 export interface SubmitRejectionView {

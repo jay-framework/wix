@@ -1,14 +1,16 @@
 // @vitest-environment node
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
     emptyStoreFor,
     projectSubmissionValues,
     seedControlValues,
+    toggleSelection,
     validateVisibleFields,
     type ControlSeed,
 } from '../lib/components/submission-values.js';
-import type { FormFieldView } from '../lib/types.js';
+import { FieldRule } from '../lib/components/field-rule.js';
+import type { FieldValue, FormFieldView } from '../lib/types.js';
 
 function textField(target: string): FormFieldView {
     return {
@@ -153,26 +155,86 @@ describe('seedControlValues', () => {
      */
     it('should seed a hidden control value into an empty store', () => {
         const seeds: ControlSeed[] = [{ target: 'propertyId', value: 'prop-123', dirty: false }];
-        expect(seedControlValues({}, seeds)).toEqual({ propertyId: 'prop-123' });
+        expect(seedControlValues({}, seeds)).toEqual({
+            store: { propertyId: 'prop-123' },
+            changedTargets: ['propertyId'],
+        });
     });
 
     it('should not overwrite a field the user already edited', () => {
         const seeds: ControlSeed[] = [{ target: 'email', value: 'default@x.com', dirty: true }];
         expect(seedControlValues({ email: 'typed@x.com' }, seeds)).toEqual({
-            email: 'typed@x.com',
+            store: { email: 'typed@x.com' },
+            changedTargets: [],
         });
     });
 
-    it('should ignore an empty control value', () => {
+    /** Intentional rewrite (DL#53 G5): a bound control's '' now clears its slot. */
+    it('should clear the slot for an empty bound control value', () => {
         const seeds: ControlSeed[] = [{ target: 'propertyId', value: '', dirty: false }];
-        expect(seedControlValues({}, seeds)).toEqual({});
+        expect(seedControlValues({}, seeds)).toEqual({
+            store: { propertyId: '' },
+            changedTargets: ['propertyId'],
+        });
     });
 
     it('should leave existing store values untouched', () => {
         const seeds: ControlSeed[] = [{ target: 'propertyId', value: 'prop-123', dirty: false }];
         expect(seedControlValues({ email: 'ada@x.com' }, seeds)).toEqual({
-            email: 'ada@x.com',
-            propertyId: 'prop-123',
+            store: { email: 'ada@x.com', propertyId: 'prop-123' },
+            changedTargets: ['propertyId'],
+        });
+    });
+
+    /**
+     * Bug: a stored, non-dirty control value is never refreshed (DL#53 G5).
+     * Found in: design-log/53 §Problem G5 (`target in seeded`, `submission-values.ts:99`).
+     * Expected: the page's current value replaces the stored one.
+     * Actual: the first seeded value is kept, so a resubmit posts a stale value.
+     */
+    it('should overwrite a stored value of a field the user has not edited', () => {
+        const seeds: ControlSeed[] = [{ target: 'slotId', value: 's-42', dirty: false }];
+        expect(seedControlValues({ slotId: 's-1' }, seeds)).toEqual({
+            store: { slotId: 's-42' },
+            changedTargets: ['slotId'],
+        });
+    });
+
+    /**
+     * Bug: a cleared control can never clear its slot (DL#53 G5).
+     * Found in: design-log/53 §Problem G5 (`!hasValue(value)`, `submission-values.ts:99`).
+     * Expected: '' from a bound control clears the stored value.
+     * Actual: the stored value stays.
+     */
+    it('should clear a stored value when a bound control is emptied', () => {
+        const seeds: ControlSeed[] = [{ target: 'slotId', value: '', dirty: false }];
+        expect(seedControlValues({ slotId: 's-1' }, seeds)).toEqual({
+            store: { slotId: '' },
+            changedTargets: ['slotId'],
+        });
+    });
+
+    it('should skip an unbound control', () => {
+        const seeds: ControlSeed[] = [{ target: 'slotId', value: undefined, dirty: false }];
+        expect(seedControlValues({ slotId: 's-1' }, seeds)).toEqual({
+            store: { slotId: 's-1' },
+            changedTargets: [],
+        });
+    });
+
+    it('should keep a dirty field even when its stored value differs', () => {
+        const seeds: ControlSeed[] = [{ target: 'email', value: 'page@x.com', dirty: true }];
+        expect(seedControlValues({ email: 'typed@x.com' }, seeds)).toEqual({
+            store: { email: 'typed@x.com' },
+            changedTargets: [],
+        });
+    });
+
+    it('should not report an unchanged value as changed', () => {
+        const seeds: ControlSeed[] = [{ target: 'tags', value: ['a', 'b'], dirty: false }];
+        expect(seedControlValues({ tags: ['a', 'b'] }, seeds)).toEqual({
+            store: { tags: ['a', 'b'] },
+            changedTargets: [],
         });
     });
 });
@@ -199,7 +261,75 @@ describe('validateVisibleFields', () => {
         const fields = [requiredField('first_name', false), requiredField('reference', true)];
 
         expect(validateVisibleFields(fields, { first_name: '', reference: '' })).toEqual({
-            first_name: 'first_name is required.',
+            first_name: { rule: FieldRule.REQUIRED, message: 'first_name is required.' },
         });
+    });
+
+    it('should run the given check on visible fields only, with the submitted value', () => {
+        const fields = [requiredField('first_name', false), requiredField('reference', true)];
+        const check = vi.fn((field: FormFieldView, value: FieldValue) =>
+            value === 'Bob'
+                ? { rule: FieldRule.CUSTOM, message: `${field.label}: no Bobs` }
+                : { rule: FieldRule.NONE, message: '' },
+        );
+
+        expect(validateVisibleFields(fields, { first_name: 'Bob', reference: '' }, check)).toEqual({
+            first_name: { rule: FieldRule.CUSTOM, message: 'first_name: no Bobs' },
+        });
+        expect(check).toHaveBeenCalledTimes(1);
+    });
+});
+
+describe('toggleSelection (DL#44 §2)', () => {
+    const interests: FormFieldView = {
+        ...multiselectField('interests'),
+        options: [
+            { value: 'a', label: 'A' },
+            { value: 'b', label: 'B' },
+            { value: 'c', label: 'C' },
+        ],
+    };
+
+    it('should add a checked option', () => {
+        expect(
+            toggleSelection(interests, { current: ['a'], optionValue: 'b', checked: true }),
+        ).toEqual(['a', 'b']);
+    });
+
+    it('should remove an unchecked option', () => {
+        expect(
+            toggleSelection(interests, { current: ['a', 'b'], optionValue: 'a', checked: false }),
+        ).toEqual(['b']);
+    });
+
+    it('should return the selection in option order, not click order', () => {
+        expect(
+            toggleSelection(interests, { current: ['c'], optionValue: 'a', checked: true }),
+        ).toEqual(['a', 'c']);
+    });
+
+    it('should drop values that are not options of the field', () => {
+        expect(
+            toggleSelection(interests, {
+                current: ['stale'],
+                optionValue: 'unknown',
+                checked: true,
+            }),
+        ).toEqual([]);
+    });
+
+    it.each(['', true, false])(
+        'should start from an empty selection when current is %j',
+        (current) => {
+            expect(
+                toggleSelection(interests, { current, optionValue: 'b', checked: true }),
+            ).toEqual(['b']);
+        },
+    );
+
+    it('should not duplicate an option that is checked twice', () => {
+        expect(
+            toggleSelection(interests, { current: ['a'], optionValue: 'a', checked: true }),
+        ).toEqual(['a']);
     });
 });

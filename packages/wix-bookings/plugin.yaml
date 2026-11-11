@@ -22,3 +22,5 @@ actions:
     action: create-booking.jay-action
 
 setup: setupWixBookings
+agentkit: generateWixBookingsAgentKit
+description: Bookings setup and agent-kit service index for dashboard links

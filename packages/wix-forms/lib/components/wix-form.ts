@@ -21,12 +21,15 @@ import {
     type DynamicContractProps,
     type Signals,
 } from '@jay-framework/fullstack-component';
-import { createEffect, createSignal, Props } from '@jay-framework/component';
+import { createSignal, Props, useReactive } from '@jay-framework/component';
 import { WIX_FORMS_SERVICE, type WixFormsService } from '../services/wix-forms-service-marker.js';
 import { ensureSessionFresh } from '@jay-framework/wix-server-client/client';
 import type { FieldValue, FormFieldView, SubmitFormResult } from '../types.js';
 import { submitForm } from '../actions/forms-actions.js';
-import { validateFormField } from '../utils/project-form-fields.js';
+import { checkFormField } from '../utils/project-form-fields.js';
+import { FieldRule, type FieldCheckResult } from './field-rule.js';
+import { createPageCheckRunner } from './page-checks.js';
+import { createSubmitOutcomeReporter } from './submit-outcome-events.js';
 import {
     presentSubmitRejection,
     SUBMIT_FAILED_MESSAGE,
@@ -39,8 +42,10 @@ import {
     emptyValueFor,
     projectSubmissionValues,
     seedControlValues,
+    toggleSelection,
     validateVisibleFields,
     type ControlSeed,
+    type OptionToggle,
 } from './submission-values.js';
 import {
     SLOW_RENDER_TTL,
@@ -51,6 +56,7 @@ import { contractTagName } from '../generators/contract-utils.js';
 import { buildFormViewState } from './form-view-state.js';
 import { createSubmitFlight } from './form-submit-flight.js';
 import { runFormSubmit } from './form-submit-execution.js';
+import { guardNativeFormSubmit } from './form-submit-guard.js';
 
 interface WixFormMetadata {
     formId: string;
@@ -106,6 +112,8 @@ function WixFormInteractive(
     const [statusMessage, setStatusMessage] = createSignal('');
     const [errorByTarget, setErrorByTarget] = createSignal<Record<string, string>>({});
     const [invalidByTarget, setInvalidByTarget] = createSignal<Record<string, boolean>>({});
+    // Which rule each shown error comes from (DL#53 G1); written and cleared with errorByTarget.
+    const [ruleByTarget, setRuleByTarget] = createSignal<Record<string, FieldRule>>({});
     const [isSubmitted, setIsSubmitted] = createSignal(false);
     const [submitFailure, setSubmitFailure] = createSignal(SubmitFailure.NONE);
     // The per-field value store — the one source of truth for each field's value (§0).
@@ -115,30 +123,53 @@ function WixFormInteractive(
     // Honeypot value is kept OUT of the store so it never reaches readFormValues (Q12).
     let honeypotValue = '';
     const submitFlight = createSubmitFlight();
+    // Each visible single select's DOM value at mount / after reset: the autofill baseline (DL#53 G2).
+    const selectBaselineByTarget = new Map<string, string>();
+    const runPageChecks = createPageCheckRunner(carryForward.formId, carryForward.fields);
+    const reportSubmitOutcome = createSubmitOutcomeReporter(carryForward.formId);
 
     function setFieldValue(target: string, value: FieldValue): void {
         setValues((current) => ({ ...current, [target]: value }));
     }
 
-    /** Submission payload — a synchronous projection of the store, never the DOM (§0). */
+    /**
+     * Submission payload — a synchronous projection of the store (§0). Submit first copies
+     * autofilled native values into the store (`reconcileNativeInputs`, DL#53 G2).
+     */
     function readFormValues(): Record<string, FieldValue> {
         return projectSubmissionValues(carryForward.fields, values());
     }
 
+    /**
+     * The built-in rules, then — only when they pass — the page's own checks (DL#53 G1). Blur and
+     * typing check the stored value; submit passes the submitted value and values.
+     */
+    function checkField(
+        field: FormFieldView,
+        value: FieldValue = values()[field.target] ?? emptyValueFor(field),
+        allValues: Readonly<Record<string, FieldValue>> = readFormValues(),
+    ): FieldCheckResult {
+        const builtIn = checkFormField(field, value);
+        return builtIn.rule === FieldRule.NONE ? runPageChecks(field, value, allValues) : builtIn;
+    }
+
     function validateField(field: FormFieldView): void {
-        const message = validateFormField(field, values()[field.target] ?? emptyValueFor(field));
+        const { rule, message } = checkField(field);
         setErrorByTarget((current) => ({ ...current, [field.target]: message }));
         setInvalidByTarget((current) => ({ ...current, [field.target]: Boolean(message) }));
+        setRuleByTarget((current) => ({ ...current, [field.target]: rule }));
     }
 
     function clearFieldError(field: FormFieldView): void {
         setErrorByTarget((current) => ({ ...current, [field.target]: '' }));
         setInvalidByTarget((current) => ({ ...current, [field.target]: false }));
+        setRuleByTarget((current) => ({ ...current, [field.target]: FieldRule.NONE }));
     }
 
     /** Push a store value back into a native input for visual consistency (Q5, Q6). */
     function reflectToInput(field: FormFieldView, value: FieldValue): void {
-        refs[contractTagName(field.target)]?.input?.exec$((element: HTMLElement) => {
+        const fieldRef = refs[contractTagName(field.target)];
+        fieldRef?.input?.exec$((element: HTMLElement) => {
             if (field.inputType === 'checkbox') {
                 (element as HTMLInputElement).checked = value === true;
             } else if (field.inputType === 'multiselect') {
@@ -150,12 +181,31 @@ function WixFormInteractive(
                 (element as HTMLInputElement).value = typeof value === 'string' ? value : '';
             }
         });
+        // A chip page binds per-option checkboxes and no `input`; set each one's `checked` (DL#44 §3).
+        if (field.inputType === 'multiselect') {
+            const selected = Array.isArray(value) ? value : [];
+            fieldRef?.options?.toggle?.map(
+                (option: any, item: { value: string }) =>
+                    void option.exec$((element: HTMLInputElement) => {
+                        element.checked = selected.includes(item.value);
+                    }),
+            );
+        }
     }
 
+    /** "Late to complain": blur validates only a field the user changed or that shows an error (DL#53 G2). */
+    function handleNativeBlur(field: FormFieldView): void {
+        if (dirtyTargets.has(field.target) || errorByTarget()[field.target]) validateField(field);
+    }
+
+    /** "Early to forgive": typing clears a shown error once valid, never swaps its text (DL#53 G2). */
     function handleNativeInput(field: FormFieldView, event: Event): void {
         dirtyTargets.add(field.target);
         setFieldValue(field.target, readNativeValue(field, event.target));
-        clearFieldError(field);
+        // Also clears a SERVER error: the client cannot re-check it, and the next submit re-asks.
+        if (errorByTarget()[field.target] && checkField(field).rule === FieldRule.NONE) {
+            clearFieldError(field);
+        }
     }
 
     function handleControl(field: FormFieldView, event: Event): void {
@@ -166,30 +216,103 @@ function WixFormInteractive(
         validateField(field);
     }
 
+    /** A chip change is a commit, like `control`: store the new selection and validate. */
+    function handleOptionToggle(field: FormFieldView, change: Omit<OptionToggle, 'current'>): void {
+        dirtyTargets.add(field.target);
+        setFieldValue(
+            field.target,
+            toggleSelection(field, { current: values()[field.target], ...change }),
+        );
+        validateField(field);
+    }
+
     wireFieldEvents(refs, carryForward.fields, {
         onNativeInput: handleNativeInput,
-        onNativeBlur: validateField,
+        onNativeBlur: handleNativeBlur,
         onControl: handleControl,
+        onOptionToggle: handleOptionToggle,
     });
     wireHoneypot(refs, (value) => {
         honeypotValue = value;
     });
 
-    // Element-bound work must wait for mount. `exec$` reads a ref's element, which is bound
-    // only AFTER component construction; a construction-time `exec$` resolves to `undefined`.
-    // So both the <form>-navigation guard and the page-provided control seeding run here, on
-    // mount, where the elements exist. (Event registration above is safe at construction —
-    // listeners are deferred and attached when the element binds.)
-    createEffect(() => {
-        wireNativeFormSubmit(refs, submit);
-        void seedControlsIntoStore(refs, carryForward.fields, dirtyTargets, setValues);
-    });
+    const reactive = useReactive();
+    /**
+     * Run `work` after the component's pending reactive flush, when a toggled conditional
+     * branch has re-mounted and its refs are bound. Inside an event handler the flush ends the
+     * batch; after an `await` (a submit's success path) jay schedules it with `setTimeout(0)`,
+     * so a bare microtask would run before it (confirmation-focus bug, DL#41 QA 2026-11-10).
+     */
+    function afterRemount(work: () => void): void {
+        void reactive.toBeClean().then(work);
+    }
+    // Render and mount run synchronously after construction, so this sees bound refs.
+    afterRemount(() => wireNativeFormSubmit(refs, submit));
+    afterRemount(() => void seedAndReflect().then(captureSelectBaselines));
+    afterRemount(() => watchControlValues(refs, carryForward.fields, seedAndReflect));
+
+    /**
+     * Refresh the store from the page's `control` values (DL#53 G5) and show each changed
+     * visible value in its input. The reflect `exec$` calls are fire-and-forget, as elsewhere.
+     */
+    async function seedAndReflect(): Promise<void> {
+        const changedTargets = await seedControlsIntoStore(
+            refs,
+            carryForward.fields,
+            dirtyTargets,
+            setValues,
+        );
+        for (const field of carryForward.fields) {
+            if (!field.hidden && changedTargets.includes(field.target)) {
+                reflectToInput(field, values()[field.target]);
+            }
+        }
+    }
+
+    /** Record what each visible single select shows before the user or the browser changes it. */
+    async function captureSelectBaselines(): Promise<void> {
+        await Promise.all(
+            reconcilableFields(carryForward.fields)
+                .filter((field) => field.inputType === 'select')
+                .map(async (field) => {
+                    const domValue = await readBoundInputValue(refs, field);
+                    if (domValue !== undefined) selectBaselineByTarget.set(field.target, domValue);
+                }),
+        );
+    }
+
+    /**
+     * Autofill guard (DL#53 G2): copy into the store each text-like input whose DOM value differs
+     * from the store (or its empty default) and mark it dirty, so the seed then keeps it. A single
+     * select is copied only when it also left its baseline. Unbound inputs are skipped.
+     */
+    async function reconcileNativeInputs(): Promise<void> {
+        await Promise.all(
+            reconcilableFields(carryForward.fields).map(async (field) => {
+                const domValue = await readBoundInputValue(refs, field);
+                if (domValue === undefined || !isReconcileNeeded(field, domValue)) return;
+                dirtyTargets.add(field.target);
+                setFieldValue(field.target, domValue);
+            }),
+        );
+    }
+
+    function isReconcileNeeded(field: FormFieldView, domValue: string): boolean {
+        if (
+            field.inputType === 'select' &&
+            domValue === (selectBaselineByTarget.get(field.target) ?? '')
+        ) {
+            return false;
+        }
+        return domValue !== (values()[field.target] ?? emptyValueFor(field));
+    }
 
     function resetForm(): void {
         submitFlight.invalidate();
         setValues(emptyStoreFor(carryForward.fields));
         setErrorByTarget({});
         setInvalidByTarget({});
+        setRuleByTarget({});
         setStatusMessage('');
         setSubmitFailure(SubmitFailure.NONE);
         setIsSubmitted(false);
@@ -230,6 +353,14 @@ function WixFormInteractive(
             for (const field of carryForward.fields) {
                 reflectToInput(field, emptyValueFor(field));
             }
+            selectBaselineByTarget.clear();
+            void captureSelectBaselines();
+            // The re-shown branch may hold a new <form> node; a reused node is a no-op.
+            wireNativeFormSubmit(refs, submit);
+            // "Send another" carries the page's current hidden values and visible defaults.
+            void seedAndReflect();
+            // A re-shown branch may hold new control nodes; watched nodes are skipped.
+            watchControlValues(refs, carryForward.fields, seedAndReflect);
         });
     }
 
@@ -239,10 +370,16 @@ function WixFormInteractive(
     });
 
     // Inside a <form>, a submit-type button's click becomes the form's `submit` event, which
-    // `wireNativeFormSubmit` handles — that single path also covers Enter-key implicit
-    // submission and `requestSubmit()`. The click drives the submit only when no form owns it.
+    // the guard handles — that single path also covers Enter-key implicit submission and
+    // `requestSubmit()`. Guarding here too covers a <form> created after the last install
+    // point: the native `submit` fires after this click dispatch, so it reaches the listener.
+    // The click drives the submit only when no form owns it.
     refs.submitButton?.onclick(({ event }: { event: Event }) => {
-        if (isFormSubmitter(event.target)) return;
+        const form = owningSubmitForm(event.target);
+        if (form) {
+            guardNativeFormSubmit(form, submit);
+            return;
+        }
         event.preventDefault();
         void submit();
     });
@@ -255,49 +392,83 @@ function WixFormInteractive(
     }
 
     async function submit(): Promise<void> {
-        // Early exit while a prior submit still seeds/validates; runFormSubmit owns the in-flight guard.
         if (isSubmitting()) return;
         setStatusMessage('');
         setSubmitFailure(SubmitFailure.NONE);
         setErrorByTarget({});
+        setInvalidByTarget({});
+        setRuleByTarget({});
 
         // Honeypot trip: fake success (a bot must not tell), before validation or the API (Q12).
         if (honeypotValue.trim()) {
             showSubmitted();
+            reportSubmitOutcome({ outcome: 'succeeded' }); // what the visitor was shown (§5)
             return;
         }
 
-        // Seed page-provided control values (hidden fields) here too: the mount-time seed can
-        // run before hydration binds the control elements, so its `exec$` reads nothing. At
-        // submit time the elements are bound; seeding never overrides edited or stored values.
-        await seedControlsIntoStore(refs, carryForward.fields, dirtyTargets, setValues);
+        // The component owns the busy flag and the flight from the first click (DL#53 G2), so a
+        // second submit or a reset during the awaits below holds by construction.
+        setIsSubmitting(true);
+        const generation = submitFlight.begin();
+        let isHandedOff = false;
+        try {
+            // Fixed order: reconcile (what the user sees wins) → seed (the page's value for
+            // untouched fields; reflecting keeps the input showing what is posted) → read → validate.
+            await reconcileNativeInputs();
+            if (!submitFlight.isCurrent(generation)) return;
+            await seedAndReflect();
+            if (!submitFlight.isCurrent(generation)) return;
 
-        const submissionValues = readFormValues();
-        const clientErrors = validateVisibleFields(carryForward.fields, submissionValues);
-        if (Object.keys(clientErrors).length) {
-            setErrorByTarget(clientErrors);
-            setInvalidByTarget(
-                Object.fromEntries(Object.keys(clientErrors).map((target) => [target, true])),
+            const submissionValues = readFormValues();
+            const clientFailures = validateVisibleFields(
+                carryForward.fields,
+                submissionValues,
+                (field, value) => checkField(field, value, submissionValues),
             );
-            showFieldErrors(clientErrors);
-            setSubmitFailure(SubmitFailure.VALIDATION);
-            return;
-        }
+            if (Object.keys(clientFailures).length) {
+                showClientErrors(clientFailures);
+                return;
+            }
 
-        await runFormSubmit({
-            flight: submitFlight,
-            isSubmitting,
-            setIsSubmitting,
-            ensureSessionFresh,
-            submitForm,
-            formId: carryForward.formId,
-            submissionValues,
-            presentSubmitResult,
-            navigate: (path) => window.location.assign(path),
-            onNetworkFailure: () => {
-                setStatusMessage(SUBMIT_FAILED_MESSAGE);
-                setSubmitFailure(SubmitFailure.NETWORK);
-            },
+            isHandedOff = true;
+            await runFormSubmit({
+                flight: submitFlight,
+                generation,
+                setIsSubmitting,
+                ensureSessionFresh,
+                submitForm,
+                formId: carryForward.formId,
+                submissionValues,
+                presentSubmitResult,
+                navigate: (path) => window.location.assign(path),
+                onNetworkFailure: () => {
+                    setStatusMessage(SUBMIT_FAILED_MESSAGE);
+                    setSubmitFailure(SubmitFailure.NETWORK);
+                    reportSubmitOutcome({ outcome: 'failed', reason: SubmitFailure.NETWORK });
+                },
+            });
+        } finally {
+            // A throw before hand-off must not leave the form busy; a reset already cleared it.
+            if (!isHandedOff && submitFlight.isCurrent(generation)) setIsSubmitting(false);
+        }
+    }
+
+    function showClientErrors(failures: Record<string, FieldCheckResult>): void {
+        const targets = Object.keys(failures);
+        const errors = Object.fromEntries(
+            targets.map((target) => [target, failures[target].message]),
+        );
+        setErrorByTarget(errors);
+        setInvalidByTarget(Object.fromEntries(targets.map((target) => [target, true])));
+        setRuleByTarget(
+            Object.fromEntries(targets.map((target) => [target, failures[target].rule])),
+        );
+        showFieldErrors(errors);
+        setSubmitFailure(SubmitFailure.VALIDATION);
+        reportSubmitOutcome({
+            outcome: 'failed',
+            reason: SubmitFailure.VALIDATION,
+            fieldErrors: errors,
         });
     }
 
@@ -307,13 +478,20 @@ function WixFormInteractive(
             const rejection = presentSubmitRejection(result, carryForward.fields);
             setErrorByTarget(rejection.errorByTarget);
             setInvalidByTarget(rejection.invalidByTarget);
+            setRuleByTarget(
+                Object.fromEntries(
+                    Object.keys(rejection.errorByTarget).map((target) => [
+                        target,
+                        FieldRule.SERVER,
+                    ]),
+                ),
+            );
             setStatusMessage(rejection.statusMessage);
             setSubmitFailure((result as SubmitRejection).reason ?? SubmitFailure.UNKNOWN);
             showFieldErrors(rejection.errorByTarget);
+            reportSubmitRejection(result as SubmitRejection);
             return undefined;
         }
-        // The store is intentionally NOT cleared — the confirmation echoes it (Q2).
-        showSubmitted();
         const redirectTo = (result as { redirectTo?: string }).redirectTo;
         const redirectPath = toSitePath(redirectTo);
         if (redirectTo !== undefined && !redirectPath) {
@@ -321,7 +499,24 @@ function WixFormInteractive(
                 formId: carryForward.formId,
             });
         }
+        // A redirect navigates away with the form still busy: no confirmation flash, no focus
+        // jump (DL#53 §6). The store is intentionally NOT cleared — the confirmation echoes it (Q2).
+        if (!redirectPath) showSubmitted();
+        reportSubmitOutcome(
+            redirectPath === undefined
+                ? { outcome: 'succeeded' }
+                : { outcome: 'succeeded', redirectTo: redirectPath },
+        );
         return redirectPath;
+    }
+
+    function reportSubmitRejection(result: SubmitRejection): void {
+        reportSubmitOutcome({
+            outcome: 'failed',
+            reason: result.reason ?? SubmitFailure.UNKNOWN,
+            ...(result.code === undefined ? {} : { code: result.code }),
+            ...(result.fieldErrors === undefined ? {} : { fieldErrors: result.fieldErrors }),
+        });
     }
 
     return {
@@ -332,6 +527,7 @@ function WixFormInteractive(
                 loadError: carryForward.loadError ?? '',
                 errorByTarget: errorByTarget(),
                 invalidByTarget: invalidByTarget(),
+                ruleByTarget: ruleByTarget(),
                 valueByTarget: values(),
                 isSubmitted: isSubmitted(),
                 submitFailure: submitFailure(),
@@ -343,9 +539,13 @@ interface FieldEventHandlers {
     onNativeInput(field: FormFieldView, event: Event): void;
     onNativeBlur(field: FormFieldView): void;
     onControl(field: FormFieldView, event: Event): void;
+    onOptionToggle(field: FormFieldView, change: Omit<OptionToggle, 'current'>): void;
 }
 
-/** Wire the native `input` (store + live validation) and the `control` channel per field. */
+/**
+ * Wire the native `input` (store + live validation), the `control` channel and, for a
+ * multiselect, the per-option `options.toggle` checkboxes per field.
+ */
 function wireFieldEvents(refs: any, fields: FormFieldView[], handlers: FieldEventHandlers): void {
     for (const field of fields) {
         const fieldRef = refs[contractTagName(field.target)];
@@ -360,68 +560,74 @@ function wireFieldEvents(refs: any, fields: FormFieldView[], handlers: FieldEven
         fieldRef.control?.oninput(({ event }: { event: Event }) =>
             handlers.onControl(field, event),
         );
+        if (field.inputType === 'multiselect') {
+            // The option comes from the item's view state, never the DOM (DL#44 §3).
+            fieldRef.options?.toggle?.onchange(
+                ({ event, viewState }: { event: Event; viewState: { value: string } }) =>
+                    handlers.onOptionToggle(field, {
+                        optionValue: viewState.value,
+                        checked: (event.target as HTMLInputElement).checked,
+                    }),
+            );
+        }
     }
 }
 
 /**
- * Run `work` after the current reactive batch flushes. Toggling `isSubmitted` re-mounts a
- * conditional branch only at the end of the event handler, and refs inside an unmounted branch
- * are detached (`exec$` no-ops) — see `clearNativeInputsAfterRemount`.
+ * Focus the first visible field (in form order) that matches and binds a native `input` or a
+ * multiselect's `options.toggle` — a chip group focuses its first bound checkbox (DL#44 §3).
  */
-function afterRemount(work: () => void): void {
-    queueMicrotask(work);
-}
-
-/** Focus the first visible field (in form order) that matches and binds a native `input`. */
 function focusFirstFieldInput(
     refs: any,
     fields: FormFieldView[],
     matches: (field: FormFieldView) => boolean,
 ): void {
     const field = fields.find(
-        (candidate) =>
-            !candidate.hidden &&
-            matches(candidate) &&
-            refs[contractTagName(candidate.target)]?.input,
+        (candidate) => !candidate.hidden && matches(candidate) && focusableRef(refs, candidate),
     );
     if (!field) return;
-    void refs[contractTagName(field.target)].input.exec$((element: HTMLElement) => element.focus());
+    void focusableRef(refs, field).exec$((element: HTMLElement) => element.focus());
 }
-
-/** True when clicking `target` makes its owning <form> fire a native `submit` event. */
-function isFormSubmitter(target: EventTarget | null): boolean {
-    const button = (target as Element | null)?.closest?.('button');
-    return !!button?.form && button.type === 'submit';
-}
-
-const wiredForms = new WeakSet<HTMLFormElement>();
 
 /**
- * Drive the plugin submit from the owning <form>'s `submit` event (Bug 1) — one path for
- * button clicks, Enter-key implicit submission, and `requestSubmit()` — and cancel the
- * browser's own GET navigation, which would reload the page before the async submit runs.
- * Keeping the button `type=submit` preserves Enter-to-submit and autofill/password-manager
- * submit detection. Must run on mount (`exec$` needs the bound element); the WeakSet keeps
- * effect re-runs from attaching a second listener (a double submit).
+ * The element ref that takes focus for `field`. A multiselect prefers its first bound chip
+ * checkbox: a chip page still has the contract's `input` ref, unbound, and focusing it no-ops.
+ * Otherwise (or a `<select multiple>` page) the field's `input`.
+ */
+function focusableRef(refs: any, field: FormFieldView): any {
+    const fieldRef = refs[contractTagName(field.target)];
+    if (field.inputType === 'multiselect') {
+        // A collection ref has only `map`/`find`; `find` returns a bound item's ref, with `exec$`.
+        const firstChip = fieldRef?.options?.toggle?.find(() => true);
+        if (firstChip) return firstChip;
+    }
+    return fieldRef?.input;
+}
+
+/** The <form> a click on `target` submits natively, if any (a submit-type button it owns). */
+function owningSubmitForm(target: EventTarget | null): HTMLFormElement | undefined {
+    const button = (target as Element | null)?.closest?.('button');
+    return button?.type === 'submit' ? (button.form ?? undefined) : undefined;
+}
+
+/**
+ * Guard the submit button's owning <form> (`guardNativeFormSubmit`). Keeping the button
+ * `type=submit` preserves Enter-to-submit and autofill/password-manager submit detection.
+ * Must run after the refs are bound — in a microtask after construction or after a re-mount —
+ * because `exec$` on an unbound ref resolves `undefined`. The guard's WeakSet makes the
+ * install points idempotent per <form> node.
  */
 function wireNativeFormSubmit(refs: any, submit: () => Promise<void>): void {
-    void refs.submitButton?.exec$((button: HTMLButtonElement) => {
-        const form = button.form;
-        if (!form || wiredForms.has(form)) return;
-        wiredForms.add(form);
-        form.addEventListener('submit', (nativeEvent: Event) => {
-            nativeEvent.preventDefault();
-            void submit();
-        });
-    });
+    void refs.submitButton?.exec$((button: HTMLButtonElement) =>
+        guardNativeFormSubmit(button.form, submit),
+    );
 }
 
 /**
  * Seed the store from each `control` element's `data-value` — page-provided defaults and
- * hidden fields (Cap 4a, Bug 2). Reads the DOM on mount (a construction-time `exec$` sees
- * no bound element and silently resolves to `undefined`), then applies the pure
- * `seedControlValues` so untouched, non-empty control values reach the submission store
- * before client validation runs. Returns the read/seed promise so callers can await it.
+ * hidden fields (Cap 4a, DL#53 G5). Must run after the refs bind: an unbound `exec$` resolves
+ * `undefined`, which the pure `seedControlValues` treats as "not bound" and skips. Resolves to
+ * the targets whose stored value the seed changed.
  */
 function seedControlsIntoStore(
     refs: any,
@@ -430,7 +636,7 @@ function seedControlsIntoStore(
     setValues: (
         updater: (current: Record<string, FieldValue>) => Record<string, FieldValue>,
     ) => void,
-): Promise<void> {
+): Promise<string[]> {
     const seeds: ControlSeed[] = [];
     const reads = fields.map((field) => {
         const control = refs[contractTagName(field.target)]?.control;
@@ -440,14 +646,60 @@ function seedControlsIntoStore(
             .then((value: string | undefined) => {
                 seeds.push({
                     target: field.target,
-                    value: value ?? '',
+                    value,
                     dirty: dirtyTargets.has(field.target),
                 });
             });
     });
     return Promise.all(reads).then(() => {
-        setValues((current) => seedControlValues(current, seeds));
+        let changedTargets: string[] = [];
+        setValues((current) => {
+            const seeded = seedControlValues(current, seeds);
+            changedTargets = seeded.changedTargets;
+            return seeded.store;
+        });
+        return changedTargets;
     });
+}
+
+/** Control elements already observed, so a re-mount that reuses a node adds no second observer. */
+const watchedControls = new WeakSet<Element>();
+
+/**
+ * Re-seed whenever a bound `control`'s `data-value` changes, so a changed page default shows
+ * in its input right away instead of only at submit (DL#53 shown-vs-sent fix, reverses Q6).
+ * `seedAndReflect` keeps values the user edited. Must run after the refs bind.
+ */
+function watchControlValues(
+    refs: any,
+    fields: FormFieldView[],
+    onControlValueChange: () => Promise<void>,
+): void {
+    if (typeof MutationObserver === 'undefined') return;
+    for (const field of fields) {
+        void refs[contractTagName(field.target)]?.control?.exec$((element: Element) => {
+            if (watchedControls.has(element)) return;
+            watchedControls.add(element);
+            new MutationObserver(() => void onControlValueChange()).observe(element, {
+                attributeFilter: ['data-value'],
+            });
+        });
+    }
+}
+
+/** Visible fields whose native input holds one DOM string: text-like kinds and single select. */
+function reconcilableFields(fields: FormFieldView[]): FormFieldView[] {
+    return fields.filter(
+        (field) =>
+            !field.hidden && field.inputType !== 'checkbox' && field.inputType !== 'multiselect',
+    );
+}
+
+/** The bound native input's `.value`, or `undefined` when the page binds no `input` (DL#41 4a). */
+function readBoundInputValue(refs: any, field: FormFieldView): Promise<string | undefined> {
+    const input = refs[contractTagName(field.target)]?.input;
+    if (!input?.exec$) return Promise.resolve(undefined);
+    return input.exec$((element: HTMLInputElement | HTMLSelectElement) => element.value);
 }
 
 /** Record the honeypot value (Q12) — a dedicated channel that never reaches the store. */

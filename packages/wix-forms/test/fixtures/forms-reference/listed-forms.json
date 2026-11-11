@@ -1,0 +1,32 @@
+[
+  {
+    "id": "0b1c2d3e-0000-4000-8000-000000000001",
+    "name": "QA Contact",
+    "fields": [
+      {
+        "target": "first_name_5820",
+        "label": "First name",
+        "inputType": "text",
+        "required": true,
+        "placeholder": "",
+        "options": []
+      },
+      {
+        "target": "email_7e06",
+        "label": "Email",
+        "inputType": "email",
+        "required": true,
+        "placeholder": "",
+        "options": []
+      },
+      {
+        "target": "form_field_aa5f",
+        "label": "I agree to be contacted",
+        "inputType": "checkbox",
+        "required": false,
+        "placeholder": "",
+        "options": []
+      }
+    ]
+  }
+]

@@ -196,3 +196,26 @@ describe('WixFormsService.createSubmission (DL#43)', () => {
         ]);
     });
 });
+
+describe('WixFormsService.isSubmittableForm', () => {
+    beforeEach(() => {
+        mockListForms.mockReset();
+        vi.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
+    it("should list the namespace's enabled forms even when include is 'all'", async () => {
+        const formId = '3f2a9c1e-5b7d-4e8f-9a0b-1c2d3e4f5a6b';
+        mockListForms.mockResolvedValueOnce([{ id: formId }]);
+        const service = provideWixFormsService(mockClient, { ...testConfig, include: 'all' });
+
+        expect(await service.isSubmittableForm(formId)).toBe(true);
+        expect(mockListForms).toHaveBeenCalledWith(mockClient, {
+            namespace: testConfig.namespace,
+            include: 'enabled',
+        });
+    });
+});

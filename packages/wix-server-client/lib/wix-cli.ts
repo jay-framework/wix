@@ -1,5 +1,5 @@
 /**
- * Setup-time Wix user access through the Wix CLI (DL #47): the user's token, and the app instances
+ * Setup-time Wix user access through the Wix CLI (DL #54): the user's token, and the app instances
  * of a site. Runs only under the toolchain (`./tools`), never on the serve path.
  */
 

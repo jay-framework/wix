@@ -8,23 +8,15 @@ import type {
     PluginAgentKitResult,
 } from '@jay-framework/stack-server-runtime';
 import { getService } from '@jay-framework/stack-server-runtime';
+import { serverClientSetupBlocker } from '@jay-framework/wix-server-client';
 import { DEFAULT_FORMS_NAMESPACE } from './config-loader.js';
 import { WIX_FORMS_SERVICE, type WixFormsService } from './services/wix-forms-service-marker.js';
-import { computeFormSlugs } from './generators/form-slug.js';
-import { elementTypeFor } from './generators/contract-utils.js';
+import { buildFormsReference } from './generators/forms-reference.js';
 import {
     SHARED_EDITING_GUIDE_PATH,
     USER_VISIBLE_MESSAGES_GUIDE_PATH,
     writeEditingGuideCopies,
 } from './source-editing.js';
-import type { FormFieldView } from './types.js';
-
-/** The runtime value type a field submits (DL#41 4c) — a hint for agent-kit discovery. */
-function valueTypeFor(field: FormFieldView): 'string' | 'boolean' | 'string[]' {
-    if (field.inputType === 'checkbox') return 'boolean';
-    if (field.inputType === 'multiselect') return 'string[]';
-    return 'string';
-}
 
 const CONFIG_FILE = '.wix-forms.yaml';
 
@@ -39,9 +31,12 @@ const CONFIG_TEMPLATE = `# Wix Forms configuration (optional).
 namespace: "${DEFAULT_FORMS_NAMESPACE}"
 
 # Restrict generation to these form ids (empty = all forms in the namespace).
+# Also the runtime allowlist: when set, only these forms accept submissions
+# (empty = the namespace's enabled forms accept submissions).
 formIds: []
 
 # Which forms to generate: enabled | disabled | all
+# Affects generation only (the runtime allowlist never uses it).
 include: enabled
 `;
 
@@ -50,12 +45,8 @@ include: enabled
 // ============================================================================
 
 export async function setupWixForms(ctx: PluginSetupContext): Promise<PluginSetupResult> {
-    if (ctx.initError) {
-        return {
-            status: 'error',
-            message: `Service init failed (is wix-server-client configured?). ${ctx.initError.message}`,
-        };
-    }
+    const blocker = serverClientSetupBlocker(ctx.initError);
+    if (blocker) return blocker;
 
     const configCreated: string[] = [];
     const configPath = path.join(ctx.configDir, CONFIG_FILE);
@@ -95,39 +86,14 @@ export async function generateWixFormsAgentKit(
     }
 
     const forms = await formsService.listForms();
-    const slugById = computeFormSlugs(forms);
-
-    const formSummaries = forms.map((form) => ({
-        contract: `form/${slugById.get(form.id)}`,
-        formId: form.id,
-        name: form.name,
-        fields: form.fields.map((field) => ({
-            target: field.target,
-            label: field.label,
-            type: field.inputType,
-            required: field.required,
-            elementType: elementTypeFor(field),
-            // DL#41 channel hints so agents discover the new value/control surfaces.
-            hidden: Boolean(field.hidden),
-            hasControl: true,
-            valueType: valueTypeFor(field),
-        })),
-    }));
+    const reference = buildFormsReference(forms, formsService.config.namespace);
 
     fs.mkdirSync(ctx.referencesDir, { recursive: true });
     const formsPath = path.join(ctx.referencesDir, 'forms.yaml');
     fs.writeFileSync(
         formsPath,
         yaml.dump(
-            {
-                _generated: new Date().toISOString(),
-                _description:
-                    'Wix Forms per-form contracts for agent discovery. ' +
-                    'Bind explicit field tags, e.g. {contact.email.label}, ref="contact.email.input".',
-                namespace: formsService.config.namespace,
-                totalForms: formSummaries.length,
-                forms: formSummaries,
-            },
+            { _generated: new Date().toISOString(), ...reference },
             { indent: 2, lineWidth: 120, noRefs: true },
         ),
         'utf-8',
@@ -144,7 +110,7 @@ export async function generateWixFormsAgentKit(
     return {
         agentKitCreated,
         message:
-            `${formSummaries.length} forms discovered in namespace "${formsService.config.namespace}"` +
+            `${reference.totalForms} forms discovered in namespace "${formsService.config.namespace}"` +
             ', forms editing guides copied',
     };
 }

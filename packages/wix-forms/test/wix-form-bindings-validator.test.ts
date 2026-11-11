@@ -1,9 +1,14 @@
 // @vitest-environment node
 
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { parse } from 'node-html-parser';
 import { describe, expect, it } from 'vitest';
 import type { JayHtmlValidationContext } from '@jay-framework/compiler-shared';
 import { validateWixFormBindings } from '../lib/validators/wix-form-bindings.js';
+
+const fixturesDir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures');
 
 const CONTACT_TAGS = [
     { tag: 'firstName', type: [] as number[] },
@@ -65,7 +70,7 @@ describe('validateWixFormBindings', () => {
 
     it('should flag a ref to an unknown field tag (the gap core does not catch)', async () => {
         const ctx = contextWith(
-            `<form><label>Phone <input ref="contact.phoneNumber.input" /></label></form>`,
+            `<form><label>Phone <input ref="contact.phoneNumber.input" /></label><button ref="contact.submitButton">Send</button></form>`,
             [contactImport],
         );
         const findings = await validateWixFormBindings(ctx);
@@ -138,7 +143,7 @@ describe('validateWixFormBindings — DL#41 second-segment ref check (gate iv)',
 
     it('should flag an unknown second-segment channel when nested tags are present', async () => {
         const ctx = contextWith(
-            `<form><button ref="contact.email.bogus" data-value="x"></button></form>`,
+            `<form><button ref="contact.email.bogus" data-value="x"></button><button ref="contact.submitButton">Send</button></form>`,
             [nestedImport],
         );
         const findings = await validateWixFormBindings(ctx);
@@ -154,7 +159,7 @@ describe('validateWixFormBindings — DL#41 second-segment ref check (gate iv)',
 
     it('should accept a known .control second-segment channel', async () => {
         const ctx = contextWith(
-            `<form><button ref="contact.email.control" data-value="x"></button></form>`,
+            `<form><button ref="contact.email.control" data-value="x"></button><button ref="contact.submitButton">Send</button></form>`,
             [nestedImport],
         );
         expect(await validateWixFormBindings(ctx)).toEqual([]);
@@ -163,7 +168,7 @@ describe('validateWixFormBindings — DL#41 second-segment ref check (gate iv)',
     it('should NOT flag a second segment when nested tags are unavailable (first-segment fallback)', async () => {
         // The flat CONTACT_TAGS import carries no nested tags → the fallback holds, no finding.
         const ctx = contextWith(
-            `<form><button ref="contact.email.bogus" data-value="x"></button></form>`,
+            `<form><button ref="contact.email.bogus" data-value="x"></button><button ref="contact.submitButton">Send</button></form>`,
             [contactImport],
         );
         expect(await validateWixFormBindings(ctx)).toEqual([]);
@@ -184,13 +189,17 @@ describe('validateWixFormBindings — accessibility warnings (DL#41 Addendum A)'
                            aria-describedby="email-error" />
                     <span id="email-error" aria-live="polite">{contact.email.error}</span>
                     <input ref="contact.firstName.input" aria-label="First name" required />
-                </form>`,
+                <button ref="contact.submitButton">Send</button></form>`,
             ),
         ).toEqual([]);
     });
 
     it('should warn on a field input with no accessible label', async () => {
-        expect(await warningsFor(`<form><input ref="contact.email.input" /></form>`)).toEqual([
+        expect(
+            await warningsFor(
+                `<form><input ref="contact.email.input" /><button ref="contact.submitButton">Send</button></form>`,
+            ),
+        ).toEqual([
             expect.objectContaining({
                 severity: 'warning',
                 message: 'ref="contact.email.input" has no accessible label.',
@@ -202,7 +211,7 @@ describe('validateWixFormBindings — accessibility warnings (DL#41 Addendum A)'
         expect(
             await warningsFor(
                 `<form><label>{contact.email.label} <input ref="contact.email.input" />
-                    <span>{contact.email.error}</span></label></form>`,
+                    <span>{contact.email.error}</span></label><button ref="contact.submitButton">Send</button></form>`,
             ),
         ).toEqual([
             expect.objectContaining({
@@ -216,7 +225,7 @@ describe('validateWixFormBindings — accessibility warnings (DL#41 Addendum A)'
     it('should warn on native required inside a <form> without novalidate', async () => {
         expect(
             await warningsFor(
-                `<form><label>{contact.email.label} <input ref="contact.email.input" required /></label></form>`,
+                `<form><label>{contact.email.label} <input ref="contact.email.input" required /></label><button ref="contact.submitButton">Send</button></form>`,
             ),
         ).toEqual([
             expect.objectContaining({
@@ -224,5 +233,160 @@ describe('validateWixFormBindings — accessibility warnings (DL#41 Addendum A)'
                 attribute: 'required',
             }),
         ]);
+    });
+});
+
+describe('validateWixFormBindings — unguarded <form> (DL#44 rule 3)', () => {
+    const unguardedWarning = expect.objectContaining({
+        severity: 'warning',
+        message:
+            'A <form> holds "contact" refs but no ref="contact.submitButton", so its native submit is not intercepted and reloads the page.',
+    });
+
+    it('should warn when a <form> holds contact.firstName.input but no contact.submitButton', async () => {
+        const ctx = contextWith(
+            `<form novalidate><label>{contact.firstName.label} <input ref="contact.firstName.input" /></label><button>Send</button></form>`,
+            [contactImport],
+        );
+        expect(await validateWixFormBindings(ctx)).toEqual([unguardedWarning]);
+    });
+
+    it('should stay silent when the <form> contains ref="contact.submitButton"', async () => {
+        const ctx = contextWith(
+            `<form novalidate><label>{contact.firstName.label} <input ref="contact.firstName.input" /></label><button ref="contact.submitButton">Send</button></form>`,
+            [contactImport],
+        );
+        expect(await validateWixFormBindings(ctx)).toEqual([]);
+    });
+
+    it('should stay silent when the key refs have no enclosing <form>', async () => {
+        const ctx = contextWith(
+            `<div><label>{contact.firstName.label} <input ref="contact.firstName.input" /></label><button ref="contact.submitButton">Send</button></div>`,
+            [contactImport],
+        );
+        expect(await validateWixFormBindings(ctx)).toEqual([]);
+    });
+
+    it('should warn once for several contact refs in the same <form>', async () => {
+        const ctx = contextWith(
+            `<form novalidate>
+                <label>{contact.firstName.label} <input ref="contact.firstName.input" /></label>
+                <label>{contact.email.label} <input ref="contact.email.input" /></label>
+            </form>`,
+            [contactImport],
+        );
+        expect(await validateWixFormBindings(ctx)).toEqual([unguardedWarning]);
+    });
+});
+
+describe('validateWixFormBindings — option refs (DL#44 rules 1 and 2)', () => {
+    const optionTags = (...extra: string[]) => ['value', 'label', ...extra].map((tag) => ({ tag }));
+    const choicesImport = {
+        key: 'contact',
+        contractName: 'form/choices',
+        contract: {
+            name: 'ChoicesForm',
+            tags: [
+                {
+                    tag: 'consent',
+                    type: [] as number[],
+                    tags: [
+                        { tag: 'label' },
+                        { tag: 'value' },
+                        { tag: 'input' },
+                        { tag: 'control' },
+                    ],
+                },
+                {
+                    tag: 'interests',
+                    type: [] as number[],
+                    tags: [
+                        { tag: 'label' },
+                        { tag: 'required' },
+                        { tag: 'error' },
+                        { tag: 'invalid' },
+                        { tag: 'input' },
+                        { tag: 'control' },
+                        { tag: 'options', tags: optionTags('selected', 'toggle') },
+                    ],
+                },
+                {
+                    tag: 'country',
+                    type: [] as number[],
+                    tags: [
+                        { tag: 'label' },
+                        { tag: 'input' },
+                        { tag: 'control' },
+                        { tag: 'options', tags: optionTags() },
+                    ],
+                },
+                { tag: 'submitButton', type: [] as number[] },
+            ],
+        },
+    };
+
+    it('should accept the rich-forms §4b checkbox-chip example', async () => {
+        const chipGroup = await readFile(
+            path.join(fixturesDir, 'checkbox-chips', 'chip-group.jay-html.fragment'),
+            'utf-8',
+        );
+        expect(await validateWixFormBindings(contextWith(chipGroup, [choicesImport]))).toEqual([]);
+    });
+
+    it('should flag options.toggle on a single select, whose options have no toggle', async () => {
+        const ctx = contextWith(
+            `<form><label forEach="contact.country.options" trackBy="value"><input type="checkbox" ref="contact.country.options.toggle" /> {label}</label><button ref="contact.submitButton">Send</button></form>`,
+            [choicesImport],
+        );
+        expect(await validateWixFormBindings(ctx)).toEqual([
+            expect.objectContaining({
+                severity: 'error',
+                message:
+                    'ref="contact.country.options.toggle" binds "country.options.toggle", which is not a tag of the options of field "country".',
+                attribute: 'ref',
+            }),
+        ]);
+    });
+
+    it('should NOT flag an option ref when the nested option tags are unavailable', async () => {
+        const ctx = contextWith(
+            `<form><input type="checkbox" ref="contact.country.options.toggle" /><button ref="contact.submitButton">Send</button></form>`,
+            [contactImport],
+        );
+        expect(await validateWixFormBindings(ctx)).toEqual([]);
+    });
+
+    it('should warn on .control inside forEach over a multiselect options', async () => {
+        const ctx = contextWith(
+            `<form><label forEach="contact.interests.options" trackBy="value"><input type="checkbox" ref="contact.interests.control" data-value="{value}" /> {label}</label><button ref="contact.submitButton">Send</button></form>`,
+            [choicesImport],
+        );
+        expect(await validateWixFormBindings(ctx)).toEqual([
+            expect.objectContaining({
+                severity: 'warning',
+                message:
+                    'ref="contact.interests.control" inside forEach="contact.interests.options" stores a single value, so each click replaces the selection instead of toggling one option.',
+                suggestion: 'Bind each checkbox with ref="contact.interests.options.toggle".',
+                attribute: 'ref',
+            }),
+        ]);
+    });
+
+    it('should warn when the .control element itself carries the forEach over options', async () => {
+        const ctx = contextWith(
+            `<form><input type="checkbox" forEach="contact.interests.options" trackBy="value" ref="contact.interests.control" data-value="{value}" /><button ref="contact.submitButton">Send</button></form>`,
+            [choicesImport],
+        );
+        expect(await validateWixFormBindings(ctx)).toEqual([
+            expect.objectContaining({ severity: 'warning', attribute: 'ref' }),
+        ]);
+    });
+
+    it('should accept .control outside a forEach over options', async () => {
+        const ctx = contextWith(
+            `<form><button ref="contact.interests.control" data-value="a">A</button><button ref="contact.submitButton">Send</button></form>`,
+            [choicesImport],
+        );
+        expect(await validateWixFormBindings(ctx)).toEqual([]);
     });
 });

@@ -7,11 +7,12 @@ export interface ApiKeyConfig {
     siteId: string;
 }
 
-/** The headless companion app's instance on one site: its token reaches only that site (DL #47). */
+/** The headless companion app's instance on one site: its token reaches only that site (DL #54). */
 export interface AppConfig {
     appId: string;
     appSecret: string;
     siteId: string;
+    /** The app instance on the site; @wix/sdk's AppStrategy cannot authenticate without it. */
     instanceId: string;
 }
 
@@ -75,9 +76,10 @@ function parseServerAuth(config: Record<string, Record<string, string>>): Server
 }
 
 export function loadConfig(): WixConfig {
-    // Resolve the config path relative to the process execution path
-    const configPath = path.join(process.cwd(), 'config', '.wix.yaml');
+    return loadConfigFrom(path.join(process.cwd(), 'config', '.wix.yaml'));
+}
 
+export function loadConfigFrom(configPath: string): WixConfig {
     // Check if the config file exists
     if (!fs.existsSync(configPath)) {
         throw new Error(`Config file not found at: ${configPath}`);

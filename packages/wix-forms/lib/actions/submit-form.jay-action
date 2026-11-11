@@ -4,6 +4,7 @@ description: Submit a Wix Form with field values keyed by target.
 inputSchema:
   formId?: string
   values: object
+  honeypot?: string  # value of the page's honeypot, for direct posts; the plugin component never sends it (DL#53)
 
 outputSchema:
   success: boolean
@@ -11,3 +12,4 @@ outputSchema:
   message?: string
   fieldErrors?: object
   reason?: number  # SubmitFailure enum index when success is false (NONE=0, VALIDATION=1, …); locale-neutral outcome for pages
+  code?: string  # the hook's ActionError / FieldRejection code; absent for plugin and Wix failures (DL#53)

@@ -31,6 +31,7 @@ export async function wixFetch<T = any>(
     path: string,
     options: WixFetchOptions = {},
 ): Promise<T> {
+    assertSafeWixPath(path);
     const { method = 'GET', body, authorization } = options;
     const authHeaders = await authHeadersFor(client, path, authorization);
 
@@ -50,6 +51,28 @@ export async function wixFetch<T = any>(
 
     const text = await response.text();
     return (text ? JSON.parse(text) : {}) as T;
+}
+
+const CONTROL_CHARACTER_OR_FRAGMENT = /[\u0000-\u001f\u007f#]/;
+const DOT_SEGMENT = /\.\.|%2e/i;
+
+/**
+ * Throws when `path` could leave the intended Wix endpoint (DL#49). A backstop: only the caller
+ * knows its segments, so callers encode ids and this refuses rather than encodes. A path not
+ * starting with "/" would change the host; the URL parser strips tab/newline, so control
+ * characters could smuggle a "..". Dots after "?" are query data. The path is not echoed.
+ */
+function assertSafeWixPath(path: string): void {
+    const pathPortion = path.split('?', 1)[0];
+    if (
+        !path.startsWith('/') ||
+        CONTROL_CHARACTER_OR_FRAGMENT.test(path) ||
+        DOT_SEGMENT.test(pathPortion)
+    ) {
+        throw new Error(
+            'wixFetch: refused an unsafe request path (it must start with "/" and contain no dot-segments, "%2e", "#" or control characters)',
+        );
+    }
 }
 
 /** Never sends an unauthenticated request: a headers-only caller client has empty auth headers. */

@@ -42,8 +42,8 @@ plugins:
           owner to dashboard-managed content instead of editing code or data.
         path: ./../../packages/wix-server-client/dist/actions/get-dashboard-url.jay-action
       - name: syncSession
-        description: Mirror the browser's Wix OAuth tokens into the httpOnly wix_session
-          cookie after verifying them with token-info, or clear it.
+        description: Mirror the browser's Wix access token into the httpOnly wix_session
+          cookie after verifying it with token-info, or clear it.
         path: ./../../packages/wix-server-client/dist/actions/sync-session.jay-action
     services:
       - name: wix-client
@@ -74,13 +74,6 @@ plugins:
         description: Category list listing the categories
         type: static
         path: ./../../packages/wix-stores/dist/contracts/category-list.jay-contract
-      - name: product-page
-        description: Full product detail page with variants, options, media gallery, and
-          add-to-cart. Use for individual product pages.
-        type: dynamic
-        path: ./agent-kit/materialized-contracts/wix-stores/product-page.jay-contract
-        metadata:
-          extendedFieldCount: 0
     actions:
       - name: searchProducts
         description: Search products in the Wix Store catalog using Catalog V3. Supports

@@ -62,6 +62,8 @@ export interface ListedFormView {
 export interface SubmitRequestInput {
     formId?: string;
     values: Record<string, FieldValue>;
+    /** The page's honeypot, for direct / scripted posts (DL#53 H). The plugin component never sends it. */
+    honeypot?: string;
 }
 
 /**
@@ -75,4 +77,6 @@ export type SubmitFormResult =
           reason: SubmitFailure;
           message?: string;
           fieldErrors?: Record<string, string>;
+          /** A hook's `ActionError` / `FieldRejection` code (DL#53 G3/G4); absent for plugin and Wix failures. */
+          code?: string;
       };

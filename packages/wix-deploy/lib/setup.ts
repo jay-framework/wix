@@ -1,7 +1,7 @@
 /**
  * wix-deploy setup hook
  *
- * Runs after wix-server-client setup, which owns config/.wix.yaml (API key or app strategy, DL #47).
+ * Runs after wix-server-client setup, which owns config/.wix.yaml (API key or app strategy, DL #54).
  * Reads wix.config.json for the deploy target, then validates the data collection exists.
  */
 

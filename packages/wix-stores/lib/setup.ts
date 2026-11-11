@@ -2,7 +2,7 @@
  * Setup handler for wix-stores plugin (Design Log #87, #10).
  *
  * Validates that wix-server-client is configured, and installs Wix Stores on the site when the catalog
- * check fails and it is missing (DL #47).
+ * check fails and it is missing (DL #54).
  * Creates config/.wix-stores.yaml with example category prefix config if missing.
  * Generates category tree reference for agent discovery.
  */
@@ -199,7 +199,7 @@ export async function setupWixStores(ctx: PluginSetupContext): Promise<PluginSet
         configCreated.push(`config/${WIX_STORES_CONFIG_FILE_NAME}`);
     }
 
-    // Only a failing catalog needs the Wix user: installing Stores requires the Wix CLI login (DL #47)
+    // Only a failing catalog needs the Wix user: installing Stores requires the Wix CLI login (DL #54)
     let catalogError = await checkCatalog(wixClient);
     if (catalogError && ctx.interactive) {
         try {

@@ -19,7 +19,21 @@ interface RawService {
     schedule?: {
         availabilityConstraints?: { sessionDurations?: number[] };
     };
-    form?: { _id?: string };
+    form?: ServiceForm;
+}
+
+export interface ServiceForm {
+    id?: string;
+    _id?: string;
+}
+
+/** Wix's id for "no custom form" — the service uses the site default participant form. */
+const DEFAULT_FORM_ID = '00000000-0000-0000-0000-000000000000';
+
+/** The service's own participant form id, or '' when it uses the default form. */
+export function participantFormId(form: ServiceForm | undefined): string {
+    const id = form?.id ?? form?._id ?? '';
+    return id === DEFAULT_FORM_ID ? '' : id;
 }
 
 export function formatPrice(service: RawService): string {
@@ -48,7 +62,7 @@ export function mapService(raw: RawService): BookingServiceView {
         description: raw.description ?? '',
         priceLabel: formatPrice(raw),
         durationLabel: duration,
-        formId: raw.form?._id ?? '',
+        formId: participantFormId(raw.form),
     };
 }
 
