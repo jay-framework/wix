@@ -14,6 +14,7 @@ import { submitForm } from '../lib/actions/forms-actions.js';
 import { SubmitFailure } from '../lib/components/submit-outcome.js';
 import type { FormFieldView } from '../lib/types.js';
 import {
+    FakeMutationObserver,
     fakeControl,
     fakeInput,
     listenerFor,
@@ -141,5 +142,50 @@ describe('wix-form control refresh (DL#53 G5)', () => {
 
         expect(postedValues(0)).toEqual({ name: 'Grace' });
         expect(input.value).toBe('Grace');
+    });
+});
+
+/**
+ * Bug: a changed visible default is posted but not shown (DL#53 QA, declarative re-check G5).
+ * Found in: design-log/53 Implementation Results — after the page changed the promo `control`
+ *   `data-value` from WELCOME10 to SPRING25, the input kept showing WELCOME10 while SPRING25
+ *   was posted. Controls were read only at mount, reset and submit (DL#53 Q6).
+ * Expected: a `data-value` change on a non-dirty field shows in its input right away;
+ *   a value the user typed is never overwritten.
+ * Actual: the input shows the old default until submit.
+ */
+describe('wix-form live control defaults (DL#53 shown-vs-sent fix)', () => {
+    beforeEach(() => {
+        vi.stubGlobal('MutationObserver', FakeMutationObserver);
+        vi.mocked(submitForm).mockReset();
+        vi.mocked(submitForm).mockResolvedValue({ success: true });
+    });
+
+    it('should show a changed visible default in its input before any submit', async () => {
+        const input = fakeInput();
+        const control = fakeControl('WELCOME10');
+        mountWixForm([optionalTextField], undefined, { name: { input, control } });
+        await settle();
+
+        control.setAttribute('data-value', 'SPRING25');
+        await settle();
+
+        expect(input.value).toBe('SPRING25');
+    });
+
+    it('should keep the value the user typed when the page changes the default', async () => {
+        const input = fakeInput();
+        const control = fakeControl('WELCOME10');
+        const harness = mountWixForm([optionalTextField], undefined, { name: { input, control } });
+        await settle();
+
+        input.value = 'MYCODE';
+        listenerFor(input, 'input')({ target: input });
+        control.setAttribute('data-value', 'SPRING25');
+        await settle();
+        await submitOnce(harness);
+
+        expect(input.value).toBe('MYCODE');
+        expect(postedValues(0)).toEqual({ name: 'MYCODE' });
     });
 });

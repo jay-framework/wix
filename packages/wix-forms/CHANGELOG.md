@@ -21,6 +21,8 @@
    value), and after "send another" (a bug fix: a second submit used to resend
    the first value, and after a reset hidden fields were sent empty). A bound control with
    `data-value=""` now clears its value. Custom widgets must render `data-value`.
+   A change to a control's `data-value` also shows in the field's visible input right away, so the
+   input never shows one value while another is sent; a value the user typed is kept.
 4. **A redirecting form no longer flashes its confirmation** before navigating. The form stays busy
    (`submitState: SUBMITTING`) until the page unloads.
 5. **Server honeypot.** A direct `submitForm` post with a non-empty `honeypot` input is dropped (fake

@@ -118,13 +118,55 @@ export function fakeInput(): FakeInput {
 export function fakeControl(dataValue?: string): FakeControl {
     const attributes = new Map<string, string>();
     if (dataValue !== undefined) attributes.set('data-value', dataValue);
-    return {
-        setAttribute: (name, value) => void attributes.set(name, value),
-        removeAttribute: (name) => void attributes.delete(name),
+    const control: FakeControl = {
+        setAttribute: (name, value) => {
+            attributes.set(name, value);
+            notifyAttributeObservers(control, name);
+        },
+        removeAttribute: (name) => {
+            attributes.delete(name);
+            notifyAttributeObservers(control, name);
+        },
         getAttribute: (name) => attributes.get(name) ?? null,
         addEventListener: vi.fn(),
         removeEventListener: vi.fn(),
     };
+    return control;
+}
+
+type AttributeObserver = { attributeFilter?: string[]; notify: () => void };
+const attributeObserversByTarget = new WeakMap<object, AttributeObserver[]>();
+
+function notifyAttributeObservers(target: object, attributeName: string): void {
+    for (const observer of attributeObserversByTarget.get(target) ?? []) {
+        if (!observer.attributeFilter || observer.attributeFilter.includes(attributeName)) {
+            queueMicrotask(observer.notify);
+        }
+    }
+}
+
+/**
+ * A minimal `MutationObserver` for the node test environment: it reports attribute changes
+ * made through a fake element's `setAttribute` / `removeAttribute`, asynchronously like the
+ * real one. Install with `vi.stubGlobal('MutationObserver', FakeMutationObserver)`.
+ */
+export class FakeMutationObserver {
+    private readonly targets: object[] = [];
+    constructor(private readonly callback: (records: unknown[]) => void) {}
+
+    observe(target: object, options: { attributeFilter?: string[] } = {}): void {
+        const observers = attributeObserversByTarget.get(target) ?? [];
+        observers.push({
+            attributeFilter: options.attributeFilter,
+            notify: () => this.targets.includes(target) && this.callback([]),
+        });
+        attributeObserversByTarget.set(target, observers);
+        this.targets.push(target);
+    }
+
+    disconnect(): void {
+        this.targets.length = 0;
+    }
 }
 
 interface BoundRef {

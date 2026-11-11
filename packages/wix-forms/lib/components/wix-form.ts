@@ -246,6 +246,7 @@ function WixFormInteractive(
     // Render and mount run synchronously after construction, so this sees bound refs.
     afterRemount(() => wireNativeFormSubmit(refs, submit));
     afterRemount(() => void seedAndReflect().then(captureSelectBaselines));
+    afterRemount(() => watchControlValues(refs, carryForward.fields, seedAndReflect));
 
     /**
      * Refresh the store from the page's `control` values (DL#53 G5) and show each changed
@@ -355,6 +356,8 @@ function WixFormInteractive(
             wireNativeFormSubmit(refs, submit);
             // "Send another" carries the page's current hidden values and visible defaults.
             void seedAndReflect();
+            // A re-shown branch may hold new control nodes; watched nodes are skipped.
+            watchControlValues(refs, carryForward.fields, seedAndReflect);
         });
     }
 
@@ -654,6 +657,31 @@ function seedControlsIntoStore(
         });
         return changedTargets;
     });
+}
+
+/** Control elements already observed, so a re-mount that reuses a node adds no second observer. */
+const watchedControls = new WeakSet<Element>();
+
+/**
+ * Re-seed whenever a bound `control`'s `data-value` changes, so a changed page default shows
+ * in its input right away instead of only at submit (DL#53 shown-vs-sent fix, reverses Q6).
+ * `seedAndReflect` keeps values the user edited. Must run after the refs bind.
+ */
+function watchControlValues(
+    refs: any,
+    fields: FormFieldView[],
+    onControlValueChange: () => Promise<void>,
+): void {
+    if (typeof MutationObserver === 'undefined') return;
+    for (const field of fields) {
+        void refs[contractTagName(field.target)]?.control?.exec$((element: Element) => {
+            if (watchedControls.has(element)) return;
+            watchedControls.add(element);
+            new MutationObserver(() => void onControlValueChange()).observe(element, {
+                attributeFilter: ['data-value'],
+            });
+        });
+    }
 }
 
 /** Visible fields whose native input holds one DOM string: text-like kinds and single select. */

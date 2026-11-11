@@ -761,3 +761,9 @@ Not covered: Firefox/WebKit for the G1/G3/G4/G5/H rows (Chromium only); a real b
 | G4 FieldRejection                                    | ✅ SERVER on phone, focused, event `BAD_PHONE`, 0 stored                                 | `dl53-declarative-g4-field-rejection-2026-11-11.webm`              |
 
 Observation, not a regression (the first run behaved the same): after the page changes the promo `control` default, the visible promo `<input>` still shows `WELCOME10`, but `SPRING25` is posted. The store is authoritative (§5, last-wins), so a user sees a different value from the one that is sent. Product may want to decide whether a `control` change should also update a native input that is bound to the same field. Evidence: `qa-testbed/evidence/dl53/declarative-*.json`. Script: `qa-testbed/testbed/qa-dl53/checks-declarative.mjs`.
+
+### Shown-vs-sent fix (2026-11-11, product decision)
+
+The observation above is fixed. Product decided that a `control` change must also update the visible input. **Deviation from Q6** (no live observation): `watchControlValues` (`lib/components/wix-form.ts`) observes each bound control's `data-value` with a `MutationObserver` after mount and after "send another" (one observer per element node), and re-runs `seedAndReflect`, which keeps fields the user edited. Seeding at mount, submit and reset is unchanged.
+
+Tests (red first): `test/wix-form-control-refresh.interactive.test.ts` › "should show a changed visible default in its input before any submit" (red: `WELCOME10`), plus the regression guard "should keep the value the user typed when the page changes the default". The harness gains a minimal `FakeMutationObserver` (node environment). CHANGELOG item 3 extended.
