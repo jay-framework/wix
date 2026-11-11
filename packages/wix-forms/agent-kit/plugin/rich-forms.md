@@ -69,8 +69,9 @@ mark it `type="button"`:
 Bind a value the page already has (route param, query, page data) through a hidden
 `control`; it seeds that field's store slot after mount, after a reset ("send another"), and
 again at submit. The slot **follows the page** while the user has not edited the field: change
-`data-value` and the next submit sends the new value (also after a failed submit); render
-`data-value=""` and the slot is cleared. It **never overwrites a field the user already
+`data-value` and the slot updates right away (a visible field's input shows the new value), so
+the next submit sends it (also after a failed submit); render `data-value=""` and the slot is
+cleared. It **never overwrites a field the user already
 edited**. A seeded visible field shows the value in its input:
 `<input type="hidden" ref="contact.email.control" data-value="{defaultEmail}" />`.
 
@@ -429,7 +430,7 @@ createEffect(() =>
   forms.onSubmitOutcome(({ event }) => {
     if (event.formId !== BOOKING_FORM_ID || event.outcome !== 'failed') return;
     if (event.code === 'SLOT_TAKEN') {
-      setSelectedSlot(undefined); // hidden data-value → "", refreshed at the next submit (§2)
+      setSelectedSlot(undefined); // hidden data-value → "": the slot follows right away (§2)
       void reloadAvailability();
     }
   }),
