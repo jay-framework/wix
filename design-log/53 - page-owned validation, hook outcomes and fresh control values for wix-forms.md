@@ -1,6 +1,6 @@
 # 53 - Page-Owned Validation, Hook Outcomes and Fresh Control Values for wix-forms
 
-Status: [Implemented] (2026-11-11, uncommitted) — P1–P7 implemented; live browser checks pass (§Live verification); Q5 VoiceOver (Safari) passed 2026-11-11. Q10 answered (a). NVDA is a non-blocking follow-up.
+Status: [Implemented] (2026-11-11, on branch `wix-forms-step-13`) — P1–P7 implemented; live browser checks pass (§Live verification); Q5 VoiceOver (Safari) passed 2026-11-11. Q10 answered (a). NVDA is a non-blocking follow-up.
 
 Builds on **DL#41** (value store, `control` channel, live validation, Addendum A accessibility), **DL#42** (submit hooks, `runSubmission`), **DL#45** (outcomes as enum variants, text is a default) and **DL#50** (allowlist, session refusal). Found while moving a downstream site's three production forms (a contact form, a booking form with a slot picker, a unit-enquiry form) onto the plugin. Generic: no site is named. Paths are relative to `packages/wix-forms/` unless stated. jay is referenced only by public surface.
 

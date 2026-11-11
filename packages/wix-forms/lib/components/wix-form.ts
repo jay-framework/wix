@@ -132,7 +132,10 @@ function WixFormInteractive(
         setValues((current) => ({ ...current, [target]: value }));
     }
 
-    /** Submission payload — a synchronous projection of the store, never the DOM (§0). */
+    /**
+     * Submission payload — a synchronous projection of the store (§0). Submit first copies
+     * autofilled native values into the store (`reconcileNativeInputs`, DL#53 G2).
+     */
     function readFormValues(): Record<string, FieldValue> {
         return projectSubmissionValues(carryForward.fields, values());
     }
