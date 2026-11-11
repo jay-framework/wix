@@ -2850,6 +2850,7 @@ __metadata:
     "@jay-framework/reactive": "npm:^0.26.1"
     "@jay-framework/runtime": "npm:^0.26.1"
     "@jay-framework/secure": "npm:^0.26.1"
+    "@jay-framework/ssr-runtime": "npm:^0.26.1"
     "@jay-framework/stack-client-runtime": "npm:^0.26.1"
     "@jay-framework/stack-server-runtime": "npm:^0.26.1"
     "@jay-framework/vite-plugin": "npm:^0.26.1"

@@ -1,0 +1,17 @@
+<html>
+<head>
+  <script type="application/jay-data">
+data:
+  </script>
+  <script type="application/jay-headless" contract="./contact-0.26.1.jay-contract" key="contact"></script>
+</head>
+<body>
+<form>
+  <label for="c-email">{contact.email.label}</label>
+  <input id="c-email" ref="contact.email.input" aria-invalid="{contact.email.invalid}" />
+  <span aria-live="polite">{contact.email.error}</span>
+  <p if="contact.email.invalid">Please check this field.</p>
+  <button ref="contact.submitButton">Send</button>
+</form>
+</body>
+</html>

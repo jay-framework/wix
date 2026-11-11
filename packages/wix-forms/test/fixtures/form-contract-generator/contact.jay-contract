@@ -14,6 +14,7 @@ tags:
       - { tag: required, type: variant, dataType: boolean }
       - { tag: error, type: data, dataType: string }
       - { tag: invalid, type: variant, dataType: boolean }
+      - { tag: errorRule, type: variant, dataType: "enum (NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE | URL | PATTERN | CUSTOM | SERVER)" }
       - { tag: input, type: interactive, elementType: HTMLInputElement }
       - { tag: control, type: interactive, elementType: HTMLElement }
   - tag: email
@@ -27,6 +28,7 @@ tags:
       - { tag: required, type: variant, dataType: boolean }
       - { tag: error, type: data, dataType: string }
       - { tag: invalid, type: variant, dataType: boolean }
+      - { tag: errorRule, type: variant, dataType: "enum (NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE | URL | PATTERN | CUSTOM | SERVER)" }
       - { tag: input, type: interactive, elementType: HTMLInputElement }
       - { tag: control, type: interactive, elementType: HTMLElement }
   - tag: message
@@ -40,6 +42,7 @@ tags:
       - { tag: required, type: variant, dataType: boolean }
       - { tag: error, type: data, dataType: string }
       - { tag: invalid, type: variant, dataType: boolean }
+      - { tag: errorRule, type: variant, dataType: "enum (NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE | URL | PATTERN | CUSTOM | SERVER)" }
       - { tag: input, type: interactive, elementType: HTMLTextAreaElement }
       - { tag: control, type: interactive, elementType: HTMLElement }
   - tag: country
@@ -51,6 +54,7 @@ tags:
       - { tag: required, type: variant, dataType: boolean }
       - { tag: error, type: data, dataType: string }
       - { tag: invalid, type: variant, dataType: boolean }
+      - { tag: errorRule, type: variant, dataType: "enum (NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE | URL | PATTERN | CUSTOM | SERVER)" }
       - { tag: input, type: interactive, elementType: HTMLSelectElement }
       - { tag: control, type: interactive, elementType: HTMLElement }
       - tag: options

@@ -3,7 +3,8 @@ import type { SubmitFlight } from './form-submit-flight.js';
 
 export interface RunFormSubmitParams {
     flight: SubmitFlight;
-    isSubmitting: () => boolean;
+    /** The generation the component began with its busy flag (DL#53 G2). */
+    generation: number;
     setIsSubmitting: (value: boolean) => void;
     ensureSessionFresh: () => Promise<void>;
     submitForm: (input: {
@@ -19,14 +20,12 @@ export interface RunFormSubmitParams {
 
 /**
  * Client submit orchestration (session refresh, action call, redirect). Kept separate from
- * the component so the path is unit-testable without a DOM harness.
+ * the component so the path is unit-testable without a DOM harness. The component owns the
+ * busy flag and the flight generation (DL#53 G2); this clears the flag on a transport failure
+ * and when there is no redirect.
  */
 export async function runFormSubmit(params: RunFormSubmitParams): Promise<void> {
-    if (params.isSubmitting()) return;
-
-    const generation = params.flight.begin();
-    params.setIsSubmitting(true);
-
+    const { generation } = params;
     let result: SubmitFormResult;
     try {
         await params.ensureSessionFresh();

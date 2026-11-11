@@ -3,6 +3,7 @@ import { getService } from '@jay-framework/stack-server-runtime';
 import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
 import { loadWixFormsConfig } from './config-loader.js';
 import { provideWixFormsService } from './services/wix-forms-service.js';
+import { provideWixFormsContext } from './contexts/wix-forms-context.js';
 
 export const init = makeJayInit()
     .withServer(async () => {
@@ -15,5 +16,7 @@ export const init = makeJayInit()
         return {};
     })
     .withClient(async () => {
+        // The page-code channel for page checks (DL#53 G1); created here once, never lazily.
+        provideWixFormsContext();
         console.log('[wix-forms] Client ready');
     });
