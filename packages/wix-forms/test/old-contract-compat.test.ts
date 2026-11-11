@@ -12,7 +12,7 @@ import {
     JAY_IMPORT_RESOLVER,
     parseJayFile,
 } from '@jay-framework/compiler-jay-html';
-import { RuntimeMode } from '@jay-framework/compiler-shared';
+import { RuntimeMode, prettifyHtml } from '@jay-framework/compiler-shared';
 import { escapeAttr, escapeHtml } from '@jay-framework/ssr-runtime';
 import { buildFormViewState } from '../lib/components/form-view-state.js';
 import { FieldRule } from '../lib/components/field-rule.js';
@@ -125,6 +125,6 @@ describe('0.26.1 contract without errorRule (DL#53 §Backward compatibility)', (
         const render = loadServerRender(generateServerElementFile(parsed.val!).val);
         const expected = await readFile(path.join(fixtureDir, 'expected-render.html'), 'utf-8');
 
-        expect(renderToString(render, viewState)).toEqual(expected.trim());
+        expect(prettifyHtml(renderToString(render, viewState))).toEqual(prettifyHtml(expected));
     });
 });
