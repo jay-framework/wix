@@ -44,6 +44,7 @@ sequenceDiagram
   A->>A: decodeSessionCookie: AccessToken, refreshToken ignored, over 3072 ignored
   A->>A: resolveRequestIdentity: session none / expired / active
 ```
+
 _The browser keeps the refresh token; the server only ever stores and reads `{ value, expiresAt }`._
 
 ## Problem
@@ -63,10 +64,10 @@ The cookie stores the refresh token (`session-cookie.ts:28-31`), though the serv
 - **Q1 (was #47 Q8). Cookie shape and migration?** `{ accessToken: { value, expiresAt } }` keeps the old top-level key, so the decoder reads old and new cookies the same way and ignores `refreshToken`. A bare `{ value, expiresAt }` would need a second decode branch for no gain. Old cookies fit the cap (DL#42: about 1828 characters).
 - **Q2 (was #47 Q9). `Secure` "except on localhost"?** The server cannot see the host through jay's public `ActionRequest`, and adding a dev-mode signal (env var or config flag) would be new surface.
   **Answer (settled, approved): `secure: true` always, with no localhost exception.**
-  - *Source:* MDN `Set-Cookie`: "Insecure sites (`http:`) cannot set cookies with the `Secure` attribute. The `https:` requirements are ignored when the `Secure` attribute is set by localhost." MDN gives no per-browser versions. So `http://localhost` is expected to work, and Chrome, Firefox and Safari are each verified live (Verification Criteria). If a browser drops the cookie there, the dev symptom is a generic submit failure (L9, DL #50) in that browser only (Q6).
-  - *Other dev hosts:* plain-http development on any host other than `localhost` (a LAN IP for phone testing, a custom `.test` host; `127.0.0.1` is checked live) never keeps `wix_session` in any browser. Dev must use `http://localhost` or https. The guide says so.
-  - *Blast radius:* every `wix_session` reader is affected, not only forms: without the cookie a wix-forms submit is refused (L9, DL #50) and wix-data `asCaller` throws its `NoCallerSessionError`.
-  - *`__Host-` prefix: deferred.* The options already meet its rules (`Secure`, `Path=/`, no `Domain`); its extra guarantee is that a subdomain or an http response cannot set or overwrite the cookie. It renames the cookie, so `resolveRequestIdentity` would need a dual read of the old and new names plus a clear of the old one, and MDN's localhost exception is stated for `Secure`, not for prefixed names: a second dev unknown. Tracked with the jay items (DL #47).
+  - _Source:_ MDN `Set-Cookie`: "Insecure sites (`http:`) cannot set cookies with the `Secure` attribute. The `https:` requirements are ignored when the `Secure` attribute is set by localhost." MDN gives no per-browser versions. So `http://localhost` is expected to work, and Chrome, Firefox and Safari are each verified live (Verification Criteria). If a browser drops the cookie there, the dev symptom is a generic submit failure (L9, DL #50) in that browser only (Q6).
+  - _Other dev hosts:_ plain-http development on any host other than `localhost` (a LAN IP for phone testing, a custom `.test` host; `127.0.0.1` is checked live) never keeps `wix_session` in any browser. Dev must use `http://localhost` or https. The guide says so.
+  - _Blast radius:_ every `wix_session` reader is affected, not only forms: without the cookie a wix-forms submit is refused (L9, DL #50) and wix-data `asCaller` throws its `NoCallerSessionError`.
+  - _`__Host-` prefix: deferred._ The options already meet its rules (`Secure`, `Path=/`, no `Domain`); its extra guarantee is that a subdomain or an http response cannot set or overwrite the cookie. It renames the cookie, so `resolveRequestIdentity` would need a dual read of the old and new names plus a clear of the old one, and MDN's localhost exception is stated for `Secure`, not for prefixed names: a second dev unknown. Tracked with the jay items (DL #47).
 - **Q3 (was #47 Q10). `Max-Age` without a refresh token?** Unchanged (30 days). The cookie outliving its access token is deliberate: an expired cookie reads as `session: 'expired'` (precise "refresh the page" copy, DL#43) instead of `'none'` (generic refusal). The comment at `session-cookie.ts:13-17` is rewritten with this reason.
 - **Q4 (was #47 Q11). Why also stop sending the refresh token from the browser?** The server ignores it, so the network and server memory should not see it. One line in `syncSessionCookie` (`wix-client-context.ts:78`): send `{ tokens: { accessToken } }`. `SyncSessionInput` becomes `{ tokens: Pick<Tokens, 'accessToken'> } | { clear: true }`; old cached bundles that still send both tokens are accepted (the extra field is ignored).
 - **Q5. What does the cap measure, and what if a real token exceeds it?** The encoded cookie value. An access-only cookie is about 1490 encoded characters (base64url of the ~1070-character token plus its JSON), so the headroom is about 2x. DL#42 did not record whether the measured token was a visitor's or a member's, so a member cookie is measured live (end-to-end check 2). If a token ever exceeded the cap, `syncSession` would answer `{ ok: false }`, which the browser treats as synced, so that caller would be cookie-less until the access token changes (up to 4 h): wix-forms submits refused (L9, generic copy) and wix-data `asCaller` throwing. No design change; the live check guards it.
@@ -76,15 +77,15 @@ The cookie stores the refresh token (`session-cookie.ts:28-31`), though the serv
 
 ### Cookie contents, before and after
 
-| | Before (DL#42) | After |
-| --- | --- | --- |
-| JSON | `{ accessToken, refreshToken }`, the SDK objects as sent | `{ accessToken: { value, expiresAt } }` |
-| Refresh token | stored | never stored; the browser stops sending it |
-| Extra fields | kept (F10) | dropped (`toAccessToken` rebuilds the object) |
-| Size | unbounded (F10) | encoded value ≤ 3072, else refused on write / ignored on read |
-| `Secure` | only when jay sees https (F11) | always |
-| `HttpOnly`, `SameSite=Lax`, `Path=/`, `Max-Age` 30 days | as is | unchanged |
-| Typical encoded length | about 1828 | about 1490 |
+|                                                         | Before (DL#42)                                           | After                                                         |
+| ------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------- |
+| JSON                                                    | `{ accessToken, refreshToken }`, the SDK objects as sent | `{ accessToken: { value, expiresAt } }`                       |
+| Refresh token                                           | stored                                                   | never stored; the browser stops sending it                    |
+| Extra fields                                            | kept (F10)                                               | dropped (`toAccessToken` rebuilds the object)                 |
+| Size                                                    | unbounded (F10)                                          | encoded value ≤ 3072, else refused on write / ignored on read |
+| `Secure`                                                | only when jay sees https (F11)                           | always                                                        |
+| `HttpOnly`, `SameSite=Lax`, `Path=/`, `Max-Age` 30 days | as is                                                    | unchanged                                                     |
+| Typical encoded length                                  | about 1828                                               | about 1490                                                    |
 
 ### 1. `lib/session/session-cookie.ts`
 
@@ -95,7 +96,11 @@ import type { AccessToken } from '@wix/sdk';
 export const MAX_SESSION_COOKIE_LENGTH = 3072;
 
 export const SESSION_COOKIE_OPTIONS: CookieOptions = {
-    httpOnly: true, secure: true, sameSite: 'Lax', path: '/', maxAge: THIRTY_DAYS_IN_SECONDS,
+  httpOnly: true,
+  secure: true,
+  sameSite: 'Lax',
+  path: '/',
+  maxAge: THIRTY_DAYS_IN_SECONDS,
 };
 
 /** The cookie value for an access token; undefined when the token is malformed or the encoded value is too long. */
@@ -129,6 +134,7 @@ Reads `accessToken.value` / `accessToken.expiresAt` from the decoded `AccessToke
 Red first in every phase: write the test with the correct expected behaviour, run it against the unchanged code, record the red result, then implement.
 
 **Phase 1: new tests (red).** `test/session/session.test.ts` and a new `test/session/session-cookie.test.ts`:
+
 - encode→decode round-trips `{ value, expiresAt }` only, and the decoded JSON has no `refreshToken`;
 - an old `{ accessToken, refreshToken }` cookie decodes to its access token;
 - extra fields on `accessToken` are dropped;
@@ -137,6 +143,7 @@ Red first in every phase: write the test with the correct expected behaviour, ru
 - `syncSession` with an oversized or malformed token → `{ ok: false }`, cookie cleared, token-info not called.
 
 **Phase 2: existing tests that change** (expected values updated to the new correct behaviour, not to the code's output):
+
 - `session.test.ts:49-66`: the expected cookie becomes `encodeSessionCookie(tokens.accessToken)` and the options gain `secure: true` (`:62`). `tokensFor` (`:14-19`) keeps the refresh token as the browser's input shape.
 - `session.test.ts:128-170`: cookies built with `encodeSessionCookie(tokens.accessToken)`.
 - `caller-client.test.ts:30-36` `cookiesWithExpiry(unknown)`: build the cookie as raw base64url JSON, because the decoder test needs a non-finite `expiresAt`, which `encodeSessionCookie` now refuses.
@@ -145,6 +152,7 @@ Red first in every phase: write the test with the correct expected behaviour, ru
 **Phase 3: implement** §1–§3.
 
 **Phase 4: guide** (`agent-kit/plugin/wix-request-session.md`):
+
 - §"Reading it in an action": "Use `resolveRequestIdentity` only in POST actions (`makeJayAction`), never in `makeJayQuery`: `wix_session` is `SameSite=Lax`, so it rides on cross-site GET navigations."
 - Correct the cookie description (access token only, `Secure`).
 - "`wix_session` is `Secure`: develop on `http://localhost` or over https. Over plain http on any other host (a LAN IP, a custom `.test` host) the session is never kept, and every caller-session feature (form submits, wix-data `asCaller`) behaves as signed-out." Plus one line per browser that fails end-to-end check 1 (Q6).
@@ -170,15 +178,15 @@ Red first in every phase: write the test with the correct expected behaviour, ru
 - **Unit** (each red first, then green): encode/decode without the refresh token; the migration read; an oversized encoded value refused both ways; `secure: true`; `syncSession` refusing junk before token-info; wix-data's old-format cookie tests green unchanged.
 - Build, type check and tests clean in wix-server-client; wix-data tests green.
 - **End-to-end, live, before release:**
-  1. *Local dev over `http://localhost` in Chrome, Firefox and Safari (Q2).* In each browser: `wix_session` is set with `Secure`, and a visitor submit succeeds. Also record what `http://127.0.0.1` does. A browser that fails is recorded and documented (Q6); it does not block the release.
-  2. *A signed-in member keeps a session (Q5).* Sign in as a member, confirm `wix_session` is set, record its encoded length (expected well under 3072), and confirm a form submit posts as the member.
+  1. _Local dev over `http://localhost` in Chrome, Firefox and Safari (Q2)._ In each browser: `wix_session` is set with `Secure`, and a visitor submit succeeds. Also record what `http://127.0.0.1` does. A browser that fails is recorded and documented (Q6); it does not block the release.
+  2. _A signed-in member keeps a session (Q5)._ Sign in as a member, confirm `wix_session` is set, record its encoded length (expected well under 3072), and confirm a form submit posts as the member.
 
 ## Scope Pre-mortem
 
-- *A dev browser over http drops the cookie* → submits refused (L9) in that browser only; end-to-end check 1 records it; guide line (Q6).
-- *Plain-http dev on a LAN IP or custom host* → no session in any browser; submits refused, wix-data `asCaller` throws. Documented in `wix-request-session.md` (Phase 4); use `localhost` or https.
-- *A token encodes over the cap* → that caller is cookie-less until the token changes (Q5); end-to-end check 2 measures a member cookie.
-- *Old browsers keep sending the refresh token* → ignored on the server; nothing stored.
+- _A dev browser over http drops the cookie_ → submits refused (L9) in that browser only; end-to-end check 1 records it; guide line (Q6).
+- _Plain-http dev on a LAN IP or custom host_ → no session in any browser; submits refused, wix-data `asCaller` throws. Documented in `wix-request-session.md` (Phase 4); use `localhost` or https.
+- _A token encodes over the cap_ → that caller is cookie-less until the token changes (Q5); end-to-end check 2 measures a member cookie.
+- _Old browsers keep sending the refresh token_ → ignored on the server; nothing stored.
 - Scope creep refused: the `__Host-` prefix, a token-info cache (F5), a dev-mode flag.
 
 ## jay-feedback
@@ -198,6 +206,7 @@ Implemented per the plan, Phases 1–5. Paths relative to `packages/wix-server-c
 **Changed:** `lib/session/session-cookie.ts` (`MAX_SESSION_COOKIE_LENGTH`, `secure: true`, `encodeSessionCookie(unknown)` / `decodeSessionCookie` → `AccessToken`, private `toAccessToken`, rewritten module and `Max-Age` comments); `lib/actions/session-actions.ts` (encode before token-info, `SyncSessionInput` uses `Pick<Tokens, 'accessToken'>`); `lib/actions/sync-session.jay-action` (description); `lib/session/request-identity.ts` (reads the decoded `AccessToken`); `lib/wix-client-context.ts` (sends `{ tokens: { accessToken } }`); `agent-kit/plugin/wix-request-session.md` (F7 line, cookie description, `Secure` dev-host rule). Tests: new `test/session/session-cookie.test.ts`; `test/session/session.test.ts`, `test/session/caller-client.test.ts`, `test/wix-client-context.test.ts` updated per Phase 2.
 
 **Red → green:**
+
 - Phase 1/2 against unchanged code: 17 failed / 65 passed in wix-server-client (all 10 new cookie tests, the 4 changed `session.test.ts` cases, the 3 changed `wix-client-context.test.ts` cases).
 - The new `syncSession` junk cases: the first malformed input (`value: ''`) passed on the old code, because `verifyAccessToken` already refuses an empty token without a fetch. Replaced by `{ value: 'member-access', expiresAt: NaN }`, which the old code sent to token-info: both junk cases (oversized, malformed) then red.
 - After Phase 3: wix-server-client **82/82**, `build:check-types` clean, `npm run build` (including `validate-plugin`) clean.
@@ -205,6 +214,7 @@ Implemented per the plan, Phases 1–5. Paths relative to `packages/wix-server-c
 - wix-forms (also a reader) **196/196**, unchanged.
 
 **Deviations:**
+
 - `caller-client.test.ts`: the now-unused `Tokens` import was removed; the raw cookie keeps `REFRESH_TOKEN`, so those decoder tests also exercise the old format.
 - `syncSession` short-circuits with `cookieValue && await verifyAccessToken(...)` rather than an early `if` return; both junk and unverified tokens share one clear-and-`{ ok: false }` branch. Behaviour as designed.
 

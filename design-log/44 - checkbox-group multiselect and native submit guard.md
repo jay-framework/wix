@@ -18,7 +18,7 @@ Builds on **DL#40** (per-form contracts, repeated `options` sub-contract), **DL#
 - **Delivery order: Phase 1 (the guard fix) ships first, as its own commit and PR with its own approval**, ahead of Phases 2–5. It is a live regression on `main` and does not depend on the checkbox feature. The Phase 1 PR also carries validator rule 3 (the missing-`submitButton` warning, which covers the guard's remaining gap, Q9) and the DL#41 Implementation Results "on ship" line. The design text is unchanged; only the delivery order is split.
 - **The guard finds the `<form>` only through `refs.submitButton`** (`exec$` → `button.form`). A `<form>` holding a key's field refs but no `ref="<key>.submitButton"` (plain button, Enter-only) stays unguarded and does a GET navigation; this is a stated gap, surfaced by a new validator **warning** (Q9), not fixed at runtime.
 - **jay-feedback:** three validator rules (`options.toggle` on a field whose `options` has no `toggle` → error via a check on the segment after `options` (the fourth ref part, `<key>.<field>.options.<child>`); `.control` inside `forEach` over a multiselect's `options` → warning; a key's refs inside a `<form>` with no `<key>.submitButton` ref → warning) + `rich-forms.md` §4b checkbox-chip example. No framework change. See §jay-feedback.
-- **Deferred to the effort's final end-to-end pass (not a phase here):** browser proof (`/demo-feature`) and the live Wix check that closes DL#41 MUST-VERIFY #1 (Wix accepts `string[]`/boolean). Marked *pending* in §Verification.
+- **Deferred to the effort's final end-to-end pass (not a phase here):** browser proof (`/demo-feature`) and the live Wix check that closes DL#41 MUST-VERIFY #1 (Wix accepts `string[]`/boolean). Marked _pending_ in §Verification.
 
 ## Background
 
@@ -58,9 +58,9 @@ DL#41 Addendum A moved submit onto the `<form>`'s `submit` event (Enter, `reques
 - **Q4. Does a `submit` listener added during the click handler see this click's submit?** Yes: the form submission is the button's activation behaviour, which runs after the `click` event dispatch finishes; the listener is on the form by then. Verified in the deferred browser pass (item c).
 - **Q5. Double submit?** Covered today: `submit()` awaits only the seed, then validates synchronously and enters `runFormSubmit`, which sets `isSubmitting(true)` before its first await (`form-submit-execution.ts:25-28`). Two overlapping submits both run `seedControlsIntoStore` (`wix-form.ts:273`); that is harmless (it re-reads the same `data-value`s and `seedControlValues` skips dirty targets). Only the second `runFormSubmit` returns early at `:25`, so one API request is sent. No new guard.
 - **Q6. Name of the toggle ref?** `toggle` states the action; `checkbox` would encode an element type. Chosen: `toggle`.
-- **Q7. Does `selected` update without extra code?** Yes, `render` passes `valueByTarget: values()` (`wix-form.ts:335`) and `form-view-state.ts:62-64` recomputes it. The DOM `checked` *property* after reset is not guaranteed by a `checked="{selected}"` attribute on reused nodes (DL#41 reset bug), hence the explicit reflect.
+- **Q7. Does `selected` update without extra code?** Yes, `render` passes `valueByTarget: values()` (`wix-form.ts:335`) and `form-view-state.ts:62-64` recomputes it. The DOM `checked` _property_ after reset is not guaranteed by a `checked="{selected}"` attribute on reused nodes (DL#41 reset bug), hence the explicit reflect.
 - **Q8. Validator: flag `.control` inside `forEach` over a multiselect's `options`?** Yes — it is the silent-scalar bug of Problem 1 and is visible in the element tree.
-- **Q9. Validator for the guard?** Yes. All three install points locate the `<form>` through the submit button (`refs.submitButton.exec$` → `button.form`, or the clicked button's `form`). Once installed, every `submit` of that form (wired or unwired button, Enter, `requestSubmit()`) reaches the listener — but a page whose `<form>` holds a key's field refs and **no** `ref="<key>.submitButton"` (a plain `<button>`, or Enter-to-submit only) never installs it, and the browser performs the GET navigation. Validation first: a bindings-validator **warning** for exactly that shape (§jay-feedback rule 3), suggesting `ref="<key>.submitButton"`. *Alternative considered:* also install from field refs (`input`'s `element.form`). Rejected: it covers only fields bound through `input` (a chip-only or `control`-only form still has no element with `.form` reachable from refs), adds a per-field `exec$` fan-out at three install points, and still leaves a gap; the warning is deterministic and points at the one-attribute fix. **Remaining gap:** a page that ignores the warning (or forms the validator cannot see, e.g. a `<form>` outside the jay-html) still navigates.
+- **Q9. Validator for the guard?** Yes. All three install points locate the `<form>` through the submit button (`refs.submitButton.exec$` → `button.form`, or the clicked button's `form`). Once installed, every `submit` of that form (wired or unwired button, Enter, `requestSubmit()`) reaches the listener — but a page whose `<form>` holds a key's field refs and **no** `ref="<key>.submitButton"` (a plain `<button>`, or Enter-to-submit only) never installs it, and the browser performs the GET navigation. Validation first: a bindings-validator **warning** for exactly that shape (§jay-feedback rule 3), suggesting `ref="<key>.submitButton"`. _Alternative considered:_ also install from field refs (`input`'s `element.form`). Rejected: it covers only fields bound through `input` (a chip-only or `control`-only form still has no element with `.form` reachable from refs), adds a per-field `exec$` fan-out at three install points, and still leaves a gap; the warning is deterministic and points at the one-attribute fix. **Remaining gap:** a page that ignores the warning (or forms the validator cannot see, e.g. a `<form>` outside the jay-html) still navigates.
 - **Q10. Does Wix accept `string[]`/boolean?** Open — DL#41 MUST-VERIFY #1; deferred to the final end-to-end pass. Fallback stays DL#41's serialize-at-boundary in `lib/wix-apis/create-submission.ts`.
 
 ## Design
@@ -78,9 +78,9 @@ Inside the existing `if (field.inputType === 'multiselect')` (`:131-133`), after
 ```ts
 /** Next multiselect selection after one option is checked or unchecked, in option order. */
 export function toggleSelection(
-    field: FormFieldView,
-    change: { current: FieldValue; optionValue: string; checked: boolean },
-): string[]
+  field: FormFieldView,
+  change: { current: FieldValue; optionValue: string; checked: boolean },
+): string[];
 ```
 
 Rules: start from `current` if it is an array, else `[]`; add or remove `optionValue`; drop values not in `field.options`; return in `field.options` order, without duplicates.
@@ -101,15 +101,15 @@ const guardedForms = new WeakSet<HTMLFormElement>();
 
 /** Route the form's native `submit` to the plugin and cancel the page-reloading GET. Idempotent per form. */
 export function guardNativeFormSubmit(
-    form: HTMLFormElement | null | undefined,
-    submit: () => Promise<void>,
+  form: HTMLFormElement | null | undefined,
+  submit: () => Promise<void>,
 ): void {
-    if (!form || guardedForms.has(form)) return;
-    guardedForms.add(form);
-    form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        void submit();
-    });
+  if (!form || guardedForms.has(form)) return;
+  guardedForms.add(form);
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    void submit();
+  });
 }
 ```
 
@@ -119,7 +119,7 @@ export function guardNativeFormSubmit(
 - The `createEffect` (`:183-186`) drops `wireNativeFormSubmit`; it keeps `seedControlsIntoStore` (harmless; the submit-time seed is the guarantee). Its comment (`:178-182`, which today claims both the guard and the seed "run here, on mount, where the elements exist") is rewritten: the effect runs synchronously at construction, before refs bind, so its `exec$` sees nothing; the seed is kept only as a best effort, and the guard is installed from microtasks and the click.
 - After the effect: `afterRemount(() => wireNativeFormSubmit(refs, submit));` — runs after the synchronous render has bound the refs.
 - `clearNativeInputsAfterRemount` (`:228-234`): inside its existing `afterRemount` callback, after the reflect loop, call `wireNativeFormSubmit(refs, submit)`. Reset can re-create the `<form>` node (conditional branch), which would otherwise stay unguarded until the next click; a reused node is a WeakSet no-op.
-- Submit-button click (`:244-248`): extract `owningSubmitForm(target: EventTarget | null): HTMLFormElement | undefined` (the `closest('button')` + `type === 'submit'` + `form` logic now inside `isFormSubmitter`, `:392-395`); `isFormSubmitter` becomes `!!owningSubmitForm(target)`. The click handler does `const form = owningSubmitForm(event.target); if (form) { guardNativeFormSubmit(form, submit); return; }` (no `preventDefault`, so the native `submit` still fires and is handled). **Chosen over the jay ref's own element** (`refs.submitButton.exec$`): `exec$` on the collection ref returns its *first* bound element (`runtime/dist/index.js:1012-1016`), not necessarily the clicked one, and it would install through a Promise executor rather than plainly in the handler; `owningSubmitForm` reads the same node the submit/no-submit decision reads, synchronously, and keeps the one `closest` call inside a typed helper instead of an `as` cast at the call site.
+- Submit-button click (`:244-248`): extract `owningSubmitForm(target: EventTarget | null): HTMLFormElement | undefined` (the `closest('button')` + `type === 'submit'` + `form` logic now inside `isFormSubmitter`, `:392-395`); `isFormSubmitter` becomes `!!owningSubmitForm(target)`. The click handler does `const form = owningSubmitForm(event.target); if (form) { guardNativeFormSubmit(form, submit); return; }` (no `preventDefault`, so the native `submit` still fires and is handled). **Chosen over the jay ref's own element** (`refs.submitButton.exec$`): `exec$` on the collection ref returns its _first_ bound element (`runtime/dist/index.js:1012-1016`), not necessarily the clicked one, and it would install through a Promise executor rather than plainly in the handler; `owningSubmitForm` reads the same node the submit/no-submit decision reads, synchronously, and keeps the one `closest` call inside a typed helper instead of an `as` cast at the call site.
 
 Known limit (unchanged from main, out of scope): two `wix-form` instances inside one `<form>` — only the first registers a listener.
 
@@ -145,20 +145,20 @@ Each phase writes its tests red first, then ends green (`yarn test` in `packages
 
 1. **Phase 1 — submit guard (bug fix).**
    - Red: `test/form-submit-guard.test.ts` — fake form (`addEventListener` stub): one listener for repeated calls on one form; `submit` event calls `preventDefault` then `submit`; `null`/`undefined` form is a no-op.
-   - Red bug-repro: `test/wix-form-native-submit.test.ts`, *"should attach the form submit listener once the submit button ref is bound"*, with a doc comment pointing at this log's Problem 2 (expected: a `submit` listener on the owning form; actual on main: none). DOM-free harness, mirroring how jay builds a page:
+   - Red bug-repro: `test/wix-form-native-submit.test.ts`, _"should attach the form submit listener once the submit button ref is bound"_, with a doc comment pointing at this log's Problem 2 (expected: a `submit` listener on the owning form; actual on main: none). DOM-free harness, mirroring how jay builds a page:
      - **Fakes:** `fakeForm = { addEventListener: vi.fn() }`; `fakeButton = { form: fakeForm, type: 'submit', addEventListener: vi.fn(), removeEventListener: vi.fn() }`.
-     - **`preRender(options)`:** `const [refManager, [submitButton]] = ReferencesManager.for(options, ['submitButton'], [], [], [])` (`@jay-framework/runtime`, `dist/index.js:1310-1316`; the returned entry is a ref *factory* that needs a construction context, `:1231-1240`). `render(viewState)` = `ConstructContext.withRootContext(viewState, refManager, () => { const ref = submitButton(); ref.set(fakeButton); return { mount: () => ref.mount(), update: () => {}, unmount: () => ref.unmount() }; })` (`:319-336`; `withRootContext` calls the fake element's `mount`, which runs `ref.mount()` → `addRef`, `:1069-1071`, `:927-933`). Return `[refManager.getPublicAPI(), render]` (`:1285-1288`). The refs shape is therefore `{ submitButton }` at the part root, which is what `WixFormInteractive` reads (`refs.submitButton`) for an unkeyed part (stack-client-runtime `partRefs = part.key ? refs[part.key] : refs`, `dist/index.js:264`).
+     - **`preRender(options)`:** `const [refManager, [submitButton]] = ReferencesManager.for(options, ['submitButton'], [], [], [])` (`@jay-framework/runtime`, `dist/index.js:1310-1316`; the returned entry is a ref _factory_ that needs a construction context, `:1231-1240`). `render(viewState)` = `ConstructContext.withRootContext(viewState, refManager, () => { const ref = submitButton(); ref.set(fakeButton); return { mount: () => ref.mount(), update: () => {}, unmount: () => ref.unmount() }; })` (`:319-336`; `withRootContext` calls the fake element's `mount`, which runs `ref.mount()` → `addRef`, `:1069-1071`, `:927-933`). Return `[refManager.getPublicAPI(), render]` (`:1285-1288`). The refs shape is therefore `{ submitButton }` at the part root, which is what `WixFormInteractive` reads (`refs.submitButton`) for an unkeyed part (stack-client-runtime `partRefs = part.key ? refs[part.key] : refs`, `dist/index.js:264`).
      - **Comp with contexts:** `makeJayComponent(preRender, (props, refs) => wixForm.comp(props, refs, fastViewState, carryForward))` with no context markers, where `fastViewState` is the fast view state turned into `{ key: createSignal(value) }` (the same shape `makeSignals` builds, `@jay-framework/stack-client-runtime` `dist/index.js:242-247`, used at `:268`) and `carryForward` is a hand-built `WixFormCarryForward` with one **optional** (`required: false`) text field, so Phase 4 test (a) is never stopped by client validation of that field; field `target`s map to ref tags via `contractTagName` (the multiselect `interests` → `refs.interests`) — exactly the `partContexts = [partFastViewState, partCarryForward]` order of `:270-274`. `wixForm.comp` is the function stored by `withInteractive` (`@jay-framework/fullstack-component` `dist/index.js:116-119`).
      - **Act/assert:** instantiate the component, `await Promise.resolve()` (one microtask), assert `fakeForm.addEventListener` was called once with `'submit'`.
      - **Against main it fails red:** the only install is the construction-time effect, which runs before `withRootContext` mounts the ref, so `exec$` resolves `undefined` and `addEventListener` is never called. Run it on the unchanged code and record the red result before Phase 1 green.
      - **Import-time risk:** no node test has imported `wix-form.ts` before. It imports `submitForm` from `../actions/forms-actions.js` and `ensureSessionFresh` from `@jay-framework/wix-server-client/client` (`wix-form.ts:26,28`), which may pull in Wix SDK / browser globals at import. Likely fix: `vi.mock('../actions/forms-actions.js')` and `vi.mock('@jay-framework/wix-server-client/client')` at the top of the test file.
      - If the harness still proves impractical — an import-time failure the mocks above do not fix, or an unforeseen DOM dependency during render — record the exact blocker, keep the unit tests, and rely on the deferred browser item (c).
-   - Red, second bug-repro in the same file, *"should guard the new form after a reset re-mount"* (also fails on main: no install point re-runs after a re-mount): extend the harness with a `resetButton` ref (`ReferencesManager.for(options, ['submitButton', 'resetButton'], …)`) and a fake reset button whose `addEventListener` records its listener. In the fake `render`, assign the created submit-button ref to an outer `let submitRef` so the test can reach it. After the first microtask, call the recorded `click` listener with `{ target: fakeResetButton, preventDefault: vi.fn() }` (the reset handler calls `event.preventDefault()`, `wix-form.ts:236-237`); then, **synchronously, before any `await`**, `submitRef.unmount()`, `submitRef.set(newFakeButton)` (where `newFakeButton.form` is a **new** fake form), `submitRef.mount()` — so the reset's `afterRemount` microtask, queued by the click, sees the swapped button; only then `await Promise.resolve()` and assert the new form's `addEventListener` was called once with `'submit'` and the first form's was not called again. The `resetButton` ref must be **created and bound in `render`**, not only declared in `ReferencesManager.for`: inside `withRootContext`, `const resetRef = resetButton(); resetRef.set(fakeResetButton);` and include `resetRef.mount()`/`resetRef.unmount()` in the fake element's `mount`/`unmount`, otherwise `refs.resetButton.onclick` has no element and the reset listener is never recorded.
+   - Red, second bug-repro in the same file, _"should guard the new form after a reset re-mount"_ (also fails on main: no install point re-runs after a re-mount): extend the harness with a `resetButton` ref (`ReferencesManager.for(options, ['submitButton', 'resetButton'], …)`) and a fake reset button whose `addEventListener` records its listener. In the fake `render`, assign the created submit-button ref to an outer `let submitRef` so the test can reach it. After the first microtask, call the recorded `click` listener with `{ target: fakeResetButton, preventDefault: vi.fn() }` (the reset handler calls `event.preventDefault()`, `wix-form.ts:236-237`); then, **synchronously, before any `await`**, `submitRef.unmount()`, `submitRef.set(newFakeButton)` (where `newFakeButton.form` is a **new** fake form), `submitRef.mount()` — so the reset's `afterRemount` microtask, queued by the click, sees the swapped button; only then `await Promise.resolve()` and assert the new form's `addEventListener` was called once with `'submit'` and the first form's was not called again. The `resetButton` ref must be **created and bound in `render`**, not only declared in `ReferencesManager.for`: inside `withRootContext`, `const resetRef = resetButton(); resetRef.set(fakeResetButton);` and include `resetRef.mount()`/`resetRef.unmount()` in the fake element's `mount`/`unmount`, otherwise `refs.resetButton.onclick` has no element and the reset listener is never recorded.
    - Red: validator rule 3 (§jay-feedback) tests in `test/wix-form-bindings-validator.test.ts`, plus the `<button ref="contact.submitButton">` additions to existing fixtures listed there → implement in `wix-form-bindings.ts`.
    - On ship: append the DL#41 Implementation Results line (§jay-feedback "On ship").
    - Green: §4 changes, including the rewritten comments at `wix-form.ts:178-182` and the `wireNativeFormSubmit` doc comment at `:399-406` (both currently state the stale "runs on mount / effect re-runs" model); both bug-repro cases go green. Update `rich-forms.md` §1 only if wording changes (behaviour now matches it).
 2. **Phase 2 — pure function.** `toggleSelection` cases in `test/submission-values.test.ts` (add, remove, option order, unknown value, non-array current, duplicate add) → implement.
-3. **Phase 3 — contract.** The `choices` fixture today has a checkbox (`consent`) and a multiselect (`interests`) but **no single `select`**, so add one: a `country` single-select field to `choicesForm` in `test/form-contract-generator.test.ts` (`:100-125`) and its hand-written expected block (with `options` but no `toggle`) to `test/fixtures/form-contract-generator/choices.jay-contract`; add the hand-written `toggle` line after `selected` in `interests.options`. The existing *"checkbox … multiselect via options.selected"* test asserts the fixture as a whole; with `country` added it no longer tests only checkbox/multiselect, so rename it to *"should model a checkbox as a boolean value variant, a multiselect via options.selected and options.toggle, and a single select via options without toggle"* (it compares the whole `choices.jay-contract` fixture). Honesty note: the `country` addition passes against current code (it pins the no-`toggle` rule); only the `toggle` line goes red. Red, then `contract-utils.ts`. No type-level test: wix-forms never generates a `.d.ts` from a contract (fixtures are `.jay-contract` only, and `parseContract` is untyped here, `form-contract-generator.test.ts:177`). Instead a parsed-contract case next to the existing one (`:131`): `checkValidationErrors(parseContract(contract.yaml, …))`, find `interests` → `options` and assert a child `expect.objectContaining({ tag: 'toggle', type: [ContractTagType.interactive], elementType: ['HTMLInputElement'] })` — `parseTag` stores `type` as an array of `ContractTagType` (`parseType`) and `elementType` as an array from `parseElementType`'s `split("|")` (`@jay-framework/compiler-jay-html`), and assert `country` → `options` has no `toggle` child. This also catches a malformed tag the YAML string comparison would accept.
+3. **Phase 3 — contract.** The `choices` fixture today has a checkbox (`consent`) and a multiselect (`interests`) but **no single `select`**, so add one: a `country` single-select field to `choicesForm` in `test/form-contract-generator.test.ts` (`:100-125`) and its hand-written expected block (with `options` but no `toggle`) to `test/fixtures/form-contract-generator/choices.jay-contract`; add the hand-written `toggle` line after `selected` in `interests.options`. The existing _"checkbox … multiselect via options.selected"_ test asserts the fixture as a whole; with `country` added it no longer tests only checkbox/multiselect, so rename it to _"should model a checkbox as a boolean value variant, a multiselect via options.selected and options.toggle, and a single select via options without toggle"_ (it compares the whole `choices.jay-contract` fixture). Honesty note: the `country` addition passes against current code (it pins the no-`toggle` rule); only the `toggle` line goes red. Red, then `contract-utils.ts`. No type-level test: wix-forms never generates a `.d.ts` from a contract (fixtures are `.jay-contract` only, and `parseContract` is untyped here, `form-contract-generator.test.ts:177`). Instead a parsed-contract case next to the existing one (`:131`): `checkValidationErrors(parseContract(contract.yaml, …))`, find `interests` → `options` and assert a child `expect.objectContaining({ tag: 'toggle', type: [ContractTagType.interactive], elementType: ['HTMLInputElement'] })` — `parseTag` stores `type` as an array of `ContractTagType` (`parseType`) and `elementType` as an array from `parseElementType`'s `split("|")` (`@jay-framework/compiler-jay-html`), and assert `country` → `options` has no `toggle` child. This also catches a malformed tag the YAML string comparison would accept.
 4. **Phase 4 — component wiring.** Red first, in `test/wix-form-native-submit.test.ts`'s harness (Phase 1) or a sibling `test/wix-form-multiselect.test.ts` reusing it:
    - **Harness extension:** carry-forward gains a required multiselect `interests` with options `a`, `b`, `c`. The ref tree is built from nested child managers (`ReferencesManager.for(options, elem, elemCollection, comp, compCollection, childRefManagers)`, `runtime/dist/index.js:1310-1316`; `mkRefs` uses `childRefManagers` as the named children and the public API calls each child's `getPublicAPI()`, `:1241-1255`):
      - `const [optionsManager, [toggle]] = ReferencesManager.for(options, [], ['toggle'], [], [])` — `toggle` in the **elemCollection** slot, so it is an `HTMLElementCollectionRefImpl` (`:1294-1300`).
@@ -167,37 +167,60 @@ Each phase writes its tests red first, then ends green (`yarn test` in `packages
      - Public API: `refs.interests.options.toggle`.
    - **Per-item refs:** in jay, a `forEach` item gets its own construction context from `ConstructContext.forItem(childViewState, id)` (`:233-246`), entered by `mkUpdateCollection` with `withContext(CONSTRUCTION_CONTEXT_MARKER, parentContext.forItem(item, id), …)` (`:631-634`); the ref factory then reads `currData` (the item) from it (`:1231-1240`). `CONSTRUCTION_CONTEXT_MARKER` is not exported, so the harness cannot enter that context directly. It does what the factory does with an item `currData`: `optionsManager.get('toggle').mkManagedRef(option, ['interests', option.value, 'toggle'], options?.eventWrapper ?? defaultEventWrapper)` (`get`, `:1256-1258`; `mkManagedRef`, `:988-995`; `defaultEventWrapper` exported). Each item ref's `viewState` is then the option item `{ value, label, selected }`, as `forItem` would give. `set` it to a fake checkbox `{ checked: false, focus: vi.fn(), addEventListener: vi.fn() /* records listener */, removeEventListener: vi.fn() }` and `mount`/`unmount` it with the fake element, like the submit ref. `vi.mock('../actions/forms-actions.js')` exposes the `submitForm` mock.
    - **Triggering submit (tests a, c):** after the first microtask, call the `submit` listener recorded on the Phase 1 fake form (`fakeForm.addEventListener.mock.calls.find(([type]) => type === 'submit')[1]`) with `{ preventDefault: vi.fn() }`. The listener calls `void submit()`, which awaits `seedControlsIntoStore` and then `runFormSubmit`, so one microtask is not enough: flush with `await vi.waitFor(() => expect(…))` (or `await new Promise((resolve) => setTimeout(resolve))`) before asserting. Mocks: `vi.mock('../actions/forms-actions.js')` with `submitForm` resolving `{ success: true }`, and `vi.mock('@jay-framework/wix-server-client/client')` with `ensureSessionFresh`/session sync resolving `undefined`.
-   - (a) *"should submit the toggled options as a string array in option order"*: fire the recorded `change` listener for `c` then `a` with `{ target: { checked: true } }`, invoke the recorded form `submit` listener → `submitForm` mock receives `interests: ['a', 'c']`.
-   - (b) *"should uncheck every chip after reset"*: toggle `a`, set the fake's `checked = true`, click reset, `await` the microtask → every fake checkbox's `checked === false`, and the first fake checkbox's `focus` was called (reset runs `focusFirstFieldInput(…, () => true)`, `wix-form.ts:200`, and the harness's text field has no bound `input`, so the first chip is the first focusable field — §3).
-   - (c) *"should focus the first chip when a required multiselect fails on submit"*: invoke the recorded form `submit` listener with no selection → its event's `preventDefault` was called and the first fake checkbox's `focus` was called once.
+   - (a) _"should submit the toggled options as a string array in option order"_: fire the recorded `change` listener for `c` then `a` with `{ target: { checked: true } }`, invoke the recorded form `submit` listener → `submitForm` mock receives `interests: ['a', 'c']`.
+   - (b) _"should uncheck every chip after reset"_: toggle `a`, set the fake's `checked = true`, click reset, `await` the microtask → every fake checkbox's `checked === false`, and the first fake checkbox's `focus` was called (reset runs `focusFirstFieldInput(…, () => true)`, `wix-form.ts:200`, and the harness's text field has no bound `input`, so the first chip is the first focusable field — §3).
+   - (c) _"should focus the first chip when a required multiselect fails on submit"_: invoke the recorded form `submit` listener with no selection → its event's `preventDefault` was called and the first fake checkbox's `focus` was called once.
    - Then green: §3 in `wix-form.ts`. Together they pin the `options.toggle` ref shape, the `viewState` payload, the reflect and the focus fallback; browser items (a), (d) remain the end-to-end proof.
 5. **Phase 5 — validator + guide.** §jay-feedback rules 1 and 2 (rule 3 shipped in Phase 1) in `test/wix-form-bindings-validator.test.ts` → `wix-form-bindings.ts`; `rich-forms.md` §4b example. The guide's ✅ chip example is proven two ways, **both mandatory**: (1) added verbatim as a bindings-validator test case against the `choices` contract, expecting no findings (ref rules only — it never compiles expressions); and (2) **compiled with jay** (`@jay-framework/compiler-jay-html`, already a wix-forms dependency, against the same contract), expecting no compile errors. **Entry points (both required):** `parseJayFile(html, filename, fixtureDir, {}, resolver, projectRoot)` (`compiler-jay-html` `dist/index.js:20087`) only parses the file and its imports — body bindings are resolved during code generation — so asserting on it alone is a **false green**; the test must then call `generateElementFile(parsed.val, <importerMode>)` (`:23091`) and assert its `.validations` is empty. The guide snippet is a fragment, so the test wraps it in a full document: one `<script type="application/jay-data">` (required by `parseYaml`), `<script type="application/jay-headless" contract="./choices.jay-contract" key="contact">` (loaded through `loadContract`), and a `<body>`. (2) is what catches binding-scope mistakes such as a field binding inside `forEach` that needs `$parent.` (Examples). Red first: run (2) on the example before the `$parent.` fix (or with `{contact.interests.invalid}`) and see "data field not found".
 
 ## Examples
 
 ✅ Checkbox-chip group (visually-hidden input, not `display:none`, so it stays focusable)
+
 ```html
 <style>
   /* Visually hidden but focusable and clickable through its <label> — never display:none. */
-  .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
-             overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
 </style>
 <form novalidate>
-<fieldset aria-describedby="contact-interests-error">
-  <legend>{contact.interests.label}<span if="contact.interests.required"> (required)</span></legend>
-  <label forEach="contact.interests.options" trackBy="value" class="chip {selected ? on}">
-    <input type="checkbox" class="sr-only" ref="contact.interests.options.toggle" value="{value}" checked="{selected}" aria-invalid="{$parent.contact.interests.invalid}" /> {label}
-  </label>
-  <span id="contact-interests-error" class="error" aria-live="polite">{contact.interests.error}</span>
-</fieldset>
-<label><input type="checkbox" ref="contact.consent.input" /> I agree</label>
-<button ref="contact.submitButton">Send</button>
+  <fieldset aria-describedby="contact-interests-error">
+    <legend>
+      {contact.interests.label}<span if="contact.interests.required"> (required)</span>
+    </legend>
+    <label forEach="contact.interests.options" trackBy="value" class="chip {selected ? on}">
+      <input
+        type="checkbox"
+        class="sr-only"
+        ref="contact.interests.options.toggle"
+        value="{value}"
+        checked="{selected}"
+        aria-invalid="{$parent.contact.interests.invalid}"
+      />
+      {label}
+    </label>
+    <span id="contact-interests-error" class="error" aria-live="polite"
+      >{contact.interests.error}</span
+    >
+  </fieldset>
+  <label><input type="checkbox" ref="contact.consent.input" /> I agree</label>
+  <button ref="contact.submitButton">Send</button>
 </form>
 ```
+
 - Inside `forEach="contact.interests.options"`, bindings are relative to the **option** (`{value}`, `{label}`, `{selected}`); reach the field with `$parent.` (`{$parent.contact.interests.invalid}`). A plain `{contact.interests.invalid}` there fails to compile ("data field not found").
 - `aria-invalid` sits on each chip `<input>`, not the `<fieldset>`: ARIA 1.2 does not support `aria-invalid` on the `group` role, so assistive tech may ignore it there. `aria-describedby` on the fieldset is fine.
 - The `<form>` follows `rich-forms.md` §1; with the wired `submitButton` inside it, rule 3 stays silent (the Phase 5 bindings-validator case checks that).
-✅ `<select multiple ref="contact.interests.input">` with `<option forEach=… selected="{selected}">` (unchanged).
+  ✅ `<select multiple ref="contact.interests.input">` with `<option forEach=… selected="{selected}">` (unchanged).
 
 ❌ `<input type="checkbox" forEach="contact.interests.options" ref="contact.interests.control" data-value="{value}">` — submits the last clicked value as a string (validator warning).
 ❌ `ref="contact.country.options.toggle"` on a single `select` — no such tag (validator error).
@@ -216,14 +239,14 @@ Each phase writes its tests red first, then ends green (`yarn test` in `packages
 
 ## Scope Pre-mortem
 
-- *Reset (or a conditional) re-creates the `<form>` node* → the reset microtask (`clearNativeInputsAfterRemount`) re-installs the guard; the Phase 1 re-mount case and browser item (d) check it.
-- *The `<form>` has no `<key>.submitButton` ref (plain button / Enter only)* → guard never installs, page navigates on submit; mitigated only by the jay-feedback rule 3 warning, not at runtime (Q9).
-- *A `<form>` appears through a conditional not driven by reset* → the click install covers clicks; Enter/`requestSubmit()` on such a form before any click stays a gap; browser item (c) checks the fresh-load path.
-- *A chip-only required multiselect is skipped by focus-first-invalid* → §3 focus fallback; Phase 4 test (c).
-- *Phase 1 harness needs a DOM* → fallback stated in Phase 1; no jsdom dependency added in this slice.
-- *`options.toggle` generated with the wrong type/element type, or on a single select* → caught by the Phase 3 parsed-contract assertion.
-- *Chip inputs hidden with `display:none`* → not focusable; guide shows sr-only clipping and a wrapping `<label>`.
-- *Wix rejects arrays* → DL#41 fallback (deferred pass).
+- _Reset (or a conditional) re-creates the `<form>` node_ → the reset microtask (`clearNativeInputsAfterRemount`) re-installs the guard; the Phase 1 re-mount case and browser item (d) check it.
+- _The `<form>` has no `<key>.submitButton` ref (plain button / Enter only)_ → guard never installs, page navigates on submit; mitigated only by the jay-feedback rule 3 warning, not at runtime (Q9).
+- _A `<form>` appears through a conditional not driven by reset_ → the click install covers clicks; Enter/`requestSubmit()` on such a form before any click stays a gap; browser item (c) checks the fresh-load path.
+- _A chip-only required multiselect is skipped by focus-first-invalid_ → §3 focus fallback; Phase 4 test (c).
+- _Phase 1 harness needs a DOM_ → fallback stated in Phase 1; no jsdom dependency added in this slice.
+- _`options.toggle` generated with the wrong type/element type, or on a single select_ → caught by the Phase 3 parsed-contract assertion.
+- _Chip inputs hidden with `display:none`_ → not focusable; guide shows sr-only clipping and a wrapping `<label>`.
+- _Wix rejects arrays_ → DL#41 fallback (deferred pass).
 - Out of scope: radio groups (served by `control`), min/max selection counts, two instances in one `<form>`, member prefill (DL#41 deferred).
 
 ## jay-feedback
@@ -236,7 +259,7 @@ Priority: validation → agent-kit → framework.
   - (2) **warning:** `ref="<key>.<field>.control"` on an element whose own `forEach`, or an ancestor's (`parentNode` walk, as `closestAncestor` does), equals `<key>.<field>.options` exactly, when that field's `options` children include `toggle`. Suggests `options.toggle`. It matches only the **absolute** form `forEach="<key>.<field>.options"` (how pages and the guides write a headless key's loop, e.g. `rich-forms.md:99`, `per-form-contracts.md:83`); a relative path (a `forEach` nested in another `forEach`, written against the outer item, e.g. `forEach="quickOption.choices"` in the store examples) or any other spelling is not matched, and the rule stays silent (a missed warning, never a false one).
   - (3) **warning:** an element with `ref="<key>.…"` (any `<key>` in the per-form import keys) whose `closestAncestor(el, 'form')` (`:129-134`) is a `<form>` that contains no descendant with `ref="<key>.submitButton"`. Message: the form's native submit is not intercepted and reloads the page; suggestion: add `ref="<key>.submitButton"` to the form's submit button. One finding per (form, key), not per ref. Known false positive (accepted, suppressible): a submit button outside the `<form>` associated through `form="<id>"` is not a descendant, so the rule warns although `button.form` would resolve and the guard would install.
   - The second-segment suggestion copy (`:224-225`) also mentions `.options.toggle` for multi-choice checkboxes.
-  - Tests: each rule fires and stays silent on the ✅ examples; nested-tags-unavailable stays silent. Rule 3: *warns when a `<form>` holds `contact.name.input` but no `contact.submitButton`*; *silent when the `<form>` contains `ref="contact.submitButton"`*; *silent when the key's refs have no enclosing `<form>`* (the click path submits); one warning for several refs in the same form.
+  - Tests: each rule fires and stays silent on the ✅ examples; nested-tags-unavailable stays silent. Rule 3: _warns when a `<form>` holds `contact.name.input` but no `contact.submitButton`_; _silent when the `<form>` contains `ref="contact.submitButton"`_; _silent when the key's refs have no enclosing `<form>`_ (the click path submits); one warning for several refs in the same form.
   - **Existing tests:** rule 3 would add a warning to existing `test/wix-form-bindings-validator.test.ts` cases that wrap key refs in a `<form>` without a submit button and assert with exact `toEqual`. The rule: **every `<form>` fixture holding a `contact.*` ref and no `contact.submitButton`** (at `34be8e2` these include `:68-72`, `:141-145`, `:157-160`, `:166-169`, `:179-190` "should accept the accessible pattern", `:193`, `:204`, `:216-223`; `:52-56` has no ref and is unaffected — re-check by running the suite after adding rule 3). Plan: add `<button ref="contact.submitButton">Send</button>` inside each such fixture's `<form>` so each test keeps testing only its own rule; their expected findings are **not** changed.
 - **Agent-kit (yes):** `rich-forms.md` §4b — add the checkbox-chip example (with its `.sr-only` CSS) and the lines "multi-choice checkboxes bind `options.toggle`; `control` is single-value" and "inside `forEach` over `options`, bindings are relative to the option; reach the field with `$parent.`". §1 already describes the (now working) native submit; no page code is needed for it.
 - **Framework (no):** recorded only — a supported after-mount hook in `@jay-framework/component` would let the guard and the hidden-control seed run at mount without a microtask.

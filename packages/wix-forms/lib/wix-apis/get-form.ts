@@ -55,7 +55,11 @@ export interface GetFormResponse {
 }
 
 export async function getFormSchema(client: WixClient, formId: string): Promise<GetFormResponse> {
-    return wixFetch<GetFormResponse>(client, `/form-schema-service/v4/forms/${formIdPathSegment(formId)}`, {
-        method: 'GET',
-    });
+    return wixFetch<GetFormResponse>(
+        client,
+        `/form-schema-service/v4/forms/${formIdPathSegment(formId)}`,
+        {
+            method: 'GET',
+        },
+    );
 }

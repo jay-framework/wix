@@ -48,15 +48,16 @@ Real visitors always carry `wix_session`: `oauthStrategy.clientId` is required b
   - with a cookie, an unlisted id is answered at once, a listed id after a Wix round trip.
 
   **Decision: accept it as a residual risk.** Form ids are random 128-bit GUIDs, so the endpoint cannot be used to enumerate them, and every form placed on a page already ships its id to the browser (`carryForward.formId`, `lib/components/wix-form.ts:326`). Learning that a known id is submittable tells an attacker nothing a page visitor cannot see. Unifying the answers instead is in Trade-offs. A List Forms failure returns `UNKNOWN` + `SUBMIT_FAILED_MESSAGE` (a server fault, not about the id). No result names the list.
+
 - **Q4 (was #47 Q5). Cache lifetime?** The process. A form enabled after the server started is refused until a restart. Accepted: a new form also needs a regenerated contract, which means a rebuild and redeploy. A form disabled after start stays allowlisted until restart (Wix still decides on its side).
 - **Q5 (was #47 Q6). Why refuse inside `submit()`, not at the top of `runSubmission`?** Only the hook's `submit(values, { as: 'site' })` call shows the opt-in. Refusing up front would break exactly the `{ as: 'site' }` forms this log keeps working. Consequence (unchanged from today): a hook runs for cookie-less requests with `caller: undefined`; the hook guide already says inputs are untrusted (`lib/services/wix-forms-submit-hooks.ts:15-17`).
 - **Q6 (was #47 Q7). Which copy for a cookie-less refusal?** `reason: PERMISSION` (agreed), with the generic `SUBMIT_FAILED_MESSAGE`. "Please sign in" is wrong for a visitor, and "your session expired" is wrong for a script. The rare real visitor without a cookie (cookies blocked, a sync failure, a token-info outage) sees the generic message; the server logs L9 with the form id. So `PERMISSION` now covers three causes (Wix 401/403, an expired session, no cookie), and the docs that define it say page copy must not assume sign-in (§3, Phase 5).
 - **Q7 (was #47 Q14). Two hook keys that canonicalise to the same id?** The first in `Object.keys` order wins. `Object.keys` lists own properties only, so the prototype-key protection of `Object.hasOwn` (`run-submission.ts:124-126`) is kept. A non-GUID key (such as the illustrative `'contact-us'` in DL#43 §Examples) never matched a real request before either; the guide now says keys are the form's id, in any case.
 - **Q8 (was #47 Q15). Honeypot?** Only `rich-forms.md` §4a is reworded; no action-schema change, no server-side honeypot in the gate. Rationale: the threat F1 describes is a script calling the action directly, and such a script simply omits the honeypot field, so a server check adds nothing against it. The bots a honeypot does catch (ones that fill every DOM input and submit through the page) are already stopped by the browser check. A server-side honeypot would need an action-schema change for no gain against the gate's threat; it is tracked (DL #47).
 - **Q9 (was #47 Q17). How is the allowlist load bounded?** Three rules, all fail-closed:
-  - *Bounded wait:* each load races a 10 s timer. `wixFetch` has no abort signal (`wix-fetch.ts:19-27`), so a timed-out List Forms request is abandoned, not cancelled, and its late result is discarded. Adding a signal to `wixFetch` is out of the gate.
-  - *Retry backoff:* after a failure or a timeout, checks fail closed for 15 s without calling Wix. Without it, any anonymous junk GUID could start a full, cursor-paged List Forms call with site credentials on every request during an outage. With it, an instance makes at most one load per 25 s (10 s timeout + 15 s backoff) while Wix is failing.
-  - *Empty list:* a successful empty list is a real answer (a site with no enabled forms, or a wrong `namespace`). It is cached, and one `console.warn` names the namespace, so every submit being `REJECTED` is visible in the log.
+  - _Bounded wait:_ each load races a 10 s timer. `wixFetch` has no abort signal (`wix-fetch.ts:19-27`), so a timed-out List Forms request is abandoned, not cancelled, and its late result is discarded. Adding a signal to `wixFetch` is out of the gate.
+  - _Retry backoff:_ after a failure or a timeout, checks fail closed for 15 s without calling Wix. Without it, any anonymous junk GUID could start a full, cursor-paged List Forms call with site credentials on every request during an outage. With it, an instance makes at most one load per 25 s (10 s timeout + 15 s backoff) while Wix is failing.
+  - _Empty list:_ a successful empty list is a real answer (a site with no enabled forms, or a wrong `namespace`). It is cached, and one `console.warn` names the namespace, so every submit being `REJECTED` is visible in the log.
 - **Q10 (was #47 Q18). A hook keyed by a non-GUID: warn at runtime?** Yes. After the gate a mis-keyed `{ as: 'site' }` hook leaves a members-only form refused for cookie-less callers with only L9 in the log. `selectHook` warns once per hooks object (a module `WeakSet`) for each key `canonicalFormId` rejects: `[wix-forms] submit hook key "<key>" is not a form id and never matches; key hooks by the form's id`. It is the cheapest deterministic feedback available: hooks are registered in TypeScript at runtime, so no `jay-stack validate` rule can see them.
 - **Q11. What if every configured `formIds` entry is invalid?** The mode follows the raw config: a non-empty `config.formIds` is configured mode, however many entries survive canonicalisation. If none survives, the set is empty and every submit is `REJECTED`, with one warning per dropped entry and one more: `[wix-forms] formIds has no valid form id: every submission is refused`. It never falls back to list mode: the owner asked for an explicit list, and enumerating the namespace would widen it.
 - **Q12. Does a `{ as: 'site' }` hook keep a cookie-less site-credential path?** Yes, by design. An allowlisted form whose hook calls `submit(…, { as: 'site' })` accepts a `curl` with no cookie and posts it with the site's credentials, which bypasses the form's own Wix submitter restriction (members-only) and possibly Wix's captcha (unmeasured, DL#43 V5). The owner opted in, so it stays; it is accepted residual risk 5 (DL #47). The zero-cost hardening is the recommended form for members-only forms that visitors must submit: require `client` before forcing the site. `client` is set only for an active session, so a cookie-less (or expired) request is refused with the hook's own `ActionError` (`REJECTED` + its message), while a page visitor still posts as the site. A script that mints a visitor token still gets through (residual risk 1). The unconditional one-liner stays for forms that are truly public.
@@ -83,17 +84,18 @@ flowchart TD
   F -- "caller, session expired" --> R4["SessionExpiredError: PERMISSION + session-expired copy (unchanged)"]
   F -- "caller, session active" --> P["post as the caller (unchanged)"]
 ```
+
 _The allowlist runs before the session refusal, so for a known GUID without a cookie the reason (R1 vs R3) shows whether it is listed: accepted residual risk 2. A post's own result (success, `VALIDATION`, Wix 401/403/404/500) is mapped as today._
 
 ### Outcomes by request
 
-| Request | Unlisted or non-GUID id | Listed, no hook | Listed, hook calls `submit()` | Listed, hook `submit(…, { as: 'site' })` | Listed, hook requires `client`, then `{ as: 'site' }` |
-| --- | --- | --- | --- | --- | --- |
-| No cookie (a script) | `REJECTED`, generic, L7 | `PERMISSION`, generic, L9 | `PERMISSION`, generic, L9 (hook sees `NoCallerSessionError`) | **site post** (risk 5) | `REJECTED`, the hook's message |
-| Visitor, active | `REJECTED`, L7 | post as the visitor | post as the visitor | site post | site post |
-| Member, active | `REJECTED`, L7 | post as the member | post as the member | site post | site post |
-| Expired cookie | `REJECTED`, L7 | `PERMISSION`, session-expired copy | `PERMISSION`, session-expired copy | site post | `REJECTED`, the hook's message |
-| Any, while List Forms fails | `UNKNOWN`, generic, L8 | same | same | same | same |
+| Request                     | Unlisted or non-GUID id | Listed, no hook                    | Listed, hook calls `submit()`                                | Listed, hook `submit(…, { as: 'site' })` | Listed, hook requires `client`, then `{ as: 'site' }` |
+| --------------------------- | ----------------------- | ---------------------------------- | ------------------------------------------------------------ | ---------------------------------------- | ----------------------------------------------------- |
+| No cookie (a script)        | `REJECTED`, generic, L7 | `PERMISSION`, generic, L9          | `PERMISSION`, generic, L9 (hook sees `NoCallerSessionError`) | **site post** (risk 5)                   | `REJECTED`, the hook's message                        |
+| Visitor, active             | `REJECTED`, L7          | post as the visitor                | post as the visitor                                          | site post                                | site post                                             |
+| Member, active              | `REJECTED`, L7          | post as the member                 | post as the member                                           | site post                                | site post                                             |
+| Expired cookie              | `REJECTED`, L7          | `PERMISSION`, session-expired copy | `PERMISSION`, session-expired copy                           | site post                                | `REJECTED`, the hook's message                        |
+| Any, while List Forms fails | `UNKNOWN`, generic, L8  | same                               | same                                                         | same                                     | same                                                  |
 
 _Unlisted ids never reach identity, a hook or Wix. A minted visitor token is an "active visitor" (risk 1)._
 
@@ -104,29 +106,32 @@ export const ALLOWLIST_LOAD_TIMEOUT_MS = 10_000;
 export const ALLOWLIST_RETRY_BACKOFF_MS = 15_000;
 
 export interface SubmittableFormsSource {
-    namespace: string; // named in the empty-list warning
-    configuredFormIds: readonly string[];
-    listEnabledFormIds(): Promise<string[]>;
+  namespace: string; // named in the empty-list warning
+  configuredFormIds: readonly string[];
+  listEnabledFormIds(): Promise<string[]>;
 }
 
 /** A check for canonical form ids. Configured ids win; otherwise one shared, success-only cached list. Each check owns its own cache and backoff. */
 export function createSubmittableFormCheck(
-    source: SubmittableFormsSource,
+  source: SubmittableFormsSource,
 ): (canonicalId: string) => Promise<boolean>;
 ```
 
-| Mode | When | Behaviour |
-| --- | --- | --- |
+| Mode       | When                          | Behaviour                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ---------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Configured | `configuredFormIds` non-empty | A `Set` built when `createSubmittableFormCheck` is called: each id canonicalised; a non-GUID entry dropped with one `console.warn`: `[wix-forms] formIds entry "<entry>" is not a form id; it is ignored`. No network. If no entry survives: empty set plus `[wix-forms] formIds has no valid form id: every submission is refused` (Q11). Because the service is also provided at setup / agent-kit time, the warnings show there too (Q2). |
-| List | otherwise | The algorithm below. |
+| List       | otherwise                     | The algorithm below.                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 **List mode**, with closure state of each check returned by `createSubmittableFormCheck` (`loading?: Promise<Set<string>>`, `retryAfterMs?: number`; never module state):
+
 1. If `Date.now() < retryAfterMs`, reject with `Error('submittable forms are unavailable (retrying after a failed load)')` without calling the source.
 2. Otherwise `loading ??= withTimeout(source.listEnabledFormIds(), ALLOWLIST_LOAD_TIMEOUT_MS).then(toCanonicalSet, onLoadFailure)`. `onLoadFailure` sets `loading = undefined` and `retryAfterMs = Date.now() + ALLOWLIST_RETRY_BACKOFF_MS`, then rethrows.
 3. Await `loading` and test `has(canonicalId)`. Concurrent first callers share `loading`.
+
 - `toCanonicalSet` warns once when the set is empty: `[wix-forms] no enabled forms in namespace "<namespace>": every submission is refused until restart`.
 
 Wiring:
+
 - `WixFormsService` (`wix-forms-service-marker.ts`) gains `isSubmittableForm(formId: string): Promise<boolean>`. `provideWixFormsService` builds the check with `listEnabledFormIds: async () => (await listForms(wixClient, { namespace: config.namespace, include: 'enabled' })).map((form) => form.id)`.
 - `WixFormsService.createSubmission` (server-side project code) is not gated: no allowlist, no cookie-less refusal. Only the public `submitForm` action is.
 
@@ -141,32 +146,33 @@ Wiring:
 attempt.state = 'pending';
 const asCaller = options?.as !== 'site';
 if (asCaller && callerSession.session === 'none') {
-    return failAttempt(new NoCallerSessionError(formId)); // state 'failed', postedAs 'caller'
+  return failAttempt(new NoCallerSessionError(formId)); // state 'failed', postedAs 'caller'
 }
 if (asCaller && isCallerSessionExpired(callerSession)) {
-    return failAttempt(new SessionExpiredError(formId));
+  return failAttempt(new SessionExpiredError(formId));
 }
 const authorization = asCaller ? callerSession.authorization : undefined;
 attempt.postedAs = asCaller ? 'caller' : 'site';
 ```
 
-  (`failAttempt` is the existing four lines at `:164-167`, extracted.) An `'active'` session always has `authorization`, which `runSubmission` already enforces at `:82-84`. A hook that catches the refusal cannot then fall back to `{ as: 'site' }`: the attempt is consumed (`:152`).
+(`failAttempt` is the existing four lines at `:164-167`, extracted.) An `'active'` session always has `authorization`, which `runSubmission` already enforces at `:82-84`. A hook that catches the refusal cannot then fall back to `{ as: 'site' }`: the attempt is consumed (`:152`).
+
 - `failedSubmissionResult` (`:239-266`): `NoCallerSessionError` → L9 → `{ success: false, reason: PERMISSION, message: SUBMIT_FAILED_MESSAGE }`, checked before the field-error branch, like `SessionExpiredError`.
 - `NoCallerSessionError` goes in `wix-forms-submit-hooks.ts` next to `SessionExpiredError` (`:60-66`), exported from `lib/index.ts`. Message: `submit() did not post form "<id>": the request has no session cookie; use { as: 'site' } to post as the site`.
 - New log lines (form id only, as `logFailure` does today): **L7** `refused a submission for a form that is not submittable`, **L8** `could not load the submittable forms`, **L9** `refused a submission without a session cookie`.
 
 ### 3. Doc comments (exact text)
 
-| Where | New text |
-| --- | --- |
-| `SubmitHookInput.submit` (`wix-forms-submit-hooks.ts:25-31`) | "Submit to Wix, at most once, before the hook settles. `values` replaces the submitted values (default: `input.values`). Posts as the caller when the request has a session; without a session cookie it is refused, unless `{ as: 'site' }` forces the site. Rejects when Wix rejects, with `SessionExpiredError` when a caller post's session expired, with `NoCallerSessionError` when the request has no session cookie, or with `SubmitIgnoredError` when ignored. Await or return it." |
-| `SubmitOptions.as` (`:36`) | "Default: the caller; refused without a session cookie. `'site'` posts with the site's credentials for any caller, with or without a cookie." |
-| `SubmitAttempt.postedAs` (`run-submission.ts:131`) | "Set synchronously with state = 'pending'. 'site' only when forced with `{ as: 'site' }`." |
-| `SubmitFailure.PERMISSION` (`lib/components/submit-outcome.ts:31`, new comment) | "Wix denied the caller (401 / 403), the caller's session expired, or the request had no session cookie. Page copy must not assume sign-in." |
-| `run-submission.ts:242` | "An expired session: the page can ask the user to refresh." (was "the page can ask the user to sign in") |
-| `WixFormsConfig` module comment (`config-loader.ts:6-11`) | "Wix Forms config: per-form contract generation and, through `formIds`, the runtime submit allowlist. Absent config → generate every enabled form in the default namespace, and accept submissions for those forms." |
-| `WixFormsConfig.formIds` (`config-loader.ts:15`) | "Optional form ids: restricts generation to these forms and is the runtime submit allowlist (`submitForm` refuses other forms)." |
-| `WixFormsConfig.include` (`config-loader.ts:17`) | "Which forms to enumerate for generation. Default: `enabled`. The runtime allowlist always uses enabled forms." |
+| Where                                                                           | New text                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SubmitHookInput.submit` (`wix-forms-submit-hooks.ts:25-31`)                    | "Submit to Wix, at most once, before the hook settles. `values` replaces the submitted values (default: `input.values`). Posts as the caller when the request has a session; without a session cookie it is refused, unless `{ as: 'site' }` forces the site. Rejects when Wix rejects, with `SessionExpiredError` when a caller post's session expired, with `NoCallerSessionError` when the request has no session cookie, or with `SubmitIgnoredError` when ignored. Await or return it." |
+| `SubmitOptions.as` (`:36`)                                                      | "Default: the caller; refused without a session cookie. `'site'` posts with the site's credentials for any caller, with or without a cookie."                                                                                                                                                                                                                                                                                                                                                |
+| `SubmitAttempt.postedAs` (`run-submission.ts:131`)                              | "Set synchronously with state = 'pending'. 'site' only when forced with `{ as: 'site' }`."                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `SubmitFailure.PERMISSION` (`lib/components/submit-outcome.ts:31`, new comment) | "Wix denied the caller (401 / 403), the caller's session expired, or the request had no session cookie. Page copy must not assume sign-in."                                                                                                                                                                                                                                                                                                                                                  |
+| `run-submission.ts:242`                                                         | "An expired session: the page can ask the user to refresh." (was "the page can ask the user to sign in")                                                                                                                                                                                                                                                                                                                                                                                     |
+| `WixFormsConfig` module comment (`config-loader.ts:6-11`)                       | "Wix Forms config: per-form contract generation and, through `formIds`, the runtime submit allowlist. Absent config → generate every enabled form in the default namespace, and accept submissions for those forms."                                                                                                                                                                                                                                                                         |
+| `WixFormsConfig.formIds` (`config-loader.ts:15`)                                | "Optional form ids: restricts generation to these forms and is the runtime submit allowlist (`submitForm` refuses other forms)."                                                                                                                                                                                                                                                                                                                                                             |
+| `WixFormsConfig.include` (`config-loader.ts:17`)                                | "Which forms to enumerate for generation. Default: `enabled`. The runtime allowlist always uses enabled forms."                                                                                                                                                                                                                                                                                                                                                                              |
 
 Unchanged on purpose: `SUBMIT_NOT_ALLOWED_MESSAGE`'s comment (`submit-outcome.ts:10`; that copy is still used only for a caller 403), and the three low-level post comments, which stay true because they describe `createSubmission` itself, not the action: `SubmitDeps.createSubmission` (`run-submission.ts:46`), `lib/wix-apis/create-submission.ts:9-10` and `WixFormsService.createSubmission` (`wix-forms-service-marker.ts:18-19`, ungated).
 
@@ -181,6 +187,7 @@ Unchanged on purpose: `SUBMIT_NOT_ALLOWED_MESSAGE`'s comment (`submit-outcome.ts
 Red first in every phase: write the test with the correct expected behaviour, run it against the unchanged code, record the red result, then implement. Starts after DL #48 and DL #49 are built (sync is via the Yarn workspace dependency).
 
 **Phase 1: allowlist.**
+
 1. `test/submittable-forms.test.ts` (pure module, fake timers; each case builds its own check):
    - Configured ids: no list call, case-insensitive match, a non-GUID entry dropped with one warning. All entries invalid (`['form-1']`): no list call, every id → false, the entry warning plus the "no valid form id" warning (Q11).
    - List mode: an unknown id → false; a wrong-case id (already canonicalised by the caller) → true; **two concurrent first calls → one `listEnabledFormIds` call**.
@@ -192,6 +199,7 @@ Red first in every phase: write the test with the correct expected behaviour, ru
 3. Implement §1.
 
 **Phase 2: `submitForm`.** `test/submission/run-submission.test.ts`:
+
 - **New, red:**
   - An unknown id → `REJECTED` + generic, no post, no `resolveIdentity`, log L7. A non-GUID id → the same, logged as `'<not a form id>'`. `isSubmittableForm` rejecting → `UNKNOWN`, L8, no post.
   - **A hooked form outside the allowlist → `REJECTED`, L7; the hook is not called and `resolveIdentity` is not called.**
@@ -218,6 +226,7 @@ Red first in every phase: write the test with the correct expected behaviour, ru
 **Phase 4: build and test.** `npm run build`, `build:check-types`, `validate-plugin` and the tests in `packages/wix-forms`; root `yarn test`.
 
 **Phase 5: agent-kit** (`agent-kit/plugin/`).
+
 - `rich-forms.md` §4a: the heading drops "spam protection". New text: "The honeypot stops naive bots that fill every input in the DOM. It is not spam protection: it runs in the browser only, and a script that calls the action directly skips it. For spam control, use Wix's form settings, your edge, or a submit hook." The note at `:44` is adjusted to match.
 - `rich-forms.md` §7 "Who the submission posts as":
   - It posts as the caller with an active `wix_session`. **Without a session cookie the submission is refused** (`submitFailure: PERMISSION`, generic message), unless the hook calls `submit(values, { as: 'site' })`.
@@ -233,14 +242,20 @@ Red first in every phase: write the test with the correct expected behaviour, ru
 ## Examples
 
 ✅ Members-only form that visitors must submit, recommended form (a cookie-less script is refused, a page visitor posts as the site):
+
 ```ts
 registerService(WIX_FORMS_SUBMIT_HOOKS, {
-    '3f2a9c1e-5b7d-4e8f-9a0b-1c2d3e4f5a6b': async ({ client, submit }) => {
-        if (!client) throw new ActionError('NO_SESSION', 'This form could not be sent. Refresh the page and try again.');
-        return submit(undefined, { as: 'site' });
-    },
+  '3f2a9c1e-5b7d-4e8f-9a0b-1c2d3e4f5a6b': async ({ client, submit }) => {
+    if (!client)
+      throw new ActionError(
+        'NO_SESSION',
+        'This form could not be sent. Refresh the page and try again.',
+      );
+    return submit(undefined, { as: 'site' });
+  },
 });
 ```
+
 ✅ A truly public form: `'<form id>': ({ submit }) => submit(undefined, { as: 'site' })`. It posts as the site for every caller, cookie or not (residual risk 5).
 ✅ The same key in upper case also matches (`canonicalFormId`).
 ❌ `'contact-us': …` never matches (a hook key must be the form's id) and logs one warning.
@@ -268,18 +283,18 @@ registerService(WIX_FORMS_SUBMIT_HOOKS, {
   - `submitForm`: no cookie → `PERMISSION`; a visitor cookie → caller post; a hook's `{ as: 'site' }` without a cookie → site post; an unknown id → `REJECTED` with no Wix or token-info call; a hooked form outside the allowlist → `REJECTED`, hook not run; the Q3 order pin; the non-GUID hook-key warning.
   - Build, type check and `validate-plugin` clean in wix-forms; root `yarn test` green.
 - **Manual** (`curl` without a cookie against a dev server): `submitForm` for an unhooked allowlisted form → `PERMISSION`; a random GUID → `REJECTED`, with no Create Submission and no token-info call in the server log (in list mode the first submit after start makes one List Forms call).
-- **End-to-end, live, before release:** *Real visitors can still submit after cookie-less submits are refused (F1).* On a dev or deployed site, a fresh browser profile with no cookies opens a page with an unhooked allowlisted form and submits it on first load. Expected: `wix_session` is set, the submit succeeds, Wix records a visitor submitter, and the server log has no L9. (The member and localhost cookie checks are in DL #48.)
+- **End-to-end, live, before release:** _Real visitors can still submit after cookie-less submits are refused (F1)._ On a dev or deployed site, a fresh browser profile with no cookies opens a page with an unhooked allowlisted form and submits it on first load. Expected: `wix_session` is set, the submit succeeds, Wix records a visitor submitter, and the server log has no L9. (The member and localhost cookie checks are in DL #48.)
 
 ## Scope Pre-mortem
 
-- *Real visitors are refused because the cookie never sets* (cookies blocked, token-info outage, a dev browser over http) → the end-to-end check here and DL #48's localhost check; L9 logs show it; generic copy.
-- *Project code calls `submitForm` directly on a new visitor's first page* and races the init sync → refused (L9). The guide tells it to `await ensureSessionFresh()` first.
-- *A hooked form is outside the allowlist* (another namespace, not in configured `formIds`, disabled) → refused before its hook (L7). Documented in §7.
-- *A site that relies on a non-GUID or wrong-case hook key* → wrong case now matches (better); a non-GUID key never matched a real id before either, and now warns once.
-- *A wrong `namespace` yields an empty list* → every submit `REJECTED`; one warning names the namespace.
-- *Every configured `formIds` entry is a typo* → every submit `REJECTED`; warnings at setup and start (Q11).
-- *A form created after deploy is refused* → L7 names it; restart (Q4); documented in §7.
-- *An owner keeps the unconditional `{ as: 'site' }` one-liner on a members-only form* → scripts post as the site (risk 5); the §7 warning and the recommended example.
+- _Real visitors are refused because the cookie never sets_ (cookies blocked, token-info outage, a dev browser over http) → the end-to-end check here and DL #48's localhost check; L9 logs show it; generic copy.
+- _Project code calls `submitForm` directly on a new visitor's first page_ and races the init sync → refused (L9). The guide tells it to `await ensureSessionFresh()` first.
+- _A hooked form is outside the allowlist_ (another namespace, not in configured `formIds`, disabled) → refused before its hook (L7). Documented in §7.
+- _A site that relies on a non-GUID or wrong-case hook key_ → wrong case now matches (better); a non-GUID key never matched a real id before either, and now warns once.
+- _A wrong `namespace` yields an empty list_ → every submit `REJECTED`; one warning names the namespace.
+- _Every configured `formIds` entry is a typo_ → every submit `REJECTED`; warnings at setup and start (Q11).
+- _A form created after deploy is refused_ → L7 names it; restart (Q4); documented in §7.
+- _An owner keeps the unconditional `{ as: 'site' }` one-liner on a members-only form_ → scripts post as the site (risk 5); the §7 warning and the recommended example.
 - Scope creep refused: rate limiting, CAPTCHA, a server honeypot, a token-info cache (F5), an abort signal in `wixFetch`.
 
 ## jay-feedback
@@ -295,11 +310,13 @@ Implemented 2026-11-09 per the plan, Phases 1–5. Out-of-gate items (rate limit
 **Changed** (paths relative to `packages/wix-forms/`): `lib/services/submittable-forms.ts` (new: `createSubmittableFormCheck`, the two constants, per-check `loading` / `retryAfterMs`); `lib/services/wix-forms-service.ts` and `wix-forms-service-marker.ts` (`isSubmittableForm`, always `include: 'enabled'`); `lib/submission/run-submission.ts` (canonical id first, allowlist before identity and the hook, `selectHook` canonical with the one-time `WeakSet` warning, `NoCallerSessionError` refusal in `submit()`, extracted `failAttempt`, L7/L8/L9); `lib/services/wix-forms-submit-hooks.ts` (`NoCallerSessionError`, §3 doc comments); `lib/index.ts` (export); `lib/actions/forms-actions.ts` (passes `isSubmittableForm`); `lib/components/submit-outcome.ts` (`PERMISSION` comment); `lib/config-loader.ts`, `lib/setup.ts` (`CONFIG_TEMPLATE`); `agent-kit/plugin/rich-forms.md`, `user-visible-messages.md`, `wix-forms-setup.md`, `per-form-contracts.md`. Tests: new `test/submittable-forms.test.ts`; `test/wix-forms-service.test.ts`, `test/submission/run-submission.test.ts`, `test/form-contract-generator.test.ts` (its fake service gains `isSubmittableForm`, a type-only change).
 
 **Red → green:**
+
 - Phase 1: `submittable-forms.test.ts` failed (module missing, 10 cases); the service `isSubmittableForm` case failed (`not a function`). Green after §1: 20/20 in the two files.
 - Phase 2: the harness changes and moved tests stayed green on the old code (they pin unchanged paths). Of the new tests, 12 were red on the old code (unknown id, non-GUID id, L8, hooked-outside-allowlist, the Q3 pin, wrong-case hooked id, no cookie unhooked, no cookie hooked, `createSubmitAttempt` with `session: 'none'`, both `selectHook` case directions, the non-GUID key warning). Three new tests passed already because they pin behaviour this log keeps: a visitor cookie posts with the caller's authorization, a hook's `{ as: 'site' }` without a cookie posts with the site client, and `selectHook(undefined, …)` does not throw.
 - After §2: wix-forms **239/239** (22 files).
 
 **`forceSite` tests** (each still tests the site path, now reachable only through `{ as: 'site' }`):
+
 - V3 site 401/403/500/network → L4: the generic mapping of a site post's failure.
 - V3 parity hooks with a site 403: Wix's outcome decides for a site post whatever the hook does with the rejection.
 - V5 un-awaited `submit()` with a site 403: the attempt is awaited with no unhandled rejection; the wrapper returns the real `submit()` promise.
@@ -311,6 +328,7 @@ No other test gained `forceSite`. Removed (replaced by the new refusal tests): "
 **Build and consumers:** `build:check-types` clean; `npm run build` including `validate-plugin` clean; wix-server-client 94/94, wix-bookings 49/49, wix-data 9/9; root `yarn test` green (all packages).
 
 **Deviations:**
+
 - `:569-596` ("a form without a hook does not call token-info") gained `isSubmittableForm` as planned but no longer serves as the old-cookie migration proof: DL #48 dropped its old-cookie migration requirement (that cookie format was never released). The test keeps its hand-built cookie only because `encodeSessionCookie` is not exported; it still proves token-info is not called. No other test was added for the old format.
 - `failAttempt` takes the attempt as a parameter (a module function) instead of being a closure; behaviour as designed.
 - The harness also gained an `isSubmittableForm` option, so allowlist cases reuse it.
@@ -326,13 +344,13 @@ End-to-end QA run 2026-11-10 (local builds of `main`, fresh `create jay` project
 
 Curl against the dev server — all passed:
 
-| Check | Result |
-| --- | --- |
+| Check                                  | Result                                                    |
+| -------------------------------------- | --------------------------------------------------------- |
 | submitForm with no cookie, listed form | `PERMISSION` (`reason:3`), nothing posted, refusal logged |
-| Unlisted GUID | `REJECTED` (`reason:2`) before any Wix call |
-| Non-GUID `formId` (`../../x`) | `REJECTED`, logged as `<not a form id>` |
-| Upper-case listed id | canonical match (PERMISSION, not REJECTED) |
-| syncSession junk token | `{ok:false}`, no token-info call |
-| Cross-site POST | 403 `CROSS_ORIGIN_REQUEST` |
+| Unlisted GUID                          | `REJECTED` (`reason:2`) before any Wix call               |
+| Non-GUID `formId` (`../../x`)          | `REJECTED`, logged as `<not a form id>`                   |
+| Upper-case listed id                   | canonical match (PERMISSION, not REJECTED)                |
+| syncSession junk token                 | `{ok:false}`, no token-info call                          |
+| Cross-site POST                        | 403 `CROSS_ORIGIN_REQUEST`                                |
 
 Browser: a real visitor submits after a cookie-less refusal; a member's submit is attributed to `submitter.memberId`.
