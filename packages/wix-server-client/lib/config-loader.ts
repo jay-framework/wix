@@ -16,6 +16,16 @@ export interface AppConfig {
     instanceId: string;
 }
 
+/**
+ * PoC (DL #56): the server calls Wix as a contributor's own Wix user, from their access token. No
+ * app secret on the machine; calls get the contributor's permissions. `siteId` scopes an account
+ * token to the site (`wix-site-id`).
+ */
+export interface UserTokenConfig {
+    token: string;
+    siteId?: string;
+}
+
 export interface OAuthConfig {
     clientId: string;
 }
@@ -23,6 +33,7 @@ export interface OAuthConfig {
 export type ServerAuthConfig =
     | { kind: 'apiKey'; apiKey: ApiKeyConfig }
     | { kind: 'app'; app: AppConfig }
+    | { kind: 'userToken'; userToken: UserTokenConfig }
     /** No server secret: the server reads public data as a visitor of `oauthStrategy.clientId`. */
     | { kind: 'visitor' };
 
@@ -41,16 +52,30 @@ function requireNonEmptyString(value: unknown, label: string): string {
 function parseServerAuth(config: Record<string, Record<string, string>>): ServerAuthConfig {
     const hasApiKey = !!config.apiKeyStrategy;
     const hasApp = !!config.appStrategy;
+    const hasUserToken = !!config.userTokenStrategy;
 
-    if (hasApiKey && hasApp) {
+    if ([hasApiKey, hasApp, hasUserToken].filter(Boolean).length > 1) {
         throw new Error(
-            'Config validation failed: provide either "apiKeyStrategy" or "appStrategy", not both',
+            'Config validation failed: provide only one of "apiKeyStrategy", "appStrategy" or "userTokenStrategy"',
         );
     }
 
     // Without a server secret, server-side reads (catalog, services) use visitor access: a site can then ship
     // with no secret at all (e.g. a static export).
-    if (!hasApiKey && !hasApp) return { kind: 'visitor' };
+    if (!hasApiKey && !hasApp && !hasUserToken) return { kind: 'visitor' };
+
+    if (hasUserToken) {
+        // The token may come from the environment, so it never has to be written to disk
+        const strategy = config.userTokenStrategy;
+        const token = requireNonEmptyString(
+            strategy.token || process.env.WIX_TOKEN,
+            'userTokenStrategy.token (or the WIX_TOKEN env)',
+        );
+        return {
+            kind: 'userToken',
+            userToken: strategy.siteId ? { token, siteId: String(strategy.siteId) } : { token },
+        };
+    }
 
     if (hasApiKey) {
         const strategy = config.apiKeyStrategy;

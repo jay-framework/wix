@@ -4,6 +4,7 @@ export {
     type WixConfig,
     type ApiKeyConfig,
     type AppConfig,
+    type UserTokenConfig,
     type OAuthConfig,
     type ServerAuthConfig,
 } from './config-loader.js';
