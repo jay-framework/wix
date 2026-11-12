@@ -810,3 +810,13 @@ P1c approved (product, 2026-11-12); P1c-a and P1c-b implemented. Fixed for the j
 - **The step-4 digit bound counts digits** in the compact local value (it may still hold a stray `+`); both verdicts block submit, as designed.
 - **The interactive rewrites** use one shared `gbPhone` field (`optionalPhone` + `phone: { defaultCountry: 'GB' }`).
 - **Testbed install for L8:** the built `dist` of wix-forms and wix-bookings was copied over the testbed's installed copies (backups in the session scratchpad) and `libphonenumber-js` added with `npm install --no-save`, instead of repacking tarballs: the branch is on 0.26.3 while the testbed runs jay 0.26.1. `jay-stack validate` on the testbed also reports 2 pre-existing errors on `/book` (`FORM_UNSUPPORTED` missing from wix-bookings' `BookingFailure` on main), unrelated to P1c.
+
+### Live gap checks (2026-11-12)
+
+Agent, QA page `/dl55-phone` on the QA testbed (plugin from this branch), Chromium + read-only REST read-back, form "QA DL55 Phone".
+
+- **Gap 1, US numbers (form as created via the API: default IL, accepted IL + US).** `202-555-0123` (local, no `+`) → `PHONE` "Please enter a valid phone number." with no request: it is parsed with the field's default IL and is not a valid IL number (step 4, Q33), not `PHONE_COUNTRY`. `+1 202-555-0123` → sent `+12025550123`, stored. `+44 20 7946 0958` → `PHONE_COUNTRY` "Please enter a number with one of these country codes: +972, +1." with no request.
+- **Gap 2, dashboard settings.** In the dashboard form builder, Phone → Field Settings: Accepted countries changed to Israel + United Kingdom, default country to United Kingdom, form saved (revision 1 → 2). Get Form: `fields[].view.defaultCountry` = `GB` and `fields[].validation.string.phoneOptions.allowedCountryCodes` = `["IL","GB"]`, exactly the paths the plugin reads; `formFields[]` (`phoneInputOptions.defaultCountryCode`, `stringOptions.validation.phoneOptions`) mirror them. No plugin bug.
+- **Gap 2, live after a dev restart.** `020 7946 0958` → sent and stored `+442079460958`; `+972541234567` → stored; `+1 202-555-0123` → `PHONE_COUNTRY` "… +972, +44." with no request.
+- **Schema caching (by design, worth knowing).** Before the restart the page still used the old rules for up to `SLOW_RENDER_TTL` (600 s): the UK local number was refused as `PHONE` and `+12025550123` was posted, refused by Wix (`NOT_ALLOWED_VALUE_ERROR`) and shown as `SERVER` with Wix's text. So a dashboard change reaches visitors within 10 minutes, and Wix's server check covers the gap.
+- **Videos (workspace root):** `dl55-gap1-us-number-2026-11-12.webm`, `dl55-gap2-dashboard-countries-2026-11-12.webm` (after restart), `dl55-gap2-stale-cache-2026-11-12.webm` (before restart).
