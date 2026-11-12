@@ -10,7 +10,7 @@
  * DL#41 4c) so boolean checkboxes and multi-select arrays survive submission.
  */
 
-import type { FieldValue, FormFieldView } from '../types.js';
+import type { FieldValue, FormFieldInputType, FormFieldView } from '../types.js';
 import { checkFormField } from '../utils/project-form-fields.js';
 import { checkPhone } from '../utils/phone-normalization.js';
 import { FieldRule, type FieldCheckResult } from './field-rule.js';
@@ -36,9 +36,33 @@ export function projectSubmissionValues(
 ): Record<string, FieldValue> {
     const values: Record<string, FieldValue> = {};
     for (const field of fields) {
-        values[field.target] = field.target in store ? store[field.target] : emptyValueFor(field);
+        const raw = field.target in store ? store[field.target] : emptyValueFor(field);
+        values[field.target] = submittedValueOf(field, raw);
     }
     return values;
+}
+
+/** Visible text-like kinds whose surrounding whitespace is not part of the value (DL #56 T). */
+const TRIMMED_KINDS = new Set<FormFieldInputType>(['text', 'textarea', 'email', 'tel', 'url']);
+
+/**
+ * The value as submitted: trimmed for a visible text-like string, otherwise unchanged (DL #56 T).
+ * The only place the trim rule is written; validation already ignores surrounding whitespace.
+ */
+export function submittedValueOf(field: FormFieldView, raw: FieldValue): FieldValue {
+    const isTrimmed =
+        !field.hidden && TRIMMED_KINDS.has(field.inputType) && typeof raw === 'string';
+    return isTrimmed ? (raw as string).trim() : raw;
+}
+
+/** The store with every visible text-like string trimmed (the confirmation echo, DL #56 T). */
+export function trimTextValues(fields: FormFieldView[], store: FieldStore): FieldStore {
+    const trimmed: FieldStore = { ...store };
+    for (const field of fields) {
+        if (field.target in store)
+            trimmed[field.target] = submittedValueOf(field, store[field.target]);
+    }
+    return trimmed;
 }
 
 /**

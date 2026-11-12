@@ -222,12 +222,46 @@ describe('runSubmission — V2, row 2 (Wix field violations)', () => {
         });
     });
 
+    /** DL #56 H, regression guard: Wix's own field violations carry no `fromHook` (they stay SERVER). */
+    it('should not mark Wix field violations as fromHook', async () => {
+        const { deps } = harness({ wixFails: fieldViolation });
+
+        expect('fromHook' in (await submitWith(deps))).toBe(false);
+    });
+
+    /** DL #56 H, regression guard: a hook that submits, sees Wix refuse, then throws stays SERVER. */
+    it('should not mark a refuse-then-throw result as fromHook', async () => {
+        const { deps } = harness({
+            wixFails: fieldViolation,
+            hook: async ({ submit }) => {
+                await submit().catch(() => undefined);
+                throw new FieldRejection({ email_4b3a: 'hook text' });
+            },
+        });
+
+        const result = await submitWith(deps);
+        expect(result).toMatchObject({ success: false, reason: SubmitFailure.VALIDATION });
+        expect('fromHook' in result).toBe(false);
+    });
+
     const fieldErrorResult = {
         success: false,
         reason: SubmitFailure.VALIDATION,
         fieldErrors: { email: 'must match format "email"', website: 'must match format "url"' },
         fieldRules: { email: FieldRule.EMAIL, website: FieldRule.URL },
     };
+
+    /**
+     * DL #56 H live-check fallback, regression guard: the captured Wix 400 (an email and a url
+     * field) returns those fields' errors with no `fromHook`, so the client keeps the Wix rule.
+     */
+    it('should return a Wix refusal of a non-email field without fromHook', async () => {
+        const { deps } = harness({ wixFails: fieldViolation });
+
+        const result = await submitWith(deps, { website: 'http://a' });
+        expect(result).toEqual(fieldErrorResult);
+        expect('fromHook' in result).toBe(false);
+    });
 
     it.each(parityHooks())(
         'should give the same field errors when the hook %s',
@@ -987,6 +1021,7 @@ describe('runSubmission — DL#53 G4, FieldRejection', () => {
             reason: SubmitFailure.VALIDATION,
             fieldErrors: { phone: 'Please check the phone number.' },
             code: 'BAD_PHONE',
+            fromHook: true, // DL #56 H: the client marks these fields HOOK, not SERVER
         });
         expect(posts).toEqual([]);
         expect(loggedMessages()).toEqual([]);
@@ -1004,6 +1039,7 @@ describe('runSubmission — DL#53 G4, FieldRejection', () => {
             success: false,
             reason: SubmitFailure.VALIDATION,
             fieldErrors: { phone: 'Please check the phone number.' },
+            fromHook: true, // DL #56 H
         });
         expect('code' in result).toBe(false);
     });
@@ -1051,6 +1087,7 @@ describe('runSubmission — DL#53 G4, FieldRejection', () => {
             reason: SubmitFailure.VALIDATION,
             fieldErrors: { email: 'Use your work email.' },
             code: 'WORK_EMAIL',
+            fromHook: true, // DL #56 H
         });
     });
 

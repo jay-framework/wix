@@ -90,6 +90,7 @@ describe('buildFormViewState', () => {
     it('should add the reserved form-level tags alongside the per-field slots', () => {
         const result = buildFormViewState(fields, {
             isSubmitting: true,
+            isHandedOff: true, // DL #56 G6: SUBMITTING means handed to the server
             statusMessage: 'Form submitted successfully.',
             loadError: '',
         });
@@ -150,9 +151,22 @@ describe('buildFormViewState submit outcome (DL#45)', () => {
         expect(result.submitFailure).toEqual(SubmitFailure.NONE);
     });
 
-    it('should be SUBMITTING while a submit is in flight', () => {
-        const result = buildFormViewState(fields, { ...idle, isSubmitting: true });
+    it('should be SUBMITTING while a handed-off submit is in flight', () => {
+        const result = buildFormViewState(fields, {
+            ...idle,
+            isSubmitting: true,
+            isHandedOff: true,
+        });
         expect(result.submitState).toEqual(SubmitState.SUBMITTING);
+    });
+
+    /**
+     * Bug: "Sending…" flashes on a client-validation stop (DL #56 G6, Q13).
+     * Expected: busy before hand-off is IDLE. Actual: SUBMITTING from the first click.
+     */
+    it('should be IDLE while busy before the hand-off', () => {
+        const result = buildFormViewState(fields, { ...idle, isSubmitting: true });
+        expect(result.submitState).toEqual(SubmitState.IDLE);
     });
 
     it('should be SUCCEEDED once submitted, even while a redirect keeps isSubmitting set', () => {

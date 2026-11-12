@@ -5,6 +5,8 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { parseSubmissionViolations } from '../lib/utils/wix-submission-errors.js';
 import { FieldRule } from '../lib/components/field-rule.js';
+import { presentSubmitRejection } from '../lib/components/submit-outcome.js';
+import type { FormFieldView } from '../lib/types.js';
 
 /**
  * Bug: every Wix field error became `SERVER` with validator text (DL#55 Problem 2), so a page's
@@ -140,5 +142,75 @@ describe('parseSubmissionViolations (DL#55 P2)', () => {
 
     it('should return empty violations for invalid JSON', () => {
         expect(parseSubmissionViolations('not json')).toEqual({ fieldErrors: {}, fieldRules: {} });
+    });
+});
+
+interface CallerPathRow {
+    item: string;
+    typed: string;
+    errors: Array<{ errorPath: string; errorType: string; params?: { format?: string } }>;
+}
+
+function callerPathRefusal(typed: string): CallerPathRow {
+    const capture = JSON.parse(
+        readFileSync(
+            resolve(__dirname, 'fixtures/format-parity/wix-caller-path-phone-2026-11-12.json'),
+            'utf8',
+        ),
+    ) as { rows: CallerPathRow[] };
+    const row = capture.rows.find(
+        (candidate) =>
+            candidate.typed === typed &&
+            candidate.errors.some((error) => error.errorType === 'NOT_ALLOWED_VALUE_ERROR'),
+    );
+    if (!row) throw new Error(`no captured NOT_ALLOWED_VALUE_ERROR row for ${typed}`);
+    return row;
+}
+
+/**
+ * Bug: Wix's `NOT_ALLOWED_VALUE_ERROR` on a phone stayed `SERVER` with Wix's text ("Phone
+ *   number's country code must correspond to one from allowed countries"), which reads wrong for
+ *   an unassigned number and bypasses the page's PHONE copy.
+ * Found in: design-log/55 - wix validation parity for wix-forms.md, Implementation Results,
+ *   "Follow-up 2026-11-12, shipped with DL #56" (product decision 2026-11-12).
+ * Expected: `PHONE` and the default phone text; `fieldErrors` keeps Wix's text.
+ * Fixtures: the captured L7 / L8(3) caller-path rows.
+ */
+describe('NOT_ALLOWED_VALUE_ERROR on a phone (DL#55 follow-up 2026-11-12)', () => {
+    it.each([
+        { cause: 'a country outside the accepted list (L7)', typed: '+442079460958' },
+        { cause: 'an unassigned number (L8(3))', typed: '+15551234567' },
+    ])('should map $cause to PHONE', ({ typed }) => {
+        const row = callerPathRefusal(typed);
+        const violations = parseSubmissionViolations(bodyWithErrors(row.errors));
+        expect(violations.fieldRules).toEqual({ phone: FieldRule.PHONE });
+        expect(violations.fieldErrors.phone).toBe(
+            "Phone number's country code must correspond to one from allowed countries",
+        );
+    });
+
+    it('should show the default phone text for the captured refusal', () => {
+        const row = callerPathRefusal('+15551234567');
+        const { fieldErrors, fieldRules } = parseSubmissionViolations(bodyWithErrors(row.errors));
+        const phoneField: FormFieldView = {
+            target: 'phone',
+            label: 'Phone',
+            inputType: 'tel',
+            required: false,
+            placeholder: '',
+            options: [],
+        };
+        const view = presentSubmitRejection({ success: false, fieldErrors, fieldRules }, [
+            phoneField,
+        ]);
+        expect(view.errorByTarget.phone).toBe('Please enter a valid phone number.');
+        expect(view.ruleByTarget.phone).toBe(FieldRule.PHONE);
+    });
+
+    // Regression guard: the mapping is phone-only (the captured item minus its phone format).
+    it('should keep NOT_ALLOWED_VALUE_ERROR unmapped when the item is not a phone', () => {
+        const [captured] = callerPathRefusal('+442079460958').errors;
+        const notPhone = { ...captured, params: {} };
+        expect(parseSubmissionViolations(bodyWithErrors([notPhone])).fieldRules).toEqual({});
     });
 });

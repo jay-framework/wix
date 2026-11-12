@@ -11,13 +11,14 @@
 2. **Wix field errors use `errorRule` `EMAIL` / `PHONE` / `URL` and the default text.** A format
    error Wix refuses after submit now shows the same rule and English default text as the browser
    check, instead of `SERVER` with Wix's validator text. `SERVER` now means an unclassified Wix
-   refusal or the site owner's custom message (and a submit hook's `FieldRejection`). A page that
+   refusal or the site owner's custom message (a submit hook's `FieldRejection` is `HOOK`, change
+   6). A page that
    printed `error` only under `SERVER` should add `EMAIL` / `PHONE` / `URL` branches or print `error`
    unconditionally. `fieldErrors` keeps Wix's text.
 3. **Phones are sent as compact international numbers (E.164).** Wix accepts only that shape from
    visitors, so the plugin converts what the visitor typed (`+972-54-123-4567`, `00972…`, or a local
-   number with a known country) to `+972541234567` before submitting. The input and the
-   confirmation keep what was typed; a submit hook sees the E.164 value, so a hook that matched
+   number with a known country) to `+972541234567` before submitting, after trimming (change 5).
+   The input and the confirmation keep what was typed (trimmed); a submit hook sees the E.164 value, so a hook that matched
    local formats must accept E.164. Stored phones become E.164.
 4. **A phone without a country code is refused in the browser with `errorRule` `PHONE_COUNTRY`**
    ("Please include the country code, starting with +.") unless `defaultPhoneCountry` in
@@ -28,6 +29,38 @@
    phones and may return `PHONE_COUNTRY`. Every page that loads the wix-forms client (bookings pages
    included) grows by about 29 KB gzipped for the phone library.
 
+5. **Text values are trimmed** before sending and in the confirmation echo (visible `text`,
+   `textarea`, `email`, `tel`, `url`; hidden, `select`, checkbox and multiselect values unchanged).
+   - **Before:** `"Ann "` was stored by Wix and shown as "Thank you, Ann .".
+   - **After:** `Ann` is stored and shown. Page checks also receive the trimmed value on blur,
+     typing and submit. A `textarea` loses leading/trailing newlines (inner whitespace is kept).
+     A phone is trimmed first, then sent as E.164 (change 3).
+   - **Why:** validation already ignored the spaces, so the stored value now matches what was
+     validated. Direct `submitForm` posts that bypass the component are not trimmed.
+6. **⚠️ Hook field errors are `errorRule: HOOK`**; Wix's own refusals stay `SERVER` (or the rule
+   of change 2).
+   - **Before:** a submit hook's `FieldRejection` marked its fields `SERVER`, like a Wix refusal.
+   - **After:** they are `HOOK`. `invalid` and `error` are unchanged, so markup that prints
+     `{field.error}` without branching keeps working. Regenerate contracts.
+
+   ```html
+   <!-- before: hook text shown only under SERVER -->
+   <span if="booking.firstName.errorRule === SERVER">{booking.firstName.error}</span>
+   <!-- after -->
+   <span if="booking.firstName.errorRule === HOOK">{booking.firstName.error}</span>
+   <span if="booking.firstName.errorRule === SERVER">We could not accept this value.</span>
+   ```
+
+7. **`submitState: SUBMITTING` starts when the request is sent**, not at the click, so "Sending…"
+   no longer flashes on a client-validation stop (as in 0.26.1). `isSubmitting` is unchanged
+   (keep `disabled` on it).
+8. **A throwing `onSubmitOutcome` handler no longer skips the other handlers.** Each handler runs
+   in its own `try`; a throw is logged.
+9. **Wix's "country not allowed" phone refusal is `errorRule: PHONE`** with the default text
+   ("Please enter a valid phone number."). Wix sends it (`NOT_ALLOWED_VALUE_ERROR`) for a country
+   outside the field's accepted list or an unassigned number; it was `SERVER` with Wix's text.
+   `fieldErrors` keeps Wix's text.
+
 ### API additions (all optional / additive)
 
 - `FieldRule.PHONE_COUNTRY` (appended after `SERVER`; existing values unchanged) and config key
@@ -36,6 +69,21 @@
   every site using wix-forms).
 - `submitForm` output `fieldRules` (target → `FieldRule` index) for server field errors the plugin
   classifies; absent targets are `SERVER`.
+- `FieldRule.HOOK` (appended after `PHONE_COUNTRY`: `SERVER = 9`, `PHONE_COUNTRY = 10`,
+  `HOOK = 11`; existing values unchanged).
+- `fromHook?: boolean` on the `submitForm` result / action output and on the `failed`
+  `SubmitOutcomeEvent`.
+- `WIX_FORMS_CONTEXT.onSubmitStart(handler)` (returns an unsubscribe), with `SubmitStartEvent` and
+  `SubmitStartHandler`.
+
+### Migration checklist
+
+- [ ] Regenerate form contracts (the `errorRule` enum gains `PHONE_COUNTRY` and `HOOK`).
+- [ ] Phone fields: branch on `PHONE` and `PHONE_COUNTRY`, or print `{field.error}`
+      unconditionally; set `defaultPhoneCountry` if visitors type local numbers.
+- [ ] Pages whose form has a submit hook that throws `FieldRejection`: add a `HOOK` branch next to
+      `SERVER` (otherwise those fields turn red with no text).
+- [ ] Submit hooks that match local phone formats: accept E.164.
 
 ## 0.26.3
 

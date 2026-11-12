@@ -49,6 +49,8 @@ export interface SubmitRejection {
     fieldRules?: Record<string, FieldRule>;
     /** A hook's code (DL#53 G3), reported to page code through `onSubmitOutcome`. */
     code?: string;
+    /** True when `fieldErrors` come from a submit hook's `FieldRejection` (DL #56 H). */
+    fromHook?: boolean;
 }
 
 export interface SubmitRejectionView {
@@ -91,14 +93,19 @@ export function presentSubmitRejection(
     return view;
 }
 
-/** The rule of a server field error (DL#55 P2). */
+/**
+ * The rule of a returned field error: HOOK for a hook rejection (DL #56 H), else DL#55 P2.
+ * `fromHook` is result-wide: a hook's `FieldRejection` never carries Wix field errors (a Wix refusal
+ * settles first), so every target is HOOK. Revisit if a result ever mixes both.
+ */
 function serverRuleOf(result: SubmitRejection, target: string): FieldRule {
+    if (result.fromHook) return FieldRule.HOOK;
     return result.fieldRules?.[target] ?? FieldRule.SERVER;
 }
 
 /** A classified rule shows the plugin default (same text as the browser check); else Wix's text. */
 function serverFieldMessage(rule: FieldRule, field: FormFieldView, wixText: string): string {
-    if (rule === FieldRule.SERVER) return wixText;
+    if (rule === FieldRule.SERVER || rule === FieldRule.HOOK) return wixText;
     return defaultFieldMessage(rule, field) ?? wixText;
 }
 

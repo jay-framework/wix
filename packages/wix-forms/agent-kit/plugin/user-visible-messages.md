@@ -80,7 +80,8 @@ For multilingual sites, Wix-translated **labels** help required messages. When t
 | `PATTERN`                   | Does not match the Wix field's pattern                                   |
 | `PHONE_COUNTRY`             | Phone without a country code and no default country, or from a country the Wix Phone field does not accept |
 | `CUSTOM`                    | A page check failed — `error` is the page check's own message            |
-| `SERVER`                    | Wix refused the field for a reason the plugin does not classify, the site owner's custom message, or a submit hook's `FieldRejection` — `error` is the server's text |
+| `SERVER`                    | Wix refused the field for a reason the plugin does not classify, or the site owner's custom message — `error` is Wix's text |
+| `HOOK`                      | The submit hook's `FieldRejection` — `error` is the hook's own text                                                         |
 
 ```html
 <span if="contact.email.errorRule === REQUIRED">Indiquez votre e-mail.</span>

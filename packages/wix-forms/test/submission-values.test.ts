@@ -5,6 +5,8 @@ import {
     emptyStoreFor,
     projectSubmissionValues,
     seedControlValues,
+    submittedValueOf,
+    trimTextValues,
     toggleSelection,
     toPostedValues,
     validateVisibleFields,
@@ -400,6 +402,95 @@ describe('toPostedValues (DL#55 P1c)', () => {
         );
         expect(toPostedValues([field], { phone: ' +972541234567' })).toEqual({
             phone: '+972541234567',
+        });
+    });
+});
+
+function fieldOfKind(
+    target: string,
+    inputType: FormFieldView['inputType'],
+    hidden = false,
+): FormFieldView {
+    return {
+        target,
+        label: target,
+        inputType,
+        required: false,
+        placeholder: '',
+        options: [],
+        hidden,
+    };
+}
+
+/**
+ * Bug: surrounding whitespace is posted and echoed although validation ignores it (DL #56 T).
+ * Found in: design-log/56 §Problem 1 — "Thank you, Ann ." and Wix stores "Ann ".
+ * Expected: visible text-like strings are trimmed in the post, the echo and the page-check value.
+ * Actual: projectSubmissionValues copies raw values; submittedValueOf / trimTextValues do not exist.
+ */
+describe('submittedValueOf / projectSubmissionValues / trimTextValues (DL #56 T)', () => {
+    const cases: Array<{
+        name: string;
+        field: FormFieldView;
+        raw: FieldValue;
+        submitted: FieldValue;
+    }> = [
+        { name: 'text', field: fieldOfKind('firstName', 'text'), raw: ' Ann ', submitted: 'Ann' },
+        {
+            name: 'email',
+            field: fieldOfKind('email', 'email'),
+            raw: 'ann@example.com ',
+            submitted: 'ann@example.com',
+        },
+        {
+            name: 'tel',
+            field: fieldOfKind('phone', 'tel'),
+            raw: ' +44 20 7946 0958 ',
+            submitted: '+44 20 7946 0958',
+        },
+        {
+            name: 'url',
+            field: fieldOfKind('website', 'url'),
+            raw: ' https://example.com\t',
+            submitted: 'https://example.com',
+        },
+        {
+            name: 'textarea keeps inner whitespace',
+            field: fieldOfKind('message', 'textarea'),
+            raw: '\n  Hello\n\n  world  \n',
+            submitted: 'Hello\n\n  world',
+        },
+        {
+            name: 'whitespace-only optional text',
+            field: fieldOfKind('nickname', 'text'),
+            raw: '   ',
+            submitted: '',
+        },
+        // Regression guards: never trimmed.
+        { name: 'hidden', field: fieldOfKind('ref', 'text', true), raw: ' id ', submitted: ' id ' },
+        { name: 'select', field: fieldOfKind('size', 'select'), raw: ' L ', submitted: ' L ' },
+        { name: 'checkbox', field: fieldOfKind('agree', 'checkbox'), raw: true, submitted: true },
+        {
+            name: 'multiselect',
+            field: fieldOfKind('tags', 'multiselect'),
+            raw: [' a '],
+            submitted: [' a '],
+        },
+    ];
+
+    it.each(cases)('submittedValueOf: $name', ({ field, raw, submitted }) => {
+        expect(submittedValueOf(field, raw)).toEqual(submitted);
+    });
+
+    it.each(cases)('projectSubmissionValues: $name', ({ field, raw, submitted }) => {
+        expect(projectSubmissionValues([field], { [field.target]: raw })).toEqual({
+            [field.target]: submitted,
+        });
+    });
+
+    it.each(cases)('trimTextValues: $name', ({ field, raw, submitted }) => {
+        expect(trimTextValues([field], { [field.target]: raw })).toEqual({
+            [field.target]: submitted,
         });
     });
 });

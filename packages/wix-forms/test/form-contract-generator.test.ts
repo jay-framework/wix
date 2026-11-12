@@ -177,9 +177,10 @@ describe('formContractGenerator', () => {
         const enums = [
             ...(compiled.val ?? '').matchAll(/export enum (\w*ErrorRule\w*) \{([^}]*)\}/g),
         ];
-        // Member order IS the contract (DL#45). DL#55 P1c appends PHONE_COUNTRY (= 10); the
-        // hook-rejection log appends HOOK (= 11) after it and extends this list.
-        const fieldRuleNames = [
+        const fieldRuleNames = Object.keys(FieldRule).filter((key) => Number.isNaN(Number(key)));
+        // Member order IS the contract (DL#45), hard-coded so a rename, reorder or append fails
+        // here loudly. Joint 0.26.4 order: DL#55 P1c PHONE_COUNTRY = 10, then DL #56 H HOOK = 11.
+        const expectedRuleNames = [
             'NONE',
             'REQUIRED',
             'MIN_LENGTH',
@@ -191,11 +192,10 @@ describe('formContractGenerator', () => {
             'CUSTOM',
             'SERVER',
             'PHONE_COUNTRY',
+            'HOOK',
         ];
-        expect(Object.keys(FieldRule).filter((key) => Number.isNaN(Number(key)))).toEqual(
-            fieldRuleNames,
-        );
         expect(FieldRule.PHONE_COUNTRY).toBe(10);
+        expect(FieldRule.HOOK).toBe(11);
 
         expect(compiled.validations).toEqual([]);
         expect(enums).toHaveLength(contactForm.fields.length);
@@ -205,8 +205,10 @@ describe('formContractGenerator', () => {
                     .split(',')
                     .map((member) => member.trim())
                     .filter(Boolean),
-            ).toEqual(fieldRuleNames);
+            ).toEqual(expectedRuleNames);
         }
+        // Regression guard: the compiled enum is exactly the runtime FieldRule.
+        expect(fieldRuleNames).toEqual(expectedRuleNames);
     });
 
     it('should produce a contract that parses without validation errors', async () => {

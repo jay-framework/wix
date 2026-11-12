@@ -24,7 +24,7 @@ vi.mock('../lib/components/form-submit-guard.js', async (importOriginal) => {
 
 import { clearGlobalContextRegistry } from '@jay-framework/runtime';
 import { submitForm } from '../lib/actions/forms-actions.js';
-import { SubmitFailure } from '../lib/components/submit-outcome.js';
+import { SubmitFailure, SubmitState } from '../lib/components/submit-outcome.js';
 import { provideWixFormsContext } from '../lib/contexts/wix-forms-context.js';
 import type { FormFieldView } from '../lib/types.js';
 import {
@@ -208,6 +208,33 @@ describe('wixForm — DL#53 G3, onSubmitOutcome', () => {
         ]);
     });
 
+    /**
+     * DL #56 H: page code can tell a hook rejection from a Wix refusal. Expected: the `failed` event
+     * carries `fromHook: true` for a hook FieldRejection. Actual: the flag is dropped.
+     */
+    it('should carry fromHook on the failed event of a hook FieldRejection', async () => {
+        vi.mocked(submitForm).mockResolvedValueOnce({
+            success: false,
+            reason: SubmitFailure.VALIDATION,
+            fieldErrors: { email: 'Use your work email.' },
+            fromHook: true,
+        } as any);
+        const events = recordOutcomes();
+        await mount([optionalEmail], { email: { input: fakeInput() } });
+
+        await submitOnce();
+
+        expect(events).toEqual([
+            {
+                formId: FORM_ID,
+                outcome: 'failed',
+                reason: SubmitFailure.VALIDATION,
+                fieldErrors: { email: 'Use your work email.' },
+                fromHook: true,
+            },
+        ]);
+    });
+
     it('should emit a NETWORK failure when the request fails', async () => {
         vi.mocked(submitForm).mockRejectedValueOnce(new Error('offline'));
         const events = recordOutcomes();
@@ -301,5 +328,229 @@ describe('wixForm — DL#53 P7, no confirmation before a redirect', () => {
         expect(harness.viewState().isSubmitted).toBe(true);
         expect(harness.viewState().isSubmitting).toBe(false);
         errors.mockRestore();
+    });
+});
+
+/** Records starts, outcomes and posts in one ordered log on a freshly provided context. */
+function recordLifecycle(): unknown[] {
+    const log: unknown[] = [];
+    const forms = provideWixFormsContext() as any;
+    forms.onSubmitStart(({ event }: { event: unknown }) => void log.push({ start: event }));
+    forms.onSubmitOutcome(({ event }: { event: any }) => void log.push(event.outcome));
+    vi.mocked(submitForm).mockImplementation(async () => {
+        log.push('submitForm');
+        return { success: true };
+    });
+    return log;
+}
+
+const starts = (log: unknown[]) => log.filter((entry: any) => entry?.start);
+
+/** A promise the test resolves by hand, to hold a submit in flight. */
+function deferred<T>(): { promise: Promise<T>; resolve: (value: T) => void } {
+    let resolve!: (value: T) => void;
+    const promise = new Promise<T>((done) => (resolve = done));
+    return { promise, resolve };
+}
+
+/**
+ * Bug: page code cannot tell that a submit started, so a 60-second hold clock cannot pause on
+ * send (DL #56 G6). Found in: design-log/56 §Problem 3.
+ * Expected: onSubmitStart fires once per submit handed to the server, before submitForm, and
+ * never for a stop before hand-off. Actual: the context has no onSubmitStart.
+ */
+describe('wixForm — DL #56 G6, onSubmitStart', () => {
+    it('should fire one start, before submitForm, with the canonical id of an upper-case form id', async () => {
+        const log = recordLifecycle();
+        mountWixForm(
+            [optionalEmail],
+            undefined,
+            { email: { input: fakeInput() } },
+            FORM_ID.toUpperCase(),
+        );
+        await settle();
+
+        await submitOnce();
+
+        expect(log).toEqual([{ start: { formId: FORM_ID } }, 'submitForm', 'succeeded']);
+    });
+
+    it('should report a network failure as start then failed (NETWORK)', async () => {
+        const log = recordLifecycle();
+        vi.mocked(submitForm).mockRejectedValueOnce(new Error('offline'));
+        await mount([optionalEmail], { email: { input: fakeInput() } });
+
+        await submitOnce();
+
+        expect(log).toEqual([{ start: { formId: FORM_ID } }, 'failed']);
+    });
+
+    it('should fire one start for a double click', async () => {
+        const log = recordLifecycle();
+        await mount([optionalEmail], { email: { input: fakeInput() } });
+
+        await Promise.all([captured.submit!(), captured.submit!()]);
+        await settle();
+
+        expect(starts(log)).toHaveLength(1);
+    });
+
+    it('should still post once and end idle when a start handler throws', async () => {
+        vi.spyOn(console, 'error').mockImplementation(() => undefined);
+        const forms = provideWixFormsContext() as any;
+        forms.onSubmitStart(() => {
+            throw new Error('page bug');
+        });
+        const harness = await mount([optionalEmail], { email: { input: fakeInput() } });
+
+        await submitOnce();
+
+        expect(submitForm).toHaveBeenCalledTimes(1);
+        expect(harness.viewState()).toMatchObject({
+            isSubmitting: false,
+            submitState: SubmitState.SUCCEEDED,
+        });
+    });
+
+    /** Regression guards: no hand-off, no start. */
+    it('should fire no start for a honeypot trip, a client stop, or a reset before hand-off', async () => {
+        const log = recordLifecycle();
+        const harness = await mount([requiredName], { name: { input: fakeInput() } });
+
+        await submitOnce(); // client stop: name is required
+        type(harness.honeypot, 'i am a bot');
+        await submitOnce(); // honeypot trip
+        type(harness.honeypot, '');
+        const pending = captured.submit!();
+        listenerFor(harness.resetButton, 'click')({ preventDefault: vi.fn() }); // reset during reconcile
+        await pending;
+        await settle();
+
+        expect(starts(log)).toEqual([]);
+    });
+
+    /** Regression guard: some outcomes have no start (the reason pages keep a "started" flag). */
+    it('should give a client stop and a honeypot trip one outcome each and no start', async () => {
+        const log = recordLifecycle();
+        const harness = await mount([requiredName], { name: { input: fakeInput() } });
+
+        await submitOnce();
+        type(harness.honeypot, 'i am a bot');
+        await submitOnce();
+
+        expect(log).toEqual(['failed', 'succeeded']);
+    });
+
+    /** Regression guard: without the plugin's client init the submit still completes. */
+    it('should complete a submit without a context', async () => {
+        const harness = await mount([optionalEmail], { email: { input: fakeInput() } });
+
+        await submitOnce();
+
+        expect(submitForm).toHaveBeenCalledTimes(1);
+        expect(harness.viewState().submitState).toBe(SubmitState.SUCCEEDED);
+    });
+});
+
+/**
+ * Bug: "Sending…" flashes on a client-validation stop, because SUBMITTING starts at the first
+ * click (DL #56 G6, Q13). Expected: SUBMITTING only once the submit is handed to the server.
+ */
+describe('wixForm — DL #56 G6, SUBMITTING means handed off', () => {
+    /** An input whose DOM read stays pending until released, holding submit in its reconcile step. */
+    function slowReadInput(): { input: FakeInput; release: () => void } {
+        const input = fakeInput();
+        const gate = deferred<string>();
+        let isGated = false;
+        Object.defineProperty(input, 'value', {
+            get: () => (isGated ? gate.promise : ''),
+            set: () => undefined,
+        });
+        return {
+            input,
+            release: () => gate.resolve(''),
+            ...{ arm: () => (isGated = true) },
+        } as any;
+    }
+
+    it('should never be SUBMITTING during an awaited reconcile of an invalid form', async () => {
+        const slow: any = slowReadInput();
+        const harness = await mount([requiredName], { name: { input: slow.input } });
+        slow.arm();
+
+        const pending = captured.submit!();
+        await settle();
+        const duringReconcile = harness.viewState().submitState;
+        slow.release();
+        await pending;
+        await settle();
+
+        expect(duringReconcile).not.toBe(SubmitState.SUBMITTING);
+        expect(harness.viewState().submitState).toBe(SubmitState.FAILED);
+    });
+
+    /** Regression guard. */
+    it('should be SUBMITTING while a valid submit is in flight', async () => {
+        const response = deferred<any>();
+        vi.mocked(submitForm).mockReturnValueOnce(response.promise);
+        const harness = await mount([optionalEmail], { email: { input: fakeInput() } });
+
+        const pending = captured.submit!();
+        await settle();
+        const inFlight = harness.viewState().submitState;
+        response.resolve({ success: true });
+        await pending;
+
+        expect(inFlight).toBe(SubmitState.SUBMITTING);
+    });
+
+    /** Regression guard: a redirect stays SUBMITTING until the page unloads (DL#53 §6). */
+    it('should stay SUBMITTING through a redirect', async () => {
+        vi.stubGlobal('window', {
+            location: { assign: vi.fn() },
+            addEventListener: vi.fn(),
+            removeEventListener: vi.fn(),
+        });
+        vi.mocked(submitForm).mockResolvedValueOnce({ success: true, redirectTo: '/thanks' });
+        const harness = await mount([optionalEmail], { email: { input: fakeInput() } });
+
+        await submitOnce();
+
+        expect(harness.viewState().submitState).toBe(SubmitState.SUBMITTING);
+    });
+
+    /** L2 regression guards: every settle path clears busy and hand-off together. */
+    it.each([
+        [
+            'a network failure',
+            () => vi.mocked(submitForm).mockRejectedValueOnce(new Error('offline')),
+        ],
+        [
+            'a VALIDATION result',
+            () =>
+                vi.mocked(submitForm).mockResolvedValueOnce({
+                    success: false,
+                    reason: SubmitFailure.VALIDATION,
+                    fieldErrors: { email: 'Wix says no.' },
+                } as any),
+        ],
+        [
+            'a REJECTED result',
+            () =>
+                vi.mocked(submitForm).mockResolvedValueOnce({
+                    success: false,
+                    reason: SubmitFailure.REJECTED,
+                } as any),
+        ],
+    ])('should be FAILED and not busy after %s', async (_name, arrange) => {
+        arrange();
+        const harness = await mount([optionalEmail], { email: { input: fakeInput() } });
+
+        await submitOnce();
+
+        expect(harness.viewState()).toMatchObject({
+            isSubmitting: false,
+            submitState: SubmitState.FAILED,
+        });
     });
 });

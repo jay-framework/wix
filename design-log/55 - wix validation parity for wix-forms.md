@@ -820,3 +820,12 @@ Agent, QA page `/dl55-phone` on the QA testbed (plugin from this branch), Chromi
 - **Gap 2, live after a dev restart.** `020 7946 0958` → sent and stored `+442079460958`; `+972541234567` → stored; `+1 202-555-0123` → `PHONE_COUNTRY` "… +972, +44." with no request.
 - **Schema caching (by design, worth knowing).** Before the restart the page still used the old rules for up to `SLOW_RENDER_TTL` (600 s): the UK local number was refused as `PHONE` and `+12025550123` was posted, refused by Wix (`NOT_ALLOWED_VALUE_ERROR`) and shown as `SERVER` with Wix's text. So a dashboard change reaches visitors within 10 minutes, and Wix's server check covers the gap.
 - **Videos (workspace root):** `dl55-gap1-us-number-2026-11-12.webm`, `dl55-gap2-dashboard-countries-2026-11-12.webm` (after restart), `dl55-gap2-stale-cache-2026-11-12.webm` (before restart).
+
+### Follow-up 2026-11-12, shipped with DL #56
+
+Product decision (2026-11-12): Wix's `NOT_ALLOWED_VALUE_ERROR` on a phone maps to `FieldRule.PHONE` with the normal phone default text ("Please enter a valid phone number."). It is the one unmapped phone refusal left after P1c (the "Schema caching" live note above showed it as `SERVER` with Wix's text).
+
+- **Why PHONE:** its two captured causes read correctly as an invalid phone: a country outside the field's accepted list (L7, `+442079460958` on the IL + US form) and an unassigned number (L8(3), `+15551234567`; Wix's text blames the country although the number has none).
+- **Change:** `fieldRuleOfWixError` (`lib/utils/wix-submission-errors.ts`) returns `PHONE` for `errorType` `NOT_ALLOWED_VALUE_ERROR` with `params.format` `phone`. Without the phone format the item stays unmapped (`SERVER`). An item with `customErrorMessage` stays unmapped, as before. `fieldErrors` keeps Wix's text. `INVALID_PHONE_COUNTRY_CODE_ERROR` (also captured in L7, alongside a `FORMAT_ERROR` for the same target, which wins as the first item) is not mapped.
+- **Tests (red first):** `test/wix-submission-errors.test.ts` "NOT_ALLOWED_VALUE_ERROR on a phone" reads the L7 and L8(3) rows from `test/fixtures/format-parity/wix-caller-path-phone-2026-11-12.json`. Before the change: 3 failed (both causes gave `fieldRules: {}`; the view showed Wix's text), 1 guard passed (non-phone item unmapped). After: 15/15 in the file.
+- **CHANGELOG:** `0.26.4` behaviour change 9.

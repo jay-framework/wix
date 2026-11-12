@@ -190,13 +190,18 @@ describe('wix-form errorRule (DL#53 G1)', () => {
         });
     });
 
-    /** DL#53 G4 (P4), regression guard: a hook FieldRejection result (with a code) takes the Wix path. */
-    it('should mark fields from a hook FieldRejection result as SERVER', async () => {
+    /**
+     * Bug: a hook FieldRejection and a Wix refusal are both SERVER, so markup can only tell them
+     * apart by text (DL #56 H). Found in: design-log/56 §Problem 2.
+     * Expected: a result with `fromHook: true` marks its visible targets HOOK. Actual: SERVER.
+     */
+    it('should mark fields from a hook FieldRejection result as HOOK', async () => {
         vi.mocked(submitForm).mockResolvedValueOnce({
             success: false,
             reason: SubmitFailure.VALIDATION,
             fieldErrors: { email: 'Use your work email.' },
             code: 'WORK_EMAIL',
+            fromHook: true,
         } as any);
         const input = fakeInput();
         const harness = await mount([requiredEmail], { email: { input } });
@@ -207,9 +212,46 @@ describe('wix-form errorRule (DL#53 G1)', () => {
         expect(fieldView(harness, 'email')).toMatchObject({
             error: 'Use your work email.',
             invalid: true,
-            errorRule: FieldRule.SERVER,
+            errorRule: FieldRule.HOOK,
         });
         expect(input.focus).toHaveBeenCalled();
+    });
+
+    /** DL #56 H: a hook rejection without a code is still HOOK; provenance is `fromHook`, not `code`. */
+    it('should mark a fromHook result without a code as HOOK', async () => {
+        vi.mocked(submitForm).mockResolvedValueOnce({
+            success: false,
+            reason: SubmitFailure.VALIDATION,
+            fieldErrors: { email: 'Use your work email.' },
+            fromHook: true,
+        } as any);
+        const input = fakeInput();
+        const harness = await mount([requiredEmail], { email: { input } });
+        type(input, 'ada@example.com');
+
+        await submitOnce();
+
+        expect(fieldView(harness, 'email').errorRule).toBe(FieldRule.HOOK);
+    });
+
+    /** DL #56 H: typing a valid value clears a HOOK error, as it clears SERVER. */
+    it('should clear a HOOK error when typing a valid value', async () => {
+        vi.mocked(submitForm).mockResolvedValueOnce({
+            success: false,
+            reason: SubmitFailure.VALIDATION,
+            fieldErrors: { email: 'Use your work email.' },
+            fromHook: true,
+        } as any);
+        const input = fakeInput();
+        const harness = await mount([requiredEmail], { email: { input } });
+        type(input, 'ada@example.com');
+        await submitOnce();
+        expect(fieldView(harness, 'email').errorRule).toBe(FieldRule.HOOK);
+
+        type(input, 'ada@work.example.com');
+        await settle();
+
+        expect(fieldView(harness, 'email')).toMatchObject({ error: '', errorRule: FieldRule.NONE });
     });
 
     it('should clear invalid and errorRule at submit start, so a network failure leaves no stale aria-invalid', async () => {

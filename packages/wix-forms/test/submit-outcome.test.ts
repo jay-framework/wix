@@ -171,6 +171,23 @@ describe('presentSubmitRejection with server field rules (DL#55 P2)', () => {
     });
 });
 
+// Regression guard (DL #56 H): `fromHook` marks every returned field error HOOK, over fieldRules.
+describe('presentSubmitRejection with a hook rejection (DL #56 H)', () => {
+    it("should mark a hook field error HOOK with the hook's text", () => {
+        const view = presentSubmitRejection(
+            {
+                success: false,
+                fromHook: true,
+                fieldErrors: { email: 'This address is on the block list.' },
+                fieldRules: { email: FieldRule.EMAIL },
+            },
+            FIELDS,
+        );
+        expect(view.ruleByTarget.email).toBe(FieldRule.HOOK);
+        expect(view.errorByTarget.email).toBe('This address is on the block list.');
+    });
+});
+
 describe('toSitePath (V9)', () => {
     it.each([
         'https://x',

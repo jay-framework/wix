@@ -31,6 +31,8 @@ export interface FieldViewState {
 
 export interface FormViewStateOverrides {
     isSubmitting: boolean;
+    /** The submit was handed to the server (DL #56 G6); absent means false. */
+    isHandedOff?: boolean;
     statusMessage: string;
     loadError: string;
     errorByTarget?: Record<string, string>;
@@ -120,10 +122,13 @@ export function buildFormViewState(
     };
 }
 
-/** Success wins over `isSubmitting`, which a redirect keeps set while the page navigates. */
+/**
+ * Success wins over the hand-off, which a redirect keeps set while the page navigates. SUBMITTING
+ * means handed to the server, not busy (DL #56 G6): no fallback to `isSubmitting`.
+ */
 function submitStateOf(overrides: FormViewStateOverrides): SubmitState {
     if (overrides.isSubmitted) return SubmitState.SUCCEEDED;
-    if (overrides.isSubmitting) return SubmitState.SUBMITTING;
+    if (overrides.isHandedOff === true) return SubmitState.SUBMITTING;
     if (overrides.submitFailure) return SubmitState.FAILED;
     return SubmitState.IDLE;
 }
