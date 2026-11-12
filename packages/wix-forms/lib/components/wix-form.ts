@@ -29,7 +29,7 @@ import { submitForm } from '../actions/forms-actions.js';
 import { checkFormField } from '../utils/project-form-fields.js';
 import { FieldRule, type FieldCheckResult } from './field-rule.js';
 import { createPageCheckRunner } from './page-checks.js';
-import { createSubmitOutcomeReporter } from './submit-outcome-events.js';
+import { createSubmitOutcomeReporter, createSubmitStartReporter } from './submit-outcome-events.js';
 import {
     presentSubmitRejection,
     SUBMIT_FAILED_MESSAGE,
@@ -41,6 +41,8 @@ import {
     emptyStoreFor,
     emptyValueFor,
     projectSubmissionValues,
+    submittedValueOf,
+    trimTextValues,
     seedControlValues,
     toggleSelection,
     toPostedValues,
@@ -128,6 +130,15 @@ function WixFormInteractive(
     const selectBaselineByTarget = new Map<string, string>();
     const runPageChecks = createPageCheckRunner(carryForward.formId, carryForward.fields);
     const reportSubmitOutcome = createSubmitOutcomeReporter(carryForward.formId);
+    const reportSubmitStart = createSubmitStartReporter(carryForward.formId);
+    // The submit was handed to the server: drives submitState SUBMITTING (DL #57 G6).
+    const [isHandedOff, setIsHandedOff] = createSignal(false);
+
+    /** The only way busy is cleared (DL #57 L2): leaving busy always ends the hand-off too. */
+    function setBusy(value: boolean): void {
+        setIsSubmitting(value);
+        if (!value) setIsHandedOff(false);
+    }
 
     function setFieldValue(target: string, value: FieldValue): void {
         setValues((current) => ({ ...current, [target]: value }));
@@ -143,7 +154,8 @@ function WixFormInteractive(
 
     /**
      * The built-in rules, then — only when they pass — the page's own checks (DL#53 G1). Blur and
-     * typing check the stored value; submit passes the submitted value and values.
+     * typing check the stored value; submit passes the submitted value and values. Page checks
+     * always see the submitted (trimmed) value, on every path (DL #57 T).
      */
     function checkField(
         field: FormFieldView,
@@ -151,7 +163,9 @@ function WixFormInteractive(
         allValues: Readonly<Record<string, FieldValue>> = readFormValues(),
     ): FieldCheckResult {
         const builtIn = checkFormField(field, value);
-        return builtIn.rule === FieldRule.NONE ? runPageChecks(field, value, allValues) : builtIn;
+        return builtIn.rule === FieldRule.NONE
+            ? runPageChecks(field, submittedValueOf(field, value), allValues)
+            : builtIn;
     }
 
     function validateField(field: FormFieldView): void {
@@ -203,7 +217,7 @@ function WixFormInteractive(
     function handleNativeInput(field: FormFieldView, event: Event): void {
         dirtyTargets.add(field.target);
         setFieldValue(field.target, readNativeValue(field, event.target));
-        // Also clears a SERVER error: the client cannot re-check it, and the next submit re-asks.
+        // Also clears a SERVER or HOOK error: the client cannot re-check it, and the next submit re-asks.
         if (errorByTarget()[field.target] && checkField(field).rule === FieldRule.NONE) {
             clearFieldError(field);
         }
@@ -317,14 +331,16 @@ function WixFormInteractive(
         setStatusMessage('');
         setSubmitFailure(SubmitFailure.NONE);
         setIsSubmitted(false);
-        setIsSubmitting(false);
+        setBusy(false);
         dirtyTargets.clear();
         honeypotValue = '';
         clearNativeInputsAfterRemount();
         afterRemount(() => focusFirstFieldInput(refs, carryForward.fields, () => true));
     }
 
+    /** The echo shows what was submitted: visible text-like values trimmed (DL #57 T). */
     function showSubmitted(): void {
+        setValues((current) => trimTextValues(carryForward.fields, current));
         setIsSubmitted(true);
         afterRemount(
             () => void refs.confirmation?.exec$((element: HTMLElement) => element.focus()),
@@ -388,7 +404,7 @@ function WixFormInteractive(
     // A bfcache Back restore must not leave the button disabled by a redirect (DL#42 §4).
     if (typeof window !== 'undefined') {
         window.addEventListener('pageshow', (event: PageTransitionEvent) => {
-            if (event.persisted) setIsSubmitting(false);
+            if (event.persisted) setBusy(false);
         });
     }
 
@@ -409,9 +425,9 @@ function WixFormInteractive(
 
         // The component owns the busy flag and the flight from the first click (DL#53 G2), so a
         // second submit or a reset during the awaits below holds by construction.
-        setIsSubmitting(true);
+        setBusy(true);
         const generation = submitFlight.begin();
-        let isHandedOff = false;
+        let hasHandedOff = false;
         try {
             // Fixed order: reconcile (what the user sees wins) → seed (the page's value for
             // untouched fields; reflecting keeps the input showing what is posted) → read → validate.
@@ -431,11 +447,13 @@ function WixFormInteractive(
                 return;
             }
 
-            isHandedOff = true;
+            hasHandedOff = true;
+            setIsHandedOff(true);
+            reportSubmitStart();
             await runFormSubmit({
                 flight: submitFlight,
                 generation,
-                setIsSubmitting,
+                setIsSubmitting: setBusy,
                 ensureSessionFresh,
                 submitForm,
                 formId: carryForward.formId,
@@ -450,7 +468,7 @@ function WixFormInteractive(
             });
         } finally {
             // A throw before hand-off must not leave the form busy; a reset already cleared it.
-            if (!isHandedOff && submitFlight.isCurrent(generation)) setIsSubmitting(false);
+            if (!hasHandedOff && submitFlight.isCurrent(generation)) setBusy(false);
         }
     }
 
@@ -510,6 +528,7 @@ function WixFormInteractive(
             reason: result.reason ?? SubmitFailure.UNKNOWN,
             ...(result.code === undefined ? {} : { code: result.code }),
             ...(result.fieldErrors === undefined ? {} : { fieldErrors: result.fieldErrors }),
+            ...(result.fromHook ? { fromHook: true } : {}),
         });
     }
 
@@ -517,6 +536,7 @@ function WixFormInteractive(
         render: () =>
             buildFormViewState(carryForward.fields, {
                 isSubmitting: isSubmitting(),
+                isHandedOff: isHandedOff(),
                 statusMessage: statusMessage(),
                 loadError: carryForward.loadError ?? '',
                 errorByTarget: errorByTarget(),

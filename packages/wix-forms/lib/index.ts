@@ -18,6 +18,8 @@ export {
     type FieldChecks,
     type SubmitOutcomeEvent,
     type SubmitOutcomeHandler,
+    type SubmitStartEvent,
+    type SubmitStartHandler,
     type WixFormsContext,
 } from './contexts/wix-forms-context.js';
 export {

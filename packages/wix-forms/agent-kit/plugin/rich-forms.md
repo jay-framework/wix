@@ -39,6 +39,12 @@ store and returns to a blank form (`isSubmitted=false`).
 
 See **§6 Accessibility** for why each attribute is there.
 
+**The echo is the submitted value, trimmed.** The plugin trims surrounding whitespace from visible
+`text`, `textarea`, `email`, `tel` and `url` values before sending, and the confirmation's
+`{x.value}` shows that trimmed value: `"Ann "` reads "Thanks, Ann!". Hidden, `select`, checkbox and
+multiselect values are never changed. While the user types, `value` stays raw (a live preview keeps
+the space just typed). Page checks (§3) always receive the trimmed value.
+
 Do **not** gate the confirmation on `statusMessage` — it is a data tag that also carries
 submit errors. Use the `isSubmitted` variant. To show your own failure copy, branch on
 `submitFailure` (see `user-visible-messages.md`). Note: a confirmation shown after a honeypot
@@ -88,10 +94,11 @@ min/max/pattern) — nothing to configure. Timing is "late to complain, early to
   shows an error. Tabbing past an untouched empty field shows nothing.
 - **Typing** in a field that shows an error clears it as soon as the value is valid, and
   otherwise leaves the text alone (one error, no re-announcement per keystroke). This also
-  clears a `SERVER` error (from Wix or the hook) once the built-in rules and page checks pass,
+  clears a `SERVER` (Wix) or `HOOK` (submit hook) error once the built-in rules and page checks pass,
   because the browser cannot re-check a server rule — but **submit re-validates**: the next
-  submit asks the server again, and a still-bad value comes back with its rule. An error from Wix
-  clears when the visitor types and comes back on the next submit if Wix still refuses the value.
+  submit asks the server again, and a still-bad value comes back with its rule (`HOOK` for a
+  submit hook's rejection). An error from Wix or a hook clears when the visitor types and comes
+  back on the next submit if it is still refused.
 - **A `control` change** (or a chip toggle) is a commit and validates immediately.
 - **Submit** validates every visible field and focuses the first invalid one, so a skipped
   required field is reported there.
@@ -101,7 +108,10 @@ min/max/pattern) — nothing to configure. Timing is "late to complain, early to
   `<option value="">` (e.g. "Choose…"): without it the browser shows the first option, but the
   form posts `''` until the user or autofill changes the select.
 - **Busy from the first click:** `isSubmitting` is set as soon as submit starts, so a second
-  click or Enter is ignored, and a reset during submit cancels it.
+  click or Enter is ignored, and a reset during submit cancels it. `submitState === SUBMITTING`
+  starts only when the submit is handed to the server (after client validation passed): bind
+  `aria-busy` to `isSubmitting` and a "Sending…" label to `submitState`, and the label never flashes
+  on a validation stop (`disabled` is optional, see §6).
 
 **Who enforces what.**
 
@@ -131,7 +141,7 @@ above). The `invalid` variant also drives error styling.
 ### Which rule failed — `errorRule`
 
 Every visible field has an `errorRule` variant:
-`NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE | URL | PATTERN | CUSTOM | SERVER | PHONE_COUNTRY`.
+`NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE | URL | PATTERN | CUSTOM | SERVER | PHONE_COUNTRY | HOOK`.
 `error` keeps the English default text; for your own wording (or another language) branch on
 `errorRule` — never match the `error` text.
 
@@ -140,7 +150,8 @@ Every visible field has an `errorRule` variant:
   <span if="contact.email.errorRule === REQUIRED">Email is required.</span>
   <span if="contact.email.errorRule === EMAIL">That email doesn't look right.</span>
   <span if="contact.email.errorRule === CUSTOM">{contact.email.error}</span>
-  <span if="contact.email.errorRule === SERVER">{contact.email.error}</span>
+  <span if="contact.email.errorRule === HOOK">{contact.email.error}</span>
+  <span if="contact.email.errorRule === SERVER">We could not accept this email. Please check it.</span>
 </span>
 ```
 
@@ -151,9 +162,12 @@ Every visible field has an `errorRule` variant:
   country the Wix Phone field does not accept. **Author checklist: on a phone field, branch on
   `PHONE` and `PHONE_COUNTRY`, or show `{field.error}` unconditionally** (`jay-stack validate`
   warns about a `PHONE` branch without `PHONE_COUNTRY`).
-- `CUSTOM` is a page check's own message. `SERVER` means Wix refused the value for a reason the
-  plugin does not classify, or it is the site owner's custom validation message, or (for now) a
-  submit hook's `FieldRejection` — `error` is that server text; print it.
+- `CUSTOM` is a page check's own message, and `HOOK` is your submit hook's `FieldRejection` text:
+  print `error`. `SERVER` means Wix refused the value for a reason the plugin does not classify,
+  or it is the site owner's custom validation message — `error` is Wix's text, so show it or your
+  own copy.
+- **If your form has a submit hook that throws `FieldRejection`, branch on `HOOK` (not only
+  `SERVER`), or its rejections show no text.**
 - **Write `REQUIRED` copy that still reads correctly while the field holds text.** Typing never
   swaps one error for another, so a field showing `REQUIRED` that receives a partial value
   (e.g. `a` in an email field) keeps `REQUIRED` until it becomes valid (cleared) or is
@@ -335,8 +349,10 @@ mechanical mistakes marked ⚠️.
   outside the conditional form. A live region inserted together with its text is often not
   announced.
 - **Confirmation is focusable**: `ref="k.confirmation" tabindex="-1"` on the thank-you panel.
-- **Busy state**: `aria-busy="{k.isSubmitting}"` on the submit button. Avoid `disabled` — it
-  drops the button out of tab order mid-submit.
+- **Busy state**: `aria-busy="{k.isSubmitting}"` on the submit button — this is the primary
+  pattern; a second click or Enter is already ignored while `isSubmitting` is set. Adding
+  `disabled="{k.isSubmitting}"` is optional and a trade-off: it drops the button out of tab order
+  mid-submit (focus is lost).
 - **`autocomplete`** on personal-data fields (`name`, `given-name`, `email`, `tel`, …).
 - **Groups**: wrap a checkbox or radio group in `<fieldset><legend>{k.f.label}</legend> …`.
 - **Custom choosers** (`control` buttons): mark the chosen one with `aria-pressed="true"`
@@ -430,7 +446,7 @@ successful `submit()`, `dropped` is ignored (the post happened) and logged.
 **Rejecting specific fields.** Validate first, then `throw new FieldRejection(fieldErrors, { code? })`
 (from `@jay-framework/wix-forms`) **before** calling `submit()`: `fieldErrors` maps field target →
 your own message. The page gets `submitFailure: VALIDATION`; each visible target shows its message
-on the field with `errorRule: SERVER` and focus moves to the first one; a hidden or unknown target
+on the field with `errorRule: HOOK` (Wix's own refusals stay `SERVER`) and focus moves to the first one; a hidden or unknown target
 goes to the status message. This is the server half of page checks (§3): re-validate here what the
 page checked in the browser.
 It is also the only server enforcement of `required` and choice options: Wix accepts and confirms
@@ -479,12 +495,56 @@ createEffect(() =>
 ```
 
 `event` is `{ formId, outcome: 'succeeded', redirectTo? }` or `{ formId, outcome: 'failed', reason,
-code?, fieldErrors? }`; `formId` is canonical (lower case), so filter on it when a page has two
+code?, fieldErrors?, fromHook? }` (`fromHook: true` when `fieldErrors` come from your hook's
+`FieldRejection`); `formId` is canonical (lower case), so filter on it when a page has two
 forms. Client validation reports `reason: VALIDATION` with the client messages, a lost request
 `reason: NETWORK`; only hook failures carry a `code`. **The event reports what the visitor was
 shown, never what was stored:** a honeypot trip and a server-side drop both read `succeeded`, like a
 real success. It is not a persistence signal; get that from your own server-side state. Without
 the plugin's client init nothing is emitted.
+
+**Reacting to a send start — declarative first, then `onSubmitStart`.** Most "a send started"
+needs are markup:
+
+```html
+<button ref="booking.submitButton" aria-busy="{booking.isSubmitting}">
+  <span if="booking.submitState === SUBMITTING">Sending…</span>
+  <span if="booking.submitState !== SUBMITTING">Book</span>
+</button>
+<div if="booking.submitState === FAILED">
+  <p if="slotError === SLOT_TAKEN">That slot was just taken. Please pick another.</p>
+  <p if="slotError !== SLOT_TAKEN">We could not send your request. Please try again.</p>
+</div>
+```
+
+The old error line disappears at the next send because the plugin clears `submitFailure` when a
+submit starts; do not clear it from code. Only imperative page state, such as pausing a hold
+clock, needs `onSubmitStart`. It fires once per submit **handed to the server**, before the request;
+never for a busy click, a honeypot trip, a client-validation stop or a reset before hand-off.
+Pairing works in both directions with gaps: some outcomes have no start (client stop, honeypot),
+and a start whose form is reset or whose page unloads in flight has no outcome (there is no
+`abandoned` outcome; your reset handling resumes the clock). Keep a per-form "started" flag:
+
+```ts
+let isClockPausedForSubmit = false; // outcomes without a start must not resume a clock never paused
+createEffect(() =>
+  forms.onSubmitStart(({ event }) => {
+    if (event.formId !== BOOKING_FORM_ID) return;
+    isClockPausedForSubmit = true;
+    pauseHoldClock();
+  }),
+);
+createEffect(() =>
+  forms.onSubmitOutcome(({ event }) => {
+    if (event.formId !== BOOKING_FORM_ID || !isClockPausedForSubmit) return;
+    isClockPausedForSubmit = false;
+    resumeHoldClock();
+  }),
+);
+```
+
+Both return an unsubscribe: subscribe inside `createEffect` and return it. Each handler runs in its
+own `try`: a throwing handler is logged and never skips the others or the request.
 
 **`submit(values?, options?)`.** Call it **once**, and `await` or `return` it. `values` replaces the
 submitted values (default: the browser's). It rejects when Wix rejects. A

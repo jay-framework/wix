@@ -22,7 +22,7 @@ actions:
 validators:
   - name: wix-forms-bindings
     handler: validateWixFormBindings
-    description: Flags retired generic `fields` binding and unknown form-field tags
+    description: Errors on the retired `wix-form` contract / generic `fields` binding and unknown field, channel or option refs; warns on unlabeled inputs, error text inside a label, native required without novalidate, a form without a submitButton ref, control on multiselect options, and a PHONE error branch without PHONE_COUNTRY
 
 setup: setupWixForms
 agentkit: generateWixFormsAgentKit

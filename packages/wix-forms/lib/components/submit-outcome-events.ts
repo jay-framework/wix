@@ -1,15 +1,16 @@
 /**
- * Reports each settled submit to page code through `WIX_FORMS_CONTEXT.onSubmitOutcome`
- * (DL#53 G3). Client-safe.
+ * Reports each submit hand-off and each settled submit to page code through
+ * `WIX_FORMS_CONTEXT.onSubmitStart` / `onSubmitOutcome` (DL#53 G3, DL #57 G6). Client-safe.
  *
  * The context is looked up at call time (Q8): without the plugin's client init nothing is
- * emitted and nothing throws. A page handler that throws is logged, never allowed to break the
- * form's own submit flow.
+ * emitted and nothing throws. The context isolates each page handler (DL #57 L1), so a throwing
+ * handler is logged and can never break the form's own submit flow.
  */
 
 import { useGlobalContext } from '@jay-framework/runtime';
 import {
     emitSubmitOutcome,
+    emitSubmitStart,
     WIX_FORMS_CONTEXT,
     type SubmitOutcomeEvent,
 } from '../contexts/wix-forms-context.js';
@@ -26,14 +27,15 @@ export function createSubmitOutcomeReporter(formId: string): SubmitOutcomeReport
     const reportedFormId = canonicalFormId(formId) ?? formId;
     return (outcome) => {
         const context = useGlobalContext(WIX_FORMS_CONTEXT);
-        if (!context) return;
-        try {
-            emitSubmitOutcome(context, { formId: reportedFormId, ...outcome });
-        } catch (error) {
-            console.error('[wix-forms] an onSubmitOutcome handler threw', {
-                formId: reportedFormId,
-                error: error instanceof Error ? `${error.name}: ${error.message}` : String(error),
-            });
-        }
+        if (context) emitSubmitOutcome(context, { formId: reportedFormId, ...outcome });
+    };
+}
+
+/** Reports that the form handed one submit to the server (DL #57 G6). */
+export function createSubmitStartReporter(formId: string): () => void {
+    const reportedFormId = canonicalFormId(formId) ?? formId;
+    return () => {
+        const context = useGlobalContext(WIX_FORMS_CONTEXT);
+        if (context) emitSubmitStart(context, { formId: reportedFormId });
     };
 }

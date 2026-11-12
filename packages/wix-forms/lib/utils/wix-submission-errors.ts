@@ -53,9 +53,11 @@ export function parseSubmissionViolations(responseBody: string): SubmissionViola
 export function fieldRuleOfWixError(error: WixSubmissionError): FieldRule | undefined {
     if (error.customErrorMessage !== undefined) return undefined;
     if (error.errorType === 'REQUIRED_VALUE_ERROR') return FieldRule.REQUIRED; // not observed live
-    if (error.errorType === 'FORMAT_ERROR') {
-        return FORMAT_RULE_OF_WIX_FORMAT[(error.params?.format ?? '').toLowerCase()];
-    }
+    const format = (error.params?.format ?? '').toLowerCase();
+    if (error.errorType === 'FORMAT_ERROR') return FORMAT_RULE_OF_WIX_FORMAT[format];
+    // A country outside the accepted list or an unassigned number (L7/L8(3)); both read as an
+    // invalid phone, so the page's PHONE copy applies (DL#55 follow-up 2026-11-12).
+    if (error.errorType === 'NOT_ALLOWED_VALUE_ERROR' && format === 'phone') return FieldRule.PHONE;
     return undefined;
 }
 

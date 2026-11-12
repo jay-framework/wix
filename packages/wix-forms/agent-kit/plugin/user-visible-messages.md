@@ -31,6 +31,13 @@ There is **no** setting in `config/.wix-forms.yaml` for message text — copy li
 | `NETWORK`       | The request did not complete (offline, timeout)                                              | —                                                                                |
 | `UNKNOWN`       | Server-side failure (logged on the server)                                                   | —                                                                                |
 
+### Busy vs sending — `isSubmitting` and `SUBMITTING`
+
+- `isSubmitting` is true from the click, before client validation. Use it for `aria-busy`; a second click or Enter is ignored while it is set.
+- `submitState === SUBMITTING` starts only when the submit is handed to the server, after client validation passed. Bind a "Sending…" label to it, so the label never flashes when validation stops the submit.
+
+See `rich-forms.md` §3 (busy from the first click) and §7 (reacting to a send start).
+
 ### Localized / custom copy (recommended)
 
 ```html
@@ -80,15 +87,20 @@ For multilingual sites, Wix-translated **labels** help required messages. When t
 | `PATTERN`                   | Does not match the Wix field's pattern                                   |
 | `PHONE_COUNTRY`             | Phone without a country code and no default country, or from a country the Wix Phone field does not accept |
 | `CUSTOM`                    | A page check failed — `error` is the page check's own message            |
-| `SERVER`                    | Wix refused the field for a reason the plugin does not classify, the site owner's custom message, or a submit hook's `FieldRejection` — `error` is the server's text |
+| `SERVER`                    | Wix refused the field for a reason the plugin does not classify, or the site owner's custom message — `error` is Wix's text |
+| `HOOK`                      | The submit hook's `FieldRejection` — `error` is the hook's own text                                                         |
 
 ```html
 <span if="contact.email.errorRule === REQUIRED">Indiquez votre e-mail.</span>
 <span if="contact.email.errorRule === EMAIL">Cet e-mail ne semble pas valide.</span>
 <span if="contact.email.errorRule === CUSTOM">{contact.email.error}</span>
+<span if="contact.email.errorRule === HOOK">{contact.email.error}</span>
+<span if="contact.email.errorRule === SERVER">Cet e-mail n’a pas été accepté. Vérifiez-le.</span>
 <span if="contact.phone.errorRule === PHONE">Ce numéro ne semble pas valide.</span>
 <span if="contact.phone.errorRule === PHONE_COUNTRY">Ajoutez l’indicatif du pays, par ex. +33.</span>
 ```
+
+`HOOK` is your submit hook's `FieldRejection` text (print `error`); `SERVER` is Wix's own refusal (write generic copy, or print `error`). If the form has a submit hook, copy under `SERVER` alone leaves hook rejections with no text.
 
 On a phone field, branch on both `PHONE` and `PHONE_COUNTRY` (or show `{field.error}` unconditionally). While the visitor types a local number with no default country, the rule flips from `PHONE` (up to 5 digits) to `PHONE_COUNTRY` (from 6) — this is expected, not a bug.
 
@@ -104,5 +116,9 @@ Never test `error` text (`if="contact.email.error === '…'"`); branch on `error
 - **Change thank-you / success text** → jay-html under `if="key.submitState === SUCCEEDED"`.
 - **Change or translate a submit error** → jay-html branches on `key.submitFailure`; never match on `statusMessage` text.
 - **Change or translate a field error** → jay-html branches on `key.<target>.errorRule`; never match on `error` text.
+- **Show a busy button** → `aria-busy="{key.isSubmitting}"`; show "Sending…" under `if="key.submitState === SUBMITTING"`, not under `isSubmitting`.
+- **Form has a submit hook that throws `FieldRejection`** → branch on `HOOK` as well as `SERVER`.
+- **Phone field with per-rule copy** → branch on `PHONE` and `PHONE_COUNTRY`.
+- **After upgrading the plugin** → run `jay-stack agent-kit` (regenerates the form contracts, so new `errorRule` values such as `HOOK` exist), then `jay-stack validate`.
 - **Change submit button text** → jay-html button content, not Wix.
 - **Do not** hard-code field labels in jay-html when they should stay dashboard-managed.

@@ -419,13 +419,16 @@ type FieldRejectionLike = Error & {
     options?: { code?: string };
 };
 
-/** A hook's per-field rejection (DL#53 G4); `code` only when the hook gave one. */
+/**
+ * A hook's per-field rejection (DL#53 G4); `code` only when the hook gave one. `fromHook` tells the
+ * client to mark the fields HOOK, not SERVER (DL #57 H); no other row sets it.
+ */
 function fieldRejectionResult(rejection: FieldRejectionLike): SubmitFormResult {
     const code = rejection.options?.code;
     const fieldErrors = rejection.fieldErrors;
     return code === undefined
-        ? { success: false, reason: SubmitFailure.VALIDATION, fieldErrors }
-        : { success: false, reason: SubmitFailure.VALIDATION, fieldErrors, code };
+        ? { success: false, reason: SubmitFailure.VALIDATION, fieldErrors, fromHook: true }
+        : { success: false, reason: SubmitFailure.VALIDATION, fieldErrors, code, fromHook: true };
 }
 
 /** Recognised by name, like `ActionError`, so it survives duplicate module instances. */
