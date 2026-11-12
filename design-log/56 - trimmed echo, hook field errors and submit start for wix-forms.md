@@ -581,3 +581,14 @@ The work was re-applied on `main` after DL #55 (validation parity, phone normali
 - **Invariant documented:** `serverRuleOf` treats `fromHook` as result-wide (every target is `HOOK`). That holds because a hook's `FieldRejection` never carries Wix field errors, since a Wix refusal settles first (`run-submission.ts:308-309` before `:318`). The comment on `serverRuleOf` says to revisit this if a result ever mixes both.
 - **Added test:** `test/submit-outcome.test.ts` › "presentSubmitRejection with a hook rejection (DL #56 H)". It is a regression guard and passes on the current code: `fromHook` wins over `fieldRules` and keeps the hook's text.
 - Tests: wix-forms 576/576.
+
+### Agent-kit review follow-up 2026-11-12
+
+Doc-only fixes from the agent-kit and validators review (no code or validator changes; the proposed "SERVER-only error copy" warning was declined by product on 2026-11-12: guides and the CHANGELOG checklist cover it, as in the rejected validation above):
+
+- `wix-forms-setup.md` config reference: added `defaultPhoneCountry` (ISO code; a Wix Phone field's default wins; else `PHONE_COUNTRY`; unsupported code fails init), linking `rich-forms.md` §3.
+- `user-visible-messages.md`: new "Busy vs sending" subsection (`isSubmitting` from the click vs `submitState === SUBMITTING` once handed to the server, G6); field-error example now shows `HOOK` (hook text) vs `SERVER` (generic copy); checklist bullets for busy/Sending…, `HOOK`, `PHONE` + `PHONE_COUNTRY`, and `jay-stack agent-kit` + `validate` after upgrading.
+- `rich-forms.md`: §6 makes `aria-busy` the primary busy pattern and `disabled` an optional trade-off; §3 and the §7 example now use `aria-busy` to match.
+- `wix-bookings-setup.md` and `wix-bookings-troubleshooting.md`: callout that participant fields use `validateFormSummaryField` (`booking-flow.ts`), so the `wixForm` phone pipeline, `PHONE_COUNTRY`, `HOOK` and `onSubmitStart` do not apply.
+- `plugin.yaml`: `wix-forms-bindings` description now lists the errors and warnings `lib/validators/wix-form-bindings.ts` actually emits.
+- Tests: wix-forms 576/576, wix-bookings 61/61, `yarn confirm` green.

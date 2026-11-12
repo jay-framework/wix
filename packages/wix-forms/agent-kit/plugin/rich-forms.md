@@ -110,8 +110,8 @@ min/max/pattern) — nothing to configure. Timing is "late to complain, early to
 - **Busy from the first click:** `isSubmitting` is set as soon as submit starts, so a second
   click or Enter is ignored, and a reset during submit cancels it. `submitState === SUBMITTING`
   starts only when the submit is handed to the server (after client validation passed): bind
-  `disabled` to `isSubmitting` and a "Sending…" label to `submitState`, and the label never flashes
-  on a validation stop.
+  `aria-busy` to `isSubmitting` and a "Sending…" label to `submitState`, and the label never flashes
+  on a validation stop (`disabled` is optional, see §6).
 
 **Who enforces what.**
 
@@ -349,8 +349,10 @@ mechanical mistakes marked ⚠️.
   outside the conditional form. A live region inserted together with its text is often not
   announced.
 - **Confirmation is focusable**: `ref="k.confirmation" tabindex="-1"` on the thank-you panel.
-- **Busy state**: `aria-busy="{k.isSubmitting}"` on the submit button. Avoid `disabled` — it
-  drops the button out of tab order mid-submit.
+- **Busy state**: `aria-busy="{k.isSubmitting}"` on the submit button — this is the primary
+  pattern; a second click or Enter is already ignored while `isSubmitting` is set. Adding
+  `disabled="{k.isSubmitting}"` is optional and a trade-off: it drops the button out of tab order
+  mid-submit (focus is lost).
 - **`autocomplete`** on personal-data fields (`name`, `given-name`, `email`, `tel`, …).
 - **Groups**: wrap a checkbox or radio group in `<fieldset><legend>{k.f.label}</legend> …`.
 - **Custom choosers** (`control` buttons): mark the chosen one with `aria-pressed="true"`
@@ -505,7 +507,7 @@ the plugin's client init nothing is emitted.
 needs are markup:
 
 ```html
-<button ref="booking.submitButton" disabled="{booking.isSubmitting}">
+<button ref="booking.submitButton" aria-busy="{booking.isSubmitting}">
   <span if="booking.submitState === SUBMITTING">Sending…</span>
   <span if="booking.submitState !== SUBMITTING">Book</span>
 </button>

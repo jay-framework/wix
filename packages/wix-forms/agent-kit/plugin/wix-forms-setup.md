@@ -131,3 +131,4 @@ Flow: user selects a booking service → `getFormSummary({ formId: service.formI
 | `namespace` | string | No | List Forms namespace. Default `wix.form_app.form` (standalone Wix Forms) |
 | `formIds` | string[] | No | Restrict generation to these form ids (empty = all forms in namespace). Also the runtime submit allowlist: when set, `submitForm` refuses other forms (empty = the namespace's enabled forms) |
 | `include` | enum | No | `enabled` (default) \| `disabled` \| `all` |
+| `defaultPhoneCountry` | string | No | ISO 3166-1 alpha-2 code (e.g. `IL`, `US`) for phones typed without a country code. A Wix Phone field's own default country wins when set. Without either, such phones are refused with `PHONE_COUNTRY`. An unsupported code fails init with an error naming the key. See `rich-forms.md` §3 |

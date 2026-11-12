@@ -55,6 +55,10 @@ Bookings loads participant fields via `getFormSummary` from `@jay-framework/wix-
   required. Wix checkout does not ask for them either, so the booking is confirmed without them.
   Do not put address or other non-text fields on a booking form until this is fixed
 
+## Phone / validation behaves differently from a `wixForm` page
+
+Expected, not a bug. Booking participant fields are checked with `validateFormSummaryField` (required + simple patterns on the trimmed value). The `wixForm` phone rules (international numbers, `defaultPhoneCountry`, `PHONE_COUNTRY`), `HOOK` errors and `onSubmitStart` do not apply to the booking flow, and phones are sent to `createBooking` as typed. Failures surface as `bookingFailure === VALIDATION`, not per-field `errorRule`.
+
 ## Do not assume success from redirect alone
 
 `postFlowUrl` fires when the user **finishes or abandons** checkout. For production, look up booking/order status rather than showing confirmation solely on page return.

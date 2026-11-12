@@ -115,6 +115,8 @@ The plugin reports **what happened** through enum variants; the string tags are 
 
 - **No available times** is not a failure: `!hasSlots` with `slotsFailure === NONE` (and `!slotsLoading`).
 - `VALIDATION`: the participant form failed a check; `bookingError` names the field (English template, Wix label).
+
+> **Participant validation is not the `wixForm` pipeline.** The booking flow checks each participant field with `validateFormSummaryField` from `@jay-framework/wix-forms`: required, plus simple email / URL / phone / number patterns on the trimmed value. The `wixForm` phone pipeline (international `+972…` numbers, `defaultPhoneCountry`, `PHONE_COUNTRY`) and the submit hook (`HOOK` errors, `onSubmitStart`) do **not** apply here: phones go to `createBooking` as typed. There is no per-field `errorRule`; branch on `bookingFailure`. For comparison, see `rich-forms.md` §3 in the wix-forms guides.
 - `CHECKOUT_PERMISSION`, `CHECKOUT_REDIRECT_REJECTED`, `SITE_NOT_PUBLISHED` are **setup** problems (see the troubleshooting guide). Show visitors a neutral line; the default text is a hint for the site owner.
 
 ```html
