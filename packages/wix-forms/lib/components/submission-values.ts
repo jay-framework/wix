@@ -42,11 +42,11 @@ export function projectSubmissionValues(
     return values;
 }
 
-/** Visible text-like kinds whose surrounding whitespace is not part of the value (DL #56 T). */
+/** Visible text-like kinds whose surrounding whitespace is not part of the value (DL #57 T). */
 const TRIMMED_KINDS = new Set<FormFieldInputType>(['text', 'textarea', 'email', 'tel', 'url']);
 
 /**
- * The value as submitted: trimmed for a visible text-like string, otherwise unchanged (DL #56 T).
+ * The value as submitted: trimmed for a visible text-like string, otherwise unchanged (DL #57 T).
  * The only place the trim rule is written; validation already ignores surrounding whitespace.
  */
 export function submittedValueOf(field: FormFieldView, raw: FieldValue): FieldValue {
@@ -55,7 +55,7 @@ export function submittedValueOf(field: FormFieldView, raw: FieldValue): FieldVa
     return isTrimmed ? (raw as string).trim() : raw;
 }
 
-/** The store with every visible text-like string trimmed (the confirmation echo, DL #56 T). */
+/** The store with every visible text-like string trimmed (the confirmation echo, DL #57 T). */
 export function trimTextValues(fields: FormFieldView[], store: FieldStore): FieldStore {
     const trimmed: FieldStore = { ...store };
     for (const field of fields) {

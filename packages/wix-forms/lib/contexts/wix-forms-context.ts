@@ -53,14 +53,14 @@ export type SubmitOutcomeEvent =
           /** A hook's `ActionError` / `FieldRejection` code; absent for plugin and Wix failures. */
           code?: string;
           fieldErrors?: Record<string, string>;
-          /** True when `fieldErrors` come from the submit hook's `FieldRejection` (DL #56 H). */
+          /** True when `fieldErrors` come from the submit hook's `FieldRejection` (DL #57 H). */
           fromHook?: boolean;
       };
 
 /** jay's event-handler shape: the event arrives as `{ event }`. */
 export type SubmitOutcomeHandler = (args: { event: SubmitOutcomeEvent }) => void;
 
-/** A submit the form handed to the server (DL #56 G6). `formId` is canonical. */
+/** A submit the form handed to the server (DL #57 G6). `formId` is canonical. */
 export interface SubmitStartEvent {
     formId: string;
 }
@@ -76,7 +76,7 @@ export interface WixFormsContext {
      */
     onSubmitOutcome(handler: SubmitOutcomeHandler): () => void;
     /**
-     * Fires once per submit handed to the server, before the request (DL #56 G6). Not for a busy
+     * Fires once per submit handed to the server, before the request (DL #57 G6). Not for a busy
      * click, a honeypot trip, a client-validation stop, or a reset before hand-off.
      * Usually followed by one onSubmitOutcome for the same form; not when the form is reset or the
      * page unloads meanwhile (no 'abandoned' outcome). Some outcomes have no start (a client-
@@ -96,7 +96,7 @@ export const WIX_FORMS_CONTEXT = createJayContext<WixFormsContext>('wix:forms');
 const REGISTERED_CHECKS = Symbol('wix-forms.registeredFieldChecks');
 /** The component's emit side; through the context, `onSubmitOutcome` only subscribes. */
 const EMIT_SUBMIT_OUTCOME = Symbol('wix-forms.emitSubmitOutcome');
-/** The component's emit side for `onSubmitStart` (DL #56 G6). */
+/** The component's emit side for `onSubmitStart` (DL #57 G6). */
 const EMIT_SUBMIT_START = Symbol('wix-forms.emitSubmitStart');
 
 interface WixFormsContextState extends WixFormsContext {
@@ -121,7 +121,7 @@ export function emitSubmitOutcome(context: WixFormsContext, event: SubmitOutcome
     (context as WixFormsContextState)[EMIT_SUBMIT_OUTCOME](event);
 }
 
-/** Emits one submit hand-off to every `onSubmitStart` subscriber (DL #56 G6). */
+/** Emits one submit hand-off to every `onSubmitStart` subscriber (DL #57 G6). */
 export function emitSubmitStart(context: WixFormsContext, event: SubmitStartEvent): void {
     (context as WixFormsContextState)[EMIT_SUBMIT_START](event);
 }
@@ -183,7 +183,7 @@ function createWixFormsContextState(): WixFormsContextState {
 }
 
 /**
- * Calls every handler with `{ event }`, each in its own `try` (DL #56 L1): a throwing page handler is
+ * Calls every handler with `{ event }`, each in its own `try` (DL #57 L1): a throwing page handler is
  * logged and never skips the others. A snapshot, so a handler that unsubscribes while being called
  * does not skip the next one.
  */

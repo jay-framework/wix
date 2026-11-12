@@ -92,11 +92,11 @@ describe('WIX_FORMS_CONTEXT onSubmitOutcome (DL#53 G3)', () => {
 });
 
 /**
- * Bug: page code has no signal that a submit started, so it cannot pause a page clock (DL #56 G6).
+ * Bug: page code has no signal that a submit started, so it cannot pause a page clock (DL #57 G6).
  * Found in: design-log/56 §Problem 3.
  * Expected: onSubmitStart delivers { event } and returns an unsubscribe. Actual: no such member.
  */
-describe('WIX_FORMS_CONTEXT onSubmitStart (DL #56 G6)', () => {
+describe('WIX_FORMS_CONTEXT onSubmitStart (DL #57 G6)', () => {
     const event = { formId: FORM_ID };
 
     it('should call each subscribed handler with { event } and return an unsubscribe', () => {
@@ -118,12 +118,12 @@ describe('WIX_FORMS_CONTEXT onSubmitStart (DL #56 G6)', () => {
 });
 
 /**
- * Bug: one throwing page handler skips every later handler (DL #56 L1).
+ * Bug: one throwing page handler skips every later handler (DL #57 L1).
  * Found in: design-log/56 TL;DR L1 — a single outer try around the whole emit.
  * Expected: each handler runs in its own try; a throw is logged once and the rest still run.
  * Actual: the emit throws at the first handler and the second never runs.
  */
-describe('WIX_FORMS_CONTEXT per-handler isolation (DL #56 L1)', () => {
+describe('WIX_FORMS_CONTEXT per-handler isolation (DL #57 L1)', () => {
     const throwing = () => {
         throw new Error('page bug');
     };

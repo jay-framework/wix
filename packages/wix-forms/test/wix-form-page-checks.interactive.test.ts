@@ -192,7 +192,7 @@ describe('wix-form errorRule (DL#53 G1)', () => {
 
     /**
      * Bug: a hook FieldRejection and a Wix refusal are both SERVER, so markup can only tell them
-     * apart by text (DL #56 H). Found in: design-log/56 §Problem 2.
+     * apart by text (DL #57 H). Found in: design-log/56 §Problem 2.
      * Expected: a result with `fromHook: true` marks its visible targets HOOK. Actual: SERVER.
      */
     it('should mark fields from a hook FieldRejection result as HOOK', async () => {
@@ -217,7 +217,7 @@ describe('wix-form errorRule (DL#53 G1)', () => {
         expect(input.focus).toHaveBeenCalled();
     });
 
-    /** DL #56 H: a hook rejection without a code is still HOOK; provenance is `fromHook`, not `code`. */
+    /** DL #57 H: a hook rejection without a code is still HOOK; provenance is `fromHook`, not `code`. */
     it('should mark a fromHook result without a code as HOOK', async () => {
         vi.mocked(submitForm).mockResolvedValueOnce({
             success: false,
@@ -234,7 +234,7 @@ describe('wix-form errorRule (DL#53 G1)', () => {
         expect(fieldView(harness, 'email').errorRule).toBe(FieldRule.HOOK);
     });
 
-    /** DL #56 H: typing a valid value clears a HOOK error, as it clears SERVER. */
+    /** DL #57 H: typing a valid value clears a HOOK error, as it clears SERVER. */
     it('should clear a HOOK error when typing a valid value', async () => {
         vi.mocked(submitForm).mockResolvedValueOnce({
             success: false,

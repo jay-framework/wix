@@ -179,7 +179,7 @@ describe('formContractGenerator', () => {
         ];
         const fieldRuleNames = Object.keys(FieldRule).filter((key) => Number.isNaN(Number(key)));
         // Member order IS the contract (DL#45), hard-coded so a rename, reorder or append fails
-        // here loudly. Joint 0.26.4 order: DL#55 P1c PHONE_COUNTRY = 10, then DL #56 H HOOK = 11.
+        // here loudly. Joint 0.26.4 order: DL#55 P1c PHONE_COUNTRY = 10, then DL #57 H HOOK = 11.
         const expectedRuleNames = [
             'NONE',
             'REQUIRED',

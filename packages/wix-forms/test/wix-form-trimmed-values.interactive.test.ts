@@ -94,12 +94,12 @@ afterEach(() => {
 });
 
 /**
- * Bug: the post and the confirmation echo keep surrounding whitespace (DL #56 T).
+ * Bug: the post and the confirmation echo keep surrounding whitespace (DL #57 T).
  * Found in: design-log/56 §Problem 1.
  * Expected: "Ann " posts and echoes as "Ann"; page checks see the trimmed value on every path.
  * Actual: the raw store value is posted, echoed and handed to page checks on blur/typing.
  */
-describe('wix-form trimmed values (DL #56 T)', () => {
+describe('wix-form trimmed values (DL #57 T)', () => {
     it('should post trimmed text values', async () => {
         const nameInput = fakeInput();
         const emailInput = fakeInput();

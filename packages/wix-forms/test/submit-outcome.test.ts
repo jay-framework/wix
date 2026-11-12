@@ -171,8 +171,8 @@ describe('presentSubmitRejection with server field rules (DL#55 P2)', () => {
     });
 });
 
-// Regression guard (DL #56 H): `fromHook` marks every returned field error HOOK, over fieldRules.
-describe('presentSubmitRejection with a hook rejection (DL #56 H)', () => {
+// Regression guard (DL #57 H): `fromHook` marks every returned field error HOOK, over fieldRules.
+describe('presentSubmitRejection with a hook rejection (DL #57 H)', () => {
     it("should mark a hook field error HOOK with the hook's text", () => {
         const view = presentSubmitRejection(
             {

@@ -90,7 +90,7 @@ describe('buildFormViewState', () => {
     it('should add the reserved form-level tags alongside the per-field slots', () => {
         const result = buildFormViewState(fields, {
             isSubmitting: true,
-            isHandedOff: true, // DL #56 G6: SUBMITTING means handed to the server
+            isHandedOff: true, // DL #57 G6: SUBMITTING means handed to the server
             statusMessage: 'Form submitted successfully.',
             loadError: '',
         });
@@ -161,7 +161,7 @@ describe('buildFormViewState submit outcome (DL#45)', () => {
     });
 
     /**
-     * Bug: "Sending…" flashes on a client-validation stop (DL #56 G6, Q13).
+     * Bug: "Sending…" flashes on a client-validation stop (DL #57 G6, Q13).
      * Expected: busy before hand-off is IDLE. Actual: SUBMITTING from the first click.
      */
     it('should be IDLE while busy before the hand-off', () => {

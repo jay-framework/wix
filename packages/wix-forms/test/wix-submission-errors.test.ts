@@ -172,7 +172,7 @@ function callerPathRefusal(typed: string): CallerPathRow {
  *   number's country code must correspond to one from allowed countries"), which reads wrong for
  *   an unassigned number and bypasses the page's PHONE copy.
  * Found in: design-log/55 - wix validation parity for wix-forms.md, Implementation Results,
- *   "Follow-up 2026-11-12, shipped with DL #56" (product decision 2026-11-12).
+ *   "Follow-up 2026-11-12, shipped with DL #57" (product decision 2026-11-12).
  * Expected: `PHONE` and the default phone text; `fieldErrors` keeps Wix's text.
  * Fixtures: the captured L7 / L8(3) caller-path rows.
  */

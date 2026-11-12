@@ -423,12 +423,12 @@ function fieldOfKind(
 }
 
 /**
- * Bug: surrounding whitespace is posted and echoed although validation ignores it (DL #56 T).
+ * Bug: surrounding whitespace is posted and echoed although validation ignores it (DL #57 T).
  * Found in: design-log/56 §Problem 1 — "Thank you, Ann ." and Wix stores "Ann ".
  * Expected: visible text-like strings are trimmed in the post, the echo and the page-check value.
  * Actual: projectSubmissionValues copies raw values; submittedValueOf / trimTextValues do not exist.
  */
-describe('submittedValueOf / projectSubmissionValues / trimTextValues (DL #56 T)', () => {
+describe('submittedValueOf / projectSubmissionValues / trimTextValues (DL #57 T)', () => {
     const cases: Array<{
         name: string;
         field: FormFieldView;

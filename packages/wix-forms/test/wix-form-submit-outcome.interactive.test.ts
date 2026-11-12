@@ -209,7 +209,7 @@ describe('wixForm — DL#53 G3, onSubmitOutcome', () => {
     });
 
     /**
-     * DL #56 H: page code can tell a hook rejection from a Wix refusal. Expected: the `failed` event
+     * DL #57 H: page code can tell a hook rejection from a Wix refusal. Expected: the `failed` event
      * carries `fromHook: true` for a hook FieldRejection. Actual: the flag is dropped.
      */
     it('should carry fromHook on the failed event of a hook FieldRejection', async () => {
@@ -355,11 +355,11 @@ function deferred<T>(): { promise: Promise<T>; resolve: (value: T) => void } {
 
 /**
  * Bug: page code cannot tell that a submit started, so a 60-second hold clock cannot pause on
- * send (DL #56 G6). Found in: design-log/56 §Problem 3.
+ * send (DL #57 G6). Found in: design-log/56 §Problem 3.
  * Expected: onSubmitStart fires once per submit handed to the server, before submitForm, and
  * never for a stop before hand-off. Actual: the context has no onSubmitStart.
  */
-describe('wixForm — DL #56 G6, onSubmitStart', () => {
+describe('wixForm — DL #57 G6, onSubmitStart', () => {
     it('should fire one start, before submitForm, with the canonical id of an upper-case form id', async () => {
         const log = recordLifecycle();
         mountWixForm(
@@ -454,9 +454,9 @@ describe('wixForm — DL #56 G6, onSubmitStart', () => {
 
 /**
  * Bug: "Sending…" flashes on a client-validation stop, because SUBMITTING starts at the first
- * click (DL #56 G6, Q13). Expected: SUBMITTING only once the submit is handed to the server.
+ * click (DL #57 G6, Q13). Expected: SUBMITTING only once the submit is handed to the server.
  */
-describe('wixForm — DL #56 G6, SUBMITTING means handed off', () => {
+describe('wixForm — DL #57 G6, SUBMITTING means handed off', () => {
     /** An input whose DOM read stays pending until released, holding submit in its reconcile step. */
     function slowReadInput(): { input: FakeInput; release: () => void } {
         const input = fakeInput();

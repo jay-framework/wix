@@ -821,7 +821,7 @@ Agent, QA page `/dl55-phone` on the QA testbed (plugin from this branch), Chromi
 - **Schema caching (by design, worth knowing).** Before the restart the page still used the old rules for up to `SLOW_RENDER_TTL` (600 s): the UK local number was refused as `PHONE` and `+12025550123` was posted, refused by Wix (`NOT_ALLOWED_VALUE_ERROR`) and shown as `SERVER` with Wix's text. So a dashboard change reaches visitors within 10 minutes, and Wix's server check covers the gap.
 - **Videos (workspace root):** `dl55-gap1-us-number-2026-11-12.webm`, `dl55-gap2-dashboard-countries-2026-11-12.webm` (after restart), `dl55-gap2-stale-cache-2026-11-12.webm` (before restart).
 
-### Follow-up 2026-11-12, shipped with DL #56
+### Follow-up 2026-11-12, shipped with DL #57
 
 Product decision (2026-11-12): Wix's `NOT_ALLOWED_VALUE_ERROR` on a phone maps to `FieldRule.PHONE` with the normal phone default text ("Please enter a valid phone number."). It is the one unmapped phone refusal left after P1c (the "Schema caching" live note above showed it as `SERVER` with Wix's text).
 

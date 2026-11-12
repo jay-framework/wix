@@ -20,7 +20,7 @@ export enum FieldRule {
     SERVER,
     /** A phone with no country code and no default country, or from a country the field refuses (DL#55 P1c). */
     PHONE_COUNTRY,
-    /** The form's submit hook rejected this field (`FieldRejection`); `error` is the hook's text (DL #56 H). */
+    /** The form's submit hook rejected this field (`FieldRejection`); `error` is the hook's text (DL #57 H). */
     HOOK,
 }
 

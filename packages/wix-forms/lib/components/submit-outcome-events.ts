@@ -1,9 +1,9 @@
 /**
  * Reports each submit hand-off and each settled submit to page code through
- * `WIX_FORMS_CONTEXT.onSubmitStart` / `onSubmitOutcome` (DL#53 G3, DL #56 G6). Client-safe.
+ * `WIX_FORMS_CONTEXT.onSubmitStart` / `onSubmitOutcome` (DL#53 G3, DL #57 G6). Client-safe.
  *
  * The context is looked up at call time (Q8): without the plugin's client init nothing is
- * emitted and nothing throws. The context isolates each page handler (DL #56 L1), so a throwing
+ * emitted and nothing throws. The context isolates each page handler (DL #57 L1), so a throwing
  * handler is logged and can never break the form's own submit flow.
  */
 
@@ -31,7 +31,7 @@ export function createSubmitOutcomeReporter(formId: string): SubmitOutcomeReport
     };
 }
 
-/** Reports that the form handed one submit to the server (DL #56 G6). */
+/** Reports that the form handed one submit to the server (DL #57 G6). */
 export function createSubmitStartReporter(formId: string): () => void {
     const reportedFormId = canonicalFormId(formId) ?? formId;
     return () => {

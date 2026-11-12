@@ -92,6 +92,6 @@ export type SubmitFormResult =
           fieldRules?: Record<string, FieldRule>;
           /** A hook's `ActionError` / `FieldRejection` code (DL#53 G3/G4); absent for plugin and Wix failures. */
           code?: string;
-          /** True only when `fieldErrors` come from a submit hook's `FieldRejection` (DL #56 H). */
+          /** True only when `fieldErrors` come from a submit hook's `FieldRejection` (DL #57 H). */
           fromHook?: boolean;
       };

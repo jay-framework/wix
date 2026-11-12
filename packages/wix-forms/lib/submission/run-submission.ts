@@ -421,7 +421,7 @@ type FieldRejectionLike = Error & {
 
 /**
  * A hook's per-field rejection (DL#53 G4); `code` only when the hook gave one. `fromHook` tells the
- * client to mark the fields HOOK, not SERVER (DL #56 H); no other row sets it.
+ * client to mark the fields HOOK, not SERVER (DL #57 H); no other row sets it.
  */
 function fieldRejectionResult(rejection: FieldRejectionLike): SubmitFormResult {
     const code = rejection.options?.code;

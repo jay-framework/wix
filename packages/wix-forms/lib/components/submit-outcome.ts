@@ -49,7 +49,7 @@ export interface SubmitRejection {
     fieldRules?: Record<string, FieldRule>;
     /** A hook's code (DL#53 G3), reported to page code through `onSubmitOutcome`. */
     code?: string;
-    /** True when `fieldErrors` come from a submit hook's `FieldRejection` (DL #56 H). */
+    /** True when `fieldErrors` come from a submit hook's `FieldRejection` (DL #57 H). */
     fromHook?: boolean;
 }
 
@@ -94,7 +94,7 @@ export function presentSubmitRejection(
 }
 
 /**
- * The rule of a returned field error: HOOK for a hook rejection (DL #56 H), else DL#55 P2.
+ * The rule of a returned field error: HOOK for a hook rejection (DL #57 H), else DL#55 P2.
  * `fromHook` is result-wide: a hook's `FieldRejection` never carries Wix field errors (a Wix refusal
  * settles first), so every target is HOOK. Revisit if a result ever mixes both.
  */

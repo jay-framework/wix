@@ -1,4 +1,4 @@
-# 56 - Trimmed Echo, Hook Field Errors and Submit Start for wix-forms
+# 57 - Trimmed Echo, Hook Field Errors and Submit Start for wix-forms
 
 Status: [Implemented] — Approved (product, 2026-11-12); implemented 2026-11-12 (uncommitted on `wix-forms-starkdale-blockers`).
 
@@ -141,7 +141,7 @@ The arrows only recommend an order; no phase needs another. T and H both edit `w
 ### 1. T — trimmed post and echo (`lib/components/submission-values.ts`, `lib/components/wix-form.ts`)
 
 ```ts
-/** Visible text-like kinds whose surrounding whitespace is not part of the value (DL #56 T). */
+/** Visible text-like kinds whose surrounding whitespace is not part of the value (DL #57 T). */
 const TRIMMED_KINDS = new Set<FormFieldInputType>(['text', 'textarea', 'email', 'tel', 'url']);
 
 /** The value as submitted: trimmed for a visible text-like string, otherwise unchanged. The only trim rule. */
@@ -191,7 +191,7 @@ export enum FieldRule {
 ```
 
 - **Result:** the failure variant of `SubmitFormResult` (`lib/types.ts:73-82`) and `SubmitRejection` (`submit-outcome.ts:41-48`) gain `fromHook?: boolean`. `fieldRejectionResult` (`run-submission.ts:405-411`) sets `fromHook: true` on both of its shapes. No other row sets it.
-- **Action schema** (`submit-form.jay-action:9-15`): `fromHook?: boolean  # true when fieldErrors come from the submit hook's FieldRejection (DL #56)`. The generated `.d.ts` follows at build.
+- **Action schema** (`submit-form.jay-action:9-15`): `fromHook?: boolean  # true when fieldErrors come from the submit hook's FieldRejection (DL #57)`. The generated `.d.ts` follows at build.
 - **Client:** `presentSubmitResult` (`wix-form.ts:481-488`) sets `result.fromHook ? FieldRule.HOOK : FieldRule.SERVER` for each visible target. `presentSubmitRejection` is unchanged: hidden and unknown targets still go to `statusMessage`.
 - **Event:** the `failed` member of `SubmitOutcomeEvent` (`wix-forms-context.ts:47-56`) gains `fromHook?: boolean`. `reportSubmitRejection` (`wix-form.ts:513-520`) copies it when set.
 - **Typing:** `handleNativeInput` (`:202-209`) clears a `HOOK` error once the client rules pass, as it clears `SERVER`. Only its comment (`:205`) is updated.
@@ -208,7 +208,7 @@ Traces:
 ### 3. G6 — `onSubmitStart` and `SUBMITTING` timing (`wix-forms-context.ts`, `submit-outcome-events.ts`, `wix-form.ts`, `form-view-state.ts`)
 
 ```ts
-/** A submit the form handed to the server (DL #56 G6). `formId` is canonical. */
+/** A submit the form handed to the server (DL #57 G6). `formId` is canonical. */
 export interface SubmitStartEvent {
   formId: string;
 }
@@ -339,7 +339,7 @@ createEffect(() =>
 
 Rules for every phase:
 
-- Write failing tests first. Doc comments cite DL #56, bug-repro style.
+- Write failing tests first. Doc comments cite DL #57, bug-repro style.
 - Then implement, run `yarn build` and `npx vitest run` in `packages/wix-forms`, and update the guide and CHANGELOG in the same phase.
 - Add an Implementation Results entry with the red-before reasons and X/Y.
 - Interactive tests use `test/support/wix-form-harness.ts`, call `provideWixFormsContext()` before mount, and clear the global registry after each test.
@@ -546,7 +546,7 @@ Branch `wix-forms-starkdale-blockers` from `main` `4fcd2eb` (`v0.26.3`). Uncommi
 The QA testbed was **copied** to the session scratchpad and only the copy was rewired to this branch's wix-forms tarball. The tarball was repacked with the testbed's `^0.26.1` jay ranges so the runtime dedupes. The copy also got a `/dl56` page and a hook for the "QA Test DL54" form (`HOOKME` → `FieldRejection` on `name`; `SLOWME` → a 2.5 s delay before `submit()`), and its dev port moved to 3300. The shared testbed's `package.json` and lockfile were not touched, because a sibling run was using it. No dashboard login and no form change.
 
 - [x] **Pre-step (read-only):** "QA Test DL54" has `name`, `email`, `phone` and `website` (URL). Stale-contract check observed: before regenerating, `jay-stack validate` rejected `errorRule === HOOK` ("Unknown enum value HOOK"), as the agent-feedback section predicts.
-- [x] **T:** `" Ann "` / padded email → "Thank you, Ann." in Chromium and Firefox. Wix stored `Ann` and an unpadded email (read back read-only through the submissions query API). **WebKit** on `http://localhost` got `PERMISSION`: this is the known `Secure`-cookie-on-localhost item from the end-to-end checklist, not DL #56.
+- [x] **T:** `" Ann "` / padded email → "Thank you, Ann." in Chromium and Firefox. Wix stored `Ann` and an unpadded email (read back read-only through the submissions query API). **WebKit** on `http://localhost` got `PERMISSION`: this is the known `Secure`-cookie-on-localhost item from the end-to-end checklist, not DL #57.
 - [~] **T, strict tel:** `'+44 20 7946 0958 '` shows **no error on blur** (pass), but **Wix refused** the submit with `must match format "phone"` (SERVER). Wix rejects the inner spaces, not the trailing one: `' +442079460958 '` passes blur and is stored as `+442079460958`. Spaced numbers belong to the sibling log's phone normalization (P1c), which composes inside `submittedValueOf` (Q5).
 - [x] **H, hook:** `HOOKME` shows the page's `HOOK` copy, and the `failed` event and result carry `fromHook: true`.
 - [x] **H, Wix refusal:** **candidate 1** (`website = http://localhost`) was refused by Wix (`must match format "url"`). The page showed the generic `SERVER` line, and the event has no `fromHook`. Candidates 2–4 were not needed, and the fallback was not needed.
@@ -576,10 +576,10 @@ The work was re-applied on `main` after DL #55 (validation parity, phone normali
 
 ### Code review follow-up (2026-11-12)
 
-- **Shipped alongside, owned by DL #55:** Wix `NOT_ALLOWED_VALUE_ERROR` on a phone field now maps to `FieldRule.PHONE` (`lib/utils/wix-submission-errors.ts`). It is a DL #55 P2 follow-up approved by product on 2026-11-12 and recorded in DL #55 Implementation Results ("Follow-up 2026-11-12, shipped with DL #56") and CHANGELOG 0.26.4 item 9; it is not part of this log's design.
+- **Shipped alongside, owned by DL #55:** Wix `NOT_ALLOWED_VALUE_ERROR` on a phone field now maps to `FieldRule.PHONE` (`lib/utils/wix-submission-errors.ts`). It is a DL #55 P2 follow-up approved by product on 2026-11-12 and recorded in DL #55 Implementation Results ("Follow-up 2026-11-12, shipped with DL #57") and CHANGELOG 0.26.4 item 9; it is not part of this log's design.
 - **Release notes:** CHANGELOG `## 0.26.4` deliberately carries both DL #55 and this log, because DL #55 merged after 0.26.3 was published and has not shipped yet.
 - **Invariant documented:** `serverRuleOf` treats `fromHook` as result-wide (every target is `HOOK`). That holds because a hook's `FieldRejection` never carries Wix field errors, since a Wix refusal settles first (`run-submission.ts:308-309` before `:318`). The comment on `serverRuleOf` says to revisit this if a result ever mixes both.
-- **Added test:** `test/submit-outcome.test.ts` › "presentSubmitRejection with a hook rejection (DL #56 H)". It is a regression guard and passes on the current code: `fromHook` wins over `fieldRules` and keeps the hook's text.
+- **Added test:** `test/submit-outcome.test.ts` › "presentSubmitRejection with a hook rejection (DL #57 H)". It is a regression guard and passes on the current code: `fromHook` wins over `fieldRules` and keeps the hook's text.
 - Tests: wix-forms 576/576.
 
 ### Agent-kit review follow-up 2026-11-12
@@ -592,3 +592,7 @@ Doc-only fixes from the agent-kit and validators review (no code or validator ch
 - `wix-bookings-setup.md` and `wix-bookings-troubleshooting.md`: callout that participant fields use `validateFormSummaryField` (`booking-flow.ts`), so the `wixForm` phone pipeline, `PHONE_COUNTRY`, `HOOK` and `onSubmitStart` do not apply.
 - `plugin.yaml`: `wix-forms-bindings` description now lists the errors and warnings `lib/validators/wix-form-bindings.ts` actually emits.
 - Tests: wix-forms 576/576, wix-bookings 61/61, `yarn confirm` green.
+
+### Renumbered to DL #57 (2026-11-12)
+
+While this branch was open, `main` merged a different design log as #56 ("User-Token (Contributor) Auth Strategy (PoC)"). This log was renumbered to #57. Its file name, title, the readme row and every `DL #56` reference in code comments, tests, guides and the CHANGELOG now say #57. The content is unchanged.

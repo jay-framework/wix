@@ -131,10 +131,10 @@ function WixFormInteractive(
     const runPageChecks = createPageCheckRunner(carryForward.formId, carryForward.fields);
     const reportSubmitOutcome = createSubmitOutcomeReporter(carryForward.formId);
     const reportSubmitStart = createSubmitStartReporter(carryForward.formId);
-    // The submit was handed to the server: drives submitState SUBMITTING (DL #56 G6).
+    // The submit was handed to the server: drives submitState SUBMITTING (DL #57 G6).
     const [isHandedOff, setIsHandedOff] = createSignal(false);
 
-    /** The only way busy is cleared (DL #56 L2): leaving busy always ends the hand-off too. */
+    /** The only way busy is cleared (DL #57 L2): leaving busy always ends the hand-off too. */
     function setBusy(value: boolean): void {
         setIsSubmitting(value);
         if (!value) setIsHandedOff(false);
@@ -155,7 +155,7 @@ function WixFormInteractive(
     /**
      * The built-in rules, then — only when they pass — the page's own checks (DL#53 G1). Blur and
      * typing check the stored value; submit passes the submitted value and values. Page checks
-     * always see the submitted (trimmed) value, on every path (DL #56 T).
+     * always see the submitted (trimmed) value, on every path (DL #57 T).
      */
     function checkField(
         field: FormFieldView,
@@ -338,7 +338,7 @@ function WixFormInteractive(
         afterRemount(() => focusFirstFieldInput(refs, carryForward.fields, () => true));
     }
 
-    /** The echo shows what was submitted: visible text-like values trimmed (DL #56 T). */
+    /** The echo shows what was submitted: visible text-like values trimmed (DL #57 T). */
     function showSubmitted(): void {
         setValues((current) => trimTextValues(carryForward.fields, current));
         setIsSubmitted(true);

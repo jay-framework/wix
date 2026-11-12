@@ -5,7 +5,7 @@ inputSchema:
   formId?: string
   values: object
   honeypot?: string  # value of the page's honeypot, for direct posts; the plugin component never sends it (DL#53)
-  fromHook?: boolean  # true when fieldErrors come from the submit hook's FieldRejection (DL#56)
+  fromHook?: boolean  # true when fieldErrors come from the submit hook's FieldRejection (DL#57)
 
 outputSchema:
   success: boolean
