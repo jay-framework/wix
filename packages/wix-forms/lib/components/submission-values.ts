@@ -12,6 +12,7 @@
 
 import type { FieldValue, FormFieldView } from '../types.js';
 import { checkFormField } from '../utils/project-form-fields.js';
+import { checkPhone } from '../utils/phone-normalization.js';
 import { FieldRule, type FieldCheckResult } from './field-rule.js';
 
 /** The per-field value store, keyed by `field.target`. */
@@ -139,4 +140,29 @@ export function validateVisibleFields(
         if (result.rule !== FieldRule.NONE) failures[field.target] = result;
     }
     return failures;
+}
+
+/**
+ * The values to post (DL#55 P1c): every tel value (visible or hidden) that `checkPhone` can
+ * convert is sent as E.164, which Wix's caller path requires; every other value passes through.
+ * The store and the inputs keep what the visitor typed.
+ */
+export function toPostedValues(
+    fields: FormFieldView[],
+    values: Record<string, FieldValue>,
+): Record<string, FieldValue> {
+    const posted = { ...values };
+    for (const field of fields) {
+        const value = posted[field.target];
+        if (field.inputType !== 'tel' || typeof value !== 'string') continue;
+        posted[field.target] = postedPhone(value, field);
+    }
+    return posted;
+}
+
+function postedPhone(value: string, field: FormFieldView): string {
+    const trimmed = value.trim();
+    if (!trimmed) return trimmed;
+    const phone = checkPhone(trimmed, field.phone);
+    return phone.rule === FieldRule.NONE ? phone.e164 : value;
 }

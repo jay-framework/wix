@@ -1,0 +1,1816 @@
+{
+  "date": "2026-11-11T12:13:52.433Z",
+  "method": "POST /form-submission-service/v4/submissions, API key, QA testbed; every case includes a deliberately invalid sibling so nothing is stored",
+  "results": [
+    {
+      "label": "phone 054.123.4567",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "phone": "054.123.4567"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "phone 050.123.4567",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "phone": "050.123.4567"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "phone 020.7946.0958",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "phone": "020.7946.0958"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "phone 12",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "phone": "12"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "phone 050 123",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "phone": "050 123"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "phone abc",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "phone": "abc"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    },
+                    {
+                      "errorPath": "phone",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"phone\"",
+                      "params": {
+                        "format": "phone"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "phone +1 (555) 123-4567 ext 5",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "phone": "+1 (555) 123-4567 ext 5"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    },
+                    {
+                      "errorPath": "phone",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"phone\"",
+                      "params": {
+                        "format": "phone"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "phone phone: 123",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "phone": "phone: 123"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    },
+                    {
+                      "errorPath": "phone",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"phone\"",
+                      "params": {
+                        "format": "phone"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "phone (050) 123/4567",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "phone": "(050) 123/4567"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    },
+                    {
+                      "errorPath": "phone",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"phone\"",
+                      "params": {
+                        "format": "phone"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "phone ０５０１２３４５６７",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "phone": "０５０１２３４５６７"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    },
+                    {
+                      "errorPath": "phone",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"phone\"",
+                      "params": {
+                        "format": "phone"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "phone +44 20 7946 0958 ext. 12",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "phone": "+44 20 7946 0958 ext. 12"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    },
+                    {
+                      "errorPath": "phone",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"phone\"",
+                      "params": {
+                        "format": "phone"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "phone +972-54-123-4567",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "phone": "+972-54-123-4567"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "phone .",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "phone": "."
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "phone ---",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "phone": "---"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "phone +",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "phone": "+"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "url HTTPS://EXAMPLE.COM",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "website": "HTTPS://EXAMPLE.COM"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "url ftp://x.com",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "website": "ftp://x.com"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "url https://x",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "website": "https://x"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    },
+                    {
+                      "errorPath": "website",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"url\"",
+                      "params": {
+                        "format": "url"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "url http://localhost:3000/a",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "website": "http://localhost:3000/a"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    },
+                    {
+                      "errorPath": "website",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"url\"",
+                      "params": {
+                        "format": "url"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "url https://exa mple.com",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "website": "https://exa mple.com"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    },
+                    {
+                      "errorPath": "website",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"url\"",
+                      "params": {
+                        "format": "url"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "url mailto:a@b.com",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "website": "mailto:a@b.com"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    },
+                    {
+                      "errorPath": "website",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"url\"",
+                      "params": {
+                        "format": "url"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "url example.com",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "website": "example.com"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    },
+                    {
+                      "errorPath": "website",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"url\"",
+                      "params": {
+                        "format": "url"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "url www.example.com",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "website": "www.example.com"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    },
+                    {
+                      "errorPath": "website",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"url\"",
+                      "params": {
+                        "format": "url"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "url bad",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "website": "bad"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    },
+                    {
+                      "errorPath": "website",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"url\"",
+                      "params": {
+                        "format": "url"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "url https://example.com/path?q=1#h",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "website": "https://example.com/path?q=1#h"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "url custom-scheme://foo.bar",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "email": "bad",
+        "website": "custom-scheme://foo.bar"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    },
+                    {
+                      "errorPath": "website",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"url\"",
+                      "params": {
+                        "format": "url"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "email a@b.c",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "website": "bad",
+        "email": "a@b.c"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    },
+                    {
+                      "errorPath": "website",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"url\"",
+                      "params": {
+                        "format": "url"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "email a@b..com",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "website": "bad",
+        "email": "a@b..com"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    },
+                    {
+                      "errorPath": "website",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"url\"",
+                      "params": {
+                        "format": "url"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "email a@localhost",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "website": "bad",
+        "email": "a@localhost"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    },
+                    {
+                      "errorPath": "website",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"url\"",
+                      "params": {
+                        "format": "url"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "email \"a b\"@x.com",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "website": "bad",
+        "email": "\"a b\"@x.com"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    },
+                    {
+                      "errorPath": "website",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"url\"",
+                      "params": {
+                        "format": "url"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "email bad2",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "website": "bad",
+        "email": "bad2"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    },
+                    {
+                      "errorPath": "website",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"url\"",
+                      "params": {
+                        "format": "url"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "email ünïcode@exämple.com",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "website": "bad",
+        "email": "ünïcode@exämple.com"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "website",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"url\"",
+                      "params": {
+                        "format": "url"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "email ann@example.com",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "website": "bad",
+        "email": "ann@example.com"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "website",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"url\"",
+                      "params": {
+                        "format": "url"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "email a+b@x.co.il",
+      "form": "15381943-348c-4ee7-8aa2-974a8a224536",
+      "sent": {
+        "name": "DL55 L1 probe",
+        "website": "bad",
+        "email": "a+b@x.co.il"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "website",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"url\"",
+                      "params": {
+                        "format": "url"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "required: full_name omitted",
+      "form": "66f47ddc-5479-4cf7-b293-5820ec89a142",
+      "sent": {
+        "email": "bad"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "required: full_name \"\"",
+      "form": "66f47ddc-5479-4cf7-b293-5820ec89a142",
+      "sent": {
+        "full_name": "",
+        "email": "bad"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "required: full_name \"   \"",
+      "form": "66f47ddc-5479-4cf7-b293-5820ec89a142",
+      "sent": {
+        "full_name": "   ",
+        "email": "bad"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "required: all omitted",
+      "form": "66f47ddc-5479-4cf7-b293-5820ec89a142",
+      "sent": {},
+      "status": 200,
+      "response": {
+        "submission": {
+          "id": "<submission-id-1>",
+          "formId": "66f47ddc-5479-4cf7-b293-5820ec89a142",
+          "namespace": "wix.form_app.form",
+          "status": "PENDING",
+          "submissions": {},
+          "createdDate": "2026-11-11T12:13:49.852Z",
+          "updatedDate": "2026-11-11T12:13:50.002Z",
+          "revision": "1",
+          "submitter": {
+            "applicationId": "<application-id>"
+          },
+          "seen": false
+        }
+      }
+    },
+    {
+      "label": "required: interests [] consent false",
+      "form": "6bf38693-c02a-4802-8dcb-270f7193b3d2",
+      "sent": {
+        "first_name_5820": "x",
+        "email_7e06": "bad",
+        "interests": [],
+        "form_field_aa5f": false
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email_7e06",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "required: interests/consent omitted",
+      "form": "6bf38693-c02a-4802-8dcb-270f7193b3d2",
+      "sent": {
+        "first_name_5820": "x",
+        "email_7e06": "bad"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email_7e06",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "enum: interests [\"Nope\"], country \"Mars\"",
+      "form": "6bf38693-c02a-4802-8dcb-270f7193b3d2",
+      "sent": {
+        "first_name_5820": "x",
+        "email_7e06": "bad",
+        "interests": ["Nope"],
+        "form_field_aa5f": true,
+        "country": "Mars"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email_7e06",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "type: interests \"News\" (string), consent \"yes\"",
+      "form": "6bf38693-c02a-4802-8dcb-270f7193b3d2",
+      "sent": {
+        "first_name_5820": "x",
+        "email_7e06": "bad",
+        "interests": "News",
+        "form_field_aa5f": "yes"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "email_7e06",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    },
+                    {
+                      "errorPath": "interests",
+                      "errorType": "TYPE_ERROR",
+                      "errorMessage": "must be array",
+                      "params": {
+                        "type": "array"
+                      }
+                    },
+                    {
+                      "errorPath": "form_field_aa5f",
+                      "errorType": "TYPE_ERROR",
+                      "errorMessage": "must be boolean",
+                      "params": {
+                        "type": "boolean"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "unknown key",
+      "form": "66f47ddc-5479-4cf7-b293-5820ec89a142",
+      "sent": {
+        "full_name": "x",
+        "email": "bad",
+        "not_a_field": "y"
+      },
+      "status": 400,
+      "response": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "not_a_field",
+                      "errorType": "UNKNOWN_VALUE_ERROR",
+                      "errorMessage": "must NOT have additional properties",
+                      "params": {
+                        "additionalProperty": "not_a_field"
+                      }
+                    },
+                    {
+                      "errorPath": "email",
+                      "errorType": "FORMAT_ERROR",
+                      "errorMessage": "must match format \"email\"",
+                      "params": {
+                        "format": "email"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "cleanProbes": [
+    {
+      "label": "clean (no invalid sibling): Contact interests [] consent false country \"Mars\"",
+      "sent": {
+        "first_name_5820": "DL55 clean probe",
+        "email_7e06": "<probe-email>",
+        "interests": [],
+        "form_field_aa5f": false,
+        "country": "Mars"
+      },
+      "status": 200,
+      "response": {
+        "submission": {
+          "id": "<submission-id-2>",
+          "formId": "6bf38693-c02a-4802-8dcb-270f7193b3d2",
+          "namespace": "wix.form_app.form",
+          "status": "PENDING",
+          "submissions": {
+            "country": "Mars",
+            "first_name_5820": "DL55 clean probe",
+            "form_field_aa5f": false,
+            "interests": [],
+            "email_7e06": "<probe-email>"
+          },
+          "createdDate": "2026-11-11T12:46:54.915Z",
+          "updatedDate": "2026-11-11T12:46:55.109Z",
+          "revision": "1",
+          "submitter": {
+            "applicationId": "<application-id>"
+          },
+          "seen": false
+        }
+      }
+    },
+    {
+      "label": "read-back of <submission-id-1> (Booking {}) at ~12:20Z",
+      "status": 200,
+      "response": {
+        "status": "CONFIRMED",
+        "submissions": {},
+        "revision": "2",
+        "updatedDate": "2026-11-11T12:13:51.148Z"
+      }
+    },
+    {
+      "label": "read-back of <submission-id-2> (clean Contact probe) ~4s after create",
+      "status": 200,
+      "response": {
+        "status": "CONFIRMED",
+        "submissions": {
+          "country": "Mars",
+          "first_name_5820": "DL55 clean probe",
+          "form_field_aa5f": false,
+          "interests": [],
+          "email_7e06": "<probe-email>"
+        }
+      }
+    }
+  ]
+}

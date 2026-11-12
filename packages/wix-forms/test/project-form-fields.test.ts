@@ -1,9 +1,11 @@
 // @vitest-environment node
 
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
     checkFormField,
-    parseSubmissionFieldErrors,
+    defaultFieldMessage,
     projectFormFields,
     projectFormSummaryFields,
     validateFormField,
@@ -316,40 +318,126 @@ describe('checkFormField (DL#53 G1)', () => {
             'Field is not in the expected format.',
         ],
         ['an invalid pattern regex', { pattern: '(' }, 'abc', FieldRule.NONE, ''],
+        // DL#55 P1c: red before P1c (a local phone with no country passed as NONE).
+        [
+            'a local phone with no country',
+            { inputType: 'tel' },
+            '0541234567',
+            FieldRule.PHONE_COUNTRY,
+            'Please include the country code, starting with +.',
+        ],
+        [
+            'a phone from a country the field does not accept',
+            { inputType: 'tel', phone: { allowedCountries: ['IL', 'US', 'CA'] } },
+            '+442079460958',
+            FieldRule.PHONE_COUNTRY,
+            'Please enter a number with one of these country codes: +972, +1.',
+        ],
     ];
 
     it.each(cases)('should report %s', (_name, overrides, value, rule, message) => {
         expect(checkFormField(fieldOf(overrides), value)).toEqual({ rule, message });
     });
+
+    /** DL#55 P2: one source for the default text, shared by the browser and classified server errors. */
+    it.each(cases.filter(([, , , rule]) => rule !== FieldRule.NONE))(
+        'should give the default message of %s',
+        (_name, overrides, _value, rule, message) => {
+            expect(defaultFieldMessage(rule, fieldOf(overrides))).toBe(message);
+        },
+    );
+
+    it.each([
+        ['MIN_LENGTH without a bound', FieldRule.MIN_LENGTH],
+        ['MAX_LENGTH without a bound', FieldRule.MAX_LENGTH],
+        ['NONE', FieldRule.NONE],
+        ['CUSTOM', FieldRule.CUSTOM],
+        ['SERVER', FieldRule.SERVER],
+    ])('should have no default message for %s', (_name, rule) => {
+        expect(defaultFieldMessage(rule, fieldOf({}))).toBeUndefined();
+    });
 });
 
-describe('parseSubmissionFieldErrors', () => {
-    it('should parse Wix validation error response into field errors', () => {
-        const body = JSON.stringify({
-            details: {
-                validationError: {
-                    fieldViolations: [
-                        {
-                            data: {
-                                errors: [
-                                    {
-                                        errorPath: 'email',
-                                        errorMessage: 'Invalid email address',
-                                    },
-                                ],
-                            },
-                        },
-                    ],
-                },
+/**
+ * Bug: a site's default phone country never reached the browser check (DL#55 P1c, Q30).
+ * Found in: design-log/55 - wix validation parity for wix-forms.md §1c "Config (P1c-a)"
+ * Expected: tel fields carry `phone: { defaultCountry }` from the option; no other field has `phone`.
+ */
+describe('projectFormFields with defaultPhoneCountry (DL#55 P1c)', () => {
+    const form = {
+        fields: [
+            { target: 'name', view: { label: 'Name' } },
+            {
+                target: 'email',
+                view: { label: 'Email' },
+                validation: { string: { format: 'EMAIL' } },
             },
-        });
+            {
+                target: 'phone',
+                view: { label: 'Phone' },
+                validation: { string: { format: 'PHONE' } },
+            },
+            { target: 'site', view: { label: 'Site' }, validation: { string: { format: 'URL' } } },
+        ],
+    };
 
-        expect(parseSubmissionFieldErrors(body)).toEqual({
-            email: 'Invalid email address',
+    it('should give tel fields the default country', () => {
+        const fields = projectFormFields(form, { defaultPhoneCountry: 'IL' });
+        expect(fields.map((field) => [field.target, field.phone])).toEqual([
+            ['name', undefined],
+            ['email', undefined],
+            ['phone', { defaultCountry: 'IL' }],
+            ['site', undefined],
+        ]);
+        expect(fields.filter((field) => 'phone' in field).map((field) => field.target)).toEqual([
+            'phone',
+        ]);
+    });
+
+    it('should give no field phone rules without the option', () => {
+        expect(projectFormFields(form).some((field) => 'phone' in field)).toBe(false);
+    });
+});
+
+/**
+ * Bug: the plugin ignored a real Wix Phone field's Default country and Accepted countries.
+ * Found in: design-log/55 - wix validation parity for wix-forms.md §1c "Phone field options (P1c-b)"
+ * Expected: from the L7 capture (a CONTACTS_PHONE field, default IL, accepted IL + US), the tel
+ *   field carries those rules, and the field's default wins over `defaultPhoneCountry`.
+ */
+describe('projectFormFields on a real Wix Phone field (DL#55 P1c-b, L7 capture)', () => {
+    const { form } = JSON.parse(
+        readFileSync(
+            resolve(__dirname, 'fixtures/format-parity/phone-input-field-schema.json'),
+            'utf8',
+        ),
+    );
+    const phoneOf = (options?: { defaultPhoneCountry?: string }) =>
+        projectFormFields(form, options).find((field) => field.target === 'phone')!;
+
+    it('should project the field as tel with its default and accepted countries', () => {
+        expect(phoneOf()).toMatchObject({
+            inputType: 'tel',
+            phone: { defaultCountry: 'IL', allowedCountries: ['IL', 'US'] },
         });
     });
 
-    it('should return empty object for invalid JSON', () => {
-        expect(parseSubmissionFieldErrors('not json')).toEqual({});
+    it("should let the field's default country win over defaultPhoneCountry", () => {
+        expect(phoneOf({ defaultPhoneCountry: 'GB' }).phone).toEqual({
+            defaultCountry: 'IL',
+            allowedCountries: ['IL', 'US'],
+        });
+    });
+
+    it.each([
+        ['0541234567', FieldRule.NONE, ''],
+        ['+12025550123', FieldRule.NONE, ''],
+        [
+            '+442079460958',
+            FieldRule.PHONE_COUNTRY,
+            'Please enter a number with one of these country codes: +972, +1.',
+        ],
+    ])('should judge "%s" by the field\'s countries', (value, rule, message) => {
+        expect(checkFormField(phoneOf(), value)).toEqual({ rule, message });
     });
 });

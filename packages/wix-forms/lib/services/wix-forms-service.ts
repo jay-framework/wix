@@ -56,7 +56,9 @@ export function provideWixFormsService(
             if (!form) {
                 throw new Error('Form schema missing from Wix response');
             }
-            const fields = projectFormFields(form);
+            const fields = projectFormFields(form, {
+                defaultPhoneCountry: config.defaultPhoneCountry,
+            });
             if (!fields.length) {
                 throw new Error('Form has no usable input fields');
             }

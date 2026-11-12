@@ -43,6 +43,7 @@ import {
     projectSubmissionValues,
     seedControlValues,
     toggleSelection,
+    toPostedValues,
     validateVisibleFields,
     type ControlSeed,
     type OptionToggle,
@@ -438,7 +439,7 @@ function WixFormInteractive(
                 ensureSessionFresh,
                 submitForm,
                 formId: carryForward.formId,
-                submissionValues,
+                submissionValues: toPostedValues(carryForward.fields, submissionValues),
                 presentSubmitResult,
                 navigate: (path) => window.location.assign(path),
                 onNetworkFailure: () => {
@@ -478,14 +479,7 @@ function WixFormInteractive(
             const rejection = presentSubmitRejection(result, carryForward.fields);
             setErrorByTarget(rejection.errorByTarget);
             setInvalidByTarget(rejection.invalidByTarget);
-            setRuleByTarget(
-                Object.fromEntries(
-                    Object.keys(rejection.errorByTarget).map((target) => [
-                        target,
-                        FieldRule.SERVER,
-                    ]),
-                ),
-            );
+            setRuleByTarget(rejection.ruleByTarget);
             setStatusMessage(rejection.statusMessage);
             setSubmitFailure((result as SubmitRejection).reason ?? SubmitFailure.UNKNOWN);
             showFieldErrors(rejection.errorByTarget);

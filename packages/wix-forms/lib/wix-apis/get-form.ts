@@ -18,6 +18,8 @@ export interface RawFormField {
         placeholder?: string;
         fieldType?: string;
         options?: Array<{ value?: string; label?: string }>;
+        /** A Wix Phone field's Default country, ISO code (DL#55 P1c-b, L7 capture). */
+        defaultCountry?: string;
     };
     validation?: {
         required?: boolean;
@@ -26,6 +28,8 @@ export interface RawFormField {
             minLength?: number;
             maxLength?: number;
             pattern?: string;
+            /** A Wix Phone field's Accepted countries, ISO codes (DL#55 P1c-b, L7 capture). */
+            phoneOptions?: { allowedCountryCodes?: string[] };
         };
         /** Present for a boolean (single-checkbox) field (DL#41 4c). */
         boolean?: Record<string, unknown>;

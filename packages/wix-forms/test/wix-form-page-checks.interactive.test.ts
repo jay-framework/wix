@@ -57,6 +57,13 @@ const optionalPhone: FormFieldView = {
     options: [],
 };
 
+/**
+ * DL#55 P1c rewrite: a local number with no country now fails the built-in PHONE_COUNTRY rule
+ * before any page check, so the page-check tests that type a local GB number give the field its
+ * country (the page check still sees what was typed).
+ */
+const gbPhone: FormFieldView = { ...optionalPhone, phone: { defaultCountry: 'GB' } };
+
 const internationalOnly = (value: unknown) =>
     String(value).startsWith('+') ? undefined : 'Use an international number, e.g. +44 20 …';
 
@@ -160,6 +167,29 @@ describe('wix-form errorRule (DL#53 G1)', () => {
         expect(fieldView(harness, 'email')).toMatchObject({ error: '', errorRule: FieldRule.NONE });
     });
 
+    /**
+     * Bug: a Wix error the plugin classifies showed as SERVER with Wix's text (DL#55 Problem 2).
+     * Found in: design-log/55 - wix validation parity for wix-forms.md §Design 2 (trace `a@b.c`)
+     * Expected: errorRule EMAIL and the default email text.
+     */
+    it('should show a classified server error with its rule and default text', async () => {
+        vi.mocked(submitForm).mockResolvedValueOnce({
+            success: false,
+            reason: SubmitFailure.VALIDATION,
+            fieldErrors: { email: 'must match format "email"' },
+            fieldRules: { email: FieldRule.EMAIL },
+        } as any);
+        const input = fakeInput();
+        const harness = await mount([requiredEmail], { email: { input } });
+        type(input, 'a@b.c');
+
+        await submitOnce();
+        expect(fieldView(harness, 'email')).toMatchObject({
+            error: 'Please enter a valid email address.',
+            errorRule: FieldRule.EMAIL,
+        });
+    });
+
     /** DL#53 G4 (P4), regression guard: a hook FieldRejection result (with a code) takes the Wix path. */
     it('should mark fields from a hook FieldRejection result as SERVER', async () => {
         vi.mocked(submitForm).mockResolvedValueOnce({
@@ -215,7 +245,7 @@ describe('wix-form page checks (DL#53 G1)', () => {
     it('should block submit with a failing page check, reported as CUSTOM with its message', async () => {
         provideWixFormsContext().registerFieldChecks(FORM_ID, { phone: [internationalOnly] });
         const input = fakeInput();
-        const harness = await mount([optionalPhone], { phone: { input } });
+        const harness = await mount([gbPhone], { phone: { input } });
         type(input, '020 7946 0000');
 
         await submitOnce();
@@ -232,7 +262,7 @@ describe('wix-form page checks (DL#53 G1)', () => {
     it('should run checks registered after the form was constructed', async () => {
         const context = provideWixFormsContext();
         const input = fakeInput();
-        const harness = await mount([optionalPhone], { phone: { input } });
+        const harness = await mount([gbPhone], { phone: { input } });
         context.registerFieldChecks(FORM_ID, { phone: [internationalOnly] });
 
         type(input, '020 7946 0000');
@@ -258,7 +288,7 @@ describe('wix-form page checks (DL#53 G1)', () => {
     it('should keep a CUSTOM error while typing until the page check passes', async () => {
         provideWixFormsContext().registerFieldChecks(FORM_ID, { phone: [internationalOnly] });
         const input = fakeInput();
-        const harness = await mount([optionalPhone], { phone: { input } });
+        const harness = await mount([gbPhone], { phone: { input } });
         type(input, '020 7946 0000');
         await submitOnce();
 
@@ -330,12 +360,50 @@ describe('wix-form page checks (DL#53 G1)', () => {
 
     it('should run built-in rules only, without throwing, when no context is registered', async () => {
         const input = fakeInput();
-        const harness = await mount([optionalPhone], { phone: { input } });
+        const harness = await mount([gbPhone], { phone: { input } });
         type(input, '020 7946 0000');
 
         await submitOnce();
 
         expect(submitForm).toHaveBeenCalledTimes(1);
         expect(fieldView(harness, 'phone').errorRule).toBe(FieldRule.NONE);
+    });
+});
+
+/**
+ * Bug: Wix's caller path refuses every phone shape but compact E.164; the plugin posted phones as
+ *   typed, so a local number cost a round trip and the visitor never learned what Wix wants.
+ * Found in: design-log/55 - wix validation parity for wix-forms.md §1c, Implementation Results
+ *   "Live check (2026-11-11)".
+ * Expected: without a country, a local phone is refused in the browser as PHONE_COUNTRY; with one,
+ *   it is sent as E.164 while the input keeps what the visitor typed.
+ */
+describe('wix-form phone normalization (DL#55 P1c)', () => {
+    it('should refuse a local phone with no country as PHONE_COUNTRY without submitting', async () => {
+        const input = fakeInput();
+        const harness = await mount([optionalPhone], { phone: { input } });
+        type(input, '054.123.4567');
+
+        await submitOnce();
+
+        expect(submitForm).not.toHaveBeenCalled();
+        expect(fieldView(harness, 'phone')).toMatchObject({
+            error: 'Please include the country code, starting with +.',
+            errorRule: FieldRule.PHONE_COUNTRY,
+        });
+    });
+
+    it('should send a local phone as E.164 when the field has a default country', async () => {
+        const input = fakeInput();
+        await mount([{ ...optionalPhone, phone: { defaultCountry: 'IL' } }], { phone: { input } });
+        type(input, '054.123.4567');
+
+        await submitOnce();
+
+        expect(submitForm).toHaveBeenCalledTimes(1);
+        expect(vi.mocked(submitForm).mock.calls[0][0]).toMatchObject({
+            values: { phone: '+972541234567' },
+        });
+        expect(input.value).toBe('054.123.4567');
     });
 });

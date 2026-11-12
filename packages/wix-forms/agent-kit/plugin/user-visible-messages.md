@@ -65,7 +65,9 @@ When the form schema fails to load, `loadError` is set (e.g. `Could not load the
 
 ## Field `{key.<target>.error}`
 
-Client-side checks use English templates such as `Please enter a valid email address.` and `` `${label} is required.` `` (label from Wix). Server field violations use Wix’s `errorMessage` when present; otherwise the plugin may use `Invalid value`.
+Client-side checks use English templates such as `Please enter a valid email address.` and `` `${label} is required.` `` (label from Wix). Server field violations the plugin classifies (Wix format errors for Email / Phone / URL) use the same English default text as the browser check and the matching `errorRule`; other server field violations use Wix’s `errorMessage` (or the owner's custom message) when present, otherwise `Invalid value`.
+
+The browser's Email / URL rules are never stricter than Wix's: a value Wix stores is never blocked in the browser, and a value only Wix refuses comes back after submit. Phones are sent as compact international numbers (`+972541234567`) while the input shows what the visitor typed; the browser refuses a phone it cannot send as an international number (`PHONE`), or one typed without a country code when no default country is known (`PHONE_COUNTRY`, see `defaultPhoneCountry` in `rich-forms.md` §3). `required` is enforced in the browser only — Wix accepts and confirms empty required fields and out-of-options choice values when the site posts; a site that needs server enforcement refuses in its submit hook with `FieldRejection` (`rich-forms.md` §7).
 
 For multilingual sites, Wix-translated **labels** help required messages. When the English templates don't fit, branch on the field's **`errorRule`** variant and write your own copy — the same outcome-vs-text rule as `submitFailure`: the variant says which rule failed, the words are yours.
 
@@ -76,14 +78,19 @@ For multilingual sites, Wix-translated **labels** help required messages. When t
 | `MIN_LENGTH` / `MAX_LENGTH` | Too short / too long (Wix schema)                                        |
 | `EMAIL` / `PHONE` / `URL`   | Wrong format for the field type                                          |
 | `PATTERN`                   | Does not match the Wix field's pattern                                   |
+| `PHONE_COUNTRY`             | Phone without a country code and no default country, or from a country the Wix Phone field does not accept |
 | `CUSTOM`                    | A page check failed — `error` is the page check's own message            |
-| `SERVER`                    | Wix or the submit hook rejected the field — `error` is the server's text |
+| `SERVER`                    | Wix refused the field for a reason the plugin does not classify, the site owner's custom message, or a submit hook's `FieldRejection` — `error` is the server's text |
 
 ```html
 <span if="contact.email.errorRule === REQUIRED">Indiquez votre e-mail.</span>
 <span if="contact.email.errorRule === EMAIL">Cet e-mail ne semble pas valide.</span>
 <span if="contact.email.errorRule === CUSTOM">{contact.email.error}</span>
+<span if="contact.phone.errorRule === PHONE">Ce numéro ne semble pas valide.</span>
+<span if="contact.phone.errorRule === PHONE_COUNTRY">Ajoutez l’indicatif du pays, par ex. +33.</span>
 ```
+
+On a phone field, branch on both `PHONE` and `PHONE_COUNTRY` (or show `{field.error}` unconditionally). While the visitor types a local number with no default country, the rule flips from `PHONE` (up to 5 digits) to `PHONE_COUNTRY` (from 6) — this is expected, not a bug.
 
 Never test `error` text (`if="contact.email.error === '…'"`); branch on `errorRule`. Write `REQUIRED` copy that still reads correctly while the field holds text (see `rich-forms.md` §3).
 

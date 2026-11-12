@@ -8,6 +8,7 @@ import type {
     FormFieldView,
 } from '../types.js';
 import { FieldRule, type FieldCheckResult } from '../components/field-rule.js';
+import { callingCodesOf, checkPhone } from './phone-normalization.js';
 
 const MULTI_SELECT_TYPES = new Set(['CHECKBOX_GROUP', 'MULTI_SELECT', 'TAGS']);
 
@@ -77,10 +78,19 @@ function readInputType(field: RawFormField, target: string): FormFieldInputType 
     return 'text';
 }
 
-export function projectFormFields(rawForm: {
-    fields?: RawFormField[];
-    formFields?: RawFormField[];
-}): FormFieldView[] {
+/** Site-level options for projecting a form for submission (DL#55 P1c). */
+export interface ProjectionOptions {
+    /** Config `defaultPhoneCountry`: the country of phones typed without a country code. */
+    defaultPhoneCountry?: string;
+}
+
+export function projectFormFields(
+    rawForm: {
+        fields?: RawFormField[];
+        formFields?: RawFormField[];
+    },
+    options: ProjectionOptions = {},
+): FormFieldView[] {
     const rawFields = rawForm.fields ?? rawForm.formFields ?? [];
     // DL#41 4a narrows DL#40 OQ-4: hidden fields are MARKED (hidden: true), not dropped,
     // so a page can populate them via the `control` channel and they reach the submission.
@@ -97,10 +107,11 @@ export function projectFormFields(rawForm: {
                 field.inputOptions?.stringOptions?.textInputOptions?.placeholder ??
                 '';
 
+            const inputType = readInputType(field, target);
             return {
                 target,
                 label,
-                inputType: readInputType(field, target),
+                inputType,
                 required: Boolean(field.validation?.required),
                 placeholder,
                 minLength: field.validation?.string?.minLength,
@@ -108,8 +119,28 @@ export function projectFormFields(rawForm: {
                 pattern: field.validation?.string?.pattern,
                 options: readFieldOptions(field),
                 hidden: Boolean(field.hidden),
+                ...phoneRulesOf(field, inputType, options),
             };
         });
+}
+
+/**
+ * `phone` only on tel fields, and only when a rule is known (DL#55 P1c). A Wix Phone field's own
+ * default country wins over config `defaultPhoneCountry`.
+ */
+function phoneRulesOf(
+    field: RawFormField,
+    inputType: FormFieldInputType,
+    { defaultPhoneCountry }: ProjectionOptions,
+): Pick<FormFieldView, 'phone'> {
+    if (inputType !== 'tel') return {};
+    const defaultCountry = field.view?.defaultCountry || defaultPhoneCountry;
+    const allowedCountries = field.validation?.string?.phoneOptions?.allowedCountryCodes ?? [];
+    const phone = {
+        ...(defaultCountry ? { defaultCountry } : {}),
+        ...(allowedCountries.length ? { allowedCountries } : {}),
+    };
+    return Object.keys(phone).length ? { phone } : {};
 }
 
 export function projectFormSummaryFields(
@@ -185,30 +216,76 @@ export function checkFormField(field: FormFieldView, value: FieldValue): FieldCh
 const PASSED: FieldCheckResult = { rule: FieldRule.NONE, message: '' };
 
 function requiredFailure(field: FormFieldView): FieldCheckResult {
-    return { rule: FieldRule.REQUIRED, message: `${field.label} is required.` };
+    return failure(FieldRule.REQUIRED, field);
 }
+
+/** A failed rule with its default message; only for rules `defaultFieldMessage` can fill. */
+function failure(rule: FieldRule, field: FormFieldView): FieldCheckResult {
+    return { rule, message: defaultFieldMessage(rule, field) ?? '' };
+}
+
+/**
+ * The default (English) message of a rule, whoever caught it (DL#55 P2). undefined when it
+ * cannot be filled (a length rule without its bound) and for NONE / CUSTOM / SERVER.
+ */
+export function defaultFieldMessage(rule: FieldRule, field: FormFieldView): string | undefined {
+    switch (rule) {
+        case FieldRule.REQUIRED:
+            return `${field.label} is required.`;
+        case FieldRule.MIN_LENGTH:
+            return field.minLength === undefined
+                ? undefined
+                : `${field.label} must be at least ${field.minLength} characters.`;
+        case FieldRule.MAX_LENGTH:
+            return field.maxLength === undefined
+                ? undefined
+                : `${field.label} must be at most ${field.maxLength} characters.`;
+        case FieldRule.EMAIL:
+            return 'Please enter a valid email address.';
+        case FieldRule.URL:
+            return 'Please enter a valid URL.';
+        case FieldRule.PHONE:
+            return 'Please enter a valid phone number.';
+        case FieldRule.PATTERN:
+            return `${field.label} is not in the expected format.`;
+        case FieldRule.PHONE_COUNTRY:
+            return phoneCountryMessage(field.phone?.allowedCountries);
+        default:
+            return undefined;
+    }
+}
+
+function phoneCountryMessage(allowedCountries: string[] | undefined): string {
+    if (!allowedCountries?.length) return 'Please include the country code, starting with +.';
+    const codes = callingCodesOf(allowedCountries).join(', ');
+    return `Please enter a number with one of these country codes: ${codes}.`;
+}
+
+/**
+ * Browser format rules for Email and URL: each may reject only values Wix's server also rejects
+ * (DL#55 P1, L1). Phones are judged by `checkPhone` against Wix's caller path (DL#55 P1c).
+ */
+const FORMAT_RULES = {
+    email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    url: /^[a-z][a-z\d+.-]*:\/\/\S+$/i, // any scheme: looser than Wix by design (DL#55 Q4)
+} as const;
 
 function checkTextRules(field: FormFieldView, trimmed: string): FieldCheckResult {
     if (field.minLength !== undefined && trimmed.length < field.minLength) {
-        return {
-            rule: FieldRule.MIN_LENGTH,
-            message: `${field.label} must be at least ${field.minLength} characters.`,
-        };
+        return failure(FieldRule.MIN_LENGTH, field);
     }
     if (field.maxLength !== undefined && trimmed.length > field.maxLength) {
-        return {
-            rule: FieldRule.MAX_LENGTH,
-            message: `${field.label} must be at most ${field.maxLength} characters.`,
-        };
+        return failure(FieldRule.MAX_LENGTH, field);
     }
-    if (field.inputType === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-        return { rule: FieldRule.EMAIL, message: 'Please enter a valid email address.' };
+    if (field.inputType === 'email' && !FORMAT_RULES.email.test(trimmed)) {
+        return failure(FieldRule.EMAIL, field);
     }
-    if (field.inputType === 'url' && !/^https?:\/\/.+/.test(trimmed)) {
-        return { rule: FieldRule.URL, message: 'Please enter a valid URL.' };
+    if (field.inputType === 'url' && !FORMAT_RULES.url.test(trimmed)) {
+        return failure(FieldRule.URL, field);
     }
-    if (field.inputType === 'tel' && !/^[+()\-\s\d]{7,}$/.test(trimmed)) {
-        return { rule: FieldRule.PHONE, message: 'Please enter a valid phone number.' };
+    if (field.inputType === 'tel') {
+        const phone = checkPhone(trimmed, field.phone);
+        if (phone.rule !== FieldRule.NONE) return failure(phone.rule, field);
     }
     return checkPattern(field, trimmed);
 }
@@ -217,36 +294,8 @@ function checkTextRules(field: FormFieldView, trimmed: string): FieldCheckResult
 function checkPattern(field: FormFieldView, trimmed: string): FieldCheckResult {
     if (!field.pattern) return PASSED;
     try {
-        return new RegExp(field.pattern).test(trimmed)
-            ? PASSED
-            : { rule: FieldRule.PATTERN, message: `${field.label} is not in the expected format.` };
+        return new RegExp(field.pattern).test(trimmed) ? PASSED : failure(FieldRule.PATTERN, field);
     } catch {
         return PASSED;
-    }
-}
-
-export function parseSubmissionFieldErrors(responseBody: string): Record<string, string> {
-    try {
-        const parsed = JSON.parse(responseBody) as {
-            details?: {
-                validationError?: {
-                    fieldViolations?: Array<{
-                        data?: { errors?: Array<{ errorPath?: string; errorMessage?: string }> };
-                    }>;
-                };
-            };
-        };
-        const fieldErrors: Record<string, string> = {};
-        const violations = parsed.details?.validationError?.fieldViolations ?? [];
-        for (const violation of violations) {
-            for (const fieldError of violation.data?.errors ?? []) {
-                if (fieldError.errorPath && !fieldErrors[fieldError.errorPath]) {
-                    fieldErrors[fieldError.errorPath] = fieldError.errorMessage ?? 'Invalid value';
-                }
-            }
-        }
-        return fieldErrors;
-    } catch {
-        return {};
     }
 }

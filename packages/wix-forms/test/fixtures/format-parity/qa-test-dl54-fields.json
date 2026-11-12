@@ -1,0 +1,38 @@
+[
+  {
+    "target": "name",
+    "label": "Name",
+    "inputType": "text",
+    "required": false,
+    "placeholder": "",
+    "options": [],
+    "hidden": false
+  },
+  {
+    "target": "email",
+    "label": "Email",
+    "inputType": "email",
+    "required": false,
+    "placeholder": "",
+    "options": [],
+    "hidden": false
+  },
+  {
+    "target": "phone",
+    "label": "Phone",
+    "inputType": "tel",
+    "required": false,
+    "placeholder": "",
+    "options": [],
+    "hidden": false
+  },
+  {
+    "target": "website",
+    "label": "Website",
+    "inputType": "url",
+    "required": false,
+    "placeholder": "",
+    "options": [],
+    "hidden": false
+  }
+]

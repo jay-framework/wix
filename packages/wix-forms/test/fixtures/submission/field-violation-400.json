@@ -1,22 +1,33 @@
 {
-  "message": "Submission validation failed",
+  "message": "Validation failed: submission Submission doesn't satisfy form requirements",
   "details": {
     "validationError": {
       "fieldViolations": [
         {
-          "field": "submission.submissions",
-          "description": "Submission validation failed",
-          "violatedRule": "OTHER",
           "ruleName": "SUBMISSION_VALIDATION",
+          "field": "submission",
+          "description": "Submission doesn't satisfy form requirements",
           "data": {
             "errors": [
               {
-                "errorPath": "email_4b3a",
+                "errorPath": "email",
                 "errorType": "FORMAT_ERROR",
-                "errorMessage": "must be a valid email"
+                "errorMessage": "must match format \"email\"",
+                "params": {
+                  "format": "email"
+                }
+              },
+              {
+                "errorPath": "website",
+                "errorType": "FORMAT_ERROR",
+                "errorMessage": "must match format \"url\"",
+                "params": {
+                  "format": "url"
+                }
               }
             ]
-          }
+          },
+          "violatedRule": "OTHER"
         }
       ]
     }

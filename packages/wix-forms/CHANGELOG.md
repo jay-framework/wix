@@ -1,6 +1,43 @@
 # Changelog — @jay-framework/wix-forms
 
-## Unreleased
+## 0.26.4
+
+### Behaviour changes (read before upgrading)
+
+1. **Browser Email and URL rules for form fields are never stricter than Wix.** URL accepts any
+   `scheme://` in any case (`HTTPS://…`, `ftp://…`) without whitespace. Values only Wix refuses
+   (e.g. `a@b.c`) are refused after submit. Phones follow change 3. The bookings participant
+   check (`validateFormSummaryField`) is unchanged.
+2. **Wix field errors use `errorRule` `EMAIL` / `PHONE` / `URL` and the default text.** A format
+   error Wix refuses after submit now shows the same rule and English default text as the browser
+   check, instead of `SERVER` with Wix's validator text. `SERVER` now means an unclassified Wix
+   refusal or the site owner's custom message (and a submit hook's `FieldRejection`). A page that
+   printed `error` only under `SERVER` should add `EMAIL` / `PHONE` / `URL` branches or print `error`
+   unconditionally. `fieldErrors` keeps Wix's text.
+3. **Phones are sent as compact international numbers (E.164).** Wix accepts only that shape from
+   visitors, so the plugin converts what the visitor typed (`+972-54-123-4567`, `00972…`, or a local
+   number with a known country) to `+972541234567` before submitting. The input and the
+   confirmation keep what was typed; a submit hook sees the E.164 value, so a hook that matched
+   local formats must accept E.164. Stored phones become E.164.
+4. **A phone without a country code is refused in the browser with `errorRule` `PHONE_COUNTRY`**
+   ("Please include the country code, starting with +.") unless `defaultPhoneCountry` in
+   `config/.wix-forms.yaml` supplies a country. Values the plugin cannot send as an international
+   number (`12`, `.`, `---`, `+`) are refused as `PHONE`. Pages that show a phone error only under
+   `errorRule === PHONE` should add a `PHONE_COUNTRY` branch or print `error` unconditionally
+   (`jay-stack validate` warns). The exported `checkFormField` / `validateFormField` refuse such
+   phones and may return `PHONE_COUNTRY`. Every page that loads the wix-forms client (bookings pages
+   included) grows by about 29 KB gzipped for the phone library.
+
+### API additions (all optional / additive)
+
+- `FieldRule.PHONE_COUNTRY` (appended after `SERVER`; existing values unchanged) and config key
+  `defaultPhoneCountry` (ISO 3166-1 alpha-2; an unsupported value fails init).
+- New runtime dependency `libphonenumber-js` (the server build imports it, so it is installed on
+  every site using wix-forms).
+- `submitForm` output `fieldRules` (target → `FieldRule` index) for server field errors the plugin
+  classifies; absent targets are `SERVER`.
+
+## 0.26.3
 
 ### Behaviour changes (read before upgrading)
 

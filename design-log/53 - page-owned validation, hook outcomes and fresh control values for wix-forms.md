@@ -767,3 +767,7 @@ Observation, not a regression (the first run behaved the same): after the page c
 The observation above is fixed. Product decided that a `control` change must also update the visible input. **Deviation from Q6** (no live observation): `watchControlValues` (`lib/components/wix-form.ts`) observes each bound control's `data-value` with a `MutationObserver` after mount and after "send another" (one observer per element node), and re-runs `seedAndReflect`, which keeps fields the user edited. Seeding at mount, submit and reset is unchanged.
 
 Tests (red first): `test/wix-form-control-refresh.interactive.test.ts` › "should show a changed visible default in its input before any submit" (red: `WELCOME10`), plus the regression guard "should keep the value the user typed when the page changes the default". The harness gains a minimal `FakeMutationObserver` (node environment). CHANGELOG item 3 extended.
+
+### DL#55 remark (2026-11-11)
+
+2026-11-11 (DL#55 P2): `SERVER` is narrowed to unclassified Wix refusals and owner custom messages (hook `FieldRejection` until `HOOK` lands from DL #56, "trimmed echo, hook field errors and submit start"). The Scope Pre-mortem line 'Localizing Wix's own server violation text' is reversed for mapped types (`EMAIL`/`PHONE`/`URL`): they show the default text. Wix accepts and confirms empty required fields when the site posts (DL#55 L1 clean probe); the plugin enforces `required` in the browser only, and the guides say so (documentation only).
