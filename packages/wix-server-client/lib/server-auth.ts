@@ -1,5 +1,27 @@
 import { ApiKeyStrategy, AppStrategy, OAuthStrategy } from '@wix/sdk';
-import type { WixConfig } from './config-loader';
+import type { UserTokenConfig, WixConfig } from './config-loader';
+
+const TOKEN_INFO_URL = 'https://www.wixapis.com/oauth2/token-info';
+
+/** A user token's headers always build; ask Wix whether the token is still active. */
+async function verifyUserToken({ token }: UserTokenConfig): Promise<void> {
+    const response = await fetch(TOKEN_INFO_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+    });
+    if (!response.ok) throw new Error(`token info failed (${response.status})`);
+    const info: { active?: boolean; subjectType?: string } = await response.json();
+    if (!info.active) throw new Error('the user token is not active (expired?)');
+}
+
+/** PoC (DL #56): every call carries the contributor's own Wix user token. */
+function userTokenStrategy({ token, siteId }: UserTokenConfig) {
+    const headers: Record<string, string> = siteId
+        ? { Authorization: token, 'wix-site-id': siteId }
+        : { Authorization: token };
+    return { getAuthHeaders: async (_host?: unknown) => ({ headers }) };
+}
 
 /** The @wix/sdk auth strategy the server client runs with, from the loaded config. */
 export function serverAuthStrategy(config: WixConfig) {
@@ -17,6 +39,8 @@ export function serverAuthStrategy(config: WixConfig) {
                 appSecret: config.auth.app.appSecret,
                 instanceId: config.auth.app.instanceId,
             });
+        case 'userToken':
+            return userTokenStrategy(config.auth.userToken);
     }
 }
 
@@ -28,6 +52,7 @@ export async function verifyServerAuth(config: WixConfig): Promise<void> {
     try {
         // The host only matters inside a Wix-hosted runtime; a headless server has none.
         await serverAuthStrategy(config).getAuthHeaders(undefined as never);
+        if (config.auth.kind === 'userToken') await verifyUserToken(config.auth.userToken);
     } catch (error) {
         const reason = error instanceof Error ? error.message : String(error);
         throw new Error(

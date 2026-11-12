@@ -25,7 +25,8 @@ const GITIGNORE_ENTRIES = ['config/.wix.yaml', 'wix.config.json'];
 type CredentialCheck =
     | { valid: false; unreadable?: string; missingAppFields?: string[] }
     | { valid: true; strategy: 'apiKey'; siteId: string }
-    | { valid: true; strategy: 'app'; appId: string };
+    | { valid: true; strategy: 'app'; appId: string }
+    | { valid: true; strategy: 'userToken' };
 
 function hasValidCredentials(configPath: string): CredentialCheck {
     if (!fs.existsSync(configPath)) {
@@ -42,6 +43,12 @@ function hasValidCredentials(configPath: string): CredentialCheck {
 
     const clientId = config.oauthStrategy?.clientId || '';
     if (!clientId || clientId.startsWith('<')) return { valid: false };
+
+    // PoC (DL #56): recognized so setup can verify it, never written by setup
+    if (config.userTokenStrategy) {
+        const token = config.userTokenStrategy.token || process.env.WIX_TOKEN || '';
+        return token ? { valid: true, strategy: 'userToken' } : { valid: false };
+    }
 
     if (config.apiKeyStrategy) {
         const apiKey = config.apiKeyStrategy.apiKey || '';
@@ -159,7 +166,9 @@ export async function setupWixServerClient(ctx: PluginSetupContext): Promise<Plu
         const summary =
             creds.strategy === 'apiKey'
                 ? `site: ${creds.siteId.substring(0, 8)}...`
-                : `app: ${creds.appId.substring(0, 8)}...`;
+                : creds.strategy === 'app'
+                  ? `app: ${creds.appId.substring(0, 8)}...`
+                  : 'Wix user token';
         return connectionResult(configPath, summary);
     }
 

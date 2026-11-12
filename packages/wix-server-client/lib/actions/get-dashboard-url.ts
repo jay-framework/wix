@@ -45,6 +45,7 @@ function configSiteId(): string | undefined {
         const { auth } = loadConfig();
         if (auth.kind === 'apiKey') return auth.apiKey.siteId;
         if (auth.kind === 'app') return auth.app.siteId;
+        if (auth.kind === 'userToken') return auth.userToken.siteId;
         return undefined;
     } catch {
         return undefined;

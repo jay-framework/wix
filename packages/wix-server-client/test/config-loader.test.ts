@@ -14,6 +14,7 @@ function withConfig(yaml: string) {
 describe('loadConfig', () => {
     afterEach(() => {
         vi.restoreAllMocks();
+        vi.unstubAllEnvs();
     });
 
     it('reads a site with only an OAuth client as visitor-only: no server secret ships with it', () => {
@@ -27,7 +28,7 @@ describe('loadConfig', () => {
         withConfig(
             'oauthStrategy:\n  clientId: c1\napiKeyStrategy:\n  apiKey: k\n  siteId: s\nappStrategy:\n  appId: a\n  appSecret: x\n',
         );
-        expect(() => loadConfig()).toThrow('not both');
+        expect(() => loadConfig()).toThrow('only one of');
     });
 
     it('keeps an app strategy scoped to one site instance', () => {
@@ -46,5 +47,36 @@ describe('loadConfig', () => {
     ])('rejects an app strategy without %s', (field, appYaml) => {
         withConfig(`oauthStrategy:\n  clientId: a\n${appYaml}`);
         expect(() => loadConfig()).toThrow(`appStrategy.${field}`);
+    });
+
+    it('keeps a contributor user token, from the config or the WIX_TOKEN env (DL #56)', () => {
+        withConfig(
+            'oauthStrategy:\n  clientId: c1\nuserTokenStrategy:\n  token: t1\n  siteId: s\n',
+        );
+        expect(loadConfig().auth).toEqual({
+            kind: 'userToken',
+            userToken: { token: 't1', siteId: 's' },
+        });
+
+        vi.stubEnv('WIX_TOKEN', 'env-token');
+        withConfig('oauthStrategy:\n  clientId: c1\nuserTokenStrategy: {}\n');
+        expect(loadConfig().auth).toEqual({ kind: 'userToken', userToken: { token: 'env-token' } });
+    });
+
+    it('rejects a user token strategy with no token, and next to another server strategy', () => {
+        vi.stubEnv('WIX_TOKEN', '');
+        withConfig('oauthStrategy:\n  clientId: c1\nuserTokenStrategy: {}\n');
+        expect(() => loadConfig()).toThrow('userTokenStrategy.token');
+
+        withConfig(
+            'oauthStrategy:\n  clientId: c1\nuserTokenStrategy:\n  token: t1\napiKeyStrategy:\n  apiKey: k\n  siteId: s\n',
+        );
+        expect(() => loadConfig()).toThrow('only one of');
+    });
+
+    it('ignores WIX_TOKEN without a userTokenStrategy section: a visitor config stays visitor', () => {
+        vi.stubEnv('WIX_TOKEN', 'env-token');
+        withConfig('oauthStrategy:\n  clientId: c1\n');
+        expect(loadConfig().auth).toEqual({ kind: 'visitor' });
     });
 });

@@ -59,6 +59,7 @@ Design documentation for the Jay Framework Wix integration packages.
 | 53  | [Page-Owned Validation, Hook Outcomes and Fresh Control Values for wix-forms](./53%20-%20page-owned%20validation,%20hook%20outcomes%20and%20fresh%20control%20values%20for%20wix-forms.md) | Implemented                                                                                                                                                            |
 | 54  | [Site-Scoped App Strategy](./54%20-%20site-scoped%20app%20strategy.md)                                                                                                                     | Implemented (store-light live setup verified; browser check pending)                                                                                                   |
 | 55  | [Wix Validation Parity for wix-forms](./55%20-%20wix%20validation%20parity%20for%20wix-forms.md)                                                                                           | Implemented (P1+P2, 2026-11-11; approved product/architecture 2026-11-11); [Implemented] P1c phone normalization (approved product 2026-11-12; implemented 2026-11-12) |
+| 56  | [User-Token (Contributor) Auth Strategy (PoC)](<./56%20-%20user-token%20contributor%20auth%20strategy%20(PoC).md>)                                                                         | PoC done: user token works for the data plane (owner token); contributor-role + expiry open                                                                            |
 
 ## Packages Covered
 
