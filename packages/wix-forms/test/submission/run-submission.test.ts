@@ -32,10 +32,11 @@ import {
     SubmitFailure,
 } from '../../lib/components/submit-outcome.js';
 import type { FieldValue } from '../../lib/types.js';
+import { FieldRule } from '../../lib/components/field-rule.js';
 
 /**
- * Shaped after the documented Wix Forms 400 body. Not a live capture: DL#41's
- * MUST-VERIFY (`errorPath` equals the field target) is still open.
+ * A Wix Forms 400 body captured live (DL#55 L1, the `email a@b.c` probe): `errorPath` equals the
+ * field target, verified live.
  */
 const FIELD_VIOLATION_BODY = readFileSync(
     resolve(__dirname, '../fixtures/submission/field-violation-400.json'),
@@ -191,14 +192,41 @@ describe('runSubmission — V2, row 2 (Wix field violations)', () => {
         expect(await submitWith(deps)).toEqual({
             success: false,
             reason: SubmitFailure.VALIDATION,
-            fieldErrors: { email_4b3a: 'must be a valid email' },
+            fieldErrors: { email: 'must match format "email"', website: 'must match format "url"' },
+            fieldRules: { email: FieldRule.EMAIL, website: FieldRule.URL },
+        });
+    });
+
+    /** DL#55 P2: only classified targets get a rule; the two TYPE_ERROR targets stay SERVER. */
+    it('should classify only the format target of the captured type-error body', async () => {
+        const typeError = () =>
+            new WixApiError(
+                400,
+                SUBMISSIONS_PATH,
+                readFileSync(
+                    resolve(__dirname, '../fixtures/submission/type-error-400.json'),
+                    'utf8',
+                ),
+            );
+        const { deps } = harness({ wixFails: typeError });
+
+        expect(await submitWith(deps)).toEqual({
+            success: false,
+            reason: SubmitFailure.VALIDATION,
+            fieldErrors: {
+                email_7e06: 'must match format "email"',
+                interests: 'must be array',
+                form_field_aa5f: 'must be boolean',
+            },
+            fieldRules: { email_7e06: FieldRule.EMAIL },
         });
     });
 
     const fieldErrorResult = {
         success: false,
         reason: SubmitFailure.VALIDATION,
-        fieldErrors: { email_4b3a: 'must be a valid email' },
+        fieldErrors: { email: 'must match format "email"', website: 'must match format "url"' },
+        fieldRules: { email: FieldRule.EMAIL, website: FieldRule.URL },
     };
 
     it.each(parityHooks())(
@@ -705,7 +733,8 @@ describe('runSubmission — DL#43, Wix refuses a caller post', () => {
         expect(await submitWith(deps)).toEqual({
             success: false,
             reason: SubmitFailure.VALIDATION,
-            fieldErrors: { email_4b3a: 'must be a valid email' },
+            fieldErrors: { email: 'must match format "email"', website: 'must match format "url"' },
+            fieldRules: { email: FieldRule.EMAIL, website: FieldRule.URL },
         });
     });
 

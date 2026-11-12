@@ -11,5 +11,6 @@ outputSchema:
   redirectTo?: string
   message?: string
   fieldErrors?: object
+  fieldRules?: object  # target → FieldRule index (REQUIRED=1, …) for server field errors the plugin classifies; others are SERVER (DL#55)
   reason?: number  # SubmitFailure enum index when success is false (NONE=0, VALIDATION=1, …); locale-neutral outcome for pages
   code?: string  # the hook's ActionError / FieldRejection code; absent for plugin and Wix failures (DL#53)

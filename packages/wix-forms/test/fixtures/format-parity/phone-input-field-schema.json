@@ -1,0 +1,209 @@
+{
+  "form": {
+    "id": "b342967d-455b-422b-be20-1ce5c34bb624",
+    "fields": [
+      {
+        "id": "d6b0d8f8-56f1-4a0f-8656-303c45900422",
+        "target": "full_name",
+        "validation": {
+          "string": {
+            "format": "UNDEFINED",
+            "enum": []
+          },
+          "required": false
+        },
+        "pii": false,
+        "hidden": false,
+        "view": {
+          "label": "Full name",
+          "fieldType": "TEXT_INPUT",
+          "hideLabel": false
+        },
+        "readOnly": false
+      },
+      {
+        "id": "d1d4e35c-fd27-4ce6-8322-d78811a20fc6",
+        "target": "phone",
+        "validation": {
+          "string": {
+            "format": "PHONE",
+            "enum": [],
+            "phoneOptions": {
+              "allowedCountryCodes": ["IL", "US"]
+            }
+          },
+          "required": false
+        },
+        "pii": true,
+        "hidden": false,
+        "view": {
+          "label": "Phone",
+          "showFlag": false,
+          "hideLabel": false,
+          "defaultCountry": "IL",
+          "fieldType": "CONTACTS_PHONE"
+        },
+        "readOnly": false
+      },
+      {
+        "id": "8b192a30-f06b-403c-9975-91f9f9c89aac",
+        "pii": false,
+        "hidden": false,
+        "view": {
+          "fieldType": "SUBMIT_BUTTON",
+          "submitText": "Send"
+        },
+        "readOnly": false
+      }
+    ],
+    "formFields": [
+      {
+        "id": "d6b0d8f8-56f1-4a0f-8656-303c45900422",
+        "hidden": false,
+        "identifier": "TEXT_INPUT",
+        "fieldType": "INPUT",
+        "inputOptions": {
+          "target": "full_name",
+          "pii": false,
+          "required": false,
+          "inputType": "STRING",
+          "readOnly": false,
+          "stringOptions": {
+            "validation": {
+              "format": "UNKNOWN_FORMAT",
+              "enum": []
+            },
+            "componentType": "TEXT_INPUT",
+            "textInputOptions": {
+              "label": "Full name",
+              "showLabel": true,
+              "mediaSettings": {
+                "imagePosition": "ABOVE",
+                "imageAlignment": "CENTER",
+                "imageFit": "COVER"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "d1d4e35c-fd27-4ce6-8322-d78811a20fc6",
+        "hidden": false,
+        "identifier": "CONTACTS_PHONE",
+        "fieldType": "INPUT",
+        "inputOptions": {
+          "target": "phone",
+          "pii": true,
+          "required": false,
+          "inputType": "STRING",
+          "contactMapping": {
+            "contactField": "PHONE",
+            "phoneInfo": {
+              "tag": "UNTAGGED"
+            }
+          },
+          "readOnly": false,
+          "stringOptions": {
+            "validation": {
+              "format": "PHONE",
+              "enum": [],
+              "phoneOptions": {
+                "allowedCountryCodes": ["IL", "US"]
+              }
+            },
+            "componentType": "PHONE_INPUT",
+            "phoneInputOptions": {
+              "label": "Phone",
+              "showLabel": true,
+              "defaultCountryCode": "IL",
+              "showCountryFlag": false
+            }
+          }
+        }
+      },
+      {
+        "id": "8b192a30-f06b-403c-9975-91f9f9c89aac",
+        "hidden": false,
+        "identifier": "SUBMIT_BUTTON",
+        "fieldType": "DISPLAY",
+        "displayOptions": {
+          "displayFieldType": "PAGE_NAVIGATION",
+          "pageNavigationOptions": {
+            "submitText": "Send"
+          }
+        }
+      }
+    ],
+    "steps": [
+      {
+        "id": "4903a959-67fb-4c57-b809-ca2d4f2ef5bf",
+        "name": "Page 1",
+        "hidden": false,
+        "layout": {
+          "large": {
+            "items": [
+              {
+                "fieldId": "d6b0d8f8-56f1-4a0f-8656-303c45900422",
+                "row": 0,
+                "column": 0,
+                "width": 12,
+                "height": 1
+              },
+              {
+                "fieldId": "d1d4e35c-fd27-4ce6-8322-d78811a20fc6",
+                "row": 1,
+                "column": 0,
+                "width": 12,
+                "height": 1
+              },
+              {
+                "fieldId": "8b192a30-f06b-403c-9975-91f9f9c89aac",
+                "row": 2,
+                "column": 0,
+                "width": 12,
+                "height": 1
+              }
+            ],
+            "sections": []
+          }
+        }
+      }
+    ],
+    "rules": [],
+    "revision": "1",
+    "createdDate": "2026-11-12T07:24:48.735Z",
+    "updatedDate": "2026-11-12T07:24:48.735Z",
+    "properties": {
+      "name": "QA DL55 Phone",
+      "disabled": false
+    },
+    "deletedFields": [],
+    "deletedFormFields": [],
+    "kind": "REGULAR",
+    "postSubmissionTriggers": {
+      "upsertContact": {
+        "fieldsMapping": {
+          "phone": {
+            "contactField": "PHONE",
+            "phoneInfo": {
+              "tag": "UNTAGGED"
+            }
+          }
+        },
+        "labels": []
+      }
+    },
+    "namespace": "wix.form_app.form",
+    "nestedForms": [],
+    "spamFilterProtectionLevel": "ADVANCED",
+    "submitSettings": {
+      "submitSuccessAction": "NO_ACTION"
+    },
+    "fieldGroups": [],
+    "enabled": true,
+    "name": "QA DL55 Phone",
+    "formRules": [],
+    "autoFillContact": "FORM_INPUT",
+    "submissionAccess": "OWNER_AND_COLLABORATORS"
+  }
+}

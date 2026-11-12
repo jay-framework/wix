@@ -4,6 +4,8 @@
  */
 
 import type { FormFieldView } from '../types.js';
+import { FieldRule } from './field-rule.js';
+import { defaultFieldMessage } from '../utils/project-form-fields.js';
 
 /** English default copy. Pages that need other words branch on `submitFailure` (DL#45). */
 export const SUBMIT_FAILED_MESSAGE = 'We could not complete your request. Please try again.';
@@ -43,6 +45,8 @@ export interface SubmitRejection {
     reason?: SubmitFailure;
     message?: string;
     fieldErrors?: Record<string, string>;
+    /** Server field errors the plugin classifies (DL#55); absent targets are `SERVER`. */
+    fieldRules?: Record<string, FieldRule>;
     /** A hook's code (DL#53 G3), reported to page code through `onSubmitOutcome`. */
     code?: string;
 }
@@ -50,6 +54,7 @@ export interface SubmitRejection {
 export interface SubmitRejectionView {
     errorByTarget: Record<string, string>;
     invalidByTarget: Record<string, boolean>;
+    ruleByTarget: Record<string, FieldRule>;
     statusMessage: string;
 }
 
@@ -61,13 +66,20 @@ export function presentSubmitRejection(
     result: SubmitRejection,
     fields: FormFieldView[],
 ): SubmitRejectionView {
-    const view: SubmitRejectionView = { errorByTarget: {}, invalidByTarget: {}, statusMessage: '' };
+    const view: SubmitRejectionView = {
+        errorByTarget: {},
+        invalidByTarget: {},
+        ruleByTarget: {},
+        statusMessage: '',
+    };
     const statusLines: string[] = result.message ? [result.message] : [];
     for (const [target, message] of Object.entries(result.fieldErrors ?? {})) {
         const field = fields.find((candidate) => candidate.target === target);
         if (field && !field.hidden) {
-            view.errorByTarget[target] = message;
+            const rule = serverRuleOf(result, target);
+            view.errorByTarget[target] = serverFieldMessage(rule, field, message);
             view.invalidByTarget[target] = true;
+            view.ruleByTarget[target] = rule;
         } else {
             statusLines.push(`${field?.label || target}: ${message}`);
         }
@@ -77,6 +89,17 @@ export function presentSubmitRejection(
         view.statusMessage = SUBMIT_FAILED_MESSAGE;
     }
     return view;
+}
+
+/** The rule of a server field error (DL#55 P2). */
+function serverRuleOf(result: SubmitRejection, target: string): FieldRule {
+    return result.fieldRules?.[target] ?? FieldRule.SERVER;
+}
+
+/** A classified rule shows the plugin default (same text as the browser check); else Wix's text. */
+function serverFieldMessage(rule: FieldRule, field: FormFieldView, wixText: string): string {
+    if (rule === FieldRule.SERVER) return wixText;
+    return defaultFieldMessage(rule, field) ?? wixText;
 }
 
 const PROBE_ORIGIN = 'https://site.invalid';

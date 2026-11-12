@@ -1,3 +1,4 @@
+import type { FieldRule } from './components/field-rule.js';
 import type { SubmitFailure } from './components/submit-outcome.js';
 
 export type FormFieldInputType =
@@ -25,6 +26,14 @@ export interface FormFieldOptionView {
     label: string;
 }
 
+/** Country rules for a tel field (DL#55 P1c). ISO 3166-1 alpha-2, upper case. */
+export interface PhoneRules {
+    /** The Phone field's defaultCountryCode (P1c-b), else config `defaultPhoneCountry`. */
+    defaultCountry?: string;
+    /** The Phone field's allowedCountryCodes (P1c-b); absent or empty = any country. */
+    allowedCountries?: string[];
+}
+
 export interface FormFieldView {
     target: string;
     label: string;
@@ -37,6 +46,8 @@ export interface FormFieldView {
     options: FormFieldOptionView[];
     /** A Wix hidden field (DL#41 4a) — no visible input; a page populates it via `control`. */
     hidden?: boolean;
+    /** Only on `tel` fields, only when a rule is known (DL#55 P1c). */
+    phone?: PhoneRules;
 }
 
 export interface FormFieldSummaryView {
@@ -77,6 +88,8 @@ export type SubmitFormResult =
           reason: SubmitFailure;
           message?: string;
           fieldErrors?: Record<string, string>;
+          /** Server field errors the plugin classifies (DL#55); absent targets are `SERVER`. */
+          fieldRules?: Record<string, FieldRule>;
           /** A hook's `ActionError` / `FieldRejection` code (DL#53 G3/G4); absent for plugin and Wix failures. */
           code?: string;
       };

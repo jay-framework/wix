@@ -17,6 +17,8 @@ export enum FieldRule {
     PATTERN,
     CUSTOM,
     SERVER,
+    /** A phone with no country code and no default country, or from a country the field refuses (DL#55 P1c). */
+    PHONE_COUNTRY,
 }
 
 /** A check's verdict: the failed rule and its default (English) message, or `NONE` and `''`. */

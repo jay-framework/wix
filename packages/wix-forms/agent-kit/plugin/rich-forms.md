@@ -90,7 +90,8 @@ min/max/pattern) — nothing to configure. Timing is "late to complain, early to
   otherwise leaves the text alone (one error, no re-announcement per keystroke). This also
   clears a `SERVER` error (from Wix or the hook) once the built-in rules and page checks pass,
   because the browser cannot re-check a server rule — but **submit re-validates**: the next
-  submit asks the server again, and a still-bad value comes back as `SERVER`.
+  submit asks the server again, and a still-bad value comes back with its rule. An error from Wix
+  clears when the visitor types and comes back on the next submit if Wix still refuses the value.
 - **A `control` change** (or a chip toggle) is a commit and validates immediately.
 - **Submit** validates every visible field and focuses the first invalid one, so a skipped
   required field is reported there.
@@ -102,6 +103,27 @@ min/max/pattern) — nothing to configure. Timing is "late to complain, early to
 - **Busy from the first click:** `isSubmitting` is set as soon as submit starts, so a second
   click or Enter is ignored, and a reset during submit cancels it.
 
+**Who enforces what.**
+
+- **Phone: what the visitor types vs what gets sent.** The visitor types freely (`054.123.4567`,
+  `+972-54-123-4567`, `00972…`) and the input keeps showing it; the plugin **sends** the compact
+  international form `+972541234567`. That is the only phone shape Wix accepts from a visitor (the
+  plugin's default caller path; a site-key post is more lenient, so don't test phones that way).
+  A number typed without a country code needs a country: set `defaultPhoneCountry: IL` (ISO code)
+  in `config/.wix-forms.yaml`; without it the browser refuses such numbers with `PHONE_COUNTRY`
+  ("include the country code"). A real Wix Phone field's default country and Accepted countries
+  are respected once the plugin reads them. Values that cannot become an international number
+  (`12`, `abc`) are refused as `PHONE`. Don't write a page check that re-validates phones.
+- **Format (Email / URL): Wix enforces it on its server.** The browser's format rules are never
+  stricter than Wix's: they block only values Wix also refuses (no `@`, a missing `scheme://`). A
+  value only Wix refuses (e.g. `a@b.c`) passes the browser and comes back from Wix after submit. To
+  accept other formats, change the Wix field to Short answer — don't write a page check that
+  copies Wix's (unpublished) rule.
+- **`required` and choice options: the browser only.** Wix accepts and confirms empty required
+  fields and choice values outside the field's options when the site posts (verified); the caller
+  path is unverified. The plugin enforces `required` in the browser only. A site that needs server
+  enforcement refuses in its submit hook with `FieldRejection` (§7).
+
 Bind `aria-invalid="{contact.email.invalid}"` on the input
 and put the `error` in a polite live region linked by `aria-describedby` (see example
 above). The `invalid` variant also drives error styling.
@@ -109,7 +131,7 @@ above). The `invalid` variant also drives error styling.
 ### Which rule failed — `errorRule`
 
 Every visible field has an `errorRule` variant:
-`NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE | URL | PATTERN | CUSTOM | SERVER`.
+`NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE | URL | PATTERN | CUSTOM | SERVER | PHONE_COUNTRY`.
 `error` keeps the English default text; for your own wording (or another language) branch on
 `errorRule` — never match the `error` text.
 
@@ -122,7 +144,16 @@ Every visible field has an `errorRule` variant:
 </span>
 ```
 
-- `CUSTOM` is a page check's own message; `SERVER` is Wix's (or the hook's) text — print `error`.
+- **The rule is the same whoever caught it.** A format error Wix refuses after submit (e.g.
+  `a@b.c`, which passes the browser) carries `EMAIL` / `PHONE` / `URL` and the same default
+  `error` text as the browser check, so one copy per rule covers both.
+- `PHONE_COUNTRY`: a phone typed without a country code and no default country, or from a
+  country the Wix Phone field does not accept. **Author checklist: on a phone field, branch on
+  `PHONE` and `PHONE_COUNTRY`, or show `{field.error}` unconditionally** (`jay-stack validate`
+  warns about a `PHONE` branch without `PHONE_COUNTRY`).
+- `CUSTOM` is a page check's own message. `SERVER` means Wix refused the value for a reason the
+  plugin does not classify, or it is the site owner's custom validation message, or (for now) a
+  submit hook's `FieldRejection` — `error` is that server text; print it.
 - **Write `REQUIRED` copy that still reads correctly while the field holds text.** Typing never
   swaps one error for another, so a field showing `REQUIRED` that receives a partial value
   (e.g. `a` in an email field) keeps `REQUIRED` until it becomes valid (cleared) or is
@@ -313,6 +344,8 @@ mechanical mistakes marked ⚠️.
 
 ## 7. Server-side submit hook (optional)
 
+Phones reach the hook as compact international numbers (`+972541234567`, §3), not as typed.
+
 Register **one hook per form** when the server must act around the submission: verify who is
 submitting, re-check availability, write your own record, add server-derived values (often into
 a hidden field), redirect to a confirmation page. Forms without a hook submit the browser values
@@ -400,6 +433,14 @@ your own message. The page gets `submitFailure: VALIDATION`; each visible target
 on the field with `errorRule: SERVER` and focus moves to the first one; a hidden or unknown target
 goes to the status message. This is the server half of page checks (§3): re-validate here what the
 page checked in the browser.
+It is also the only server enforcement of `required` and choice options: Wix accepts and confirms
+an empty required field when the site posts (§3), so a site that needs it checks in the hook:
+
+```ts
+if (!String(values.full_name ?? '').trim()) {
+  throw new FieldRejection({ full_name: 'Full name is required.' });
+}
+```
 
 ```ts
 [BOOKING_FORM_ID]: async ({ values, submit }) => {

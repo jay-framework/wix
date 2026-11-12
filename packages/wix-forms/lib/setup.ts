@@ -38,6 +38,11 @@ formIds: []
 # Which forms to generate: enabled | disabled | all
 # Affects generation only (the runtime allowlist never uses it).
 include: enabled
+
+# Country for phone numbers typed without a country code (ISO code, e.g. IL).
+# A Wix Phone field's own default country wins. Unset: such numbers are refused
+# in the browser with a request to add the country code.
+# defaultPhoneCountry: IL
 `;
 
 // ============================================================================

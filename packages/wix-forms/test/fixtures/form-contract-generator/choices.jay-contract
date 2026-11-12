@@ -13,7 +13,7 @@ tags:
       - { tag: required, type: variant, dataType: boolean }
       - { tag: error, type: data, dataType: string }
       - { tag: invalid, type: variant, dataType: boolean }
-      - { tag: errorRule, type: variant, dataType: "enum (NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE | URL | PATTERN | CUSTOM | SERVER)" }
+      - { tag: errorRule, type: variant, dataType: "enum (NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE | URL | PATTERN | CUSTOM | SERVER | PHONE_COUNTRY)" }
       - { tag: input, type: interactive, elementType: HTMLInputElement }
       - { tag: control, type: interactive, elementType: HTMLElement }
   - tag: interests
@@ -25,7 +25,7 @@ tags:
       - { tag: required, type: variant, dataType: boolean }
       - { tag: error, type: data, dataType: string }
       - { tag: invalid, type: variant, dataType: boolean }
-      - { tag: errorRule, type: variant, dataType: "enum (NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE | URL | PATTERN | CUSTOM | SERVER)" }
+      - { tag: errorRule, type: variant, dataType: "enum (NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE | URL | PATTERN | CUSTOM | SERVER | PHONE_COUNTRY)" }
       - { tag: input, type: interactive, elementType: HTMLSelectElement }
       - { tag: control, type: interactive, elementType: HTMLElement }
       - tag: options
@@ -46,7 +46,7 @@ tags:
       - { tag: required, type: variant, dataType: boolean }
       - { tag: error, type: data, dataType: string }
       - { tag: invalid, type: variant, dataType: boolean }
-      - { tag: errorRule, type: variant, dataType: "enum (NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE | URL | PATTERN | CUSTOM | SERVER)" }
+      - { tag: errorRule, type: variant, dataType: "enum (NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE | URL | PATTERN | CUSTOM | SERVER | PHONE_COUNTRY)" }
       - { tag: input, type: interactive, elementType: HTMLSelectElement }
       - { tag: control, type: interactive, elementType: HTMLElement }
       - tag: options

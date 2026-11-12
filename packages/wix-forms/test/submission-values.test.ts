@@ -6,11 +6,13 @@ import {
     projectSubmissionValues,
     seedControlValues,
     toggleSelection,
+    toPostedValues,
     validateVisibleFields,
     type ControlSeed,
 } from '../lib/components/submission-values.js';
 import { FieldRule } from '../lib/components/field-rule.js';
-import type { FieldValue, FormFieldView } from '../lib/types.js';
+import type { FieldValue, FormFieldView, PhoneRules } from '../lib/types.js';
+import { checkFormField } from '../lib/utils/project-form-fields.js';
 
 function textField(target: string): FormFieldView {
     return {
@@ -331,5 +333,73 @@ describe('toggleSelection (DL#44 §2)', () => {
         expect(
             toggleSelection(interests, { current: ['a'], optionValue: 'a', checked: true }),
         ).toEqual(['a']);
+    });
+});
+
+function telField(
+    target: string,
+    extra: { hidden?: boolean; phone?: PhoneRules } = {},
+): FormFieldView {
+    return { ...textField(target), inputType: 'tel', ...extra };
+}
+
+/**
+ * Bug: the plugin posted phones as typed; Wix's caller path accepts only compact E.164.
+ * Found in: design-log/55 - wix validation parity for wix-forms.md §1c "Sent value"
+ * Expected: convertible tel values (visible or hidden) are sent as E.164; everything else unchanged.
+ * Actual (before P1c): `toPostedValues` is missing.
+ */
+describe('toPostedValues (DL#55 P1c)', () => {
+    const IL = { defaultCountry: 'IL' };
+
+    it('should send a visible local phone as E.164 and leave other values alone', () => {
+        const fields = [telField('phone', { phone: IL }), textField('name'), checkboxField('ok')];
+        const values: Record<string, FieldValue> = {
+            phone: '054.123.4567',
+            name: ' Ann ',
+            ok: true,
+        };
+        const before = structuredClone(values);
+        expect(toPostedValues(fields, values)).toEqual({
+            phone: '+972541234567',
+            name: ' Ann ',
+            ok: true,
+        });
+        expect(values).toEqual(before);
+    });
+
+    it('should trim a phone before converting it', () => {
+        const fields = [telField('phone', { phone: IL })];
+        expect(toPostedValues(fields, { phone: ' 054.123.4567' })).toEqual({
+            phone: '+972541234567',
+        });
+    });
+
+    it('should pass a hidden phone that cannot be converted through unchanged', () => {
+        const fields = [telField('phone', { hidden: true })];
+        expect(toPostedValues(fields, { phone: 'call me' })).toEqual({ phone: 'call me' });
+    });
+
+    it('should convert a hidden phone the page filled with an international number', () => {
+        const fields = [telField('phone', { hidden: true })];
+        expect(toPostedValues(fields, { phone: '00972541234567' })).toEqual({
+            phone: '+972541234567',
+        });
+    });
+
+    it('should keep an empty phone empty', () => {
+        expect(toPostedValues([telField('phone', { phone: IL })], { phone: '' })).toEqual({
+            phone: '',
+        });
+    });
+
+    it('should judge a padded phone like the trimmed one in the browser and the payload', () => {
+        const field = telField('phone');
+        expect(checkFormField(field, ' +972541234567')).toEqual(
+            checkFormField(field, '+972541234567'),
+        );
+        expect(toPostedValues([field], { phone: ' +972541234567' })).toEqual({
+            phone: '+972541234567',
+        });
     });
 });

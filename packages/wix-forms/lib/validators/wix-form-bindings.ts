@@ -20,6 +20,8 @@
  *  5. Option refs (DL#44 rules 1, 2) — `<key>.<field>.options.<child>` must be a tag of that
  *     field's options (`toggle` exists only on a multiselect), and a `.control` inside
  *     `forEach` over a multiselect's options is warned: it stores one value, not a selection.
+ *  6. A phone error shown only under `errorRule === PHONE` (DL#55 P1c): `PHONE_COUNTRY` would
+ *     show no error.
  *
  * Best-effort: a page still importing the retired `contract="wix-form"` also
  * gets a migration message, IF the unresolved name surfaces in headlessImports.
@@ -64,6 +66,7 @@ export const validateWixFormBindings: JayHtmlValidatorFn = (ctx) => {
     detectScalarControlOverOptions(ctx, infoByKey, findings);
     detectAccessibilityIssues(ctx, new Set(formImports.map((imp) => imp.key!)), findings);
     detectUnguardedForms(ctx, new Set(formImports.map((imp) => imp.key!)), findings);
+    detectPhoneRuleWithoutCountryBranch(ctx, new Set(formImports.map((imp) => imp.key!)), findings);
     return findings;
 };
 
@@ -324,6 +327,91 @@ function detectScalarControlOverOptions(
             attribute: 'ref',
         });
     });
+}
+
+/** `<key>.<field>.errorRule === RULE` (or `==`), the whole condition; anything else is unrecognised. */
+const ERROR_RULE_CONDITION = /^(\w+)\.(\w+)\.errorRule\s*===?\s*(\w+)$/;
+const ERROR_TEXT_BINDING = /\{\s*(\w+)\.(\w+)\.error\s*\}/g;
+
+interface PhoneErrorDisplay {
+    rules: Set<string>;
+    hasUnconditionalBinding: boolean;
+}
+
+/**
+ * Warning 6 (DL#55 P1c): a field that branches on errorRule PHONE but not PHONE_COUNTRY, with every
+ * `{<key>.<field>.error}` text binding inside a matched branch, shows nothing for PHONE_COUNTRY.
+ * Only a whole `if=` of the form `<key>.<field>.errorRule === RULE` is matched; any other condition
+ * is unrecognised and stays silent (a missed warning, never a false one). Attribute expressions
+ * are not bindings: they do not show the error to a sighted visitor.
+ */
+function detectPhoneRuleWithoutCountryBranch(
+    ctx: Parameters<JayHtmlValidatorFn>[0],
+    formKeys: Set<string>,
+    findings: JayHtmlValidationFinding[],
+): void {
+    const displays = collectErrorDisplays(ctx, formKeys);
+    for (const [fieldPath, { rules, hasUnconditionalBinding }] of displays) {
+        if (!rules.has('PHONE') || rules.has('PHONE_COUNTRY') || hasUnconditionalBinding) continue;
+        findings.push({
+            severity: 'warning',
+            message: `\`${fieldPath}\` branches on errorRule PHONE but not PHONE_COUNTRY: a phone without a country code would show no error. Add a PHONE_COUNTRY branch or print {${fieldPath}.error} unconditionally (DL#55 P1c).`,
+            suggestion: `Add <span if="${fieldPath}.errorRule === PHONE_COUNTRY">…</span>, or print {${fieldPath}.error} outside the errorRule branches.`,
+        });
+    }
+}
+
+function collectErrorDisplays(
+    ctx: Parameters<JayHtmlValidatorFn>[0],
+    formKeys: Set<string>,
+): Map<string, PhoneErrorDisplay> {
+    const displays = new Map<string, PhoneErrorDisplay>();
+    const displayOf = (fieldPath: string) => {
+        const display = displays.get(fieldPath) ?? {
+            rules: new Set(),
+            hasUnconditionalBinding: false,
+        };
+        displays.set(fieldPath, display);
+        return display;
+    };
+    walkElements(ctx.body, ctx, (el: any) => {
+        const condition = matchedErrorRuleCondition(el, formKeys);
+        if (condition) displayOf(condition.fieldPath).rules.add(condition.rule);
+        for (const fieldPath of ownErrorBindings(el, formKeys)) {
+            if (!selfOrAncestorBranchesOn(el, fieldPath, formKeys)) {
+                displayOf(fieldPath).hasUnconditionalBinding = true;
+            }
+        }
+    });
+    return displays;
+}
+
+function matchedErrorRuleCondition(
+    el: any,
+    formKeys: Set<string>,
+): { fieldPath: string; rule: string } | undefined {
+    const condition: string | undefined = el?.getAttribute?.('if');
+    const match = condition?.trim().match(ERROR_RULE_CONDITION);
+    if (!match || !formKeys.has(match[1])) return undefined;
+    return { fieldPath: `${match[1]}.${match[2]}`, rule: match[3] };
+}
+
+/** `{<key>.<field>.error}` in the element's own text nodes only. */
+function ownErrorBindings(el: any, formKeys: Set<string>): string[] {
+    const ownText = (el?.childNodes ?? [])
+        .filter((child: any) => child.nodeType === 3)
+        .map((child: any) => String(child.rawText ?? child.text ?? ''))
+        .join(' ');
+    return [...ownText.matchAll(ERROR_TEXT_BINDING)]
+        .filter((match) => formKeys.has(match[1]))
+        .map((match) => `${match[1]}.${match[2]}`);
+}
+
+function selfOrAncestorBranchesOn(el: any, fieldPath: string, formKeys: Set<string>): boolean {
+    for (let node = el; node; node = node.parentNode) {
+        if (matchedErrorRuleCondition(node, formKeys)?.fieldPath === fieldPath) return true;
+    }
+    return false;
 }
 
 function selfOrAncestorLoopsOver(el: any, loop: string): boolean {

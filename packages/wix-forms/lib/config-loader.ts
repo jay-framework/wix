@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import yaml from 'js-yaml';
+import { isSupportedCountry } from 'libphonenumber-js/min';
 import type { FormInclude } from './wix-apis/list-forms.js';
 
 /**
@@ -21,6 +22,11 @@ export interface WixFormsConfig {
      * uses enabled forms.
      */
     include: FormInclude;
+    /**
+     * Country of phones typed without a country code (DL#55 P1c), ISO 3166-1 alpha-2, upper case.
+     * A Wix Phone field's own default country wins. Unset: such phones are refused in the browser.
+     */
+    defaultPhoneCountry?: string;
 }
 
 /**
@@ -36,6 +42,7 @@ interface RawWixFormsConfig {
     namespace?: string;
     formIds?: string[];
     include?: FormInclude;
+    defaultPhoneCountry?: string;
 }
 
 export function loadWixFormsConfig(projectRoot: string): WixFormsConfig {
@@ -48,7 +55,20 @@ export function loadWixFormsConfig(projectRoot: string): WixFormsConfig {
         namespace: raw?.namespace?.trim() || DEFAULT_FORMS_NAMESPACE,
         formIds: Array.isArray(raw?.formIds) ? raw!.formIds : [],
         include: raw?.include ?? 'enabled',
+        ...phoneCountryOf(raw?.defaultPhoneCountry),
     };
+}
+
+/** A bad code fails init loudly; otherwise every local phone would fail quietly (DL#55 P1c). */
+function phoneCountryOf(rawValue: unknown): Pick<WixFormsConfig, 'defaultPhoneCountry'> {
+    if (rawValue === undefined || rawValue === null) return {};
+    const country = String(rawValue).trim().toUpperCase();
+    if (!isSupportedCountry(country)) {
+        throw new Error(
+            `config/.wix-forms.yaml: defaultPhoneCountry "${country}" is not a country code libphonenumber-js supports (use an ISO 3166-1 alpha-2 code, e.g. IL, US, GB). Fix or remove the key.`,
+        );
+    }
+    return { defaultPhoneCountry: country };
 }
 
 function defaultConfig(): WixFormsConfig {

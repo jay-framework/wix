@@ -33,7 +33,11 @@ import {
 } from '../services/wix-forms-submit-hooks.js';
 import type { FieldValue, SubmitFormResult, SubmitRequestInput } from '../types.js';
 import { canonicalFormId } from '../utils/form-id.js';
-import { parseSubmissionFieldErrors } from '../utils/project-form-fields.js';
+import {
+    parseSubmissionViolations,
+    type SubmissionViolations,
+} from '../utils/wix-submission-errors.js';
+import type { FieldRule } from '../components/field-rule.js';
 
 type Values = Record<string, FieldValue>;
 
@@ -361,9 +365,14 @@ function failedSubmissionResult(formId: string, attempt: SubmitAttempt): SubmitF
             message: SUBMIT_SESSION_EXPIRED_MESSAGE,
         };
     }
-    const fieldErrors = fieldErrorsOf(failure);
+    const { fieldErrors, fieldRules } = violationsOf(failure);
     if (Object.keys(fieldErrors).length) {
-        return { success: false, reason: SubmitFailure.VALIDATION, fieldErrors };
+        return {
+            success: false,
+            reason: SubmitFailure.VALIDATION,
+            fieldErrors,
+            ...optionalFieldRules(fieldRules),
+        };
     }
     if (attempt.postedAs === 'caller' && !isSiteTemplateRefusal(failure)) {
         logFailure("Wix refused the caller's submission", formId, failure); // L6, never retried as the site
@@ -392,8 +401,17 @@ function isSiteTemplateRefusal(error: unknown): boolean {
     }
 }
 
-function fieldErrorsOf(error: unknown): Record<string, string> {
-    return error instanceof WixApiError ? parseSubmissionFieldErrors(error.responseBody) : {};
+function violationsOf(error: unknown): SubmissionViolations {
+    return error instanceof WixApiError
+        ? parseSubmissionViolations(error.responseBody)
+        : { fieldErrors: {}, fieldRules: {} };
+}
+
+/** `fieldRules` is an optional output: absent rather than empty (DL#55 P2). */
+function optionalFieldRules(fieldRules: Record<string, FieldRule>): {
+    fieldRules?: Record<string, FieldRule>;
+} {
+    return Object.keys(fieldRules).length ? { fieldRules } : {};
 }
 
 type FieldRejectionLike = Error & {

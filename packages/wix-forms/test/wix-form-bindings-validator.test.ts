@@ -390,3 +390,80 @@ describe('validateWixFormBindings — option refs (DL#44 rules 1 and 2)', () => 
         expect(await validateWixFormBindings(ctx)).toEqual([]);
     });
 });
+
+/**
+ * Bug: P1c makes a phone field newly produce PHONE_COUNTRY; a page that shows its error only under
+ *   an `errorRule === PHONE` branch shows nothing for it (DL#55 P1c, validator warning 6).
+ * Found in: design-log/55 - wix validation parity for wix-forms.md §1c "Plugin validation"
+ * Expected: a located warning when a field branches on PHONE, not on PHONE_COUNTRY, and has no
+ *   unconditional `{key.field.error}` text binding; unrecognised conditions stay silent.
+ */
+describe('validateWixFormBindings — PHONE without PHONE_COUNTRY (DL#55 P1c warning 6)', () => {
+    const phoneCountryWarning = expect.objectContaining({
+        severity: 'warning',
+        message:
+            '`contact.phone` branches on errorRule PHONE but not PHONE_COUNTRY: a phone without a country code would show no error. Add a PHONE_COUNTRY branch or print {contact.phone.error} unconditionally (DL#55 P1c).',
+    });
+
+    function findingsFor(html: string) {
+        return validateWixFormBindings(contextWith(html, [contactImport]));
+    }
+
+    it('should warn on a PHONE-only branch', async () => {
+        expect(
+            await findingsFor(
+                `<div><span if="contact.phone.errorRule === PHONE">{contact.phone.error}</span></div>`,
+            ),
+        ).toEqual([phoneCountryWarning]);
+    });
+
+    it('should stay silent with a PHONE_COUNTRY branch', async () => {
+        expect(
+            await findingsFor(
+                `<div><span if="contact.phone.errorRule === PHONE">Bad phone</span>
+                 <span if="contact.phone.errorRule === PHONE_COUNTRY">Add +</span></div>`,
+            ),
+        ).toEqual([]);
+    });
+
+    it('should stay silent with an unconditional error binding', async () => {
+        expect(
+            await findingsFor(
+                `<div><span if="contact.phone.errorRule === PHONE">Bad phone</span>
+                 <span>{contact.phone.error}</span></div>`,
+            ),
+        ).toEqual([]);
+    });
+
+    it('should warn when the only unconditional error expression is an attribute', async () => {
+        expect(
+            await findingsFor(
+                `<div aria-label="{contact.phone.error}"><span if="contact.phone.errorRule === PHONE">Bad phone</span></div>`,
+            ),
+        ).toEqual([phoneCountryWarning]);
+    });
+
+    it('should warn when the error binding is nested two levels inside a PHONE branch', async () => {
+        expect(
+            await findingsFor(
+                `<div if="contact.phone.errorRule === PHONE"><p><b>{contact.phone.error}</b></p></div>`,
+            ),
+        ).toEqual([phoneCountryWarning]);
+    });
+
+    it('should stay silent on a compound condition it does not recognise', async () => {
+        expect(
+            await findingsFor(
+                `<div><span if="contact.phone.errorRule === PHONE || contact.phone.errorRule === SERVER">{contact.phone.error}</span></div>`,
+            ),
+        ).toEqual([]);
+    });
+
+    it('should warn on the == spelling', async () => {
+        expect(
+            await findingsFor(
+                `<div><span if="contact.phone.errorRule == PHONE">{contact.phone.error}</span></div>`,
+            ),
+        ).toEqual([phoneCountryWarning]);
+    });
+});

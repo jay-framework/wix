@@ -10,7 +10,7 @@
  * ```typescript
  * const forms = useContext(WIX_FORMS_CONTEXT);
  * const unregister = forms.registerFieldChecks(BOOKING_FORM_ID, {
- *     phone: [(value) => (isValidPhone(String(value)) ? undefined : 'Use an international number')],
+ *     guests: [(value) => (Number(value) <= 8 ? undefined : 'Up to 8 guests per booking')],
  * });
  * // The context outlives the page: subscribe in an effect so unmount unsubscribes.
  * createEffect(() =>
