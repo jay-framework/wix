@@ -103,6 +103,26 @@ describe('wixForm — DL#53 H, the in-page honeypot', () => {
         expect(submitForm).not.toHaveBeenCalled();
         expect(harness.viewState().isSubmitted).toBe(true);
     });
+
+    /**
+     * Bug: a honeypot value set programmatically (`input.value = 'x'`, as a bot or DevTools does)
+     *   without an input event is not detected, so the submission posts to Wix.
+     * Found in: wix-forms 0.26.4, migration QA of a consuming site (2026-11-14).
+     * Expected: the honeypot's DOM value is read at submit time; a non-empty value trips the
+     *   honeypot — confirmation shown, no submitForm call — the same as a typed value.
+     * Actual: the component records the honeypot only from `oninput`, so the untouched recorded
+     *   value is '' and submitForm is called (and the plugin never sends the `honeypot` input,
+     *   so the server cannot drop it either).
+     */
+    it('should trip the honeypot when its value is set without an input event', async () => {
+        const harness = await mount([optionalEmail], { email: { input: fakeInput() } });
+        harness.honeypot.value = 'i am a bot';
+
+        await submitOnce();
+
+        expect(submitForm).not.toHaveBeenCalled();
+        expect(harness.viewState().isSubmitted).toBe(true);
+    });
 });
 
 /** Subscribes to `onSubmitOutcome` on a freshly provided context; returns the events seen. */

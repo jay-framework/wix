@@ -771,3 +771,13 @@ Tests (red first): `test/wix-form-control-refresh.interactive.test.ts` › "shou
 ### DL#55 remark (2026-11-11)
 
 2026-11-11 (DL#55 P2): `SERVER` is narrowed to unclassified Wix refusals and owner custom messages (hook `FieldRejection` until `HOOK` lands from DL #57, "trimmed echo, hook field errors and submit start"). The Scope Pre-mortem line 'Localizing Wix's own server violation text' is reversed for mapped types (`EMAIL`/`PHONE`/`URL`): they show the default text. Wix accepts and confirms empty required fields when the site posts (DL#55 L1 clean probe); the plugin enforces `required` in the browser only, and the guides say so (documentation only).
+
+### Post-release fix B1 — honeypot read from the DOM at submit (2026-11-14)
+
+Bug: the client short-circuit recorded the honeypot only from its `input` event (`wireHoneypot`), so a bot that set `.value` directly (no event) was not caught and posted. Reproduction: `test/wix-form-submit-outcome.interactive.test.ts` "should trip the honeypot when its value is set without an input event" (red: `submitForm` called once).
+
+Fix (client-only, no contract change, Design unchanged): `submit()` keeps the synchronous check of the recorded value, and as the first step of the flight (after the busy flag, preserving G2's "busy before the first await") reads the honeypot's live `.value` via `exec$` (`readHoneypotDomValue`); a non-blank value trips the same fake success. The component still never sends the `honeypot` action input (Q10 (a) unchanged); sending it is a possible follow-up that would need a design change.
+
+Agent feedback: neither — the honeypot is wired by the plugin, not by page authors, so there is nothing to validate or teach.
+
+Results: wix-forms `npx vitest run` 577/577; `tsc --noEmit` clean.

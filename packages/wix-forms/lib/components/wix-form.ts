@@ -418,8 +418,7 @@ function WixFormInteractive(
 
         // Honeypot trip: fake success (a bot must not tell), before validation or the API (Q12).
         if (honeypotValue.trim()) {
-            showSubmitted();
-            reportSubmitOutcome({ outcome: 'succeeded' }); // what the visitor was shown (§5)
+            showHoneypotSuccess();
             return;
         }
 
@@ -429,6 +428,14 @@ function WixFormInteractive(
         const generation = submitFlight.begin();
         let hasHandedOff = false;
         try {
+            // A bot may set the honeypot's `.value` without an `input` event, so read the DOM too.
+            const liveHoneypotValue = await readHoneypotDomValue(refs);
+            if (!submitFlight.isCurrent(generation)) return;
+            if (liveHoneypotValue.trim()) {
+                showHoneypotSuccess();
+                return;
+            }
+
             // Fixed order: reconcile (what the user sees wins) → seed (the page's value for
             // untouched fields; reflecting keeps the input showing what is posted) → read → validate.
             await reconcileNativeInputs();
@@ -470,6 +477,11 @@ function WixFormInteractive(
             // A throw before hand-off must not leave the form busy; a reset already cleared it.
             if (!hasHandedOff && submitFlight.isCurrent(generation)) setBusy(false);
         }
+    }
+
+    function showHoneypotSuccess(): void {
+        showSubmitted();
+        reportSubmitOutcome({ outcome: 'succeeded' }); // what the visitor was shown (§5)
     }
 
     function showClientErrors(failures: Record<string, FieldCheckResult>): void {
@@ -714,6 +726,13 @@ function readBoundInputValue(refs: any, field: FormFieldView): Promise<string | 
     const input = refs[contractTagName(field.target)]?.input;
     if (!input?.exec$) return Promise.resolve(undefined);
     return input.exec$((element: HTMLInputElement | HTMLSelectElement) => element.value);
+}
+
+/** The honeypot input's live `.value`; `''` when the page binds no honeypot. */
+async function readHoneypotDomValue(refs: any): Promise<string> {
+    const input = refs.honeypot;
+    if (!input?.exec$) return '';
+    return (await input.exec$((element: HTMLInputElement) => element.value)) ?? '';
 }
 
 /** Record the honeypot value (Q12) — a dedicated channel that never reaches the store. */
