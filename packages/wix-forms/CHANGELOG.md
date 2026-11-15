@@ -1,5 +1,13 @@
 # Changelog — @jay-framework/wix-forms
 
+## Unreleased
+
+### Fixes
+
+- **The honeypot trips when a bot sets its value without typing.** The form now also reads the
+  honeypot input's current value at submit, so a script that sets `.value` directly (no `input`
+  event) gets the fake success and never posts. No contract change.
+
 ## 0.26.4
 
 ### Behaviour changes (read before upgrading)
