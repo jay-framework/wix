@@ -781,3 +781,5 @@ Fix (client-only, no contract change, Design unchanged): `submit()` keeps the sy
 Agent feedback: neither — the honeypot is wired by the plugin, not by page authors, so there is nothing to validate or teach.
 
 Results: wix-forms `npx vitest run` 577/577; `tsc --noEmit` clean.
+
+Results (2026-11-15): a real `yarn install` followed by `yarn confirm` passes: 913/913 tests across the packages, wix-forms 577/577, type-check and format clean. Live check on the QA testbed, run with the worktree build in place of the npm 0.26.4 package and then switched back, on `/contact` in Chromium. Case 1: the honeypot `.value` was set by JS with no input event. The page showed the success confirmation (`submitState=2`) and sent no POST at all, so no `wixForms.submitForm` request. Case 2, the control with an empty honeypot: success, and one `wixForms.submitForm` POST, which created one testbed submission. Pass.
