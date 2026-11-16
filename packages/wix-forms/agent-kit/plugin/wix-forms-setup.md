@@ -127,4 +127,37 @@ which reads Get Form through `WixFormsService.getRawForm` — it does **not** us
 | `namespace` | string | No | List Forms namespace. Default `wix.form_app.form` (standalone Wix Forms) |
 | `formIds` | string[] | No | Restrict generation to these form ids (empty = all forms in namespace). Also the runtime submit allowlist: when set, `submitForm` refuses other forms (empty = the namespace's enabled forms) |
 | `include` | enum | No | `enabled` (default) \| `disabled` \| `all` |
+| `address.locale` | string | No | `Intl.DisplayNames` locale for country names (default `en`). An unsupported locale fails init |
+| `address.labels.parts` | map | No | Part label overrides, e.g. `{ postalCode: PLZ }`. Merged per key into the defaults |
+| `address.labels.subdivisionPart` | map | No | Subdivision label per country code, e.g. `{ US: State }` |
+| `address.labels.subdivisions` | map | No | Region names per country, e.g. `{ IT: { '25': Lombardia } }`; merged per country, so other countries keep their names |
 | `defaultPhoneCountry` | string | No | ISO 3166-1 alpha-2 code (e.g. `IL`, `US`) for phones typed without a country code. A Wix Phone field's own default country wins when set. Without either, such phones are refused with `PHONE_COUNTRY`. An unsupported code fails init with an error naming the key. See `rich-forms.md` §3 |
+
+## Address copy
+
+Address layouts come from Wix (List Form Templates) at runtime, cached for an hour; no data ships with the plugin. Wix gives codes, not names: the plugin names the countries (`Intl.DisplayNames`) and the regions of US, GB, CA, DE, JP, BR, FR, ES and AU in English. Other countries' regions show their codes until you name them:
+
+```yaml
+address:
+  locale: de
+  labels:
+    parts: { postalCode: PLZ }
+    subdivisionPart: { US: State }
+    subdivisions: { IT: { '25': Lombardia } }
+```
+
+The same config applies to booking pages (wix-bookings resolves addresses through this plugin).
+
+## QA-only settings
+
+- `WIX_FORMS_ADDRESS_TEMPLATES_ORIGIN` (environment variable, **not** config): replaces the origin (scheme, host, port) of the List Form Templates request, so a QA run can make the layout fetch fail (`http://127.0.0.1:9`). An invalid value fails init naming the variable; when set, the server logs `[wix-forms] address templates origin overridden to <origin> (QA only)` once. Never set it in production: every form with an address becomes unavailable.
+
+## Before release: L-drift
+
+Before every release, run the address map probe against the QA probe form (one all-countries address whose part overrides are all required), as an anonymous visitor:
+
+```bash
+node packages/wix-forms/scripts/address-map-probe.mjs --client-id <headless client id> --form-id <probe form id> --target address out.json
+```
+
+It re-derives the country → layout map and diffs it, and the templates, against `test/fixtures/address/`. Any difference blocks the release until the fixtures and `COUNTRY_TEMPLATE_IDS` are updated through a red-first test.

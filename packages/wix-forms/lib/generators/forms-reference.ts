@@ -1,6 +1,7 @@
 import type { FormFieldView, ListedFormView } from '../types.js';
 import { computeFormSlugs } from './form-slug.js';
 import { contractTagName, elementTypeFor } from './contract-utils.js';
+import { ADDRESS_PARTS } from '../address/address-types.js';
 
 const DESCRIPTION =
     'Wix Forms per-form contracts for agent discovery. Bind explicit field tags, e.g. ' +
@@ -36,7 +37,10 @@ export function buildFormsReference(forms: ListedFormView[], namespace: string) 
     };
 }
 
+const LISTED_COUNTRIES_LIMIT = 10;
+
 function fieldReference(field: FormFieldView) {
+    if (field.inputType === 'address') return addressReference(field);
     return {
         tag: contractTagName(field.target),
         label: field.label,
@@ -48,6 +52,21 @@ function fieldReference(field: FormFieldView) {
         hidden: Boolean(field.hidden),
         hasControl: true,
         valueType: valueTypeFor(field),
+    };
+}
+
+/** DL #52 §5: the parts every address contract carries, and its countries (a list when short). */
+function addressReference(field: FormFieldView) {
+    const countries = field.address?.countries.map((country) => country.value) ?? [];
+    return {
+        tag: contractTagName(field.target),
+        label: field.label,
+        type: 'address' as const,
+        target: field.target,
+        required: field.required,
+        parts: [...ADDRESS_PARTS],
+        countries: countries.length <= LISTED_COUNTRIES_LIMIT ? countries : countries.length,
+        valueType: 'AddressValue',
     };
 }
 

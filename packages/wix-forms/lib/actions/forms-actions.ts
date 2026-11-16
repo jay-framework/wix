@@ -40,6 +40,8 @@ export const submitForm = makeJayAction('wixForms.submitForm')
                 const form = listed.find((entry) => canonicalFormId(entry.id) === formId);
                 return form?.unsupportedFields ?? [];
             },
+            addressFieldsOf: (formId) => forms.addressFieldsOf(formId),
+            learnedAddressFacts: forms.learnedAddressFacts(),
             hook: selectHook(hooks, input.formId ?? ''),
         });
     });

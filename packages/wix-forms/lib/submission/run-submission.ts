@@ -43,6 +43,16 @@ import {
     type SubmissionViolations,
 } from '../utils/wix-submission-errors.js';
 import type { FieldRule } from '../components/field-rule.js';
+import type { FormFieldView } from '../types.js';
+import {
+    ADDRESS_LAYOUTS_UNAVAILABLE_MESSAGE,
+    AddressLayoutsUnavailableError,
+} from '../address/address-templates.js';
+import type { LearnedAddressFacts } from '../address/learned-address-facts.js';
+import { mapAddressViolations } from '../address/address-violations.js';
+import { isBlankAddress, readAddressValue, toWixAddress } from '../address/address-value.js';
+import { fieldErrorsOf } from '../utils/project-form-fields.js';
+import { submissionLocatedViolations } from '../utils/located-violations.js';
 
 type Values = Record<string, FieldValue>;
 
@@ -67,6 +77,14 @@ export interface SubmitDeps {
     isSubmittableForm(formId: string): Promise<boolean>;
     /** The form's fields this version cannot render (DL #51 §2), for a canonical id. */
     unsupportedFieldsOf(formId: string): Promise<UnsupportedFieldView[]>;
+    /**
+     * The form's address fields, projected per call with the current learned facts (DL #52 §5).
+     * Rejects with `AddressLayoutsUnavailableError` when the layouts cannot load. Optional for
+     * callers without addresses; absent = no address fields.
+     */
+    addressFieldsOf?(formId: string): Promise<FormFieldView[]>;
+    /** The process-wide learned facts a Wix 400 feeds (DL #52 Q6, Q17). */
+    learnedAddressFacts?: LearnedAddressFacts;
     hook?: SubmitHook;
 }
 
@@ -100,7 +118,12 @@ export async function runSubmission(
     const supported = await supportedValues(formId, request.values, deps);
     if ('refusal' in supported) return supported.refusal;
     return submitSubmittableForm(
-        { formId, values: supported.values, honeypot: honeypotOf(request) },
+        {
+            formId,
+            values: supported.values,
+            honeypot: honeypotOf(request),
+            addressFields: supported.addressFields,
+        },
         deps,
     );
 }
@@ -110,7 +133,9 @@ function honeypotOf(request: SubmitRequestInput): string {
     return typeof request.honeypot === 'string' ? request.honeypot.trim() : '';
 }
 
-type SupportedValues = { values: Values } | { refusal: SubmitFormResult };
+type SupportedValues =
+    | { values: Values; addressFields: FormFieldView[] }
+    | { refusal: SubmitFormResult };
 
 /**
  * DL #51 §2: a form with a required field this site cannot show never submits (Wix accepts a
@@ -122,11 +147,13 @@ async function supportedValues(
     deps: SubmitDeps,
 ): Promise<SupportedValues> {
     let unsupportedFields: UnsupportedFieldView[];
+    let addressFields: FormFieldView[];
     try {
         unsupportedFields = await deps.unsupportedFieldsOf(formId);
+        addressFields = (await deps.addressFieldsOf?.(formId)) ?? [];
     } catch (error) {
-        logFailure("could not load the form's unsupported fields", formId, error);
-        return { refusal: genericFailure(SubmitFailure.UNKNOWN) };
+        logFailure("could not load the form's fields", formId, error);
+        return { refusal: formLoadFailure(error) };
     }
     if (unsupportedFields.some((field) => field.required === true)) {
         logFailure(
@@ -138,7 +165,48 @@ async function supportedValues(
     }
     const unsupportedTargets = new Set(unsupportedFields.map((field) => field.target));
     const kept = Object.entries(values).filter(([target]) => !unsupportedTargets.has(target));
-    return { values: Object.fromEntries(kept) };
+    const checked = checkAddressValues(Object.fromEntries(kept), addressFields);
+    if ('refusal' in checked) return checked;
+    return { values: checked.values, addressFields };
+}
+
+/**
+ * A template failure is transient (DL #52 Q3): the form is unavailable, with the layouts message.
+ * SubmitFailure has no FORM_UNAVAILABLE member, so the reason is UNKNOWN (DL #52 implementation note).
+ */
+function formLoadFailure(error: unknown): SubmitFormResult {
+    if (error instanceof AddressLayoutsUnavailableError) {
+        return {
+            success: false,
+            reason: SubmitFailure.UNKNOWN,
+            message: ADDRESS_LAYOUTS_UNAVAILABLE_MESSAGE,
+        };
+    }
+    return genericFailure(SubmitFailure.UNKNOWN);
+}
+
+/**
+ * DL #52 §5: each address is read as parts, an optional blank one dropped, the rest normalised to
+ * its layout and validated before the hook, with no Wix call on a failure.
+ */
+function checkAddressValues(
+    values: Values,
+    addressFields: FormFieldView[],
+): { values: Values } | { refusal: SubmitFormResult } {
+    const normalised: Values = { ...values };
+    const fieldErrors: Record<string, string> = {};
+    for (const field of addressFields) {
+        const address = readAddressValue(values[field.target]);
+        delete normalised[field.target];
+        if (!field.required && isBlankAddress(address)) continue;
+        Object.assign(fieldErrors, fieldErrorsOf(field, address));
+        const payload = toWixAddress(field.address!, address);
+        if (payload) normalised[field.target] = payload;
+    }
+    if (Object.keys(fieldErrors).length) {
+        return { refusal: { success: false, reason: SubmitFailure.VALIDATION, fieldErrors } };
+    }
+    return { values: normalised };
 }
 
 const NOT_SUBMITTABLE = 'refused a submission for a form that is not submittable';
@@ -166,10 +234,11 @@ interface SubmittableRequest {
     formId: string;
     values: Values;
     honeypot: string;
+    addressFields: FormFieldView[];
 }
 
 async function submitSubmittableForm(
-    { formId, values, honeypot }: SubmittableRequest,
+    { formId, values, honeypot, addressFields }: SubmittableRequest,
     deps: SubmitDeps,
 ): Promise<SubmitFormResult> {
     // With a hook, the hook owns the decision (DL#53 H); without one, a filled honeypot is dropped
@@ -216,7 +285,18 @@ async function submitSubmittableForm(
     }
     attempt.sealed = true;
     await attempt.settled; // a submit() that started before the seal is awaited
-    return settleSubmission(formId, attempt, thrown, outcome);
+    return settleSubmission(formId, attempt, thrown, outcome, {
+        addressFields,
+        values,
+        facts: deps.learnedAddressFacts,
+    });
+}
+
+/** What the 400 mapping needs to locate address errors and learn from them (DL #52 §5). */
+interface AddressContext {
+    addressFields: FormFieldView[];
+    values: Values;
+    facts?: LearnedAddressFacts;
 }
 
 /**
@@ -334,6 +414,7 @@ function settleSubmission(
     attempt: SubmitAttempt,
     thrown: unknown,
     outcome: SubmitHookOutcome | void,
+    address: AddressContext,
 ): SubmitFormResult {
     if (attempt.state !== 'idle' && thrown !== undefined && thrown !== attempt.failure) {
         logFailure('the submit hook threw after submit() was called', formId, thrown); // L3
@@ -350,7 +431,7 @@ function settleSubmission(
         return redirectTo === undefined ? { success: true } : { success: true, redirectTo };
     }
     if (attempt.state === 'failed') {
-        return failedSubmissionResult(formId, attempt);
+        return failedSubmissionResult(formId, attempt, address);
     }
     const dropped = thrown === undefined ? outcome || undefined : undefined;
     if (dropped?.dropped === true) {
@@ -391,7 +472,11 @@ function wixFailureReason(error: unknown): SubmitFailure {
 }
 
 /** The `failed` row (DL#43 §Design 2): reads the attempt's own failure, swallowed or rethrown. */
-function failedSubmissionResult(formId: string, attempt: SubmitAttempt): SubmitFormResult {
+function failedSubmissionResult(
+    formId: string,
+    attempt: SubmitAttempt,
+    address: AddressContext,
+): SubmitFormResult {
     const failure = attempt.failure;
     if (failure instanceof NoCallerSessionError) {
         logFailure('refused a submission without a session cookie', formId, undefined); // L9
@@ -405,13 +490,14 @@ function failedSubmissionResult(formId: string, attempt: SubmitAttempt): SubmitF
             message: SUBMIT_SESSION_EXPIRED_MESSAGE,
         };
     }
-    const { fieldErrors, fieldRules } = violationsOf(failure);
+    const { fieldErrors, fieldRules, learned } = violationsOf(failure, address);
     if (Object.keys(fieldErrors).length) {
         return {
             success: false,
             reason: SubmitFailure.VALIDATION,
             fieldErrors,
             ...optionalFieldRules(fieldRules),
+            ...learned,
         };
     }
     if (attempt.postedAs === 'caller' && !isSiteTemplateRefusal(failure)) {
@@ -441,10 +527,54 @@ function isSiteTemplateRefusal(error: unknown): boolean {
     }
 }
 
-function violationsOf(error: unknown): SubmissionViolations {
-    return error instanceof WixApiError
-        ? parseSubmissionViolations(error.responseBody)
-        : { fieldErrors: {}, fieldRules: {} };
+type LearnedOutputs = Pick<
+    Extract<SubmitFormResult, { success: false }>,
+    'fieldOptions' | 'revealedParts' | 'factsCountry'
+>;
+
+/**
+ * Wix's 400 (DL#55 P2), with address part keys worded by `addressMessageFor` and their learned
+ * facts written to the store first (DL #52 Q6, Q17). Address part errors are `SERVER` (no rule).
+ */
+function violationsOf(
+    error: unknown,
+    address: AddressContext,
+): SubmissionViolations & { learned: LearnedOutputs } {
+    if (!(error instanceof WixApiError)) return { fieldErrors: {}, fieldRules: {}, learned: {} };
+    const parsed = parseSubmissionViolations(error.responseBody);
+    if (!address.addressFields.length || !address.facts) return { ...parsed, learned: {} };
+    const mapped = mapAddressViolations({
+        violations: submissionLocatedViolations(error.responseBody),
+        fields: address.addressFields,
+        values: address.values,
+        facts: address.facts,
+    });
+    const handledKeys = new Set(
+        submissionLocatedViolations(error.responseBody)
+            .filter((violation) => !mapped.unhandled.includes(violation))
+            .map((violation) => violation.key),
+    );
+    const fieldErrors = Object.fromEntries(
+        Object.entries(parsed.fieldErrors).filter(([key]) => !handledKeys.has(key)),
+    );
+    const fieldRules = Object.fromEntries(
+        Object.entries(parsed.fieldRules).filter(([key]) => !handledKeys.has(key)),
+    );
+    return {
+        fieldErrors: { ...fieldErrors, ...mapped.fieldErrors },
+        fieldRules,
+        learned: {
+            ...(Object.keys(mapped.fieldOptions).length
+                ? { fieldOptions: mapped.fieldOptions }
+                : {}),
+            ...(Object.keys(mapped.revealedParts).length
+                ? { revealedParts: mapped.revealedParts }
+                : {}),
+            ...(Object.keys(mapped.factsCountry).length
+                ? { factsCountry: mapped.factsCountry }
+                : {}),
+        },
+    };
 }
 
 /** `fieldRules` is an optional output: absent rather than empty (DL#55 P2). */

@@ -59,7 +59,12 @@ interface FieldState {
     value: FieldValue;
 }
 
-function fieldToViewState(field: FormFieldView, state: FieldState): FieldViewState {
+function fieldToViewState(
+    field: FormFieldView,
+    state: FieldState,
+    errorByTarget: Record<string, string>,
+): FieldViewState | AddressViewState {
+    if (field.inputType === 'address') return addressViewState(field, state.value, errorByTarget);
     const viewState: FieldViewState = {
         label: field.label,
         required: field.required,
@@ -95,15 +100,19 @@ export function buildFieldsViewState(
     invalidByTarget: Record<string, boolean> = {},
     valueByTarget: Record<string, FieldValue> = {},
     ruleByTarget: Record<string, FieldRule> = {},
-): Record<string, FieldViewState> {
-    const viewState: Record<string, FieldViewState> = {};
+): Record<string, FieldViewState | AddressViewState> {
+    const viewState: Record<string, FieldViewState | AddressViewState> = {};
     for (const field of fields) {
-        viewState[contractTagName(field.target)] = fieldToViewState(field, {
-            error: errorByTarget[field.target] ?? '',
-            invalid: invalidByTarget[field.target] ?? false,
-            errorRule: ruleByTarget[field.target] ?? FieldRule.NONE,
-            value: valueByTarget[field.target] ?? '',
-        });
+        viewState[contractTagName(field.target)] = fieldToViewState(
+            field,
+            {
+                error: errorByTarget[field.target] ?? '',
+                invalid: invalidByTarget[field.target] ?? false,
+                errorRule: ruleByTarget[field.target] ?? FieldRule.NONE,
+                value: valueByTarget[field.target] ?? '',
+            },
+            errorByTarget,
+        );
     }
     return viewState;
 }

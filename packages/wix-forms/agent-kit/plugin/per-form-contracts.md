@@ -30,7 +30,8 @@ Run `jay-stack agent-kit`, then read:
 
 Only these Wix field kinds get a tag: short and long text, email, URL, phone,
 dropdown / radio (closed list), date picker (as text), single checkbox and checkbox
-group (closed list). Every other kind (address, number, rating, file upload,
+group (closed list), and a Multi-line address (see "Address fields" below). Every
+other kind (number, rating, file upload, a hidden address,
 signature, payment, appointment, service picker, a choice with a custom "Other"
 option, a read-only field) is **left out of the contract** and listed per form
 under `unsupportedFields` in `forms.yaml` (`target`, `label`, `wixKind`, `required`).
@@ -46,6 +47,30 @@ names them.
   by hand.
 - A required field with no target in Wix cannot be submitted either; agent-kit warns
   (`required field "<label>" has no target in Wix`).
+
+## Address fields
+
+A Wix **Multi-line address** is one sub-contract named after its target, with a
+fixed set of **eight parts**, always all present (whatever countries the form
+offers today, because the site owner can widen them later):
+
+`country`, `addressLine`, `addressLine2`, `streetName`, `streetNumber`, `city`,
+`subdivision`, `postalCode`.
+
+- The field: `label`, `required`, `error` (the first part error), `invalid`.
+- `country`: `label`, `value`, `error`, `invalid`, `input` (a `<select>`), `options`.
+- Every other part: `shown`, `required`, `label`, `value`, `error`, `invalid`,
+  `maxLength`, `input`. Each country shows its own parts (Israel: street name and
+  house number; the US: a State; Italy: a region code): wrap each in
+  `if="<key>.<address>.<part>.shown"`.
+- `subdivision` also has `listed` (a `<select>` of `options`) and a free-text `text`
+  input for `!listed`. Bind **both**.
+- Part errors arrive keyed `<target>/<part>` (`address/subdivision`) in a rejected
+  submit's `fieldErrors`. When Wix teaches a region list (`fieldOptions`) or requires
+  a hidden part (`revealedParts`), the component updates the part for you.
+- The validator (rule 6) errors on an unknown part ref and on any part without its
+  input(s). Markup: `rich-forms.md` §4c.
+- `forms.yaml` lists the field as `type: address` with its `parts` and `countries`.
 
 ## Each field is a sub-contract named after its `target`
 

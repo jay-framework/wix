@@ -296,6 +296,36 @@ is single-value, so each click would replace the whole selection (the validator 
   not support it). Hide the input visually with clipping, never `display:none`, so it stays
   focusable; a failed submit focuses the first chip of an invalid group.
 
+## 4c. Address fields
+
+Bind all eight parts; each part shows only for the countries that use it:
+
+```html
+<fieldset>
+  <label>{contact.address.country.label}
+    <select ref="contact.address.country.input" autocomplete="country">
+      <option forEach="contact.address.country.options" trackBy="value" value="{value}">{label}</option>
+    </select></label>
+  <label if="contact.address.streetName.shown">{contact.address.streetName.label}<input ref="contact.address.streetName.input" /></label>
+  <label if="contact.address.streetNumber.shown">{contact.address.streetNumber.label}<input ref="contact.address.streetNumber.input" /></label>
+  <label if="contact.address.addressLine.shown">{contact.address.addressLine.label}<input ref="contact.address.addressLine.input" autocomplete="address-line1" /></label>
+  <label if="contact.address.addressLine2.shown">{contact.address.addressLine2.label}<input ref="contact.address.addressLine2.input" autocomplete="address-line2" /></label>
+  <label if="contact.address.city.shown">{contact.address.city.label}<input ref="contact.address.city.input" autocomplete="address-level2" /></label>
+  <label if="contact.address.subdivision.shown">{contact.address.subdivision.label}
+    <select if="contact.address.subdivision.listed" ref="contact.address.subdivision.input" autocomplete="address-level1">
+      <option forEach="contact.address.subdivision.options" trackBy="value" value="{value}">{label}</option>
+    </select>
+    <input if="!contact.address.subdivision.listed" ref="contact.address.subdivision.text" autocomplete="address-level1" /></label>
+  <label if="contact.address.postalCode.shown">{contact.address.postalCode.label}<input ref="contact.address.postalCode.input" autocomplete="postal-code" /></label>
+</fieldset>
+<p if="contact.address.invalid">{contact.address.error}</p>
+```
+
+- `autocomplete` tokens: `country`, `address-line1`, `address-line2`, `address-level2` (city), `address-level1` (subdivision), `postal-code`. `streetName` and `streetNumber` have **no** standard token: never put `address-line1` on them.
+- Both subdivision inputs are required (rule 6): `input` for a listed region, `text` for free text. Italy starts as free text and switches to a select after Wix names the valid codes.
+- An optional address that is left blank (a preselected country alone counts as blank) is not submitted.
+- The value is an object (`{ country, city, … }`, Wix's own keys). A submit hook that narrows `values[target]` to `string | string[] | boolean` must handle it.
+
 ## 5. Custom UI / multi-step
 
 Any element bound to a field's `control` feeds that field's store slot via its `data-value`

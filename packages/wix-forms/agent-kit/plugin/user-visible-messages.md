@@ -70,7 +70,7 @@ Binding `{contact.statusMessage}` for `REJECTED` is a choice: it shows a hook's 
 
 When the form schema fails to load, `loadError` is set (e.g. `Could not load the form.`, permission-denied hints). Bind `{key.loadError}` if you want to show it, or use `if="contact.loadError"` with your own localized explanation.
 
-`loadError` is also set when the form has a **required field this site cannot show** (for example a Wix address field): `This form has a required field this site cannot show: <label>.` No fields render in that case and the form cannot be submitted; see `unsupportedFields` in `forms.yaml` and `per-form-contracts.md`.
+`loadError` is also set when the form has a **required field this site cannot show** (for example a file upload), and to `Could not load the address layouts. Please try again later.` when the address layouts could not be fetched (it retries shortly): `This form has a required field this site cannot show: <label>.` No fields render in that case and the form cannot be submitted; see `unsupportedFields` in `forms.yaml` and `per-form-contracts.md`.
 
 ## Field `{key.<target>.error}`
 
@@ -107,6 +107,23 @@ For multilingual sites, Wix-translated **labels** help required messages. When t
 On a phone field, branch on both `PHONE` and `PHONE_COUNTRY` (or show `{field.error}` unconditionally). While the visitor types a local number with no default country, the rule flips from `PHONE` (up to 5 digits) to `PHONE_COUNTRY` (from 6) — this is expected, not a bug.
 
 Never test `error` text (`if="contact.email.error === '…'"`); branch on `errorRule`. Write `REQUIRED` copy that still reads correctly while the field holds text (see `rich-forms.md` §3).
+
+## Address messages
+
+English defaults, with the labels resolved from `config/.wix-forms.yaml` `address.labels` (else the plugin's English defaults):
+
+| When | Message |
+| ---- | ------- |
+| No country | `Country/Region is required.` |
+| Country not offered | `Choose a country from the list.` |
+| Required part empty | `<label> is required.` (e.g. `State is required.`, `Street name is required.`) |
+| Too long | `<label> must be at most <n> characters.` |
+| Postal code over 50 characters | `Zip / Postal code is too long.` |
+| Region not in the list | `Choose a <label> from the list.` (e.g. `Choose a State from the list.`, `Choose a Region from the list.`) |
+| Wix needs a part the plugin does not know | `This address cannot be accepted for <country>. Please contact us.` |
+| Any other Wix rule | `<label>: please check this value.` |
+
+Default part labels: Country/Region, Address, Address line 2, Street name, House number, City, State/Region (Region for countries without their own list), Zip / Postal code; per-country subdivision labels: US State, GB Region, CA Province, DE State, JP Prefecture, BR State, FR Region, ES Province, AU State. Override any of them, and name region codes, in config (`wix-forms-setup.md` → Address copy). A page may also ignore `label` and write its own text.
 
 ## `getFormSummary` (deprecated)
 
