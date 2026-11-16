@@ -146,7 +146,8 @@ describe('createBooking server re-validation (DL #51 test 9)', () => {
         expect(mockGetBookingServiceById).toHaveBeenCalledTimes(1);
     });
 
-    it('check order: a required unsupported field wins over a missing first name', async () => {
+    /** DL #52 flips this: the required address is validated with the other fields. */
+    it('check order: a missing first name and a missing required address are both invalid', async () => {
         serviceWithForm(QA_FORM_ID);
 
         const outcome = await newService().createBooking(
@@ -155,15 +156,16 @@ describe('createBooking server re-validation (DL #51 test 9)', () => {
         );
 
         expect(outcome).toEqual({
-            outcome: 'formUnavailable',
-            failure: 'FORM_UNSUPPORTED',
-            message:
-                'This booking form has a required field this site cannot show yet: Multi-line address. Booking is disabled until the site is updated.',
+            outcome: 'invalid',
+            fieldErrors: {
+                first_name: 'First name is required.',
+                'address/country': 'Country/Region is required.',
+            },
         });
         expect(mockCreateBookingRecord).not.toHaveBeenCalled();
     });
 
-    it('resolves (does not reject) FORM_UNSUPPORTED for the default form', async () => {
+    it('resolves (does not reject) invalid for the default form without an address', async () => {
         serviceWithForm(ZERO_FORM_ID);
 
         await expect(
@@ -171,7 +173,10 @@ describe('createBooking server re-validation (DL #51 test 9)', () => {
                 bookingInput(VALID_VALUES),
                 formsReturning(rawFormFixture('default-form')),
             ),
-        ).resolves.toMatchObject({ outcome: 'formUnavailable', failure: 'FORM_UNSUPPORTED' });
+        ).resolves.toEqual({
+            outcome: 'invalid',
+            fieldErrors: { 'address/country': 'Country/Region is required.' },
+        });
         expect(mockCreateBookingRecord).not.toHaveBeenCalled();
     });
 

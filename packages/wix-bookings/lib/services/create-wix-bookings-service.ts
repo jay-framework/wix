@@ -2,7 +2,17 @@ import type { WixClient } from '@wix/sdk';
 import { WixApiError } from '@jay-framework/wix-server-client/client';
 import type { WixBookingsConfig } from '../config-loader.js';
 import { MAX_SLOTS_PER_QUERY } from '../constants.js';
-import type { ProjectedForm, WixFormsService } from '@jay-framework/wix-forms';
+import {
+    addressMessageFor,
+    hasAddressField,
+    mapAddressViolations,
+    parseBookingFormViolations,
+    readAddressValue,
+    type ProjectedForm,
+    type ProjectionOptions,
+    type RawForm,
+    type WixFormsService,
+} from '@jay-framework/wix-forms';
 import type {
     BookingFormFieldView,
     BookingSlotView,
@@ -36,6 +46,7 @@ import {
     participantFieldErrors,
     projectParticipantForm,
     supportedParticipantValues,
+    toFormFieldView,
 } from '../utils/participant-form.js';
 import { describeUnsupportedForm } from '../utils/booking-outcome.js';
 import { createParticipantFormLoader } from './participant-form-source.js';
@@ -45,6 +56,25 @@ const FORM_UNAVAILABLE_MESSAGE = 'Could not load the participant form. Please tr
 interface CheckedParticipantForm {
     service: RawBookingService;
     formValues: Record<string, ParticipantFormValue>;
+    /** The rendered fields, for mapping a Create Booking 400 back to them (DL #52 §3 step 5). */
+    fields: BookingFormFieldView[];
+    forms: WixFormsService;
+}
+
+/**
+ * Templates and the current learned facts, per call (DL #52 §3): the raw form is cached, the
+ * projection never is, so every call sees what was learned so far. A template failure throws.
+ */
+async function projectionOptionsFor(
+    rawForm: RawForm,
+    forms: WixFormsService,
+): Promise<ProjectionOptions> {
+    if (!hasAddressField(rawForm)) return {};
+    return {
+        addressTemplates: await forms.addressTemplates(),
+        learnedFacts: forms.learnedAddressFacts().snapshot(),
+        addressConfig: forms.config.address,
+    };
 }
 
 async function resolvePaidCheckoutRedirectUrl(
@@ -96,7 +126,8 @@ export function createWixBookingsService(
         try {
             service = await getBookingServiceById(wixClient, input.serviceId);
             const { formId, rawForm } = await loadParticipantForm(service, forms);
-            participantForm = projectParticipantForm(rawForm, formId, warnOnce);
+            const options = await projectionOptionsFor(rawForm, forms);
+            participantForm = projectParticipantForm(rawForm, formId, warnOnce, options);
         } catch (error) {
             console.error('[wix-bookings] could not load the participant form', {
                 serviceId: input.serviceId,
@@ -121,6 +152,8 @@ export function createWixBookingsService(
         return {
             service: service!,
             formValues: supportedParticipantValues(participantForm.fields, input.formValues),
+            fields: participantForm.fields,
+            forms,
         };
     }
 
@@ -179,16 +212,20 @@ export function createWixBookingsService(
             }
             const service = await getBookingServiceById(wixClient, serviceId);
             const { formId, rawForm } = await loadParticipantForm(service, forms);
-            return projectParticipantForm(rawForm, formId, warnOnce);
+            const options = await projectionOptionsFor(rawForm, forms);
+            return projectParticipantForm(rawForm, formId, warnOnce, options);
         },
 
         async createBooking(input, forms) {
             const checked = await checkParticipantForm(input, forms);
             if ('outcome' in checked) return checked;
-            return bookAndCheckout(wixClient, config, checked.service, {
-                ...input,
-                formValues: checked.formValues,
-            });
+            return bookAndCheckout(
+                wixClient,
+                config,
+                checked.service,
+                { ...input, formValues: checked.formValues },
+                checked,
+            );
         },
     };
 }
@@ -212,6 +249,7 @@ async function bookAndCheckout(
     config: WixBookingsConfig,
     rawService: RawBookingService | undefined,
     input: CreateBookingInput,
+    checked?: CheckedParticipantForm,
 ): Promise<CreateBookingOutcome> {
     const paymentPreference =
         input.paymentPreference ??
@@ -247,14 +285,21 @@ async function bookAndCheckout(
         slotData.eventId = input.slot.eventId;
     }
 
-    const bookingData = await createBookingRecord(wixClient, {
-        booking: {
-            bookedEntity: { slot: slotData },
-            selectedPaymentOption: paymentPreference,
-            totalParticipants: 1,
-        },
-        formSubmission: input.formValues,
-    });
+    let bookingData: Awaited<ReturnType<typeof createBookingRecord>>;
+    try {
+        bookingData = await createBookingRecord(wixClient, {
+            booking: {
+                bookedEntity: { slot: slotData },
+                selectedPaymentOption: paymentPreference,
+                totalParticipants: 1,
+            },
+            formSubmission: input.formValues,
+        });
+    } catch (error) {
+        const invalid = checked ? invalidFromFormViolations(error, input, checked) : undefined;
+        if (invalid) return invalid;
+        throw error;
+    }
 
     const bookingId = bookingData.booking.id;
     const cartData = await createBookingCart(wixClient, bookingId, config.bookingAppId);
@@ -270,6 +315,44 @@ async function bookAndCheckout(
 
     const { orderId } = await placeBookingOrder(wixClient, cartId);
     return { outcome: 'confirmed', ...(orderId ? { orderId } : {}) };
+}
+
+/**
+ * A Create Booking 400 with located form violations is an `invalid` outcome, never a throw
+ * (DL #52 §3 step 5). Learned subdivisions and revealed parts are written to the store first.
+ * Only `createBookingRecord` is covered: cart and checkout errors keep their own paths.
+ */
+function invalidFromFormViolations(
+    error: unknown,
+    input: CreateBookingInput,
+    checked: CheckedParticipantForm,
+): CreateBookingOutcome | undefined {
+    if (!(error instanceof WixApiError) || error.status !== 400) return undefined;
+    const violations = parseBookingFormViolations(error.responseBody);
+    if (!violations.length) return undefined;
+    const views = checked.fields.map(toFormFieldView);
+    const mapped = mapAddressViolations({
+        violations,
+        fields: views.filter((field) => field.inputType === 'address'),
+        values: input.formValues,
+        facts: checked.forms.learnedAddressFacts(),
+    });
+    const fieldErrors = { ...mapped.fieldErrors };
+    for (const violation of mapped.unhandled) {
+        const field = views.find((candidate) => candidate.target === violation.key);
+        fieldErrors[violation.key] ??= field
+            ? addressMessageFor(field, readAddressValue(undefined), violation)
+            : (violation.wixMessage ?? 'Please check this value.');
+    }
+    return {
+        outcome: 'invalid',
+        fieldErrors,
+        ...(Object.keys(mapped.fieldOptions).length ? { fieldOptions: mapped.fieldOptions } : {}),
+        ...(Object.keys(mapped.revealedParts).length
+            ? { revealedParts: mapped.revealedParts }
+            : {}),
+        ...(Object.keys(mapped.factsCountry).length ? { factsCountry: mapped.factsCountry } : {}),
+    };
 }
 
 /** Each distinct message once per service instance: a cached form is projected on every request. */

@@ -70,15 +70,23 @@ export { parseBookingFormViolations } from './utils/located-violations.js';
 export {
     AddressLayoutsUnavailableError,
     ADDRESS_LAYOUTS_UNAVAILABLE_MESSAGE,
+    parseAddressTemplates,
     type AddressTemplateSource,
     type AddressTemplates,
 } from './address/address-templates.js';
-export type { LearnedAddressFacts } from './address/learned-address-facts.js';
+export {
+    createLearnedAddressFacts,
+    type LearnedAddressFacts,
+} from './address/learned-address-facts.js';
 export {
     mapAddressViolations,
     type AddressViolationsResult,
 } from './address/address-violations.js';
-export { hasAddressField, type ProjectionOptions } from './utils/project-form-fields.js';
+export {
+    hasAddressField,
+    projectAddressField,
+    type ProjectionOptions,
+} from './utils/project-form-fields.js';
 
 export type { RawForm, RawFormField } from './wix-apis/get-form.js';
 export {

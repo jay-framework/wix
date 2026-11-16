@@ -2,7 +2,14 @@
 
 import { readFileSync } from 'node:fs';
 import { vi } from 'vitest';
-import type { RawForm, WixFormsService } from '@jay-framework/wix-forms';
+import {
+    createLearnedAddressFacts,
+    parseAddressTemplates,
+    type AddressTemplates,
+    type LearnedAddressFacts,
+    type RawForm,
+    type WixFormsService,
+} from '@jay-framework/wix-forms';
 
 export type GetFormFixture =
     | 'booking-form'
@@ -25,12 +32,34 @@ export function rawFormFixture(name: GetFormFixture): RawForm {
     return form;
 }
 
-/** A forms service whose `getRawForm` returns `form` (or runs `getRawForm`). */
+/** The live List Form Templates capture (DL #52 Phase A0), parsed. */
+export function fixtureTemplates(): AddressTemplates {
+    const url = new URL(
+        '../../../wix-forms/test/fixtures/address/templates-list-response.json',
+        import.meta.url,
+    );
+    return parseAddressTemplates(JSON.parse(readFileSync(url, 'utf8')));
+}
+
+export type FakeFormsService = WixFormsService & {
+    getRawForm: ReturnType<typeof vi.fn>;
+    addressTemplates: ReturnType<typeof vi.fn>;
+};
+
+/**
+ * A forms service whose `getRawForm` returns `form` (or runs `getRawForm`), with the fixture
+ * templates and its own learned-facts store (DL #52).
+ */
 export function formsReturning(
     form: RawForm | ((formId: string) => Promise<RawForm>),
-): WixFormsService & { getRawForm: ReturnType<typeof vi.fn> } {
+    facts: LearnedAddressFacts = createLearnedAddressFacts(),
+): FakeFormsService {
     const getRawForm = vi.fn(typeof form === 'function' ? form : async () => form);
-    return { getRawForm } as unknown as WixFormsService & {
-        getRawForm: ReturnType<typeof vi.fn>;
-    };
+    const addressTemplates = vi.fn(async () => fixtureTemplates());
+    return {
+        getRawForm,
+        addressTemplates,
+        learnedAddressFacts: () => facts,
+        config: { namespace: 'wix.form_app.form', formIds: [], include: 'enabled' },
+    } as unknown as FakeFormsService;
 }

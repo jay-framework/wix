@@ -21,6 +21,9 @@ outputSchema:
   outcome: enum(confirmed | redirect | invalid | formUnavailable)
   orderId?: string
   redirectUrl?: string
-  fieldErrors?: object
+  fieldErrors?: object  # by target, or <target>/<part> for an address part (DL #52)
+  fieldOptions?: object  # <target>/subdivision → the codes Wix accepts, learned from this 400 (DL #52)
+  revealedParts?: object  # target → parts Wix required that the layout hid (DL #52)
+  factsCountry?: object  # target → the submitted country the learned facts belong to (DL #52)
   failure?: enum(FORM_UNSUPPORTED | FORM_UNAVAILABLE)
   message?: string

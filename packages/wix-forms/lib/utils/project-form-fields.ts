@@ -95,7 +95,10 @@ export function hasAddressField(rawForm: RawForm): boolean {
  * An address field with its spec, or undefined (unsupported) when hidden — the `control` channel
  * carries strings (Q12) — or when no country can be offered (Q4).
  */
-function projectAddressField(key: FieldKey, options: ProjectionOptions): FormFieldView | undefined {
+export function projectAddressField(
+    key: FieldKey,
+    options: ProjectionOptions,
+): FormFieldView | undefined {
     if (!options.addressTemplates) {
         throw new Error(
             'projectFormFields: a form with an address needs addressTemplates (load them first)',

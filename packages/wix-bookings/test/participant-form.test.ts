@@ -54,7 +54,8 @@ const BOOKING_TYPE: Array<[GetFormFixture, string, BookingFormFieldView['type'] 
     ['booking-form-all-kinds', 'last_name', 'STRING'],
     ['booking-form-all-kinds', 'phone', 'PHONE'],
     ['booking-form-all-kinds', 'email', 'EMAIL'],
-    ['booking-form-all-kinds', 'address', undefined],
+    // DL #52 flips row 13: a visible Multi-line address is supported.
+    ['booking-form-all-kinds', 'address', 'ADDRESS'],
     ['booking-form-all-kinds', 'add_your_message', 'STRING'],
     ['booking-form-all-kinds', 'long_answer_1135', 'STRING'],
     ['booking-form-all-kinds', 'form_field_e966', 'BOOLEAN'],
@@ -107,6 +108,15 @@ const BOOKING_FORM_PROJECTION = {
             ...noView,
         },
         {
+            target: 'address',
+            label: 'Multi-line address',
+            type: 'ADDRESS',
+            required: true,
+            longText: false,
+            ...noView,
+            address: expect.any(Object),
+        },
+        {
             target: 'add_your_message',
             label: 'Add your message',
             type: 'STRING',
@@ -115,14 +125,7 @@ const BOOKING_FORM_PROJECTION = {
             ...noView,
         },
     ],
-    unsupportedFields: [
-        {
-            target: 'address',
-            label: 'Multi-line address',
-            wixKind: 'ADDRESS/MULTILINE_ADDRESS',
-            required: true,
-        },
-    ],
+    unsupportedFields: [],
 };
 
 describe('toBookingFieldType (DL #51 test 5)', () => {
@@ -158,7 +161,8 @@ describe('WixBookingsService.getParticipantForm (DL #51 §3)', () => {
     });
     afterEach(() => vi.restoreAllMocks());
 
-    it('reads the QA form through getRawForm, in layout order, with the address unsupported', async () => {
+    /** DL #52 B2: the address is a field with all 247 countries; nothing is unsupported. */
+    it('reads the QA form through getRawForm, in layout order, with the address supported', async () => {
         mockGetBookingServiceById.mockResolvedValue({ form: { id: QA_FORM_ID } });
         const forms = formsReturning(rawFormFixture('booking-form'));
 
@@ -168,6 +172,8 @@ describe('WixBookingsService.getParticipantForm (DL #51 §3)', () => {
         );
 
         expect(projected).toEqual(BOOKING_FORM_PROJECTION);
+        const address = projected.fields.find((field) => field.type === 'ADDRESS')!.address!;
+        expect(address.countries).toHaveLength(247);
         expect(forms.getRawForm).toHaveBeenCalledWith(QA_FORM_ID);
         expect(mockGetBookingServiceById).toHaveBeenCalledWith(mockClient, 'svc-qa');
     });

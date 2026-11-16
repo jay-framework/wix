@@ -10,7 +10,7 @@ outputSchema:
   fields:
     - target: string
       label: string
-      type: enum(STRING | EMAIL | PHONE | URL | BOOLEAN)
+      type: enum(STRING | EMAIL | PHONE | URL | BOOLEAN | ADDRESS)
       required: boolean
       longText: boolean
       placeholder: string
@@ -20,6 +20,7 @@ outputSchema:
       options:
         - value: string
           label: string
+      address?: object  # ADDRESS only: the resolved spec (countries, layouts, learned facts), DL #52
   unsupportedFields:
     - target: string
       label: string
