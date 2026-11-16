@@ -4,7 +4,12 @@
 export { init } from './init.js';
 // setup handler (setupWixBookings/setup) is tools-time — moved to ./tools (DL#179).
 export { bookingFlow } from './components/booking-flow.js';
-export { listServices, listSlots, createBooking } from './actions/bookings-actions.js';
+export {
+    listServices,
+    listSlots,
+    getParticipantForm,
+    createBooking,
+} from './actions/bookings-actions.js';
 export {
     provideWixBookingsService,
     WIX_BOOKINGS_SERVICE,
@@ -14,7 +19,9 @@ export type {
     BookingServiceView,
     BookingSlotView,
     BookingFormFieldView,
+    CreateBookingInput,
     CreateBookingOutcome,
+    ParticipantFormValue,
 } from './types.js';
 export {
     WIX_BOOKINGS_CONTEXT,

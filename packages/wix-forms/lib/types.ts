@@ -50,6 +50,7 @@ export interface FormFieldView {
     phone?: PhoneRules;
 }
 
+/** @deprecated Since DL #51: the Summary API has no `required`; see `getRawForm`. */
 export interface FormFieldSummaryView {
     target: string;
     label: string;
@@ -64,11 +65,28 @@ export interface FormFieldErrorView {
     errorMessage: string;
 }
 
+/** A form field this version cannot render or submit (DL #51 §1). */
+export interface UnsupportedFieldView {
+    target: string;
+    label: string;
+    /** `wixKindOf(key)`, or the Summary API's type. */
+    wixKind: string;
+    /** `'unknown'` only from the deprecated Summary path, which never blocks (DL #51 Q13). */
+    required: boolean | 'unknown';
+}
+
+/** A projection that keeps every input field: rendered (`fields`) or listed (`unsupportedFields`). */
+export interface ProjectedForm<F> {
+    fields: F[];
+    unsupportedFields: UnsupportedFieldView[];
+}
+
 /** A form enumerated at build time, with its projected visible fields (DL#40). */
 export interface ListedFormView {
     id: string;
     name: string;
     fields: FormFieldView[];
+    unsupportedFields: UnsupportedFieldView[];
 }
 
 /** The `submitForm` action input (DL#41). */

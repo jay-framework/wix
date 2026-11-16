@@ -2,10 +2,9 @@ import { createJayContext, registerGlobalContext, useGlobalContext } from '@jay-
 import type { WixClient } from '@wix/sdk';
 import { WIX_CLIENT_CONTEXT, WixApiError, wixFetch } from '@jay-framework/wix-server-client/client';
 import type { WixBookingsConfig } from '../config-loader.js';
-import type { BookingServiceType } from '../types.js';
+import type { BookingServiceType, CreateBookingInput, CreateBookingOutcome } from '../types.js';
 import { getBookingServiceById, type RawBookingService } from '../wix-apis/query-services.js';
-import { createWixBookingsService } from '../services/create-wix-bookings-service.js';
-import type { WixBookingsService } from '../services/wix-bookings-service-marker.js';
+import { createUncheckedBooking } from '../services/create-wix-bookings-service.js';
 
 /**
  * Bookings in the browser, with the visitor's (or member's) own Wix client: for sites served without a Jay
@@ -84,8 +83,12 @@ export interface WixBookingsContext {
     serviceById(id: string): Promise<RawBookingService | undefined>;
     /** Class sessions (and appointment openings) in a local date range, as Wix's calendar queries them. */
     timeSlots(query: TimeSlotsQuery): Promise<TimeSlot[]>;
-    /** Create the booking and continue to checkout (or confirm a free booking), as the server action does. */
-    createBooking: WixBookingsService['createBooking'];
+    /**
+     * Create the booking and continue to checkout (or confirm a free booking), as the server action does,
+     * but without its participant-form checks (DL #51 §4): there is no server, and the visitor's own client
+     * can call Wix directly anyway. Validate the form on the page.
+     */
+    createBooking(input: CreateBookingInput): Promise<CreateBookingOutcome>;
     /**
      * A placed order (a confirmed booking's `orderId`) as its buyer reads it, with the texts Wix's thank-you page
      * shows; undefined for anyone else.
@@ -150,7 +153,7 @@ export function createWixBookingsContext(
         }
         return settings;
     };
-    const service = createWixBookingsService(wixClient, config);
+    const createBooking = createUncheckedBooking(wixClient, config);
     /** The visitor's or member's own bookings matching `filter` (Bookings Reader). */
     const ownBookings = async (filter: Record<string, unknown>) => {
         const res = await wixFetch<{
@@ -218,7 +221,7 @@ export function createWixBookingsContext(
             );
             return res.timeSlots ?? [];
         },
-        createBooking: service.createBooking,
+        createBooking,
         async serviceBookings(serviceId) {
             return (
                 await ownBookings({

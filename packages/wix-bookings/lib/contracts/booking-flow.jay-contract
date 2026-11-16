@@ -104,9 +104,9 @@ tags:
     tags:
       - { tag: target, type: data, dataType: string }
       - { tag: label, type: data, dataType: string }
-      - { tag: type, type: data, dataType: string }
+      - { tag: type, type: data, dataType: string, description: "STRING | EMAIL | PHONE | URL | BOOLEAN (a single checkbox: bind it to an input type=checkbox)" }
       - { tag: required, type: data, dataType: boolean }
-      - { tag: formInputs, type: interactive, elementType: HTMLInputElement, description: Participant form field }
+      - { tag: formInputs, type: interactive, elementType: HTMLInputElement, description: Participant form field (a checkbox for BOOLEAN) }
 
   - tag: formLoading
     type: variant
@@ -137,9 +137,9 @@ tags:
 
   - tag: bookingFailure
     type: variant
-    dataType: enum (NONE | VALIDATION | FORM_UNAVAILABLE | CHECKOUT_PERMISSION | CHECKOUT_REDIRECT_REJECTED | SITE_NOT_PUBLISHED | UNKNOWN)
+    dataType: enum (NONE | VALIDATION | FORM_UNAVAILABLE | CHECKOUT_PERMISSION | CHECKOUT_REDIRECT_REJECTED | SITE_NOT_PUBLISHED | UNKNOWN | FORM_UNSUPPORTED)
     phase: fast+interactive
-    description: Why the participant form or the booking failed (NONE when it did not)
+    description: Why the participant form or the booking failed (NONE when it did not). FORM_UNSUPPORTED = the form has a required field this site cannot show; booking stays off until the site is updated
 
   - tag: bookButton
     type: interactive

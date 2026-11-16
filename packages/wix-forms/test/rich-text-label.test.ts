@@ -16,7 +16,7 @@ const richTextLabelForm = JSON.parse(
  */
 describe('projectFormFields with rich-text labels', () => {
     it('should extract plain text from a rich-content field label', () => {
-        const labels = projectFormFields(richTextLabelForm).map((field) => field.label);
+        const labels = projectFormFields(richTextLabelForm).fields.map((field) => field.label);
 
         expect(labels).toEqual(['First name', 'Your message']);
     });

@@ -14,12 +14,20 @@ vi.mock('../lib/wix-apis/list-forms.js', () => ({
     listForms: vi.fn(),
 }));
 
+vi.mock('../lib/wix-apis/get-form.js', () => ({
+    getFormSchema: vi.fn(),
+}));
+
 import { getFormSummary } from '../lib/wix-apis/get-form-summary.js';
 import { listForms } from '../lib/wix-apis/list-forms.js';
+import { getFormSchema } from '../lib/wix-apis/get-form.js';
 import { provideWixFormsService } from '../lib/services/wix-forms-service.js';
+import { fixtureField, formSummaryFixture, rawFormFixture } from './support/form-kinds.js';
 
 const mockGetFormSummary = vi.mocked(getFormSummary);
 const mockListForms = vi.mocked(listForms);
+const mockGetFormSchema = vi.mocked(getFormSchema);
+const FORM_ID = '3f2a9c1e-5b7d-4e8f-9a0b-1c2d3e4f5a6b';
 const mockClient = {} as Parameters<typeof provideWixFormsService>[0];
 const testConfig = {
     namespace: 'wix.form_app.form',
@@ -84,9 +92,7 @@ describe('WixFormsService.listForms', () => {
             {
                 id: 'form-1',
                 name: 'Contact',
-                formFields: [
-                    { target: 'email', view: { label: 'Email' }, validation: { required: true } },
-                ],
+                formFields: rawFormFixture('contact-form').formFields,
             },
         ]);
         const service = provideWixFormsService(mockClient, testConfig);
@@ -115,7 +121,7 @@ describe('WixFormsService.getFormSummaryFields', () => {
         expect(mockGetFormSummary).not.toHaveBeenCalled();
     });
 
-    it('should throw when Wix returns no usable fields', async () => {
+    it('should throw when Wix returns no fields at all', async () => {
         mockGetFormSummary.mockResolvedValueOnce({ formSummary: { fields: [] } });
         const service = provideWixFormsService(mockClient, testConfig);
 
@@ -124,17 +130,122 @@ describe('WixFormsService.getFormSummaryFields', () => {
         );
     });
 
-    it('should return projected fields when Wix returns a valid summary', async () => {
+    it('should not throw when only unsupported fields are returned', async () => {
+        vi.spyOn(console, 'warn').mockImplementation(() => {});
         mockGetFormSummary.mockResolvedValueOnce({
-            formSummary: {
-                fields: [{ target: 'email', label: 'Email', type: 'EMAIL', required: true }],
-            },
+            formSummary: { fields: [{ target: 'photo', label: 'Photo', type: 'FILE' }] },
         });
         const service = provideWixFormsService(mockClient, testConfig);
 
-        await expect(service.getFormSummaryFields('form-1')).resolves.toEqual([
-            { target: 'email', label: 'Email', type: 'EMAIL', required: true },
+        await expect(service.getFormSummaryFields('form-1')).resolves.toEqual({
+            fields: [],
+            unsupportedFields: [
+                { target: 'photo', label: 'Photo', wixKind: 'FILE', required: 'unknown' },
+            ],
+        });
+        vi.restoreAllMocks();
+    });
+
+    /** DL #51 §1: the dropped fields are logged once per form id, never silently lost. */
+    it('should log the unsupported summary fields once per form id', async () => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        mockGetFormSummary.mockResolvedValue(formSummaryFixture());
+        const service = provideWixFormsService(mockClient, testConfig);
+
+        await service.getFormSummaryFields('form-1');
+        await service.getFormSummaryFields('form-1');
+
+        expect(
+            warn.mock.calls.filter(([message]) => /not supported/.test(String(message))),
+        ).toEqual([
+            [
+                '[wix-forms] Form form-1: fields not supported and not returned: Multi-line address (MULTILINE_ADDRESS).',
+            ],
         ]);
+        vi.restoreAllMocks();
+    });
+});
+
+describe('WixFormsService.getFormFields (DL #51 test 17)', () => {
+    beforeEach(() => {
+        mockGetFormSchema.mockReset();
+    });
+
+    it('should return only unsupported fields without throwing', async () => {
+        mockGetFormSchema.mockResolvedValueOnce({
+            form: { formFields: [fixtureField('booking-form-all-kinds', 'file_upload_1ffc')] },
+        });
+        const service = provideWixFormsService(mockClient, testConfig);
+
+        await expect(service.getFormFields(FORM_ID)).resolves.toEqual({
+            fields: [],
+            unsupportedFields: [
+                {
+                    target: 'file_upload_1ffc',
+                    label: 'File upload',
+                    wixKind: 'WIX_FILE/FILE_UPLOAD',
+                    required: false,
+                },
+            ],
+        });
+    });
+
+    it('should throw when the form has neither supported nor unsupported fields', async () => {
+        mockGetFormSchema.mockResolvedValueOnce({
+            form: { formFields: [fixtureField('contact-form', 'SUBMIT_BUTTON')] },
+        });
+        const service = provideWixFormsService(mockClient, testConfig);
+
+        await expect(service.getFormFields(FORM_ID)).rejects.toThrow(
+            'Form has no usable input fields',
+        );
+    });
+});
+
+describe('WixFormsService.listForms (DL #51 §2)', () => {
+    beforeEach(() => {
+        mockListForms.mockReset();
+    });
+
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
+    it('should list each form with its unsupported fields', async () => {
+        mockListForms.mockResolvedValueOnce([
+            { id: FORM_ID, name: 'Booking form', ...rawFormFixture('booking-form') },
+        ]);
+        const [form] = await provideWixFormsService(mockClient, testConfig).listForms();
+
+        expect(form?.fields.map((field) => field.target)).toEqual([
+            'first_name',
+            'last_name',
+            'email',
+            'phone',
+            'add_your_message',
+        ]);
+        expect(form?.unsupportedFields).toEqual([
+            {
+                target: 'address',
+                label: 'Multi-line address',
+                wixKind: 'ADDRESS/MULTILINE_ADDRESS',
+                required: true,
+            },
+        ]);
+    });
+
+    it('should warn about a required field that has no target', async () => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        const form = rawFormFixture('contact-form');
+        delete form.formFields!.find((field) => field.inputOptions?.target === 'email_7e06')!
+            .inputOptions!.target;
+        mockListForms.mockResolvedValueOnce([{ id: FORM_ID, name: 'QA Contact', ...form }]);
+
+        await provideWixFormsService(mockClient, testConfig).listForms();
+
+        expect(warn).toHaveBeenCalledWith(
+            '[wix-forms] Form "QA Contact": required field "Email" has no target in Wix and cannot be submitted.',
+        );
     });
 });
 

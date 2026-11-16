@@ -27,14 +27,32 @@ function buildContract(form: ListedFormView, slug: string): string {
     );
     const tags = [...fieldTags, reservedFormTags()].join('\n');
     return `name: ${toPascalCase(slug)}Form
-description: ${describe(form)}
+description: ${yamlScalar(describe(form))}
 ${sourceEditingContractHeader(form.id)}
 tags:
 ${tags}`;
 }
 
+/** Plain when YAML reads it back unchanged; JSON-quoted (valid YAML) otherwise, e.g. for `: `. */
+function yamlScalar(text: string): string {
+    const plain = /^[^\s'"&*!|>%@`{}\[\],#?:-][^]*$/.test(text) && !/: | #|\n|\s$/.test(text);
+    return plain ? text : JSON.stringify(text);
+}
+
 function describe(form: ListedFormView): string {
-    return `Wix form "${form.name}" (${form.id})`;
+    const identity = `Wix form "${form.name}" (${form.id})`;
+    if (!form.unsupportedFields.length) return identity;
+    const labels = form.unsupportedFields.map((field) => field.label).join(', ');
+    return `${identity}. Unsupported fields left out: ${labels}.`;
+}
+
+/** DL #51 §2: a warning, not an error, so one form cannot stop agent-kit for the whole site. */
+function warnUnsupportedFields(form: ListedFormView, slug: string): void {
+    for (const field of form.unsupportedFields) {
+        console.warn(
+            `[wix-forms] Form "${form.name}": field "${field.target}" (${field.label}, ${field.wixKind}) is not supported and was left out of form/${slug}.`,
+        );
+    }
 }
 
 export const generator = makeContractGenerator()
@@ -45,6 +63,7 @@ export const generator = makeContractGenerator()
 
         return listed.map((form) => {
             const slug = slugById.get(form.id)!;
+            warnUnsupportedFields(form, slug);
             console.log(`[wix-forms] Generated form contract: form/${slug}`);
             return {
                 // The materializer kebab-cases this into `form/<name>`; the slug is

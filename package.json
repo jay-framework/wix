@@ -22,7 +22,7 @@
     "agent-kit": "jay-stack-cli agent-kit",
     "rebuild": "yarn run clean && yarn run build",
     "reinstall": "npm run clean:node_modules && yarn install && yarn run rebuild",
-    "test": "wsrun -te --report test",
+    "test": "node --test scripts/test/publish-gate.test.cjs && wsrun -te --report test",
     "version:packages:patch": "wsrun -p '@jay-framework/*' -s -e --report --prefix version patch --deferred && yarn version apply --all",
     "version:packages:minor": "wsrun -p '@jay-framework/*' -s -e --report --prefix version minor --deferred && yarn version apply --all",
     "version:packages:major": "wsrun -p '@jay-framework/*' -s -e --report --prefix version major --deferred && yarn version apply --all",

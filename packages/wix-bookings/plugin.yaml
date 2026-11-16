@@ -18,6 +18,8 @@ actions:
     action: list-services.jay-action
   - name: listSlots
     action: list-slots.jay-action
+  - name: getParticipantForm
+    action: get-participant-form.jay-action
   - name: createBooking
     action: create-booking.jay-action
 

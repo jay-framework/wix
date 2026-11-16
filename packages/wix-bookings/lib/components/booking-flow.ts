@@ -13,6 +13,7 @@ import {
     type BookingFlowFastViewState,
     type BookingFlowRefs,
     type BookingFlowSlowViewState,
+    type FormFieldOfBookingFlowViewState,
     type ServiceOfBookingFlowViewState,
     type SlotOfBookingFlowViewState,
 } from '../contracts/booking-flow.jay-contract';
@@ -25,13 +26,11 @@ import type {
     BookingServiceType,
     BookingServiceView,
     BookingSlotView,
+    CreateBookingOutcome,
+    ParticipantFormValue,
 } from '../types.js';
-import { createBooking, listSlots } from '../actions/bookings-actions.js';
-import {
-    getFormSummary,
-    toPostedSummaryValues,
-    validateFormSummaryField,
-} from '@jay-framework/wix-forms';
+import { createBooking, getParticipantForm, listSlots } from '../actions/bookings-actions.js';
+import { blockingFieldLabels, participantFieldErrors } from '../utils/participant-form.js';
 import {
     SLOW_RENDER_TTL,
     SLOW_RENDER_GRACE,
@@ -41,13 +40,8 @@ import {
     bookingStateOf,
     describeBookingError,
     describeServicesError,
+    describeUnsupportedForm,
 } from '../utils/booking-outcome.js';
-
-const DEFAULT_PARTICIPANT_FIELDS: BookingFormFieldView[] = [
-    { target: 'first_name', label: 'First Name', type: 'STRING', required: true },
-    { target: 'last_name', label: 'Last Name', type: 'STRING', required: true },
-    { target: 'email', label: 'Email', type: 'EMAIL', required: true },
-];
 
 interface BookingFlowCarryForward {
     services: BookingServiceView[];
@@ -60,6 +54,10 @@ function toBookingService(service: ServiceOfBookingFlowViewState): BookingServic
         ...service,
         type: service.type as BookingServiceType,
     };
+}
+
+function toContractFormField(field: BookingFormFieldView): FormFieldOfBookingFlowViewState {
+    return { target: field.target, label: field.label, type: field.type, required: field.required };
 }
 
 function toContractSlot(slot: BookingSlotView): SlotOfBookingFlowViewState {
@@ -215,21 +213,14 @@ function BookingFlowInteractive(
         setFormFields([]);
 
         try {
-            if (!service.formId) {
-                setFormFields(DEFAULT_PARTICIPANT_FIELDS);
+            const participantForm = await getParticipantForm({ serviceId: service.id });
+            const blocking = blockingFieldLabels(participantForm);
+            if (blocking.length) {
+                failBooking(BookingFailure.FORM_UNSUPPORTED, describeUnsupportedForm(blocking));
+                setShowForm(false);
                 return;
             }
-
-            const result = await getFormSummary({ formId: service.formId });
-            setFormFields(
-                result.fields.map((field) => ({
-                    target: field.target,
-                    label: field.label,
-                    type: field.type,
-                    required: field.required,
-                    ...(field.phone ? { phone: field.phone } : {}),
-                })),
-            );
+            setFormFields(participantForm.fields);
         } catch (error) {
             const message =
                 error instanceof Error ? error.message : 'Could not load participant form fields.';
@@ -240,13 +231,16 @@ function BookingFlowInteractive(
         }
     }
 
-    async function readFormValues(): Promise<Record<string, string>> {
-        const formValues: Record<string, string> = {};
+    async function readFormValues(): Promise<Record<string, ParticipantFormValue>> {
+        const formValues: Record<string, ParticipantFormValue> = {};
         const reads =
             refs.formFields?.formInputs?.map((input, field) =>
                 input.exec$((element) => ({
                     target: field.target,
-                    value: (element as HTMLInputElement).value,
+                    value:
+                        field.type === 'BOOLEAN'
+                            ? (element as HTMLInputElement).checked
+                            : (element as HTMLInputElement).value,
                 })),
             ) ?? [];
         const resolved = await Promise.all(reads);
@@ -266,13 +260,10 @@ function BookingFlowInteractive(
         resetBookingMessages();
 
         const formValues = await readFormValues();
-        const fields = formFields();
-        for (const field of fields) {
-            const validationError = validateFormSummaryField(field, formValues[field.target] ?? '');
-            if (validationError) {
-                failBooking(BookingFailure.VALIDATION, validationError);
-                return;
-            }
+        const [validationError] = Object.values(participantFieldErrors(formFields(), formValues));
+        if (validationError) {
+            failBooking(BookingFailure.VALIDATION, validationError);
+            return;
         }
 
         setIsBooking(true);
@@ -287,26 +278,49 @@ function BookingFlowInteractive(
                     scheduleId: slot.scheduleId,
                     eventId: slot.eventId,
                 },
-                formValues: toPostedSummaryValues(fields, formValues),
+                formValues,
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                 siteOrigin: window.location.origin,
             });
 
-            if (result.outcome === 'redirect') {
-                window.location.href = result.redirectUrl;
-                return;
-            }
-
-            setBookingStatus('Booking confirmed!');
-            setIsConfirmed(true);
-            setShowForm(false);
-            setSelectedSlot(null);
+            showBookingOutcome(result);
         } catch (error) {
             const { failure, message } = describeBookingError(error);
             failBooking(failure, message);
         } finally {
             setIsBooking(false);
         }
+    }
+
+    function showBookingOutcome(result: CreateBookingOutcome) {
+        switch (result.outcome) {
+            case 'redirect':
+                window.location.href = result.redirectUrl;
+                return;
+            case 'confirmed':
+                setBookingStatus('Booking confirmed!');
+                setIsConfirmed(true);
+                setShowForm(false);
+                setSelectedSlot(null);
+                return;
+            case 'invalid':
+                failBooking(BookingFailure.VALIDATION, firstFieldError(result.fieldErrors));
+                return;
+            case 'formUnavailable':
+                failBooking(BookingFailure[result.failure], result.message);
+                setShowForm(false);
+                return;
+            default: {
+                const unhandled: never = result;
+                throw new Error(`Unknown booking outcome: ${JSON.stringify(unhandled)}`);
+            }
+        }
+    }
+
+    /** The message of the first rendered field with an error; any message when none is rendered. */
+    function firstFieldError(fieldErrors: Record<string, string>): string {
+        const rendered = formFields().find((field) => fieldErrors[field.target]);
+        return rendered ? fieldErrors[rendered.target] : (Object.values(fieldErrors)[0] ?? '');
     }
 
     function onBackToServices() {
@@ -364,7 +378,7 @@ function BookingFlowInteractive(
             slotsMessage: slotsMessage(),
             slotsFailure: slotsFailure(),
             hasSlots: hasSlots(),
-            formFields: formFields(),
+            formFields: formFields().map(toContractFormField),
             formLoading: formLoading(),
             isBooking: isBooking(),
             bookingStatus: bookingStatus(),

@@ -31,7 +31,12 @@ import {
     type SubmitHooks,
     type SubmitOptions,
 } from '../services/wix-forms-submit-hooks.js';
-import type { FieldValue, SubmitFormResult, SubmitRequestInput } from '../types.js';
+import type {
+    FieldValue,
+    SubmitFormResult,
+    SubmitRequestInput,
+    UnsupportedFieldView,
+} from '../types.js';
 import { canonicalFormId } from '../utils/form-id.js';
 import {
     parseSubmissionViolations,
@@ -60,6 +65,8 @@ export interface SubmitDeps {
     resolveClient(): CallerSession;
     /** The submit allowlist (DL #50 §1), for a canonical id; rejects when it cannot load. */
     isSubmittableForm(formId: string): Promise<boolean>;
+    /** The form's fields this version cannot render (DL #51 §2), for a canonical id. */
+    unsupportedFieldsOf(formId: string): Promise<UnsupportedFieldView[]>;
     hook?: SubmitHook;
 }
 
@@ -90,8 +97,10 @@ export async function runSubmission(
     }
     const refusal = await allowlistRefusal(formId, deps);
     if (refusal) return refusal;
+    const supported = await supportedValues(formId, request.values, deps);
+    if ('refusal' in supported) return supported.refusal;
     return submitSubmittableForm(
-        { formId, values: request.values, honeypot: honeypotOf(request) },
+        { formId, values: supported.values, honeypot: honeypotOf(request) },
         deps,
     );
 }
@@ -99,6 +108,37 @@ export async function runSubmission(
 /** The `honeypot` input is untrusted (DL#53 H): a non-string counts as absent. */
 function honeypotOf(request: SubmitRequestInput): string {
     return typeof request.honeypot === 'string' ? request.honeypot.trim() : '';
+}
+
+type SupportedValues = { values: Values } | { refusal: SubmitFormResult };
+
+/**
+ * DL #51 §2: a form with a required field this site cannot show never submits (Wix accepts a
+ * submission that leaves it out); an optional one is dropped from the values.
+ */
+async function supportedValues(
+    formId: string,
+    values: Values,
+    deps: SubmitDeps,
+): Promise<SupportedValues> {
+    let unsupportedFields: UnsupportedFieldView[];
+    try {
+        unsupportedFields = await deps.unsupportedFieldsOf(formId);
+    } catch (error) {
+        logFailure("could not load the form's unsupported fields", formId, error);
+        return { refusal: genericFailure(SubmitFailure.UNKNOWN) };
+    }
+    if (unsupportedFields.some((field) => field.required === true)) {
+        logFailure(
+            'refused a submission for a form with a required field this site cannot show',
+            formId,
+            undefined,
+        ); // L10
+        return { refusal: genericFailure(SubmitFailure.REJECTED) };
+    }
+    const unsupportedTargets = new Set(unsupportedFields.map((field) => field.target));
+    const kept = Object.entries(values).filter(([target]) => !unsupportedTargets.has(target));
+    return { values: Object.fromEntries(kept) };
 }
 
 const NOT_SUBMITTABLE = 'refused a submission for a form that is not submittable';

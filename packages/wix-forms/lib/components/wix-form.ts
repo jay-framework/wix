@@ -24,7 +24,12 @@ import {
 import { createSignal, Props, useReactive } from '@jay-framework/component';
 import { WIX_FORMS_SERVICE, type WixFormsService } from '../services/wix-forms-service-marker.js';
 import { ensureSessionFresh } from '@jay-framework/wix-server-client/client';
-import type { FieldValue, FormFieldView, SubmitFormResult } from '../types.js';
+import type {
+    FieldValue,
+    FormFieldView,
+    SubmitFormResult,
+    UnsupportedFieldView,
+} from '../types.js';
 import { submitForm } from '../actions/forms-actions.js';
 import { checkFormField } from '../utils/project-form-fields.js';
 import { FieldRule, type FieldCheckResult } from './field-rule.js';
@@ -76,7 +81,17 @@ interface WixFormCarryForward {
 async function renderSlowlyChanging(props: WixFormProps, forms: WixFormsService) {
     const formId = props.metadata?.formId ?? '';
     try {
-        const fields = await forms.getFormFields(formId);
+        const { fields, unsupportedFields } = await forms.getFormFields(formId);
+        const blocking = unsupportedFields.filter((field) => field.required === true);
+        if (blocking.length) {
+            // Fail-closed (DL #51 §2): no field renders next to one that can never be submitted.
+            const loadError = describeUnsupportedRequiredFields(blocking);
+            return phaseOutput<Record<string, unknown>, WixFormCarryForward>(
+                buildFormViewState([], { isSubmitting: false, statusMessage: '', loadError }),
+                { formId, fields: [], loadError },
+                { ttl: SLOW_RENDER_TTL, grace: SLOW_RENDER_GRACE },
+            );
+        }
         return phaseOutput<Record<string, unknown>, WixFormCarryForward>(
             buildFormViewState(fields, { isSubmitting: false, statusMessage: '', loadError: '' }),
             { formId, fields },
@@ -767,6 +782,10 @@ function readControlValue(target: EventTarget | null): string {
         return dataValue;
     }
     return (element as HTMLInputElement).value ?? '';
+}
+
+function describeUnsupportedRequiredFields(fields: UnsupportedFieldView[]): string {
+    return `This form has a required field this site cannot show: ${fields.map((field) => field.label).join(', ')}.`;
 }
 
 function describeLoadError(error: unknown): string {

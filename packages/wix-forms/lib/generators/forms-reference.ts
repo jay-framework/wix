@@ -23,6 +23,15 @@ export function buildFormsReference(forms: ListedFormView[], namespace: string) 
                 form.fields.map((field) => [field.label, contractTagName(field.target)]),
             ),
             fields: form.fields.map(fieldReference),
+            // DL #51: fields left out of the contract, so an agent knows why a field is missing.
+            unsupportedFields: form.unsupportedFields.map(
+                ({ target, label, wixKind, required }) => ({
+                    target,
+                    label,
+                    wixKind,
+                    required,
+                }),
+            ),
         })),
     };
 }

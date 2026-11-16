@@ -1,0 +1,753 @@
+{
+  "_source": "POST https://www.wixapis.com/bookings/v2/bookings on the Premium test site, service \"QA Consultation\" (custom form bbb199c4-\u2026, required Address), 2026-11-10. formSubmission = { first_name, last_name, email: address.probe@example.com (placeholder), address }. Booking, submission and slot ids removed.",
+  "cases": [
+    {
+      "case": "US subdivision \"AL\"",
+      "sentAddress": {
+        "country": "US",
+        "subdivision": "AL",
+        "city": "Montgomery",
+        "postalCode": "36104",
+        "addressLine": "600 Dexter Ave"
+      },
+      "status": 200,
+      "error": null
+    },
+    {
+      "case": "US subdivision \"US-AL\"",
+      "sentAddress": {
+        "country": "US",
+        "subdivision": "US-AL",
+        "city": "Montgomery",
+        "postalCode": "36104",
+        "addressLine": "600 Dexter Ave"
+      },
+      "status": 400,
+      "error": {
+        "message": "Validation failed: must be equal to one of the allowed values must be equal to one of the allowed values",
+        "formViolations": [
+          {
+            "fieldName": "address/subdivision",
+            "description": "must be equal to one of the allowed values",
+            "ruleName": "NOT_ALLOWED_VALUE_ERROR",
+            "data": {
+              "allowedValues": [
+                "AA",
+                "AE",
+                "AK",
+                "AL",
+                "AP",
+                "AR",
+                "AZ",
+                "CA",
+                "CO",
+                "CT",
+                "DC",
+                "DE",
+                "FL",
+                "GA",
+                "HI",
+                "IA",
+                "ID",
+                "IL",
+                "IN",
+                "KS",
+                "KY",
+                "LA",
+                "MA",
+                "MD",
+                "ME",
+                "MI",
+                "MN",
+                "MO",
+                "MS",
+                "MT",
+                "NC",
+                "ND",
+                "NE",
+                "NH",
+                "NJ",
+                "NM",
+                "NV",
+                "NY",
+                "OH",
+                "OK",
+                "OR",
+                "PA",
+                "RI",
+                "SC",
+                "SD",
+                "TN",
+                "TX",
+                "UT",
+                "VA",
+                "VT",
+                "WA",
+                "WI",
+                "WV",
+                "WY"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "US subdivision \"Alabama\"",
+      "sentAddress": {
+        "country": "US",
+        "subdivision": "Alabama",
+        "city": "Montgomery",
+        "postalCode": "36104",
+        "addressLine": "600 Dexter Ave"
+      },
+      "status": 400,
+      "error": {
+        "message": "Validation failed: must be equal to one of the allowed values must be equal to one of the allowed values",
+        "formViolations": [
+          {
+            "fieldName": "address/subdivision",
+            "description": "must be equal to one of the allowed values",
+            "ruleName": "NOT_ALLOWED_VALUE_ERROR",
+            "data": {
+              "allowedValues": [
+                "AA",
+                "AE",
+                "AK",
+                "AL",
+                "AP",
+                "AR",
+                "AZ",
+                "CA",
+                "CO",
+                "CT",
+                "DC",
+                "DE",
+                "FL",
+                "GA",
+                "HI",
+                "IA",
+                "ID",
+                "IL",
+                "IN",
+                "KS",
+                "KY",
+                "LA",
+                "MA",
+                "MD",
+                "ME",
+                "MI",
+                "MN",
+                "MO",
+                "MS",
+                "MT",
+                "NC",
+                "ND",
+                "NE",
+                "NH",
+                "NJ",
+                "NM",
+                "NV",
+                "NY",
+                "OH",
+                "OK",
+                "OR",
+                "PA",
+                "RI",
+                "SC",
+                "SD",
+                "TN",
+                "TX",
+                "UT",
+                "VA",
+                "VT",
+                "WA",
+                "WI",
+                "WV",
+                "WY"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "US subdivision \"US-PR\"",
+      "sentAddress": {
+        "country": "US",
+        "subdivision": "US-PR",
+        "city": "San Juan",
+        "postalCode": "00901",
+        "addressLine": "1 Calle Fortaleza"
+      },
+      "status": 400,
+      "error": {
+        "message": "Validation failed: must be equal to one of the allowed values must be equal to one of the allowed values",
+        "formViolations": [
+          {
+            "fieldName": "address/subdivision",
+            "description": "must be equal to one of the allowed values",
+            "ruleName": "NOT_ALLOWED_VALUE_ERROR",
+            "data": {
+              "allowedValues": [
+                "AA",
+                "AE",
+                "AK",
+                "AL",
+                "AP",
+                "AR",
+                "AZ",
+                "CA",
+                "CO",
+                "CT",
+                "DC",
+                "DE",
+                "FL",
+                "GA",
+                "HI",
+                "IA",
+                "ID",
+                "IL",
+                "IN",
+                "KS",
+                "KY",
+                "LA",
+                "MA",
+                "MD",
+                "ME",
+                "MI",
+                "MN",
+                "MO",
+                "MS",
+                "MT",
+                "NC",
+                "ND",
+                "NE",
+                "NH",
+                "NJ",
+                "NM",
+                "NV",
+                "NY",
+                "OH",
+                "OK",
+                "OR",
+                "PA",
+                "RI",
+                "SC",
+                "SD",
+                "TN",
+                "TX",
+                "UT",
+                "VA",
+                "VT",
+                "WA",
+                "WI",
+                "WV",
+                "WY"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "US subdivision \"US-AA\"",
+      "sentAddress": {
+        "country": "US",
+        "subdivision": "US-AA",
+        "city": "APO",
+        "postalCode": "34001",
+        "addressLine": "Unit 1"
+      },
+      "status": 400,
+      "error": {
+        "message": "Validation failed: must be equal to one of the allowed values must be equal to one of the allowed values",
+        "formViolations": [
+          {
+            "fieldName": "address/subdivision",
+            "description": "must be equal to one of the allowed values",
+            "ruleName": "NOT_ALLOWED_VALUE_ERROR",
+            "data": {
+              "allowedValues": [
+                "AA",
+                "AE",
+                "AK",
+                "AL",
+                "AP",
+                "AR",
+                "AZ",
+                "CA",
+                "CO",
+                "CT",
+                "DC",
+                "DE",
+                "FL",
+                "GA",
+                "HI",
+                "IA",
+                "ID",
+                "IL",
+                "IN",
+                "KS",
+                "KY",
+                "LA",
+                "MA",
+                "MD",
+                "ME",
+                "MI",
+                "MN",
+                "MO",
+                "MS",
+                "MT",
+                "NC",
+                "ND",
+                "NE",
+                "NH",
+                "NJ",
+                "NM",
+                "NV",
+                "NY",
+                "OH",
+                "OK",
+                "OR",
+                "PA",
+                "RI",
+                "SC",
+                "SD",
+                "TN",
+                "TX",
+                "UT",
+                "VA",
+                "VT",
+                "WA",
+                "WI",
+                "WV",
+                "WY"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "US subdivision \"XX\" (bogus)",
+      "sentAddress": {
+        "country": "US",
+        "subdivision": "XX",
+        "city": "Montgomery",
+        "postalCode": "36104",
+        "addressLine": "600 Dexter Ave"
+      },
+      "status": 400,
+      "error": {
+        "message": "Validation failed: must be equal to one of the allowed values must be equal to one of the allowed values",
+        "formViolations": [
+          {
+            "fieldName": "address/subdivision",
+            "description": "must be equal to one of the allowed values",
+            "ruleName": "NOT_ALLOWED_VALUE_ERROR",
+            "data": {
+              "allowedValues": [
+                "AA",
+                "AE",
+                "AK",
+                "AL",
+                "AP",
+                "AR",
+                "AZ",
+                "CA",
+                "CO",
+                "CT",
+                "DC",
+                "DE",
+                "FL",
+                "GA",
+                "HI",
+                "IA",
+                "ID",
+                "IL",
+                "IN",
+                "KS",
+                "KY",
+                "LA",
+                "MA",
+                "MD",
+                "ME",
+                "MI",
+                "MN",
+                "MO",
+                "MS",
+                "MT",
+                "NC",
+                "ND",
+                "NE",
+                "NH",
+                "NJ",
+                "NM",
+                "NV",
+                "NY",
+                "OH",
+                "OK",
+                "OR",
+                "PA",
+                "RI",
+                "SC",
+                "SD",
+                "TN",
+                "TX",
+                "UT",
+                "VA",
+                "VT",
+                "WA",
+                "WI",
+                "WV",
+                "WY"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "US without subdivision",
+      "sentAddress": {
+        "country": "US",
+        "city": "Montgomery",
+        "postalCode": "36104",
+        "addressLine": "600 Dexter Ave"
+      },
+      "status": 400,
+      "error": {
+        "message": "Validation failed: must have required property 'subdivision' must have required property 'subdivision'",
+        "formViolations": [
+          {
+            "fieldName": "address/subdivision",
+            "description": "must have required property 'subdivision'",
+            "ruleName": "REQUIRED_VALUE_ERROR",
+            "data": {
+              "missingProperty": "subdivision"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "IL addressLine, no subdivision",
+      "sentAddress": {
+        "country": "IL",
+        "city": "Tel Aviv",
+        "postalCode": "6100000",
+        "addressLine": "Rothschild 1"
+      },
+      "status": 400,
+      "error": {
+        "message": "Validation failed: address/streetName must have required property 'streetName', address/streetNumber must have required property 'streetNumber', address/addressLine must NOT have additional properties",
+        "formViolations": [
+          {
+            "fieldName": "address/streetName",
+            "description": "must have required property 'streetName'",
+            "ruleName": "REQUIRED_VALUE_ERROR",
+            "data": {
+              "missingProperty": "streetName"
+            }
+          },
+          {
+            "fieldName": "address/streetNumber",
+            "description": "must have required property 'streetNumber'",
+            "ruleName": "REQUIRED_VALUE_ERROR",
+            "data": {
+              "missingProperty": "streetNumber"
+            }
+          },
+          {
+            "fieldName": "address/addressLine",
+            "description": "must NOT have additional properties",
+            "ruleName": "UNKNOWN_VALUE_ERROR",
+            "data": {
+              "additionalProperty": "addressLine"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "IL streetName+streetNumber, no addressLine, no subdivision",
+      "sentAddress": {
+        "country": "IL",
+        "city": "Tel Aviv",
+        "postalCode": "6100000",
+        "streetName": "Rothschild",
+        "streetNumber": "1"
+      },
+      "status": 200,
+      "error": null
+    },
+    {
+      "case": "GB subdivision \"ENG\"",
+      "sentAddress": {
+        "country": "GB",
+        "subdivision": "ENG",
+        "city": "London",
+        "postalCode": "SW1A 1AA",
+        "addressLine": "10 Downing St"
+      },
+      "status": 200,
+      "error": null
+    },
+    {
+      "case": "GB subdivision \"GB-ENG\"",
+      "sentAddress": {
+        "country": "GB",
+        "subdivision": "GB-ENG",
+        "city": "London",
+        "postalCode": "SW1A 1AA",
+        "addressLine": "10 Downing St"
+      },
+      "status": 400,
+      "error": {
+        "message": "Validation failed: must be equal to one of the allowed values must be equal to one of the allowed values",
+        "formViolations": [
+          {
+            "fieldName": "address/subdivision",
+            "description": "must be equal to one of the allowed values",
+            "ruleName": "NOT_ALLOWED_VALUE_ERROR",
+            "data": {
+              "allowedValues": ["ENG", "NIR", "SCT", "WLS"]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "CA subdivision \"ON\"",
+      "sentAddress": {
+        "country": "CA",
+        "subdivision": "ON",
+        "city": "Toronto",
+        "postalCode": "M5H 2N2",
+        "addressLine": "100 Queen St W"
+      },
+      "status": 200,
+      "error": null
+    },
+    {
+      "case": "CA subdivision \"CA-ON\"",
+      "sentAddress": {
+        "country": "CA",
+        "subdivision": "CA-ON",
+        "city": "Toronto",
+        "postalCode": "M5H 2N2",
+        "addressLine": "100 Queen St W"
+      },
+      "status": 400,
+      "error": {
+        "message": "Validation failed: must be equal to one of the allowed values must be equal to one of the allowed values",
+        "formViolations": [
+          {
+            "fieldName": "address/subdivision",
+            "description": "must be equal to one of the allowed values",
+            "ruleName": "NOT_ALLOWED_VALUE_ERROR",
+            "data": {
+              "allowedValues": [
+                "AB",
+                "BC",
+                "MB",
+                "NB",
+                "NL",
+                "NS",
+                "NT",
+                "NU",
+                "ON",
+                "PE",
+                "QC",
+                "SK",
+                "YT"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "US subdivision \"AA\"",
+      "sentAddress": {
+        "country": "US",
+        "subdivision": "AA",
+        "city": "APO",
+        "postalCode": "34001",
+        "addressLine": "Unit 1"
+      },
+      "status": 200,
+      "error": null
+    },
+    {
+      "case": "US subdivision \"PR\"",
+      "sentAddress": {
+        "country": "US",
+        "subdivision": "PR",
+        "city": "San Juan",
+        "postalCode": "00901",
+        "addressLine": "1 Calle Fortaleza"
+      },
+      "status": 400,
+      "error": {
+        "message": "Validation failed: must be equal to one of the allowed values must be equal to one of the allowed values",
+        "formViolations": [
+          {
+            "fieldName": "address/subdivision",
+            "description": "must be equal to one of the allowed values",
+            "ruleName": "NOT_ALLOWED_VALUE_ERROR",
+            "data": {
+              "allowedValues": [
+                "AA",
+                "AE",
+                "AK",
+                "AL",
+                "AP",
+                "AR",
+                "AZ",
+                "CA",
+                "CO",
+                "CT",
+                "DC",
+                "DE",
+                "FL",
+                "GA",
+                "HI",
+                "IA",
+                "ID",
+                "IL",
+                "IN",
+                "KS",
+                "KY",
+                "LA",
+                "MA",
+                "MD",
+                "ME",
+                "MI",
+                "MN",
+                "MO",
+                "MS",
+                "MT",
+                "NC",
+                "ND",
+                "NE",
+                "NH",
+                "NJ",
+                "NM",
+                "NV",
+                "NY",
+                "OH",
+                "OK",
+                "OR",
+                "PA",
+                "RI",
+                "SC",
+                "SD",
+                "TN",
+                "TX",
+                "UT",
+                "VA",
+                "VT",
+                "WA",
+                "WI",
+                "WV",
+                "WY"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "IL with subdivision \"TA\"",
+      "sentAddress": {
+        "country": "IL",
+        "subdivision": "TA",
+        "city": "Tel Aviv",
+        "postalCode": "6100000",
+        "streetName": "Rothschild",
+        "streetNumber": "1"
+      },
+      "status": 400,
+      "error": {
+        "message": "Validation failed: must NOT have additional properties must NOT have additional properties",
+        "formViolations": [
+          {
+            "fieldName": "address/subdivision",
+            "description": "must NOT have additional properties",
+            "ruleName": "UNKNOWN_VALUE_ERROR",
+            "data": {
+              "additionalProperty": "subdivision"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "acceptedBookingsContactDetailsFullAddress": [
+    {
+      "fullAddress": {
+        "country": "US",
+        "subdivision": "AL",
+        "city": "Montgomery",
+        "postalCode": "36104",
+        "addressLine": "600 Dexter Ave",
+        "formattedAddress": "600 Dexter Ave, Montgomery, AL, 36104, US",
+        "subdivisions": []
+      },
+      "status": "CREATED"
+    },
+    {
+      "fullAddress": {
+        "country": "IL",
+        "city": "Tel Aviv",
+        "postalCode": "6100000",
+        "streetAddress": {
+          "number": "1",
+          "name": "Rothschild",
+          "apt": ""
+        },
+        "formattedAddress": "Rothschild 1, Tel Aviv, 6100000, IL",
+        "subdivisions": []
+      },
+      "status": "CREATED"
+    },
+    {
+      "fullAddress": {
+        "country": "GB",
+        "subdivision": "ENG",
+        "city": "London",
+        "postalCode": "SW1A 1AA",
+        "addressLine": "10 Downing St",
+        "formattedAddress": "10 Downing St, London, ENG, SW1A 1AA, GB",
+        "subdivisions": []
+      },
+      "status": "CREATED"
+    },
+    {
+      "fullAddress": {
+        "country": "CA",
+        "subdivision": "ON",
+        "city": "Toronto",
+        "postalCode": "M5H 2N2",
+        "addressLine": "100 Queen St W",
+        "formattedAddress": "100 Queen St W, Toronto, ON, M5H 2N2, CA",
+        "subdivisions": []
+      },
+      "status": "CREATED"
+    },
+    {
+      "fullAddress": {
+        "country": "US",
+        "subdivision": "AA",
+        "city": "APO",
+        "postalCode": "34001",
+        "addressLine": "Unit 1",
+        "formattedAddress": "Unit 1, APO, AA, 34001, US",
+        "subdivisions": []
+      },
+      "status": "CREATED"
+    }
+  ]
+}

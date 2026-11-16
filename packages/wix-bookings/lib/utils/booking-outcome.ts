@@ -58,6 +58,11 @@ export function describeBookingError(error: unknown): Outcome<BookingFailure> {
     };
 }
 
+/** DL #51: the default text for FORM_UNSUPPORTED — the site, not the visitor, must change. */
+export function describeUnsupportedForm(labels: string[]): string {
+    return `This booking form has a required field this site cannot show yet: ${labels.join(', ')}. Booking is disabled until the site is updated.`;
+}
+
 export function bookingStateOf(state: {
     isBooking: boolean;
     isConfirmed: boolean;

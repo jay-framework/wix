@@ -7,6 +7,9 @@ export { wixForm } from './components/wix-form.js';
 export { getFormSummary, submitForm } from './actions/forms-actions.js';
 export {
     checkFormField,
+    projectFormFields,
+    unsupportedFieldOf,
+    inLayoutOrder,
     validateFormField,
     validateFormSummaryField,
 } from './utils/project-form-fields.js';
@@ -23,6 +26,17 @@ export {
     type SubmitStartHandler,
     type WixFormsContext,
 } from './contexts/wix-forms-context.js';
+export {
+    readFieldKey,
+    classifyFormField,
+    ignoreReasonOf,
+    wixKindOf,
+    type FieldKey,
+    type FieldIgnoreReason,
+} from './utils/classify-form-field.js';
+export { readFieldView, type FieldViewData } from './utils/read-field-view.js';
+export { canonicalFormId } from './utils/form-id.js';
+export type { RawForm, RawFormField } from './wix-apis/get-form.js';
 export {
     provideWixFormsService,
     WIX_FORMS_SERVICE,
@@ -47,7 +61,10 @@ export type {
     FormFieldSummaryView,
     PhoneRules,
     FormFieldErrorView,
+    FormFieldOptionView,
     ListedFormView,
+    ProjectedForm,
+    UnsupportedFieldView,
 } from './types.js';
 export type { WixFormsConfig } from './config-loader.js';
 

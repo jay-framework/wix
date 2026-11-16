@@ -27,6 +27,7 @@
     "./booking-flow.jay-contract": "./dist/contracts/booking-flow.jay-contract",
     "./list-services.jay-action": "./dist/actions/list-services.jay-action",
     "./list-slots.jay-action": "./dist/actions/list-slots.jay-action",
+    "./get-participant-form.jay-action": "./dist/actions/get-participant-form.jay-action",
     "./create-booking.jay-action": "./dist/actions/create-booking.jay-action"
   },
   "scripts": {

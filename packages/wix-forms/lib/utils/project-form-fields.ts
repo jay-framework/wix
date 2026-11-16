@@ -1,82 +1,26 @@
-import type { RawFieldLabel, RawFormField, RichContentNode } from '../wix-apis/get-form.js';
+import type { RawForm, RawFormField } from '../wix-apis/get-form.js';
 import type { FormSummaryField } from '../wix-apis/get-form-summary.js';
 import type {
     FieldValue,
     FormFieldInputType,
-    FormFieldOptionView,
     FormFieldSummaryView,
     FormFieldView,
+    ProjectedForm,
+    UnsupportedFieldView,
 } from '../types.js';
+import {
+    classifyFormField,
+    componentOptionsOf,
+    ignoreReasonOf,
+    readFieldKey,
+    wixKindOf,
+    type FieldKey,
+} from './classify-form-field.js';
+import { readFieldView } from './read-field-view.js';
 import { FieldRule, type FieldCheckResult } from '../components/field-rule.js';
 import { callingCodesOf, checkPhone } from './phone-normalization.js';
 
-const MULTI_SELECT_TYPES = new Set(['CHECKBOX_GROUP', 'MULTI_SELECT', 'TAGS']);
-
-function readFieldOptions(field: RawFormField): FormFieldOptionView[] {
-    const rawOptions =
-        field.view?.options ??
-        field.inputOptions?.stringOptions?.options ??
-        field.inputOptions?.arrayOptions?.options ??
-        [];
-    return rawOptions
-        .map((option) => ({
-            value: option.value ?? option.label ?? '',
-            label: option.label ?? option.value ?? '',
-        }))
-        .filter((option) => option.value);
-}
-
-function readLabelText(label: RawFieldLabel | undefined): string {
-    if (label === undefined) return '';
-    if (typeof label === 'string') return label;
-    return collectRichText(label).trim();
-}
-
-function collectRichText(node: RichContentNode): string {
-    const ownText = node.textData?.text ?? '';
-    return ownText + (node.nodes ?? []).map(collectRichText).join('');
-}
-
-function componentTypeOf(field: RawFormField): string | undefined {
-    return (
-        field.view?.fieldType ??
-        field.inputOptions?.stringOptions?.componentType ??
-        field.inputOptions?.arrayOptions?.componentType
-    );
-}
-
-/** A choice field that permits selecting more than one option (DL#41 4c). */
-function isMultiSelect(field: RawFormField): boolean {
-    if (field.inputOptions?.arrayOptions) return true;
-    return MULTI_SELECT_TYPES.has(componentTypeOf(field) ?? '');
-}
-
-/** A single boolean checkbox (consent-style) — no options, boolean-valued (DL#41 4c). */
-function isBooleanField(field: RawFormField): boolean {
-    if (field.inputOptions?.booleanOptions || field.validation?.boolean) return true;
-    return componentTypeOf(field) === 'CHECKBOX';
-}
-
-function readInputType(field: RawFormField, target: string): FormFieldInputType {
-    const options = readFieldOptions(field);
-    if (options.length > 0) {
-        return isMultiSelect(field) ? 'multiselect' : 'select';
-    }
-    if (isBooleanField(field)) {
-        return 'checkbox';
-    }
-
-    const viewFieldType = field.view?.fieldType ?? field.inputOptions?.stringOptions?.componentType;
-    if (viewFieldType === 'TEXT_AREA' || target === 'message') {
-        return 'textarea';
-    }
-
-    const format = field.validation?.string?.format;
-    if (format === 'EMAIL') return 'email';
-    if (format === 'PHONE') return 'tel';
-    if (format === 'URL') return 'url';
-    return 'text';
-}
+const SUMMARY_FIELD_TYPES = new Set(['STRING', 'EMAIL', 'PHONE', 'NUMBER', 'URL']);
 
 /** Site-level options for projecting a form for submission (DL#55 P1c). */
 export interface ProjectionOptions {
@@ -84,58 +28,52 @@ export interface ProjectionOptions {
     defaultPhoneCountry?: string;
 }
 
+/**
+ * Per-form projection (DL #51 §1): every targeted input is either rendered (`fields`) or
+ * listed as unsupported, in the form's layout order. Only `formFields[]` is read.
+ */
 export function projectFormFields(
-    rawForm: {
-        fields?: RawFormField[];
-        formFields?: RawFormField[];
-    },
+    rawForm: RawForm,
     options: ProjectionOptions = {},
-): FormFieldView[] {
-    const rawFields = rawForm.fields ?? rawForm.formFields ?? [];
-    // DL#41 4a narrows DL#40 OQ-4: hidden fields are MARKED (hidden: true), not dropped,
-    // so a page can populate them via the `control` channel and they reach the submission.
-    return rawFields
-        .filter((field) => field.target)
-        .map((field) => {
-            const target = field.target!;
-            const label =
-                readLabelText(field.view?.label) ||
-                readLabelText(field.inputOptions?.stringOptions?.textInputOptions?.label) ||
-                target;
-            const placeholder =
-                field.view?.placeholder ??
-                field.inputOptions?.stringOptions?.textInputOptions?.placeholder ??
-                '';
-
-            const inputType = readInputType(field, target);
-            return {
-                target,
-                label,
-                inputType,
-                required: Boolean(field.validation?.required),
-                placeholder,
-                minLength: field.validation?.string?.minLength,
-                maxLength: field.validation?.string?.maxLength,
-                pattern: field.validation?.string?.pattern,
-                options: readFieldOptions(field),
-                hidden: Boolean(field.hidden),
-                ...phoneRulesOf(field, inputType, options),
-            };
+): ProjectedForm<FormFieldView> {
+    const projected: ProjectedForm<FormFieldView> = { fields: [], unsupportedFields: [] };
+    for (const raw of inLayoutOrder(rawForm)) {
+        const key = readFieldKey(raw);
+        if (ignoreReasonOf(key)) continue;
+        const inputType = classifyFormField(key);
+        if (!inputType) {
+            projected.unsupportedFields.push(unsupportedFieldOf(key));
+            continue;
+        }
+        projected.fields.push({
+            target: key.target!,
+            label: key.label,
+            inputType,
+            required: key.required,
+            ...readFieldView(raw, key),
+            // DL#41 4a: hidden fields are MARKED, not dropped, so a page can fill them via `control`.
+            hidden: key.hidden,
+            ...phoneRulesOf(raw, inputType, options),
         });
+    }
+    return projected;
 }
 
 /**
  * `phone` only on tel fields, and only when a rule is known (DL#55 P1c). A Wix Phone field's own
- * default country wins over config `defaultPhoneCountry`.
+ * default country wins over config `defaultPhoneCountry`. Read from `formFields[]` (DL #51), whose
+ * `phoneInputOptions.defaultCountryCode` / `stringOptions.validation.phoneOptions` mirror the
+ * legacy paths DL#55 captured (DL#55 Gap 2).
  */
 function phoneRulesOf(
-    field: RawFormField,
+    raw: RawFormField,
     inputType: FormFieldInputType,
     { defaultPhoneCountry }: ProjectionOptions,
 ): Pick<FormFieldView, 'phone'> {
     if (inputType !== 'tel') return {};
-    const defaultCountry = field.view?.defaultCountry || defaultPhoneCountry;
-    const allowedCountries = field.validation?.string?.phoneOptions?.allowedCountryCodes ?? [];
+    const defaultCountry = componentOptionsOf(raw)?.defaultCountryCode || defaultPhoneCountry;
+    const allowedCountries =
+        raw.inputOptions?.stringOptions?.validation?.phoneOptions?.allowedCountryCodes ?? [];
     const phone = {
         ...(defaultCountry ? { defaultCountry } : {}),
         ...(allowedCountries.length ? { allowedCountries } : {}),
@@ -143,30 +81,73 @@ function phoneRulesOf(
     return Object.keys(phone).length ? { phone } : {};
 }
 
+/** Labels of required inputs with no target (DL #51 row 2): Wix requires them, nothing can send them. */
+export function requiredUntargetedLabels(rawForm: RawForm): string[] {
+    return (rawForm.formFields ?? [])
+        .map(readFieldKey)
+        .filter((key) => key.required && ignoreReasonOf(key) === 'no-target')
+        .map((key) => key.label);
+}
+
+export function unsupportedFieldOf(key: FieldKey): UnsupportedFieldView {
+    return {
+        target: key.target!,
+        label: key.label,
+        wixKind: wixKindOf(key),
+        required: key.required,
+    };
+}
+
+/**
+ * `formFields[]` in `steps[0].layout.large.items` order (row, then column). Layout items for
+ * ids outside `formFields[]` are skipped; fields without a layout item come last.
+ */
+export function inLayoutOrder(rawForm: RawForm): RawFormField[] {
+    const fields = rawForm.formFields ?? [];
+    const items = [...(rawForm.steps?.[0]?.layout?.large?.items ?? [])].sort(
+        (first, second) =>
+            (first.row ?? 0) - (second.row ?? 0) || (first.column ?? 0) - (second.column ?? 0),
+    );
+    const byId = new Map(fields.map((field) => [field.id, field]));
+    const placed = new Set(items.flatMap((item) => byId.get(item.fieldId) ?? []));
+    return [...placed, ...fields.filter((field) => !placed.has(field))];
+}
+
+/**
+ * @deprecated Since DL #51 (Phase 1b): the Summary API has no `required`; bookings reads Get Form.
+ * Kept types are rendered as before; any other targeted field is listed as unsupported.
+ */
 export function projectFormSummaryFields(
     fields: FormSummaryField[] | undefined,
     { defaultPhoneCountry }: ProjectionOptions = {},
-): FormFieldSummaryView[] {
-    const projected = (fields ?? [])
-        .filter((field) => !field.deleted)
-        .filter(
-            (field) =>
-                field.type && ['STRING', 'EMAIL', 'PHONE', 'NUMBER', 'URL'].includes(field.type),
-        )
-        .map((field) => ({
-            target: field.target ?? field.id ?? '',
-            label: field.label ?? field.target ?? 'Field',
-            type: (field.type ?? 'STRING') as FormFieldSummaryView['type'],
-            required: Boolean(field.required),
-            ...(field.type === 'PHONE' && defaultPhoneCountry
-                ? { phone: { defaultCountry: defaultPhoneCountry } }
-                : {}),
-        }))
-        .filter((field) => field.target);
-
+): ProjectedForm<FormFieldSummaryView> {
+    const projected: ProjectedForm<FormFieldSummaryView> = { fields: [], unsupportedFields: [] };
+    for (const field of fields ?? []) {
+        if (field.deleted || !field.target) continue;
+        const label = field.label ?? field.target;
+        if (field.type && SUMMARY_FIELD_TYPES.has(field.type)) {
+            projected.fields.push({
+                target: field.target,
+                label,
+                type: field.type as FormFieldSummaryView['type'],
+                required: Boolean(field.required),
+                ...(field.type === 'PHONE' && defaultPhoneCountry
+                    ? { phone: { defaultCountry: defaultPhoneCountry } }
+                    : {}),
+            });
+        } else {
+            projected.unsupportedFields.push({
+                target: field.target,
+                label,
+                wixKind: field.type ?? '?',
+                required: 'unknown',
+            });
+        }
+    }
     return projected;
 }
 
+/** @deprecated Since DL #51 (Phase 1b): use `validateFormField`. */
 export function validateFormSummaryField(field: FormFieldSummaryView, value: string): string {
     const trimmed = (value ?? '').trim();
     if (field.required && !trimmed) {

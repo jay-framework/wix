@@ -3,7 +3,8 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { describe, expect, it } from 'vitest';
+import yaml from 'js-yaml';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
     compileContract,
     ContractTagType,
@@ -22,8 +23,9 @@ function serviceWith(forms: ListedFormView[]): WixFormsService {
     return {
         config: { namespace: 'wix.form_app.form', formIds: [], include: 'enabled' },
         listForms: async () => forms,
-        getFormFields: async () => [],
-        getFormSummaryFields: async () => [],
+        getFormFields: async () => ({ fields: [], unsupportedFields: [] }),
+        getRawForm: async () => ({}),
+        getFormSummaryFields: async () => ({ fields: [], unsupportedFields: [] }),
         isSubmittableForm: async () => true,
         createSubmission: async () => {},
     };
@@ -69,6 +71,7 @@ const contactForm: ListedFormView = {
             ],
         },
     ],
+    unsupportedFields: [],
 };
 
 const choicesForm: ListedFormView = {
@@ -104,6 +107,36 @@ const choicesForm: ListedFormView = {
                 { value: 'il', label: 'Israel' },
                 { value: 'us', label: 'United States' },
             ],
+        },
+    ],
+    unsupportedFields: [],
+};
+
+const bookingForm: ListedFormView = {
+    id: 'b1',
+    name: 'Booking form',
+    fields: [
+        {
+            target: 'first_name',
+            label: 'First name',
+            inputType: 'text',
+            required: true,
+            placeholder: '',
+            options: [],
+        },
+    ],
+    unsupportedFields: [
+        {
+            target: 'address',
+            label: 'Multi-line address',
+            wixKind: 'ADDRESS/MULTILINE_ADDRESS',
+            required: true,
+        },
+        {
+            target: 'file_upload_1ffc',
+            label: 'File upload',
+            wixKind: 'WIX_FILE/FILE_UPLOAD',
+            required: false,
         },
     ],
 };
@@ -250,6 +283,7 @@ describe('formContractGenerator', () => {
                     options: [],
                 },
             ],
+            unsupportedFields: [],
         };
 
         const [contract] = await formContractGenerator.generate(serviceWith([form]));
@@ -265,6 +299,42 @@ describe('formContractGenerator', () => {
         expect(fieldTags).toContain('phoneNumber');
         expect(fieldTags).not.toContain('first_name');
         expect(fieldTags).not.toContain('phone-number');
+    });
+});
+
+describe('formContractGenerator with unsupported fields (DL #51 test 3)', () => {
+    afterEach(() => vi.restoreAllMocks());
+
+    it('should warn about each unsupported field and leave it out of the contract', async () => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
+
+        const [contract] = await formContractGenerator.generate(serviceWith([bookingForm]));
+
+        expect(warn.mock.calls).toEqual([
+            [
+                '[wix-forms] Form "Booking form": field "address" (Multi-line address, ADDRESS/MULTILINE_ADDRESS) is not supported and was left out of form/booking-form.',
+            ],
+            [
+                '[wix-forms] Form "Booking form": field "file_upload_1ffc" (File upload, WIX_FILE/FILE_UPLOAD) is not supported and was left out of form/booking-form.',
+            ],
+        ]);
+        const parsed = checkValidationErrors(
+            parseContract(contract.yaml, 'form-booking-form.jay-contract'),
+        ) as { tags: ParsedTag[] };
+        expect(parsed.tags.map((tag) => tag.tag)).toContain('firstName');
+        expect(parsed.tags.map((tag) => tag.tag)).not.toContain('address');
+        expect((yaml.load(contract.yaml) as { description: string }).description).toBe(
+            'Wix form "Booking form" (b1). Unsupported fields left out: Multi-line address, File upload.',
+        );
+    });
+
+    it('should not warn for a form whose fields are all supported', async () => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
+        const [contract] = await formContractGenerator.generate(serviceWith([contactForm]));
+        expect(warn).not.toHaveBeenCalled();
+        expect(contract.yaml).toContain('description: Wix form "Contact" (f1a2b3)\n');
     });
 });
 

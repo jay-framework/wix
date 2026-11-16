@@ -10,6 +10,7 @@ import {
     bookingStateOf,
     describeBookingError,
     describeServicesError,
+    describeUnsupportedForm,
 } from '../lib/utils/booking-outcome.js';
 
 // The contract's enums, as `jay-cli definitions` generates them.
@@ -24,6 +25,7 @@ vi.mock('../lib/contracts/booking-flow.jay-contract', () => ({
         CHECKOUT_REDIRECT_REJECTED: 4,
         SITE_NOT_PUBLISHED: 5,
         UNKNOWN: 6,
+        FORM_UNSUPPORTED: 7,
     },
 }));
 
@@ -102,3 +104,64 @@ describe('bookingStateOf', () => {
         );
     });
 });
+
+describe('FORM_UNSUPPORTED (DL #51 test 16)', () => {
+    it('should name the fields in the default text', () => {
+        expect(describeUnsupportedForm(['Multi-line address', 'File upload'])).toBe(
+            'This booking form has a required field this site cannot show yet: Multi-line address, File upload. Booking is disabled until the site is updated.',
+        );
+    });
+
+    it('should be a FAILED booking state', () => {
+        expect(
+            bookingStateOf({
+                isBooking: false,
+                isConfirmed: false,
+                failure: BookingFailure.FORM_UNSUPPORTED,
+            }),
+        ).toEqual(BookingState.FAILED);
+    });
+
+    it('should be the last member of BookingFailure (appended after UNKNOWN)', () => {
+        expect(failureNames()).toEqual([
+            'NONE',
+            'VALIDATION',
+            'FORM_UNAVAILABLE',
+            'CHECKOUT_PERMISSION',
+            'CHECKOUT_REDIRECT_REJECTED',
+            'SITE_NOT_PUBLISHED',
+            'UNKNOWN',
+            'FORM_UNSUPPORTED',
+        ]);
+    });
+});
+
+/** Exhaustive over the contract's enum: a missing or extra member fails type-checking. */
+function failureName(failure: BookingFailure): string {
+    switch (failure) {
+        case BookingFailure.NONE:
+            return 'NONE';
+        case BookingFailure.VALIDATION:
+            return 'VALIDATION';
+        case BookingFailure.FORM_UNAVAILABLE:
+            return 'FORM_UNAVAILABLE';
+        case BookingFailure.CHECKOUT_PERMISSION:
+            return 'CHECKOUT_PERMISSION';
+        case BookingFailure.CHECKOUT_REDIRECT_REJECTED:
+            return 'CHECKOUT_REDIRECT_REJECTED';
+        case BookingFailure.SITE_NOT_PUBLISHED:
+            return 'SITE_NOT_PUBLISHED';
+        case BookingFailure.UNKNOWN:
+            return 'UNKNOWN';
+        case BookingFailure.FORM_UNSUPPORTED:
+            return 'FORM_UNSUPPORTED';
+        default: {
+            const unhandled: never = failure;
+            throw new Error(`unhandled BookingFailure ${String(unhandled)}`);
+        }
+    }
+}
+
+function failureNames(): string[] {
+    return [0, 1, 2, 3, 4, 5, 6, 7].map((value) => failureName(value as BookingFailure));
+}

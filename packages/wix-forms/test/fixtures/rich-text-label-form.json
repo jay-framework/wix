@@ -1,32 +1,55 @@
 {
-  "fields": [
+  "formFields": [
     {
-      "target": "first_name",
-      "view": { "label": "First name", "fieldType": "TEXT_INPUT" }
+      "id": "d218ec18-fa60-4cc3-936f-e75325cd5904",
+      "fieldType": "INPUT",
+      "identifier": "CONTACTS_FIRST_NAME",
+      "hidden": false,
+      "inputOptions": {
+        "target": "first_name",
+        "required": false,
+        "inputType": "STRING",
+        "stringOptions": {
+          "componentType": "TEXT_INPUT",
+          "validation": { "format": "UNKNOWN_FORMAT", "enum": [] },
+          "textInputOptions": { "label": "First name" }
+        }
+      }
     },
     {
-      "target": "message",
-      "view": {
-        "fieldType": "TEXT_AREA",
-        "label": {
-          "nodes": [
-            {
-              "type": "PARAGRAPH",
-              "id": "p1",
+      "id": "7caf04b1-4f3c-4e37-b967-e60ca9d114d0",
+      "fieldType": "INPUT",
+      "identifier": "TEXT_AREA",
+      "hidden": false,
+      "inputOptions": {
+        "target": "message",
+        "required": false,
+        "inputType": "STRING",
+        "stringOptions": {
+          "componentType": "TEXT_INPUT",
+          "validation": { "format": "UNKNOWN_FORMAT", "enum": [] },
+          "textInputOptions": {
+            "label": {
               "nodes": [
                 {
-                  "type": "TEXT",
-                  "id": "",
-                  "textData": { "text": "Your ", "decorations": [] }
-                },
-                {
-                  "type": "TEXT",
-                  "id": "",
-                  "textData": { "text": "message", "decorations": [{ "type": "BOLD" }] }
+                  "type": "PARAGRAPH",
+                  "id": "p1",
+                  "nodes": [
+                    {
+                      "type": "TEXT",
+                      "id": "",
+                      "textData": { "text": "Your ", "decorations": [] }
+                    },
+                    {
+                      "type": "TEXT",
+                      "id": "",
+                      "textData": { "text": "message", "decorations": [{ "type": "BOLD" }] }
+                    }
+                  ]
                 }
               ]
             }
-          ]
+          }
         }
       }
     }

@@ -1,4 +1,4 @@
-Wix Forms plugin setup — dynamic forms and shared getFormSummary action.
+Wix Forms plugin setup — dynamic per-form contracts and the shared form schema service.
 
 ## What wix-forms provides
 
@@ -7,7 +7,8 @@ Per-form headless contracts (one per Wix form) and two server actions:
 - **form/&lt;slug&gt;** — one contract generated per Wix form at agent-kit time, with
   tags named after that form's fields. See `per-form-contracts.md` and
   `user-visible-messages.md` (Wix vs plugin copy, success/i18n).
-- **getFormSummary** — returns participant field schema for other plugins (e.g. wix-bookings)
+- **`WixFormsService.getRawForm(formId)`** — the full Get Form schema, for other plugins (wix-bookings reads its participant form with it). Classify its fields with `readFieldKey` / `classifyFormField` (exported), which list what this version cannot show
+- **getFormSummary** — **deprecated** (removed in the next minor): flat field summaries without `required`
 - **submitForm** — submits form values to Wix Forms. If you call it yourself (not through the `wixForm` component), `await ensureSessionFresh()` from `@jay-framework/wix-server-client/client` first: a submit without the session cookie is refused
 - **`WixFormsService.isSubmittableForm(formId)`** — the same allowlist check `submitForm` runs. It expects the canonical id, the form GUID in lowercase: trim and lowercase project input first, or a differently cased id reads as not submittable.
 
@@ -103,22 +104,17 @@ page-provided values, custom-UI/multi-step, honeypot, non-string fields, and a
 server-side submit hook (verify the caller, write your own record, redirect) — see
 `rich-forms.md`.
 
-## Cross-plugin use: getFormSummary
+## Cross-plugin use: the participant form schema
 
-`wix-bookings` loads participant fields via `getFormSummary` — it does **not** use the `wix-form` UI on `/book`.
+`wix-bookings` loads participant fields with its own query `wixBookings.getParticipantForm({ serviceId })`,
+which reads Get Form through `WixFormsService.getRawForm` — it does **not** use the `wix-form` UI on `/book`.
+`required` is Wix's real flag, and a required field bookings cannot show disables booking (`FORM_UNSUPPORTED`).
 
-```typescript
-import { getFormSummary } from '@jay-framework/wix-forms';
-```
+**`getFormSummary` is deprecated** (removed in the next minor; the server warns once when it is called):
 
-Flow: user selects a booking service → `getFormSummary({ formId: service.formId })` → user fills participant fields → `createBooking`.
-
-- **`required` is always `false`.** Wix's Form Summary API returns each field's `target`,
-  `label`, `type`, and options — not whether it is required — so `getFormSummary` cannot
-  report it, and `createBooking` does not enforce it either. Mark fields you know are required
-  (e.g. first name, email) in your jay-html.
-- **Only text-like fields are returned** (string, email, phone, number, URL). Address and other
-  non-text fields are dropped, even when required.
+- The Form Summary API has no `required`, so every field reads `required: false`.
+- Only text-like fields are returned (string, email, phone, number, URL); others are now listed in
+  `unsupportedFields` (`required: "unknown"`) instead of being dropped silently.
 - An invalid or missing `formId` is refused with an `ActionError` `INVALID_INPUT` (a 4xx),
   before any Wix call.
 

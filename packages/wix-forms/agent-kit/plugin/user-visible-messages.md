@@ -70,6 +70,8 @@ Binding `{contact.statusMessage}` for `REJECTED` is a choice: it shows a hook's 
 
 When the form schema fails to load, `loadError` is set (e.g. `Could not load the form.`, permission-denied hints). Bind `{key.loadError}` if you want to show it, or use `if="contact.loadError"` with your own localized explanation.
 
+`loadError` is also set when the form has a **required field this site cannot show** (for example a Wix address field): `This form has a required field this site cannot show: <label>.` No fields render in that case and the form cannot be submitted; see `unsupportedFields` in `forms.yaml` and `per-form-contracts.md`.
+
 ## Field `{key.<target>.error}`
 
 Client-side checks use English templates such as `Please enter a valid email address.` and `` `${label} is required.` `` (label from Wix). Server field violations the plugin classifies (Wix format errors for Email / Phone / URL) use the same English default text as the browser check and the matching `errorRule`; other server field violations use Wix’s `errorMessage` (or the owner's custom message) when present, otherwise `Invalid value`.
@@ -106,9 +108,9 @@ On a phone field, branch on both `PHONE` and `PHONE_COUNTRY` (or show `{field.er
 
 Never test `error` text (`if="contact.email.error === '…'"`); branch on `errorRule`. Write `REQUIRED` copy that still reads correctly while the field holds text (see `rich-forms.md` §3).
 
-## `getFormSummary` (bookings / participant fields)
+## `getFormSummary` (deprecated)
 
-`validateFormSummaryField` uses the same English validation patterns. That path is separate from the page `wixForm` UI; bookings integration is covered by the setup guide (`wix-forms-setup.md`) shipped in the `@jay-framework/wix-forms` package.
+Deprecated: wix-bookings now reads its participant form with `wixBookings.getParticipantForm` (Get Form, real `required` flags) and validates with `validateFormField`, the same English patterns as the page form. `getFormSummary` and `validateFormSummaryField` remain for one release; see `wix-forms-setup.md`.
 
 ## Agent checklist
 

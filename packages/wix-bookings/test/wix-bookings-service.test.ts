@@ -43,6 +43,15 @@ import { createBookingRedirectSession } from '../lib/wix-apis/create-redirect-se
 import { getBookingServiceById } from '../lib/wix-apis/query-services.js';
 import { listAvailabilityTimeSlots } from '../lib/wix-apis/list-availability-slots.js';
 import { provideWixBookingsService } from '../lib/services/wix-bookings-service.js';
+import { formsReturning, QA_FORM_ID, rawFormFixture } from './support/form-kinds.js';
+
+/** A participant form whose only field is an optional email: these tests cover checkout, not forms. */
+function emailOnlyForms() {
+    const form = rawFormFixture('booking-form');
+    form.formFields = form.formFields!.filter((field) => field.inputOptions?.target === 'email');
+    form.formFields[0]!.inputOptions!.required = false;
+    return formsReturning(form);
+}
 
 const mockCreateBookingRecord = vi.mocked(createBookingRecord);
 const mockCreateBookingCart = vi.mocked(createBookingCart);
@@ -77,6 +86,7 @@ describe('WixBookingsService.createBooking', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         mockGetBookingServiceById.mockResolvedValue({
+            form: { id: QA_FORM_ID },
             payment: { options: { online: true, inPerson: false } },
         });
         mockCreateBookingRecord.mockResolvedValue({ booking: { id: 'booking-1' } });
@@ -90,7 +100,7 @@ describe('WixBookingsService.createBooking', () => {
         mockPlaceBookingOrder.mockResolvedValue({ orderId: 'order-1' });
         const service = provideWixBookingsService(mockClient, config);
 
-        await expect(service.createBooking(bookingInput)).resolves.toEqual({
+        await expect(service.createBooking(bookingInput, emailOnlyForms())).resolves.toEqual({
             outcome: 'confirmed',
             orderId: 'order-1',
         });
@@ -103,7 +113,10 @@ describe('WixBookingsService.createBooking', () => {
             summary: { priceSummary: { total: { amount: '0' } } },
         });
         mockPlaceBookingOrder.mockResolvedValue({ orderId: 'order-1' });
-        await provideWixBookingsService(mockClient, config).createBooking(bookingInput);
+        await provideWixBookingsService(mockClient, config).createBooking(
+            bookingInput,
+            emailOnlyForms(),
+        );
         const slot = (call: number) =>
             (mockCreateBookingRecord.mock.calls[call][1] as any).booking.bookedEntity.slot;
         expect(slot(0).resourceSelections).toEqual([
@@ -117,7 +130,7 @@ describe('WixBookingsService.createBooking', () => {
         await provideWixBookingsService(mockClient, {
             ...config,
             staffResourceTypeId: '',
-        }).createBooking(classInput);
+        }).createBooking(classInput, emailOnlyForms());
         expect(slot(1).resourceSelections).toBeUndefined();
         expect(slot(1).eventId).toBe('ev-1');
     });
@@ -131,7 +144,7 @@ describe('WixBookingsService.createBooking', () => {
         });
         const service = provideWixBookingsService(mockClient, config);
 
-        await expect(service.createBooking(bookingInput)).resolves.toEqual({
+        await expect(service.createBooking(bookingInput, emailOnlyForms())).resolves.toEqual({
             outcome: 'redirect',
             redirectUrl: 'https://checkout.wix.com/session-1',
         });

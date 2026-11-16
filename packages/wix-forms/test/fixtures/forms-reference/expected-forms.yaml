@@ -3,7 +3,7 @@ _description: >-
   ref="contact.email.input". Tag names come from Wix field targets, which Wix often auto-generates (firstName_5820,
   formFieldAa5f): find a field by its label in tagByLabel, then bind its tag. Tags are stable; never rename them.
 namespace: wix.form_app.form
-totalForms: 1
+totalForms: 2
 forms:
   - contract: form/qa-contact
     formId: 0b1c2d3e-0000-4000-8000-000000000001
@@ -40,3 +40,24 @@ forms:
         hidden: false
         hasControl: true
         valueType: boolean
+    unsupportedFields: []
+  - contract: form/booking-form
+    formId: 0b1c2d3e-0000-4000-8000-000000000002
+    name: Booking form
+    tagByLabel:
+      First name: firstName
+    fields:
+      - tag: firstName
+        label: First name
+        type: text
+        target: first_name
+        required: true
+        elementType: HTMLInputElement
+        hidden: false
+        hasControl: true
+        valueType: string
+    unsupportedFields:
+      - target: address
+        label: Multi-line address
+        wixKind: ADDRESS/MULTILINE_ADDRESS
+        required: true

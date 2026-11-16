@@ -1,0 +1,61 @@
+{
+  "formSummary": {
+    "id": "bbb199c4-9f44-46e8-baaa-05e101851965",
+    "fields": [
+      {
+        "target": "first_name",
+        "label": "First name",
+        "type": "STRING",
+        "options": [],
+        "deleted": false,
+        "id": "00000000-0000-0000-0000-000000000001",
+        "fields": []
+      },
+      {
+        "target": "last_name",
+        "label": "Last name",
+        "type": "STRING",
+        "options": [],
+        "deleted": false,
+        "id": "00000000-0000-0000-0000-000000000010",
+        "fields": []
+      },
+      {
+        "target": "email",
+        "label": "Email",
+        "type": "EMAIL",
+        "options": [],
+        "deleted": false,
+        "id": "00000000-0000-0000-0000-000000000002",
+        "fields": []
+      },
+      {
+        "target": "phone",
+        "label": "Phone",
+        "type": "PHONE",
+        "options": [],
+        "deleted": false,
+        "id": "00000000-0000-0000-0000-000000000003",
+        "fields": []
+      },
+      {
+        "target": "address",
+        "label": "Multi-line address",
+        "type": "MULTILINE_ADDRESS",
+        "options": [],
+        "deleted": false,
+        "id": "00000000-0000-0000-0000-000000000004",
+        "fields": []
+      },
+      {
+        "target": "add_your_message",
+        "label": "Add your message",
+        "type": "STRING",
+        "options": [],
+        "deleted": false,
+        "id": "00000000-0000-0000-0000-000000000008",
+        "fields": []
+      }
+    ]
+  }
+}

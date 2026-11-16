@@ -26,6 +26,27 @@ Run `jay-stack agent-kit`, then read:
 - `agent-kit/materialized-contracts/wix-forms/form-<slug>.jay-contract` — the
   generated contract itself.
 
+## Fields the plugin cannot show (`unsupportedFields`)
+
+Only these Wix field kinds get a tag: short and long text, email, URL, phone,
+dropdown / radio (closed list), date picker (as text), single checkbox and checkbox
+group (closed list). Every other kind (address, number, rating, file upload,
+signature, payment, appointment, service picker, a choice with a custom "Other"
+option, a read-only field) is **left out of the contract** and listed per form
+under `unsupportedFields` in `forms.yaml` (`target`, `label`, `wixKind`, `required`).
+`jay-stack agent-kit` also warns about each one, and the contract `description`
+names them.
+
+- **Optional** unsupported field: the form works without it; it is never submitted.
+- **Required** unsupported field: the form cannot be submitted (Wix would accept a
+  submission without it, so the value would be lost). The page renders **no fields**,
+  sets `loadError` (`This form has a required field this site cannot show: <label>.`),
+  and `submitForm` refuses the form. Fix it in the Wix dashboard: make the field
+  optional, remove it, or replace it with a supported kind. Do not add a tag for it
+  by hand.
+- A required field with no target in Wix cannot be submitted either; agent-kit warns
+  (`required field "<label>" has no target in Wix`).
+
 ## Each field is a sub-contract named after its `target`
 
 A field `email` becomes a `sub-contract` tag `email` carrying:

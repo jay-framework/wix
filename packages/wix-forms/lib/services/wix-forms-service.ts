@@ -6,8 +6,13 @@ import { getFormSchema } from '../wix-apis/get-form.js';
 import { getFormSummary } from '../wix-apis/get-form-summary.js';
 import { listForms } from '../wix-apis/list-forms.js';
 import { createSubmittableFormCheck } from './submittable-forms.js';
-import { projectFormFields, projectFormSummaryFields } from '../utils/project-form-fields.js';
-import type { ListedFormView } from '../types.js';
+import {
+    projectFormFields,
+    projectFormSummaryFields,
+    requiredUntargetedLabels,
+} from '../utils/project-form-fields.js';
+import { canonicalFormId } from '../utils/form-id.js';
+import type { ListedFormView, UnsupportedFieldView } from '../types.js';
 import { WIX_FORMS_SERVICE, type WixFormsService } from './wix-forms-service-marker.js';
 
 export function provideWixFormsService(
@@ -15,6 +20,7 @@ export function provideWixFormsService(
     config: WixFormsConfig,
 ): WixFormsService {
     let listCache: ListedFormView[] | undefined;
+    const summaryWarnedFormIds = new Set<string>();
     // Always `enabled`, whatever `config.include` says: that flag is for generation (DL #50 §1).
     const isSubmittableForm = createSubmittableFormCheck({
         namespace: config.namespace,
@@ -40,29 +46,36 @@ export function provideWixFormsService(
             if (!forms.length) {
                 warnNoFormsListed(config);
             }
-            listCache = forms.map((form) => ({
-                id: form.id,
-                name: form.name ?? form.id,
-                fields: projectFormFields(form),
-            }));
+            listCache = forms.map((form) => {
+                const name = form.name ?? form.id;
+                warnRequiredUntargeted(name, requiredUntargetedLabels(form));
+                return { id: form.id, name, ...projectFormFields(form) };
+            });
             return listCache;
+        },
+
+        async getRawForm(formId) {
+            if (!canonicalFormId(formId)) {
+                throw new Error('Form ID is not a valid Wix form id.');
+            }
+            const { form } = await getFormSchema(wixClient, formId);
+            if (!form) {
+                throw new Error('Form schema missing from Wix response');
+            }
+            return form;
         },
 
         async getFormFields(formId) {
             if (!formId) {
                 throw new Error('Form ID is missing.');
             }
-            const { form } = await getFormSchema(wixClient, formId);
-            if (!form) {
-                throw new Error('Form schema missing from Wix response');
-            }
-            const fields = projectFormFields(form, {
+            const projected = projectFormFields(await service.getRawForm(formId), {
                 defaultPhoneCountry: config.defaultPhoneCountry,
             });
-            if (!fields.length) {
+            if (!projected.fields.length && !projected.unsupportedFields.length) {
                 throw new Error('Form has no usable input fields');
             }
-            return fields;
+            return projected;
         },
 
         async getFormSummaryFields(formId) {
@@ -72,13 +85,17 @@ export function provideWixFormsService(
                 );
             }
             const { formSummary } = await getFormSummary(wixClient, formId);
-            const fields = projectFormSummaryFields(formSummary?.fields, {
+            const projected = projectFormSummaryFields(formSummary?.fields, {
                 defaultPhoneCountry: config.defaultPhoneCountry,
             });
-            if (!fields.length) {
+            if (!projected.fields.length && !projected.unsupportedFields.length) {
                 throw new Error('Could not load participant form fields from Wix.');
             }
-            return fields;
+            if (projected.unsupportedFields.length && !summaryWarnedFormIds.has(formId)) {
+                summaryWarnedFormIds.add(formId);
+                warnSummaryFieldsNotReturned(formId, projected.unsupportedFields);
+            }
+            return projected;
         },
 
         isSubmittableForm,
@@ -93,6 +110,22 @@ export function provideWixFormsService(
 
     registerService(WIX_FORMS_SERVICE, service);
     return service;
+}
+
+/** DL #51 row 2: Wix requires the field, but with no target nothing can submit it. */
+function warnRequiredUntargeted(formName: string, labels: string[]): void {
+    for (const label of labels) {
+        console.warn(
+            `[wix-forms] Form "${formName}": required field "${label}" has no target in Wix and cannot be submitted.`,
+        );
+    }
+}
+
+function warnSummaryFieldsNotReturned(formId: string, fields: UnsupportedFieldView[]): void {
+    const described = fields.map((field) => `${field.label} (${field.wixKind})`).join(', ');
+    console.warn(
+        `[wix-forms] Form ${formId}: fields not supported and not returned: ${described}.`,
+    );
 }
 
 /** Empty List Forms is valid (no forms yet); warn when filters may be wrong. */

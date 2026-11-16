@@ -7,12 +7,16 @@ import { identitySubmitDeps, runSubmission, selectHook } from '../submission/run
 import type { SubmitFormResult, SubmitRequestInput } from '../types.js';
 import { canonicalFormId } from '../utils/form-id.js';
 
+/**
+ * @deprecated Since DL #51: the Summary API has no `required`. wix-bookings reads its
+ * participant form with `wixBookings.getParticipantForm`. Removed in the next minor.
+ */
 export const getFormSummary = makeJayQuery('wixForms.getFormSummary')
     .withServices(WIX_FORMS_SERVICE)
     .withHandler(async (input: { formId?: string }, forms) => {
+        warnGetFormSummaryDeprecated();
         const formId = requireSummaryFormId(input.formId);
-        const fields = await forms.getFormSummaryFields(formId);
-        return { fields };
+        return forms.getFormSummaryFields(formId);
     });
 
 /** DL#42 §Design 3: a thin wrapper; `runSubmission` returns every outcome. */
@@ -31,9 +35,25 @@ export const submitForm = makeJayAction('wixForms.submitForm')
             resolveClient,
             resolveIdentity,
             isSubmittableForm: (formId) => forms.isSubmittableForm(formId),
+            unsupportedFieldsOf: async (formId) => {
+                const listed = await forms.listForms();
+                const form = listed.find((entry) => canonicalFormId(entry.id) === formId);
+                return form?.unsupportedFields ?? [];
+            },
             hook: selectHook(hooks, input.formId ?? ''),
         });
     });
+
+let getFormSummaryDeprecationWarned = false;
+
+function warnGetFormSummaryDeprecated(): void {
+    if (getFormSummaryDeprecationWarned) return;
+    getFormSummaryDeprecationWarned = true;
+    console.warn(
+        '[wix-forms] wixForms.getFormSummary is deprecated: the Form Summary API has no required flags. ' +
+            'Read the full schema (WixFormsService.getRawForm); wix-bookings uses wixBookings.getParticipantForm.',
+    );
+}
 
 /** A missing or non-GUID form id is the caller's mistake: a 4xx ActionError, never a 500 (DL#49). */
 function requireSummaryFormId(formId: string | undefined): string {

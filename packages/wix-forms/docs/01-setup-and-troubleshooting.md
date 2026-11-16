@@ -19,7 +19,7 @@ There is no generic `wix-form` contract, no `formId` prop, and no `defaultFormId
 
 ## Bookings integration
 
-`wix-bookings` loads participant fields via `getFormSummary` from this plugin (not the per-form page UI).
+`wix-bookings` loads participant fields with its own `wixBookings.getParticipantForm`, which reads the full schema through this plugin's `WixFormsService.getRawForm` (not the per-form page UI). `getFormSummary` is deprecated.
 
 ## Common errors
 
