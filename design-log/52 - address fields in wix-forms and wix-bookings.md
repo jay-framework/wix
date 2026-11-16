@@ -1,52 +1,134 @@
 # 52 - Address Fields in wix-forms and wix-bookings
 
-Status: Design
+Status: Design (revision 4, after the revision-3 round-2 review)
 
-Covers `@jay-framework/wix-forms` and `@jay-framework/wix-bookings`. This is the follow-up log that DL #51 §5 defers to: it designs address support, and its implementation is the one that may delete `RELEASE-BLOCKED.md`. It builds on DL #51's approved types and functions (`FieldKey`, `readFieldKey`, `classifyFormField`, `readFieldView`, `toBookingFieldType`, `ProjectedForm`, `getParticipantForm`, `CreateBookingInput`, `CreateBookingOutcome`, and the §4 check order), plus DL #40 (per-form contracts), DL #41 (value store, `FieldValue`) and DL #44 (multiselect). jay is used only through its public surface (contract YAML, `parseContract`, `JayHtmlValidatorFn`). Paths are relative to `packages/` unless stated. Line citations are to `main` at `2adbdcd`, before DL #51 lands. Where DL #51 replaces a function, this log names the DL #51 function, not the old line.
-
-**Dependency:** DL #51 Phases 1a, 1b and 2 are merged. Every phase here edits code that DL #51 introduces.
+Covers `@jay-framework/wix-forms` and `@jay-framework/wix-bookings`. This is the follow-up log that DL #51 §5 defers to. It designs address support for **both** bookings (Create Booking) and per-form submission (Create Submission), and its last implementation step deletes `RELEASE-BLOCKED.md`. It builds on DL #51 (implemented: `FieldKey`, `readFieldKey`, `classifyFormField`, `readFieldView`, `toBookingFieldType`, `ProjectedForm`, `getParticipantForm`, the §4 check order), DL #40 (per-form contracts), DL #41 (value store, `FieldValue`), DL #44 (multiselect), DL #45/#46 (locale-neutral outcomes) and DL #55 (Wix validation parity, `parseSubmissionViolations`, the `defaultPhoneCountry` config precedent). jay is used only through its public surface (contract YAML, `parseContract`, `JayHtmlValidatorFn`, `plugin.yaml` `validators:`). Paths are relative to `packages/` unless stated. Line citations are to the branch `form-address-fields` with DL #51 applied (`eb3b756`).
 
 ## Decisions for the Implementer (TL;DR)
 
-- **Supported countries are fail-closed: US, GB, CA, IL.** These are the four countries with a fixture-backed layout (F7, F8). An address field offers `ADDRESS_LAYOUTS ∩ allowedCountries`, or all four when `allowedCountries` is empty. When that intersection is empty, the field is unsupported (DL #51 row 13 rules). A visitor from any other country cannot enter an address. ⚠️ This needs product approval (**O2**).
-- **The per-country table lives in wix-forms:** `wix-forms/lib/address/address-layouts.ts`, exported to wix-bookings. Its contents come from two sources. The layout and labels come from F7 (Wix's form preview). The codes come from F8 (Create Booking's own `allowedValues`). A red-first test asserts the table equals both fixtures. Licence and ownership are an open product item (**O1**). Implementation does not start until O1 is answered.
-- **A dynamic part set uses fixed contract tags.** Every country uses a subset of seven fixed parts (`country`, `addressLine`, `streetName`, `streetNumber`, `city`, `subdivision`, `postalCode`). The contract emits that superset once, each part as a non-repeated sub-contract. Every part except `country` has a boolean `shown` variant. A page binds every part and wraps each in `if="….shown"`. There is no repeated `parts` list (Q6).
-- **Value format:** `AddressValue = Partial<Record<AddressPart, string>>`, a flat object whose keys are Wix's own part names, exactly as F8 sent them. `FieldValue` widens to `string | string[] | boolean | AddressValue`. `toWixAddress(spec, value)` is the single payload boundary:
-  - it sends `country` plus that country's layout parts, trimmed;
-  - it never sends a part outside the layout (`subdivision` for IL, `addressLine` for IL, `addressLine2` ever);
-  - with no country, it returns `undefined`, and the key is left out of the payload (F6: a left-out address is accepted).
-- **Required semantics:**
-  - A required address field needs a country.
-  - Once a country is chosen, every part in its layout is required (F7: all shown parts are marked required; F8 confirms it for `subdivision`).
-  - A schema where any offered layout part has `validation.fields.<part>.required !== true`, or where `fieldSettings` is anything other than `{ addressLine2: { show: false } }`, is **unsupported** (fail-closed: unobserved).
-- **Error keys are `<target>/<part>`,** the same string Wix returns as `fieldName` (F8: `address/subdivision`). The client validator, the server validator and Wix's located errors all key part errors this way. There is no translation table.
-- **Located Wix errors, bookings:** the new `parseBookingFormViolations(responseBody)` reads `details.validationError.fieldViolations[].data.formViolations[]`, the raw shape of F6's 400. ⚠️ The address 400s were recorded only in flattened form, so LB0 re-captures one raw body and commits it as a fixture. A Create Booking 400 that carries form violations is **returned** as `{ outcome: 'invalid', fieldErrors }`, never thrown. If Wix reports `NOT_ALLOWED_VALUE_ERROR` on a subdivision that our table accepted, the server logs a **table drift** line with Wix's `allowedValues`.
-- **Bookings first, per-form gated.** Phases A (shared core) and B (bookings) are designed in full and are the release-gate path. Create Submission with an address was never probed, so Phase F (per-form) starts only after live check **LF0** records Create Submission's accept/reject behaviour and error path. If LF0 differs from Create Booking, per-form stays unsupported and this log gets an addendum. **The gate does not wait for Phase F** (**O3**): row 13 per-form stays "unsupported, fail-visible" (DL #51 1a) until then.
-- **Gate exit = L6+** (§Verification). L6+ is DL #51 L6 plus a blank optional address, the negative `curl` mappings, the drift check and the stored shape. Phase B's last step deletes `RELEASE-BLOCKED.md`, and only after L6+ passes.
-- **Bookings contract:** a new top-level `address` sub-contract with a `present` variant. The address field is **not** an entry of `formFields`, because it has no single `formInputs` element. A booking form has at most one supported address; a second one is unsupported.
-- **jay-feedback:** add wix-forms validator **rule 6** (Phase F), which errors on an unknown ref under an address field and warns on an address part with no bound `input`. Update the agent-kit guides for both plugins. No bookings validator: wix-bookings has none (`wix-bookings/plugin.yaml`), and adding the infrastructure is out of scope.
+- **Layouts are fetched, not hand-owned.** wix-forms reads Wix's public **List Form Templates** API at runtime: `GET https://www.wixapis.com/form-template-service/v2/templates?namespace=wix.form_platform.form&templateIds=<id>&…` with all 12 address template ids, always passed explicitly. The response lists each id twice, so it is de-duplicated by `id`. A visitor token works (live probes on a QA site). Each template gives the parts, their order, `required`, `hidden`, `maxLength` / `pattern`, and, for some countries, the subdivision codes.
+- **The one hard-coded table** is `country → templateId` (`COUNTRY_TEMPLATE_IDS`, 66 entries, public ids). Every other country uses `MLA_COMMON`. It is **derived from live Create Submission probes**, and its fixture is committed as `wix-forms/test/fixtures/address/country-template-map.json` (§Country map provenance). A red-first test pins the table to the fixture. L12 re-probes all 247 countries live before each release and diffs the result against the fixture. When Wix requires a part that the chosen layout hides, the part is **revealed at runtime** (Q17), so a wrong or stale map entry costs one correction, not a dead end.
+- **Cache: per server process, success-only, TTL 1 h, shared in-flight promise, 30 s retry backoff after a failure.** This is the pattern of `wix-bookings/lib/services/participant-form-source.ts:29-44` and `wix-forms/lib/services/submittable-forms.ts`. **A failure is transient, and it has one outcome everywhere: the form is unavailable.** The source throws `AddressLayoutsUnavailableError`, and it propagates exactly like a failed Get Form (Q3):
+  - bookings `getParticipantForm` and `createBooking` → `FORM_UNAVAILABLE` ("Could not load the participant form. Please try again later.", `create-wix-bookings-service.ts:43`);
+  - per-form render → the existing load-error state (`wix-form.ts:100-108`, short error TTL);
+  - per-form submit → `FORM_UNAVAILABLE`.
+
+  `FORM_UNSUPPORTED` and `unsupportedFields` are reserved for permanent capability gaps. Nothing is submitted with a guessed layout.
+
+- **Countries: all 247 that Wix accepts** (`ADDRESS_COUNTRY_CODES`, fixture `server-allowed-countries.json`, including `AN` and `XK`). A field honours `validation.allowedCountries` (empty means all) and `multilineAddressOptions.defaultCountryConfig`. `COUNTRY` + `countryOptions` preselects that country. `BY_IP` preselects nothing, because geolocation is out of scope (Q9). Country names come from `Intl.DisplayNames(locale, { type: 'region' })`, with locale `en` unless the site sets `address.locale`; a code with no name falls back to the code.
+- **Required, per part:** the form's `validation.fields.<part>.required` wins, and the template's `required` is the fallback. The field-level `required` means "a country plus every required part". An **optional** field is left out of the payload when it is **blank**, meaning no part other than `country` has a non-empty value (this covers a preselected country). `addressLine2` is a normal part. It is shown when the template shows it (IL) or when `fieldSettings.addressLine2.show === true`, and it is never required unless the form says so. The old "never send addressLine2" and "unknown `fieldSettings` → unsupported" rules are **dropped**.
+- **Subdivision has three cases, decided per country by its template:**
+  - **Listed** (US GB CA DE JP BR FR ES AU): a `<select>` of the template's codes.
+  - **Unlisted** (the 56 `MLA_COMMON_STATE` countries, for example IT): **free text**. When Wix rejects the value with `NOT_ALLOWED_VALUE_ERROR`, its `params.allowedValues` is mapped back onto the part. The part then switches to a select of those codes, and its stale text value is cleared. The server remembers the codes per country in `LearnedAddressFacts` (owned by `WixFormsService`), so later visitors get the select from the start, in bookings and per form alike (Q6).
+  - **None** (COMMON, IL): no subdivision part.
+  - No locale dataset and no ISO 3166-2 package is used (Q7).
+- **Labels:** the plugin ships English defaults:
+  - a part label for each template `identifier`;
+  - a subdivision **part** label for each listed country;
+  - English **option** names for the codes of the 9 listed countries (`address-labels.ts`; a test pins its key set to the template codes).
+  - Everything else (unlisted-country codes) shows its code.
+  - The site overrides any of these in `config/.wix-forms.yaml` `address.labels` (Q8). Visitor-facing names are plain geographic names, written for this repo.
+- **Contract: fixed superset.** Every country's parts are a subset of eight fixed parts: `country`, `addressLine`, `addressLine2`, `streetName`, `streetNumber`, `city`, `subdivision`, `postalCode`. Each part is a non-repeated sub-contract with `shown`, `required`, `label`, `value`, `error`, `invalid` and `input`. `subdivision` additionally has a `listed` variant, `options` and a `text` input. There is no repeated `parts` list (Q5). **All eight parts are emitted in every address contract**, bookings and per form alike, so a runtime country set or layout change can never show a part that the page has no tag for (§2).
+- **Value:** `AddressValue = Partial<Record<AddressPart, string>>`, flat with Wix's own keys. Both Create Booking and Create Submission accept exactly this (live probes). `FieldValue` widens to `string | string[] | boolean | AddressValue`. **`toWixAddress(spec, value)`** is the single payload boundary:
+  - it sends `country` (upper-cased) plus the parts the country's layout **shows**, each trimmed and non-empty;
+  - it keeps an un-offered country as given (upper-cased), so validation rejects it;
+  - it returns `undefined` only when the value has no country **and** no part.
+- **Located errors share one key: `<target>/<part>`.** Wix uses this key in both envelopes:
+  - Create Booking: `fieldViolations[].data.formViolations[].fieldName`;
+  - Create Submission: `fieldViolations[].data.errors[].errorPath`.
+  - The client validator, server validator and both parsers key by it.
+  - One mapper, `addressMessageFor(spec, value, violation)`, turns a violation into a message.
+  - DL #55's `parseSubmissionViolations` is **extended**: it keeps `<target>/<part>` paths and `params.allowedValues`.
+  - A new `parseBookingFormViolations` reads the bookings envelope into the same `LocatedViolation` type.
+  - A Create Booking 400 with form violations is **returned** as `invalid`, never thrown.
+- **One spec after learned facts arrive: `withLearnedFacts(spec, facts)`** (`address-value.ts`, pure, client-safe). It is the only function that merges learned subdivision lists and revealed parts into an `AddressFieldSpec`. Every consumer reads the spec it returns: the view state, `nextAddressValue`, `toWixAddress`, `validateAddressValue` / `fieldErrorsOf`, on the server and on the client, in bookings and per form (§1 "One spec"). The server never caches a spec with facts merged in: it projects per call from the current `LearnedAddressFacts.snapshot()`. Per-form pages receive the snapshot in the **fast** phase, not the slow-render cache, so a learned list reaches the next visitor on the next request (§5).
+- **Both phases ship before the gate opens.** Phase F (per-form) is designed fully here and is no longer gated: LF0 answered it.
+- **Release gate exit = all of §Verification "Gate exit".** That is the live QA cycle L1–L12, with its prerequisites declared and pre-approved (Q15). The last commit deletes `RELEASE-BLOCKED.md` and cites the QA report and video.
+- **jay-feedback:**
+  - wix-forms rule 6: an unknown address part ref → **error**. A part without a bound `input`, or a `subdivision` without **both** `input` and `text` bound → **error**. Any part can be shown at runtime (Q17), so a missing input is always a potential dead end.
+  - A **new wix-bookings validator** with the same rule, scoped to `booking-flow`'s `address`, sharing the rule's logic exported from wix-forms. The "no address refs bound" check is an **error only when a site service's participant form has an address field** (known from the agent-kit `services.yaml`), nothing when none has one, and a **warning** when it cannot be known. It is suppressible per page (§6).
+  - Agent-kit guide updates in both plugins.
 
 ## Background
 
-DL #51 makes both packages fail visibly on fields they cannot render (row 13: `ADDRESS` + `MULTILINE_ADDRESS` is unsupported everywhere). Phase 1b reads the real `required` flag, so every booking form with the default required Address now shows `FORM_UNSUPPORTED`. That covers the default "Booking form" (F4) and the QA form. The release gate (DL #51 Q17 = b) therefore blocks every publish from `main` until address support ships and L6 passes.
+DL #51 makes both packages fail visibly on fields they cannot render (row 13: `ADDRESS` + `MULTILINE_ADDRESS` is unsupported). Every booking form with the default required Address therefore shows `FORM_UNSUPPORTED`, and `RELEASE-BLOCKED.md` blocks every publish from `main` (`scripts/publish.cjs:8-18`) until this log ships.
 
-What Wix does, from DL #51 F2, F7 and F8 and the QA probe (`reviews/qa-address-probe-2026-11-11.md`; fixtures `wix-forms/test/fixtures/form-kinds/address-parts-by-country.json` and `address-create-booking-probe.json`):
+**What Wix does.** These facts come from live probes on a QA site, 2026-11-11 and 2026-11-16. Fixtures: `wix-forms/test/fixtures/form-kinds/address-parts-by-country.json`, `address-create-booking-probe.json` (DL #51 F7/F8), plus the new ones this log commits (Phase A0).
 
-| Country | Parts Wix shows (all required)                             | Subdivision                                              |
-| ------- | ---------------------------------------------------------- | -------------------------------------------------------- |
-| US      | Address, City, **State**, Zip / Postal code                | 54 bare codes (50 states, `DC`, `AA` `AE` `AP`; no `PR`) |
-| GB      | Address, City, **Region**, Zip / Postal code               | `ENG` `NIR` `SCT` `WLS`                                  |
-| CA      | Address, City, **Province**, Zip / Postal code             | 13 bare codes                                            |
-| IL      | **Street name**, **House number**, City, Zip / Postal code | none                                                     |
+- **Templates.** List Form Templates returns one `FORM_INPUT` template per country group, named `MLA_<CC>`. Each template `field` carries:
+  - `identifier` (`MLA_ADDRESS_LINE`, `MLA_CITY`, …);
+  - `inputOptions.target` (the part name);
+  - `required` and `hidden`;
+  - `stringOptions.validation` (`maxLength`, `pattern`, `enum`);
+  - `componentType` (`TEXT_INPUT` / `DROPDOWN`).
 
-- Wix validates a sent address per country and returns located errors (`address/<part>`). A `NOT_ALLOWED_VALUE_ERROR` lists `allowedValues`, and they equal the preview's list for US, GB and CA.
-- Wix accepts an address that is left out entirely.
-- Get Form has no per-country data. It carries `allowedCountries: []`, a flat `required: true` on all eight parts, and `fieldSettings.addressLine2.show: false` (`booking-form.json`, the `BOOKINGS_ADDRESS` field).
-- Wix stores the address in `contactDetails.fullAddress`:
-  - US/GB/CA keep the bare `subdivision` code and `addressLine`;
-  - IL stores the street as `streetAddress: { name, number, apt }`.
+  The order is `steps[0].layout.large.items` (row, column, width). All 12 templates were captured raw on 2026-11-16 (Phase A0 `templates-list-response.json`), including FR, ES, AU and COMMON_STATE. Templates carry **no labels**: dropdown option labels equal the codes. Templates are identical across two sites and across `Accept-Language`.
 
-Raw wire shape of a Create Booking form violation, from F6's off-list dropdown 400 (captured 2026-11-10, response body; DL #51 summarises it as F6):
+| Template (id)                                             | Countries                    | Parts in order (`*` required in template; `[]` hidden)                              | Subdivision    |
+| --------------------------------------------------------- | ---------------------------- | ----------------------------------------------------------------------------------- | -------------- |
+| `MLA_COMMON` `0d5dcb6d-1403-4b80-b73e-6d90a2245561`       | every unmapped country (181) | addressLine\*, [addressLine2], city\*, postalCode\*                                 | none           |
+| `MLA_COMMON_STATE` `b7b59987-e5c6-4ec7-a4af-f48318a68a5d` | 56 (AE … IT … ZA)            | addressLine\*, [al2], city\*, subdivision\*, postalCode\*                           | empty `enum`   |
+| `MLA_US` `ebe1c447-8fd5-4c7a-8cf1-75b94db68698`           | US                           | as COMMON_STATE                                                                     | 54             |
+| `MLA_GB` `3d059d26-8ce8-48ce-9779-b23e42014454`           | GB                           | as COMMON_STATE                                                                     | 4              |
+| `MLA_CA` `2b942888-7d93-41ee-b85c-5705263f9eea`           | CA                           | as COMMON_STATE                                                                     | 13             |
+| `MLA_IL` `bc7a8d54-8df3-47cb-bb9b-3338fd6246e5`           | IL                           | streetName\*, streetNumber\*, **addressLine2 shown**, city\*, postalCode (optional) | none           |
+| `MLA_DE` `c7bde0e2-187e-44e7-8f51-14162259eb2b`           | DE                           | streetName\*, streetNumber\*, [al2], postalCode\*, city\*, subdivision\*            | 16             |
+| `MLA_JP` `e51fc7b5-0c29-40c6-b2e8-58d9fa5e3c29`           | JP                           | postalCode\*, subdivision\*, city\*, addressLine\*, [al2]                           | 47 (`01`–`47`) |
+| `MLA_BR` `3160f799-1ade-455b-87f9-128875ec874e`           | BR                           | streetName\*, streetNumber\*, [al2], city\*, subdivision\*, postalCode\*            | 27             |
+| `MLA_FR` `fbc1fb24-37bc-4c0f-afa4-35e88a43127d`           | FR                           | addressLine\*, [al2], postalCode\*, city\*, subdivision\*                           | 16             |
+| `MLA_ES` `f0e74759-d378-4ae7-9db7-42b4c7d02094`           | ES                           | as COMMON_STATE                                                                     | 19             |
+| `MLA_AU` `76f1a42e-b609-4c8b-b41a-7ebf2fbb5a56`           | AU                           | as COMMON_STATE                                                                     | 8              |
+
+- **Per-part limits** (every template, and enforced by the server): `addressLine` maxLength 150; `city` and `addressLine2` maxLength 50; `postalCode` pattern `^.{0,50}$`; `streetName` / `streetNumber` have no limit.
+- **Server enforcement.** The server checks:
+  - the template;
+  - the form's per-part `required` overrides (all `true` on booking forms, so IL's postalCode is required there);
+  - `allowedCountries`;
+  - "no additional properties" outside the layout, with `addressLine2` always allowed.
+
+  For an `MLA_COMMON_STATE` country it also enforces a list the template does not carry. IT accepts only 20 region codes, and `MI` is rejected. The 400 returns that list in `allowedValues`. FR accepts `IDF` but rejects `FR-IDF`.
+
+- **Countries.** With `allowedCountries: []`, the country `NOT_ALLOWED_VALUE_ERROR` lists exactly 247 codes. With `["US","IL","IT"]`, GB is rejected on `<target>/country` with those three as `allowedValues`.
+- **Schema** (public Form Schemas types):
+  - `addressOptions.validation.allowedCountries` (max 200);
+  - `addressOptions.validation.fields.<part>.required`;
+  - `multilineAddressOptions.defaultCountryConfig { type: BY_IP | COUNTRY, countryOptions: "<CC>" }` (a plain string);
+  - `multilineAddressOptions.fieldSettings.addressLine2.show`, the only public `fieldSettings` key.
+- **Create Submission (LF0).** The probe used a QA form with a required `address` and an optional `address_limited` (`["US","IL","IT"]`, default US), 27 cases, `lf0-create-submission-probe.json`:
+  - Create Submission accepts the same flat object as Create Booking, and stores it verbatim.
+  - A required address that is left out is rejected with `errorPath: "address"` `REQUIRED_VALUE_ERROR`. A string is rejected with `TYPE_ERROR`.
+  - Hidden `addressLine2` is accepted and stored.
+  - Envelope (verbatim, `allowedValues` abridged):
+
+```json
+{
+  "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+  "details": {
+    "validationError": {
+      "fieldViolations": [
+        {
+          "ruleName": "SUBMISSION_VALIDATION",
+          "field": "submission",
+          "description": "Submission doesn't satisfy form requirements",
+          "data": {
+            "errors": [
+              {
+                "errorPath": "address/subdivision",
+                "errorType": "NOT_ALLOWED_VALUE_ERROR",
+                "errorMessage": "must be equal to one of the allowed values",
+                "params": { "allowedValues": ["AA", "AE", "…"] }
+              }
+            ]
+          },
+          "violatedRule": "OTHER"
+        }
+      ]
+    }
+  }
+}
+```
+
+- **Create Booking envelope** (F6's off-list dropdown 400, verbatim, captured 2026-11-10):
 
 ```json
 {
@@ -55,6 +137,7 @@ Raw wire shape of a Create Booking form violation, from F6's off-list dropdown 4
     "validationError": {
       "fieldViolations": [
         {
+          "field": "must be equal to one of the allowed values",
           "ruleName": "NOT_ALLOWED_VALUE_ERROR",
           "data": {
             "allowedValues": ["Option 1", "Option 2"],
@@ -75,274 +158,395 @@ Raw wire shape of a Create Booking form violation, from F6's off-list dropdown 4
 }
 ```
 
-The probe fixture stores the address cases' `formViolations` without that envelope. Assuming the envelope is the same for address errors is reasonable, but it is ⚠️ unverified (LB0).
+The address cases in `address-create-booking-probe.json` store `cases[].error.formViolations[]` without that envelope. LB0 captures one raw address 400 to confirm the envelope.
+
+- Wix stores the address in `contactDetails.fullAddress`. US/GB/CA keep a bare `subdivision` and `addressLine`. IL stores `streetAddress { name, number }`.
 
 ## Problem
 
-1. **No address anywhere:**
-   - `FormFieldInputType` (`wix-forms/lib/types.ts:3-11`) and `FieldValue` (`:21`) have no address kind;
-   - the contract builders (`wix-forms/lib/generators/contract-utils.ts:21-94`), the view state (`components/form-view-state.ts:46-72`) and the submission projection (`components/submission-values.ts:31-40`) have no address case;
-   - the bookings contract (`wix-bookings/lib/contracts/booking-flow.jay-contract:99-109`) has a single `formInputs: HTMLInputElement` per field.
-2. **The part set depends on the country, and jay contract tags are fixed.** A page cannot render a field whose sub-tags appear and disappear at runtime unless every possible tag is in the contract.
-3. **Wix rejects nearly everything a visitor would type for a subdivision** (a label, an ISO code), so the subdivision must be a choice from Wix's own list. No API serves that list (F8).
-4. **Wix's located errors are lost:**
-   - `createBookingRecord` (`wix-bookings/lib/wix-apis/create-booking.ts:8-16`) throws a `WixApiError` (`wix-server-client/lib/wix-fetch.ts:145-154`), which becomes `describeBookingError` → `UNKNOWN` (`wix-bookings/lib/utils/booking-outcome.ts:32-59`), so a visitor sees "Booking failed";
-   - `parseSubmissionFieldErrors` (`wix-forms/lib/utils/project-form-fields.ts:202-226`) reads `errors[].errorPath`, a Create Submission shape, not `formViolations[].fieldName`.
-5. **The release gate is closed** until bookings can take an address for US, UK, Canada and Israel (DL #51 L6).
+1. **No address anywhere.** `FieldValue` (`wix-forms/lib/types.ts:22`) and `ParticipantFormValue` (`wix-bookings/lib/types.ts:36`) carry strings and booleans only. There is no address contract tag. `classify-form-field.ts:70` leaves `ADDRESS/MULTILINE_ADDRESS` unsupported.
+2. **The part set depends on the country, and jay contract tags are fixed.**
+3. **Wix's layout and code lists are only in its templates and its 400s.** Get Form carries no per-country data.
+4. **Located errors are lost.**
+   - Bookings: `createBookingRecord` (`wix-bookings/lib/wix-apis/create-booking.ts:9-17`) throws `WixApiError`, which becomes `UNKNOWN` via `describeBookingError` (`wix-bookings/lib/utils/booking-outcome.ts:32`).
+   - Per-form: `parseSubmissionViolations` (`wix-forms/lib/utils/wix-submission-errors.ts:39-50`) keys by `errorPath`, which already is `address/subdivision`. But no field owns that key, so the client drops it to the status message.
+5. **The release gate is closed** for every package.
 
 ## Prior Art / Adjacent Mechanisms
 
-| Mechanism                                                                         | Where                                                                                                               | Use here                                                                                                                                                                                                                                                                                    |
-| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Classification key + view data split (DL #51)                                     | `FieldKey` / `readFieldKey` / `readFieldView` in `wix-forms/lib/utils/classify-form-field.ts`, `read-field-view.ts` | **Extended.** `FieldKey.address` carries the schema facts that classification needs; `FieldViewData.address` carries the offered layouts. Row 13 becomes conditional.                                                                                                                       |
-| `ProjectedForm` / `unsupportedFields` (DL #51 §1)                                 | `wix-forms/lib/types.ts`                                                                                            | **Reused.** An address that fails the support rule stays in `unsupportedFields`, and the DL #51 blocking rule applies unchanged.                                                                                                                                                            |
-| Per-form field sub-contract (DL #40 §3)                                           | `contract-utils.ts:67-94` (`fieldTag`)                                                                              | **Pattern reused.** The address gets its own builder `addressFieldTag`, because it has no single `input` element.                                                                                                                                                                           |
-| Repeated `options` sub-contract (DL #40, #41, #44)                                | `contract-utils.ts:116-137`                                                                                         | **Reused** for the country and subdivision lists (`value` = code, `label`).                                                                                                                                                                                                                 |
-| Value store keyed by target (DL #41 §0) and the `FieldValue` widening (DL #41 4c) | `wix-form.ts:115`, `submission-values.ts`, `types.ts:21`                                                            | **Extended the same way 4c did:** one new member (`AddressValue`), widened through every layer the value crosses (store → action → service → wrapper).                                                                                                                                      |
-| Per-option `selected` variant and chip `toggle` (DL #44)                          | `contract-utils.ts:132-135`                                                                                         | Precedent for a variant nested inside a sub-contract. The address adds a third nesting level (form → address → subdivision → options). ⚠️ That is not shown in the repo (checked: no contract nests a non-repeated sub-contract inside one), so a `parseContract` fixture comes first (A6). |
-| `validateFormField` (DL #41 4c)                                                   | `project-form-fields.ts:157-200`                                                                                    | Its address branch returns the first part message. The new `fieldErrorsOf` returns every part's message.                                                                                                                                                                                    |
-| `presentSubmitRejection`                                                          | `components/submit-outcome.ts:58-78`                                                                                | **Extended:** `<target>/<part>` keys go to that part's error. Today an unknown key falls through to `statusMessage` (`:69-71`).                                                                                                                                                             |
-| `CreateBookingOutcome.invalid` + §4 check order (DL #51 Phase 2)                  | `wix-bookings/lib/types.ts`                                                                                         | **Reused:** the address validates in step 3, and Wix's own form violations become `invalid` too (new step 5).                                                                                                                                                                               |
-| `allowedValues` in a 400 (F8)                                                     | Create Booking                                                                                                      | **Drift detector only** (Q3), not a data source.                                                                                                                                                                                                                                            |
-| CLDR / ISO 3166-2 snapshot                                                        | DL #51 rounds 6-11 (withdrawn)                                                                                      | **Rejected:** Wix's sets differ (F7, F8).                                                                                                                                                                                                                                                   |
+| Mechanism                                                              | Where                                                                     | Use here                                                                                                                |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `FieldKey` / `readFieldKey` / `readFieldView` (DL #51)                 | `classify-form-field.ts:16-60`, `read-field-view.ts:10-18`                | **Extended:** `FieldKey.address` holds the schema facts; `FieldViewData.address` holds the resolved spec.               |
+| `ProjectedForm` / `unsupportedFields` (DL #51)                         | `wix-forms/lib/types.ts`, `wix-forms/lib/utils/project-form-fields.ts:92` | **Reused** for "no offered country" only (a permanent gap). "Layouts unavailable" is transient and throws instead (Q3). |
+| Raw-form cache with TTL, shared in-flight promise, success-only        | `wix-bookings/lib/services/participant-form-source.ts:29-44`              | **Pattern reused** for the template cache.                                                                              |
+| Fail-closed list load with backoff                                     | `wix-forms/lib/services/submittable-forms.ts:1-90`                        | **Pattern reused** (failure not cached, retry backoff, timeout).                                                        |
+| `parseSubmissionViolations` (DL #55 P2)                                | `wix-submission-errors.ts:39-74`                                          | **Extended:** keeps `params.allowedValues` and exposes `LocatedViolation[]`.                                            |
+| `WixApiError.responseBody` / `instanceof` from `/client`               | `create-wix-bookings-service.ts:2,62`                                     | **Reused** for the Create Booking 400 path (scoped to `createBookingRecord` only).                                      |
+| `defaultPhoneCountry` in `config/.wix-forms.yaml` (DL #55 P1c)         | `wix-forms/lib/config-loader.ts:12-29`                                    | **Pattern reused** for `address.locale` / `address.labels`.                                                             |
+| Repeated `options` sub-contract (DL #40/#44) and `FormFieldOptionView` | `contract-utils.ts`, `wix-forms/lib/types.ts`                             | **Reused** for country and subdivision options (no new `AddressOption`).                                                |
+| Plugin validators (`plugin.yaml` `validators:` + `JayHtmlValidatorFn`) | `wix-forms/plugin.yaml:22-25`, `lib/validators/wix-form-bindings.ts`      | **Reused:** rule 6 in wix-forms; a new one-entry validator in wix-bookings.                                             |
+| `Intl.DisplayNames`                                                    | platform                                                                  | Country names, no data shipped.                                                                                         |
+| Locale dataset / ISO 3166-2 package                                    | —                                                                         | **Rejected:** not confirmed publicly available; ISO is wrong for IT/FR (Q7).                                            |
 
-**Null hypothesis per new surface.**
+**Null hypothesis per new surface:**
 
-- `AddressValue`: no existing `FieldValue` member can carry several named strings, and Wix wants an object (F8).
-- `ADDRESS_LAYOUTS`: Get Form carries no layout (F8) and no API serves one.
-- `shown` variant: without it a page cannot hide parts that are absent for a country, and every page would hard-code the layout itself.
-- `parseBookingFormViolations`: the existing parser reads a different path.
-- Bookings `address` sub-contract: the `formFields` item has one `HTMLInputElement`.
-- Rule 6: core grafts unknown `ref=` sub-tags silently (`wix-forms/lib/validators/wix-form-bindings.ts:10-13`).
-
-Every other piece reuses what is there.
+| Surface                                                                  | Why an existing primitive does not suffice                                                                                                                                                    |
+| ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AddressValue`                                                           | No `FieldValue` member carries several named strings, and both Wix APIs want an object.                                                                                                       |
+| `listFormTemplates` + `AddressTemplateSource`                            | Get Form has no layout. Templates are the only public source.                                                                                                                                 |
+| `COUNTRY_TEMPLATE_IDS`                                                   | No API serves the mapping. It is derived from public Create Submission probes (§Country map provenance) and re-probed by L12.                                                                 |
+| `shown` / `required` per part                                            | The parts and their required flags vary by country, and a fixed contract can express that only with variants.                                                                                 |
+| `subdivision.listed` + `text`                                            | Unlisted countries need free text, and listed ones need a select (Q6). One `input` with `HTMLSelectElement \| HTMLInputElement` would force pages to bind one ref in two places.              |
+| `LocatedViolation` + `parseBookingFormViolations`                        | The bookings envelope is different. The type is shared so that one message mapper serves both APIs.                                                                                           |
+| `address-labels.ts`                                                      | Templates and APIs carry no labels.                                                                                                                                                           |
+| `LearnedAddressFacts` (`wix-forms/lib/address/learned-address-facts.ts`) | It is the only way an unlisted country gets a select without shipping a dataset, and the only way a stale map entry is corrected at runtime (Q17). No existing cache holds per-country facts. |
+| `WIX_FORMS_ADDRESS_TEMPLATES_ORIGIN` (QA-only env)                       | L11 must make the live template fetch fail on a running testbed. The source is created inside `WixFormsService`, so the testbed cannot inject a `fetch` (Q18).                                |
+| Bookings validator                                                       | Core grafts unknown `ref=` sub-tags silently, so a page without IL's street parts would be a visitor dead end.                                                                                |
 
 ## Questions and Answers
 
-**Q1. Which countries are supported?**
-A: US, GB, CA, IL, fail-closed, as DL #51 §5 prefers. A field offers `ADDRESS_LAYOUTS` filtered by `allowedCountries` when that list is non-empty. A field that offers none is unsupported. A country is added later as a new table entry plus a fixture row plus a live check. ⚠️ Turning off online booking for visitors from other countries on forms with a required address is a product decision (**O2**).
+**Q1. Where do layouts come from?** List Form Templates at runtime (TL;DR). A visitor token and an API key both return 200. Always pass the 12 ids: without them, the namespace returns 39 templates, some not address templates. De-duplicate by `id`. The documented path is `/form-template-service/v2/templates`; the docs' curl example shows another host path, which is wrong. There is no hand-owned layout table and no licence question.
 
-**Q2. Where does the table live, and who owns it?**
-A: In `wix-forms/lib/address/address-layouts.ts`. Address is a Wix Forms field kind, and wix-bookings already depends on wix-forms. Its contents:
+**Q2. Which auth?** The same `WixClient` that wix-forms uses for Get Form (`WixFormsService`), which works under both API-key and visitor auth. The docs name scope `SCOPE.FORMS.VIEW-FORM`.
 
-- country codes, from what F8 sent and Wix accepted;
-- layouts, part labels and US subdivision labels, from F7's preview;
-- subdivision codes, from F8's `allowedValues` (Wix's public API answer);
-- GB and CA subdivision labels: the fixture records codes only, so ⚠️ LA0 records Wix's labels into `address-parts-by-country.json` first.
+**Q3. Cache and failure?** `createAddressTemplateSource(fetch)` in `wix-forms/lib/services/address-templates.ts`:
 
-No code or data is copied from Wix's client bundle. The codes are public standards (USPS abbreviations, the ISO 3166-2 suffixes). Wix's _selection_ (no US territories) is observed behaviour. **O1, open for product approval:**
+- One cache per server process (per `WixFormsService` instance).
+- The TTL is 1 h. Templates are identical across sites, so freshness matters only for drift.
+- Concurrent callers share one promise. A failure or a 5 s timeout is not cached, and opens a 30 s backoff in which calls fail fast.
+- A response that lacks any of the 12 ids, or whose template has no `inputOptions.target` on a field, counts as a **failure**: the layout is not trusted partially.
 
-- (a) Is shipping this derived table in a public package acceptable?
-- (b) The owner is the wix-forms maintainers. They update the table when the drift log fires or the drift check fails.
+Failure → `AddressLayoutsUnavailableError` (message "Could not load the address layouts. Please try again later."). It is **thrown, never turned into an unsupported field**, because the cause is transient and FORM_UNSUPPORTED would tell the page author to change the form. It is thrown only when the raw form has an `ADDRESS` field, so forms without one are unaffected. One outcome per caller, all "unavailable":
 
-**Q3. Why not read `allowedValues` at runtime instead of shipping a table?**
-A:
+- `getParticipantForm` (`create-wix-bookings-service.ts:175`) rethrows. The client already maps a throw to `failBooking(FORM_UNAVAILABLE, …)` (`booking-flow.ts:216-227`).
+- Server `createBooking` step 1 → `{ failure: 'FORM_UNAVAILABLE' }` (`:105-109`), as for a failed Get Form.
+- Per-form render: `getFormFields` throws, so `renderSlowlyChanging` takes its existing load-error branch (`wix-form.ts:100-108`): `loadError` is shown and the short `SLOW_RENDER_ERROR_TTL` lets the next render retry. It is **not** the DL #51 "unsupported" state.
+- Per-form submit: `{ success: false, reason: FORM_UNAVAILABLE }`, the DL #53 outcome for a form that could not be loaded.
 
-- It costs a deliberately failing Create Booking per country, per cache period.
-- It gives codes only: no layout, no labels.
-- Create Submission's equivalent is unknown.
+`ProjectionOptions.addressTemplates` is therefore never absent for a form with an address: the service loads the templates first or throws (§1).
 
-It is kept as a **drift detector**: a server log at runtime, and a manual check before release (L-drift).
+**Q4. Which countries?** `ADDRESS_COUNTRY_CODES` (247) ∩ `allowedCountries`, upper-cased, or all 247 when it is empty. Codes in `allowedCountries` that Wix does not accept are dropped with a generation warning. If nothing remains, the field is unsupported ("no country Wix accepts"). Order: by display name in the configured locale.
 
-**Q4. Free-text subdivision and rely on Wix (DL #51 Q17 c)?**
-A: Rejected. Visitors type labels ("Alabama"), and Wix rejects every one (F8). The located error would turn most submissions into a correction loop.
+**Q5. Why a fixed superset and not a repeated `parts` list?**
 
-**Q5. How does a dynamic part set fit fixed contract tags?**
-A: The part universe is fixed: Wix's `validation.fields` has eight keys (F2). `addressLine2` is never shown (`show: false`; any other setting is unsupported), which leaves seven. The contract emits each offered part once as a non-repeated sub-contract. Every part but `country` has a `shown` variant that the component sets from the selected country's layout. The per-form generator emits only the union of the offered layouts, so an `allowedCountries: ['US']` form gets no `streetName` / `streetNumber` tags. Bookings' static contract always has all seven.
+- Each part needs its own `autocomplete` token, written statically.
+- Rule 6 checks coverage tag by tag.
+- Designers place Street name and House number side by side.
+- `subdivision` has two inputs.
 
-**Q6. Why not a repeated `parts` list (the DL #51 Q8 guess)?**
-A: Four reasons:
+jay does accept `elementType: A | B` (the contract parser splits on `|`), so element type is **not** a reason.
 
-- A repeated item has one `elementType`, but country and subdivision are `<select>` and the other parts are `<input>`.
-- Each part needs its own `autocomplete` token (`postal-code`, `address-level1`, …). In a list the designer cannot write it statically.
-- Validator rule 6 can check coverage tag by tag.
-- Designers place Street name and House number side by side, which they cannot do in a uniform loop.
+**Q6. Unlisted subdivisions (56 countries)?** Options weighed:
 
-The cost is an `if` per part. That cost is accepted.
+- (i) free text plus mapping Wix's located error;
+- (ii) ship code lists harvested from Wix 400s (a hand-owned table again, which drifts silently, and gives codes without names);
+- (iii) a locale dataset (availability unconfirmed).
 
-**Q7. What value format is sent?**
-A: The flat object F8 accepted: `{ country, subdivision?, city, postalCode, addressLine? | streetName? + streetNumber? }`, with values as strings, country as ISO 3166-1 alpha-2 (`US`, `GB`, `CA`, `IL`), and subdivision as the bare code. Wix builds `streetAddress` and `formattedAddress` itself (F8 stored shape).
+**Decision: (i), with learning.**
 
-**Q8. How do whole-field and per-part `required` combine (DL #51 Q7)?**
-A:
+1. The part renders `listed: false`, which is a text input. The placeholder hint is "Region code", overridable.
+2. On a 400 `NOT_ALLOWED_VALUE_ERROR` at `<target>/subdivision` for a country whose layout has an unlisted subdivision, the server:
+   - calls `learnedFacts.learnSubdivisions(country, allowedValues)` (store below);
+   - returns `fieldOptions: { '<target>/subdivision': allowedValues as FormFieldOptionView[] }` with the invalid outcome. Labels come from `address.labels.subdivisions.<CC>`, else the code.
+3. The client replaces its spec with `withLearnedFacts(spec, { subdivisionsOf: { <CC>: options } })` (§1 "One spec"), so the part becomes `listed: true` with those options and the next payload and validation use the list. `nextAddressValue` is not involved: the outcome handler (`showBookingOutcome` / `presentSubmitRejection`) sets the store's `subdivision` to `''`, so the stale `MI` is neither shown in the select nor re-sent. The part error reads "Choose a Region from the list.". The page is guaranteed to have both inputs, because rule 6 makes a missing `subdivision.input` or `subdivision.text` an **error** (jay-feedback).
+4. Later visitors get the select straight away, because no path serves a spec with stale facts: bookings `getParticipantForm` projects per call with `learnedFacts.snapshot()` (§3), and the per-form **fast** phase, which runs per request and is not behind `SLOW_RENDER_TTL`, adds the current snapshot to the slow-phase spec (§5). L5 (bookings) and L10 (per form) check this with a new browser context.
 
-- Field `required: true`: a country must be chosen.
-- With a country chosen, every layout part is required, whether the field is required or not. A partial address is rejected by Wix (F8 case 9), so "optional" means "all or nothing".
-- An optional field with no country is left out of the payload.
-- A `validation.fields.<part>.required` other than `true` on an offered layout part is unobserved, so the field is unsupported, with the reason in the warning.
+**The store.** `wix-forms/lib/address/learned-address-facts.ts` (server-only):
 
-**Q9. Country and part labels (DL #51 Q9)?**
-A: They are English defaults in the table: "United States", "United Kingdom", "Canada", "Israel" (⚠️ Wix's exact country labels were not recorded; LA0 records them), plus F7's part labels. Pages that need other copy branch on the option `value` (the code), following the DL #45 locale-neutral pattern. Localisation is out of scope.
+```ts
+export type CountryCode = string; // ISO-like upper-case code from ADDRESS_COUNTRY_CODES
+export interface LearnedAddressFacts {
+  subdivisionsOf(country: CountryCode): string[] | undefined;
+  learnSubdivisions(country: CountryCode, codes: readonly string[]): void;
+  revealedPartsOf(country: CountryCode): LayoutPart[]; // Q17; [] when none
+  revealPart(country: CountryCode, part: LayoutPart): void;
+  snapshot(): LearnedFactsSnapshot; // every unexpired entry; bounded by the 247 keys
+}
+// address-types.ts (client-safe, travels in action outputs and the fast-phase carry-forward)
+export interface LearnedFactsSnapshot {
+  subdivisionsOf?: Record<CountryCode, FormFieldOptionView[]>;
+  revealedPartsOf?: Record<CountryCode, LayoutPart[]>;
+}
+export function createLearnedAddressFacts(options?: { now?: () => number }): LearnedAddressFacts;
+```
 
-**Q10. A country with no subdivision (DL #51 Q19)?**
-A: IL's layout has no `subdivision`, so `subdivision.shown` is `false` and `toWixAddress` never sends one. Wix rejects it otherwise (F8 case 12).
+- **Owner:** one instance per `WixFormsService`, created next to the template source and exposed as `WixFormsService.learnedAddressFacts()`. wix-bookings reaches it through the `WixFormsService` it already resolves for address specs. Bookings and per form therefore share one store per process.
+- **Keys:** `CountryCode` everywhere. Writes whose country is not in `ADDRESS_COUNTRY_CODES` are ignored, so the key space is bounded at 247 and no eviction policy is needed beyond the TTL.
+- **Validation:** a write is ignored unless every code matches `^[A-Z0-9]{1,3}$` and there are 1–200 codes (the largest server list seen in the probe is SI, with 110). Codes are upper-cased and de-duplicated. `revealPart` accepts only `LayoutPart` values.
+- **Expiry:** each country entry expires 1 h after its last write (the template TTL). A read of an expired entry returns `undefined` / `[]` and deletes it.
+- **Not persisted.** It is lost on restart (Trade-offs).
 
-**Q11. Online payment (DL #51 Q11)?**
-A: The address goes into `createBookingRecord`'s `formSubmission` (`wix-bookings/lib/services/create-wix-bookings-service.ts:140-147`) before the cart is created (`:150`), so the payment path never sees it. ⚠️ L6+ includes one online payment and checks the stored `fullAddress`.
+The spec takes per-country facts outside `AddressLayout`, so layout keys stay `templateId` (§1: `subdivisionsOf`, `revealedPartsOf`). `snapshot()` turns codes into `FormFieldOptionView`s with the resolved labels (`address.labels.subdivisions.<CC>`, else the code).
 
-**Q12. How do Wix's located errors map back to parts?**
-A:
+Rationale: Wix's own enforced list is the only correct source (ISO is wrong for IT/FR). It costs at most one round trip per country per hour per process, and it never offers a code Wix rejects. A visitor who types a valid code (FR `IDF` style) passes first time. **Option labels for learned codes are the codes**, unless `address.labels.subdivisions.<CC>` names them.
 
-- Bookings: `parseBookingFormViolations` → `fieldName` is already `<target>/<part>` (F8) → the message comes from `ruleName` and the part label (§4).
-- Per-form: `parseSubmissionFieldErrors`'s `errorPath`. ⚠️ Its form for an address part is unknown. LF0 records it, and `normalizeErrorPath` maps `address.subdivision` or `address/subdivision` to `address/subdivision`. If LF0 shows something else, Phase F stops for an addendum.
+**Q7. Why not ISO 3166-2 or Wix's locale dataset?** Raw ISO 3166-2 offers IT provinces and old FR regions that Wix rejects. A public npm release of Wix's locale dataset is unconfirmed, so it is treated as unusable. Neither is a dependency.
 
-**Q13. Per-form (Create Submission) scope?**
-A: Designed here (§5) but gated behind LF0, which is a live probe. LF0 needs a site change: adding an address field to a QA contact form. That needs approval (**O3**). The release gate does not wait for Phase F.
+**Q8. Labels?** `wix-forms/lib/address/address-labels.ts` holds:
 
-**Q14. Bookings contract shape?**
-A: A top-level `address` sub-contract (§3) with `present`, `label`, `required`, `error`, `invalid` and the seven parts. The address is not an item of `formFields`. A second supported address field on one booking form is unsupported (fail-closed, rare; DL #51 blocking rule).
+- `PART_LABELS` by part: Country/Region, Address, Address line 2, Street name, House number, City, State/Region, Zip / Postal code. The F7 preview strings are used where F7 recorded them. "State/Region" and "Address line 2" are **invented fallbacks**.
+- `SUBDIVISION_PART_LABELS` by country: US State, GB Region, CA Province, DE State, JP Prefecture, BR State, FR Region, ES Province, AU State.
+- `SUBDIVISION_NAMES[CC][code]` for the 9 listed countries: English geographic names written for this repo. Its key set is pinned to the template codes by test A2.
 
-**Q15. Initial country?**
-A: None, unless the field offers exactly one country, which is then preselected. With no country, only the `country` part shows. Guessing a country from the locale is out of scope.
+Override: `config/.wix-forms.yaml`:
 
-**Q16. Which DL #51 tests change expectations?**
-A: These encode "address unsupported", which this log changes on purpose:
+```yaml
+address:
+  locale: de # Intl.DisplayNames locale for country names; default en
+  labels:
+    parts: { postalCode: PLZ }
+    subdivisionPart: { US: State }
+    subdivisions: { IT: { '25': Lombardia } }
+```
 
-- Phase B flips DL #51 tests 5, 6 and 9 for the address (bookings);
-- Phase F flips the per-form "unsupported, required" row of the fixture table (tests 2-4).
+Overrides are **merged per key** into the defaults (`{ ...PART_LABELS, ...parts }`, and per country for `subdivisions`). They never replace a whole table, so `subdivisions: { IT: {...} }` leaves the US names intact. The config is read by the existing loader (`wix-forms/lib/config-loader.ts:39`) and applies to both plugins, because bookings resolves address specs through `WixFormsService`. Per-page copy is the page's own (it may ignore `label` and write its own text). Validation messages use the resolved labels.
 
-The new expectations come from F7 and F8, not from current output. They are rewritten red first.
+**Q9. Initial country?**
 
-**Q17. Are `autocompleteEnabled` and `showCountryFlags` honoured?**
-A: No. Wix's own autocomplete is a UI feature of its client and does not change the submitted shape. Both are ignored, and the agent-kit guide recommends the browser's `autocomplete` tokens instead.
+- `defaultCountryConfig.type === 'COUNTRY'` with an offered `countryOptions` → preselected.
+- A single offered country → preselected.
+- `BY_IP` → none. Geolocating the request is out of scope, and guessing from `Accept-Language` would be wrong for travellers.
 
-### Open items for product approval
+The preselection is applied by `initialAddressValue(spec)` into the **store** at form load. Blank-ness ignores it (TL;DR).
 
-- **O1** Licence and ownership of `ADDRESS_LAYOUTS` (Q2). It blocks the start of implementation.
-- **O2** Four supported countries only. Visitors elsewhere cannot book online when the address is required (Q1).
-- **O3** Per-form address is gated behind LF0, which needs an address field added to a QA contact form, and the release gate does not wait for it (Q13).
+**Q10. Required semantics?**
+
+- Part `p` is required iff `validation.fields.p.required ?? template.required`, and `p` is shown for the chosen country.
+- A **required field** needs a country and every required part.
+- An **optional field** that is blank is left out.
+- An optional field that is not blank needs a country and every required part. Wix agrees: a partial address is rejected.
+- `addressLine2` shown via `fieldSettings` is optional unless `validation.fields.addressLine2.required` is `true`.
+- Unknown members under `validation.fields.<part>` are ignored. Wix's located errors cover them, and the template already carries the limits.
+
+**Q11. Un-offered or malformed country?**
+
+- `toWixAddress` upper-cases `country` and keeps it even when not offered. `'us'` normalises to `'US'` and is accepted.
+- `'FR'` on a US-only field → `{ '<target>/country': 'Choose a country from the list.' }`. Server step 3 rejects it, and Wix is not called.
+- A non-string country is dropped by `readAddressValue`.
+- `validateAddressValue(spec, value: AddressValue | undefined, required)` accepts `undefined`.
+
+**Q12. Hidden fields and prefill?** A hidden address is unsupported per form, because the `control` channel carries strings. Bookings ignores hidden fields (DL #51 row 3). Prefill is out of scope.
+
+**Q13. A second address on one booking form?** Unsupported (DL #51 blocking rule). Per form, several address fields are supported, since each has its own target.
+
+**Q14. Are `autocompleteEnabled` / `showCountryFlags` honoured?** No. They are Wix client UI features. Pages use browser `autocomplete` tokens instead. `streetName` / `streetNumber` have **no** standard token, so agents must not put `address-line1` on them.
+
+**Q15. Live-check prerequisites?** The QA-site changes below are covered by the approval of this log for implementation; the QA report records that approval by role ("approved by the product owner at design-log approval", with the date), never by name. Each change is restored afterwards, and the restore is part of the check:
+
+- **Optional address:** on the bookings QA site, make the QA service form's address optional in the dashboard for L5, then restore it to required. Per form, the LF0 form already has an optional `address_limited`.
+- **Restricted / default country:** use the LF0 form's `address_limited` (`["US","IL","IT"]`, default US). For bookings, set the QA booking form's address to `allowedCountries ["US","IL","IT"]` with default US for L6, then restore it.
+- **Pay in person:** switch the QA service to pay in person for the browser bookings, then restore "Entire amount online".
+- **Online payment:** the address is written by `createBookingRecord` (`create-wix-bookings-service.ts:250-256`) **before** the cart (`:259`), so payment never reads it. L4 proves that the online-payment path reaches Wix checkout with the booking created and `fullAddress` stored. No card is charged. Completing a payment is **not** a gate step, because it would test Wix checkout, not this change.
+- **Pages:** the QA testbed's `/book` page and per-form page get the address markup (task B9/F9). They live in the workspace testbed, not in this repo. The repo's proof is the agent-kit examples and validator tests.
+- **All-required probe form (L12):** the forms QA site keeps one form with a single all-countries `address` field whose part overrides (`validation.fields.<part>.required`) are **all** `true`, the form the 2026-11-16 probe used. It must exist before L12 and must not be edited between releases, because the signatures in `country-template-map.json` assume every shown part is required. The QA report records its form id (not committed). If it is missing or changed, L12 is not run until it is recreated with that shape.
+- **Cleanup:** bookings and submissions created by checks are listed in the QA report and cancelled or deleted from the dashboard.
+
+**Q16. Which DL #51 tests flip?** Bookings tests 5, 6 and 9 (address now supported), and the per-form "unsupported, required" rows of the fixture table (tests 2-4). They are rewritten red first, from the fixtures.
+
+**Q17. What if Wix requires a part that our layout hides?** This happens when a map entry is wrong or stale: for example, a COMMON_STATE country mapped to COMMON hides `subdivision`, and Wix answers `<target>/subdivision` `REQUIRED_VALUE_ERROR`. **Decision: reveal the part.**
+
+1. The server sees a located `REQUIRED_VALUE_ERROR` on `<target>/<part>` where `<part>` is a `LayoutPart` that `layoutOf(spec, country)` does not show.
+2. It calls `learnedFacts.revealPart(country, part)`, logs the drift line (§3), and returns the invalid outcome with `fieldErrors['<target>/<part>'] = '<label> is required.'` and `revealedParts: { '<target>': ['<part>'] }`.
+3. The client replaces its spec with `withLearnedFacts(spec, { revealedPartsOf: { <CC>: [part] } })`, so the part is shown (`shown: true`, `required: true`) and the next `toWixAddress` sends it. For `subdivision`, it is `listed: false` (free text) until a NOT_ALLOWED teaches the list (Q6). The visitor fills it and resubmits.
+4. Later visitors see the part from the start through the same per-call snapshot as Q6 step 4, and the server's own `toWixAddress` on the next submit keeps it, because the server projects with the current snapshot (§3 step 3, §5). `withLearnedFacts` inserts the part in its fixed superset order (`AddressPart` order), because the template carries no position for it.
+
+This works because every contract carries all eight parts and rule 6 requires every part input to be bound. It costs one correction per country per process per hour, and L12 makes the drift visible before release. **The remaining dead end:** Wix requires a part that is **not** one of the eight (a new `target`). The server cannot reveal it, so the visitor gets the field-level message "This address cannot be accepted for <country name>. Please contact us." on `<target>/country`, and the drift log fires. The pre-mortem and the troubleshooting guide record this. An unknown target in the **template** response already fails closed (Q3).
+
+**Q18. How does L11 force a template failure on a running testbed?** `createAddressTemplateSource({ fetch, origin })` is injectable, and unit test A8 injects a failing `fetch`. The live testbed cannot inject, because `WixFormsService` builds its source at plugin init. So the default factory reads **one QA-only env var**, `WIX_FORMS_ADDRESS_TEMPLATES_ORIGIN`:
+
+- Only the **origin** is overridable (scheme, host, port, parsed with `new URL(v).origin`). The path `/form-template-service/v2/templates`, the namespace and the 12 ids are fixed.
+- An invalid value throws at init, naming the variable.
+- When it is set, the first fetch logs `[wix-forms] address templates origin overridden to <origin> (QA only)`.
+- It is read only in `address-templates.ts`. It is documented in `wix-forms-setup.md` under "QA-only settings" and is not part of `config/.wix-forms.yaml`, so a site cannot set it by accident through config.
+
+L11 sets it to `http://127.0.0.1:9` (closed port), restarts the dev server, checks, then unsets it and restarts again.
 
 ## Design
+
+### Country map provenance (B1)
+
+`COUNTRY_TEMPLATE_IDS` is derived only from public API behaviour. No private source is used.
+
+1. **Probe** (2026-11-16, visitor token, QA form with one required, all-countries `address` field whose part overrides are all `required: true`). For each of the 247 codes in `server-allowed-countries.json`, two Create Submission calls:
+   - `{ country }` → one `REQUIRED_VALUE_ERROR` per required part, which gives the **required-part set**;
+   - `{ country, subdivision: 'XX' }` → `NOT_ALLOWED_VALUE_ERROR` with `params.allowedValues` (a subdivision part exists, with Wix's list) or `UNKNOWN_VALUE_ERROR` (no subdivision part).
+
+   Every probe must be refused. A stored submission is recorded and deleted (none were stored by this probe). **The probe must run as a visitor.** An earlier attempt with a site-admin identity had country-only addresses accepted and stored: required-part validation did not apply to that identity, so its responses say nothing about layouts. The probe script therefore takes a client id and mints an anonymous visitor token, and it aborts if any probe returns 200.
+
+2. **Signature** per country: (required-part set, `NONE` | `LISTED` + sorted `allowedValues`).
+3. **Match** against the 12 template layouts (shown parts minus `addressLine2`, because the form makes every shown part required):
+   - same part set, no subdivision → COMMON or IL (their part sets differ);
+   - same part set, `allowedValues` equal to a template's non-empty `enum` → that template (US, GB, CA, DE, JP, BR, FR, ES, AU; DE and BR share a part set and are told apart by the list);
+   - same part set, a list that equals no template `enum` → `MLA_COMMON_STATE` (empty `enum`; the list is Wix's server-side list, e.g. IT's 20 codes).
+   - Anything else (no candidate, or more than one) is **unmatched**.
+4. **Result:** all 247 countries matched exactly one template, and all 494 probes were refused (no submission stored). Per template: `MLA_COMMON` 181, `MLA_COMMON_STATE` 56, and one each for US, GB, CA, IL, DE, JP, BR, FR, ES, AU. Only four required-part sets occur: {addressLine, city, postalCode} (COMMON), {addressLine, city, subdivision, postalCode} (US GB CA JP FR ES AU and COMMON_STATE), {streetName, streetNumber, city, postalCode} (IL) and {streetName, streetNumber, city, subdivision, postalCode} (DE, BR). Server lists for COMMON_STATE countries run from 4 codes (SZ) to 110 (SI).
+5. **Count:** 66 entries in `COUNTRY_TEMPLATE_IDS` (56 COMMON_STATE + 10 own-template countries). An earlier 67-entry summary counted the `COMMON` fallback as a key; COMMON is not a table entry, it is the default for the other 181 countries. 66 + 181 = 247.
+6. **Fail closed for unmatched countries:** a code that is a key of the fixture's `unmatchedOrAmbiguous` object (the evidence file's own name) is removed from `ADDRESS_COUNTRY_CODES ∩ allowedCountries` at spec resolution with a generation warning ("country <CC> has no verified address layout"). It is never guessed onto COMMON. A field left with no country is unsupported (Q4). The 2026-11-16 probe has no unmatched country, so the set is empty today. The rule exists so that a future L12 re-probe that finds a new signature fails closed instead of guessing.
+
+**Drift check (L12).** Before every release, the same probe script re-derives the map live and diffs it against the committed fixture, together with the template diff. Any difference blocks the release until the fixture and `COUNTRY_TEMPLATE_IDS` are updated through a red-first test. Between releases, Q17's runtime reveal covers a stale entry.
 
 ### 1. Shared address core (Phase A) — `wix-forms/lib/address/`
 
 ```ts
-// address/address-types.ts
+// address-types.ts (client-safe)
 export type AddressPart =
   | 'country'
   | 'addressLine'
+  | 'addressLine2'
   | 'streetName'
   | 'streetNumber'
   | 'city'
   | 'subdivision'
   | 'postalCode';
 export type LayoutPart = Exclude<AddressPart, 'country'>;
-/** The store and payload value of an address field (Q7). Keys are Wix's part names. */
 export type AddressValue = Partial<Record<AddressPart, string>>;
-export interface AddressOption {
-  value: string;
-  label: string;
-} // value = code (F8)
-export interface AddressCountryLayout {
-  country: string; // 'US' | 'GB' | 'CA' | 'IL'
-  label: string; // English default (Q9)
-  parts: LayoutPart[]; // in Wix's display order (F7); all required
-  partLabels: Partial<Record<LayoutPart, string>>; // overrides of ADDRESS_PART_LABELS, e.g. subdivision: 'State'
-  subdivisions: AddressOption[]; // [] when `parts` has no 'subdivision'
+export interface AddressPartSpec {
+  part: LayoutPart;
+  label: string; // resolved (config > default)
+  required: boolean; // form override ?? template
+  maxLength?: number; // template
+  pattern?: string; // template (postalCode)
 }
-/** The layouts one field offers, in table order (Q1). */
+export interface AddressLayout {
+  templateId: string;
+  parts: AddressPartSpec[]; // shown parts, in template order
+  subdivisionLabel?: string; // when 'subdivision' is a part
+  subdivisions?: FormFieldOptionView[]; // listed by the template only; per-country lists are in subdivisionsOf
+}
 export interface AddressFieldSpec {
-  countries: AddressCountryLayout[];
+  countries: FormFieldOptionView[]; // offered, value = code, label = Intl name
+  initialCountry?: string; // Q9
+  layouts: Record<string, AddressLayout>; // key: templateId; only the templates used by offered countries
+  templateOf: Record<string, string>; // offered CountryCode → templateId; absent → COMMON id
+  subdivisionsOf: Record<string, FormFieldOptionView[]>; // CountryCode → learned list (Q6); overrides an unlisted layout
+  revealedPartsOf: Record<string, LayoutPart[]>; // CountryCode → parts revealed at runtime (Q17)
 }
-/** Raw schema facts classification needs (read by readFieldKey for inputType ADDRESS). */
 export interface AddressSchemaFacts {
-  allowedCountries: string[]; // addressOptions.validation.allowedCountries ?? []
-  partRequired: Record<string, boolean | undefined>; // addressOptions.validation.fields.<part>.required
-  fieldSettings: Record<string, { show?: boolean }>; // multilineAddressOptions.fieldSettings ?? {}
+  // read by readFieldKey for ADDRESS
+  allowedCountries: string[];
+  partRequired: Partial<Record<LayoutPart, boolean>>;
+  showAddressLine2: boolean;
+  defaultCountry?: { type: 'BY_IP' | 'COUNTRY'; country?: string };
 }
 
-// address/address-layouts.ts — data only, client-safe
-export const ADDRESS_PART_LABELS: Record<AddressPart, string>;
-// country 'Country/Region', addressLine 'Address', streetName 'Street name', streetNumber 'House number',
-// city 'City', subdivision 'State/Region', postalCode 'Zip / Postal code' (F7)
-export const ADDRESS_LAYOUTS: readonly AddressCountryLayout[]; // US, GB, CA, IL
-// US: ['addressLine','city','subdivision','postalCode'], subdivision 'State', 54 options
-// GB: same parts, 'Region', ENG NIR SCT WLS · CA: same parts, 'Province', 13 · IL: ['streetName','streetNumber','city','postalCode'], []
+// address-countries.ts (data): ADDRESS_COUNTRY_CODES (247), COUNTRY_TEMPLATE_IDS (66), COMMON_TEMPLATE_ID, ADDRESS_TEMPLATE_IDS (12)
+// address-labels.ts (data): PART_LABELS, SUBDIVISION_PART_LABELS, SUBDIVISION_NAMES
+// address-templates.ts (server): parseAddressTemplates(json) → Record<templateId, RawAddressTemplate>; de-dupes by id
+//   createAddressTemplateSource({ fetch, origin? }) → AddressTemplateSource { load(): Promise<AddressTemplates> } (Q3, Q18)
+// learned-address-facts.ts (server): LearnedAddressFacts, createLearnedAddressFacts (Q6)
+// address-spec.ts (server): resolveAddressSpec(facts, templates, labels) → AddressFieldSpec | { unsupported: string }
+//   the base spec: subdivisionsOf and revealedPartsOf are {}; learned facts are added only by withLearnedFacts
 
-// address/address-support.ts
-/** The supported layouts this field offers; [] means unsupported (row 13). */
-export function offeredAddressLayouts(facts: AddressSchemaFacts): AddressCountryLayout[];
-/** Why a field is unsupported, for the generation/server warning; undefined when supported. */
-export function addressUnsupportedReason(facts: AddressSchemaFacts): string | undefined;
-
-// address/address-value.ts — pure, client-safe
+// address-value.ts (pure, client-safe)
 export function layoutOf(
   spec: AddressFieldSpec,
   country: string | undefined,
-): AddressCountryLayout | undefined;
-/** Next store value after one part changes; a country change clears a subdivision not in the new list. */
+): AddressLayout | undefined; // template layout + subdivisionsOf + revealedPartsOf for that country
+export function withLearnedFacts(
+  spec: AddressFieldSpec,
+  facts: LearnedFactsSnapshot,
+): AddressFieldSpec; // the one merge point (below)
+export function initialAddressValue(spec: AddressFieldSpec): AddressValue;
 export function nextAddressValue(
   spec: AddressFieldSpec,
   current: AddressValue,
   part: AddressPart,
   value: string,
-): AddressValue;
-/** The payload boundary (Q7): country + its layout parts, trimmed; undefined when no country. */
+): AddressValue; // country change drops parts not shown and a subdivision not listed
+export function isBlankAddress(value: AddressValue): boolean; // no non-empty part except country
 export function toWixAddress(spec: AddressFieldSpec, value: AddressValue): AddressValue | undefined;
-/** Per-part messages, keyed by part. Runs on toWixAddress's output. */
 export function validateAddressValue(
   spec: AddressFieldSpec,
-  value: AddressValue,
+  value: AddressValue | undefined,
   required: boolean,
 ): Partial<Record<AddressPart, string>>;
-/** Untrusted input → only own string-valued AddressPart keys (server side). */
-export function readAddressValue(raw: unknown): AddressValue;
+export function readAddressValue(raw: unknown): AddressValue; // own string-valued AddressPart keys only
 export function addressErrorKey(target: string, part: AddressPart): string; // `${target}/${part}`
 export function splitErrorKey(key: string): { target: string; part?: AddressPart };
-export function isAddressValue(value: FieldValue): value is AddressValue; // a plain object, not an array
+export function isAddressValue(value: FieldValue): value is AddressValue;
 ```
 
-**Support rule** (`offeredAddressLayouts`; every step fail-closed):
+`toWixAddress` steps:
 
-1. Candidates: `ADDRESS_LAYOUTS` filtered by `allowedCountries` when that list is non-empty (codes compared upper-case).
-2. If `fieldSettings` is not exactly `{ addressLine2: { show: false } }` (other members of that entry ignored) → `[]`. Reason: `"address settings this site cannot show (<keys>)"`.
-3. For each part in the union of the candidates' `parts`, plus `country`: if `partRequired[part] !== true` → `[]`. Reason: `"address part <part> is optional in Wix; not supported"`.
-4. Otherwise, the candidates (`[]` → reason `"no supported country (supported: US, GB, CA, IL)"`).
+1. If `isBlankAddress(value)` and `!value.country`, return `undefined`.
+2. `country = value.country?.trim().toUpperCase()`.
+3. Take the layout `layoutOf(spec, country)`, which is COMMON for an un-offered code, so validation still runs.
+4. Return `{ country, ...each shown part with a trimmed, non-empty value }`.
 
-**Validation messages** (`validateAddressValue`, English defaults, exported from `address/address-messages.ts`):
+Optional blank fields are left out by the callers through `isBlankAddress`, before `toWixAddress`.
 
-- country missing on a required field: `Country/Region is required.`;
-- country not offered: `Choose a country from the list.`;
-- a layout part empty: `<part label> is required.`;
-- subdivision not in the layout's codes: `Choose a <State|Region|Province> from the list.`
+`validateAddressValue` checks, in order:
 
-No length or postal-code format checks: Wix's rules are unknown, ⚠️ LB0 probes one bad zip, and a Wix rejection arrives as a located error (§4).
+1. `undefined` or blank, and the field is optional → `{}`.
+2. No country → `Country/Region is required.` (only on `country`).
+   A required field that is blank **but has a country** (a preselected one) skips this and goes on to step 4, so the visitor sees each required part's message, not a country message for a country that is already set. LF0 "country only" (US) therefore gives exactly `address/addressLine`, `address/city`, `address/subdivision`, `address/postalCode`, the same four keys Wix returned (A5).
+3. Country not offered → `Choose a country from the list.`
+4. A required part that is empty → `<label> is required.`
+5. A value over `maxLength` → `<label> must be at most <n> characters.`
+6. A value that fails `pattern` → `<label> is too long.` This wording is correct only for the pattern `^.{0,50}$`, the only one in all 12 templates. Test A1 pins that every template pattern equals it, so a new pattern fails the build and its message is decided then.
+7. A listed subdivision not in the list → `Choose a <subdivisionLabel> from the list.`
 
-**Wiring into DL #51 types** (`wix-forms/lib/types.ts`, `classify-form-field.ts`, `read-field-view.ts`):
+The messages are English defaults in `address-messages.ts`, documented in `user-visible-messages.md`.
+
+**Resolving the spec** (`resolveAddressSpec`, fail-closed):
+
+1. Offered = `ADDRESS_COUNTRY_CODES ∩ allowedCountries` (Q4). Empty → `{ unsupported: 'no country Wix accepts' }`.
+2. For each used template: parts = the fields with `hidden: false`, plus `addressLine2` when `showAddressLine2`. Keep template order.
+3. `required` = `partRequired[part] ?? field.required`.
+4. Limits come from `stringOptions.validation`.
+5. Subdivisions: a non-empty template `enum` goes on the layout. `subdivisionsOf` and `revealedPartsOf` start empty. Layout keys stay `templateId`.
+6. Labels: `config.labels` > `address-labels.ts` > the code.
+7. `initialCountry` per Q9.
+
+**One spec: `withLearnedFacts(spec, facts)`.** Pure, returns a new spec, never mutates:
+
+1. For each country in `facts.subdivisionsOf` that is offered **and** whose template has an empty `enum` (unlisted), set `subdivisionsOf[country]` to the list. A list for a listed or un-offered country is ignored.
+2. For each country in `facts.revealedPartsOf` that is offered, set `revealedPartsOf[country]` to the union of the existing and new parts.
+3. Return `spec` unchanged when nothing applied.
+
+`layoutOf` reads both maps, so the shown parts, `required`, `listed` and the options all follow. Who calls it, and with which facts:
+
+| Path                                                  | Facts                                                                                                                                                   | Where                                                              |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Bookings `getParticipantForm` / `createBooking`       | `forms.learnedAddressFacts().snapshot()`, per call                                                                                                      | `projectParticipantForm` via `ProjectionOptions.learnedFacts` (§3) |
+| Per-form server submit                                | the same snapshot, per call                                                                                                                             | `deps.addressFieldsOf` (§5)                                        |
+| Per-form render                                       | the same snapshot, taken in the **fast** phase                                                                                                          | `renderFastChanging` (`wix-form.ts:111`, §5)                       |
+| Bookings / per-form client after an `invalid` outcome | `{ subdivisionsOf: outcome.fieldOptions, revealedPartsOf: outcome.revealedParts }`, keyed back from `<target>/<part>` to country by the value's country | `showBookingOutcome` / `presentSubmitRejection` (§3, §5)           |
+
+`projectFormFields` applies it when `ProjectionOptions.learnedFacts` is given, after `resolveAddressSpec`. No other function reads `LearnedAddressFacts` or patches a spec, so the client view state, the client payload and validation, and the server payload and validation cannot disagree.
+
+**Wiring into DL #51 types:**
 
 ```ts
+// wix-forms/lib/types.ts
 export type FormFieldInputType = … | 'address';
-export type FieldValue = string | string[] | boolean | AddressValue;
-export interface FormFieldView { …; address?: AddressFieldSpec }   // set iff inputType === 'address'
-// FieldKey (DL #51) gains:
-address?: AddressSchemaFacts;            // read only when inputType === 'ADDRESS'
-// FieldViewData (DL #51) gains:
-address?: AddressFieldSpec;              // { countries: offeredAddressLayouts(key.address) }
-/** Every message for one field, keyed by target, or by `<target>/<part>` for an address. */
-export function fieldErrorsOf(field: FormFieldView, value: FieldValue): Record<string, string>; // project-form-fields.ts
+export type FieldValue = string | string[] | boolean | AddressValue;  // :22
+export interface FormFieldView { …; address?: AddressFieldSpec }    // iff inputType === 'address'
+// classify-form-field.ts FieldKey (:16) gains  address?: AddressSchemaFacts  (read in readFieldKey :40 when inputType === 'ADDRESS')
+// read-field-view.ts FieldViewData (:10) gains  address?: AddressFieldSpec
+// project-form-fields.ts
+export function fieldErrorsOf(field: FormFieldView, value: FieldValue): Record<string, string>; // keyed by target or `<target>/<part>`
 ```
 
-- **Row 13** of DL #51's classification table changes. `ADDRESS` + `MULTILINE_ADDRESS` with `offeredAddressLayouts(key.address).length > 0` and `!key.hidden` gives:
-  - per-form: `'address'` (**Phase F**; until then, unsupported as in DL #51);
-  - bookings: `'ADDRESS'` (**Phase B**).
-- Otherwise the field is unsupported, and `UnsupportedFieldView.wixKind` stays `ADDRESS/MULTILINE_ADDRESS`. The generator and server warnings append `addressUnsupportedReason`.
-- A hidden address is unsupported per form, because the `control` channel carries strings only. Bookings already ignores hidden fields (DL #51 row 3).
-- `validateFormField` (`project-form-fields.ts:157`) gains an address branch: the first message of `fieldErrorsOf`, or `''`. `validateVisibleFields` (`submission-values.ts:117-128`) switches to `fieldErrorsOf`, so part errors reach their parts.
-- **Exports** (`wix-forms/lib/index.ts` and `index.client.ts`; every module above is client-safe): the address types, `ADDRESS_LAYOUTS`, `toWixAddress`, `nextAddressValue`, `validateAddressValue`, `readAddressValue`, `layoutOf`, `addressErrorKey`, `splitErrorKey`, `fieldErrorsOf`. The table is about 75 options, roughly 3 KB.
+- **Row 13**: `ADDRESS` + `MULTILINE_ADDRESS`, not hidden, with a resolved spec → `'address'` (per form) / `'ADDRESS'` (bookings). Otherwise it is unsupported, and the warning carries the reason.
+- Spec resolution needs the templates, which are async, and `projectFormFields` (`wix-forms/lib/utils/project-form-fields.ts:35`) is sync. `ProjectionOptions` (`:26`) therefore gains `addressTemplates?: AddressTemplates` and `learnedFacts?: LearnedFactsSnapshot`, loaded by the caller beforehand. The service methods that project (`wix-forms/lib/services/wix-forms-service.ts:18`) load templates only when the raw form has an `ADDRESS` field, so forms without an address make no extra call. A load failure **throws** `AddressLayoutsUnavailableError` from the service method (Q3). Calling `projectFormFields` with an address and without `addressTemplates` is a programming error and throws, so no path turns a transient failure into an unsupported field.
+- `validateFormField` (`project-form-fields.ts:171`) gains an address branch (the first message of `fieldErrorsOf`). `checkFormField` (`project-form-fields.ts:176`) is unchanged for other kinds.
+- **Exports** (`index.ts`, `index.client.ts`): the types, the `address-value.ts` functions, `fieldErrorsOf`, `addressViewState` (§2), `LocatedViolation`, `addressMessageFor`, and the rule-6 core `checkAddressBindings` (for the bookings validator). Server-only (`index.ts`): `parseBookingFormViolations`, `AddressTemplateSource`, `AddressLayoutsUnavailableError`, `LearnedAddressFacts`, and the `WixFormsService.addressTemplates()` / `learnedAddressFacts()` / `addressFieldsOf()` members. Client-safe (`index.client.ts`) also gets `withLearnedFacts` and `LearnedFactsSnapshot`.
 
-### 2. Contract YAML — the address part subtree
+### 2. Contract subtree and view state
 
-The bookings contract (§3) and the per-form generator (§5) use the same subtree. Per-form `addressFieldTag(field)` in `contract-utils.ts` emits it for the parts in the union of `field.address.countries[].parts`. `country` is always present. Shown here at field level 1, for a field whose `target` is `address`:
+Shared by bookings (§3) and per-form (§5). `addressFieldTag(field)` in `contract-utils.ts` emits it with **all eight parts, always**, per form as in bookings' static contract. It is not narrowed to the parts the offered countries use. Why: a per-form contract is a build-time snapshot, and the site owner can widen `allowedCountries` in the dashboard later (for example add IL). A narrowed contract would then lack `streetName`, the page would have no input, and nothing would catch it at build time. With all eight emitted and rule 6 requiring every part input, any later country or a revealed part (Q17) always has an input. The cost is street inputs on a US-only page, hidden by `if="…shown"`.
+
+Defence in depth for contracts generated by an older plugin version: when the runtime spec shows a part whose tag is missing from the loaded contract, the field is unsupported (`address contract is missing part <part>; regenerate contracts`) and a warning is logged. This is a permanent gap until regeneration, so FORM_UNSUPPORTED is correct. Test F1 covers it.
 
 ```yaml
-- tag: address
+- tag: address # the field's target
   type: sub-contract
   phase: fast+interactive
-  description: Multi-line address
   tags:
     - { tag: label, type: data, dataType: string }
     - { tag: required, type: variant, dataType: boolean }
-    - { tag: error, type: data, dataType: string } # first part error (summary)
+    - { tag: error, type: data, dataType: string } # first part error
     - { tag: invalid, type: variant, dataType: boolean }
     - tag: country
       type: sub-contract
@@ -352,300 +556,461 @@ The bookings contract (§3) and the per-form generator (§5) use the same subtre
         - { tag: error, type: data, dataType: string }
         - { tag: invalid, type: variant, dataType: boolean }
         - { tag: input, type: interactive, elementType: HTMLSelectElement }
-        - tag: options
-          type: sub-contract
-          repeated: true
-          trackBy: value
-          tags:
-            - { tag: value, type: data, dataType: string }
-            - { tag: label, type: data, dataType: string }
+        - {
+            tag: options,
+            type: sub-contract,
+            repeated: true,
+            trackBy: value,
+            tags:
+              [
+                { tag: value, type: data, dataType: string },
+                { tag: label, type: data, dataType: string },
+              ],
+          }
     - tag: subdivision
       type: sub-contract
       tags:
         - { tag: shown, type: variant, dataType: boolean }
-        - { tag: label, type: data, dataType: string } # State / Region / Province
-        - { tag: value, type: data, dataType: string }
-        - { tag: error, type: data, dataType: string }
-        - { tag: invalid, type: variant, dataType: boolean }
-        - { tag: input, type: interactive, elementType: HTMLSelectElement }
-        - tag: options
-          type: sub-contract
-          repeated: true
-          trackBy: value
-          tags:
-            - { tag: value, type: data, dataType: string }
-            - { tag: label, type: data, dataType: string }
-    # addressLine, streetName, streetNumber, city, postalCode — each:
-    - tag: city
-      type: sub-contract
-      tags:
-        - { tag: shown, type: variant, dataType: boolean }
+        - { tag: listed, type: variant, dataType: boolean } # select vs free text (Q6)
+        - { tag: required, type: variant, dataType: boolean }
         - { tag: label, type: data, dataType: string }
         - { tag: value, type: data, dataType: string }
         - { tag: error, type: data, dataType: string }
         - { tag: invalid, type: variant, dataType: boolean }
+        - { tag: input, type: interactive, elementType: HTMLSelectElement }
+        - { tag: text, type: interactive, elementType: HTMLInputElement }
+        - { tag: options, …as country }
+    # addressLine, addressLine2, streetName, streetNumber, city, postalCode — each:
+    - tag: city
+      type: sub-contract
+      tags:
+        - { tag: shown, type: variant, dataType: boolean }
+        - { tag: required, type: variant, dataType: boolean }
+        - { tag: label, type: data, dataType: string }
+        - { tag: value, type: data, dataType: string }
+        - { tag: error, type: data, dataType: string }
+        - { tag: invalid, type: variant, dataType: boolean }
+        - { tag: maxLength, type: data, dataType: number }
         - { tag: input, type: interactive, elementType: HTMLInputElement }
 ```
 
-- No field-level `input`, `control` or `placeholder`.
-- Part tag names are fixed camelCase, under the field, so they never collide with `RESERVED_TAG_NAMES` (`contract-utils.ts:164-176`), which are form-level.
-- ⚠️ **A6** proves with `parseContract` that this three-level nesting (form → address → subdivision → options) parses and that the ViewState and Refs types generate. **Fallback** if it does not: hoist the two option lists to `address.countryOptions` / `address.subdivisionOptions`, which is the same depth as today's field-level `options`, and keep everything else.
+- Part tags are camelCase under the field, so they never collide with `RESERVED_TAG_NAMES` (form-level).
+- jay contracts nest non-repeated sub-contracts inside sub-contracts (jay's contract format doc, "Form Component with Nested Structure"), so the depth is not a risk. **Minimum jay: 0.26.4**, enforced by the runtime dependency ranges `^0.26.4` in `wix-forms/package.json:44-52` (`component`, `fullstack-component`, `runtime`, `stack-*-runtime`), which includes the fix for duplicate sibling `input` ref consts. A6/B5 **compile** a page that binds every part.
+- `addressViewState(field, value, errors)` (in `components/form-view-state.ts`, exported) builds the subtree. **`present: false` / no country**: `country.options` = offered countries, `country.value` = `''` (or the initial country), every other part `shown: false` with empty `value`/`error`/`label`, and `subdivision.options` = `[]`.
 
 ### 3. Bookings (Phase B) — `wix-bookings`
 
 ```ts
-// wix-bookings/lib/types.ts (after DL #51 1b)
-export interface BookingFormFieldView { …; type: 'STRING' | 'EMAIL' | 'PHONE' | 'URL' | 'BOOLEAN' | 'ADDRESS'; address?: AddressFieldSpec }
-export type BookingFormValue = string | boolean | AddressValue;
-// CreateBookingInput.formValues: Record<string, BookingFormValue>   (was string | boolean, DL #51)
-// wix-apis/create-booking.ts:12  formSubmission: Record<string, BookingFormValue>
-
-// wix-bookings/lib/utils/form-violations.ts (new, server)
-export interface FormViolation { fieldName: string; ruleName: string; allowedValues?: string[] }
-/** details.validationError.fieldViolations[].data.formViolations[]; [] when absent or unparseable. */
-export function parseBookingFormViolations(responseBody: string): FormViolation[];
-/** One English message per fieldName; part labels from the field's layout. */
-export function violationsToFieldErrors(violations: FormViolation[], fields: BookingFormFieldView[], formValues: Record<string, BookingFormValue>): Record<string, string>;
+// lib/types.ts
+export type ParticipantFormValue = string | boolean | AddressValue; // :36
+// BookingFormFieldView.type gains 'ADDRESS'; address?: AddressFieldSpec
+// CreateBookingOutcome 'invalid' gains  fieldOptions?: Record<string, FormFieldOptionView[]>   (learned lists, Q6)
+//                                   and revealedParts?: Record<string, LayoutPart[]>           (target → parts, Q17)
 ```
 
-- **`getParticipantForm`** (DL #51 §3): `toBookingFieldType` row 13 → `'ADDRESS'` when supported, and the view carries `address: readFieldView(raw, key).address`. A second supported `ADDRESS` field → `unsupportedFields` (Q14).
-- **Contract** `booking-flow.jay-contract`: a new top-level tag after `formFields` (`:99-109`). It is §2's subtree, with all seven parts, `phase: fast+interactive` and a `present` variant:
+- **`toBookingFieldType`** (`participant-form.ts:35`): row 13 → `'ADDRESS'`. **`toFormFieldView`** (`:43`) adds `ADDRESS → 'address'` and copies `address`.
+- **`projectParticipantForm`** (`participant-form.ts:67`) receives the templates and `learnedAddressFacts().snapshot()` through `ProjectionOptions`, on **every** call: the source caches the raw form (`participant-form-source.ts:29-44`), never the projection, so each `getParticipantForm` and `createBooking` sees the facts learned so far. `participant-form-source.ts:44` loads the templates with the raw form when the form has an address. A template failure in `getParticipantForm` **rethrows** `AddressLayoutsUnavailableError`, and the client shows `FORM_UNAVAILABLE` (`booking-flow.ts:216-227`), as for a failed Get Form (Q3).
+- **Action schemas**: `get-participant-form.jay-action` output `fields[]` gains `type: ADDRESS` and `address: object`. Its `.jay-action.d.ts` types `address?: AddressFieldSpec`. `create-booking.jay-action` `formValues: object` is unchanged, and its `.d.ts` uses the widened `ParticipantFormValue`. The outputs `fieldOptions?: object` and `revealedParts?: object` are added.
+- **Contract** `booking-flow.jay-contract`: a new top-level `address` tag after `formFields`. It is §2's subtree with all eight parts plus `{ tag: present, type: variant, dataType: boolean }`.
+- **Client** (`components/booking-flow.ts`):
+  - `onSelectSlot` (`:203-232`) splits `participantForm.fields` (`:216-223`) into `formFields` (non-address) and `addressField`, and **resets** `addressValue` to `initialAddressValue(spec)` and `addressErrors` to `{}`.
+  - New signals `addressField` (the `BookingFormFieldView` whose `address` is **the one spec**), `addressValue`, `addressErrors`. There is no separate options or revealed-parts signal.
+  - Part refs: `input` / `text` get `oninput` / `onchange` → `nextAddressValue`, plus an `onblur` part validation.
+  - `readFormValues` (`:234-252`) adds `formValues[target] = toWixAddress(addressField().address, addressValue())` unless the field is optional and blank.
+  - `onConfirmBooking` (`:253`): client validation via `fieldErrorsOf(toFormFieldView(addressField()), addressValue())`. Part messages go to `addressErrors`, and the first message (formFields first, then address) goes to `failBooking(VALIDATION, …)` (`:163`).
+  - `showBookingOutcome` (`:295`) `invalid`: it distributes `<target>/<part>` keys to `addressErrors`, then sets `addressField` to a copy whose `address` is `withLearnedFacts(address, { subdivisionsOf: { [country]: fieldOptions['<target>/subdivision'] }, revealedPartsOf: { [country]: revealedParts['<target>'] } })`, with `country = addressValue().country`, and clears `addressValue.subdivision` when a list was learned (Q6). `addressViewState`, `nextAddressValue`, `readFormValues` and `onConfirmBooking` all read `addressField()`, so the revealed or listed part is shown, validated and sent.
+  - `onBackToServices` (`:326`) resets all three signals.
+- **Server `createBooking`** (`create-wix-bookings-service.ts:90-124`), in order:
+  1. Load service, form and templates. Any failure, including `AddressLayoutsUnavailableError` → `FORM_UNAVAILABLE` (`:105-109`).
+  2. Blocking unsupported → `FORM_UNSUPPORTED` (`:111-117`).
+  3. `participantFieldErrors` (`:119`, `participant-form.ts:115`) gains the address, using the spec projected in step 1 with the current snapshot (so a part revealed by an earlier 400 is kept by `toWixAddress`): `readAddressValue` → optional and blank → dropped; else `toWixAddress` → `validateAddressValue`. Errors → `invalid`.
+  4. `supportedParticipantValues` (`participant-form.ts:130`) puts the normalised address in, and drops unknown keys and parts outside the layout.
+  5. **New:** wrap only `createBookingRecord` (`:250-256`) in a `try`. A `WixApiError` with status 400 and `parseBookingFormViolations(error.responseBody).length > 0` → **return** `{ outcome: 'invalid', fieldErrors, fieldOptions, revealedParts }`. Learned subdivisions and revealed parts are written to `LearnedAddressFacts` first (Q6, Q17). Cart and checkout errors (`:259+`) are untouched. Everything else rethrows as today.
+- **`parseBookingFormViolations(body): LocatedViolation[]`** (in wix-forms `utils/located-violations.ts`) reads `details.validationError.fieldViolations[].data.formViolations[]`. It **de-duplicates** by `fieldName` + `ruleName` across `fieldViolations` entries, and returns `[]` on bad JSON.
+- **Drift log** (one line per process per key): `[wix-forms] address drift: Wix rejected <target>/<part> (<ruleName>) for <country>; layout <templateId>. See "Address drift" in @jay-framework/wix-forms docs/01-setup-and-troubleshooting.md.`. That entry (added by this log, and linked from `wix-bookings-troubleshooting.md`) tells the site operator what to do: run `scripts/address-map-probe.mjs` (L-drift), and report the country, part and rule. B7 asserts the exact line. No visitor values are logged. It fires on `UNKNOWN_VALUE_ERROR`, on `REQUIRED_VALUE_ERROR` for a part our layout did not show (which is also revealed, Q17), and on a located error for a target or part outside the eight (the dead end, Q17). A `NOT_ALLOWED_VALUE_ERROR` on an unlisted subdivision is expected and **not** drift. On a listed one, it is drift.
 
-```yaml
-- tag: address
-  type: sub-contract
-  phase: fast+interactive
-  description: The participant form's address, when it has one (branch on present)
-  tags:
-    - { tag: present, type: variant, dataType: boolean }
-    - { tag: label, type: data, dataType: string }
-    - { tag: required, type: variant, dataType: boolean }
-    - { tag: error, type: data, dataType: string }
-    - { tag: invalid, type: variant, dataType: boolean }
-    # country, addressLine, streetName, streetNumber, city, subdivision, postalCode — exactly §2
+```ts
+// wix-forms/lib/utils/located-violations.ts
+export interface LocatedViolation {
+  key: string;
+  ruleName: string;
+  allowedValues?: string[];
+  wixMessage?: string;
+}
+export function parseBookingFormViolations(responseBody: string): LocatedViolation[];
+export function submissionLocatedViolations(responseBody: string): LocatedViolation[]; // errors[] → { key: errorPath, ruleName: errorType, allowedValues: params.allowedValues }
+export function addressMessageFor(
+  field: FormFieldView,
+  value: AddressValue,
+  violation: LocatedViolation,
+): string;
 ```
 
-- **Client** (`booking-flow.ts`):
-  - `onSelectSlot` (`:201-236`, replaced by DL #51 with `getParticipantForm`) sets `formFields` to the non-address entries and `addressField` to the first `ADDRESS` entry.
-  - New signals `addressValue: AddressValue` and `addressErrors: Record<string, string>`.
-  - Each part's `refs.address.<part>.input` gets `oninput`/`onchange` → `nextAddressValue` and an `onblur` validation.
-  - `render` builds `address` from `addressViewState(field, value, errors)`. That function is shared with per-form (it lives in `wix-forms/lib/components/form-view-state.ts` and is exported).
-  - `readFormValues` (`:238-252`) adds `formValues[target] = toWixAddress(spec, addressValue())` when defined.
-  - Client validation runs `fieldErrorsOf(toFormFieldView(view), value)`. The first message goes to `failBooking(VALIDATION, …)` (as DL #51 §4 does), and part messages go to `addressErrors`.
-  - `onBackToServices` (`:307-320`) clears both signals.
-- **Server `createBooking`.** DL #51 §4's check order gains steps:
-  1. Resolve the form → `FORM_UNAVAILABLE`.
-  2. Required unsupported → `FORM_UNSUPPORTED`.
-  3. Validate every supported field with `fieldErrorsOf`. An address value is first normalised: `readAddressValue` → `toWixAddress`, so extra parts from an untrusted client are dropped and an empty address is left out. Errors → `invalid` with `<target>/<part>` keys.
-  4. Drop unknown keys and call Wix.
-  5. **New:** a `WixApiError` with status 400 and `parseBookingFormViolations(body).length > 0` → **return** `{ outcome: 'invalid', fieldErrors: violationsToFieldErrors(…) }`. Every other error still throws, as today.
-- **Drift log** (step 5). For `NOT_ALLOWED_VALUE_ERROR` on `<target>/subdivision`, or on `<target>/country`, when step 3 had accepted the value:
+`addressMessageFor`:
 
-  `[wix-bookings] address table drift: Wix rejected <part> "<value>" for <country>; Wix allows [<allowedValues>]. Update ADDRESS_LAYOUTS (DL #52).`
+- `REQUIRED_VALUE_ERROR` → `<label> is required.`;
+- `NOT_ALLOWED_VALUE_ERROR` → `Choose a <label> from the list.` (country: `Choose a country from the list.`);
+- `MAX_LENGTH_ERROR` → `<label> must be at most <n> characters.`;
+- `INVALID_VALUE_FOR_PATTERN_ERROR` → `<label> is too long.`;
+- `UNKNOWN_VALUE_ERROR` → `This address cannot be accepted for <country name>. Please contact us.`;
+- otherwise → `<label>: please check this value.`
 
-  For `UNKNOWN_VALUE_ERROR` or `REQUIRED_VALUE_ERROR` on an address part: the same line with `layout` instead of the value list. The visitor sees the mapped message. No values beyond the part and the country are logged.
+A key with no part (`address` REQUIRED) → the field label message. A non-address key (F6 dropdown) → `<field label>: please check this value.`
 
-- **Violation messages** (`violationsToFieldErrors`):
-  - `REQUIRED_VALUE_ERROR` → `<part label> is required.`;
-  - `NOT_ALLOWED_VALUE_ERROR` → `Choose a <part label> from the list.`;
-  - `UNKNOWN_VALUE_ERROR` → `This address cannot be accepted for <country label>. Please contact us.`;
-  - anything else → `<part label or field label>: please check this value.`
+✅ booking page:
 
-  A non-address `fieldName` (a dropdown, F6) uses the field label.
+```html
+<div if="flow.address.present">
+  <label
+    >{flow.address.country.label}
+    <select ref="flow.address.country.input" autocomplete="country">
+      <option forEach="flow.address.country.options" trackBy="value" value="{value}">
+        {label}
+      </option>
+    </select></label
+  >
+  <label if="flow.address.streetName.shown"
+    >{flow.address.streetName.label}<input ref="flow.address.streetName.input"
+  /></label>
+  <label if="flow.address.streetNumber.shown"
+    >{flow.address.streetNumber.label}<input ref="flow.address.streetNumber.input"
+  /></label>
+  <label if="flow.address.addressLine.shown"
+    >{flow.address.addressLine.label}<input
+      ref="flow.address.addressLine.input"
+      autocomplete="address-line1"
+  /></label>
+  <label if="flow.address.addressLine2.shown"
+    >{flow.address.addressLine2.label}<input
+      ref="flow.address.addressLine2.input"
+      autocomplete="address-line2"
+  /></label>
+  <label if="flow.address.city.shown"
+    >{flow.address.city.label}<input ref="flow.address.city.input" autocomplete="address-level2"
+  /></label>
+  <label if="flow.address.subdivision.shown"
+    >{flow.address.subdivision.label}
+    <select
+      if="flow.address.subdivision.listed"
+      ref="flow.address.subdivision.input"
+      autocomplete="address-level1"
+    >
+      <option forEach="flow.address.subdivision.options" trackBy="value" value="{value}">
+        {label}
+      </option>
+    </select>
+    <input
+      if="!flow.address.subdivision.listed"
+      ref="flow.address.subdivision.text"
+      autocomplete="address-level1"
+  /></label>
+  <label if="flow.address.postalCode.shown"
+    >{flow.address.postalCode.label}<input
+      ref="flow.address.postalCode.input"
+      autocomplete="postal-code"
+  /></label>
+</div>
+```
 
-- **Client outcome** (DL #51 §4 `switch`): `invalid` → `failBooking(VALIDATION, first message in formFields-then-address order)`, and `addressErrors` = its `<target>/…` entries.
-- **Action schema** `create-booking.jay-action`: `formValues: object` is unchanged. Its `.d.ts` types `formValues` as `Record<string, string | boolean | AddressValue>`.
-
-✅ `<div if="flow.address.present"> <select ref="flow.address.country.input" autocomplete="country">…</select> <label if="flow.address.subdivision.shown">{flow.address.subdivision.label}<select ref="flow.address.subdivision.input" autocomplete="address-level1"><option forEach="flow.address.subdivision.options" trackBy="value" value="{value}">{label}</option></select></label> … </div>`
-❌ A single `<input>` bound in `formFields` for the address, or a free-text State input: Wix rejects "Alabama" (F8).
+❌ binding the address as one `formFields` input; ❌ a page without `streetName` / `streetNumber` (an IL visitor would hit "Street name is required." with no input; the bookings validator reports an **error**); ❌ binding only one of `subdivision.input` / `subdivision.text` (error).
 
 ### 4. Data flow
 
 ```mermaid
 flowchart LR
-  GF[Get Form, cached] --> K[readFieldKey: FieldKey.address facts]
-  K --> S{offeredAddressLayouts}
-  S -->|empty| U[unsupportedFields: blocks if required]
-  S -->|layouts| V[readFieldView: AddressFieldSpec]
-  V --> C[client: country select, then shown parts]
-  C -->|nextAddressValue| ST[store: AddressValue]
-  ST -->|toWixAddress + fieldErrorsOf| A[createBooking / submitForm]
-  A -->|readAddressValue, toWixAddress, validate| W[Wix Create Booking / Create Submission]
-  W -->|400 formViolations: address/part| M[invalid: fieldErrors by target/part]
+  GF[Get Form cached] --> K[readFieldKey: AddressSchemaFacts]
+  T[List Form Templates cached 1h] --> R
+  L[LearnedAddressFacts: subdivisions, revealed parts] --> R
+  K --> R{resolveAddressSpec}
+  T -. failure, throws .-> UA[FORM_UNAVAILABLE / load error]
+  R -->|unsupported: no offered country| U[unsupportedFields]
+  R -->|spec| C[client: country, shown parts]
+  C -->|nextAddressValue| ST[store AddressValue]
+  ST -->|isBlank / toWixAddress / validate| S[createBooking / submitForm server]
+  S -->|readAddressValue, toWixAddress, validate| W[Wix Create Booking / Create Submission]
+  W -->|400 → LocatedViolation by target/part| M[invalid + fieldOptions + revealedParts]
+  M --> L
   M --> C
-  W -->|NOT_ALLOWED on accepted value| D[drift log]
 ```
 
-### 5. Per-form (Phase F, after LF0) — `wix-forms`
+### 5. Per-form (Phase F) — `wix-forms`
 
-- `classifyFormField` row 13 → `'address'` (§1).
-- **Generator:**
-  - `form-contract-generator.ts:24-34` emits `addressFieldTag(field)` for `inputType === 'address'`;
-  - `elementTypeFor` (`contract-utils.ts:21-31`) is not called for address;
-  - `forms-reference.ts` `fieldReference` (`:30-43`) gives `{ tag, label, type: 'address', target, required, hidden: false, hasControl: false, valueType: 'address', parts: [<emitted part tags>], countries: [<codes>] }` and no `elementType`.
-- **View state** (`form-view-state.ts:46-72`): `fieldToViewState` → `addressViewState(field, value, errorByTarget, invalidByTarget)`:
-  - `shown` comes from `layoutOf(field.address, value.country)`;
-  - part labels come from the layout;
-  - subdivision options come from that layout;
-  - errors come from the `<target>/<part>` keys;
-  - the field-level `error` is the first part error.
-- **Component** (`wix-form.ts`):
-  - `wireFieldEvents` (`:396-421`) wires `fieldRef[part]?.input` `oninput`/`onchange` → `setFieldValue(target, nextAddressValue(…))`, and `onblur` → part validation;
-  - `reflectToInput` (`:143-167`) sets each part's `.value`;
-  - `focusableRef` (`:444-452`) returns the first errored part's input, else `country`;
-  - `emptyValueFor` (`submission-values.ts:20-24`) → `{}`;
-  - `projectSubmissionValues` (`:31-40`) applies `toWixAddress` and leaves the key out when the result is `undefined`.
-- **Errors:**
-  - `presentSubmitRejection` (`submit-outcome.ts:64-72`) runs `splitErrorKey`, so a key whose target is a visible address field sets the part error and `invalid`;
-  - `parseSubmissionFieldErrors` (`project-form-fields.ts:202-226`) passes each `errorPath` through `normalizeErrorPath(path, addressTargets)` (⚠️ its form comes from LF0).
-- **Server** (`run-submission.ts:113-156`):
-  - `SubmitDeps` gains `fieldsOf(formId): Promise<FormFieldView[]>`, backed by the same `listForms` cache as DL #51's `unsupportedFieldsOf`;
-  - before the hook, each address value is normalised and validated (`readAddressValue` → `toWixAddress` → `validateAddressValue`), and an error returns `{ success: false, reason: VALIDATION, fieldErrors }` without calling Wix.
-  - This also strips parts that an untrusted client adds.
-- **Value type:** `create-submission.ts:21-37` already takes `FieldValue`, so it gets the widening for free. `submit-form.jay-action` `values: object` is unchanged.
+- `classifyFormField` row 13 → `'address'`.
+- **Generator:** `form-contract-generator.ts` emits `addressFieldTag(field)` with all eight parts (§2). Generation loads templates once per run; a failure fails the generation with a clear error, since a contract cannot be emitted from a guess. `forms-reference.ts` `fieldReference` gives `{ type: 'address', target, required, parts: [...], countries: <count or list ≤ 10> }`.
+- **View state:** `fieldToViewState` → `addressViewState`.
+- **Component** `wix-form.ts`:
+  - `wireFieldEvents` wires `input` / `text` per part → `setFieldValue(target, nextAddressValue(…))`;
+  - `reflectToInput` sets part `.value`;
+  - `focusableRef` returns the first errored part, else `country`;
+  - `emptyValueFor` (`components/submission-values.ts:22`) → `initialAddressValue(spec)`;
+  - `projectSubmissionValues` (`submission-values.ts:33`) drops optional blank addresses and applies `toWixAddress`;
+  - `validateVisibleFields` (`submission-values.ts:155`) uses `fieldErrorsOf`.
+  - **One spec on the client:** the interactive component (`wix-form.ts:127`) keeps `addressSpecs: Record<target, AddressFieldSpec>` as a signal, seeded from `carryForward.fields`. A `currentFields()` read returns `carryForward.fields` with each address field's `address` replaced from that signal, and **every** consumer above (view state, `nextAddressValue`, `projectSubmissionValues`, `validateVisibleFields`, `createPageCheckRunner` at `:146`) takes `currentFields()`, never `carryForward.fields` directly. `presentSubmitRejection` updates the signal through `withLearnedFacts` (below).
+- **Learned facts reach renders in the fast phase.** `renderSlowlyChanging` (`wix-form.ts:81`) keeps calling `getFormFields` **without** learned facts, so the slow output, cached under `SLOW_RENDER_TTL` 600 s / `SLOW_RENDER_GRACE` 3600 s (`slow-render-defaults.ts:9-10`), holds only the base spec. `renderFastChanging` (`:111`), which runs on every request, gains the `WixFormsService` argument (the builder already declares `withServices(WIX_FORMS_SERVICE)`, `:800`, and jay-stack passes declared services to every server phase) and, when `carryForward.fields` has an address, replaces each spec with `withLearnedFacts(spec, forms.learnedAddressFacts().snapshot())` in both the fast view state and the carry-forward it returns. This is an in-memory read, no network. A later per-form visitor therefore gets a learned select or revealed part on the next request, not after the slow TTL. F2b tests it.
+- **Server** (`lib/submission/run-submission.ts`):
+  - `SubmitDeps` (`run-submission.ts:56-71`) has no field specs today: its only form-shape dependency is `unsupportedFieldsOf(formId)` (`:69`), wired in `forms-actions.ts:38-42` from the process-lifetime `listForms()` cache (`wix-forms-service.ts:37-55`). That cache is **not** used for specs, because it holds projections frozen at first load. `unsupportedFieldsOf` is unchanged.
+  - **New dependency** `addressFieldsOf(formId): Promise<FormFieldView[]>` in `SubmitDeps`, wired in `forms-actions.ts` next to `unsupportedFieldsOf` as `(formId) => forms.addressFieldsOf(formId)`. `WixFormsService.addressFieldsOf` returns `[]` with no network call when the listed form (from `listForms()`) has no address field (`ListedFormView` gains `hasAddress: boolean`). Otherwise it calls `getFormFields(formId, { learnedFacts: learnedAddressFacts().snapshot() })` and returns the address fields. Caching: Get Form is fetched per call, as `getFormFields` does today (`wix-forms-service.ts:68-78`, no raw-form cache); templates come from the 1 h template cache; the projection is **never cached**, so each submit uses the facts learned so far. The cost is one Get Form per submit of a form with an address (Trade-offs).
+  - `listForms()` projects with templates too (loaded only when a listed raw form has an `ADDRESS` field; a failure throws, so submit returns `FORM_UNAVAILABLE` and generation fails). It does not pass learned facts: it only needs `unsupportedFields` and `hasAddress`.
+  - In `supportedValues` (`:119-149`), each address value goes through `readAddressValue` → blank optional → dropped; otherwise `toWixAddress` → `validateAddressValue`. Errors → `{ success: false, reason: VALIDATION, fieldErrors }` before the hook, with no Wix call.
+  - A template failure → `FORM_UNAVAILABLE` (Q3).
+  - **Wix 400** (`failedSubmissionResult`, `:394`, `violationsOf` `:444`): `parseSubmissionViolations` is extended. An `errorPath` `<target>/<part>` whose target is an address field becomes a part key with `addressMessageFor`'s text and `FieldRule.SERVER`. `NOT_ALLOWED_VALUE_ERROR` on `<target>/subdivision` feeds `LearnedAddressFacts` and `fieldOptions` (Q6). A `REQUIRED_VALUE_ERROR` on a hidden part feeds `revealPart` and `revealedParts` (Q17). Because the next submit calls `addressFieldsOf` again, the server's `toWixAddress` keeps the revealed part (F5b).
+- **Client errors:** `presentSubmitRejection` (`submit-outcome.ts:67`) runs `splitErrorKey`. A part key sets that part's error. For `fieldOptions` / `revealedParts` it sets `addressSpecs[target] = withLearnedFacts(spec, …)` keyed by the stored value's country (as in bookings), and for a learned list sets the store's `subdivision` to `''` through `setFieldValue` (Q6, Q17).
+- `submit-form.jay-action` output gains `fieldOptions?: object` and `revealedParts?: object`. `create-submission.ts` already takes `FieldValue`.
+
+### 6. Compatibility
+
+- **Existing booking pages** bind no address refs. A form with a required address previously showed `FORM_UNSUPPORTED`. After this change it shows the form, and confirm fails with "Country/Region is required.", which no control on the page can fix. Mitigations:
+  - the bookings validator's **"no address refs"** check (`BOOKINGS-ADDRESS-UNBOUND`) fires only on a page that imports `booking-flow` and binds no `<key>.address.*` ref. Its severity depends on what the site's services need, read from the agent-kit reference `agent-kit/references/wix-bookings/services.yaml` under `ctx.projectRoot`:
+
+    | `services.yaml` says                                                            | Result                                                                                                                                                         |
+    | ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+    | some visible service has `participantFormHasAddress: true`                      | **error**: "Service <name> asks for an address, but this booking-flow page binds no address inputs. Add the address markup (wix-bookings-setup.md → Address)." |
+    | every visible service has `participantFormHasAddress: false`                    | no finding                                                                                                                                                     |
+    | the file is missing, or a service lacks the flag (generated by an older plugin) | **warning**: "Cannot tell whether any service asks for an address; run `jay-stack agent-kit` to refresh services.yaml."                                        |
+
+    `participantFormHasAddress` is written by `generateWixBookingsAgentKit` (`lib/generate-agent-kit.ts`, `bookings-references.ts:23`): for each service it reads the participant form's raw fields and checks for an `ADDRESS` input (no templates needed). The validator never calls Wix. A page that binds **some** address refs gets rule (a)/(b) errors regardless, since a partial address is always a dead end.
+
+    **Suppression.** Plugin validators receive the page's `<script type="application/jay-validations">` YAML as `ctx.validationOverrides` (jay-stack's `runPluginValidators` passes it unchanged). The validator honours one plugin-namespaced key, for a page that deliberately offers only address-free services:
+
+    ```html
+    <script type="application/jay-validations">
+      wix-bookings:
+        allow-unbound-address: true
+    </script>
+    ```
+
+    It silences only `BOOKINGS-ADDRESS-UNBOUND` (error or warning) on that page, never rules (a)/(b). Every finding's `suggestion` names this key. `wix-bookings-setup.md` documents it, and B8 tests it.
+
+    So a page that uses `booking-flow` without address markup breaks the build only when a service on the site actually asks for an address, which is exactly when that page would ship a form no visitor can submit;
+
+  - changelog entries for both packages: "booking pages must add the address markup (see wix-bookings-setup.md)";
+  - a troubleshooting entry for that symptom.
+
+  Runtime detection of unbound refs is **not** designed: we rely on no jay API that reports whether a ref is bound. The validator is the guard.
+
+- **Semver.** Both packages are at `0.26.4`. This change has two breaking effects: the `FieldValue` widening (submit hooks, DL #42, that narrow on `string | string[] | boolean` must handle objects), and the new build error for booking pages on sites with an address service. Under semver for `0.x`, the minor digit is the breaking slot, so the release is **0.27.0**, not a patch, and consumers on `^0.26.x` do not get it without opting in. The changelog lists both under "Breaking", with the fix for each.
+- **`fieldOptions`** is additive.
+
+### 7. Release gate (`RELEASE-BLOCKED.md`)
+
+**Exit criteria:** every Gate-exit check (L1–L12) passes and is recorded in the QA report with its video, all unit tests (A, B, F) are green, and `yarn confirm` passes. Only then does the **last** implementation commit:
+
+- delete `RELEASE-BLOCKED.md`;
+- add the L-drift step to a durable release checklist (the `scripts/publish.cjs` header comment plus a "Before release" section in `wix-forms/agent-kit/plugin/wix-forms-setup.md`);
+- update DL #51's status ("L6 passed via DL #52 Gate exit") and both index rows.
 
 ## Implementation Plan
 
-**Before Phase A:** O1 answered.
+**Phase A0 — fixtures (first task, no code):** commit to `wix-forms/test/fixtures/address/`:
 
-**Phase A — shared core (wix-forms; no behaviour change, row 13 still unsupported):**
+- `templates-list-response.json`: the raw List Form Templates response for all 12 ids (captured fresh 2026-11-16 as a visitor, duplicates included). It is the only template fixture, and A1/A2 read FR, ES, AU and COMMON_STATE from it like the others;
+- `country-template-map.json`: the derived map, `{ _source, probedAt, templateIds, countryTemplateIds, unmatchedOrAmbiguous: { <CC>: { requiredParts, subdivision, candidates } }, perCountry: { <CC>: { requiredParts, subdivision: NONE | LISTED, allowedValues?, template } } }` (`unmatchedOrAmbiguous` is `{}` today), transcribed from the probe evidence (§Country map provenance) with probe ids removed;
+- `server-allowed-countries.json`;
+- `create-submission-address-probe.json`: the 27 LF0 cases, stripped of form, submission and request ids;
+- `create-booking-400-dropdown.json`: F6's body, verbatim, from the 2026-11-10 capture's `== RESPONSE 400` section.
 
-- **LA0 (live, read-only):** open the Wix form preview of the QA form and record into `address-parts-by-country.json`: the GB and CA subdivision labels, the four country labels, and every option list's order. This is a fixture edit with a `_source` note.
-- Build `lib/address/*` (§1), the `FieldKey.address` and `FieldViewData.address` reads, `fieldErrorsOf`, the `FieldValue` widening, and the exports.
-- Red tests A1-A6.
+And the probe script `wix-forms/scripts/address-map-probe.mjs` (dev-only, not shipped). It takes `--client-id`, `--form-id`, `--target` and an output path as arguments, and embeds no ids. It runs the §Country map provenance probe and prints the diff against `country-template-map.json` and `templates-list-response.json`. L12 runs it.
 
-**Phase B — bookings (the gate path):**
+Each has a `_source` note ("live probe on a QA site, 2026-11-16"). Before commit, every fixture is stripped of site ids, form ids, submission ids, request ids (`x-wix-request-id`, `requestId`) and the QA site's name; a test (A0) greps the fixture directory for UUID-shaped strings other than the 12 template ids and fails on any. Expected-value fixtures are written by hand from these.
 
-- **LB0 (live, `curl`, first task):** send Create Booking with US `subdivision: "XX"`, IL with `addressLine`, US with `postalCode: "ABC"`, and US with a 300-character `city`. Commit the four **response bodies** (no request bodies, no contact data) as `wix-bookings/test/fixtures/address/create-booking-400-*.json`. Also commit F6's dropdown 400 response body as `create-booking-400-dropdown.json`. If the envelope differs from F6's, `parseBookingFormViolations` follows the captured shape. Record whether the zip and length cases are rejected, and where.
-- Then: row 13 `'ADDRESS'`, the `address` contract tag, the client wiring, server steps 3 and 5, the drift log, `form-violations.ts`, and the widened types and `.d.ts`.
-- Update the DL #51 bookings tests that encode "address unsupported" (Q16), red first with the new expectations.
-- Guides (§Agent feedback loop).
-- Red tests B1-B6.
-- **L6+** passes → delete `RELEASE-BLOCKED.md` in its own commit, which cites the L6+ demo video.
+**Phase A — shared core (wix-forms; row 13 still unsupported):**
 
-**Phase F0 — LF0 (live; needs O3 approval for the site change):** on a QA contact form with a required Multi-line address, send Create Submission with the 16 F8 variants. Record the status, error body and stored submission to `wix-forms/test/fixtures/form-kinds/address-create-submission-probe.json`. Phase F proceeds only if:
+1. Write the `lib/address/*` data and the pure functions, `address-templates.ts` (fetch, de-dupe, cache, backoff), and `resolveAddressSpec`.
+2. Wire `FieldKey.address`, `ProjectionOptions.addressTemplates` and `fieldErrorsOf`, widen `FieldValue`, and add `located-violations.ts`, the `config.address` read and the exports.
+3. Red tests A0–A11 → green.
 
-- the accepted and rejected sets equal F8's;
-- the error path locates the part.
+**Phase B-server (bookings):**
 
-Otherwise, write an addendum to this log before any per-form code.
+1. **LB0** (live, `curl`, first): Create Booking with US `subdivision: "XX"`, IL with `addressLine` only, US `postalCode` 60 chars, US `addressLine` 160 chars. Commit **only 400 bodies** as `wix-bookings/test/fixtures/address/create-booking-400-*.json`. A 200 is recorded in the QA report as `accepted`, with its booking listed for cleanup. Confirm the envelope is F6's; if it differs, the parser follows the capture and this log gets an Implementation-Results note.
+2. Row 13 `'ADDRESS'`, `toFormFieldView`, projection with templates, server steps 1–5, learned subdivisions, the drift log, the widened types and action schemas.
+3. DL #51 bookings tests 5, 6, 9 flipped red first.
+4. B1, B2, B4, B6, B7 green.
 
-**Phase F — per-form:** §5, validator rule 6, guides, and the per-form rows of DL #51's fixture table flipped red first. Red tests F1-F7, then LF1.
+**Phase B-client:**
+
+1. Write the contract tag, the `booking-flow.ts` wiring, the `participantFormHasAddress` flag in `services.yaml`, and the bookings validator (`plugin.yaml` `validators:` entry + `validateBookingFlowBindings` export, with the `allow-unbound-address` suppression).
+2. Update the guides.
+3. B3, B5, B8 green.
+4. **B9:** add the address markup (the ✅ example) to the QA testbed `/book` page.
+
+**Phase F — per-form:**
+
+1. Generator, view state, component (including the fast-phase snapshot and `currentFields()`), `addressFieldsOf` in `SubmitDeps` / `forms-actions.ts` / `WixFormsService`, server and 400 mapping (§5), plus rule 6. If the fast-render signature does not receive the declared service, the type check fails and this log gets an Implementation-Results note with the alternative (a `getAddressFacts` action called at interactive start).
+2. Flip the DL #51 per-form fixture rows red first.
+3. F1–F8 (with F2b, F5b) green.
+4. **F9:** a QA testbed per-form page for the LF0 form.
+
+**Phase Q — Gate exit:** apply the Q15 site changes, run L1–L12 (`/demo-feature`), restore the site, record the QA report and video, then the §7 final commit.
 
 ## Examples
 
-✅ US visitor: the store holds `{ country: 'US', addressLine: '600 Dexter Ave', city: 'Montgomery', subdivision: 'AL', postalCode: '36104', streetName: 'left over' }`. The payload is `{ country: 'US', addressLine: '600 Dexter Ave', city: 'Montgomery', subdivision: 'AL', postalCode: '36104' }`, which is F8 case 1.
-
-✅ The visitor switches US → IL. `nextAddressValue` clears `subdivision`, `subdivision.shown` and `addressLine.shown` become `false`, and `streetName.shown` and `streetNumber.shown` become `true`.
-
-✅ The field is optional and the visitor picks no country. `address` is absent from `formSubmission`, and Wix accepts the booking (F6).
-
-❌ `subdivision: 'US-AL'` or `'Alabama'`: Wix rejects it (F8), and our `<select>` never produces it. Server step 3 catches a hand-crafted one: `{ 'address/subdivision': 'Choose a State from the list.' }`.
-
-❌ Sending all eight parts because Get Form marks them all required (F2). IL then fails with `UNKNOWN_VALUE_ERROR` (F8 case 10).
-
-❌ A page binding `ref="form.address.state.input"`. That is an unknown part, so rule 6 reports an error.
+- ✅ **US.** Store `{ country:'US', addressLine:'600 Dexter Ave', city:'Montgomery', subdivision:'AL', postalCode:'36104', streetName:'left over' }` → payload without `streetName` (LF0 "US valid", 200).
+- ✅ **IL.** `{ country:'IL', streetName:'Herzl', streetNumber:'1', addressLine2:'Apt 4', city:'Tel Aviv', postalCode:'6100000' }` is sent as is (LF0 "IL + addressLine2", 200). Switching IL → US drops `streetName`, `streetNumber` and `addressLine2` (hidden for US).
+- ✅ **IT.** The visitor types `MI` → Wix 400 NOT_ALLOWED with 20 codes → `address/subdivision`: "Choose a Region from the list.". The part becomes a select of the 20 codes (labels = codes unless configured). The next IT visitor gets the select from the start.
+- ✅ **Optional field, default country US, untouched.** The store is `{ country:'US' }`, which is blank → key left out → accepted.
+- ❌ `{ country:'FR' }` on `address_limited` → server step 3: `address_limited/country`: "Choose a country from the list."; Wix is not called.
+- ❌ `postalCode` of 60 chars → client "Zip / Postal code is too long."; if it is forged past the client, Wix INVALID_VALUE_FOR_PATTERN_ERROR → the same message on the part.
+- ❌ `ref="flow.address.state.input"` → bookings validator error (unknown part).
 
 ## Trade-offs
 
-- **Four countries only** (fail-closed). A visitor elsewhere cannot complete a form with a required address (**O2**). The benefit: nothing ships that Wix would reject.
-- **A table derived from Wix behaviour.** It can drift silently in what Wix accepts. Mitigations: the runtime drift log, the L-drift check before release, and located errors so that a drift costs one correction and not a dead end. The licence question is **O1**.
-- **Fixed superset contract.** Each part needs an `if`, so pages are a bit more verbose. In exchange, contracts are typed and validatable.
-- **English labels and messages.** This follows today's `validateFormField` messages. Per-part locale-neutral enums are not added (DL #45 covers the form-level outcome).
-- **"Optional" means all or nothing** once a country is chosen. This follows Wix (F8 case 9).
-- **Strict schema support** (`fieldSettings`, per-part `required`). An owner who changes the address settings in the dashboard gets "unsupported" until the change is probed. This is the same trade as DL #51's strict tuples.
-- **Per-form after the gate.** Releases can resume before per-form address works. Per-form address stays fail-visible (DL #51 1a) in the meantime.
+- **A runtime dependency on List Form Templates.** It is one cached call per process per hour, and it fails closed. In exchange there is no hand table for 12 layouts, and Wix changes to layouts flow in automatically. The country → template map can still drift, and L-drift plus the drift log cover it.
+- **Free text for 56 countries.** The first visitor per country per hour may get one correction. In exchange, no dataset or licence, and never an offer of a code Wix rejects. Codes without names (IT `25`) read poorly unless the site configures names.
+- **One Get Form per submit of a form with an address.** `addressFieldsOf` projects per call so the server never strips a revealed part; forms without an address pay nothing. Caching the projection was rejected because it would freeze learned facts.
+- **Learned facts live in process memory.** They are lost on restart, and each server instance learns separately, which costs one correction per instance. There is no persistence layer.
+- **All eight parts in every contract, and rule 6 errors on any unbound part.** Pages carry inputs they rarely show, and existing booking pages break at build until they add the markup. In exchange, no country change, map drift or revealed part can strand a visitor.
+- **English defaults**, with site-level overrides in config. Locale-neutral per-part enums are not added.
+- **The fixed superset contract** needs an `if` per part, and both subdivision inputs on the page.
+- **The gate waits for per-form too.** That is a longer gate, but it gives one release with both paths proven, and DL #51's "Scope vs L6" gap is closed.
 
 ## Verification Criteria
 
-Unit tests are written red first, and their expected values come from the fixtures, never from current output. "Row N" means the row number in the probe report's Create Booking table (§3 of the report). The fixture's `cases[]` has the same 16 cases in a different order, so tests match them by `case` name.
+Unit tests are red first, and their expected values come from the fixtures, never from current output.
 
-- **A1** `ADDRESS_LAYOUTS` equals `address-parts-by-country.json` for US, GB, CA and IL. Each preview label maps to a part: `Address` → `addressLine`, `Street name` → `streetName`, `House number` → `streetNumber`, `City` → `city`, `State` / `Region` / `Province` → `subdivision`, `Zip / Postal code` → `postalCode`. The test compares parts, their order, `subdivisionLabel`, codes and their order, and the labels (the US labels today; GB, CA and country labels after LA0).
-- **A2** For every `NOT_ALLOWED_VALUE_ERROR` case in `address-create-booking-probe.json`, the set of `formViolations[].data.allowedValues` equals the table's subdivision codes for that country (US 54, GB 4, CA 13).
-- **A3** `toWixAddress` over a store value built from each **accepted** probe case (rows 1, 7, 11, 13, 15), with an unrelated part added, deep-equals that case's `sentAddress`. Row 12's address (IL + `subdivision`) normalises to row 11's. An empty country gives `undefined`.
-- **A4** For each **rejected** probe case, `validateAddressValue(toWixAddress(…))` has, for every rejected part, an error keyed by that case's `formViolations[].fieldName`: subdivision for rows 2-6 and 8; subdivision for row 9; `streetName` and `streetNumber` for row 10. (Row 10's `UNKNOWN_VALUE_ERROR` on `addressLine` cannot occur after normalisation, which the test asserts.)
-- **A5** `readFieldKey` + `offeredAddressLayouts`:
-  - `booking-form.json` and `default-form.json` → US, GB, CA, IL;
-  - hand-written copies:
-    - `allowedCountries: ['FR']` → `[]`, with the reason naming the supported list;
-    - `['us', 'FR']` → US;
-    - `addressLine2.show: true` → `[]`;
-    - `fieldSettings: {}` → `[]`;
-    - `fields.city.required: false` → `[]`;
-    - `fields.subdivision` missing with `allowedCountries: ['IL']` → IL (no subdivision in that layout);
-    - the same with `['US']` → `[]`;
-    - `hidden: true` → per-form unsupported.
-- **A6** `parseContract` over the expected YAML fixtures `test/fixtures/address/address-field-all.yaml` (four countries) and `address-field-us.yaml` (no street parts), written first. They parse, and the generated ViewState has `address.subdivision.options[]` and `address.city.shown`. On failure, apply §2's fallback and record it.
-- **B1** `parseBookingFormViolations` over `create-booking-400-dropdown.json` gives `[{ fieldName: 'dropdown_7b7d', ruleName: 'NOT_ALLOWED_VALUE_ERROR', allowedValues: ['Option 1', 'Option 2'] }]`. Over LB0's US and IL bodies, it gives the fixture's `fieldName`s. Over `'{}'` and `'not json'` it gives `[]`.
-- **B2** `getParticipantForm` with `booking-form.json` and with `default-form.json`: the address is in `fields` with `type: 'ADDRESS'` and four layouts, and `unsupportedFields` is empty. With a copy carrying two address fields, the second is in `unsupportedFields`. (This replaces DL #51 tests 5 and 6's address expectation.)
+- **A0** The fixture directory contains no UUID other than the 12 template ids, and no `requestId` key.
+- **A1** `parseAddressTemplates(templates-list-response.json)` → 12 unique ids; parts/order/required/limits for **all 12** (COMMON, COMMON_STATE, US, GB, CA, IL, DE, JP, BR, FR, ES, AU) equal a hand-written `expected-layouts.json`. Every `postalCode` pattern equals `^.{0,50}$` (pins step 6's message).
+- **A2** `SUBDIVISION_NAMES[CC]` key set equals the template `enum` for each of the 9 listed countries. `COUNTRY_TEMPLATE_IDS` equals `country-template-map.json` `countryTemplateIds` (66 entries, none mapped to COMMON), every id in it is one of the 12, and every fixture `perCountry` signature re-matches to its recorded template with the §provenance rule (so the matcher and the table cannot diverge). `unmatchedOrAmbiguous` is `{}`, and a spec resolved with a fixture copy that lists `ZW` under it does not offer ZW and warns.
+- **A3** `resolveAddressSpec`, cases:
+  - `booking-form.json` facts → 247 countries, initial none;
+  - `allowedCountries ['us','IL','IT','ZZ']` → US, IL, IT (ZZ dropped, with a warning);
+  - `['ZZ']` → unsupported;
+  - `defaultCountryConfig COUNTRY 'US'` → initial US;
+  - `BY_IP` → none;
+  - IL with form override `postalCode.required: true` → required, and without the override → optional;
+  - `showAddressLine2` → `addressLine2` in US parts, optional;
+  - the resolved spec has empty `subdivisionsOf` / `revealedPartsOf`, and IT's layout is free text;
+  - `projectFormFields` with `learnedFacts: { subdivisionsOf: { IT: [20 codes] } }` → the address spec deep-equals `withLearnedFacts(base, sameFacts)`;
+  - templates absent while the form has an address → `projectFormFields` **throws** (no unsupported field).
+- **A4** `toWixAddress` over each **accepted** LF0 case (by `case` name: "US valid", "IL streetName+number", "IL + addressLine2", "FR IDF", "ZW without subdivision"), with an unrelated part added, deep-equals that case's `sent.address`. `'us'` → `'US'`. Un-offered `'FR'` is kept. Blank → `undefined`.
+- **A5** `validateAddressValue(toWixAddress(…))` for each **rejected** LF0 case whose rejection is client-detectable gives errors on the same `<part>`s as the case's `errorPath`s, asserted through `fieldErrorsOf` keys `address/<part>`:
+  - "US missing subdivision", "US missing postalCode", "US XX", "US US-AL", "country only" (required field, preselected-style `{country:'US'}` → exactly the keys `address/addressLine`, `address/city`, `address/subdivision`, `address/postalCode`, and **no** `address/country`), "parts, no country" (→ only `address/country`), "IL without postalCode", "IL with addressLine" (streetName/streetNumber), "postalCode 60 chars", "addressLine 160 chars", "limited field, GB".
+  - Excluded, because they can only be caught by Wix and are tested in A6: "IT MI", "IT XX", "FR FR-IDF".
+  - Excluded, because normalisation makes them impossible: "US + streetName" and "ZW with subdivision". The test asserts they normalise to accepted shapes.
+- **A6** `submissionLocatedViolations` over every LF0 400 body gives `{ key: errorPath, ruleName: errorType, allowedValues }`, and `addressMessageFor` gives the documented message.
+- **A7** `parseBookingFormViolations(create-booking-400-dropdown.json)` → `[{ key:'dropdown_7b7d', ruleName:'NOT_ALLOWED_VALUE_ERROR', allowedValues:['Option 1','Option 2'] }]`. A body repeating the same violation in two `fieldViolations` → one item. `'{}'` and `'not json'` → `[]`.
+- **A8** Template source (injected `fetch` and `now`): two concurrent calls → one fetch; a failure is not cached; a call within 30 s of a failure rejects with `AddressLayoutsUnavailableError` without a fetch; the TTL runs from the **successful response**, not the request: a fetch that starts at t=0 and resolves at t=4 s is served from cache at t=3604 s − 1 ms and refetched at t=3604 s; a response missing one id → failure. `origin: 'http://127.0.0.1:9'` → the request URL is `http://127.0.0.1:9/form-template-service/v2/templates?namespace=…` with the 12 ids; an origin with a path (`http://x/y`) uses only `http://x`; an invalid value throws naming `WIX_FORMS_ADDRESS_TEMPLATES_ORIGIN`.
+- **A9** `nextAddressValue`: US→IL clears `subdivision`, `addressLine` and hidden `addressLine2`; IL→US clears the street parts.
+- **A10** `LearnedAddressFacts` (injected `now`): learn IT 20 codes → `subdivisionsOf('IT')` returns them upper-cased, de-duplicated; `'ZZ'` (not in the 247) → ignored; a code `'TOOLONG'` or 201 codes → whole write ignored; after 1 h → `undefined` and the entry is gone; `revealPart('ZW','subdivision')` → `revealedPartsOf('ZW')` is `['subdivision']`; `revealPart('ZW','state' as any)` → ignored; `snapshot()` holds exactly the unexpired IT list (as options labelled by code, or by `address.labels.subdivisions.IT`) and ZW's revealed part.
+- **A11** `withLearnedFacts`: IT list on a base spec → `layoutOf(spec,'IT')` is listed with those 20 options; the input spec is unchanged (no mutation); a list for US (listed) or for an un-offered country → ignored; `revealedPartsOf.ZW = ['subdivision']` → `layoutOf(spec,'ZW')` shows subdivision, required, free text, after `city` (superset order); then `toWixAddress(spec, { country:'ZW', …, subdivision:'HA' })` includes `subdivision`, and `validateAddressValue` with it empty gives `address/subdivision` "State/Region is required."; with the IT list, `validateAddressValue` on `subdivision:'MI'` gives "Choose a Region from the list.".
+- **B1** `parseBookingFormViolations` over LB0's bodies → keys `address/subdivision`, `address/streetName`, `address/streetNumber`, `address/postalCode`, `address/addressLine`, as captured.
+- **B2** `getParticipantForm` (`booking-form.json`, `default-form.json`) → the address in `fields` as `ADDRESS` with 247 countries, `unsupportedFields` empty. Two address fields → the second unsupported. A template failure → `getParticipantForm` **rejects** with `AddressLayoutsUnavailableError`, and `unsupportedFields` is never populated for it; the client test asserts `FORM_UNAVAILABLE`.
 - **B3** `booking-flow` with `default-form.json`:
-  - no `FORM_UNSUPPORTED`;
-  - `address.present`, and `formFields` has no address entry;
-  - choosing `US` gives `subdivision.shown` with 54 options labelled as in the fixture;
-  - then `IL` gives `subdivision.shown === false`, `streetName.shown`, and the subdivision value is cleared;
-  - a confirm with a missing city gives `bookingFailure === VALIDATION` and `address.city.error === 'City is required.'`.
-- **B4** Server `createBooking` with a `default-form.json` service:
-  - a valid IL value plus a stray `addressLine` → the Wix spy's `formSubmission.address` deep-equals F8 row 11's `sentAddress`;
-  - `subdivision: 'US-AL'` → `invalid`, `{ 'address/subdivision': 'Choose a State from the list.' }`, Wix not called;
-  - a mocked Wix 400 with LB0's body → resolves `invalid` keyed by `address/…` (does not reject), and `describeBookingError` is not called;
-  - a mocked `NOT_ALLOWED_VALUE_ERROR` on an `AL` we accepted → one drift `console.error` naming `US` and the allowed list.
-- **B5** `booking-flow.jay-contract` parses. Its `address` subtree, minus `present`, equals `addressFieldTag` for all seven parts (both parsed, tag trees compared).
-- **B6** An optional address left blank → no `address` key in the Wix payload, and the booking proceeds.
-- **F1-F7 (Phase F):**
-  - F1: `projectFormFields(booking-form.json)` → `'address'` with its spec;
-  - F2: view-state `shown` and options per country;
-  - F3: `projectSubmissionValues` uses `toWixAddress` and leaves out an empty address;
-  - F4: `presentSubmitRejection` with `address/subdivision` → a part error, not `statusMessage`;
-  - F5: `parseSubmissionFieldErrors` over LF0's body → `address/<part>`;
-  - F6: `forms.yaml` lists `parts` and `countries`;
-  - F7: rule 6 (unknown part ref → error; an unbound part input → warning; a fully bound page → clean).
+  - no `FORM_UNSUPPORTED`, `address.present`;
+  - US → `subdivision.shown`, `listed`, 54 options with names;
+  - IL → `streetName.shown`, `addressLine2.shown`, `subdivision.shown === false`;
+  - IT → `listed === false`; then an `invalid` outcome with `fieldOptions['address/subdivision']` (20 codes) → `listed === true`, 20 options, `address.subdivision.value === ''` and the store's `subdivision` is `''` (the typed `MI` is gone); choosing `25` and confirming → the `createBooking` action spy receives `formValues.address.subdivision === '25'`; confirming with none chosen → `VALIDATION` "Choose a Region from the list." from the client, and the spy is not called;
+  - an `invalid` outcome with `revealedParts: { address: ['subdivision'] }` for ZW → `subdivision.shown`, `required`, `listed === false`; typing `HA` and confirming → the spy receives `formValues.address` containing `subdivision: 'HA'` (the revealed part is not stripped); confirming with it empty → `address.subdivision.error === 'State/Region is required.'` and the spy is not called;
+  - confirm with city empty → `VALIDATION` and `address.city.error === 'City is required.'`;
+  - `onSelectSlot` to another service resets the address.
+- **B4** Server `createBooking`:
+  - IL + stray `addressLine` → the Wix spy payload equals the LF0 IL accepted shape;
+  - `'US-AL'` → `invalid` on `address/subdivision`, Wix not called;
+  - mocked 400 (LB0 body) → resolves `invalid`, and `describeBookingError` is not called;
+  - mocked IT 400 → `fieldOptions['address/subdivision']` has 20 codes, and the next `getParticipantForm` lists IT;
+  - a 400 from `createBookingCart` still throws;
+  - a template failure → `FORM_UNAVAILABLE`;
+  - mocked 400 `address/subdivision` REQUIRED for ZW (COMMON) → `invalid`, `revealedParts.address` = `['subdivision']`, and the next `getParticipantForm` shows ZW with subdivision; a second `createBooking` for ZW with `subdivision: 'HA'` → the Wix spy payload contains `subdivision: 'HA'` (server `toWixAddress` uses the per-call snapshot);
+  - after the IT 400, a second `createBooking` with `subdivision: 'MI'` → `invalid` from server step 3 ("Choose a Region from the list.") and Wix is not called; with `'25'` → the Wix spy payload contains `subdivision: '25'`.
+- **B5** The contract parses, and `address` minus `present` equals `addressFieldTag` with all parts. A jay-html page with the ✅ markup **compiles** and passes `jay-stack validate`.
+- **B6** An optional blank address (with a preselected country) → no `address` key in the payload.
+- **B7** Drift log: an `UNKNOWN_VALUE_ERROR` on `address/addressLine` for US logs once, the line equals the documented text including `See "Address drift" in @jay-framework/wix-forms docs/01-setup-and-troubleshooting.md.`, and contains no visitor value. A NOT_ALLOWED on an unlisted subdivision does not log.
+- **B8** Bookings validator (fixture `services.yaml` files under a temp `projectRoot`): `state` ref → error; a page missing `streetName.input` → **error**; a page with `subdivision.input` but no `subdivision.text` → **error**; the ✅ page → clean. A page with **no** address refs:
+  - a service with `participantFormHasAddress: true` → **error** `BOOKINGS-ADDRESS-UNBOUND` naming that service;
+  - all services `false` → no finding (an existing address-free booking page keeps building);
+  - no `services.yaml`, or a service without the flag → **warning**;
+  - the `true` case plus the `wix-bookings: { allow-unbound-address: true }` block → no finding, and the page **builds** (`jay-stack validate` exit 0); the same block on a page missing `streetName.input` → still an error;
+  - `generateWixBookingsAgentKit` with a mocked service whose form has an `ADDRESS` field writes `participantFormHasAddress: true`, and `false` for a form without one.
+- **F1–F8:**
+  - F1: `projectFormFields` with templates → `'address'`; without templates → throws; a spec part whose tag is missing from the loaded contract → unsupported with `address contract is missing part streetName; regenerate contracts`;
+  - F1b: a per-form render whose template load fails → the load-error state (`loadError` = "Could not load the address layouts. Please try again later."), not the unsupported state;
+  - F2: view-state per country;
+  - F2b: `renderFastChanging` with a slow carry-forward holding the base IT spec, and a store that learned IT's list after the slow render → the fast view state and returned carry-forward show IT `listed === true` with 20 options; with an empty store → unchanged spec;
+  - F3: `projectSubmissionValues` drops a blank optional address;
+  - F4: `presentSubmitRejection` with `address/subdivision` + `fieldOptions` → part error, `listed === true`, store `subdivision === ''`; choosing `25` and submitting → the `submitForm` action spy receives `values.address.subdivision === '25'`. With `revealedParts: { address: ['subdivision'] }` for ZW → part shown; typing `HA` and submitting → the spy's `values.address` contains `subdivision: 'HA'`;
+  - F5: `runSubmission` + a mocked LF0 400 → part keys;
+  - F5b: `runSubmission` with a real `LearnedAddressFacts` and `addressFieldsOf` backed by it: a mocked 400 `address/subdivision` REQUIRED for ZW → `revealedParts`; the next `runSubmission` for ZW with `subdivision: 'HA'` → the `createSubmission` spy receives `address.subdivision === 'HA'`. `addressFieldsOf` for a form whose listing has `hasAddress: false` makes no Get Form call;
+  - F6: `forms.yaml` lists the parts;
+  - F7: rule 6 — unknown part → error; missing any part `input` → error; only one subdivision input → error; the generated contract for a `["US"]` form still has all eight parts;
+  - F8: a generated per-form contract + ✅ page compiles.
 
-**Live checks** (Wix VPN, Premium test site, `/demo-feature`). They **replace and extend DL #51 L6 as the gate exit**:
+### Gate exit — live QA cycle (Wix VPN, QA sites, `/demo-feature`, one recorded video)
 
-- **LA0, LB0, LF0:** as in the Implementation Plan.
-- **L6+** (after Phase B, before deleting `RELEASE-BLOCKED.md`):
-  1. In the browser, a default-form service and the QA service each book end to end for US, GB, CA and IL, using only the page's selects and inputs (DL #51 L6). Pay in person for all eight, plus one online payment (US).
-  2. Each stored `contactDetails.fullAddress` matches F8:
-     - US/GB/CA have a bare `subdivision` and `addressLine`, and `formattedAddress` contains the code;
-     - IL has `streetAddress { name, number }` and no `subdivision`.
-  3. A service whose address is optional books with the address left blank, and the booking has no address.
-  4. `curl` our `createBooking` with `subdivision: 'XX'` → `invalid` on `address/subdivision`; with IL + `addressLine` only → `invalid` on `address/streetName` and `address/streetNumber`. No booking is created.
-  5. **L-drift:** for US, GB and CA, a direct Wix Create Booking with `subdivision: 'XX'`. Its `allowedValues` must equal `ADDRESS_LAYOUTS` (no booking results). This repeats before every release that ships the table, and whenever the drift log fires.
-  6. A demo video is recorded to the workspace root.
+Prerequisites: Q15 site changes applied, the B9/F9 pages deployed to the testbed. Every booking is made through the page's own controls.
 
-  Only then is `RELEASE-BLOCKED.md` deleted.
+**Process assumption (L5, L10).** Learned facts live in one server process, shared by bookings and per form. The checks run against the testbed's `jay-stack dev` server, which is a single Node process. QA confirms this before L5 (`pgrep -f "jay-stack dev"` → one PID, recorded in the report) and does not restart it between L5's steps. The "later visitor" step uses a **new incognito browser context**, so no client state carries over and the select can come only from the server.
 
-- **LF1** (after Phase F): a per-form page submits US and IL addresses, and the submission shows in the Wix dashboard. A bad subdivision sent by `curl` → `VALIDATION` with the part error.
+| Check                                  | Steps                                                                                                                                                                                                 | Expected (pass condition)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **L1** US (bookings)                   | Book a default-form service: US, addressLine `600 Dexter Ave`, city `Montgomery`, State `AL` from the select, postal `36104`.                                                                         | Booking created. `contactDetails.fullAddress` contains `country: "US"`, `subdivision: "AL"`, `addressLine: "600 Dexter Ave"`, `city: "Montgomery"`, `postalCode: "36104"`; `formattedAddress` contains `AL`. The State select had 54 options.                                                                                                                                                                                                                                                                  |
+| **L2** GB, DE, JP (bookings)           | Book each with the first listed subdivision (`ENG`, `BW`, `01`).                                                                                                                                      | Each booking created with that `subdivision`. DE's DOM order is streetName, streetNumber, postalCode, city, subdivision. JP's first shown part is postalCode. Select sizes 4 / 16 / 47.                                                                                                                                                                                                                                                                                                                        |
+| **L3** IL (bookings + per form)        | Book IL: street `Herzl`, number `1`, line 2 `Apt 4`, city `Tel Aviv`, postal `6100000`. Submit the same on the per-form page.                                                                         | No subdivision input shown; `addressLine2` shown and not marked required. Booking `fullAddress.streetAddress` = `{ name: "Herzl", number: "1" }`. Submission stored flat: `{ country: "IL", streetName: "Herzl", streetNumber: "1", addressLine2: "Apt 4", city: "Tel Aviv", postalCode: "6100000" }`.                                                                                                                                                                                                         |
+| **L4** COMMON (ZW) + online path       | Book ZW: `1 st`, `Harare`, `0000`. Then one US booking (L1 values) on the online-payment service.                                                                                                     | ZW: no subdivision input; booking created with no `subdivision` key. Online: the browser reaches Wix checkout; the booking exists with L1's `fullAddress`. No card is charged.                                                                                                                                                                                                                                                                                                                                 |
+| **L5** Empty-list country (IT)         | Confirm one server PID. Book IT with Region typed `MI`. Then pick `25` and confirm. Then a new incognito context opens the booking page and selects IT.                                               | First confirm: the Region error reads exactly "Choose a Region from the list."; the text input is replaced by a select with exactly these 20 codes: `21 23 25 32 34 36 42 45 52 55 57 62 65 67 72 75 77 78 82 88`; its value is empty. Second confirm: booking created with `subdivision: "25"`. Incognito: IT shows the 20-code select immediately, with no text input.                                                                                                                                       |
+| **L6** Restricted / default country    | Open the form with `["US","IL","IT"]`, default US. `curl` createBooking with GB.                                                                                                                      | Country select has exactly 3 options, ordered by `en` name: Israel, Italy, United States; `US` preselected. `curl` → `outcome: "invalid"`, `fieldErrors["address/country"]` = "Choose a country from the list."; no booking created.                                                                                                                                                                                                                                                                           |
+| **L7** Required parts / optional blank | Optional-address service: confirm with the address untouched (US preselected). Then the required form with only City filled.                                                                          | Untouched: booking created; `contactDetails` has **no** `fullAddress`. City only: `VALIDATION`; part errors on exactly `address/addressLine` ("Address is required."), `address/subdivision` ("State is required."), `address/postalCode` ("Zip / Postal code is required."); no country error.                                                                                                                                                                                                                |
+| **L8** Max length / pattern            | Type 160 chars in the address line and 60 in the postal code. Then forge both via `curl`.                                                                                                             | Browser: "Address must be at most 150 characters." and "Zip / Postal code is too long.", no request sent. `curl`: `invalid` with the same two messages on `address/addressLine` / `address/postalCode`.                                                                                                                                                                                                                                                                                                        |
+| **L9** Per-form submit                 | Submit US (L1 values) and IL (L3 values) on the LF0 page. `curl` submitForm with `subdivision: "XX"` for US.                                                                                          | Both submissions in the dashboard with the stored objects of L1/L3. `curl` → `{ success: false, reason: "VALIDATION" }`, `fieldErrors["address/subdivision"]` = "Choose a State from the list."; no submission stored.                                                                                                                                                                                                                                                                                         |
+| **L10** Located server errors          | Same server PID as L5, not restarted. Per-form page: IT with `MI` (bookings is L5). Then pick `25` and submit. Then a new incognito context opens the per-form page and selects IT.                   | First submit: "Choose a Region from the list." under the subdivision control, form status message empty, the text input replaced by the 20-code select. Second submit: stored with `subdivision: "25"`. Incognito (within the slow-render TTL): IT shows the 20-code select immediately, proving the fast-phase snapshot (§5). If L5 ran first, the per-form page may already show the select on the first attempt (shared store); then the incognito step alone is the pass condition and the report says so. |
+| **L11** Template fetch failure         | Set `WIX_FORMS_ADDRESS_TEMPLATES_ORIGIN=http://127.0.0.1:9`, restart. Open the booking page, select the address service; open the per-form page; `curl` submitForm. Unset, restart, wait 30 s, retry. | Booking page: `FORM_UNAVAILABLE` with "Could not load the participant form. Please try again later.". Per-form page: load error "Could not load the address layouts. Please try again later.". `curl` → `reason: "FORM_UNAVAILABLE"`. Log contains the "origin overridden" line once. After unset: both pages render the address.                                                                                                                                                                              |
+| **L12** L-drift                        | Run `wix-forms/scripts/address-map-probe.mjs` against the QA form.                                                                                                                                    | Template diff vs `templates-list-response.json` (ignoring order and duplicates): empty. Map diff vs `country-template-map.json`: empty (66 non-COMMON entries, 181 COMMON, same signatures). Every probe refused (0 stored). IL + `subdivision` still `UNKNOWN_VALUE_ERROR`. Repeated before every release (§7).                                                                                                                                                                                               |
+
+Then the Q15 restores are made and recorded. Only after that does §7's final commit run.
 
 ## Scope Pre-mortem (what this will not handle)
 
-- Countries beyond US, GB, CA and IL; the "none selected" layout; `addressLine2` shown.
-- Localised country, part or subdivision labels.
-- Wix's Google autocomplete, `showCountryFlags`, and custom part labels in `fieldSettings` (ignored, Q17).
-- Prefill or `control` for an address (DL #41 Cap 2 and 4a carry strings); a hidden address.
-- More than one address on a booking form.
-- Conditional `rules[]` (as DL #51).
-- Postal-code or length rules beyond what Wix's located errors report (LB0 records them).
-- Wix's own submitted payload (never captured; F8's accepted shape stands in).
-- Cancelling the probe bookings that LB0 and L6+ create. They are listed in the QA report for manual cleanup.
+- Localised subdivision names beyond config. Learned-code names.
+- `BY_IP` geolocation.
+- Wix autocomplete and `showCountryFlags`.
+- Prefill / `control` for an address; a hidden per-form address.
+- Two addresses on one booking form.
+- Conditional `rules[]`.
+- Persistence of learned facts across restarts or across server instances.
+- Completing a real online payment.
+- Fields Wix may add to templates later (an unknown `target` makes the template response a failure, so it fails closed).
+- **A required part outside the eight** in a Create Booking / Create Submission 400 (Q17). The visitor sees "This address cannot be accepted for <country name>. Please contact us." and cannot fix it; the drift log fires and L12 would catch it before release. A part **inside** the eight is revealed at runtime and is not a dead end.
+- Countries whose probe signature matched no template (keys of the fixture's `unmatchedOrAmbiguous`) are not offered (§Country map provenance).
+- `<target>/<part>` is seen live with targets `address` and `address_limited` (so non-default targets are covered).
+
+## Review history (summary)
+
+Three independent review rounds shaped this log. Each resolution lives in the section named:
+
+- **Live-check prerequisites** (site changes, restores, online payment, pages, cleanup): Q15.
+- **Preselected and un-offered countries, blank-ness, `validateAddressValue` signature, per-part errors with only a country set:** Q9–Q11, §1 validate steps 1–2.
+- **Bookings binding validator** and **subdivision inputs as errors:** jay-feedback, B8, F7.
+- **Missing surfaces** (action schemas, `toFormFieldView`, `present:false` view state, slot reset): §2, §3.
+- **Compatibility of existing pages and the `FieldValue` widening:** §6.
+- **Compile proof and minimum jay version:** §2, B5, F8.
+- **One transient template-failure outcome (`FORM_UNAVAILABLE`):** TL;DR, Q3.
+- **Public provenance of the country map, its drift check, and the runtime fallback for a hidden required part:** §Country map provenance, Q17, L12.
+- **Learned-facts store ownership, keys, validation and expiry:** Q6.
+- **One spec after learned facts (`withLearnedFacts`), per-call server projection (`addressFieldsOf`), fast-phase delivery past the slow-render cache:** §1 "One spec", §3, §5, A11, B3, B4, F2b, F4, F5b, L10.
+- **Bookings validator severity by `participantFormHasAddress`, suppression syntax, semver 0.27.0:** §6, B8.
+- **QA-only template origin override:** Q18.
+- **All eight parts in every contract:** §2.
+- **Fixture capture of all 12 templates and per-check expected values:** Phase A0, Gate exit table.
 
 ## Agent feedback loop (jay-feedback decision)
 
-- **Validation, yes: wix-forms rule 6** (`wix-forms/lib/validators/wix-form-bindings.ts`, Phase F):
-  - (a) **error**: a `ref="<key>.<addressField>.<x>…"` where `<x>` is not a part tag of that field's contract, or the ref names a part's child that does not exist;
-  - (b) **warning**: an emitted part whose `input` ref is not bound on the page ("Israel needs streetName and streetNumber; bind every part and wrap it in `if=…shown`").
-
-  Both are deterministic from the contract and the page, which is the same data that rules 2 and 5 use.
-
-- **No bookings validator:** wix-bookings registers none (`wix-bookings/plugin.yaml`). The booking-flow contract's `address` description and the setup guide carry the rule instead. Adding validator infrastructure to wix-bookings is a separate change.
+- **Validation, yes:**
+  - **wix-forms rule 6** (`lib/validators/wix-form-bindings.ts`):
+    - (a) **error** on a ref under an address field naming an unknown part or part child;
+    - (b) **error** for any of the eight parts with no bound `input`, and for a `subdivision` missing either `input` or `text` ("Israel needs streetName and streetNumber; Italy needs subdivision.text; any country may need any part"). It is an error, not a warning, because every part can be shown at runtime (all eight are always emitted, Q17), so a missing input is a visitor dead end, not a style issue.
+  - **wix-bookings `validateBookingFlowBindings`** (new `plugin.yaml` `validators:` entry): the same (a)/(b), scoped to the `booking-flow` key's `address`, plus `BOOKINGS-ADDRESS-UNBOUND` when no address ref is bound: error / nothing / warning by `services.yaml` `participantFormHasAddress`, suppressible with `wix-bookings: { allow-unbound-address: true }` (§6).
+  - Both call the exported `checkAddressBindings`. All of it is deterministic from the contract and the page.
 - **Agent-kit:**
-  - wix-forms `per-form-contracts.md`: the address subtree, `shown`, error keys;
-  - wix-forms `rich-forms.md`: the markup pattern, with `autocomplete` tokens `country`, `address-line1`, `address-level2`, `address-level1`, `postal-code`; selects for country and subdivision;
-  - wix-forms `user-visible-messages.md`: address messages;
-  - wix-bookings `wix-bookings-setup.md`: an `address` section like the ✅ example;
+  - wix-forms `per-form-contracts.md`: the subtree, `shown` / `listed` / `required`, error keys `<target>/<part>`, `fieldOptions`.
+  - wix-forms `rich-forms.md`: the ✅ markup, `autocomplete` tokens (no token on street parts), both subdivision inputs.
+  - wix-forms `user-visible-messages.md`: address messages and the `address.labels` overrides.
+  - wix-forms `wix-forms-setup.md`: `address.locale` / `labels`, and the "Before release: L-drift" section.
+  - wix-bookings `wix-bookings-setup.md`: an address section with the ✅ example, the `participantFormHasAddress` flag, and the `allow-unbound-address` suppression block.
   - wix-bookings `wix-bookings-troubleshooting.md`:
-    - "country not listed" → only US, GB, CA and IL;
-    - "address table drift" log → update `ADDRESS_LAYOUTS`;
-    - an address shown as unsupported → the dashboard settings changed (`fieldSettings`, optional parts, or `allowedCountries` outside the four);
-  - replace DL #51's `FORM_UNSUPPORTED` address wording.
-- **No framework change:** everything is contract modelling over existing jay primitives (A6 confirms the nesting).
+    - "Country/Region is required" with no control → add the address markup;
+    - `FORM_UNAVAILABLE` / "Could not load the address layouts" → template fetch failing (network/auth, or `WIX_FORMS_ADDRESS_TEMPLATES_ORIGIN` left set);
+    - "This address cannot be accepted for <country>" → Wix requires a part outside the eight; run L-drift and report;
+    - "address drift" log → run L-drift (links to the wix-forms entry below);
+    - `BOOKINGS-ADDRESS-UNBOUND` → add the markup, or refresh `services.yaml`, or suppress for an address-free page.
+  - wix-forms `docs/01-setup-and-troubleshooting.md`: an "Address drift" entry (what the log line means, run the probe, what to report); the log line points here.
+    - IT shows codes → set `address.labels.subdivisions`.
+  - Replace DL #51's `FORM_UNSUPPORTED` address wording in both troubleshooting guides.
+- **No framework change:** everything uses existing jay contract primitives.
