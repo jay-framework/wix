@@ -145,6 +145,7 @@ function phoneRulesOf(
 
 export function projectFormSummaryFields(
     fields: FormSummaryField[] | undefined,
+    { defaultPhoneCountry }: ProjectionOptions = {},
 ): FormFieldSummaryView[] {
     const projected = (fields ?? [])
         .filter((field) => !field.deleted)
@@ -157,6 +158,9 @@ export function projectFormSummaryFields(
             label: field.label ?? field.target ?? 'Field',
             type: (field.type ?? 'STRING') as FormFieldSummaryView['type'],
             required: Boolean(field.required),
+            ...(field.type === 'PHONE' && defaultPhoneCountry
+                ? { phone: { defaultCountry: defaultPhoneCountry } }
+                : {}),
         }))
         .filter((field) => field.target);
 
@@ -177,8 +181,8 @@ export function validateFormSummaryField(field: FormFieldSummaryView, value: str
     if (field.type === 'URL' && !/^https?:\/\/.+/.test(trimmed)) {
         return 'Please enter a valid URL.';
     }
-    if (field.type === 'PHONE' && !/^[+()\-\s\d]{7,}$/.test(trimmed)) {
-        return 'Please enter a valid phone number.';
+    if (field.type === 'PHONE') {
+        return summaryPhoneMessage(field, trimmed);
     }
     if (field.type === 'NUMBER' && !/^-?\d+(\.\d+)?$/.test(trimmed)) {
         return 'Please enter a valid number.';
@@ -245,7 +249,7 @@ export function defaultFieldMessage(rule: FieldRule, field: FormFieldView): stri
         case FieldRule.URL:
             return 'Please enter a valid URL.';
         case FieldRule.PHONE:
-            return 'Please enter a valid phone number.';
+            return INVALID_PHONE_MESSAGE;
         case FieldRule.PATTERN:
             return `${field.label} is not in the expected format.`;
         case FieldRule.PHONE_COUNTRY:
@@ -253,6 +257,17 @@ export function defaultFieldMessage(rule: FieldRule, field: FormFieldView): stri
         default:
             return undefined;
     }
+}
+
+const INVALID_PHONE_MESSAGE = 'Please enter a valid phone number.';
+
+/** Bookings participant phones are judged by the same `checkPhone` as forms (DL #58). */
+function summaryPhoneMessage(field: FormFieldSummaryView, trimmed: string): string {
+    const phone = checkPhone(trimmed, field.phone);
+    if (phone.rule === FieldRule.PHONE) return INVALID_PHONE_MESSAGE;
+    if (phone.rule === FieldRule.PHONE_COUNTRY)
+        return phoneCountryMessage(field.phone?.allowedCountries);
+    return '';
 }
 
 function phoneCountryMessage(allowedCountries: string[] | undefined): string {

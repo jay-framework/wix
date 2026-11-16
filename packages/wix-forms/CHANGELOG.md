@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Behaviour changes (read before upgrading)
+
+1. **Bookings participant phones are checked and sent like form phones (wix-bookings).**
+   `validateFormSummaryField` now judges PHONE fields with `checkPhone`, and the new
+   `toPostedSummaryValues` sends them as E.164, so `+1 202-555-0123` books instead of failing with
+   a Wix 400 (UNKNOWN). A number without a country code is now refused in the browser ("Please
+   include the country code, starting with +.") unless `defaultPhoneCountry` is set. Summary
+   fields carry an optional `phone` (`PhoneRules`, now exported).
+
 ### Fixes
 
 - **The honeypot trips when a bot sets its value without typing.** The form now also reads the

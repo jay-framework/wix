@@ -57,7 +57,7 @@ Bookings loads participant fields via `getFormSummary` from `@jay-framework/wix-
 
 ## Phone / validation behaves differently from a `wixForm` page
 
-Expected, not a bug. Booking participant fields are checked with `validateFormSummaryField` (required + simple patterns on the trimmed value). The `wixForm` phone rules (international numbers, `defaultPhoneCountry`, `PHONE_COUNTRY`), `HOOK` errors and `onSubmitStart` do not apply to the booking flow, and phones are sent to `createBooking` as typed. Failures surface as `bookingFailure === VALIDATION`, not per-field `errorRule`.
+Expected, not a bug. Booking participant fields are checked with `validateFormSummaryField` (required + simple patterns on the trimmed value). Phones use the same `checkPhone` as `wixForm`: a spaced or dashed number such as `+1 202-555-0123` is sent to `createBooking` as E.164 (`+12025550123`), and a number with no country code is refused ("Please include the country code, starting with +.") unless `defaultPhoneCountry` is set in `config/.wix-forms.yaml`. `HOOK` errors and `onSubmitStart` do not apply to the booking flow. Failures surface as `bookingFailure === VALIDATION`, not per-field `errorRule`.
 
 ## Do not assume success from redirect alone
 

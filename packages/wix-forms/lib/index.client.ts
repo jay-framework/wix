@@ -9,6 +9,7 @@ export {
     validateFormField,
     validateFormSummaryField,
 } from './utils/project-form-fields.js';
+export { toPostedSummaryValues } from './components/submission-values.js';
 export { FieldRule, type FieldCheckResult } from './components/field-rule.js';
 export {
     WIX_FORMS_CONTEXT,
@@ -25,5 +26,6 @@ export type {
     FieldValue,
     FormFieldView,
     FormFieldSummaryView,
+    PhoneRules,
     FormFieldErrorView,
 } from './types.js';

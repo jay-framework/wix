@@ -55,6 +55,8 @@ export interface FormFieldSummaryView {
     label: string;
     type: 'STRING' | 'EMAIL' | 'PHONE' | 'NUMBER' | 'URL';
     required: boolean;
+    /** PHONE fields only (DL #58): config `defaultPhoneCountry`; the Form Summary API has no field country. */
+    phone?: PhoneRules;
 }
 
 export interface FormFieldErrorView {

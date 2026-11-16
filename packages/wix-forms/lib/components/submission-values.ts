@@ -10,7 +10,13 @@
  * DL#41 4c) so boolean checkboxes and multi-select arrays survive submission.
  */
 
-import type { FieldValue, FormFieldInputType, FormFieldView } from '../types.js';
+import type {
+    FieldValue,
+    FormFieldInputType,
+    FormFieldSummaryView,
+    FormFieldView,
+    PhoneRules,
+} from '../types.js';
 import { checkFormField } from '../utils/project-form-fields.js';
 import { checkPhone } from '../utils/phone-normalization.js';
 import { FieldRule, type FieldCheckResult } from './field-rule.js';
@@ -179,14 +185,31 @@ export function toPostedValues(
     for (const field of fields) {
         const value = posted[field.target];
         if (field.inputType !== 'tel' || typeof value !== 'string') continue;
-        posted[field.target] = postedPhone(value, field);
+        posted[field.target] = postedPhone(value, field.phone);
     }
     return posted;
 }
 
-function postedPhone(value: string, field: FormFieldView): string {
+/**
+ * The bookings participant values to post (DL #58): every PHONE value `checkPhone` accepts is
+ * sent as E.164, which createBooking requires; every other value passes through.
+ */
+export function toPostedSummaryValues(
+    fields: FormFieldSummaryView[],
+    values: Record<string, string>,
+): Record<string, string> {
+    const posted = { ...values };
+    for (const field of fields) {
+        const value = posted[field.target];
+        if (field.type !== 'PHONE' || typeof value !== 'string') continue;
+        posted[field.target] = postedPhone(value, field.phone);
+    }
+    return posted;
+}
+
+function postedPhone(value: string, rules: PhoneRules | undefined): string {
     const trimmed = value.trim();
     if (!trimmed) return trimmed;
-    const phone = checkPhone(trimmed, field.phone);
+    const phone = checkPhone(trimmed, rules);
     return phone.rule === FieldRule.NONE ? phone.e164 : value;
 }
