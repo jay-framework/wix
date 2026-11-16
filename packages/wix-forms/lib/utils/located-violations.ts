@@ -32,6 +32,8 @@ interface SubmissionError {
 
 interface ViolationEnvelope<Item> {
     details?: {
+        /** Schema violations (REQUIRED, additional property) on Create Booking (LB0). */
+        applicationError?: { data?: { formViolations?: Item[]; errors?: Item[] } };
         validationError?: {
             fieldViolations?: Array<{
                 data?: { formViolations?: Item[]; errors?: Item[] };
@@ -40,7 +42,10 @@ interface ViolationEnvelope<Item> {
     };
 }
 
-/** Create Booking: `fieldViolations[].data.formViolations[]`, de-duplicated by key + rule. */
+/**
+ * Create Booking: `validationError.fieldViolations[].data.formViolations[]` and
+ * `applicationError.data.formViolations[]` (both seen live, LB0), de-duplicated by key + rule.
+ */
 export function parseBookingFormViolations(responseBody: string): LocatedViolation[] {
     const items = envelopeItems<BookingFormViolation>(responseBody, 'formViolations');
     return uniqueViolations(
@@ -73,8 +78,12 @@ export function submissionLocatedViolations(responseBody: string): LocatedViolat
 function envelopeItems<Item>(responseBody: string, member: 'formViolations' | 'errors'): Item[] {
     try {
         const parsed = JSON.parse(responseBody) as ViolationEnvelope<Item>;
-        const fieldViolations = parsed?.details?.validationError?.fieldViolations ?? [];
-        return fieldViolations.flatMap((violation) => violation?.data?.[member] ?? []);
+        const details = parsed?.details;
+        const fieldViolations = details?.validationError?.fieldViolations ?? [];
+        return [
+            ...fieldViolations.flatMap((violation) => violation?.data?.[member] ?? []),
+            ...(details?.applicationError?.data?.[member] ?? []),
+        ];
     } catch {
         return [];
     }

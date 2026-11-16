@@ -1,0 +1,47 @@
+{
+  "source": "LB0 live Create Booking (anonymous visitor token), 2026-11-16; raw 400 body, no ids",
+  "status": 400,
+  "sentAddress": {
+    "country": "IL",
+    "city": "Tel Aviv",
+    "postalCode": "6100000",
+    "addressLine": "Herzl 1"
+  },
+  "body": {
+    "message": "Validation failed: address/streetName must have required property 'streetName', address/streetNumber must have required property 'streetNumber', address/addressLine must NOT have additional properties",
+    "details": {
+      "applicationError": {
+        "code": "INVALID_ARGUMENT",
+        "description": "Validation failed: address/streetName must have required property 'streetName', address/streetNumber must have required property 'streetNumber', address/addressLine must NOT have additional properties",
+        "data": {
+          "formViolations": [
+            {
+              "fieldName": "address/streetName",
+              "description": "must have required property 'streetName'",
+              "ruleName": "REQUIRED_VALUE_ERROR",
+              "data": {
+                "missingProperty": "streetName"
+              }
+            },
+            {
+              "fieldName": "address/streetNumber",
+              "description": "must have required property 'streetNumber'",
+              "ruleName": "REQUIRED_VALUE_ERROR",
+              "data": {
+                "missingProperty": "streetNumber"
+              }
+            },
+            {
+              "fieldName": "address/addressLine",
+              "description": "must NOT have additional properties",
+              "ruleName": "UNKNOWN_VALUE_ERROR",
+              "data": {
+                "additionalProperty": "addressLine"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

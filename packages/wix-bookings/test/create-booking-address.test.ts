@@ -4,9 +4,8 @@
  * DL #52 Phase B-server (B1, B2, B4, B6, B7): the participant address on the server. Expected
  * values come from the live captures (Create Booking 2026-11-10, Create Submission 2026-11-16).
  *
- * Create Booking 400 bodies: the address `formViolations[]` are the ones captured live in
- * `address-create-booking-probe.json`, inside the envelope of F6's verbatim 400
- * (`create-booking-400-dropdown.json`). LB0's raw address 400s are taken by the live QA step.
+ * Create Booking 400 bodies: LB0's raw captures (`create-booking-400-<case>.json`, 2026-11-16).
+ * Synthetic violations are placed in the envelope Wix uses for their rule (see `createBooking400`).
  */
 
 import { readFileSync } from 'node:fs';
@@ -82,15 +81,27 @@ function wixFixture(name: string): any {
     return JSON.parse(readFileSync(url, 'utf8'));
 }
 
-function capturedFormViolations(caseName: string): unknown[] {
-    const probe = wixFixture('form-kinds/address-create-booking-probe.json');
-    return probe.cases.find((entry: any) => entry.case === caseName).error.formViolations;
+/** LB0's raw Create Booking 400 (`create-booking-400-<name>.json`). */
+function lb0Error(name: string): WixApiError {
+    const body = wixFixture(`address/create-booking-400-${name}.json`).body;
+    return new WixApiError(400, '/bookings/v2/bookings', JSON.stringify(body));
 }
 
-/** F6's verbatim envelope with these form violations. */
-function createBooking400(formViolations: unknown[]): WixApiError {
-    const body = structuredClone(wixFixture('address/create-booking-400-dropdown.json').body);
-    body.details.validationError.fieldViolations[0].data.formViolations = formViolations;
+/**
+ * A Create Booking 400 with these form violations, in the envelope Wix uses for their rule (LB0):
+ * REQUIRED / UNKNOWN (schema) violations come in `details.applicationError.data.formViolations`,
+ * NOT_ALLOWED / pattern / length in `details.validationError.fieldViolations[].data.formViolations`.
+ */
+function createBooking400(formViolations: Array<{ ruleName: string }>): WixApiError {
+    const schemaRules = ['REQUIRED_VALUE_ERROR', 'UNKNOWN_VALUE_ERROR'];
+    const isSchema = formViolations.every((item) => schemaRules.includes(item.ruleName));
+    const body = structuredClone(
+        wixFixture(
+            `address/create-booking-400-${isSchema ? 'il-addressline-only' : 'us-subdivision-xx'}.json`,
+        ).body,
+    );
+    if (isSchema) body.details.applicationError.data.formViolations = formViolations;
+    else body.details.validationError.fieldViolations[0].data.formViolations = formViolations;
     return new WixApiError(400, '/bookings/v2/bookings', JSON.stringify(body));
 }
 
@@ -151,18 +162,49 @@ beforeEach(() => {
 
 afterEach(() => vi.restoreAllMocks());
 
-describe('B1: parseBookingFormViolations over the captured address 400s', () => {
+/**
+ * Bug: parseBookingFormViolations read only the `validationError` envelope; Wix sends REQUIRED and
+ * "additional property" violations in `details.applicationError.data.formViolations`.
+ * Found in: DL #52 live QA LB0 (IL case), `evidence/dl52/LB0-parsed.json`.
+ * Expected: the located keys of every raw LB0 body. Actual: `[]` for the IL body.
+ */
+describe('B1: parseBookingFormViolations over the raw LB0 Create Booking 400s', () => {
     it.each([
-        ['US subdivision "XX" (bogus)', ['address/subdivision']],
+        ['us-subdivision-xx', ['address/subdivision']],
         [
-            'IL addressLine, no subdivision',
+            'il-addressline-only',
             ['address/streetName', 'address/streetNumber', 'address/addressLine'],
         ],
-        ['US without subdivision', ['address/subdivision']],
-    ])('%s → %j', (caseName, keys) => {
-        const error = createBooking400(capturedFormViolations(caseName));
-        expect(parseBookingFormViolations(error.responseBody).map((item) => item.key)).toEqual(
-            keys,
+        ['us-postalcode-60', ['address/postalCode']],
+        ['us-addressline-160', ['address/addressLine']],
+    ])('locates %s → %j', (name, keys) => {
+        expect(
+            parseBookingFormViolations(lb0Error(name).responseBody).map((item) => item.key),
+        ).toEqual(keys);
+    });
+});
+
+/**
+ * Bug: a REQUIRED 400 in the real (`applicationError`) envelope was rethrown, not turned into a
+ * located `invalid` outcome, so the Q17 reveal never happened.
+ * Found in: DL #52 live QA LB0. Expected: `invalid` with B1's IL keys. Actual: WixApiError thrown.
+ */
+describe('B1b: createBooking maps the raw IL 400', () => {
+    it('returns invalid with located IL errors from the applicationError envelope', async () => {
+        mockCreateBookingRecord.mockRejectedValueOnce(lb0Error('il-addressline-only'));
+        const outcome = await service().createBooking(
+            input({
+                country: 'IL',
+                streetName: 'Herzl',
+                streetNumber: '1',
+                city: 'Tel Aviv',
+                postalCode: '6100000',
+            }),
+            formsReturning(rawFormFixture('booking-form')),
+        );
+        expect(outcome.outcome).toBe('invalid');
+        expect(Object.keys((outcome as any).fieldErrors).sort()).toEqual(
+            ['address/addressLine', 'address/streetName', 'address/streetNumber'].sort(),
         );
     });
 });
