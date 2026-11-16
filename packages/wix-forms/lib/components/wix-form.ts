@@ -419,8 +419,17 @@ function WixFormInteractive(
     }
     // Render and mount run synchronously after construction, so this sees bound refs.
     afterRemount(() => wireNativeFormSubmit(refs, submit));
+    afterRemount(reflectAddressFields);
     afterRemount(() => void seedAndReflect().then(captureSelectBaselines));
     afterRemount(() => watchControlValues(refs, carryForward.fields, seedAndReflect));
+
+    /** A native select does not follow the view state: show each address's initial country. */
+    function reflectAddressFields(): void {
+        for (const field of carryForward.fields) {
+            if (field.inputType !== 'address') continue;
+            reflectToInput(field, values()[field.target] ?? emptyValueFor(field));
+        }
+    }
 
     /**
      * Refresh the store from the page's `control` values (DL#53 G5) and show each changed

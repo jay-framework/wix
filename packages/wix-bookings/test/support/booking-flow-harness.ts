@@ -32,6 +32,7 @@ export interface BookingFlowHarness {
     selectService(serviceId: string): void;
     selectSlot(slotId: string): void;
     book(): void;
+    backToServices(): void;
     /** Types into an address part's `input` (or the subdivision `text`), as a visitor would. */
     typeAddress(part: string, value: string, channel?: 'input' | 'text'): void;
     /** The DOM value of an address part's element, as the component last set it. */
@@ -155,6 +156,7 @@ export function mountBookingFlow(
         selectService: (serviceId) => clicks.service({ coordinate: [serviceId] }),
         selectSlot: (slotId) => clicks.slot({ coordinate: [slotId] }),
         book: () => clicks.book({ coordinate: [] }),
+        backToServices: () => clicks.back({ coordinate: [] }),
         typeAddress: (part, value, channel = 'input') => {
             const element = addressElement(`${part}.${channel}`);
             element.value = value;

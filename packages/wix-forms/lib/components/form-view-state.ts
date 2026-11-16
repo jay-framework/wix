@@ -20,7 +20,12 @@ import {
     type AddressValue,
     type LayoutPart,
 } from '../address/address-types.js';
-import { addressErrorKey, isAddressValue, layoutOf } from '../address/address-value.js';
+import {
+    addressErrorKey,
+    initialAddressValue,
+    isAddressValue,
+    layoutOf,
+} from '../address/address-value.js';
 import { SubmitFailure, SubmitState } from './submit-outcome.js';
 import { FieldRule } from './field-rule.js';
 import { contractTagName } from '../generators/contract-utils.js';
@@ -188,7 +193,7 @@ export function addressViewState(
     errors: Record<string, string> = {},
 ): AddressViewState {
     const spec = field.address!;
-    const address: AddressValue = isAddressValue(value) ? value : {};
+    const address: AddressValue = isAddressValue(value) ? value : initialAddressValue(spec);
     const layout = layoutOf(spec, address.country);
     const errorOf = (part: AddressPart) => errors[addressErrorKey(field.target, part)] ?? '';
     const firstError = ADDRESS_PARTS.map(errorOf).find(Boolean) ?? '';

@@ -207,3 +207,23 @@ describe('F4: presentSubmitRejection on an address', () => {
         expect(form.element('addressLine').focus).toHaveBeenCalled();
     });
 });
+
+/**
+ * Bug: the initial (default) country is in the store and the view state, but never written to
+ * the country `<select>`, so the visitor sees "Choose…" (or the first option) above US parts.
+ * Found in: DL #52 live QA L6 (bookings; the per-form component has the same reflect gap).
+ * Expected: the country select's DOM value is the default country after mount.
+ * Actual: the select's value is "".
+ */
+describe('the default country on load', () => {
+    it('writes the initial country to the country select', async () => {
+        const field = addressFieldView();
+        const form = mountAddressForm({
+            ...field,
+            address: { ...field.address!, initialCountry: 'US' },
+        });
+        await settle();
+        expect(form.viewState.address.country.value).toBe('US');
+        expect(form.dom('country')).toBe('US');
+    });
+});

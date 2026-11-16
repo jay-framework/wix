@@ -4,7 +4,7 @@ import {
     RenderPipeline,
     type Signals,
 } from '@jay-framework/fullstack-component';
-import { createSignal, Props } from '@jay-framework/component';
+import { createSignal, Props, useReactive } from '@jay-framework/component';
 import {
     BookingFailure,
     ServicesFailure,
@@ -215,10 +215,15 @@ function BookingFlowInteractive(
     const [addressValue, setAddressValue] = createSignal<AddressValue>({});
     const [addressErrors, setAddressErrors] = createSignal<Record<string, string>>({});
 
+    const reactive = useReactive();
+
+    /** The initial country is shown once the new options are rendered (a select needs them). */
     function resetAddress(field: BookingFormFieldView | null) {
+        const initial = field?.address ? initialAddressValue(field.address) : {};
         setAddressField(field);
-        setAddressValue(field?.address ? initialAddressValue(field.address) : {});
+        setAddressValue(initial);
         setAddressErrors({});
+        void reactive.toBeClean().then(() => reflectAddressInputs(initial));
     }
 
     function onAddressInput(part: AddressPart, value: string) {
@@ -253,7 +258,6 @@ function BookingFlowInteractive(
     function reflectAddressInputs(value: AddressValue) {
         const addressRefs = refs.address as Record<string, any> | undefined;
         for (const part of ADDRESS_PARTS) {
-            if (part === 'country') continue;
             for (const channel of ['input', 'text']) {
                 void addressRefs?.[part]?.[channel]?.exec$?.((element: HTMLInputElement) => {
                     element.value = value[part] ?? '';

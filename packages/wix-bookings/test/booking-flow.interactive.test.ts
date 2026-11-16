@@ -466,3 +466,41 @@ describe('B3: the address in booking-flow (DL #52)', () => {
         expect(flow.viewState.address.present).toBe(false);
     });
 });
+
+function defaultUsForm(): RawForm {
+    const form = rawFormFixture('booking-form');
+    const address = form.formFields!.find((field) => field.inputOptions?.target === 'address')!;
+    (address.inputOptions as any).addressOptions.multilineAddressOptions.defaultCountryConfig = {
+        type: 'COUNTRY',
+        countryOptions: 'US',
+    };
+    return form;
+}
+
+/**
+ * Bug: the default country reached the view state (`initialCountry: "US"`, US parts shown), but
+ * was never written to the country `<select>`: `reflectAddressInputs` skipped `country`, and
+ * `resetAddress` did not reflect at all.
+ * Found in: DL #52 live QA L6. Expected: the select shows US on load and after a reset.
+ * Actual: the select's value is "" ("Choose…").
+ */
+describe('the default country in booking-flow (DL #52 live QA L6)', () => {
+    it('writes the default country to the country select on load', async () => {
+        const flow = await openForm(defaultUsForm(), CONTACT_FORM_ID);
+        expect(flow.viewState.address.country.value).toBe('US');
+        expect(flow.addressDomValue('country')).toBe('US');
+    });
+
+    it('writes it again after the form is reset and reopened', async () => {
+        const flow = await openForm(defaultUsForm(), CONTACT_FORM_ID);
+        flow.typeAddress('country', 'IL');
+        await flush();
+        flow.backToServices();
+        await flush();
+        flow.selectService(QA_SERVICE.id);
+        await flush();
+        flow.selectSlot(SLOT.id);
+        await flush();
+        expect(flow.addressDomValue('country')).toBe('US');
+    });
+});
