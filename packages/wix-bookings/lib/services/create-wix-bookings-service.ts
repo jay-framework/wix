@@ -48,10 +48,8 @@ import {
     supportedParticipantValues,
     toFormFieldView,
 } from '../utils/participant-form.js';
-import { describeUnsupportedForm } from '../utils/booking-outcome.js';
+import { describeUnsupportedForm, FORM_UNAVAILABLE_MESSAGE } from '../utils/booking-outcome.js';
 import { createParticipantFormLoader } from './participant-form-source.js';
-
-const FORM_UNAVAILABLE_MESSAGE = 'Could not load the participant form. Please try again later.';
 
 interface CheckedParticipantForm {
     service: RawBookingService;

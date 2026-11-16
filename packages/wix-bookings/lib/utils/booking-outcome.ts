@@ -29,6 +29,10 @@ export function describeServicesError(error: unknown): Outcome<ServicesFailure> 
     };
 }
 
+/** FORM_UNAVAILABLE's one visitor text (DL #52 Q3), on the server outcome and the page alike. */
+export const FORM_UNAVAILABLE_MESSAGE =
+    'Could not load the participant form. Please try again later.';
+
 export function describeBookingError(error: unknown): Outcome<BookingFailure> {
     const rawMessage = error instanceof Error ? error.message : '';
     if (rawMessage.includes('/ecom/v2/carts') && rawMessage.includes('403')) {

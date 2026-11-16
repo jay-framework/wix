@@ -504,3 +504,26 @@ describe('the default country in booking-flow (DL #52 live QA L6)', () => {
         expect(flow.addressDomValue('country')).toBe('US');
     });
 });
+
+/**
+ * Bug: when the participant form cannot load (for example the address layouts failed), the page
+ * showed the raw error text instead of the FORM_UNAVAILABLE message.
+ * Found in: DL #52 live QA L11. Expected: "Could not load the participant form. Please try again
+ * later.". Actual: "Could not load the address layouts. Please try again later.".
+ */
+describe('a participant form that cannot load (DL #52 live QA L11)', () => {
+    it('shows the FORM_UNAVAILABLE message, not the raw error', async () => {
+        vi.mocked(getParticipantForm).mockRejectedValue(
+            new Error('Could not load the address layouts. Please try again later.'),
+        );
+        const flow = mountBookingFlow();
+        flow.selectService(QA_SERVICE.id);
+        await flush();
+        flow.selectSlot(SLOT.id);
+        await flush();
+        expect(flow.viewState.bookingFailure).toBe(BookingFailure.FORM_UNAVAILABLE);
+        expect(flow.viewState.bookingError).toBe(
+            'Could not load the participant form. Please try again later.',
+        );
+    });
+});

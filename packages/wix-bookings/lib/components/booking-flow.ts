@@ -58,6 +58,7 @@ import {
     describeBookingError,
     describeServicesError,
     describeUnsupportedForm,
+    FORM_UNAVAILABLE_MESSAGE,
 } from '../utils/booking-outcome.js';
 
 interface BookingFlowCarryForward {
@@ -338,9 +339,8 @@ function BookingFlowInteractive(
             setFormFields(fields.filter((field) => field.type !== 'ADDRESS'));
             resetAddress(fields.find((field) => field.type === 'ADDRESS') ?? null);
         } catch (error) {
-            const message =
-                error instanceof Error ? error.message : 'Could not load participant form fields.';
-            failBooking(BookingFailure.FORM_UNAVAILABLE, message);
+            console.warn('[wix-bookings] participant form could not load:', error);
+            failBooking(BookingFailure.FORM_UNAVAILABLE, FORM_UNAVAILABLE_MESSAGE);
             setShowForm(false);
         } finally {
             setFormLoading(false);
