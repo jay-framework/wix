@@ -1355,11 +1355,7 @@
                       "errorType": "NOT_ALLOWED_VALUE_ERROR",
                       "errorMessage": "must be equal to one of the allowed values",
                       "params": {
-                        "allowedValues": [
-                          "US",
-                          "IL",
-                          "IT"
-                        ]
+                        "allowedValues": ["US", "IL", "IT"]
                       }
                     }
                   ]

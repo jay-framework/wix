@@ -5,6 +5,8 @@
  */
 
 import type { FormFieldInputType } from '../types.js';
+import type { AddressSchemaFacts, LayoutPart } from '../address/address-types.js';
+import { isLayoutPart } from '../address/address-types.js';
 import type {
     RawComponentOptions,
     RawFieldLabel,
@@ -30,6 +32,8 @@ export interface FieldKey {
     itemType?: string;
     enumValues: string[];
     label: string;
+    /** Only for `inputType === 'ADDRESS'` (DL #52 §1). */
+    address?: AddressSchemaFacts;
 }
 
 export type FieldIgnoreReason = 'display' | 'no-target';
@@ -56,6 +60,49 @@ export function readFieldKey(raw: RawFormField): FieldKey {
         itemType: inputOptions.arrayOptions?.validation?.items?.itemType,
         enumValues: readEnumValues(raw),
         label: readLabelText(componentOptionsOf(raw)?.label) || target || raw.id || '',
+        ...(inputOptions.inputType === 'ADDRESS' ? { address: readAddressFacts(raw) } : {}),
+    };
+}
+
+interface RawAddressOptions {
+    validation?: {
+        allowedCountries?: unknown[];
+        fields?: Record<string, { required?: boolean } | undefined>;
+    };
+    multilineAddressOptions?: {
+        fieldSettings?: { addressLine2?: { show?: boolean } };
+        defaultCountryConfig?: { type?: string; countryOptions?: string };
+    };
+}
+
+/** The public Form Schemas address options; unknown members are ignored (DL #52 Q10). */
+function readAddressFacts(raw: RawFormField): AddressSchemaFacts {
+    const options = (raw.inputOptions?.addressOptions ?? {}) as RawAddressOptions;
+    const partRequired: Partial<Record<LayoutPart, boolean>> = {};
+    for (const [part, rule] of Object.entries(options.validation?.fields ?? {})) {
+        if (isLayoutPart(part) && typeof rule?.required === 'boolean')
+            partRequired[part] = rule.required;
+    }
+    const defaults = options.multilineAddressOptions?.defaultCountryConfig;
+    const defaultType =
+        defaults?.type === 'COUNTRY' || defaults?.type === 'BY_IP' ? defaults.type : undefined;
+    return {
+        allowedCountries: (options.validation?.allowedCountries ?? []).filter(
+            (code): code is string => typeof code === 'string' && code !== '',
+        ),
+        partRequired,
+        showAddressLine2:
+            options.multilineAddressOptions?.fieldSettings?.addressLine2?.show === true,
+        ...(defaultType
+            ? {
+                  defaultCountry: {
+                      type: defaultType,
+                      ...(typeof defaults?.countryOptions === 'string' && defaults.countryOptions
+                          ? { country: defaults.countryOptions }
+                          : {}),
+                  },
+              }
+            : {}),
     };
 }
 
@@ -74,6 +121,9 @@ export function classifyFormField(key: FieldKey): FormFieldInputType | undefined
             return classifyStringField(key);
         case 'BOOLEAN':
             return key.componentType === 'CHECKBOX' ? 'checkbox' : undefined;
+        case 'ADDRESS':
+            // Row 13: the spec (countries, layouts) is resolved by the projection (DL #52).
+            return key.componentType === 'MULTILINE_ADDRESS' ? 'address' : undefined;
         case 'ARRAY':
             return isClosedChoice(key) &&
                 key.componentType === 'CHECKBOX_GROUP' &&

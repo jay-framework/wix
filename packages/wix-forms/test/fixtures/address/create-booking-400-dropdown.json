@@ -10,20 +10,14 @@
             "field": "must be equal to one of the allowed values",
             "description": "must be equal to one of the allowed values",
             "data": {
-              "allowedValues": [
-                "Option 1",
-                "Option 2"
-              ],
+              "allowedValues": ["Option 1", "Option 2"],
               "formViolations": [
                 {
                   "fieldName": "dropdown_7b7d",
                   "description": "must be equal to one of the allowed values",
                   "ruleName": "NOT_ALLOWED_VALUE_ERROR",
                   "data": {
-                    "allowedValues": [
-                      "Option 1",
-                      "Option 2"
-                    ]
+                    "allowedValues": ["Option 1", "Option 2"]
                   }
                 }
               ]

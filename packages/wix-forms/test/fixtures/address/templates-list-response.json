@@ -4231,12 +4231,7 @@
             "stringOptions": {
               "validation": {
                 "format": "UNKNOWN_FORMAT",
-                "enum": [
-                  "ENG",
-                  "NIR",
-                  "SCT",
-                  "WLS"
-                ]
+                "enum": ["ENG", "NIR", "SCT", "WLS"]
               },
               "componentType": "DROPDOWN",
               "dropdownOptions": {
@@ -4383,12 +4378,7 @@
             "stringOptions": {
               "validation": {
                 "format": "UNKNOWN_FORMAT",
-                "enum": [
-                  "ENG",
-                  "NIR",
-                  "SCT",
-                  "WLS"
-                ]
+                "enum": ["ENG", "NIR", "SCT", "WLS"]
               },
               "componentType": "DROPDOWN",
               "dropdownOptions": {
@@ -6287,16 +6277,7 @@
             "stringOptions": {
               "validation": {
                 "format": "UNKNOWN_FORMAT",
-                "enum": [
-                  "ACT",
-                  "NSW",
-                  "NT",
-                  "QLD",
-                  "SA",
-                  "TAS",
-                  "VIC",
-                  "WA"
-                ]
+                "enum": ["ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA"]
               },
               "componentType": "DROPDOWN",
               "dropdownOptions": {
@@ -6467,16 +6448,7 @@
             "stringOptions": {
               "validation": {
                 "format": "UNKNOWN_FORMAT",
-                "enum": [
-                  "ACT",
-                  "NSW",
-                  "NT",
-                  "QLD",
-                  "SA",
-                  "TAS",
-                  "VIC",
-                  "WA"
-                ]
+                "enum": ["ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA"]
               },
               "componentType": "DROPDOWN",
               "dropdownOptions": {
@@ -10964,12 +10936,7 @@
             "stringOptions": {
               "validation": {
                 "format": "UNKNOWN_FORMAT",
-                "enum": [
-                  "ENG",
-                  "NIR",
-                  "SCT",
-                  "WLS"
-                ]
+                "enum": ["ENG", "NIR", "SCT", "WLS"]
               },
               "componentType": "DROPDOWN",
               "dropdownOptions": {
@@ -11116,12 +11083,7 @@
             "stringOptions": {
               "validation": {
                 "format": "UNKNOWN_FORMAT",
-                "enum": [
-                  "ENG",
-                  "NIR",
-                  "SCT",
-                  "WLS"
-                ]
+                "enum": ["ENG", "NIR", "SCT", "WLS"]
               },
               "componentType": "DROPDOWN",
               "dropdownOptions": {
@@ -13020,16 +12982,7 @@
             "stringOptions": {
               "validation": {
                 "format": "UNKNOWN_FORMAT",
-                "enum": [
-                  "ACT",
-                  "NSW",
-                  "NT",
-                  "QLD",
-                  "SA",
-                  "TAS",
-                  "VIC",
-                  "WA"
-                ]
+                "enum": ["ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA"]
               },
               "componentType": "DROPDOWN",
               "dropdownOptions": {
@@ -13200,16 +13153,7 @@
             "stringOptions": {
               "validation": {
                 "format": "UNKNOWN_FORMAT",
-                "enum": [
-                  "ACT",
-                  "NSW",
-                  "NT",
-                  "QLD",
-                  "SA",
-                  "TAS",
-                  "VIC",
-                  "WA"
-                ]
+                "enum": ["ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA"]
               },
               "componentType": "DROPDOWN",
               "dropdownOptions": {

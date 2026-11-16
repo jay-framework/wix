@@ -210,7 +210,8 @@ const PER_FORM_KIND: Array<[GetFormFixture, string, ReturnType<typeof classifyFo
     ['booking-form-all-kinds', 'last_name', 'text'],
     ['booking-form-all-kinds', 'phone', 'tel'],
     ['booking-form-all-kinds', 'email', 'email'],
-    ['booking-form-all-kinds', 'address', undefined],
+    // DL #52 flips row 13: the address is supported (its spec is resolved by the projection).
+    ['booking-form-all-kinds', 'address', 'address'],
     ['booking-form-all-kinds', 'add_your_message', 'textarea'],
     ['booking-form-all-kinds', 'long_answer_1135', 'textarea'],
     ['booking-form-all-kinds', 'form_field_e966', 'checkbox'],

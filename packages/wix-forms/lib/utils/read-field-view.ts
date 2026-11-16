@@ -4,6 +4,7 @@
  */
 
 import type { FormFieldOptionView } from '../types.js';
+import type { AddressFieldSpec } from '../address/address-types.js';
 import type { RawFormField } from '../wix-apis/get-form.js';
 import { componentOptionsOf, type FieldKey } from './classify-form-field.js';
 
@@ -13,6 +14,8 @@ export interface FieldViewData {
     maxLength?: number;
     pattern?: string;
     options: FormFieldOptionView[];
+    /** An address field's resolved spec (DL #52); set by the projection, which has the templates. */
+    address?: AddressFieldSpec;
 }
 
 export function readFieldView(raw: RawFormField, key: FieldKey): FieldViewData {

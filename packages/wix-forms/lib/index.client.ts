@@ -36,6 +36,36 @@ export {
 } from './utils/classify-form-field.js';
 export { readFieldView, type FieldViewData } from './utils/read-field-view.js';
 export { canonicalFormId } from './utils/form-id.js';
+// Address fields (DL #52): the value, the spec and the located errors.
+export {
+    addressErrorKey,
+    initialAddressValue,
+    isAddressValue,
+    isBlankAddress,
+    layoutOf,
+    nextAddressValue,
+    readAddressValue,
+    splitErrorKey,
+    toWixAddress,
+    validateAddressValue,
+    withLearnedFacts,
+} from './address/address-value.js';
+export {
+    ADDRESS_PARTS,
+    LAYOUT_PARTS,
+    type AddressFieldSpec,
+    type AddressLayout,
+    type AddressPart,
+    type AddressPartSpec,
+    type AddressSchemaFacts,
+    type AddressValue,
+    type CountryCode,
+    type LayoutPart,
+    type LearnedFactsSnapshot,
+} from './address/address-types.js';
+export { addressMessageFor, type LocatedViolation } from './utils/located-violations.js';
+export { fieldErrorsOf } from './utils/project-form-fields.js';
+
 export type { RawForm, RawFormField } from './wix-apis/get-form.js';
 export type {
     FieldValue,

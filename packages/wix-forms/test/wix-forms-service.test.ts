@@ -21,6 +21,8 @@ vi.mock('../lib/wix-apis/get-form.js', () => ({
 import { getFormSummary } from '../lib/wix-apis/get-form-summary.js';
 import { listForms } from '../lib/wix-apis/list-forms.js';
 import { getFormSchema } from '../lib/wix-apis/get-form.js';
+import { fixtureTemplates } from './support/address-fixtures.js';
+import { AddressLayoutsUnavailableError } from '../lib/address/address-templates.js';
 import { provideWixFormsService } from '../lib/services/wix-forms-service.js';
 import { fixtureField, formSummaryFixture, rawFormFixture } from './support/form-kinds.js';
 
@@ -29,6 +31,10 @@ const mockListForms = vi.mocked(listForms);
 const mockGetFormSchema = vi.mocked(getFormSchema);
 const FORM_ID = '3f2a9c1e-5b7d-4e8f-9a0b-1c2d3e4f5a6b';
 const mockClient = {} as Parameters<typeof provideWixFormsService>[0];
+
+function withTemplates() {
+    return { addressTemplateSource: { load: async () => fixtureTemplates() } };
+}
 const testConfig = {
     namespace: 'wix.form_app.form',
     formIds: [],
@@ -211,27 +217,53 @@ describe('WixFormsService.listForms (DL #51 §2)', () => {
         vi.restoreAllMocks();
     });
 
-    it('should list each form with its unsupported fields', async () => {
+    /** DL #52 flips the address to supported; the templates load only for a form with one. */
+    it('should list each form with its fields and hasAddress', async () => {
         mockListForms.mockResolvedValueOnce([
             { id: FORM_ID, name: 'Booking form', ...rawFormFixture('booking-form') },
         ]);
-        const [form] = await provideWixFormsService(mockClient, testConfig).listForms();
+        const [form] = await provideWixFormsService(
+            mockClient,
+            testConfig,
+            withTemplates(),
+        ).listForms();
 
         expect(form?.fields.map((field) => field.target)).toEqual([
             'first_name',
             'last_name',
             'email',
             'phone',
+            'address',
             'add_your_message',
         ]);
-        expect(form?.unsupportedFields).toEqual([
-            {
-                target: 'address',
-                label: 'Multi-line address',
-                wixKind: 'ADDRESS/MULTILINE_ADDRESS',
-                required: true,
-            },
+        expect(form?.unsupportedFields).toEqual([]);
+        expect(form?.hasAddress).toBe(true);
+    });
+
+    it('should throw AddressLayoutsUnavailableError when the templates fail (never unsupported)', async () => {
+        mockListForms.mockResolvedValueOnce([
+            { id: FORM_ID, name: 'Booking form', ...rawFormFixture('booking-form') },
         ]);
+        const failing = {
+            addressTemplateSource: {
+                load: () => Promise.reject(new AddressLayoutsUnavailableError()),
+            },
+        };
+        await expect(
+            provideWixFormsService(mockClient, testConfig, failing).listForms(),
+        ).rejects.toBeInstanceOf(AddressLayoutsUnavailableError);
+    });
+
+    it('should not load templates for forms without an address', async () => {
+        mockListForms.mockResolvedValueOnce([
+            { id: FORM_ID, name: 'Contact', ...rawFormFixture('contact-form') },
+        ]);
+        const load = vi.fn();
+        const [form] = await provideWixFormsService(mockClient, testConfig, {
+            addressTemplateSource: { load },
+        }).listForms();
+        expect(load).not.toHaveBeenCalled();
+        expect(form?.hasAddress).toBe(false);
     });
 
     it('should warn about a required field that has no target', async () => {
@@ -328,5 +360,36 @@ describe('WixFormsService.isSubmittableForm', () => {
             namespace: testConfig.namespace,
             include: 'enabled',
         });
+    });
+});
+
+/**
+ * Review round 3, m1: a form can be submittable but not listed (`include` / `formIds`): it must
+ * fall through to the per-call projection, never be treated as address-free.
+ */
+describe('WixFormsService.addressFieldsOf (DL #52 §5)', () => {
+    beforeEach(() => {
+        mockListForms.mockReset();
+        mockGetFormSchema.mockReset();
+    });
+
+    it('makes no Get Form call for a listed form without an address', async () => {
+        mockListForms.mockResolvedValueOnce([
+            { ...rawFormFixture('contact-form'), id: FORM_ID, name: 'Contact' },
+        ]);
+        const service = provideWixFormsService(mockClient, testConfig, withTemplates());
+        expect(await service.addressFieldsOf(FORM_ID)).toEqual([]);
+        expect(mockGetFormSchema).not.toHaveBeenCalled();
+    });
+
+    it('projects a form that is not listed, with the learned facts', async () => {
+        mockListForms.mockResolvedValueOnce([]);
+        mockGetFormSchema.mockResolvedValue({ form: rawFormFixture('booking-form') });
+        const service = provideWixFormsService(mockClient, testConfig, withTemplates());
+        service.learnedAddressFacts().revealPart('ZW', 'subdivision');
+        const fields = await service.addressFieldsOf(FORM_ID);
+        expect(fields.map((field) => field.target)).toEqual(['address']);
+        expect(fields[0].address!.revealedPartsOf).toEqual({ ZW: ['subdivision'] });
+        expect(mockGetFormSchema).toHaveBeenCalledTimes(1);
     });
 });

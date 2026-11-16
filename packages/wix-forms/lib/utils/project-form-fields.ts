@@ -17,8 +17,21 @@ import {
     type FieldKey,
 } from './classify-form-field.js';
 import { readFieldView } from './read-field-view.js';
+import { inLayoutOrder } from './layout-order.js';
+
+export { inLayoutOrder };
 import { FieldRule, type FieldCheckResult } from '../components/field-rule.js';
 import { callingCodesOf, checkPhone } from './phone-normalization.js';
+import type { AddressTemplates } from '../address/address-templates.js';
+import type { AddressConfig, LearnedFactsSnapshot } from '../address/address-types.js';
+import { resolveAddressSpec } from '../address/address-spec.js';
+import {
+    addressErrorKey,
+    isAddressValue,
+    toWixAddress,
+    validateAddressValue,
+    withLearnedFacts,
+} from '../address/address-value.js';
 
 const SUMMARY_FIELD_TYPES = new Set(['STRING', 'EMAIL', 'PHONE', 'NUMBER', 'URL']);
 
@@ -26,6 +39,14 @@ const SUMMARY_FIELD_TYPES = new Set(['STRING', 'EMAIL', 'PHONE', 'NUMBER', 'URL'
 export interface ProjectionOptions {
     /** Config `defaultPhoneCountry`: the country of phones typed without a country code. */
     defaultPhoneCountry?: string;
+    /** Required when the form has an address: loaded by the caller first, or the caller throws (DL #52 Q3). */
+    addressTemplates?: AddressTemplates;
+    /** The learned-facts snapshot to merge into each address spec (DL #52 §1 "One spec"). */
+    learnedFacts?: LearnedFactsSnapshot;
+    /** Config `address` (locale, labels). */
+    addressConfig?: AddressConfig;
+    /** Where spec-resolution warnings go; default `console.warn`. */
+    warn?: (message: string) => void;
 }
 
 /**
@@ -45,6 +66,12 @@ export function projectFormFields(
             projected.unsupportedFields.push(unsupportedFieldOf(key));
             continue;
         }
+        if (inputType === 'address') {
+            const address = projectAddressField(key, options);
+            if (address) projected.fields.push(address);
+            else projected.unsupportedFields.push(unsupportedFieldOf(key));
+            continue;
+        }
         projected.fields.push({
             target: key.target!,
             label: key.label,
@@ -57,6 +84,65 @@ export function projectFormFields(
         });
     }
     return projected;
+}
+
+/** True when the raw form has an `ADDRESS` input: only then are templates loaded (DL #52 §1). */
+export function hasAddressField(rawForm: RawForm): boolean {
+    return (rawForm.formFields ?? []).some((field) => field.inputOptions?.inputType === 'ADDRESS');
+}
+
+/**
+ * An address field with its spec, or undefined (unsupported) when hidden — the `control` channel
+ * carries strings (Q12) — or when no country can be offered (Q4).
+ */
+function projectAddressField(key: FieldKey, options: ProjectionOptions): FormFieldView | undefined {
+    if (!options.addressTemplates) {
+        throw new Error(
+            'projectFormFields: a form with an address needs addressTemplates (load them first)',
+        );
+    }
+    if (key.hidden) return undefined;
+    const resolved = resolveAddressSpec(key.address!, options.addressTemplates, {
+        config: options.addressConfig,
+        warn: options.warn,
+    });
+    if ('unsupported' in resolved) {
+        (options.warn ?? console.warn)(
+            `[wix-forms] address field "${key.target}": ${resolved.unsupported}.`,
+        );
+        return undefined;
+    }
+    const address = options.learnedFacts
+        ? withLearnedFacts(resolved, options.learnedFacts)
+        : resolved;
+    return {
+        target: key.target!,
+        label: key.label,
+        inputType: 'address',
+        required: key.required,
+        placeholder: '',
+        options: [],
+        address,
+    };
+}
+
+/**
+ * Every built-in error of a value, keyed by target, or by `<target>/<part>` for an address
+ * (DL #52 §1): the keys both Wix APIs use for located errors.
+ */
+export function fieldErrorsOf(field: FormFieldView, value: FieldValue): Record<string, string> {
+    if (field.inputType === 'address' && field.address) {
+        const normalised = toWixAddress(field.address, isAddressValue(value) ? value : {});
+        const errors = validateAddressValue(field.address, normalised, field.required);
+        return Object.fromEntries(
+            Object.entries(errors).map(([part, message]) => [
+                addressErrorKey(field.target, part as keyof typeof errors),
+                message as string,
+            ]),
+        );
+    }
+    const message = validateFormField(field, value);
+    return message ? { [field.target]: message } : {};
 }
 
 /**
@@ -96,21 +182,6 @@ export function unsupportedFieldOf(key: FieldKey): UnsupportedFieldView {
         wixKind: wixKindOf(key),
         required: key.required,
     };
-}
-
-/**
- * `formFields[]` in `steps[0].layout.large.items` order (row, then column). Layout items for
- * ids outside `formFields[]` are skipped; fields without a layout item come last.
- */
-export function inLayoutOrder(rawForm: RawForm): RawFormField[] {
-    const fields = rawForm.formFields ?? [];
-    const items = [...(rawForm.steps?.[0]?.layout?.large?.items ?? [])].sort(
-        (first, second) =>
-            (first.row ?? 0) - (second.row ?? 0) || (first.column ?? 0) - (second.column ?? 0),
-    );
-    const byId = new Map(fields.map((field) => [field.id, field]));
-    const placed = new Set(items.flatMap((item) => byId.get(item.fieldId) ?? []));
-    return [...placed, ...fields.filter((field) => !placed.has(field))];
 }
 
 /**
@@ -187,6 +258,7 @@ export function checkFormField(field: FormFieldView, value: FieldValue): FieldCh
         const empty = !Array.isArray(value) || value.length === 0;
         return field.required && empty ? requiredFailure(field) : PASSED;
     }
+    if (field.inputType === 'address') return checkAddressField(field, value);
 
     const trimmed = (typeof value === 'string' ? value : '').trim();
     if (field.required && !trimmed) {
@@ -199,6 +271,16 @@ export function checkFormField(field: FormFieldView, value: FieldValue): FieldCh
 }
 
 const PASSED: FieldCheckResult = { rule: FieldRule.NONE, message: '' };
+
+/** The first part error; REQUIRED for a missing part, PATTERN for any other address rule. */
+function checkAddressField(field: FormFieldView, value: FieldValue): FieldCheckResult {
+    const [message] = Object.values(fieldErrorsOf(field, value));
+    if (!message) return PASSED;
+    return {
+        rule: message.endsWith(' is required.') ? FieldRule.REQUIRED : FieldRule.PATTERN,
+        message,
+    };
+}
 
 function requiredFailure(field: FormFieldView): FieldCheckResult {
     return failure(FieldRule.REQUIRED, field);

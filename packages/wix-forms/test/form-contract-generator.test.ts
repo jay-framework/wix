@@ -16,6 +16,7 @@ import { generator as formContractGenerator } from '../lib/generators/form-contr
 import { FieldRule } from '../lib/components/field-rule.js';
 import type { ListedFormView } from '../lib/types.js';
 import type { WixFormsService } from '../lib/services/wix-forms-service-marker.js';
+import { createLearnedAddressFacts } from '../lib/address/learned-address-facts.js';
 
 const fixturesDir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures');
 
@@ -28,6 +29,9 @@ function serviceWith(forms: ListedFormView[]): WixFormsService {
         getFormSummaryFields: async () => ({ fields: [], unsupportedFields: [] }),
         isSubmittableForm: async () => true,
         createSubmission: async () => {},
+        addressTemplates: async () => ({}),
+        learnedAddressFacts: () => createLearnedAddressFacts(),
+        addressFieldsOf: async () => [],
     };
 }
 

@@ -16,6 +16,9 @@ import type { FieldValue, FormFieldView } from '../lib/types.js';
 import { FieldRule } from '../lib/components/field-rule.js';
 import type { RawForm } from '../lib/wix-apis/get-form.js';
 import { fixtureField, formSummaryFixture, rawFormFixture } from './support/form-kinds.js';
+import { fixtureTemplates, requiredAddressFacts, specOf } from './support/address-fixtures.js';
+
+const withTemplates = { addressTemplates: fixtureTemplates(), warn: () => {} };
 
 const textView = { placeholder: '', options: [], hidden: false };
 
@@ -24,8 +27,9 @@ describe('projectFormFields (DL #51 §1)', () => {
      * DL #51 test 2 (projection): reads `formFields[]` only, in layout order, and returns the
      * unsupported fields instead of dropping or mis-rendering them.
      */
-    it('should project booking-form.json in layout order, listing the address as unsupported', () => {
-        expect(projectFormFields(rawFormFixture('booking-form'))).toEqual({
+    /** DL #52 flips this row: the address is projected with its spec, nothing is unsupported. */
+    it('should project booking-form.json in layout order, with the address supported', () => {
+        expect(projectFormFields(rawFormFixture('booking-form'), withTemplates)).toEqual({
             fields: [
                 {
                     target: 'first_name',
@@ -50,6 +54,15 @@ describe('projectFormFields (DL #51 §1)', () => {
                 },
                 { target: 'phone', label: 'Phone', inputType: 'tel', required: false, ...textView },
                 {
+                    target: 'address',
+                    label: 'Multi-line address',
+                    inputType: 'address',
+                    required: true,
+                    placeholder: '',
+                    options: [],
+                    address: specOf(requiredAddressFacts()),
+                },
+                {
                     target: 'add_your_message',
                     label: 'Add your message',
                     inputType: 'textarea',
@@ -57,14 +70,7 @@ describe('projectFormFields (DL #51 §1)', () => {
                     ...textView,
                 },
             ],
-            unsupportedFields: [
-                {
-                    target: 'address',
-                    label: 'Multi-line address',
-                    wixKind: 'ADDRESS/MULTILINE_ADDRESS',
-                    required: true,
-                },
-            ],
+            unsupportedFields: [],
         });
     });
 
@@ -85,14 +91,9 @@ describe('projectFormFields (DL #51 §1)', () => {
 
     it('should list each unsupported kind of the all-kinds form with its Wix kind', () => {
         expect(
-            projectFormFields(rawFormFixture('booking-form-all-kinds')).unsupportedFields,
+            projectFormFields(rawFormFixture('booking-form-all-kinds'), withTemplates)
+                .unsupportedFields,
         ).toEqual([
-            {
-                target: 'address',
-                label: 'Multi-line address',
-                wixKind: 'ADDRESS/MULTILINE_ADDRESS',
-                required: true,
-            },
             {
                 target: 'file_upload_1ffc',
                 label: 'File upload',
@@ -121,10 +122,11 @@ describe('projectFormFields (DL #51 §1)', () => {
         form.steps![0]!.layout!.large!.items = items.filter(
             (item) => item.fieldId !== '00000000-0000-0000-0000-000000000001',
         );
-        expect(projectFormFields(form).fields.map((field) => field.target)).toEqual([
+        expect(projectFormFields(form, withTemplates).fields.map((field) => field.target)).toEqual([
             'last_name',
             'email',
             'phone',
+            'address',
             'add_your_message',
             'first_name',
         ]);
@@ -412,7 +414,7 @@ describe('projectFormFields with defaultPhoneCountry (DL#55 P1c)', () => {
     // Live capture (DL #51 Phase 0): one PHONE_INPUT field with no own default country.
     const form = rawFormFixture('booking-form');
     const phoneRulesByTarget = (options?: { defaultPhoneCountry?: string }) =>
-        projectFormFields(form, options)
+        projectFormFields(form, { ...withTemplates, ...options })
             .fields.filter((field) => 'phone' in field)
             .map((field) => [field.target, field.phone]);
 
