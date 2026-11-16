@@ -1,6 +1,6 @@
 # 52 - Address Fields in wix-forms and wix-bookings
 
-Status: Design (revision 4, after the revision-3 round-2 review)
+Status: [Implemented — pending live QA L1–L12] (revision 4; implementation 2026-11-16)
 
 Covers `@jay-framework/wix-forms` and `@jay-framework/wix-bookings`. This is the follow-up log that DL #51 §5 defers to. It designs address support for **both** bookings (Create Booking) and per-form submission (Create Submission), and its last implementation step deletes `RELEASE-BLOCKED.md`. It builds on DL #51 (implemented: `FieldKey`, `readFieldKey`, `classifyFormField`, `readFieldView`, `toBookingFieldType`, `ProjectedForm`, `getParticipantForm`, the §4 check order), DL #40 (per-form contracts), DL #41 (value store, `FieldValue`), DL #44 (multiselect), DL #45/#46 (locale-neutral outcomes) and DL #55 (Wix validation parity, `parseSubmissionViolations`, the `defaultPhoneCountry` config precedent). jay is used only through its public surface (contract YAML, `parseContract`, `JayHtmlValidatorFn`, `plugin.yaml` `validators:`). Paths are relative to `packages/` unless stated. Line citations are to the branch `form-address-fields` with DL #51 applied (`eb3b756`).
 
@@ -1014,3 +1014,56 @@ Three independent review rounds shaped this log. Each resolution lives in the se
     - IT shows codes → set `address.labels.subdivisions`.
   - Replace DL #51's `FORM_UNSUPPORTED` address wording in both troubleshooting guides.
 - **No framework change:** everything uses existing jay contract primitives.
+
+## Implementation Results
+
+Implemented on `form-address-fields` (local commits only, not pushed). The design above is unchanged; deviations and interpretations are listed here. The live gate (L1–L12) and the §7 final commit are not part of this step: `RELEASE-BLOCKED.md` stays.
+
+### Commits
+
+Phase A0 (fixtures + probe script), A (shared core), B-server, B-client, F (per form), then the release preparation (0.27.0, changelogs, client exports found by the repo build, this section).
+
+### Deviations from the design
+
+1. **Row 13 flips in Phase A, not B/F.** A3 requires `projectFormFields` to resolve an address spec, which needs the row. The DL #51 per-form rows (classification, projection, `listForms`) and bookings tests 5, 6, 9 were rewritten with the new expectations (address supported) in the phase that broke them.
+2. **De-duplicating the template response keeps the first *complete* copy.** The live response lists MLA_FR three times, and one copy has five `UNKNOWN_FIELD_TYPE` fields with no `inputOptions`. Taking "the" copy by id would fail the whole response (Q3). A copy whose every field has a target is used; an id with no such copy is a failure. A1 pins this on the committed capture.
+3. **A0 allows the templates' own ids.** The templates response carries field and step UUIDs (needed for layout order). A0 allows the 12 template ids plus the UUIDs found inside `templates-list-response.json`, and fails on any other UUID in the directory; a second check keeps those internal ids out of every other fixture. `createdDate` / `updatedDate` were dropped from that capture.
+4. **`addressLine2`'s form override counts only when the form shows the line.** The default booking form says `addressLine2.required: true` with `show: false`, and Create Booking accepted IL without `addressLine2` (`address-create-booking-probe.json`, "IL streetName+streetNumber…", 200). Following Q10 literally would make IL's line 2 required on every booking form, contradicting L3 ("not marked required"). So: shown via `fieldSettings` → override ?? false; shown by the template (IL) → the template's `required` (false).
+5. **Subdivision label of the shared unlisted template is "Region".** The log's messages for Italy ("Choose a Region from the list.") need a label that `SUBDIVISION_PART_LABELS` does not give (it has the 9 own-template countries). `MLA_COMMON_STATE` layouts use `Region`; a part revealed on a layout without one uses the part label `State/Region` (A11). `address.labels.subdivisionPart.<CC>` applies to own-template countries only (the shared layout is per template, not per country).
+6. **A required, empty subdivision with a *learned* list reads "Choose a Region from the list."** B3 expects this after the IT correction, while L7 expects "State is required." for an empty US (template) list. `validateAddressValue` therefore uses the "choose from the list" wording only when the country's list was learned.
+7. **`AddressFieldSpec` gains `partLabels`.** A revealed part needs a label, and `layoutOf` has no other source for it.
+8. **A country change keeps only the parts both layouts show.** A9 expects US→IL to clear `addressLine2`, which IL shows; the value under a part the old layout hid is stale.
+9. **Per-form submit with a template failure returns `reason: UNKNOWN`** with the message "Could not load the address layouts. Please try again later.". `SubmitFailure` has no `FORM_UNAVAILABLE` member (DL #53 never defined one), and adding a member would change every generated `submitFailure` enum. L11's `curl` pass condition is therefore `reason: 5` (UNKNOWN) with that message.
+10. **F1's "missing part in the loaded contract" uses contract metadata.** The runtime does not see the contract, so the generator writes `metadata.addressParts: { <target>: [the 7 layout parts] }` for forms with an address, and the slow render marks an address unsupported (warning `address contract is missing part <part>; regenerate contracts`) when a part is missing there. A contract from 0.26.x has no metadata entry and therefore fails closed.
+11. **`createLearnedAddressFacts({ now, labels })`** (review m3) and **`factsCountry`** in the `invalid` outcome and the submit result (review m7): the server names the country the facts belong to, and the client applies them to that country only.
+12. **B1 bodies.** LB0 (live Create Booking captures) was not run in this step. B1 parses the address `formViolations[]` captured live on 2026-11-10 (`address-create-booking-probe.json`) inside F6's verbatim 400 envelope. LB0's raw captures are left to the QA step; if the envelope differs, the parser follows the capture.
+13. **The generated `.jay-action.d.ts` omit `object` members** (jay's generator drops them, as it already did for `fieldErrors`), so `address?: AddressFieldSpec` is typed in `lib/types.ts`, not in the action `.d.ts`.
+14. **Client entry exports.** The wix-bookings client bundle imports its participant-form utilities and its service (static-export path), so `projectAddressField`, `hasAddressField`, `parseBookingFormViolations` and `mapAddressViolations` are also exported from `@jay-framework/wix-forms/client`. All are pure; the template source and the learned-facts factory stay server-only.
+15. **B5/B8/F8 "passes `jay-stack validate`"** is proven by compiling the page with `compiler-jay-html` (parse + generate, no validations) and running the plugin validator on it. The full CLI run on a real project is part of the testbed checks (B9/F9).
+16. **A5 includes "IT no subdivision" and "FR subdivision FR-IDF".** Both are client-detectable (IT is required free text; FR's template lists its codes), so they are asserted rather than excluded. Probe case names are the captured ones ("IL valid street", "ZW (COMMON) no subdivision", …).
+17. **wix-bookings gains a `@jay-framework/compiler-shared` dependency** (the validator's `walkElements`), already in the lockfile through wix-forms.
+
+### Round-3 review minors
+
+- **m1** `addressFieldsOf` returns `[]` only when the listed form has `hasAddress: false`; a form missing from the listing is projected per call (`hasAddress` is optional, absent = unknown). Test: `WixFormsService.addressFieldsOf` "projects a form that is not listed".
+- **m2** A template target outside the eight parts fails the response (`parseAddressTemplates`). Test A1 "fails on a target that is not one of the eight parts".
+- **m3** `createLearnedAddressFacts({ labels })`; `snapshot()` names codes from `address.labels.subdivisions`. Test A10.
+- **m4** `checkAddressBindings` is exported from `@jay-framework/wix-forms/tools`; `validateBookingFlowBindings` from wix-bookings `lib/tools.ts`, which imports the core from `@jay-framework/wix-forms/tools`.
+- **m5** Both packages are 0.27.0 and wix-bookings depends on `@jay-framework/wix-forms` `^0.27.0`. §7 checklist addition: the final commit must keep both versions and that range in step (and the lockfile).
+- **m6** A participant form that cannot be read during agent-kit leaves `participantFormHasAddress` out for that service and logs a warning; the validator then warns. Test: `generate-agent-kit` "writes true, false, and no flag when the form cannot be read".
+- **m7** The server returns `factsCountry` (target → the submitted country); bookings and per-form clients apply learned facts to that country only. Test B3 "applies learned facts to the country the server names".
+
+### Test results
+
+`yarn confirm` (rebuild of all 27 workspaces, `build:check-types`, every test suite, format) passes.
+
+- wix-forms: 797/797 (665 before; new: A0–A11, F1–F8 with F1b, F2b, F5b, the service `addressFieldsOf` cases; DL #51 rows flipped).
+- wix-bookings: 158/158 (124 before; new: B1–B8 and the `participantFormHasAddress` cases; DL #51 tests 5, 6, 9 flipped).
+- The other workspaces' suites are unchanged and green.
+
+Red first: A9, B3 (three cases) and F4 failed first and were fixed in code; the expected values of every other new test were written from the fixtures and the log before running, but several passed on their first run because the code had been written in the same phase.
+
+### Pending
+
+- Live QA L1–L12 (Gate exit), LB0's raw Create Booking captures, and the Q15 site changes and restores, by the separate QA step. The B9 `/book` markup and the F9 per-form page (`/address`) are in the workspace testbed, not in this repo.
+- §7 final commit (delete `RELEASE-BLOCKED.md`, the L-drift line in the `scripts/publish.cjs` header, DL #51 status) only after the gate passes.

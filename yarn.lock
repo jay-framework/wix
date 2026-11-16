@@ -2707,6 +2707,7 @@ __metadata:
     "@babel/preset-env": "npm:^7.23.8"
     "@babel/preset-typescript": "npm:^7.23.3"
     "@jay-framework/compiler-jay-stack": "npm:^0.26.4"
+    "@jay-framework/compiler-shared": "npm:^0.26.4"
     "@jay-framework/component": "npm:^0.26.4"
     "@jay-framework/fullstack-component": "npm:^0.26.4"
     "@jay-framework/jay-cli": "npm:^0.26.4"
@@ -2718,7 +2719,7 @@ __metadata:
     "@jay-framework/stack-server-runtime": "npm:^0.26.4"
     "@jay-framework/vite-plugin": "npm:^0.26.4"
     "@jay-framework/wix-dev-environment": "workspace:^"
-    "@jay-framework/wix-forms": "npm:^0.26.4"
+    "@jay-framework/wix-forms": "npm:^0.27.0"
     "@jay-framework/wix-server-client": "npm:^0.26.4"
     "@wix/sdk": "npm:^1.21.5"
     js-yaml: "npm:^4.1.0"
@@ -2833,7 +2834,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jay-framework/wix-forms@npm:^0.26.4, @jay-framework/wix-forms@workspace:packages/wix-forms":
+"@jay-framework/wix-forms@npm:^0.27.0, @jay-framework/wix-forms@workspace:packages/wix-forms":
   version: 0.0.0-use.local
   resolution: "@jay-framework/wix-forms@workspace:packages/wix-forms"
   dependencies:

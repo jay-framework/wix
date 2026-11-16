@@ -1,6 +1,30 @@
 # Changelog — @jay-framework/wix-forms
 
-## Unreleased
+## 0.27.0
+
+### Breaking
+
+1. **`FieldValue` now includes an address object** (`string | string[] | boolean | AddressValue`,
+   DL #52). A submit hook that narrows `values[target]` to `string | string[] | boolean` must
+   handle an object `{ country, addressLine?, city?, subdivision?, postalCode?, … }` (Wix's own
+   keys) for a Multi-line address field. Use `isAddressValue` from this package.
+2. **A Multi-line address is now a supported field.** Its per-form contract tag has all eight parts
+   (`country`, `addressLine`, `addressLine2`, `streetName`, `streetNumber`, `city`, `subdivision`,
+   `postalCode`); a form with a required address no longer shows "This form has a required field
+   this site cannot show". Re-run `jay-stack agent-kit` and bind the parts (`rich-forms.md` §4c):
+   the validator now **errors** on an address part without its input(s) (rule 6).
+
+### Features
+
+- Address layouts come from Wix's public List Form Templates API at runtime (cached 1 h; a failure
+  makes the form unavailable, never unsupported). Countries: all 247 Wix accepts, honouring the
+  field's allowed countries and default country.
+- Part errors are keyed `<target>/<part>`; when Wix names the valid regions (Italy) or requires a
+  hidden part, the part updates for the visitor and for later visitors (learned per server process).
+- `config/.wix-forms.yaml` `address.locale` and `address.labels` (part labels, subdivision labels,
+  region names).
+- Booking pages (wix-bookings) must add the address markup (see wix-bookings-setup.md → Address).
+- Dev-only `scripts/address-map-probe.mjs` (L-drift): run before every release.
 
 ### Behaviour changes (read before upgrading)
 

@@ -63,8 +63,22 @@ export {
     type LayoutPart,
     type LearnedFactsSnapshot,
 } from './address/address-types.js';
-export { addressMessageFor, type LocatedViolation } from './utils/located-violations.js';
-export { fieldErrorsOf } from './utils/project-form-fields.js';
+export {
+    addressMessageFor,
+    parseBookingFormViolations,
+    type LocatedViolation,
+} from './utils/located-violations.js';
+// Pure; client-resolvable because wix-bookings' client entry bundles its service (static export).
+export {
+    mapAddressViolations,
+    type AddressViolationsResult,
+} from './address/address-violations.js';
+export {
+    fieldErrorsOf,
+    hasAddressField,
+    projectAddressField,
+    type ProjectionOptions,
+} from './utils/project-form-fields.js';
 export {
     addressViewState,
     type AddressPartViewState,
