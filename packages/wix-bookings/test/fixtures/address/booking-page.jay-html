@@ -6,36 +6,36 @@ data:
   <script type="application/jay-headless" contract="../../../lib/contracts/booking-flow.jay-contract" key="flow"></script>
 </head>
 <body>
-<div if="flow.address.present">
+<div if="flow.address.present" style="display: flex; flex-direction: column">
   <label
     >{flow.address.country.label}
     <select ref="flow.address.country.input" autocomplete="country">
       <option forEach="flow.address.country.options" trackBy="value" value="{value}">{label}</option>
     </select></label
   >
-  <label if="flow.address.streetName.shown"
+  <label if="flow.address.streetName.shown" style="order: {flow.address.streetName.order}"
     >{flow.address.streetName.label}<input ref="flow.address.streetName.input"
   /></label>
-  <label if="flow.address.streetNumber.shown"
+  <label if="flow.address.streetNumber.shown" style="order: {flow.address.streetNumber.order}"
     >{flow.address.streetNumber.label}<input ref="flow.address.streetNumber.input"
   /></label>
-  <label if="flow.address.addressLine.shown"
+  <label if="flow.address.addressLine.shown" style="order: {flow.address.addressLine.order}"
     >{flow.address.addressLine.label}<input ref="flow.address.addressLine.input" autocomplete="address-line1"
   /></label>
-  <label if="flow.address.addressLine2.shown"
+  <label if="flow.address.addressLine2.shown" style="order: {flow.address.addressLine2.order}"
     >{flow.address.addressLine2.label}<input ref="flow.address.addressLine2.input" autocomplete="address-line2"
   /></label>
-  <label if="flow.address.city.shown"
+  <label if="flow.address.city.shown" style="order: {flow.address.city.order}"
     >{flow.address.city.label}<input ref="flow.address.city.input" autocomplete="address-level2"
   /></label>
-  <label if="flow.address.subdivision.shown"
+  <label if="flow.address.subdivision.shown" style="order: {flow.address.subdivision.order}"
     >{flow.address.subdivision.label}
     <select if="flow.address.subdivision.listed" ref="flow.address.subdivision.input" autocomplete="address-level1">
       <option forEach="flow.address.subdivision.options" trackBy="value" value="{value}">{label}</option>
     </select>
     <input if="!flow.address.subdivision.listed" ref="flow.address.subdivision.text" autocomplete="address-level1"
   /></label>
-  <label if="flow.address.postalCode.shown"
+  <label if="flow.address.postalCode.shown" style="order: {flow.address.postalCode.order}"
     >{flow.address.postalCode.label}<input ref="flow.address.postalCode.input" autocomplete="postal-code"
   /></label>
 </div>

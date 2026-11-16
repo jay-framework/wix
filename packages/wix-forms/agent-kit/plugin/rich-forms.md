@@ -301,26 +301,27 @@ is single-value, so each click would replace the whole selection (the validator 
 Bind all eight parts; each part shows only for the countries that use it:
 
 ```html
-<fieldset>
+<fieldset style="display: flex; flex-direction: column">
   <label>{contact.address.country.label}
     <select ref="contact.address.country.input" autocomplete="country">
       <option forEach="contact.address.country.options" trackBy="value" value="{value}">{label}</option>
     </select></label>
-  <label if="contact.address.streetName.shown">{contact.address.streetName.label}<input ref="contact.address.streetName.input" /></label>
-  <label if="contact.address.streetNumber.shown">{contact.address.streetNumber.label}<input ref="contact.address.streetNumber.input" /></label>
-  <label if="contact.address.addressLine.shown">{contact.address.addressLine.label}<input ref="contact.address.addressLine.input" autocomplete="address-line1" /></label>
-  <label if="contact.address.addressLine2.shown">{contact.address.addressLine2.label}<input ref="contact.address.addressLine2.input" autocomplete="address-line2" /></label>
-  <label if="contact.address.city.shown">{contact.address.city.label}<input ref="contact.address.city.input" autocomplete="address-level2" /></label>
-  <label if="contact.address.subdivision.shown">{contact.address.subdivision.label}
+  <label if="contact.address.streetName.shown" style="order: {contact.address.streetName.order}">{contact.address.streetName.label}<input ref="contact.address.streetName.input" /></label>
+  <label if="contact.address.streetNumber.shown" style="order: {contact.address.streetNumber.order}">{contact.address.streetNumber.label}<input ref="contact.address.streetNumber.input" /></label>
+  <label if="contact.address.addressLine.shown" style="order: {contact.address.addressLine.order}">{contact.address.addressLine.label}<input ref="contact.address.addressLine.input" autocomplete="address-line1" /></label>
+  <label if="contact.address.addressLine2.shown" style="order: {contact.address.addressLine2.order}">{contact.address.addressLine2.label}<input ref="contact.address.addressLine2.input" autocomplete="address-line2" /></label>
+  <label if="contact.address.city.shown" style="order: {contact.address.city.order}">{contact.address.city.label}<input ref="contact.address.city.input" autocomplete="address-level2" /></label>
+  <label if="contact.address.subdivision.shown" style="order: {contact.address.subdivision.order}">{contact.address.subdivision.label}
     <select if="contact.address.subdivision.listed" ref="contact.address.subdivision.input" autocomplete="address-level1">
       <option forEach="contact.address.subdivision.options" trackBy="value" value="{value}">{label}</option>
     </select>
     <input if="!contact.address.subdivision.listed" ref="contact.address.subdivision.text" autocomplete="address-level1" /></label>
-  <label if="contact.address.postalCode.shown">{contact.address.postalCode.label}<input ref="contact.address.postalCode.input" autocomplete="postal-code" /></label>
+  <label if="contact.address.postalCode.shown" style="order: {contact.address.postalCode.order}">{contact.address.postalCode.label}<input ref="contact.address.postalCode.input" autocomplete="postal-code" /></label>
 </fieldset>
 <p if="contact.address.invalid">{contact.address.error}</p>
 ```
 
+- Parts follow the country's own layout order (Germany: postal code before city; Japan: postal code first). Each part's `order` is its position in that layout (0 when hidden): put the parts in a flex container and bind `style="order: {…order}"`, as above. The country select stays first.
 - `autocomplete` tokens: `country`, `address-line1`, `address-line2`, `address-level2` (city), `address-level1` (subdivision), `postal-code`. `streetName` and `streetNumber` have **no** standard token: never put `address-line1` on them.
 - Both subdivision inputs are required (rule 6): `input` for a listed region, `text` for free text. Italy starts as free text and switches to a select after Wix names the valid codes.
 - An optional address that is left blank (a preselected country alone counts as blank) is not submitted.

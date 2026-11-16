@@ -90,7 +90,15 @@ function toContractSlot(slot: BookingSlotView): SlotOfBookingFlowViewState {
 
 /** No address field (DL #52 §2): every part hidden, nothing to choose. */
 function absentAddressViewState(): AddressOfBookingFlowViewState {
-    const part = { shown: false, required: false, label: '', value: '', error: '', invalid: false };
+    const part = {
+        shown: false,
+        required: false,
+        order: 0,
+        label: '',
+        value: '',
+        error: '',
+        invalid: false,
+    };
     return {
         present: false,
         label: '',

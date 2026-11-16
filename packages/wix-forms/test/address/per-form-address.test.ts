@@ -166,6 +166,52 @@ describe('F2: the address view state per country', () => {
     });
 });
 
+/**
+ * Bug: the view state carried no part order, so a page could only show parts in its own fixed
+ * markup order, not the template's layout order.
+ * Found in: DL #52 live QA L2. Expected: DE streetName, streetNumber, postalCode, city,
+ * subdivision; JP starts with postalCode (`expected-layouts.json`). Actual: no `order` per part.
+ */
+describe('F2c: each shown part carries its template layout position', () => {
+    const field = addressFieldView();
+    const expectedLayouts = JSON.parse(
+        fs.readFileSync(new URL('expected-layouts.json', FIXTURE_DIR), 'utf8'),
+    );
+    const templateOrder = (template: string): string[] =>
+        expectedLayouts[template].fields
+            .filter((part: { hidden: boolean }) => !part.hidden)
+            .map((part: { part: string }) => part.part);
+    const shownInOrder = (country: string): string[] => {
+        const state = buildFormViewState([field], {
+            isSubmitting: false,
+            statusMessage: '',
+            loadError: '',
+            valueByTarget: { address: { country } },
+        }).address as Record<string, any>;
+        return LAYOUT_PARTS.filter((part) => state[part].shown).sort(
+            (first, second) => state[first].order - state[second].order,
+        );
+    };
+
+    it.each([
+        ['DE', 'MLA_DE'],
+        ['JP', 'MLA_JP'],
+        ['IL', 'MLA_IL'],
+    ])('%s parts sorted by order follow %s', (country, template) => {
+        expect(shownInOrder(country)).toEqual(templateOrder(template));
+    });
+
+    it('a hidden part has order 0', () => {
+        const state = buildFormViewState([field], {
+            isSubmitting: false,
+            statusMessage: '',
+            loadError: '',
+            valueByTarget: { address: { country: 'US' } },
+        }).address as Record<string, any>;
+        expect(state.streetName.order).toBe(0);
+    });
+});
+
 describe('F2b: the fast phase merges the learned facts', () => {
     const carryForward = { formId: 'form-1', fields: [addressFieldView()] };
     const fast = async (forms: WixFormsService) =>

@@ -159,6 +159,8 @@ export interface AddressPartViewState {
     value: string;
     error: string;
     invalid: boolean;
+    /** 1-based position in the country's template layout (for CSS `order`); 0 when hidden. */
+    order: number;
     maxLength?: number;
     listed?: boolean;
     options?: FormFieldOptionView[];
@@ -170,7 +172,7 @@ export interface AddressViewState {
     /** The first part error, in part order. */
     error: string;
     invalid: boolean;
-    country: Omit<AddressPartViewState, 'shown' | 'required' | 'maxLength' | 'listed'> & {
+    country: Omit<AddressPartViewState, 'shown' | 'required' | 'order' | 'maxLength' | 'listed'> & {
         options: FormFieldOptionView[];
     };
     [part: string]: unknown;
@@ -215,9 +217,11 @@ function partViewState(
     address: AddressValue,
     error: string,
 ): AddressPartViewState {
-    const partSpec = layout?.parts.find((candidate) => candidate.part === part);
+    const position = layout?.parts.findIndex((candidate) => candidate.part === part) ?? -1;
+    const partSpec = position >= 0 ? layout!.parts[position] : undefined;
     const view: AddressPartViewState = {
         shown: Boolean(partSpec),
+        order: position + 1,
         required: partSpec?.required ?? false,
         label: partSpec?.label ?? '',
         value: partSpec ? (address[part] ?? '') : '',

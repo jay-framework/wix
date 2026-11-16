@@ -59,10 +59,11 @@ offers today, because the site owner can widen them later):
 
 - The field: `label`, `required`, `error` (the first part error), `invalid`.
 - `country`: `label`, `value`, `error`, `invalid`, `input` (a `<select>`), `options`.
-- Every other part: `shown`, `required`, `label`, `value`, `error`, `invalid`,
+- Every other part: `shown`, `required`, `order`, `label`, `value`, `error`, `invalid`,
   `maxLength`, `input`. Each country shows its own parts (Israel: street name and
   house number; the US: a State; Italy: a region code): wrap each in
-  `if="<key>.<address>.<part>.shown"`.
+  `if="<key>.<address>.<part>.shown"`. `order` is the part's position in the country's
+  layout (0 when hidden): bind `style="order: {…order}"` inside a flex container.
 - `subdivision` also has `listed` (a `<select>` of `options`) and a free-text `text`
   input for `!listed`. Bind **both**.
 - Part errors arrive keyed `<target>/<part>` (`address/subdivision`) in a rejected

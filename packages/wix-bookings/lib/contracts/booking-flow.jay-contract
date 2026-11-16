@@ -138,6 +138,7 @@ tags:
         tags:
           - { tag: shown, type: variant, dataType: boolean }
           - { tag: required, type: variant, dataType: boolean }
+          - { tag: order, type: data, dataType: number } # template layout position, 0 when hidden
           - { tag: label, type: data, dataType: string }
           - { tag: value, type: data, dataType: string }
           - { tag: error, type: data, dataType: string }
@@ -149,6 +150,7 @@ tags:
         tags:
           - { tag: shown, type: variant, dataType: boolean }
           - { tag: required, type: variant, dataType: boolean }
+          - { tag: order, type: data, dataType: number } # template layout position, 0 when hidden
           - { tag: label, type: data, dataType: string }
           - { tag: value, type: data, dataType: string }
           - { tag: error, type: data, dataType: string }
@@ -160,6 +162,7 @@ tags:
         tags:
           - { tag: shown, type: variant, dataType: boolean }
           - { tag: required, type: variant, dataType: boolean }
+          - { tag: order, type: data, dataType: number } # template layout position, 0 when hidden
           - { tag: label, type: data, dataType: string }
           - { tag: value, type: data, dataType: string }
           - { tag: error, type: data, dataType: string }
@@ -171,6 +174,7 @@ tags:
         tags:
           - { tag: shown, type: variant, dataType: boolean }
           - { tag: required, type: variant, dataType: boolean }
+          - { tag: order, type: data, dataType: number } # template layout position, 0 when hidden
           - { tag: label, type: data, dataType: string }
           - { tag: value, type: data, dataType: string }
           - { tag: error, type: data, dataType: string }
@@ -182,6 +186,7 @@ tags:
         tags:
           - { tag: shown, type: variant, dataType: boolean }
           - { tag: required, type: variant, dataType: boolean }
+          - { tag: order, type: data, dataType: number } # template layout position, 0 when hidden
           - { tag: label, type: data, dataType: string }
           - { tag: value, type: data, dataType: string }
           - { tag: error, type: data, dataType: string }
@@ -194,6 +199,7 @@ tags:
           - { tag: shown, type: variant, dataType: boolean }
           - { tag: listed, type: variant, dataType: boolean }
           - { tag: required, type: variant, dataType: boolean }
+          - { tag: order, type: data, dataType: number } # template layout position, 0 when hidden
           - { tag: label, type: data, dataType: string }
           - { tag: value, type: data, dataType: string }
           - { tag: error, type: data, dataType: string }
@@ -212,6 +218,7 @@ tags:
         tags:
           - { tag: shown, type: variant, dataType: boolean }
           - { tag: required, type: variant, dataType: boolean }
+          - { tag: order, type: data, dataType: number } # template layout position, 0 when hidden
           - { tag: label, type: data, dataType: string }
           - { tag: value, type: data, dataType: string }
           - { tag: error, type: data, dataType: string }

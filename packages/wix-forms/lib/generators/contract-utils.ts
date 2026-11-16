@@ -195,6 +195,7 @@ function layoutPartLines(part: string, level: number): string[] {
         `${child}- { tag: shown, type: variant, dataType: boolean }`,
         ...(isSubdivision ? [`${child}- { tag: listed, type: variant, dataType: boolean }`] : []),
         `${child}- { tag: required, type: variant, dataType: boolean }`,
+        `${child}- { tag: order, type: data, dataType: number }`,
         `${child}- { tag: label, type: data, dataType: string }`,
         `${child}- { tag: value, type: data, dataType: string }`,
         `${child}- { tag: error, type: data, dataType: string }`,
