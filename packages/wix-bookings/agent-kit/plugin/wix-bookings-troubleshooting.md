@@ -51,13 +51,35 @@ Bookings loads participant fields via `wixBookings.getParticipantForm` (Wix Get 
   2026-11-10 booked a form with a required Address and got 200 without one — so the plugin's
   `createBooking` re-validates every field on the server and refuses a missing required value
   (`bookingFailure === VALIDATION`)
-- **`FORM_UNSUPPORTED`:** a **required** field uses a kind this version cannot show (address,
-  dropdown, date picker, checkbox group, file upload, number, …): booking is disabled for that
+- **`FORM_UNSUPPORTED`:** a **required** field uses a kind this version cannot show (dropdown,
+  date picker, checkbox group, file upload, number, a second address, …): booking is disabled for that
   service, and `bookingError` names the field. Make the field optional in the Wix dashboard (or
   remove it), or upgrade the plugin. An **optional** field of such a kind is left out of the
   participant form with a server warning (`[wix-bookings] …`), and never sent
-- Shown kinds: text, long text, email, phone, URL, and a single checkbox (`type === BOOLEAN`, bind
+- Shown kinds: text, long text, email, phone, URL, a Multi-line address (the `address` tag, see
+  setup §6), and a single checkbox (`type === BOOLEAN`, bind
   it to `<input type="checkbox">`). Hidden fields are ignored with a server warning
+
+## Address problems
+
+- **"Country/Region is required." and the page has no address control:** the page binds no
+  address refs. Add the address markup (setup §6). The `BOOKINGS-ADDRESS-UNBOUND` validator
+  finding reports this at build time.
+- **`FORM_UNAVAILABLE` / "Could not load the address layouts":** the plugin could not fetch the
+  address layouts from Wix (List Form Templates): a network or API-key problem, retried after 30 s.
+  If the QA-only `WIX_FORMS_ADDRESS_TEMPLATES_ORIGIN` environment variable is set, unset it and
+  restart.
+- **"This address cannot be accepted for <country>. Please contact us.":** Wix requires an address
+  part outside the eight the plugin knows. Run the L-drift probe (`scripts/address-map-probe.mjs`
+  in `@jay-framework/wix-forms`) and report the country, part and rule.
+- **`[wix-forms] address drift: …` in the server log:** Wix answered differently from the plugin's
+  country layout map. See "Address drift" in the `@jay-framework/wix-forms`
+  `docs/01-setup-and-troubleshooting.md`.
+- **`BOOKINGS-ADDRESS-UNBOUND`:** add the address markup; or re-run `jay-stack agent-kit` if
+  `services.yaml` is stale; or, on a page that only offers address-free services, suppress it with
+  `wix-bookings: { allow-unbound-address: true }` in the page's jay-validations block.
+- **Italy (and other countries) show region codes, not names:** name them in
+  `config/.wix-forms.yaml` `address.labels.subdivisions` (wix-forms setup guide).
 
 ## Phone / validation behaves differently from a `wixForm` page
 

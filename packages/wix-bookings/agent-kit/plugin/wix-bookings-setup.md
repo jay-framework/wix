@@ -103,6 +103,44 @@ The Wix site must be **published** — hosted checkout uses the published site.
 </jay:booking-flow>
 ```
 
+### 6. Address
+
+A participant form with a **Multi-line address** (the default booking form has a required one) renders through the `address` tag, **not** through `formFields`. Every country shows its own parts (Israel: street name and house number; the US: a State select; Italy: a region code), so the page binds **all eight parts**, each under `if="<key>.address.<part>.shown"`:
+
+```html
+<div if="flow.address.present">
+  <label>{flow.address.country.label}
+    <select ref="flow.address.country.input" autocomplete="country">
+      <option forEach="flow.address.country.options" trackBy="value" value="{value}">{label}</option>
+    </select></label>
+  <label if="flow.address.streetName.shown">{flow.address.streetName.label}<input ref="flow.address.streetName.input" /></label>
+  <label if="flow.address.streetNumber.shown">{flow.address.streetNumber.label}<input ref="flow.address.streetNumber.input" /></label>
+  <label if="flow.address.addressLine.shown">{flow.address.addressLine.label}<input ref="flow.address.addressLine.input" autocomplete="address-line1" /></label>
+  <label if="flow.address.addressLine2.shown">{flow.address.addressLine2.label}<input ref="flow.address.addressLine2.input" autocomplete="address-line2" /></label>
+  <label if="flow.address.city.shown">{flow.address.city.label}<input ref="flow.address.city.input" autocomplete="address-level2" /></label>
+  <label if="flow.address.subdivision.shown">{flow.address.subdivision.label}
+    <select if="flow.address.subdivision.listed" ref="flow.address.subdivision.input" autocomplete="address-level1">
+      <option forEach="flow.address.subdivision.options" trackBy="value" value="{value}">{label}</option>
+    </select>
+    <input if="!flow.address.subdivision.listed" ref="flow.address.subdivision.text" autocomplete="address-level1" /></label>
+  <label if="flow.address.postalCode.shown">{flow.address.postalCode.label}<input ref="flow.address.postalCode.input" autocomplete="postal-code" /></label>
+</div>
+```
+
+- Each part has `shown`, `required`, `label`, `value`, `error`, `invalid` and `input`; `subdivision` also has `listed`, `options` and the free-text `text` input. `address.error` is the first part error.
+- ❌ Binding the address as a `formFields` input. ❌ Leaving out `streetName` / `streetNumber` (an Israeli visitor gets "Street name is required." with no input). ❌ Binding only one of `subdivision.input` / `subdivision.text`. ❌ `autocomplete="address-line1"` on the street parts: they have no standard token.
+- `createBooking` returns part errors keyed `address/<part>` (`invalid` outcome). When Wix teaches a region list (Italy) or requires a hidden part, the plugin switches that part for you; the page does nothing extra.
+- **Validator** (`wix-bookings-address-bindings`): an unknown part ref or an unbound part input is an **error**. A `booking-flow` page that binds **no** address ref is an error (`BOOKINGS-ADDRESS-UNBOUND`) when a service in `agent-kit/references/wix-bookings/services.yaml` has `participantFormHasAddress: true`, nothing when every service has `false`, and a warning when the file or the flag is missing (re-run `jay-stack agent-kit`). A page that deliberately offers only address-free services silences that one finding:
+
+```html
+<script type="application/jay-validations">
+  wix-bookings:
+    allow-unbound-address: true
+</script>
+```
+
+- Country names, part labels and region names come from `config/.wix-forms.yaml` `address` (see the wix-forms setup guide): the booking flow resolves addresses through the forms service.
+
 ## Outcomes — write your own copy
 
 The plugin reports **what happened** through enum variants; the string tags are English **defaults**. For your own wording or another language, branch on the variant and write the text in jay-html. Never detect an outcome by testing or matching a string.
@@ -116,9 +154,9 @@ The plugin reports **what happened** through enum variants; the string tags are 
 
 - **No available times** is not a failure: `!hasSlots` with `slotsFailure === NONE` (and `!slotsLoading`).
 - `VALIDATION`: the participant form failed a check, in the browser or on the server; `bookingError` names the field (English template, Wix label).
-- `FORM_UNSUPPORTED`: the service's form has a **required** field this version cannot show (for example an address). Booking stays off for that service until the site is updated (make the field optional in Wix, or upgrade); the form is hidden. Show a "please call us" line, not "try again".
-- `FORM_UNAVAILABLE`: the participant form could not be loaded (Wix error, or the service has no form). Retrying may help.
-- Participant fields (`formFields`): `type` is `STRING`, `EMAIL`, `PHONE`, `URL`, or `BOOLEAN` (a single checkbox: render `<input type="checkbox">` for it; the plugin reads `.checked`).
+- `FORM_UNSUPPORTED`: the service's form has a **required** field this version cannot show (for example a file upload, or a second address). Booking stays off for that service until the site is updated (make the field optional in Wix, or upgrade); the form is hidden. Show a "please call us" line, not "try again".
+- `FORM_UNAVAILABLE`: the participant form could not be loaded (Wix error, the address layouts could not be fetched, or the service has no form). Retrying may help.
+- Participant fields (`formFields`): `type` is `STRING`, `EMAIL`, `PHONE`, `URL`, or `BOOLEAN` (the address is in `address`, §6) (a single checkbox: render `<input type="checkbox">` for it; the plugin reads `.checked`).
 
 > **Participant validation is not the `wixForm` pipeline.** The booking flow checks each participant field with `validateFormField` from `@jay-framework/wix-forms` (DL #51): required, length and pattern from the Wix schema, and the email / URL / phone format rules. A phone must include its country code (`+972…`): no `defaultPhoneCountry` or Phone-field default country is applied, and the number is sent to `createBooking` as typed, not converted. The submit hook (`HOOK` errors, `onSubmitStart`) does **not** apply here. There is no per-field `errorRule`; branch on `bookingFailure`. For comparison, see `rich-forms.md` §3 in the wix-forms guides.
 - `CHECKOUT_PERMISSION`, `CHECKOUT_REDIRECT_REJECTED`, `SITE_NOT_PUBLISHED` are **setup** problems (see the troubleshooting guide). Show visitors a neutral line; the default text is a hint for the site owner.

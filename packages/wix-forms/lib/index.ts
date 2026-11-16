@@ -65,6 +65,12 @@ export {
 } from './address/address-types.js';
 export { addressMessageFor, type LocatedViolation } from './utils/located-violations.js';
 export { fieldErrorsOf } from './utils/project-form-fields.js';
+export {
+    addressViewState,
+    type AddressPartViewState,
+    type AddressViewState,
+} from './components/form-view-state.js';
+export { addressFieldTag } from './generators/contract-utils.js';
 // Server-only address surfaces (DL #52).
 export { parseBookingFormViolations } from './utils/located-violations.js';
 export {

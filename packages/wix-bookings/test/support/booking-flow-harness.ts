@@ -32,7 +32,22 @@ export interface BookingFlowHarness {
     selectService(serviceId: string): void;
     selectSlot(slotId: string): void;
     book(): void;
+    /** Types into an address part's `input` (or the subdivision `text`), as a visitor would. */
+    typeAddress(part: string, value: string, channel?: 'input' | 'text'): void;
+    /** The DOM value of an address part's element, as the component last set it. */
+    addressDomValue(part: string, channel?: 'input' | 'text'): string;
 }
+
+const ADDRESS_PART_NAMES = [
+    'country',
+    'addressLine',
+    'addressLine2',
+    'streetName',
+    'streetNumber',
+    'city',
+    'subdivision',
+    'postalCode',
+];
 
 export const QA_SERVICE: BookingServiceView = {
     id: 'svc-1',
@@ -67,7 +82,32 @@ export function mountBookingFlow(
             clicks[name] = handler;
         },
     });
+    type InputHandler = (event: { event: { target: FakeInput } }) => void;
+    const addressHandlers = new Map<string, InputHandler>();
+    const addressElements = new Map<string, FakeInput>();
+    const addressElement = (key: string) => {
+        if (!addressElements.has(key)) addressElements.set(key, { value: '', checked: false });
+        return addressElements.get(key)!;
+    };
+    const addressRef = (part: string, channel: string) => {
+        const key = `${part}.${channel}`;
+        return {
+            oninput: (handler: InputHandler) => addressHandlers.set(key, handler),
+            onchange: () => {},
+            onblur: () => {},
+            exec$: async (fn: (element: FakeInput) => unknown) => fn(addressElement(key)),
+        };
+    };
+    const address = Object.fromEntries(
+        ADDRESS_PART_NAMES.map((part) => [
+            part,
+            part === 'subdivision'
+                ? { input: addressRef(part, 'input'), text: addressRef(part, 'text') }
+                : { input: addressRef(part, 'input') },
+        ]),
+    );
     const refs = {
+        address,
         services: { serviceButtons: onclick('service') },
         slots: { slotButtons: onclick('slot') },
         formFields: {
@@ -115,5 +155,11 @@ export function mountBookingFlow(
         selectService: (serviceId) => clicks.service({ coordinate: [serviceId] }),
         selectSlot: (slotId) => clicks.slot({ coordinate: [slotId] }),
         book: () => clicks.book({ coordinate: [] }),
+        typeAddress: (part, value, channel = 'input') => {
+            const element = addressElement(`${part}.${channel}`);
+            element.value = value;
+            addressHandlers.get(`${part}.${channel}`)!({ event: { target: element } });
+        },
+        addressDomValue: (part, channel = 'input') => addressElement(`${part}.${channel}`).value,
     };
 }

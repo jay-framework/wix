@@ -37,6 +37,7 @@ export default defineConfig(({ isSsrBuild }) => ({
                 '@jay-framework/json-patch',
                 '@jay-framework/secure',
                 '@jay-framework/wix-forms',
+                '@jay-framework/wix-forms/tools',
                 '@jay-framework/wix-server-client',
                 '@jay-framework/wix-server-client/client',
                 '@wix/sdk',

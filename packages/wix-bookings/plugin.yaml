@@ -23,6 +23,11 @@ actions:
   - name: createBooking
     action: create-booking.jay-action
 
+validators:
+  - name: wix-bookings-address-bindings
+    handler: validateBookingFlowBindings
+    description: Errors on a booking-flow page whose address binds an unknown part or leaves a part input unbound, and on a page with no address inputs when a service's participant form asks for an address (BOOKINGS-ADDRESS-UNBOUND; a warning when services.yaml cannot tell; suppress with wix-bookings allow-unbound-address)
+
 setup: setupWixBookings
 agentkit: generateWixBookingsAgentKit
 description: Bookings setup and agent-kit service index for dashboard links

@@ -44,6 +44,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@jay-framework/compiler-shared": "^0.26.4",
     "@jay-framework/component": "^0.26.4",
     "@jay-framework/fullstack-component": "^0.26.4",
     "@jay-framework/reactive": "^0.26.4",

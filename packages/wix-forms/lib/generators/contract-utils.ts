@@ -10,6 +10,7 @@ import type { FormFieldView } from '../types.js';
 import { SubmitFailure, SubmitState } from '../components/submit-outcome.js';
 import { FieldRule } from '../components/field-rule.js';
 import { camelCase } from './camel-case.js';
+import { LAYOUT_PARTS } from '../address/address-types.js';
 
 const INDENT = '  ';
 
@@ -25,6 +26,7 @@ export function elementTypeFor(field: FormFieldView): string {
             return 'HTMLTextAreaElement';
         case 'select':
         case 'multiselect':
+        case 'address':
             return 'HTMLSelectElement';
         default:
             return 'HTMLInputElement';
@@ -136,6 +138,91 @@ function optionsSubContract(field: FormFieldView, level: number): string[] {
         lines.push(`${child}- { tag: toggle, type: interactive, elementType: HTMLInputElement }`);
     }
     return lines;
+}
+
+/**
+ * The address sub-contract (DL #52 §2): all eight parts, always, so no country, map drift or
+ * revealed part can show a part the page has no tag for. `extraTags` lets bookings add `present`.
+ */
+export function addressFieldTag(
+    tagName: string,
+    description: string,
+    level = 1,
+    extraTags: string[] = [],
+): string {
+    const item = pad(level);
+    const prop = pad(level + 1);
+    const child = pad(level + 2);
+    return [
+        `${item}- tag: ${tagName}`,
+        `${prop}type: sub-contract`,
+        `${prop}phase: fast+interactive`,
+        `${prop}description: ${yamlInline(description)}`,
+        `${prop}tags:`,
+        ...extraTags.map((tag) => `${child}${tag}`),
+        `${child}- { tag: label, type: data, dataType: string }`,
+        `${child}- { tag: required, type: variant, dataType: boolean }`,
+        `${child}- { tag: error, type: data, dataType: string }`,
+        `${child}- { tag: invalid, type: variant, dataType: boolean }`,
+        ...countryPartLines(level + 2),
+        ...LAYOUT_PARTS.flatMap((part) => layoutPartLines(part, level + 2)),
+    ].join('\n');
+}
+
+function countryPartLines(level: number): string[] {
+    const child = pad(level + 2);
+    return [
+        `${pad(level)}- tag: country`,
+        `${pad(level + 1)}type: sub-contract`,
+        `${pad(level + 1)}tags:`,
+        `${child}- { tag: label, type: data, dataType: string }`,
+        `${child}- { tag: value, type: data, dataType: string }`,
+        `${child}- { tag: error, type: data, dataType: string }`,
+        `${child}- { tag: invalid, type: variant, dataType: boolean }`,
+        `${child}- { tag: input, type: interactive, elementType: HTMLSelectElement }`,
+        ...addressOptionsLines(level + 2),
+    ];
+}
+
+/** `subdivision` is a select when listed and free text otherwise (Q6): it has both inputs. */
+function layoutPartLines(part: string, level: number): string[] {
+    const child = pad(level + 2);
+    const isSubdivision = part === 'subdivision';
+    return [
+        `${pad(level)}- tag: ${part}`,
+        `${pad(level + 1)}type: sub-contract`,
+        `${pad(level + 1)}tags:`,
+        `${child}- { tag: shown, type: variant, dataType: boolean }`,
+        ...(isSubdivision ? [`${child}- { tag: listed, type: variant, dataType: boolean }`] : []),
+        `${child}- { tag: required, type: variant, dataType: boolean }`,
+        `${child}- { tag: label, type: data, dataType: string }`,
+        `${child}- { tag: value, type: data, dataType: string }`,
+        `${child}- { tag: error, type: data, dataType: string }`,
+        `${child}- { tag: invalid, type: variant, dataType: boolean }`,
+        ...(isSubdivision
+            ? [
+                  `${child}- { tag: input, type: interactive, elementType: HTMLSelectElement }`,
+                  `${child}- { tag: text, type: interactive, elementType: HTMLInputElement }`,
+                  ...addressOptionsLines(level + 2),
+              ]
+            : [
+                  `${child}- { tag: maxLength, type: data, dataType: number }`,
+                  `${child}- { tag: input, type: interactive, elementType: HTMLInputElement }`,
+              ]),
+    ];
+}
+
+function addressOptionsLines(level: number): string[] {
+    const child = pad(level + 2);
+    return [
+        `${pad(level)}- tag: options`,
+        `${pad(level + 1)}type: sub-contract`,
+        `${pad(level + 1)}repeated: true`,
+        `${pad(level + 1)}trackBy: value`,
+        `${pad(level + 1)}tags:`,
+        `${child}- { tag: value, type: data, dataType: string }`,
+        `${child}- { tag: label, type: data, dataType: string }`,
+    ];
 }
 
 /** Reserved form-level tags, kept at the top level (DL#40 §3, DL#41 Caps 1 + 4a). */

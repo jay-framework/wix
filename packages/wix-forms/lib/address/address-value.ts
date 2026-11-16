@@ -166,14 +166,32 @@ export function validateAddressValue(
     }
     const errors: Partial<Record<AddressPart, string>> = {};
     const layout = layoutOf(spec, country)!;
+    const isLearnedList = Boolean(spec.subdivisionsOf[country]?.length);
     for (const partSpec of layout.parts) {
-        const message = partError(layout, partSpec, address[partSpec.part]?.trim() ?? '');
+        const message = partError(
+            layout,
+            partSpec,
+            address[partSpec.part]?.trim() ?? '',
+            isLearnedList,
+        );
         if (message) errors[partSpec.part] = message;
     }
     return errors;
 }
 
-function partError(layout: AddressLayout, partSpec: AddressPartSpec, value: string): string {
+/**
+ * A required empty subdivision whose list was learned from Wix keeps Wix's wording ("Choose a
+ * Region from the list.", Q6): the visitor typed a code and must now pick one.
+ */
+function partError(
+    layout: AddressLayout,
+    partSpec: AddressPartSpec,
+    value: string,
+    isLearnedList: boolean,
+): string {
+    if (!value && partSpec.required && partSpec.part === 'subdivision' && isLearnedList) {
+        return addressMessages.notInList(layout.subdivisionLabel ?? partSpec.label);
+    }
     if (!value) return partSpec.required ? addressMessages.required(partSpec.label) : '';
     if (partSpec.maxLength !== undefined && value.length > partSpec.maxLength) {
         return addressMessages.tooManyCharacters(partSpec.label, partSpec.maxLength);

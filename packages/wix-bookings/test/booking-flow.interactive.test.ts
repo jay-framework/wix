@@ -123,22 +123,19 @@ afterEach(() => {
 
 describe('booking flow on Get Form (DL #51 Phase 1b)', () => {
     /**
-     * DL #51 test 6. Bug: a default-form service showed built-in First/Last/Email and booked
-     *   without the required Address (step-11 mapped the zero id to "no form").
-     * Found in: QA 2026-11-10 (qa-18, F4, F6).
-     * Expected: FORM_UNSUPPORTED naming the address, no form shown, no built-in fields.
+     * DL #51 test 6, flipped by DL #52: the default form's required address is no longer
+     *   FORM_UNSUPPORTED; it renders through the `address` tag, not as a `formFields` input.
      */
-    it('should disable booking with FORM_UNSUPPORTED for the default form', async () => {
+    it('should show the default form with its address (no FORM_UNSUPPORTED)', async () => {
         const flow = await openForm(rawFormFixture('default-form'), ZERO_FORM_ID);
 
         expect(getParticipantForm).toHaveBeenCalledWith({ serviceId: QA_SERVICE.id });
-        expect(flow.viewState.bookingFailure).toBe(BookingFailure.FORM_UNSUPPORTED);
-        expect(flow.viewState.bookingState).toBe(BookingState.FAILED);
-        expect(flow.viewState.showForm).toBe(false);
-        expect(flow.viewState.formFields).toEqual([]);
-        expect(flow.viewState.bookingError).toBe(
-            'This booking form has a required field this site cannot show yet: Multi-line address. Booking is disabled until the site is updated.',
-        );
+        expect(flow.viewState.bookingFailure).toBe(BookingFailure.NONE);
+        expect(flow.viewState.showForm).toBe(true);
+        expect(
+            flow.viewState.formFields.map((field: { target: string }) => field.target),
+        ).not.toContain('address');
+        expect(flow.viewState.address.present).toBe(true);
     });
 
     /** DL #51 test 7: a required consent checkbox is rendered and submits a boolean. */
@@ -257,5 +254,215 @@ describe('booking flow on server outcomes (DL #51 Phase 2)', () => {
         expect(flow.viewState.bookingFailure).toBe(BookingFailure.FORM_UNAVAILABLE);
         expect(flow.viewState.showForm).toBe(false);
         expect(describeBookingError).not.toHaveBeenCalled();
+    });
+});
+
+const IT_CODES = [
+    '21',
+    '23',
+    '25',
+    '32',
+    '34',
+    '36',
+    '42',
+    '45',
+    '52',
+    '55',
+    '57',
+    '62',
+    '65',
+    '67',
+    '72',
+    '75',
+    '77',
+    '78',
+    '82',
+    '88',
+];
+
+function fillPerson(flow: BookingFlowHarness): void {
+    flow.input('first_name').value = 'Ada';
+    flow.input('last_name').value = 'Lovelace';
+    flow.input('email').value = 'ada@example.com';
+}
+
+async function fillAddress(flow: BookingFlowHarness, parts: Record<string, string>): Promise<void> {
+    for (const [part, value] of Object.entries(parts)) {
+        flow.typeAddress(
+            part,
+            value,
+            part === 'subdivision' && !flow.viewState.address.subdivision.listed ? 'text' : 'input',
+        );
+        await flush();
+    }
+}
+
+function sentAddress(call = 0): Record<string, string> {
+    return vi.mocked(createBooking).mock.calls[call]![0].formValues.address as Record<
+        string,
+        string
+    >;
+}
+
+const IT = { addressLine: 'Via Roma 1', city: 'Milano', postalCode: '20100' };
+const ZW = { addressLine: '1 st', city: 'Harare', postalCode: '0000' };
+
+describe('B3: the address in booking-flow (DL #52)', () => {
+    it('renders per country: US listed with names, IL streets, IT free text', async () => {
+        const flow = await openForm(rawFormFixture('default-form'), ZERO_FORM_ID);
+        flow.typeAddress('country', 'US');
+        await flush();
+        const us = flow.viewState.address;
+        expect([
+            us.subdivision.shown,
+            us.subdivision.listed,
+            us.subdivision.options.length,
+        ]).toEqual([true, true, 54]);
+        expect(
+            us.subdivision.options.find((option: { value: string }) => option.value === 'AL'),
+        ).toEqual({ value: 'AL', label: 'Alabama' });
+        flow.typeAddress('country', 'IL');
+        await flush();
+        const il = flow.viewState.address;
+        expect([il.streetName.shown, il.addressLine2.shown, il.subdivision.shown]).toEqual([
+            true,
+            true,
+            false,
+        ]);
+        flow.typeAddress('country', 'IT');
+        await flush();
+        expect(flow.viewState.address.subdivision.listed).toBe(false);
+    });
+
+    it('IT: a learned list replaces the typed code, then 25 is sent; none chosen fails on the client', async () => {
+        const flow = await openForm(rawFormFixture('default-form'), ZERO_FORM_ID);
+        fillPerson(flow);
+        flow.typeAddress('country', 'IT');
+        await flush();
+        await fillAddress(flow, { ...IT, subdivision: 'MI' });
+        vi.mocked(createBooking).mockResolvedValueOnce({
+            outcome: 'invalid',
+            fieldErrors: { 'address/subdivision': 'Choose a Region from the list.' },
+            fieldOptions: {
+                'address/subdivision': IT_CODES.map((code) => ({ value: code, label: code })),
+            },
+            factsCountry: { address: 'IT' },
+        } as never);
+        await book(flow);
+
+        const subdivision = flow.viewState.address.subdivision;
+        expect([subdivision.listed, subdivision.options.length, subdivision.value]).toEqual([
+            true,
+            20,
+            '',
+        ]);
+        expect(subdivision.error).toBe('Choose a Region from the list.');
+        expect(flow.addressDomValue('subdivision', 'text')).toBe('');
+
+        vi.mocked(createBooking).mockClear();
+        await book(flow);
+        expect(flow.viewState.bookingFailure).toBe(BookingFailure.VALIDATION);
+        expect(flow.viewState.bookingError).toBe('Choose a Region from the list.');
+        expect(createBooking).not.toHaveBeenCalled();
+
+        vi.mocked(createBooking).mockResolvedValueOnce({ outcome: 'confirmed' } as never);
+        flow.typeAddress('subdivision', '25');
+        await flush();
+        await book(flow);
+        expect(sentAddress().subdivision).toBe('25');
+    });
+
+    it('ZW: a revealed subdivision is shown, required, free text, and sent', async () => {
+        const flow = await openForm(rawFormFixture('default-form'), ZERO_FORM_ID);
+        fillPerson(flow);
+        flow.typeAddress('country', 'ZW');
+        await flush();
+        await fillAddress(flow, ZW);
+        vi.mocked(createBooking).mockResolvedValueOnce({
+            outcome: 'invalid',
+            fieldErrors: { 'address/subdivision': 'State/Region is required.' },
+            revealedParts: { address: ['subdivision'] },
+            factsCountry: { address: 'ZW' },
+        } as never);
+        await book(flow);
+        const revealed = flow.viewState.address.subdivision;
+        expect([revealed.shown, revealed.required, revealed.listed]).toEqual([true, true, false]);
+
+        vi.mocked(createBooking).mockClear();
+        await book(flow);
+        expect(flow.viewState.address.subdivision.error).toBe('State/Region is required.');
+        expect(createBooking).not.toHaveBeenCalled();
+
+        vi.mocked(createBooking).mockResolvedValueOnce({ outcome: 'confirmed' } as never);
+        flow.typeAddress('subdivision', 'HA', 'text');
+        await flush();
+        await book(flow);
+        expect(sentAddress()).toEqual({ country: 'ZW', ...ZW, subdivision: 'HA' });
+    });
+
+    /** Review round 3, m7: facts for another country than the one now chosen are not applied to it. */
+    it('applies learned facts to the country the server names, not the one chosen since', async () => {
+        const flow = await openForm(rawFormFixture('default-form'), ZERO_FORM_ID);
+        fillPerson(flow);
+        flow.typeAddress('country', 'IT');
+        await flush();
+        await fillAddress(flow, { ...IT, subdivision: 'MI' });
+        vi.mocked(createBooking).mockImplementationOnce(async () => {
+            flow.typeAddress('country', 'ES');
+            await flush();
+            return {
+                outcome: 'invalid',
+                fieldErrors: { 'address/subdivision': 'Choose a Region from the list.' },
+                fieldOptions: {
+                    'address/subdivision': IT_CODES.map((code) => ({ value: code, label: code })),
+                },
+                factsCountry: { address: 'IT' },
+            } as never;
+        });
+        await book(flow);
+        flow.typeAddress('country', 'AT');
+        await flush();
+        expect(flow.viewState.address.subdivision.listed).toBe(false);
+        flow.typeAddress('country', 'IT');
+        await flush();
+        expect(flow.viewState.address.subdivision.options).toHaveLength(20);
+    });
+
+    it('city empty → VALIDATION and the city part error', async () => {
+        const flow = await openForm(rawFormFixture('default-form'), ZERO_FORM_ID);
+        fillPerson(flow);
+        flow.typeAddress('country', 'US');
+        await flush();
+        await fillAddress(flow, {
+            addressLine: '600 Dexter Ave',
+            subdivision: 'AL',
+            postalCode: '36104',
+        });
+        await book(flow);
+        expect(flow.viewState.bookingFailure).toBe(BookingFailure.VALIDATION);
+        expect(flow.viewState.address.city.error).toBe('City is required.');
+        expect(createBooking).not.toHaveBeenCalled();
+    });
+
+    it('selecting a slot again resets the address', async () => {
+        const flow = await openForm(rawFormFixture('default-form'), ZERO_FORM_ID);
+        flow.typeAddress('country', 'US');
+        await flush();
+        flow.selectSlot(SLOT.id);
+        await flush();
+        expect(flow.viewState.address.country.value).toBe('');
+    });
+
+    it('shows FORM_UNAVAILABLE when the participant form (its templates) cannot load', async () => {
+        vi.mocked(getParticipantForm).mockRejectedValue(
+            new Error('Could not load the address layouts. Please try again later.'),
+        );
+        const flow = mountBookingFlow();
+        flow.selectService(QA_SERVICE.id);
+        await flush();
+        flow.selectSlot(SLOT.id);
+        await flush();
+        expect(flow.viewState.bookingFailure).toBe(BookingFailure.FORM_UNAVAILABLE);
+        expect(flow.viewState.address.present).toBe(false);
     });
 });

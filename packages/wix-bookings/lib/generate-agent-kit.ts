@@ -5,10 +5,18 @@ import type {
     PluginAgentKitContext,
     PluginAgentKitResult,
 } from '@jay-framework/stack-server-runtime';
-import { getService } from '@jay-framework/stack-server-runtime';
+import { getService, hasService } from '@jay-framework/stack-server-runtime';
+import { canonicalFormId, WIX_FORMS_SERVICE, type WixFormsService } from '@jay-framework/wix-forms';
 import { WIX_CLIENT_SERVICE } from '@jay-framework/wix-server-client';
 import { loadWixBookingsConfig } from './config-loader.js';
-import { buildServicesReference, buildSiteReference } from './generators/bookings-references.js';
+import {
+    buildServicesReference,
+    buildSiteReference,
+    serviceId,
+    type ParticipantAddressFlags,
+} from './generators/bookings-references.js';
+import { participantFormId } from './utils/format.js';
+import type { RawBookingService } from './wix-apis/query-services.js';
 import { discoverStaffResourceTypeId } from './wix-apis/discover-staff-resource-type.js';
 import { queryBookingServices } from './wix-apis/query-services.js';
 import { queryStaffMembers } from './wix-apis/query-staff-members.js';
@@ -29,7 +37,11 @@ export async function generateWixBookingsAgentKit(
         discoverStaffResourceTypeId(client),
     ]);
 
-    const servicesRef = buildServicesReference(services);
+    const forms = hasService(WIX_FORMS_SERVICE) ? getService(WIX_FORMS_SERVICE) : undefined;
+    const servicesRef = buildServicesReference(
+        services,
+        await participantAddressFlags(services, forms),
+    );
     const siteRef = buildSiteReference({
         staffResourceTypeId: config.staffResourceTypeId || discoveredStaffResourceTypeId || '',
         staffMembers,
@@ -73,4 +85,36 @@ export async function generateWixBookingsAgentKit(
         agentKitCreated,
         message: `${servicesRef.visibleServices} services indexed${siteNote}`,
     };
+}
+
+/**
+ * Whether each visible service's participant form has a visible address (DL #52 §6). Reads the raw
+ * form only (no templates). A failed read omits that service's flag and logs why (review m6).
+ */
+export async function participantAddressFlags(
+    services: RawBookingService[],
+    forms: WixFormsService | undefined,
+): Promise<ParticipantAddressFlags> {
+    const flags = new Map<string, boolean>();
+    if (!forms) return flags;
+    for (const service of services.filter((entry) => !entry.hidden)) {
+        const id = serviceId(service);
+        const formId = canonicalFormId(participantFormId(service.form));
+        if (!id || !formId) continue;
+        try {
+            const rawForm = await forms.getRawForm(formId);
+            flags.set(id, hasVisibleAddress(rawForm.formFields ?? []));
+        } catch (error) {
+            console.warn(
+                `[wix-bookings] agent-kit: could not read the participant form of service "${service.name ?? id}"; participantFormHasAddress is left out (${error instanceof Error ? error.message : String(error)}).`,
+            );
+        }
+    }
+    return flags;
+}
+
+function hasVisibleAddress(
+    fields: Array<{ hidden?: boolean; inputOptions?: { inputType?: string } }>,
+): boolean {
+    return fields.some((field) => !field.hidden && field.inputOptions?.inputType === 'ADDRESS');
 }
