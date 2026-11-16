@@ -11,10 +11,20 @@
 // (validation.fields.<part>.required) are all true. The probe runs as an anonymous visitor: a
 // site-admin identity skips required-part validation and its answers say nothing about layouts.
 // Every probe must be refused; the script aborts on the first accepted submission.
+//
+// Pacing (L12): a fresh visitor token every 90 probes (Wix allows about 100 per token), 2.5 s
+// between probes, exponential backoff on 429 / 5xx. Progress is saved to <output>.progress.json
+// after each country; re-running the same command resumes from it. A finished run removes it.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { layoutsByTemplateName, matchSignature, signatureOf } from './address-map-match.mjs';
+import {
+  createTokenRotation,
+  pendingCountries,
+  PROBE_SPACING_MS,
+  retryDelayMs,
+} from './address-map-probe-pacing.mjs';
 
 const API = 'https://www.wixapis.com';
 const FIXTURES = path.join(
@@ -27,14 +37,24 @@ const mapFixture = readJson('country-template-map.json');
 const templatesFixture = readJson('templates-list-response.json');
 const countries = readJson('server-allowed-countries.json').countries;
 
-const authorization = await anonymousVisitorToken(options.clientId);
-const templatesBody = await listTemplates(authorization, Object.values(mapFixture.templateIds));
+const tokens = createTokenRotation({ mint: () => anonymousVisitorToken(options.clientId) });
+const templatesBody = await listTemplates(
+  await tokens.authorizationForNextProbe(),
+  Object.values(mapFixture.templateIds),
+);
 const layouts = layoutsByTemplateName(templatesBody, mapFixture.templateIds);
 
-const perCountry = {};
-for (const country of countries) {
-  const onlyCountry = await probe(authorization, { country });
-  const withSubdivision = await probe(authorization, { country, subdivision: 'XX' });
+const progressPath = `${options.output}.progress.json`;
+const perCountry = fs.existsSync(progressPath)
+  ? JSON.parse(fs.readFileSync(progressPath, 'utf8'))
+  : {};
+const pending = pendingCountries(countries, perCountry);
+if (pending.length < countries.length) {
+  console.log(`Resuming: ${countries.length - pending.length} countries already probed.`);
+}
+for (const country of pending) {
+  const onlyCountry = await probe({ country });
+  const withSubdivision = await probe({ country, subdivision: 'XX' });
   const signature = signatureOf(options.target, onlyCountry, withSubdivision);
   const candidates = matchSignature(signature, layouts);
   perCountry[country] = {
@@ -42,9 +62,12 @@ for (const country of countries) {
     template: candidates.length === 1 ? candidates[0] : null,
     candidates,
   };
+  fs.writeFileSync(progressPath, JSON.stringify(perCountry));
   process.stdout.write(`${country} `);
 }
 process.stdout.write('\n');
+// A finished run must not be "resumed" by the next release's run.
+fs.rmSync(progressPath, { force: true });
 
 const derived = derivedMap(perCountry);
 fs.writeFileSync(options.output, JSON.stringify(derived, null, 2) + '\n');
@@ -103,19 +126,20 @@ async function listTemplates(authorization, templateIds) {
   return response.json();
 }
 
-/** One Create Submission; returns the located errors. Retries 429 / 5xx with backoff. */
-async function probe(authorization, address) {
+/** One Create Submission on the current rotated token; returns the located errors. */
+async function probe(address) {
   const body = JSON.stringify({
     submission: { formId: options.formId, submissions: { [options.target]: address } },
   });
   for (let attempt = 0; attempt < 8; attempt += 1) {
+    const authorization = await tokens.authorizationForNextProbe();
     const response = await fetch(`${API}/form-submission-service/v4/submissions`, {
       method: 'POST',
       headers: { Authorization: authorization, 'Content-Type': 'application/json' },
       body,
     });
     if (response.status === 429 || response.status >= 500) {
-      await sleep(5000 * 2 ** Math.min(attempt, 4));
+      await sleep(retryDelayMs(attempt));
       continue;
     }
     const parsed = await response.json().catch(() => ({}));
@@ -125,7 +149,7 @@ async function probe(authorization, address) {
       );
       process.exit(3);
     }
-    await sleep(400);
+    await sleep(PROBE_SPACING_MS);
     return (parsed.details?.validationError?.fieldViolations ?? []).flatMap(
       (violation) => violation.data?.errors ?? [],
     );

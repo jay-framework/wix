@@ -23,16 +23,17 @@ There is no generic `wix-form` contract, no `formId` prop, and no `defaultFormId
 
 ## Common errors
 
-| Symptom                                                       | Fix                                                                                                                                                             |
-| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 403 on form schema or submit                                  | Add **Wix Forms** permission to API key                                                                                                                         |
-| Console: `[wix-forms] No forms listed for namespace …`        | Often normal before forms exist; else check `namespace`, `formIds`, `include` in `config/.wix-forms.yaml`, then re-run agent-kit                                |
-| Validator: retired `contract="wix-form"`                      | Switch to `contract="form/<slug>"` from `forms.yaml`                                                                                                            |
-| Unknown field in bindings                                     | Use field `target` names from `forms.yaml`; no `forEach` on a generic `fields` list                                                                             |
-| Form loads but no fields                                      | Form has no supported input fields in Wix schema                                                                                                                |
-| `Could not load the address layouts. Please try again later.` | List Form Templates failed (network, API key). It retries after 30 s. Unset `WIX_FORMS_ADDRESS_TEMPLATES_ORIGIN` if it is set                                   |
-| Console: `… inputs only in the legacy "fields[]" …`           | The form was created through the API with the old `fields[]` list; its fields are unsupported. Re-create it in the Wix Forms dashboard (or with `formFields[]`) |
-| A country shows region codes (Italy: `25`)                    | Name them in `config/.wix-forms.yaml` `address.labels.subdivisions`                                                                                             |
+| Symptom                                                       | Fix                                                                                                                                                                      |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 403 on form schema or submit                                  | Add **Wix Forms** permission to API key                                                                                                                                  |
+| Console: `[wix-forms] No forms listed for namespace …`        | Often normal before forms exist; else check `namespace`, `formIds`, `include` in `config/.wix-forms.yaml`, then re-run agent-kit                                         |
+| Validator: retired `contract="wix-form"`                      | Switch to `contract="form/<slug>"` from `forms.yaml`                                                                                                                     |
+| Unknown field in bindings                                     | Use field `target` names from `forms.yaml`; no `forEach` on a generic `fields` list                                                                                      |
+| Form loads but no fields                                      | Form has no supported input fields in Wix schema                                                                                                                         |
+| `Could not load the address layouts. Please try again later.` | List Form Templates failed (network, API key). It retries after 30 s. Unset `WIX_FORMS_ADDRESS_TEMPLATES_ORIGIN` if it is set                                            |
+| `Could not load the form. Please try again later.`            | Server log `Form ID is missing.`: the page's contract has no `metadata.formId` (not a generated `form/<slug>` contract). Re-run agent-kit and use the generated contract |
+| Console: `… inputs only in the legacy "fields[]" …`           | The form was created through the API with the old `fields[]` list; its fields are unsupported. Re-create it in the Wix Forms dashboard (or with `formFields[]`)          |
+| A country shows region codes (Italy: `25`)                    | Name them in `config/.wix-forms.yaml` `address.labels.subdivisions`                                                                                                      |
 
 ## Address drift
 

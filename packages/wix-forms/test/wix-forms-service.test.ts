@@ -24,6 +24,8 @@ import { getFormSchema } from '../lib/wix-apis/get-form.js';
 import { fixtureTemplates } from './support/address-fixtures.js';
 import { AddressLayoutsUnavailableError } from '../lib/address/address-templates.js';
 import { provideWixFormsService } from '../lib/services/wix-forms-service.js';
+import { generator as formContractGenerator } from '../lib/generators/form-contract-generator.js';
+import { LAYOUT_PARTS } from '../lib/address/address-types.js';
 import { fixtureField, formSummaryFixture, rawFormFixture } from './support/form-kinds.js';
 
 const mockGetFormSummary = vi.mocked(getFormSummary);
@@ -465,5 +467,40 @@ describe('a form with inputs only in the legacy fields[] (DL #52 live QA)', () =
         ).getFormFields(FORM_ID);
         expect(projected.unsupportedFields).toEqual(expectedUnsupported);
         expect(console.warn).toHaveBeenCalledWith(LEGACY_WARNING);
+    });
+});
+
+describe('form contract generation without the address templates', () => {
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
+    /**
+     * Bug: with the templates unreachable at server start, no per-form contract is generated, so
+     * the page has no metadata.formId and shows "Form ID is missing." with "undefined" labels.
+     * Found in: DL #52 live QA re-run L11 (QA-REPORT-DL52 bug 6).
+     * Expected: the contract and its metadata (formId, all eight address parts) are generated
+     * without the templates; only the runtime render/submit fails closed with the layouts message.
+     * Actual: generation throws "Could not load the address layouts ... no form contract was generated".
+     */
+    it('should generate the address form contract and its formId when the templates fail', async () => {
+        vi.spyOn(console, 'log').mockImplementation(() => {});
+        vi.spyOn(console, 'warn').mockImplementation(() => {});
+        mockListForms.mockResolvedValueOnce([
+            { ...rawFormFixture('booking-form'), id: FORM_ID, name: 'Booking form' },
+        ]);
+        const load = vi.fn(() => Promise.reject(new AddressLayoutsUnavailableError()));
+        const service = provideWixFormsService(mockClient, testConfig, {
+            addressTemplateSource: { load },
+        });
+
+        const [contract] = await formContractGenerator.generate(service);
+
+        expect(contract?.metadata).toEqual({
+            formId: FORM_ID,
+            addressParts: { address: [...LAYOUT_PARTS] },
+        });
+        expect(contract?.yaml).toContain('tag: address');
+        expect(load).not.toHaveBeenCalled();
     });
 });

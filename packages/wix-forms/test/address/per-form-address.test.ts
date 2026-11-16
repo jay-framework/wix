@@ -109,6 +109,27 @@ describe('F1b: a template failure on render', () => {
     });
 });
 
+describe('F1c: a page without a form id', () => {
+    /**
+     * Bug: a page whose contract has no metadata.formId showed the internal "Form ID is missing."
+     * text to the visitor.
+     * Found in: DL #52 live QA re-run L11 (QA-REPORT-DL52 bug 6).
+     * Expected: a visitor-facing message ("Could not load the form. Please try again later.").
+     * Actual: "Form ID is missing."
+     */
+    it('should not show the raw "Form ID is missing." text to a visitor', async () => {
+        vi.spyOn(console, 'error').mockImplementation(() => {});
+        const forms = formsService({
+            getFormFields: async () => {
+                throw new Error('Form ID is missing.');
+            },
+        });
+        const output = await slowRender(forms, undefined);
+        expect(output.rendered.loadError).toBe('Could not load the form. Please try again later.');
+        vi.restoreAllMocks();
+    });
+});
+
 describe('F2: the address view state per country', () => {
     const field = addressFieldView();
     const stateOf = (value: Record<string, string>) =>
@@ -268,7 +289,7 @@ function listedForm(field: FormFieldView): ListedFormView {
 async function generatedContract(field: FormFieldView) {
     const forms = {
         config: { namespace: 'wix.form_app.form', formIds: [], include: 'enabled' },
-        listForms: async () => [listedForm(field)],
+        listFormsForContracts: async () => [listedForm(field)],
     } as unknown as WixFormsService;
     vi.spyOn(console, 'log').mockImplementation(() => {});
     const [contract] = await formContractGenerator.generate(forms);

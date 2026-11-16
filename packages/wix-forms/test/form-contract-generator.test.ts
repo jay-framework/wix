@@ -24,6 +24,7 @@ function serviceWith(forms: ListedFormView[]): WixFormsService {
     return {
         config: { namespace: 'wix.form_app.form', formIds: [], include: 'enabled' },
         listForms: async () => forms,
+        listFormsForContracts: async () => forms,
         getFormFields: async () => ({ fields: [], unsupportedFields: [] }),
         getRawForm: async () => ({}),
         getFormSummaryFields: async () => ({ fields: [], unsupportedFields: [] }),

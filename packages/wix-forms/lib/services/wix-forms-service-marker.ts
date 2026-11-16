@@ -28,6 +28,11 @@ export interface WixFormsService {
      */
     listForms(): Promise<ListedFormView[]>;
     /**
+     * The listing for contract generation: address fields without their spec, so it never
+     * depends on the address templates (DL #52 L11). Not cached; runtime code uses `listForms`.
+     */
+    listFormsForContracts(): Promise<ListedFormView[]>;
+    /**
      * Load one form's fields by id (runtime slow phase), with the fields this version cannot
      * render (DL #51). Throws only when the form has neither.
      */

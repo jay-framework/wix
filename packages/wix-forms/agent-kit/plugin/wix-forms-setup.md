@@ -135,7 +135,7 @@ which reads Get Form through `WixFormsService.getRawForm` — it does **not** us
 
 ## Address copy
 
-Address layouts come from Wix (List Form Templates) at runtime, cached for an hour; no data ships with the plugin. Wix gives codes, not names: the plugin names the countries (`Intl.DisplayNames`) and the regions of US, GB, CA, DE, JP, BR, FR, ES and AU in English. Other countries' regions show their codes until you name them:
+Address layouts come from Wix (List Form Templates) at runtime, cached for an hour; no data ships with the plugin. Contract generation (agent-kit) does not fetch them: every address contract has all eight parts, so a layout outage fails only the page render and submit, never the contract. Wix gives codes, not names: the plugin names the countries (`Intl.DisplayNames`) and the regions of US, GB, CA, DE, JP, BR, FR, ES and AU in English. Other countries' regions show their codes until you name them:
 
 ```yaml
 address:

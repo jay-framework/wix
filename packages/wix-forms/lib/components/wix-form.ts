@@ -1036,11 +1036,16 @@ function describeUnsupportedRequiredFields(fields: UnsupportedFieldView[]): stri
     return `This form has a required field this site cannot show: ${fields.map((field) => field.label).join(', ')}.`;
 }
 
+const GENERIC_LOAD_ERROR = 'Could not load the form. Please try again later.';
+
 function describeLoadError(error: unknown): string {
-    const rawMessage = error instanceof Error ? error.message : 'Could not load the form.';
-    return rawMessage.includes('403')
-        ? 'Forms API access denied. Add Wix Forms permission to your API key in the Wix dashboard.'
-        : rawMessage || 'Could not load the form. Please try again later.';
+    const rawMessage = error instanceof Error ? error.message : '';
+    if (rawMessage.includes('403')) {
+        return 'Forms API access denied. Add Wix Forms permission to your API key in the Wix dashboard.';
+    }
+    // A missing or malformed form id is a site setup fault, not something a visitor can act on.
+    if (!rawMessage || rawMessage.startsWith('Form ID ')) return GENERIC_LOAD_ERROR;
+    return rawMessage;
 }
 
 export const wixForm = makeJayStackComponent<any>()

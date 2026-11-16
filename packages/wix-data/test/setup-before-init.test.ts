@@ -36,7 +36,10 @@ describe('setupWixData before wix-data init has run', () => {
      * Actual: status "error", "WixDataService not available. Check initialization."
      */
     it('should report the collections config without needing WixDataService', async () => {
-        const result = await setupWixData({ projectRoot: '/project', configDir: '/project/config' } as any);
+        const result = await setupWixData({
+            projectRoot: '/project',
+            configDir: '/project/config',
+        } as any);
 
         expect(loadConfig).toHaveBeenCalledWith(fakeWixClient);
         expect(result.status).toBe('configured');

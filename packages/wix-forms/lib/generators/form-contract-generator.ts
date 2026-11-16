@@ -88,25 +88,12 @@ function warnUnsupportedFields(form: ListedFormView, slug: string): void {
     }
 }
 
-/** A contract cannot be emitted from a guess: a template failure fails the generation (§5). */
-async function listFormsForGeneration(forms: { listForms(): Promise<ListedFormView[]> }) {
-    try {
-        return await forms.listForms();
-    } catch (error) {
-        if (error instanceof Error && error.name === 'AddressLayoutsUnavailableError') {
-            throw new Error(
-                '[wix-forms] Could not load the address layouts (Wix List Form Templates), so no form contract was generated. Check the network and the API key, then re-run agent-kit.',
-                { cause: error },
-            );
-        }
-        throw error;
-    }
-}
-
 export const generator = makeContractGenerator()
     .withServices(WIX_FORMS_SERVICE)
     .generateWith(async (forms) => {
-        const listed = await listFormsForGeneration(forms);
+        // Never the templates: a contract carries all eight address parts (M4), so a template
+        // failure fails only the runtime render and submit, never the contract (DL #52 L11).
+        const listed = await forms.listFormsForContracts();
         const slugById = computeFormSlugs(listed);
 
         return listed.map((form) => {

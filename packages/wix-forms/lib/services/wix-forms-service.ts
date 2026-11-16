@@ -70,34 +70,43 @@ export function provideWixFormsService(
             ),
     });
 
+    async function listProjectedForms(
+        optionsFor: (rawForms: RawForm[]) => Promise<ProjectionOptions>,
+    ): Promise<ListedFormView[]> {
+        const forms = await listForms(wixClient, {
+            namespace: config.namespace,
+            formIds: config.formIds,
+            include: config.include,
+        });
+        if (!forms.length) {
+            warnNoFormsListed(config);
+        }
+        const options = await optionsFor(forms);
+        return forms.map((form) => {
+            const name = form.name ?? form.id;
+            warnRequiredUntargeted(name, requiredUntargetedLabels(form));
+            return {
+                id: form.id,
+                name,
+                hasAddress: hasAddressField(form),
+                ...projectFormFields(form, options),
+            };
+        });
+    }
+
     const service: WixFormsService = {
         config,
 
         async listForms() {
-            if (listCache) {
-                return listCache;
-            }
-            const forms = await listForms(wixClient, {
-                namespace: config.namespace,
-                formIds: config.formIds,
-                include: config.include,
-            });
-            if (!forms.length) {
-                warnNoFormsListed(config);
-            }
-            const options = await projectionOptionsFor(forms);
-            listCache = forms.map((form) => {
-                const name = form.name ?? form.id;
-                warnRequiredUntargeted(name, requiredUntargetedLabels(form));
-                return {
-                    id: form.id,
-                    name,
-                    hasAddress: hasAddressField(form),
-                    ...projectFormFields(form, options),
-                };
-            });
+            listCache ??= await listProjectedForms(projectionOptionsFor);
             return listCache;
         },
+
+        listFormsForContracts: () =>
+            listProjectedForms(async () => ({
+                defaultPhoneCountry: config.defaultPhoneCountry,
+                withoutAddressSpecs: true,
+            })),
 
         async getRawForm(formId) {
             if (!canonicalFormId(formId)) {

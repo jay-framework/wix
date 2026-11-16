@@ -41,6 +41,12 @@ export interface ProjectionOptions {
     defaultPhoneCountry?: string;
     /** Required when the form has an address: loaded by the caller first, or the caller throws (DL #52 Q3). */
     addressTemplates?: AddressTemplates;
+    /**
+     * Contract generation only: project an address field without its spec, so no templates are
+     * needed. Every address contract carries all eight parts anyway (DL #52 M4); the runtime
+     * render and submit still resolve the spec and fail closed when the templates fail.
+     */
+    withoutAddressSpecs?: boolean;
     /** The learned-facts snapshot to merge into each address spec (DL #52 §1 "One spec"). */
     learnedFacts?: LearnedFactsSnapshot;
     /** Config `address` (locale, labels). */
@@ -131,6 +137,9 @@ export function projectAddressField(
     key: FieldKey,
     options: ProjectionOptions,
 ): FormFieldView | undefined {
+    if (options.withoutAddressSpecs) {
+        return key.hidden ? undefined : addressFieldView(key);
+    }
     if (!options.addressTemplates) {
         throw new Error(
             'projectFormFields: a form with an address needs addressTemplates (load them first)',
@@ -150,6 +159,10 @@ export function projectAddressField(
     const address = options.learnedFacts
         ? withLearnedFacts(resolved, options.learnedFacts)
         : resolved;
+    return { ...addressFieldView(key), address };
+}
+
+function addressFieldView(key: FieldKey): FormFieldView {
     return {
         target: key.target!,
         label: key.label,
@@ -157,7 +170,6 @@ export function projectAddressField(
         required: key.required,
         placeholder: '',
         options: [],
-        address,
     };
 }
 
