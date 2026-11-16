@@ -13,7 +13,8 @@ confirmation can echo what was entered via each field's `value`. A `resetButton`
 store and returns to a blank form (`isSubmitted=false`).
 
 ```html
-<form novalidate if="!contact.isSubmitted">
+<p role="alert" if="contact.loadError">{contact.loadError}</p>
+<form novalidate if="!contact.isSubmitted && !contact.loadError">
   <label for="contact-email">{contact.email.label}</label>
   <input
     id="contact-email"

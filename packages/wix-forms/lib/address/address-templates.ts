@@ -56,6 +56,14 @@ export class AddressLayoutsUnavailableError extends Error {
     }
 }
 
+/**
+ * By name, not `instanceof`: on the dev server the service (loaded at plugin init) and an action
+ * (loaded in Vite's SSR module graph) hold two copies of this module, so the classes differ.
+ */
+export function isAddressLayoutsUnavailable(error: unknown): boolean {
+    return error instanceof Error && error.name === 'AddressLayoutsUnavailableError';
+}
+
 /** Requests `url` and resolves its JSON body; rejects on a non-2xx answer. */
 export type FetchTemplatesJson = (url: string) => Promise<unknown>;
 

@@ -120,7 +120,7 @@ bindings that do not match the contract. Form identity is fixed by
 ```html
 <script type="application/jay-headless" plugin="@jay-framework/wix-forms"
         contract="form/contact" key="contact"></script>
-<form novalidate if="!contact.isSubmitted">
+<form novalidate if="!contact.isSubmitted && !contact.loadError">
   <label for="firstName">{contact.firstName.label}</label>
   <input id="firstName" ref="contact.firstName.input" autocomplete="given-name"
          aria-required="{contact.firstName.required}" aria-describedby="firstName-error"
@@ -132,8 +132,9 @@ bindings that do not match the contract. Form identity is fixed by
     </select>
   </label>
   <button ref="contact.submitButton">Send</button>
-  <p class="form-error" if="contact.loadError">{contact.loadError}</p>
 </form>
+<!-- A load error leaves no fields, so the form is hidden and only the error shows -->
+<p class="form-error" role="alert" if="contact.loadError">{contact.loadError}</p>
 <!-- Success: gate on isSubmitted, never on statusMessage (it also carries errors) -->
 <p if="contact.isSubmitted" ref="contact.confirmation" tabindex="-1">Thank you — we received your message.</p>
 ```

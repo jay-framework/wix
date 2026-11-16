@@ -71,7 +71,8 @@ on one page you typically keep distinct keys while each script points at its own
   key="newsletter">
 </script>
 
-<form novalidate if="!contact.isSubmitted">
+<p role="alert" if="contact.loadError">{contact.loadError}</p>
+<form novalidate if="!contact.isSubmitted && !contact.loadError">
   <label>{contact.email.label}
     <input ref="contact.email.input" autocomplete="email"
            aria-required="{contact.email.required}" placeholder="{contact.email.placeholder}" />

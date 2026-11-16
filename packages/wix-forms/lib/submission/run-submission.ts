@@ -46,7 +46,7 @@ import type { FieldRule } from '../components/field-rule.js';
 import type { FormFieldView } from '../types.js';
 import {
     ADDRESS_LAYOUTS_UNAVAILABLE_MESSAGE,
-    AddressLayoutsUnavailableError,
+    isAddressLayoutsUnavailable,
 } from '../address/address-templates.js';
 import type { LearnedAddressFacts } from '../address/learned-address-facts.js';
 import { mapAddressViolations } from '../address/address-violations.js';
@@ -175,7 +175,7 @@ async function supportedValues(
  * SubmitFailure has no FORM_UNAVAILABLE member, so the reason is UNKNOWN (DL #52 implementation note).
  */
 function formLoadFailure(error: unknown): SubmitFormResult {
-    if (error instanceof AddressLayoutsUnavailableError) {
+    if (isAddressLayoutsUnavailable(error)) {
         return {
             success: false,
             reason: SubmitFailure.UNKNOWN,

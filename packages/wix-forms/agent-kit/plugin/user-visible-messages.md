@@ -70,6 +70,8 @@ Binding `{contact.statusMessage}` for `REJECTED` is a choice: it shows a hook's 
 
 When the form schema fails to load, `loadError` is set (e.g. `Could not load the form.`, permission-denied hints). Bind `{key.loadError}` if you want to show it, or use `if="contact.loadError"` with your own localized explanation.
 
+With a `loadError` the component has **no fields**, so every field binding (`{key.<field>.label}`, address parts, options) is empty and renders as `undefined`. Gate the form on it: `<form novalidate if="!key.isSubmitted && !key.loadError">`, with the `loadError` paragraph outside the form.
+
 `loadError` is also set when the form has a **required field this site cannot show** (for example a file upload), and to `Could not load the address layouts. Please try again later.` when the address layouts could not be fetched (it retries shortly): `This form has a required field this site cannot show: <label>.` No fields render in that case and the form cannot be submitted; see `unsupportedFields` in `forms.yaml` and `per-form-contracts.md`.
 
 ## Field `{key.<target>.error}`

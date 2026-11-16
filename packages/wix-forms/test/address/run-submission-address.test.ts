@@ -114,6 +114,31 @@ describe('F5: runSubmission maps a Wix 400 onto address parts', () => {
             message: 'Could not load the address layouts. Please try again later.',
         });
     });
+
+    /**
+     * Bug: on the live dev server the submit returned the generic "We could not complete your
+     * request. Please try again." instead of the layouts message, because the service that threw
+     * was loaded at plugin init and the action in Vite's SSR module graph: two copies of the
+     * error class, so `instanceof` failed.
+     * Found in: DL #52 live QA re-run 2, L11 (per-form curl submitForm).
+     * Expected: reason UNKNOWN with "Could not load the address layouts. Please try again later."
+     * Actual: reason UNKNOWN with "We could not complete your request. Please try again."
+     */
+    it('should return the layouts message for a template failure thrown by another copy of the module', async () => {
+        const { deps } = depsWith(vi.fn());
+        deps.addressFieldsOf = async () => {
+            const fromOtherModuleCopy = new Error(
+                'Could not load the address layouts. Please try again later.',
+            );
+            fromOtherModuleCopy.name = 'AddressLayoutsUnavailableError';
+            throw fromOtherModuleCopy;
+        };
+        await expect(runSubmission({ formId: FORM_ID, values: {} }, deps)).resolves.toEqual({
+            success: false,
+            reason: SubmitFailure.UNKNOWN,
+            message: 'Could not load the address layouts. Please try again later.',
+        });
+    });
 });
 
 describe('F5b: a revealed part survives the next submit', () => {
