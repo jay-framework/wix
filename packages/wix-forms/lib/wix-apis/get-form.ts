@@ -78,10 +78,20 @@ export interface RawFormStep {
     layout?: { large?: { items?: RawLayoutItem[] } };
 }
 
+/** An entry of the legacy `fields[]` list, read only to report it (DL #52 live QA). */
+export interface RawLegacyField {
+    target?: string;
+    validation?: { required?: boolean; predefined?: { format?: string } };
+    view?: { label?: string };
+}
+
 export interface GetFormResponse {
     form?: {
         id?: string;
+        name?: string;
         formFields?: RawFormField[];
+        /** Legacy field list; never projected. Inputs only here make the form unsupported. */
+        fields?: RawLegacyField[];
         steps?: RawFormStep[];
     };
 }

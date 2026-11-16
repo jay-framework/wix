@@ -103,16 +103,25 @@ describe('projectFormFields (DL #51 §1)', () => {
         ]);
     });
 
-    it('should ignore the old-style fields[] array and deletedFormFields', () => {
+    it('should ignore deletedFormFields, and fields[] when formFields[] is present', () => {
         const form = rawFormFixture('contact-form');
         const extra = fixtureField('booking-form-all-kinds', 'file_upload_1ffc');
         const withDeleted = { ...form, deletedFormFields: [extra] };
         expect(projectFormFields(withDeleted)).toEqual(projectFormFields(form));
-        const oldStyleOnly = { fields: (form as { fields?: unknown }).fields } as RawForm;
-        expect(projectFormFields(oldStyleOnly)).toEqual({
-            fields: [],
-            unsupportedFields: [],
+    });
+
+    /** DL #52 live QA flips the old-style-only row: it was silent (bug 3), now it fails loudly. */
+    it('should list the inputs of an old-style-only form as unsupported and warn', () => {
+        const legacy = (rawFormFixture('contact-form') as RawForm).fields ?? [];
+        const warnings: string[] = [];
+        const projected = projectFormFields({ fields: legacy } as RawForm, {
+            warn: (message) => warnings.push(message),
         });
+        expect(projected.fields).toEqual([]);
+        expect(projected.unsupportedFields.map((field) => field.target)).toEqual(
+            legacy.filter((field) => field.target).map((field) => field.target),
+        );
+        expect(warnings).toHaveLength(legacy.length ? 1 : 0);
     });
 
     it('should skip layout items that are not in formFields and put unplaced fields last', () => {

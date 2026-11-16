@@ -393,3 +393,77 @@ describe('WixFormsService.addressFieldsOf (DL #52 §5)', () => {
         expect(mockGetFormSchema).toHaveBeenCalledTimes(1);
     });
 });
+
+/**
+ * Bug: a form whose inputs exist only in the legacy `fields[]` (with an empty `formFields[]`)
+ * projects to nothing, silently: no field, no unsupported field, no warning.
+ * Found in: DL #52 live QA setup (form LF0, `evidence/dl52/lf0-listed.json`).
+ * Expected: each legacy input is listed as unsupported (`LEGACY_FIELDS:<format>`) and a warning
+ * names the cause. Actual: `fields: []`, `unsupportedFields: []`, nothing logged.
+ */
+describe('a form with inputs only in the legacy fields[] (DL #52 live QA)', () => {
+    const legacyForm = {
+        formFields: [],
+        fields: [
+            {
+                target: 'address',
+                validation: { required: true, predefined: { format: 'MULTILINE_ADDRESS' } },
+                view: { label: 'address' },
+            },
+            {
+                target: 'address_limited',
+                validation: { required: false, predefined: { format: 'MULTILINE_ADDRESS' } },
+                view: { label: 'address_limited' },
+            },
+        ],
+    };
+    const expectedUnsupported = [
+        {
+            target: 'address',
+            label: 'address',
+            wixKind: 'LEGACY_FIELDS:MULTILINE_ADDRESS',
+            required: true,
+        },
+        {
+            target: 'address_limited',
+            label: 'address_limited',
+            wixKind: 'LEGACY_FIELDS:MULTILINE_ADDRESS',
+            required: false,
+        },
+    ];
+    const LEGACY_WARNING =
+        '[wix-forms] Form "LF0" has its inputs only in the legacy "fields[]" (its "formFields[]" is empty), which this plugin does not read: address, address_limited are unsupported. Re-create the form in the Wix Forms dashboard.';
+
+    beforeEach(() => {
+        mockListForms.mockReset();
+        mockGetFormSchema.mockReset();
+        vi.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => vi.restoreAllMocks());
+
+    it('lists the legacy inputs as unsupported at agent-kit generation and warns with the cause', async () => {
+        mockListForms.mockResolvedValueOnce([{ id: FORM_ID, name: 'LF0', ...legacyForm }] as never);
+        const [form] = await provideWixFormsService(
+            mockClient,
+            testConfig,
+            withTemplates(),
+        ).listForms();
+        expect(form?.fields).toEqual([]);
+        expect(form?.unsupportedFields).toEqual(expectedUnsupported);
+        expect(console.warn).toHaveBeenCalledWith(LEGACY_WARNING);
+    });
+
+    it('marks them unsupported at runtime (getFormFields), naming the cause', async () => {
+        mockGetFormSchema.mockResolvedValueOnce({
+            form: { id: FORM_ID, name: 'LF0', ...legacyForm },
+        } as never);
+        const projected = await provideWixFormsService(
+            mockClient,
+            testConfig,
+            withTemplates(),
+        ).getFormFields(FORM_ID);
+        expect(projected.unsupportedFields).toEqual(expectedUnsupported);
+        expect(console.warn).toHaveBeenCalledWith(LEGACY_WARNING);
+    });
+});

@@ -58,6 +58,11 @@ export function projectFormFields(
     options: ProjectionOptions = {},
 ): ProjectedForm<FormFieldView> {
     const projected: ProjectedForm<FormFieldView> = { fields: [], unsupportedFields: [] };
+    const legacyOnly = legacyOnlyFieldsOf(rawForm);
+    if (legacyOnly.length) {
+        warnLegacyOnlyForm(rawForm, legacyOnly, options.warn ?? console.warn);
+        return { fields: [], unsupportedFields: legacyOnly };
+    }
     for (const raw of inLayoutOrder(rawForm)) {
         const key = readFieldKey(raw);
         if (ignoreReasonOf(key)) continue;
@@ -84,6 +89,33 @@ export function projectFormFields(
         });
     }
     return projected;
+}
+
+/**
+ * Inputs that exist only in the legacy `fields[]` (empty `formFields[]`), as unsupported fields.
+ * Only `formFields[]` is projected; without this such a form would project to nothing, silently.
+ */
+function legacyOnlyFieldsOf(rawForm: RawForm): UnsupportedFieldView[] {
+    if (rawForm.formFields?.length) return [];
+    return (rawForm.fields ?? [])
+        .filter((field) => field.target)
+        .map((field) => ({
+            target: field.target!,
+            label: field.view?.label ?? field.target!,
+            wixKind: `LEGACY_FIELDS:${field.validation?.predefined?.format ?? 'UNKNOWN'}`,
+            required: field.validation?.required === true,
+        }));
+}
+
+function warnLegacyOnlyForm(
+    rawForm: RawForm,
+    legacyOnly: UnsupportedFieldView[],
+    warn: (message: string) => void,
+): void {
+    const targets = legacyOnly.map((field) => field.target).join(', ');
+    warn(
+        `[wix-forms] Form "${rawForm.name ?? rawForm.id}" has its inputs only in the legacy "fields[]" (its "formFields[]" is empty), which this plugin does not read: ${targets} are unsupported. Re-create the form in the Wix Forms dashboard.`,
+    );
 }
 
 /** True when the raw form has an `ADDRESS` input: only then are templates loaded (DL #52 §1). */
