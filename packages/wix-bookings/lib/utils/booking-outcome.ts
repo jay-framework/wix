@@ -33,6 +33,9 @@ export function describeServicesError(error: unknown): Outcome<ServicesFailure> 
 export const FORM_UNAVAILABLE_MESSAGE =
     'Could not load the participant form. Please try again later.';
 
+/** Wix rate limiting (429) is transient; the visitor sees no API text. */
+const RATE_LIMITED_MESSAGE = 'Booking is busy right now. Please wait a minute and try again.';
+
 export function describeBookingError(error: unknown): Outcome<BookingFailure> {
     const rawMessage = error instanceof Error ? error.message : '';
     if (rawMessage.includes('/ecom/v2/carts') && rawMessage.includes('403')) {
@@ -55,6 +58,9 @@ export function describeBookingError(error: unknown): Outcome<BookingFailure> {
             message:
                 'Could not open Wix checkout. Publish your Wix site (hosted checkout requires a published site).',
         };
+    }
+    if (rawMessage.startsWith('Wix API 429')) {
+        return { failure: BookingFailure.UNKNOWN, message: RATE_LIMITED_MESSAGE };
     }
     return {
         failure: BookingFailure.UNKNOWN,

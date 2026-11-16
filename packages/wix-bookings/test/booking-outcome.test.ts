@@ -165,3 +165,19 @@ function failureName(failure: BookingFailure): string {
 function failureNames(): string[] {
     return [0, 1, 2, 3, 4, 5, 6, 7].map((value) => failureName(value as BookingFailure));
 }
+
+/**
+ * Bug: a Wix 429 (rate limit) from place-order showed the raw "Wix API 429: …" text to the visitor.
+ * Found in: DL #52 live QA, note A (L2 JP, L3, L4 ZW, L5). Expected: a friendly retry message,
+ * no API text. Actual: "Wix API 429: /ecom/v2/carts/<id>/place-order".
+ */
+describe('describeBookingError on a Wix 429', () => {
+    it('maps a rate-limited place-order to a friendly retry message', () => {
+        expect(
+            describeBookingError(new Error('Wix API 429: /ecom/v2/carts/c-1/place-order')),
+        ).toEqual({
+            failure: BookingFailure.UNKNOWN,
+            message: 'Booking is busy right now. Please wait a minute and try again.',
+        });
+    });
+});
