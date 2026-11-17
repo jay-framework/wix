@@ -26,6 +26,53 @@ Run `jay-stack agent-kit`, then read:
 - `agent-kit/materialized-contracts/wix-forms/form-<slug>.jay-contract` — the
   generated contract itself.
 
+## Fields the plugin cannot show (`unsupportedFields`)
+
+Only these Wix field kinds get a tag: short and long text, email, URL, phone,
+dropdown / radio (closed list), date picker (as text), single checkbox and checkbox
+group (closed list), and a Multi-line address (see "Address fields" below). Every
+other kind (number, rating, file upload, a hidden address,
+signature, payment, appointment, service picker, a choice with a custom "Other"
+option, a read-only field) is **left out of the contract** and listed per form
+under `unsupportedFields` in `forms.yaml` (`target`, `label`, `wixKind`, `required`).
+`jay-stack agent-kit` also warns about each one, and the contract `description`
+names them.
+
+- **Optional** unsupported field: the form works without it; it is never submitted.
+- **Required** unsupported field: the form cannot be submitted (Wix would accept a
+  submission without it, so the value would be lost). The page renders **no fields**,
+  sets `loadError` (`This form has a required field this site cannot show: <label>.`),
+  and `submitForm` refuses the form. Fix it in the Wix dashboard: make the field
+  optional, remove it, or replace it with a supported kind. Do not add a tag for it
+  by hand.
+- A required field with no target in Wix cannot be submitted either; agent-kit warns
+  (`required field "<label>" has no target in Wix`).
+
+## Address fields
+
+A Wix **Multi-line address** is one sub-contract named after its target, with a
+fixed set of **eight parts**, always all present (whatever countries the form
+offers today, because the site owner can widen them later):
+
+`country`, `addressLine`, `addressLine2`, `streetName`, `streetNumber`, `city`,
+`subdivision`, `postalCode`.
+
+- The field: `label`, `required`, `error` (the first part error), `invalid`.
+- `country`: `label`, `value`, `error`, `invalid`, `input` (a `<select>`), `options`.
+- Every other part: `shown`, `required`, `order`, `label`, `value`, `error`, `invalid`,
+  `maxLength`, `input`. Each country shows its own parts (Israel: street name and
+  house number; the US: a State; Italy: a region code): wrap each in
+  `if="<key>.<address>.<part>.shown"`. `order` is the part's position in the country's
+  layout (0 when hidden): bind `style="order: {…order}"` inside a flex container.
+- `subdivision` also has `listed` (a `<select>` of `options`) and a free-text `text`
+  input for `!listed`. Bind **both**.
+- Part errors arrive keyed `<target>/<part>` (`address/subdivision`) in a rejected
+  submit's `fieldErrors`. When Wix teaches a region list (`fieldOptions`) or requires
+  a hidden part (`revealedParts`), the component updates the part for you.
+- The validator (rule 6) errors on an unknown part ref and on any part without its
+  input(s). Markup: `rich-forms.md` §4c.
+- `forms.yaml` lists the field as `type: address` with its `parts` and `countries`.
+
 ## Each field is a sub-contract named after its `target`
 
 A field `email` becomes a `sub-contract` tag `email` carrying:
@@ -73,7 +120,7 @@ bindings that do not match the contract. Form identity is fixed by
 ```html
 <script type="application/jay-headless" plugin="@jay-framework/wix-forms"
         contract="form/contact" key="contact"></script>
-<form novalidate if="!contact.isSubmitted">
+<form novalidate if="!contact.isSubmitted && !contact.loadError">
   <label for="firstName">{contact.firstName.label}</label>
   <input id="firstName" ref="contact.firstName.input" autocomplete="given-name"
          aria-required="{contact.firstName.required}" aria-describedby="firstName-error"
@@ -85,8 +132,9 @@ bindings that do not match the contract. Form identity is fixed by
     </select>
   </label>
   <button ref="contact.submitButton">Send</button>
-  <p class="form-error" if="contact.loadError">{contact.loadError}</p>
 </form>
+<!-- A load error leaves no fields, so the form is hidden and only the error shows -->
+<p class="form-error" role="alert" if="contact.loadError">{contact.loadError}</p>
 <!-- Success: gate on isSubmitted, never on statusMessage (it also carries errors) -->
 <p if="contact.isSubmitted" ref="contact.confirmation" tabindex="-1">Thank you — we received your message.</p>
 ```

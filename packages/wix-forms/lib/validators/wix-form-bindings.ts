@@ -22,6 +22,8 @@
  *     `forEach` over a multiselect's options is warned: it stores one value, not a selection.
  *  6. A phone error shown only under `errorRule === PHONE` (DL#55 P1c): `PHONE_COUNTRY` would
  *     show no error.
+ *  7. Address bindings (DL #52 rule 6): every part of an address field binds its input(s), and no
+ *     ref names an unknown part or part child (`checkAddressBindings`).
  *
  * Best-effort: a page still importing the retired `contract="wix-form"` also
  * gets a migration message, IF the unresolved name surfaces in headlessImports.
@@ -29,6 +31,7 @@
 
 import type { JayHtmlValidatorFn, JayHtmlValidationFinding } from '@jay-framework/compiler-shared';
 import { walkElements } from '@jay-framework/compiler-shared';
+import { checkAddressBindings, isAddressContractTag } from './address-bindings.js';
 
 const RETIRED_CONTRACT_NAME = 'wix-form';
 const FORM_CONTRACT_PREFIX = 'form/';
@@ -67,8 +70,33 @@ export const validateWixFormBindings: JayHtmlValidatorFn = (ctx) => {
     detectAccessibilityIssues(ctx, new Set(formImports.map((imp) => imp.key!)), findings);
     detectUnguardedForms(ctx, new Set(formImports.map((imp) => imp.key!)), findings);
     detectPhoneRuleWithoutCountryBranch(ctx, new Set(formImports.map((imp) => imp.key!)), findings);
+    detectAddressBindingIssues(ctx, formImports, findings);
     return findings;
 };
+
+/** Rule 6 (DL #52): each address field of each per-form import, against every `ref=` on the page. */
+function detectAddressBindingIssues(
+    ctx: Parameters<JayHtmlValidatorFn>[0],
+    formImports: FormImport[],
+    findings: JayHtmlValidationFinding[],
+): void {
+    const refs = collectRefs(ctx);
+    for (const imp of formImports) {
+        for (const tag of imp.contract?.tags ?? []) {
+            if (!isAddressContractTag(tag)) continue;
+            findings.push(...checkAddressBindings(refs, `${imp.key}.${tag.tag}`));
+        }
+    }
+}
+
+function collectRefs(ctx: Parameters<JayHtmlValidatorFn>[0]): string[] {
+    const refs: string[] = [];
+    walkElements(ctx.body, ctx, (el: any) => {
+        const ref: string | undefined = el?.getAttribute?.('ref');
+        if (ref) refs.push(ref);
+    });
+    return refs;
+}
 
 /**
  * A <form> holding a key's refs but no `<key>.submitButton` (DL#44 rule 3): the runtime finds

@@ -1,5 +1,7 @@
 name: getFormSummary
-description: Load flat form field summaries for booking participant forms or other integrations.
+description: >-
+  Deprecated since DL #51: wix-bookings reads its participant form with wixBookings.getParticipantForm.
+  Loads flat form field summaries; fields this version cannot show are listed in unsupportedFields.
 
 inputSchema:
   formId?: string
@@ -10,3 +12,9 @@ outputSchema:
       label: string
       type: enum(STRING | EMAIL | PHONE | NUMBER | URL)
       required: boolean
+  unsupportedFields:
+    - target: string
+      label: string
+      wixKind: string
+      # Always "unknown": the Form Summary API carries no required flag (DL #51 Q13).
+      required: string

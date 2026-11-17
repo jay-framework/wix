@@ -19,14 +19,34 @@ There is no generic `wix-form` contract, no `formId` prop, and no `defaultFormId
 
 ## Bookings integration
 
-`wix-bookings` loads participant fields via `getFormSummary` from this plugin (not the per-form page UI).
+`wix-bookings` loads participant fields with its own `wixBookings.getParticipantForm`, which reads the full schema through this plugin's `WixFormsService.getRawForm` (not the per-form page UI). `getFormSummary` is deprecated.
 
 ## Common errors
 
-| Symptom                                                | Fix                                                                                                                              |
-| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
-| 403 on form schema or submit                           | Add **Wix Forms** permission to API key                                                                                          |
-| Console: `[wix-forms] No forms listed for namespace …` | Often normal before forms exist; else check `namespace`, `formIds`, `include` in `config/.wix-forms.yaml`, then re-run agent-kit |
-| Validator: retired `contract="wix-form"`               | Switch to `contract="form/<slug>"` from `forms.yaml`                                                                             |
-| Unknown field in bindings                              | Use field `target` names from `forms.yaml`; no `forEach` on a generic `fields` list                                              |
-| Form loads but no fields                               | Form has no supported input fields in Wix schema                                                                                 |
+| Symptom                                                       | Fix                                                                                                                                                                      |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 403 on form schema or submit                                  | Add **Wix Forms** permission to API key                                                                                                                                  |
+| Console: `[wix-forms] No forms listed for namespace …`        | Often normal before forms exist; else check `namespace`, `formIds`, `include` in `config/.wix-forms.yaml`, then re-run agent-kit                                         |
+| Validator: retired `contract="wix-form"`                      | Switch to `contract="form/<slug>"` from `forms.yaml`                                                                                                                     |
+| Unknown field in bindings                                     | Use field `target` names from `forms.yaml`; no `forEach` on a generic `fields` list                                                                                      |
+| Form loads but no fields                                      | Form has no supported input fields in Wix schema                                                                                                                         |
+| `Could not load the address layouts. Please try again later.` | List Form Templates failed (network, API key). It retries after 30 s. Unset `WIX_FORMS_ADDRESS_TEMPLATES_ORIGIN` if it is set                                            |
+| `Could not load the form. Please try again later.`            | Server log `Form ID is missing.`: the page's contract has no `metadata.formId` (not a generated `form/<slug>` contract). Re-run agent-kit and use the generated contract |
+| Console: `… inputs only in the legacy "fields[]" …`           | The form was created through the API with the old `fields[]` list; its fields are unsupported. Re-create it in the Wix Forms dashboard (or with `formFields[]`)          |
+| A country shows region codes (Italy: `25`)                    | Name them in `config/.wix-forms.yaml` `address.labels.subdivisions`                                                                                                      |
+
+## Address drift
+
+The server logs, once per process per key:
+
+```
+[wix-forms] address drift: Wix rejected <target>/<part> (<rule>) for <country>; layout <templateId>. See "Address drift" in @jay-framework/wix-forms docs/01-setup-and-troubleshooting.md.
+```
+
+It means Wix answered differently from the plugin's country → layout map: Wix required a part the layout hid (the plugin shows it from then on, so the visitor can fix it), refused a part the layout shows, or rejected a code from a region list the template itself carries. No visitor value is logged.
+
+What to do:
+
+1. Run the L-drift probe (`scripts/address-map-probe.mjs`, see `wix-forms-setup.md` → Before release) against your QA probe form.
+2. Report the country, part and rule from the log line, with the probe's diff, to the plugin maintainers.
+3. If a visitor saw "This address cannot be accepted for <country>. Please contact us.", Wix needs a part outside the eight the plugin knows: only a plugin update fixes that.

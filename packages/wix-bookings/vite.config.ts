@@ -1,8 +1,9 @@
 import { resolve } from 'path';
-import { defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
 import { JayRollupConfig, jayStackCompiler } from '@jay-framework/compiler-jay-stack';
 
 const root = resolve(__dirname);
+const INTERACTIVE_TESTS = 'test/**/*.interactive.test.ts';
 const jayOptions: JayRollupConfig = {
     tsConfigFilePath: resolve(root, 'tsconfig.json'),
     outputDir: 'build',
@@ -36,6 +37,7 @@ export default defineConfig(({ isSsrBuild }) => ({
                 '@jay-framework/json-patch',
                 '@jay-framework/secure',
                 '@jay-framework/wix-forms',
+                '@jay-framework/wix-forms/tools',
                 '@jay-framework/wix-server-client',
                 '@jay-framework/wix-server-client/client',
                 '@wix/sdk',
@@ -43,7 +45,26 @@ export default defineConfig(({ isSsrBuild }) => ({
         },
     },
     test: {
-        globals: true,
-        environment: 'node',
+        projects: [
+            {
+                extends: true,
+                test: {
+                    name: 'unit',
+                    globals: true,
+                    environment: 'node',
+                    exclude: [...configDefaults.exclude, INTERACTIVE_TESTS],
+                },
+            },
+            // No jay-stack plugin: its SSR code-split replaces `withInteractive(...)`, removing
+            // the interactive constructor the booking-flow tests drive (as in wix-forms).
+            {
+                test: {
+                    name: 'interactive',
+                    globals: true,
+                    environment: 'node',
+                    include: [INTERACTIVE_TESTS],
+                },
+            },
+        ],
     },
 }));

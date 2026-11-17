@@ -1,0 +1,39 @@
+{
+  "source": "LB0 live Create Booking (anonymous visitor token), 2026-11-16; raw 400 body, no ids",
+  "status": 400,
+  "sentAddress": {
+    "country": "US",
+    "city": "Montgomery",
+    "postalCode": "36104",
+    "subdivision": "AL",
+    "addressLine": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+  },
+  "body": {
+    "message": "Validation failed: must NOT have more than 150 characters must NOT have more than 150 characters",
+    "details": {
+      "validationError": {
+        "fieldViolations": [
+          {
+            "ruleName": "MAX_LENGTH_ERROR",
+            "field": "must NOT have more than 150 characters",
+            "description": "must NOT have more than 150 characters",
+            "data": {
+              "limit": 150,
+              "formViolations": [
+                {
+                  "fieldName": "address/addressLine",
+                  "description": "must NOT have more than 150 characters",
+                  "ruleName": "MAX_LENGTH_ERROR",
+                  "data": {
+                    "limit": 150
+                  }
+                }
+              ]
+            },
+            "violatedRule": "OTHER"
+          }
+        ]
+      }
+    }
+  }
+}

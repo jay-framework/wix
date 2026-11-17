@@ -11,7 +11,21 @@
  * confirmation / sent-state view swap.
  */
 
-import type { FieldValue, FormFieldView } from '../types.js';
+import type { FieldValue, FormFieldOptionView, FormFieldView } from '../types.js';
+import {
+    ADDRESS_PARTS,
+    LAYOUT_PARTS,
+    type AddressLayout,
+    type AddressPart,
+    type AddressValue,
+    type LayoutPart,
+} from '../address/address-types.js';
+import {
+    addressErrorKey,
+    initialAddressValue,
+    isAddressValue,
+    layoutOf,
+} from '../address/address-value.js';
 import { SubmitFailure, SubmitState } from './submit-outcome.js';
 import { FieldRule } from './field-rule.js';
 import { contractTagName } from '../generators/contract-utils.js';
@@ -50,7 +64,12 @@ interface FieldState {
     value: FieldValue;
 }
 
-function fieldToViewState(field: FormFieldView, state: FieldState): FieldViewState {
+function fieldToViewState(
+    field: FormFieldView,
+    state: FieldState,
+    errorByTarget: Record<string, string>,
+): FieldViewState | AddressViewState {
+    if (field.inputType === 'address') return addressViewState(field, state.value, errorByTarget);
     const viewState: FieldViewState = {
         label: field.label,
         required: field.required,
@@ -86,15 +105,19 @@ export function buildFieldsViewState(
     invalidByTarget: Record<string, boolean> = {},
     valueByTarget: Record<string, FieldValue> = {},
     ruleByTarget: Record<string, FieldRule> = {},
-): Record<string, FieldViewState> {
-    const viewState: Record<string, FieldViewState> = {};
+): Record<string, FieldViewState | AddressViewState> {
+    const viewState: Record<string, FieldViewState | AddressViewState> = {};
     for (const field of fields) {
-        viewState[contractTagName(field.target)] = fieldToViewState(field, {
-            error: errorByTarget[field.target] ?? '',
-            invalid: invalidByTarget[field.target] ?? false,
-            errorRule: ruleByTarget[field.target] ?? FieldRule.NONE,
-            value: valueByTarget[field.target] ?? '',
-        });
+        viewState[contractTagName(field.target)] = fieldToViewState(
+            field,
+            {
+                error: errorByTarget[field.target] ?? '',
+                invalid: invalidByTarget[field.target] ?? false,
+                errorRule: ruleByTarget[field.target] ?? FieldRule.NONE,
+                value: valueByTarget[field.target] ?? '',
+            },
+            errorByTarget,
+        );
     }
     return viewState;
 }
@@ -131,4 +154,91 @@ function submitStateOf(overrides: FormViewStateOverrides): SubmitState {
     if (overrides.isHandedOff === true) return SubmitState.SUBMITTING;
     if (overrides.submitFailure) return SubmitState.FAILED;
     return SubmitState.IDLE;
+}
+
+/** One part of the address view state (DL #52 §2). */
+export interface AddressPartViewState {
+    shown: boolean;
+    required: boolean;
+    label: string;
+    value: string;
+    error: string;
+    invalid: boolean;
+    /** 1-based position in the country's template layout (for CSS `order`); 0 when hidden. */
+    order: number;
+    maxLength?: number;
+    listed?: boolean;
+    options?: FormFieldOptionView[];
+}
+
+export interface AddressViewState {
+    label: string;
+    required: boolean;
+    /** The first part error, in part order. */
+    error: string;
+    invalid: boolean;
+    country: Omit<AddressPartViewState, 'shown' | 'required' | 'order' | 'maxLength' | 'listed'> & {
+        options: FormFieldOptionView[];
+    };
+    [part: string]: unknown;
+}
+
+/**
+ * The address subtree (DL #52 §2): every part, shown or not, so a page can bind all eight. With no
+ * country, only the country select has content. `errors` is keyed `<target>/<part>`.
+ */
+export function addressViewState(
+    field: FormFieldView,
+    value: FieldValue | undefined,
+    errors: Record<string, string> = {},
+): AddressViewState {
+    const spec = field.address!;
+    const address: AddressValue = isAddressValue(value) ? value : initialAddressValue(spec);
+    const layout = layoutOf(spec, address.country);
+    const errorOf = (part: AddressPart) => errors[addressErrorKey(field.target, part)] ?? '';
+    const firstError = ADDRESS_PARTS.map(errorOf).find(Boolean) ?? '';
+    const view: AddressViewState = {
+        label: field.label,
+        required: field.required,
+        error: firstError,
+        invalid: Boolean(firstError),
+        country: {
+            label: spec.partLabels.country,
+            value: address.country ?? '',
+            error: errorOf('country'),
+            invalid: Boolean(errorOf('country')),
+            options: spec.countries,
+        },
+    };
+    for (const part of LAYOUT_PARTS) {
+        view[part] = partViewState(part, layout, address, errorOf(part));
+    }
+    return view;
+}
+
+function partViewState(
+    part: LayoutPart,
+    layout: AddressLayout | undefined,
+    address: AddressValue,
+    error: string,
+): AddressPartViewState {
+    const position = layout?.parts.findIndex((candidate) => candidate.part === part) ?? -1;
+    const partSpec = position >= 0 ? layout!.parts[position] : undefined;
+    const view: AddressPartViewState = {
+        shown: Boolean(partSpec),
+        order: position + 1,
+        required: partSpec?.required ?? false,
+        label: partSpec?.label ?? '',
+        value: partSpec ? (address[part] ?? '') : '',
+        error,
+        invalid: Boolean(error),
+    };
+    if (part === 'subdivision') {
+        const options = partSpec ? (layout?.subdivisions ?? []) : [];
+        view.listed = options.length > 0;
+        view.options = options;
+    } else {
+        view.maxLength = partSpec?.maxLength ?? 0;
+    }
+    return view;
 }

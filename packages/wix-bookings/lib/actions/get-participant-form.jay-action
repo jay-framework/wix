@@ -1,0 +1,28 @@
+name: getParticipantForm
+description: >-
+  Load a booking service's participant form (Wix Get Form) in layout order. Fields bookings cannot
+  show are listed in unsupportedFields; a required one disables booking (FORM_UNSUPPORTED).
+
+inputSchema:
+  serviceId: string
+
+outputSchema:
+  fields:
+    - target: string
+      label: string
+      type: enum(STRING | EMAIL | PHONE | URL | BOOLEAN | ADDRESS)
+      required: boolean
+      longText: boolean
+      placeholder: string
+      minLength?: number
+      maxLength?: number
+      pattern?: string
+      options:
+        - value: string
+          label: string
+      address?: object  # ADDRESS only: the resolved spec (countries, layouts, learned facts), DL #52
+  unsupportedFields:
+    - target: string
+      label: string
+      wixKind: string
+      required: boolean

@@ -70,6 +70,10 @@ Keep this region always present (no `if`). After a submit, `statusMessage` holds
 
 When the form schema fails to load, `loadError` is set (e.g. `Could not load the form.`, permission-denied hints). Bind `{key.loadError}` if you want to show it, or use `if="contact.loadError"` with your own localized explanation.
 
+With a `loadError` the component has **no fields**, so every field binding (`{key.<field>.label}`, address parts, options) is empty and renders as `undefined`. Gate the form on it: `<form novalidate if="!key.isSubmitted && !key.loadError">`, with the `loadError` paragraph outside the form.
+
+`loadError` is also set when the form has a **required field this site cannot show** (for example a file upload), and to `Could not load the address layouts. Please try again later.` when the address layouts could not be fetched (it retries shortly): `This form has a required field this site cannot show: <label>.` No fields render in that case and the form cannot be submitted; see `unsupportedFields` in `forms.yaml` and `per-form-contracts.md`.
+
 ## Field `{key.<target>.error}`
 
 Client-side checks use English templates such as `Please enter a valid email address.` and `` `${label} is required.` `` (label from Wix). Server field violations the plugin classifies (Wix format errors for Email / Phone / URL) use the same English default text as the browser check and the matching `errorRule`; other server field violations use Wix’s `errorMessage` (or the owner's custom message) when present, otherwise `Invalid value`.
@@ -106,9 +110,26 @@ On a phone field, branch on both `PHONE` and `PHONE_COUNTRY` (or show `{field.er
 
 Never test `error` text (`if="contact.email.error === '…'"`); branch on `errorRule`. Write `REQUIRED` copy that still reads correctly while the field holds text (see `rich-forms.md` §3).
 
-## `getFormSummary` (bookings / participant fields)
+## Address messages
 
-`validateFormSummaryField` uses the same English validation patterns. That path is separate from the page `wixForm` UI; bookings integration is covered by the setup guide (`wix-forms-setup.md`) shipped in the `@jay-framework/wix-forms` package.
+English defaults, with the labels resolved from `config/.wix-forms.yaml` `address.labels` (else the plugin's English defaults):
+
+| When | Message |
+| ---- | ------- |
+| No country | `Country/Region is required.` |
+| Country not offered | `Choose a country from the list.` |
+| Required part empty | `<label> is required.` (e.g. `State is required.`, `Street name is required.`) |
+| Too long | `<label> must be at most <n> characters.` |
+| Postal code over 50 characters | `Zip / Postal code is too long.` |
+| Region not in the list | `Choose a <label> from the list.` (e.g. `Choose a State from the list.`, `Choose a Region from the list.`) |
+| Wix needs a part the plugin does not know | `This address cannot be accepted for <country>. Please contact us.` |
+| Any other Wix rule | `<label>: please check this value.` |
+
+Default part labels: Country/Region, Address, Address line 2, Street name, House number, City, State/Region (Region for countries without their own list), Zip / Postal code; per-country subdivision labels: US State, GB Region, CA Province, DE State, JP Prefecture, BR State, FR Region, ES Province, AU State. Override any of them, and name region codes, in config (`wix-forms-setup.md` → Address copy). A page may also ignore `label` and write its own text.
+
+## `getFormSummary` (deprecated)
+
+Deprecated: wix-bookings now reads its participant form with `wixBookings.getParticipantForm` (Get Form, real `required` flags) and validates with `validateFormField`, the same English patterns as the page form. `getFormSummary` and `validateFormSummaryField` remain for one release; see `wix-forms-setup.md`.
 
 ## Agent checklist
 

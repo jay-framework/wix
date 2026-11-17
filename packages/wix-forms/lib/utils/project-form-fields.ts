@@ -1,141 +1,212 @@
-import type { RawFieldLabel, RawFormField, RichContentNode } from '../wix-apis/get-form.js';
+import type { RawForm, RawFormField } from '../wix-apis/get-form.js';
 import type { FormSummaryField } from '../wix-apis/get-form-summary.js';
 import type {
     FieldValue,
     FormFieldInputType,
-    FormFieldOptionView,
     FormFieldSummaryView,
     FormFieldView,
+    ProjectedForm,
+    UnsupportedFieldView,
 } from '../types.js';
+import {
+    classifyFormField,
+    componentOptionsOf,
+    ignoreReasonOf,
+    readFieldKey,
+    wixKindOf,
+    type FieldKey,
+} from './classify-form-field.js';
+import { readFieldView } from './read-field-view.js';
+import { inLayoutOrder } from './layout-order.js';
+
+export { inLayoutOrder };
 import { FieldRule, type FieldCheckResult } from '../components/field-rule.js';
 import { callingCodesOf, checkPhone } from './phone-normalization.js';
+import type { AddressTemplates } from '../address/address-templates.js';
+import type { AddressConfig, LearnedFactsSnapshot } from '../address/address-types.js';
+import { resolveAddressSpec } from '../address/address-spec.js';
+import {
+    addressErrorKey,
+    isAddressValue,
+    toWixAddress,
+    validateAddressValue,
+    withLearnedFacts,
+} from '../address/address-value.js';
 
-const MULTI_SELECT_TYPES = new Set(['CHECKBOX_GROUP', 'MULTI_SELECT', 'TAGS']);
-
-function readFieldOptions(field: RawFormField): FormFieldOptionView[] {
-    const rawOptions =
-        field.view?.options ??
-        field.inputOptions?.stringOptions?.options ??
-        field.inputOptions?.arrayOptions?.options ??
-        [];
-    return rawOptions
-        .map((option) => ({
-            value: option.value ?? option.label ?? '',
-            label: option.label ?? option.value ?? '',
-        }))
-        .filter((option) => option.value);
-}
-
-function readLabelText(label: RawFieldLabel | undefined): string {
-    if (label === undefined) return '';
-    if (typeof label === 'string') return label;
-    return collectRichText(label).trim();
-}
-
-function collectRichText(node: RichContentNode): string {
-    const ownText = node.textData?.text ?? '';
-    return ownText + (node.nodes ?? []).map(collectRichText).join('');
-}
-
-function componentTypeOf(field: RawFormField): string | undefined {
-    return (
-        field.view?.fieldType ??
-        field.inputOptions?.stringOptions?.componentType ??
-        field.inputOptions?.arrayOptions?.componentType
-    );
-}
-
-/** A choice field that permits selecting more than one option (DL#41 4c). */
-function isMultiSelect(field: RawFormField): boolean {
-    if (field.inputOptions?.arrayOptions) return true;
-    return MULTI_SELECT_TYPES.has(componentTypeOf(field) ?? '');
-}
-
-/** A single boolean checkbox (consent-style) — no options, boolean-valued (DL#41 4c). */
-function isBooleanField(field: RawFormField): boolean {
-    if (field.inputOptions?.booleanOptions || field.validation?.boolean) return true;
-    return componentTypeOf(field) === 'CHECKBOX';
-}
-
-function readInputType(field: RawFormField, target: string): FormFieldInputType {
-    const options = readFieldOptions(field);
-    if (options.length > 0) {
-        return isMultiSelect(field) ? 'multiselect' : 'select';
-    }
-    if (isBooleanField(field)) {
-        return 'checkbox';
-    }
-
-    const viewFieldType = field.view?.fieldType ?? field.inputOptions?.stringOptions?.componentType;
-    if (viewFieldType === 'TEXT_AREA' || target === 'message') {
-        return 'textarea';
-    }
-
-    const format = field.validation?.string?.format;
-    if (format === 'EMAIL') return 'email';
-    if (format === 'PHONE') return 'tel';
-    if (format === 'URL') return 'url';
-    return 'text';
-}
+const SUMMARY_FIELD_TYPES = new Set(['STRING', 'EMAIL', 'PHONE', 'NUMBER', 'URL']);
 
 /** Site-level options for projecting a form for submission (DL#55 P1c). */
 export interface ProjectionOptions {
     /** Config `defaultPhoneCountry`: the country of phones typed without a country code. */
     defaultPhoneCountry?: string;
+    /** Required when the form has an address: loaded by the caller first, or the caller throws (DL #52 Q3). */
+    addressTemplates?: AddressTemplates;
+    /**
+     * Contract generation only: project an address field without its spec, so no templates are
+     * needed. Every address contract carries all eight parts anyway (DL #52 M4); the runtime
+     * render and submit still resolve the spec and fail closed when the templates fail.
+     */
+    withoutAddressSpecs?: boolean;
+    /** The learned-facts snapshot to merge into each address spec (DL #52 §1 "One spec"). */
+    learnedFacts?: LearnedFactsSnapshot;
+    /** Config `address` (locale, labels). */
+    addressConfig?: AddressConfig;
+    /** Where spec-resolution warnings go; default `console.warn`. */
+    warn?: (message: string) => void;
 }
 
+/**
+ * Per-form projection (DL #51 §1): every targeted input is either rendered (`fields`) or
+ * listed as unsupported, in the form's layout order. Only `formFields[]` is read.
+ */
 export function projectFormFields(
-    rawForm: {
-        fields?: RawFormField[];
-        formFields?: RawFormField[];
-    },
+    rawForm: RawForm,
     options: ProjectionOptions = {},
-): FormFieldView[] {
-    const rawFields = rawForm.fields ?? rawForm.formFields ?? [];
-    // DL#41 4a narrows DL#40 OQ-4: hidden fields are MARKED (hidden: true), not dropped,
-    // so a page can populate them via the `control` channel and they reach the submission.
-    return rawFields
-        .filter((field) => field.target)
-        .map((field) => {
-            const target = field.target!;
-            const label =
-                readLabelText(field.view?.label) ||
-                readLabelText(field.inputOptions?.stringOptions?.textInputOptions?.label) ||
-                target;
-            const placeholder =
-                field.view?.placeholder ??
-                field.inputOptions?.stringOptions?.textInputOptions?.placeholder ??
-                '';
-
-            const inputType = readInputType(field, target);
-            return {
-                target,
-                label,
-                inputType,
-                required: Boolean(field.validation?.required),
-                placeholder,
-                minLength: field.validation?.string?.minLength,
-                maxLength: field.validation?.string?.maxLength,
-                pattern: field.validation?.string?.pattern,
-                options: readFieldOptions(field),
-                hidden: Boolean(field.hidden),
-                ...phoneRulesOf(field, inputType, options),
-            };
+): ProjectedForm<FormFieldView> {
+    const projected: ProjectedForm<FormFieldView> = { fields: [], unsupportedFields: [] };
+    const legacyOnly = legacyOnlyFieldsOf(rawForm);
+    if (legacyOnly.length) {
+        warnLegacyOnlyForm(rawForm, legacyOnly, options.warn ?? console.warn);
+        return { fields: [], unsupportedFields: legacyOnly };
+    }
+    for (const raw of inLayoutOrder(rawForm)) {
+        const key = readFieldKey(raw);
+        if (ignoreReasonOf(key)) continue;
+        const inputType = classifyFormField(key);
+        if (!inputType) {
+            projected.unsupportedFields.push(unsupportedFieldOf(key));
+            continue;
+        }
+        if (inputType === 'address') {
+            const address = projectAddressField(key, options);
+            if (address) projected.fields.push(address);
+            else projected.unsupportedFields.push(unsupportedFieldOf(key));
+            continue;
+        }
+        projected.fields.push({
+            target: key.target!,
+            label: key.label,
+            inputType,
+            required: key.required,
+            ...readFieldView(raw, key),
+            // DL#41 4a: hidden fields are MARKED, not dropped, so a page can fill them via `control`.
+            hidden: key.hidden,
+            ...phoneRulesOf(raw, inputType, options),
         });
+    }
+    return projected;
+}
+
+/**
+ * Inputs that exist only in the legacy `fields[]` (empty `formFields[]`), as unsupported fields.
+ * Only `formFields[]` is projected; without this such a form would project to nothing, silently.
+ */
+function legacyOnlyFieldsOf(rawForm: RawForm): UnsupportedFieldView[] {
+    if (rawForm.formFields?.length) return [];
+    return (rawForm.fields ?? [])
+        .filter((field) => field.target)
+        .map((field) => ({
+            target: field.target!,
+            label: field.view?.label ?? field.target!,
+            wixKind: `LEGACY_FIELDS:${field.validation?.predefined?.format ?? 'UNKNOWN'}`,
+            required: field.validation?.required === true,
+        }));
+}
+
+function warnLegacyOnlyForm(
+    rawForm: RawForm,
+    legacyOnly: UnsupportedFieldView[],
+    warn: (message: string) => void,
+): void {
+    const targets = legacyOnly.map((field) => field.target).join(', ');
+    warn(
+        `[wix-forms] Form "${rawForm.name ?? rawForm.id}" has its inputs only in the legacy "fields[]" (its "formFields[]" is empty), which this plugin does not read: ${targets} are unsupported. Re-create the form in the Wix Forms dashboard.`,
+    );
+}
+
+/** True when the raw form has an `ADDRESS` input: only then are templates loaded (DL #52 §1). */
+export function hasAddressField(rawForm: RawForm): boolean {
+    return (rawForm.formFields ?? []).some((field) => field.inputOptions?.inputType === 'ADDRESS');
+}
+
+/**
+ * An address field with its spec, or undefined (unsupported) when hidden — the `control` channel
+ * carries strings (Q12) — or when no country can be offered (Q4).
+ */
+export function projectAddressField(
+    key: FieldKey,
+    options: ProjectionOptions,
+): FormFieldView | undefined {
+    if (options.withoutAddressSpecs) {
+        return key.hidden ? undefined : addressFieldView(key);
+    }
+    if (!options.addressTemplates) {
+        throw new Error(
+            'projectFormFields: a form with an address needs addressTemplates (load them first)',
+        );
+    }
+    if (key.hidden) return undefined;
+    const resolved = resolveAddressSpec(key.address!, options.addressTemplates, {
+        config: options.addressConfig,
+        warn: options.warn,
+    });
+    if ('unsupported' in resolved) {
+        (options.warn ?? console.warn)(
+            `[wix-forms] address field "${key.target}": ${resolved.unsupported}.`,
+        );
+        return undefined;
+    }
+    const address = options.learnedFacts
+        ? withLearnedFacts(resolved, options.learnedFacts)
+        : resolved;
+    return { ...addressFieldView(key), address };
+}
+
+function addressFieldView(key: FieldKey): FormFieldView {
+    return {
+        target: key.target!,
+        label: key.label,
+        inputType: 'address',
+        required: key.required,
+        placeholder: '',
+        options: [],
+    };
+}
+
+/**
+ * Every built-in error of a value, keyed by target, or by `<target>/<part>` for an address
+ * (DL #52 §1): the keys both Wix APIs use for located errors.
+ */
+export function fieldErrorsOf(field: FormFieldView, value: FieldValue): Record<string, string> {
+    if (field.inputType === 'address' && field.address) {
+        const normalised = toWixAddress(field.address, isAddressValue(value) ? value : {});
+        const errors = validateAddressValue(field.address, normalised, field.required);
+        return Object.fromEntries(
+            Object.entries(errors).map(([part, message]) => [
+                addressErrorKey(field.target, part as keyof typeof errors),
+                message as string,
+            ]),
+        );
+    }
+    const message = validateFormField(field, value);
+    return message ? { [field.target]: message } : {};
 }
 
 /**
  * `phone` only on tel fields, and only when a rule is known (DL#55 P1c). A Wix Phone field's own
- * default country wins over config `defaultPhoneCountry`.
+ * default country wins over config `defaultPhoneCountry`. Read from `formFields[]` (DL #51), whose
+ * `phoneInputOptions.defaultCountryCode` / `stringOptions.validation.phoneOptions` mirror the
+ * legacy paths DL#55 captured (DL#55 Gap 2).
  */
-function phoneRulesOf(
-    field: RawFormField,
+export function phoneRulesOf(
+    raw: RawFormField,
     inputType: FormFieldInputType,
     { defaultPhoneCountry }: ProjectionOptions,
 ): Pick<FormFieldView, 'phone'> {
     if (inputType !== 'tel') return {};
-    const defaultCountry = field.view?.defaultCountry || defaultPhoneCountry;
-    const allowedCountries = field.validation?.string?.phoneOptions?.allowedCountryCodes ?? [];
+    const defaultCountry = componentOptionsOf(raw)?.defaultCountryCode || defaultPhoneCountry;
+    const allowedCountries =
+        raw.inputOptions?.stringOptions?.validation?.phoneOptions?.allowedCountryCodes ?? [];
     const phone = {
         ...(defaultCountry ? { defaultCountry } : {}),
         ...(allowedCountries.length ? { allowedCountries } : {}),
@@ -143,26 +214,58 @@ function phoneRulesOf(
     return Object.keys(phone).length ? { phone } : {};
 }
 
+/** Labels of required inputs with no target (DL #51 row 2): Wix requires them, nothing can send them. */
+export function requiredUntargetedLabels(rawForm: RawForm): string[] {
+    return (rawForm.formFields ?? [])
+        .map(readFieldKey)
+        .filter((key) => key.required && ignoreReasonOf(key) === 'no-target')
+        .map((key) => key.label);
+}
+
+export function unsupportedFieldOf(key: FieldKey): UnsupportedFieldView {
+    return {
+        target: key.target!,
+        label: key.label,
+        wixKind: wixKindOf(key),
+        required: key.required,
+    };
+}
+
+/**
+ * @deprecated Since DL #51 (Phase 1b): the Summary API has no `required`; bookings reads Get Form.
+ * Kept types are rendered as before; any other targeted field is listed as unsupported.
+ */
 export function projectFormSummaryFields(
     fields: FormSummaryField[] | undefined,
-): FormFieldSummaryView[] {
-    const projected = (fields ?? [])
-        .filter((field) => !field.deleted)
-        .filter(
-            (field) =>
-                field.type && ['STRING', 'EMAIL', 'PHONE', 'NUMBER', 'URL'].includes(field.type),
-        )
-        .map((field) => ({
-            target: field.target ?? field.id ?? '',
-            label: field.label ?? field.target ?? 'Field',
-            type: (field.type ?? 'STRING') as FormFieldSummaryView['type'],
-            required: Boolean(field.required),
-        }))
-        .filter((field) => field.target);
-
+    { defaultPhoneCountry }: ProjectionOptions = {},
+): ProjectedForm<FormFieldSummaryView> {
+    const projected: ProjectedForm<FormFieldSummaryView> = { fields: [], unsupportedFields: [] };
+    for (const field of fields ?? []) {
+        if (field.deleted || !field.target) continue;
+        const label = field.label ?? field.target;
+        if (field.type && SUMMARY_FIELD_TYPES.has(field.type)) {
+            projected.fields.push({
+                target: field.target,
+                label,
+                type: field.type as FormFieldSummaryView['type'],
+                required: Boolean(field.required),
+                ...(field.type === 'PHONE' && defaultPhoneCountry
+                    ? { phone: { defaultCountry: defaultPhoneCountry } }
+                    : {}),
+            });
+        } else {
+            projected.unsupportedFields.push({
+                target: field.target,
+                label,
+                wixKind: field.type ?? '?',
+                required: 'unknown',
+            });
+        }
+    }
     return projected;
 }
 
+/** @deprecated Since DL #51 (Phase 1b): use `validateFormField`. */
 export function validateFormSummaryField(field: FormFieldSummaryView, value: string): string {
     const trimmed = (value ?? '').trim();
     if (field.required && !trimmed) {
@@ -177,8 +280,8 @@ export function validateFormSummaryField(field: FormFieldSummaryView, value: str
     if (field.type === 'URL' && !/^https?:\/\/.+/.test(trimmed)) {
         return 'Please enter a valid URL.';
     }
-    if (field.type === 'PHONE' && !/^[+()\-\s\d]{7,}$/.test(trimmed)) {
-        return 'Please enter a valid phone number.';
+    if (field.type === 'PHONE') {
+        return summaryPhoneMessage(field, trimmed);
     }
     if (field.type === 'NUMBER' && !/^-?\d+(\.\d+)?$/.test(trimmed)) {
         return 'Please enter a valid number.';
@@ -202,6 +305,7 @@ export function checkFormField(field: FormFieldView, value: FieldValue): FieldCh
         const empty = !Array.isArray(value) || value.length === 0;
         return field.required && empty ? requiredFailure(field) : PASSED;
     }
+    if (field.inputType === 'address') return checkAddressField(field, value);
 
     const trimmed = (typeof value === 'string' ? value : '').trim();
     if (field.required && !trimmed) {
@@ -214,6 +318,16 @@ export function checkFormField(field: FormFieldView, value: FieldValue): FieldCh
 }
 
 const PASSED: FieldCheckResult = { rule: FieldRule.NONE, message: '' };
+
+/** The first part error; REQUIRED for a missing part, PATTERN for any other address rule. */
+function checkAddressField(field: FormFieldView, value: FieldValue): FieldCheckResult {
+    const [message] = Object.values(fieldErrorsOf(field, value));
+    if (!message) return PASSED;
+    return {
+        rule: message.endsWith(' is required.') ? FieldRule.REQUIRED : FieldRule.PATTERN,
+        message,
+    };
+}
 
 function requiredFailure(field: FormFieldView): FieldCheckResult {
     return failure(FieldRule.REQUIRED, field);
@@ -245,7 +359,7 @@ export function defaultFieldMessage(rule: FieldRule, field: FormFieldView): stri
         case FieldRule.URL:
             return 'Please enter a valid URL.';
         case FieldRule.PHONE:
-            return 'Please enter a valid phone number.';
+            return INVALID_PHONE_MESSAGE;
         case FieldRule.PATTERN:
             return `${field.label} is not in the expected format.`;
         case FieldRule.PHONE_COUNTRY:
@@ -253,6 +367,17 @@ export function defaultFieldMessage(rule: FieldRule, field: FormFieldView): stri
         default:
             return undefined;
     }
+}
+
+const INVALID_PHONE_MESSAGE = 'Please enter a valid phone number.';
+
+/** Bookings participant phones are judged by the same `checkPhone` as forms (DL #58). */
+function summaryPhoneMessage(field: FormFieldSummaryView, trimmed: string): string {
+    const phone = checkPhone(trimmed, field.phone);
+    if (phone.rule === FieldRule.PHONE) return INVALID_PHONE_MESSAGE;
+    if (phone.rule === FieldRule.PHONE_COUNTRY)
+        return phoneCountryMessage(field.phone?.allowedCountries);
+    return '';
 }
 
 function phoneCountryMessage(allowedCountries: string[] | undefined): string {

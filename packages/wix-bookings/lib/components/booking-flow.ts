@@ -4,15 +4,17 @@ import {
     RenderPipeline,
     type Signals,
 } from '@jay-framework/fullstack-component';
-import { createSignal, Props } from '@jay-framework/component';
+import { createSignal, Props, useReactive } from '@jay-framework/component';
 import {
     BookingFailure,
     ServicesFailure,
     SlotsFailure,
     type BookingFlowContract,
     type BookingFlowFastViewState,
+    type AddressOfBookingFlowViewState,
     type BookingFlowRefs,
     type BookingFlowSlowViewState,
+    type FormFieldOfBookingFlowViewState,
     type ServiceOfBookingFlowViewState,
     type SlotOfBookingFlowViewState,
 } from '../contracts/booking-flow.jay-contract';
@@ -25,9 +27,28 @@ import type {
     BookingServiceType,
     BookingServiceView,
     BookingSlotView,
+    CreateBookingOutcome,
+    ParticipantFormValue,
 } from '../types.js';
-import { createBooking, listSlots } from '../actions/bookings-actions.js';
-import { getFormSummary, validateFormSummaryField } from '@jay-framework/wix-forms';
+import { createBooking, getParticipantForm, listSlots } from '../actions/bookings-actions.js';
+import {
+    blockingFieldLabels,
+    normalisedAddress,
+    participantFieldErrors,
+    postedParticipantValues,
+    toFormFieldView,
+} from '../utils/participant-form.js';
+import {
+    ADDRESS_PARTS,
+    addressViewState,
+    fieldErrorsOf,
+    initialAddressValue,
+    nextAddressValue,
+    splitErrorKey,
+    withLearnedFacts,
+    type AddressPart,
+    type AddressValue,
+} from '@jay-framework/wix-forms';
 import {
     SLOW_RENDER_TTL,
     SLOW_RENDER_GRACE,
@@ -37,13 +58,9 @@ import {
     bookingStateOf,
     describeBookingError,
     describeServicesError,
+    describeUnsupportedForm,
+    FORM_UNAVAILABLE_MESSAGE,
 } from '../utils/booking-outcome.js';
-
-const DEFAULT_PARTICIPANT_FIELDS: BookingFormFieldView[] = [
-    { target: 'first_name', label: 'First Name', type: 'STRING', required: true },
-    { target: 'last_name', label: 'Last Name', type: 'STRING', required: true },
-    { target: 'email', label: 'Email', type: 'EMAIL', required: true },
-];
 
 interface BookingFlowCarryForward {
     services: BookingServiceView[];
@@ -58,6 +75,10 @@ function toBookingService(service: ServiceOfBookingFlowViewState): BookingServic
     };
 }
 
+function toContractFormField(field: BookingFormFieldView): FormFieldOfBookingFlowViewState {
+    return { target: field.target, label: field.label, type: field.type, required: field.required };
+}
+
 function toContractSlot(slot: BookingSlotView): SlotOfBookingFlowViewState {
     return {
         id: slot.id,
@@ -67,6 +88,46 @@ function toContractSlot(slot: BookingSlotView): SlotOfBookingFlowViewState {
         scheduleId: slot.scheduleId ?? '',
         eventId: slot.eventId ?? '',
     };
+}
+
+/** No address field (DL #52 §2): every part hidden, nothing to choose. */
+function absentAddressViewState(): AddressOfBookingFlowViewState {
+    const part = {
+        shown: false,
+        required: false,
+        order: 0,
+        label: '',
+        value: '',
+        error: '',
+        invalid: false,
+    };
+    return {
+        present: false,
+        label: '',
+        required: false,
+        error: '',
+        invalid: false,
+        country: { label: '', value: '', error: '', invalid: false, options: [] },
+        addressLine: { ...part, maxLength: 0 },
+        addressLine2: { ...part, maxLength: 0 },
+        streetName: { ...part, maxLength: 0 },
+        streetNumber: { ...part, maxLength: 0 },
+        city: { ...part, maxLength: 0 },
+        subdivision: { ...part, listed: false, options: [] },
+        postalCode: { ...part, maxLength: 0 },
+    } as AddressOfBookingFlowViewState;
+}
+
+function toAddressViewState(
+    field: BookingFormFieldView | null,
+    value: AddressValue,
+    errors: Record<string, string>,
+): AddressOfBookingFlowViewState {
+    if (!field?.address) return absentAddressViewState();
+    return {
+        present: true,
+        ...addressViewState(toFormFieldView(field), value, errors),
+    } as unknown as AddressOfBookingFlowViewState;
 }
 
 async function renderSlowlyChanging(_props: object, bookings: WixBookingsService) {
@@ -107,6 +168,7 @@ async function renderFastChanging(_props: object, carryForward: BookingFlowCarry
             slotsMessage: '',
             slotsFailure: SlotsFailure.NONE,
             formFields: [],
+            address: absentAddressViewState(),
             formLoading: false,
             isBooking: false,
             bookingStatus: '',
@@ -150,6 +212,61 @@ function BookingFlowInteractive(
     const [bookingError, setBookingError] = createSignal('');
     const [bookingFailure, setBookingFailure] = createSignal(BookingFailure.NONE);
     const [isConfirmed, setIsConfirmed] = createSignal(false);
+    // The address (DL #52 §3): `addressField().address` is the one spec every consumer reads.
+    const [addressField, setAddressField] = createSignal<BookingFormFieldView | null>(null);
+    const [addressValue, setAddressValue] = createSignal<AddressValue>({});
+    const [addressErrors, setAddressErrors] = createSignal<Record<string, string>>({});
+
+    const reactive = useReactive();
+
+    /** The initial country is shown once the new options are rendered (a select needs them). */
+    function resetAddress(field: BookingFormFieldView | null) {
+        const initial = field?.address ? initialAddressValue(field.address) : {};
+        setAddressField(field);
+        setAddressValue(initial);
+        setAddressErrors({});
+        void reactive.toBeClean().then(() => reflectAddressInputs(initial));
+    }
+
+    function onAddressInput(part: AddressPart, value: string) {
+        const field = addressField();
+        if (!field?.address) return;
+        const next = nextAddressValue(field.address, addressValue(), part, value);
+        setAddressValue(next);
+        if (part === 'country') reflectAddressInputs(next);
+        const key = `${field.target}/${part}`;
+        if (addressErrors()[key] && !addressErrorsNow()[key]) clearAddressError(key);
+    }
+
+    /** "Late to complain": blur shows the part's current error, if any. */
+    function onAddressBlur(part: AddressPart) {
+        const field = addressField();
+        if (!field) return;
+        const key = `${field.target}/${part}`;
+        const message = addressErrorsNow()[key] ?? '';
+        setAddressErrors((current) => ({ ...current, [key]: message }));
+    }
+
+    function addressErrorsNow(): Record<string, string> {
+        const field = addressField();
+        return field ? fieldErrorsOf(toFormFieldView(field), addressValue()) : {};
+    }
+
+    function clearAddressError(key: string) {
+        setAddressErrors((current) => ({ ...current, [key]: '' }));
+    }
+
+    /** Native inputs keep their DOM text: show what the store now holds. */
+    function reflectAddressInputs(value: AddressValue) {
+        const addressRefs = refs.address as Record<string, any> | undefined;
+        for (const part of ADDRESS_PARTS) {
+            for (const channel of ['input', 'text']) {
+                void addressRefs?.[part]?.[channel]?.exec$?.((element: HTMLInputElement) => {
+                    element.value = value[part] ?? '';
+                });
+            }
+        }
+    }
 
     function resetBookingMessages() {
         setBookingStatus('');
@@ -209,45 +326,47 @@ function BookingFlowInteractive(
         setShowForm(true);
         setFormLoading(true);
         setFormFields([]);
+        resetAddress(null);
 
         try {
-            if (!service.formId) {
-                setFormFields(DEFAULT_PARTICIPANT_FIELDS);
+            const participantForm = await getParticipantForm({ serviceId: service.id });
+            const blocking = blockingFieldLabels(participantForm);
+            if (blocking.length) {
+                failBooking(BookingFailure.FORM_UNSUPPORTED, describeUnsupportedForm(blocking));
+                setShowForm(false);
                 return;
             }
-
-            const result = await getFormSummary({ formId: service.formId });
-            setFormFields(
-                result.fields.map((field) => ({
-                    target: field.target,
-                    label: field.label,
-                    type: field.type,
-                    required: field.required,
-                })),
-            );
+            const fields = participantForm.fields as BookingFormFieldView[];
+            setFormFields(fields.filter((field) => field.type !== 'ADDRESS'));
+            resetAddress(fields.find((field) => field.type === 'ADDRESS') ?? null);
         } catch (error) {
-            const message =
-                error instanceof Error ? error.message : 'Could not load participant form fields.';
-            failBooking(BookingFailure.FORM_UNAVAILABLE, message);
+            console.warn('[wix-bookings] participant form could not load:', error);
+            failBooking(BookingFailure.FORM_UNAVAILABLE, FORM_UNAVAILABLE_MESSAGE);
             setShowForm(false);
         } finally {
             setFormLoading(false);
         }
     }
 
-    async function readFormValues(): Promise<Record<string, string>> {
-        const formValues: Record<string, string> = {};
+    async function readFormValues(): Promise<Record<string, ParticipantFormValue>> {
+        const formValues: Record<string, ParticipantFormValue> = {};
         const reads =
             refs.formFields?.formInputs?.map((input, field) =>
                 input.exec$((element) => ({
                     target: field.target,
-                    value: (element as HTMLInputElement).value,
+                    value:
+                        field.type === 'BOOLEAN'
+                            ? (element as HTMLInputElement).checked
+                            : (element as HTMLInputElement).value,
                 })),
             ) ?? [];
         const resolved = await Promise.all(reads);
         for (const entry of resolved) {
             formValues[entry.target] = entry.value;
         }
+        const field = addressField();
+        const address = field ? normalisedAddress(field, addressValue()) : undefined;
+        if (field && address) formValues[field.target] = address;
         return formValues;
     }
 
@@ -261,13 +380,15 @@ function BookingFlowInteractive(
         resetBookingMessages();
 
         const formValues = await readFormValues();
-        const fields = formFields();
-        for (const field of fields) {
-            const validationError = validateFormSummaryField(field, formValues[field.target] ?? '');
-            if (validationError) {
-                failBooking(BookingFailure.VALIDATION, validationError);
-                return;
-            }
+        const partErrors = addressErrorsNow();
+        setAddressErrors(partErrors);
+        const [validationError] = [
+            ...Object.values(participantFieldErrors(formFields(), formValues)),
+            ...Object.values(partErrors),
+        ];
+        if (validationError) {
+            failBooking(BookingFailure.VALIDATION, validationError);
+            return;
         }
 
         setIsBooking(true);
@@ -282,25 +403,81 @@ function BookingFlowInteractive(
                     scheduleId: slot.scheduleId,
                     eventId: slot.eventId,
                 },
-                formValues,
+                formValues: postedParticipantValues(formFields(), formValues),
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                 siteOrigin: window.location.origin,
             });
 
-            if (result.outcome === 'redirect') {
-                window.location.href = result.redirectUrl;
-                return;
-            }
-
-            setBookingStatus('Booking confirmed!');
-            setIsConfirmed(true);
-            setShowForm(false);
-            setSelectedSlot(null);
+            showBookingOutcome(result);
         } catch (error) {
             const { failure, message } = describeBookingError(error);
             failBooking(failure, message);
         } finally {
             setIsBooking(false);
+        }
+    }
+
+    function showBookingOutcome(result: CreateBookingOutcome) {
+        switch (result.outcome) {
+            case 'redirect':
+                window.location.href = result.redirectUrl;
+                return;
+            case 'confirmed':
+                setBookingStatus('Booking confirmed!');
+                setIsConfirmed(true);
+                setShowForm(false);
+                setSelectedSlot(null);
+                return;
+            case 'invalid':
+                showAddressRejection(result);
+                failBooking(BookingFailure.VALIDATION, firstFieldError(result.fieldErrors));
+                return;
+            case 'formUnavailable':
+                failBooking(BookingFailure[result.failure], result.message);
+                setShowForm(false);
+                return;
+            default: {
+                const unhandled: never = result;
+                throw new Error(`Unknown booking outcome: ${JSON.stringify(unhandled)}`);
+            }
+        }
+    }
+
+    /** The message of the first rendered field with an error; any message when none is rendered. */
+    function firstFieldError(fieldErrors: Record<string, string>): string {
+        const rendered = formFields().find((field) => fieldErrors[field.target]);
+        return rendered ? fieldErrors[rendered.target] : (Object.values(fieldErrors)[0] ?? '');
+    }
+
+    /**
+     * Part errors go to the address; learned facts replace the spec through `withLearnedFacts`,
+     * keyed by the country the server says it learned them for (review m7), so a country changed
+     * while the request was in flight cannot receive them. A learned list clears the stale code.
+     */
+    function showAddressRejection(result: Extract<CreateBookingOutcome, { outcome: 'invalid' }>) {
+        const field = addressField();
+        if (!field?.address) return;
+        const partErrors = Object.fromEntries(
+            Object.entries(result.fieldErrors).filter(
+                ([key]) => splitErrorKey(key).target === field.target && key !== field.target,
+            ),
+        );
+        setAddressErrors(partErrors);
+        const country = result.factsCountry?.[field.target];
+        const listKey = `${field.target}/subdivision`;
+        const options = result.fieldOptions?.[listKey];
+        const revealed = result.revealedParts?.[field.target];
+        if (!country || (!options && !revealed)) return;
+        setAddressField({
+            ...field,
+            address: withLearnedFacts(field.address, {
+                ...(options ? { subdivisionsOf: { [country]: options } } : {}),
+                ...(revealed ? { revealedPartsOf: { [country]: revealed } } : {}),
+            }),
+        });
+        if (options && addressValue().country === country) {
+            setAddressValue({ ...addressValue(), subdivision: '' });
+            reflectAddressInputs(addressValue());
         }
     }
 
@@ -317,6 +494,7 @@ function BookingFlowInteractive(
         setSlotsFailure(SlotsFailure.NONE);
         setHasSlots(false);
         setFormFields([]);
+        resetAddress(null);
     }
 
     refs.services?.serviceButtons?.onclick(({ coordinate }) => {
@@ -334,6 +512,18 @@ function BookingFlowInteractive(
             void onSelectSlot(slot);
         }
     });
+
+    for (const part of ADDRESS_PARTS) {
+        const partRefs = (refs.address as Record<string, any> | undefined)?.[part];
+        for (const channel of ['input', 'text']) {
+            const ref = partRefs?.[channel];
+            const read = ({ event }: { event: Event }) =>
+                onAddressInput(part, (event.target as HTMLInputElement).value ?? '');
+            ref?.oninput?.(read);
+            ref?.onchange?.(read);
+            ref?.onblur?.(() => onAddressBlur(part));
+        }
+    }
 
     refs.bookButton?.onclick(() => {
         void onConfirmBooking();
@@ -359,7 +549,8 @@ function BookingFlowInteractive(
             slotsMessage: slotsMessage(),
             slotsFailure: slotsFailure(),
             hasSlots: hasSlots(),
-            formFields: formFields(),
+            formFields: formFields().map(toContractFormField),
+            address: toAddressViewState(addressField(), addressValue(), addressErrors()),
             formLoading: formLoading(),
             isBooking: isBooking(),
             bookingStatus: bookingStatus(),

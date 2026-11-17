@@ -22,7 +22,7 @@ actions:
 validators:
   - name: wix-forms-bindings
     handler: validateWixFormBindings
-    description: Errors on the retired `wix-form` contract / generic `fields` binding and unknown field, channel or option refs; warns on unlabeled inputs, error text inside a label, native required without novalidate, a form without a submitButton ref, control on multiselect options, a PHONE error branch without PHONE_COUNTRY, and a per-field error element that is itself live (aria-live or role alert/status/log), which is announced twice
+    description: Errors on the retired `wix-form` contract / generic `fields` binding and unknown field, channel or option refs; warns on unlabeled inputs, error text inside a label, native required without novalidate, a form without a submitButton ref, control on multiselect options, a PHONE error branch without PHONE_COUNTRY, and a per-field error element that is itself live (aria-live or role alert/status/log), which is announced twice; errors on an address ref to an unknown part and on any address part without its input(s) (DL #52 rule 6)
 
 setup: setupWixForms
 agentkit: generateWixFormsAgentKit

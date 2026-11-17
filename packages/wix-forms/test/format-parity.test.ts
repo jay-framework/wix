@@ -136,12 +136,12 @@ describe('format parity with Wix (DL#55 P1)', () => {
         expect(checkFormField(fieldOf(target), value).rule).toBe(FieldRule.NONE);
     });
 
-    // (d) Regression guard: the bookings participant check keeps today's rules (Q20).
+    // (d) The bookings participant check: phones follow checkPhone since DL #58 (was Q20's regex).
     it.each([
-        ['PHONE', '054.123.4567', 'Please enter a valid phone number.'],
+        ['PHONE', '054.123.4567', 'Please include the country code, starting with +.'],
         ['PHONE', '12', 'Please enter a valid phone number.'],
         ['URL', 'HTTPS://EXAMPLE.COM', 'Please enter a valid URL.'],
-    ] as const)('should keep the bookings %s rule refusing "%s"', (type, value, message) => {
+    ] as const)('should have the bookings %s rule refuse "%s"', (type, value, message) => {
         const field: FormFieldSummaryView = { target: 'f', label: 'F', type, required: false };
         expect(validateFormSummaryField(field, value)).toBe(message);
     });

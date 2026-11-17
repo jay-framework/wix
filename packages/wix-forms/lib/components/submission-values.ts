@@ -10,10 +10,22 @@
  * DL#41 4c) so boolean checkboxes and multi-select arrays survive submission.
  */
 
-import type { FieldValue, FormFieldInputType, FormFieldView } from '../types.js';
+import type {
+    FieldValue,
+    FormFieldInputType,
+    FormFieldSummaryView,
+    FormFieldView,
+    PhoneRules,
+} from '../types.js';
 import { checkFormField } from '../utils/project-form-fields.js';
 import { checkPhone } from '../utils/phone-normalization.js';
 import { FieldRule, type FieldCheckResult } from './field-rule.js';
+import {
+    initialAddressValue,
+    isAddressValue,
+    isBlankAddress,
+    toWixAddress,
+} from '../address/address-value.js';
 
 /** The per-field value store, keyed by `field.target`. */
 export type FieldStore = Record<string, FieldValue>;
@@ -22,6 +34,8 @@ export type FieldStore = Record<string, FieldValue>;
 export function emptyValueFor(field: FormFieldView): FieldValue {
     if (field.inputType === 'checkbox') return false;
     if (field.inputType === 'multiselect') return [];
+    if (field.inputType === 'address')
+        return field.address ? initialAddressValue(field.address) : {};
     return '';
 }
 
@@ -37,9 +51,21 @@ export function projectSubmissionValues(
     const values: Record<string, FieldValue> = {};
     for (const field of fields) {
         const raw = field.target in store ? store[field.target] : emptyValueFor(field);
+        if (field.inputType === 'address') {
+            const address = submittedAddressOf(field, raw);
+            if (address) values[field.target] = address;
+            continue;
+        }
         values[field.target] = submittedValueOf(field, raw);
     }
     return values;
+}
+
+/** An optional blank address is left out; any other is sent as Wix takes it (DL #52 §1). */
+function submittedAddressOf(field: FormFieldView, raw: FieldValue): FieldValue | undefined {
+    const address = isAddressValue(raw) ? raw : {};
+    if (!field.required && isBlankAddress(address)) return undefined;
+    return field.address ? toWixAddress(field.address, address) : undefined;
 }
 
 /** Visible text-like kinds whose surrounding whitespace is not part of the value (DL #57 T). */
@@ -179,14 +205,31 @@ export function toPostedValues(
     for (const field of fields) {
         const value = posted[field.target];
         if (field.inputType !== 'tel' || typeof value !== 'string') continue;
-        posted[field.target] = postedPhone(value, field);
+        posted[field.target] = postedPhone(value, field.phone);
     }
     return posted;
 }
 
-function postedPhone(value: string, field: FormFieldView): string {
+/**
+ * The bookings participant values to post (DL #58): every PHONE value `checkPhone` accepts is
+ * sent as E.164, which createBooking requires; every other value passes through.
+ */
+export function toPostedSummaryValues(
+    fields: FormFieldSummaryView[],
+    values: Record<string, string>,
+): Record<string, string> {
+    const posted = { ...values };
+    for (const field of fields) {
+        const value = posted[field.target];
+        if (field.type !== 'PHONE' || typeof value !== 'string') continue;
+        posted[field.target] = postedPhone(value, field.phone);
+    }
+    return posted;
+}
+
+function postedPhone(value: string, rules: PhoneRules | undefined): string {
     const trimmed = value.trim();
     if (!trimmed) return trimmed;
-    const phone = checkPhone(trimmed, field.phone);
+    const phone = checkPhone(trimmed, rules);
     return phone.rule === FieldRule.NONE ? phone.e164 : value;
 }

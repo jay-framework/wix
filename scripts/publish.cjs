@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const { execSync } = require('child_process');
+const path = require('path');
 const readline = require('readline');
 
 function askOtp(prompt) {
@@ -22,7 +23,7 @@ function getPackages() {
     .filter((pkg) => {
       if (pkg.location === '.') return false;
       try {
-        const pkgJson = require(require('path').resolve(pkg.location, 'package.json'));
+        const pkgJson = require(path.resolve(pkg.location, 'package.json'));
         return !pkgJson.private;
       } catch {
         return false;
@@ -97,4 +98,9 @@ async function main() {
   if (failed > 0) process.exit(1);
 }
 
-main();
+if (require.main === module) {
+  main().catch((err) => {
+    console.error(err.message);
+    process.exit(1);
+  });
+}
