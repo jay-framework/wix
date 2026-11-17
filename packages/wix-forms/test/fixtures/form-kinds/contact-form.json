@@ -1,0 +1,546 @@
+{
+  "form": {
+    "id": "6bf38693-c02a-4802-8dcb-270f7193b3d2",
+    "fields": [
+      {
+        "id": "37c474c4-c2f5-42eb-f2e9-ad3113516244",
+        "pii": false,
+        "hidden": false,
+        "view": {
+          "nextText": "Next",
+          "fieldType": "SUBMIT_BUTTON",
+          "submitText": "Submit",
+          "previousText": "Back"
+        },
+        "readOnly": false
+      },
+      {
+        "id": "d218ec18-fa60-4cc3-936f-e75325cd5904",
+        "target": "first_name_5820",
+        "validation": {
+          "string": {
+            "format": "UNDEFINED",
+            "enum": []
+          },
+          "required": true
+        },
+        "pii": true,
+        "hidden": false,
+        "view": {
+          "questionImageResize": "cover",
+          "label": "First name",
+          "questionImagePlacement": "top",
+          "hideLabel": false,
+          "fieldType": "CONTACTS_FIRST_NAME",
+          "questionImageAlignment": "center"
+        },
+        "readOnly": false
+      },
+      {
+        "id": "1b59ef7a-8465-4e9c-bbea-4179079034e3",
+        "target": "email_7e06",
+        "validation": {
+          "string": {
+            "format": "EMAIL",
+            "enum": []
+          },
+          "required": true
+        },
+        "pii": true,
+        "hidden": false,
+        "view": {
+          "questionImageResize": "cover",
+          "label": "Email",
+          "questionImagePlacement": "top",
+          "hideLabel": false,
+          "fieldType": "CONTACTS_EMAIL",
+          "questionImageAlignment": "center"
+        },
+        "readOnly": false
+      },
+      {
+        "id": "143d2ecb-e1a8-41d1-4e91-e0db96260739",
+        "target": "interests",
+        "validation": {
+          "array": {
+            "items": {
+              "string": {
+                "format": "UNDEFINED",
+                "enum": ["News", "Offers", "Events"]
+              }
+            }
+          },
+          "required": true
+        },
+        "pii": false,
+        "hidden": false,
+        "view": {
+          "questionImageResize": "cover",
+          "label": "Interests",
+          "questionImagePlacement": "top",
+          "options": [
+            {
+              "id": "84ab701f-09db-41b7-7ec3-6e516ec9af9e",
+              "label": "News",
+              "value": "News",
+              "isLabelHidden": false
+            },
+            {
+              "id": "a2fd6b7f-97e8-49bd-d01d-0576ff3faf21",
+              "label": "Offers",
+              "value": "Offers",
+              "isLabelHidden": false
+            },
+            {
+              "id": "018eb71a-2db5-4118-2135-ccb94310a9c1",
+              "label": "Events",
+              "value": "Events",
+              "isLabelHidden": false
+            }
+          ],
+          "addOther": false,
+          "hideLabel": false,
+          "numberOfColumns": 1.0,
+          "fieldType": "CHECKBOX_GROUP",
+          "questionImageAlignment": "center"
+        },
+        "readOnly": false
+      },
+      {
+        "id": "f187d86b-0e25-4f55-6ee8-7c60c8e7fb50",
+        "target": "country",
+        "validation": {
+          "string": {
+            "format": "UNDEFINED",
+            "enum": ["Israel", "United States"]
+          },
+          "required": false
+        },
+        "pii": false,
+        "hidden": false,
+        "view": {
+          "label": "Country",
+          "options": [
+            {
+              "id": "f52714f1-63c2-4e1c-6949-ab612b5a0c62",
+              "label": "Israel",
+              "value": "Israel"
+            },
+            {
+              "id": "4811b36f-2e93-49b1-577b-bf944141d37c",
+              "label": "United States",
+              "value": "United States"
+            }
+          ],
+          "addOther": false,
+          "hideLabel": false,
+          "fieldType": "DROPDOWN"
+        },
+        "readOnly": false
+      },
+      {
+        "id": "5a50059c-287f-41d9-327d-67af419ea58e",
+        "target": "form_field_aa5f",
+        "validation": {
+          "boolean": {
+            "enum": [true]
+          },
+          "required": true
+        },
+        "pii": false,
+        "hidden": false,
+        "view": {
+          "label": {
+            "nodes": [
+              {
+                "id": "z6ngw3",
+                "type": "PARAGRAPH",
+                "nodes": [
+                  {
+                    "id": "",
+                    "type": "TEXT",
+                    "nodes": [],
+                    "textData": {
+                      "text": "I agree to be contacted",
+                      "decorations": []
+                    }
+                  }
+                ],
+                "paragraphData": {
+                  "textStyle": {
+                    "textAlignment": "AUTO"
+                  }
+                }
+              }
+            ],
+            "documentStyle": {}
+          },
+          "fieldType": "CHECKBOX",
+          "defaultValue": false
+        },
+        "readOnly": false
+      }
+    ],
+    "formFields": [
+      {
+        "id": "37c474c4-c2f5-42eb-f2e9-ad3113516244",
+        "hidden": false,
+        "identifier": "SUBMIT_BUTTON",
+        "fieldType": "DISPLAY",
+        "displayOptions": {
+          "displayFieldType": "PAGE_NAVIGATION",
+          "pageNavigationOptions": {
+            "nextPageText": "Next",
+            "previousPageText": "Back",
+            "submitText": "Submit"
+          }
+        }
+      },
+      {
+        "id": "d218ec18-fa60-4cc3-936f-e75325cd5904",
+        "hidden": false,
+        "identifier": "CONTACTS_FIRST_NAME",
+        "fieldType": "INPUT",
+        "inputOptions": {
+          "target": "first_name_5820",
+          "pii": true,
+          "required": true,
+          "inputType": "STRING",
+          "contactMapping": {
+            "contactField": "FIRST_NAME"
+          },
+          "readOnly": false,
+          "stringOptions": {
+            "validation": {
+              "format": "UNKNOWN_FORMAT",
+              "enum": []
+            },
+            "componentType": "TEXT_INPUT",
+            "textInputOptions": {
+              "label": "First name",
+              "showLabel": true,
+              "mediaSettings": {
+                "imagePosition": "ABOVE",
+                "imageAlignment": "CENTER",
+                "imageFit": "COVER"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "1b59ef7a-8465-4e9c-bbea-4179079034e3",
+        "hidden": false,
+        "identifier": "CONTACTS_EMAIL",
+        "fieldType": "INPUT",
+        "inputOptions": {
+          "target": "email_7e06",
+          "pii": true,
+          "required": true,
+          "inputType": "STRING",
+          "contactMapping": {
+            "contactField": "EMAIL",
+            "emailInfo": {
+              "tag": "UNTAGGED"
+            }
+          },
+          "readOnly": false,
+          "stringOptions": {
+            "validation": {
+              "format": "EMAIL",
+              "enum": []
+            },
+            "componentType": "TEXT_INPUT",
+            "textInputOptions": {
+              "label": "Email",
+              "showLabel": true,
+              "mediaSettings": {
+                "imagePosition": "ABOVE",
+                "imageAlignment": "CENTER",
+                "imageFit": "COVER"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "143d2ecb-e1a8-41d1-4e91-e0db96260739",
+        "hidden": false,
+        "identifier": "CHECKBOX_GROUP",
+        "fieldType": "INPUT",
+        "inputOptions": {
+          "target": "interests",
+          "pii": false,
+          "required": true,
+          "inputType": "ARRAY",
+          "readOnly": false,
+          "arrayOptions": {
+            "validation": {
+              "items": {
+                "itemType": "STRING",
+                "stringOptions": {
+                  "format": "UNKNOWN_FORMAT",
+                  "enum": ["News", "Offers", "Events"]
+                }
+              }
+            },
+            "componentType": "CHECKBOX_GROUP",
+            "checkboxGroupOptions": {
+              "label": "Interests",
+              "options": [
+                {
+                  "label": "News",
+                  "value": "News",
+                  "default": false,
+                  "id": "84ab701f-09db-41b7-7ec3-6e516ec9af9e",
+                  "showLabel": true
+                },
+                {
+                  "label": "Offers",
+                  "value": "Offers",
+                  "default": false,
+                  "id": "a2fd6b7f-97e8-49bd-d01d-0576ff3faf21",
+                  "showLabel": true
+                },
+                {
+                  "label": "Events",
+                  "value": "Events",
+                  "default": false,
+                  "id": "018eb71a-2db5-4118-2135-ccb94310a9c1",
+                  "showLabel": true
+                }
+              ],
+              "showLabel": true,
+              "numberOfColumns": "ONE",
+              "mediaSettings": {
+                "imagePosition": "ABOVE",
+                "imageAlignment": "CENTER",
+                "imageFit": "COVER"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "f187d86b-0e25-4f55-6ee8-7c60c8e7fb50",
+        "hidden": false,
+        "identifier": "DROPDOWN",
+        "fieldType": "INPUT",
+        "inputOptions": {
+          "target": "country",
+          "pii": false,
+          "required": false,
+          "inputType": "STRING",
+          "readOnly": false,
+          "stringOptions": {
+            "validation": {
+              "format": "UNKNOWN_FORMAT",
+              "enum": ["Israel", "United States"]
+            },
+            "componentType": "DROPDOWN",
+            "dropdownOptions": {
+              "label": "Country",
+              "options": [
+                {
+                  "label": "Israel",
+                  "value": "Israel",
+                  "default": false,
+                  "id": "f52714f1-63c2-4e1c-6949-ab612b5a0c62"
+                },
+                {
+                  "label": "United States",
+                  "value": "United States",
+                  "default": false,
+                  "id": "4811b36f-2e93-49b1-577b-bf944141d37c"
+                }
+              ],
+              "showLabel": true
+            }
+          }
+        }
+      },
+      {
+        "id": "5a50059c-287f-41d9-327d-67af419ea58e",
+        "hidden": false,
+        "identifier": "CHECKBOX",
+        "fieldType": "INPUT",
+        "inputOptions": {
+          "target": "form_field_aa5f",
+          "pii": false,
+          "required": true,
+          "inputType": "BOOLEAN",
+          "readOnly": false,
+          "booleanOptions": {
+            "validation": {
+              "enum": [true]
+            },
+            "componentType": "CHECKBOX",
+            "checkboxOptions": {
+              "label": {
+                "nodes": [
+                  {
+                    "type": "PARAGRAPH",
+                    "id": "z6ngw3",
+                    "nodes": [
+                      {
+                        "type": "TEXT",
+                        "id": "",
+                        "nodes": [],
+                        "textData": {
+                          "text": "I agree to be contacted",
+                          "decorations": []
+                        }
+                      }
+                    ],
+                    "paragraphData": {
+                      "textStyle": {
+                        "textAlignment": "AUTO"
+                      }
+                    }
+                  }
+                ],
+                "documentStyle": {}
+              },
+              "checked": false
+            }
+          }
+        }
+      }
+    ],
+    "steps": [
+      {
+        "id": "ea5e8e88-e52b-4e1a-e45c-c200fad32bae",
+        "name": "Page 1",
+        "hidden": false,
+        "layout": {
+          "large": {
+            "items": [
+              {
+                "fieldId": "d218ec18-fa60-4cc3-936f-e75325cd5904",
+                "row": 0,
+                "column": 0,
+                "width": 12,
+                "height": 1
+              },
+              {
+                "fieldId": "1b59ef7a-8465-4e9c-bbea-4179079034e3",
+                "row": 1,
+                "column": 0,
+                "width": 12,
+                "height": 1
+              },
+              {
+                "fieldId": "143d2ecb-e1a8-41d1-4e91-e0db96260739",
+                "row": 2,
+                "column": 0,
+                "width": 12,
+                "height": 1
+              },
+              {
+                "fieldId": "f187d86b-0e25-4f55-6ee8-7c60c8e7fb50",
+                "row": 3,
+                "column": 0,
+                "width": 12,
+                "height": 1
+              },
+              {
+                "fieldId": "5a50059c-287f-41d9-327d-67af419ea58e",
+                "row": 4,
+                "column": 0,
+                "width": 12,
+                "height": 1
+              },
+              {
+                "fieldId": "37c474c4-c2f5-42eb-f2e9-ad3113516244",
+                "row": 5,
+                "column": 0,
+                "width": 12,
+                "height": 1
+              }
+            ],
+            "sections": []
+          }
+        }
+      }
+    ],
+    "rules": [],
+    "revision": "2",
+    "createdDate": "2026-11-10T07:49:47.482Z",
+    "updatedDate": "2026-11-10T07:50:05.696Z",
+    "properties": {
+      "name": "QA Contact",
+      "disabled": false
+    },
+    "deletedFields": [],
+    "deletedFormFields": [],
+    "kind": "REGULAR",
+    "postSubmissionTriggers": {
+      "upsertContact": {
+        "fieldsMapping": {
+          "email_7e06": {
+            "contactField": "EMAIL",
+            "emailInfo": {
+              "tag": "UNTAGGED"
+            }
+          },
+          "first_name_5820": {
+            "contactField": "FIRST_NAME"
+          }
+        },
+        "labels": []
+      }
+    },
+    "extendedFields": {
+      "namespaces": {
+        "@forms/form-app": {
+          "automationId": "REDACTED"
+        }
+      }
+    },
+    "namespace": "wix.form_app.form",
+    "nestedForms": [],
+    "spamFilterProtectionLevel": "ADVANCED",
+    "submitSettings": {
+      "submitSuccessAction": "THANK_YOU_MESSAGE",
+      "thankYouMessageOptions": {
+        "durationInSeconds": 8,
+        "richContent": {
+          "nodes": [
+            {
+              "type": "PARAGRAPH",
+              "id": "nepr01",
+              "nodes": [
+                {
+                  "type": "TEXT",
+                  "id": "",
+                  "nodes": [],
+                  "textData": {
+                    "text": "Thanks, we received your submission.",
+                    "decorations": []
+                  }
+                }
+              ],
+              "paragraphData": {
+                "textStyle": {
+                  "textAlignment": "CENTER"
+                }
+              }
+            }
+          ],
+          "metadata": {
+            "version": 1,
+            "createdTimestamp": "2026-11-10T07:47:21.760Z",
+            "updatedTimestamp": "2026-11-10T07:47:21.760Z",
+            "id": "29b8556b-61b4-4427-8500-28a18b3f0824"
+          }
+        }
+      }
+    },
+    "fieldGroups": [],
+    "enabled": true,
+    "name": "QA Contact",
+    "formRules": [],
+    "autoFillContact": "FORM_INPUT",
+    "submissionAccess": "OWNER_AND_COLLABORATORS"
+  }
+}

@@ -9,7 +9,7 @@ This document captures **Wix dashboard configuration**, **API permission require
 ## Booking flow (server)
 
 ```
-listServices → listSlots → getFormSummary (wix-forms) → createBooking
+listServices → listSlots → getParticipantForm (Get Form via wix-forms) → createBooking (re-validates)
   → POST /bookings/v2/bookings
   → POST /ecom/v2/carts
   → POST /ecom/v2/carts/{id}/calculate

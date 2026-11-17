@@ -50,15 +50,20 @@ describe('mapService', () => {
     });
 
     /**
-     * Gap: every service on the QA site has form id 00000000-0000-0000-0000-000000000000
-     * (the site default form). Sending it to getFormSummary would fail the booking flow.
-     * Expected: the zero id means "no form", so the default participant fields are used.
+     * DL #51 test 18 (§3b). Bug: the all-zero form id was mapped to '' ("no form"), so every
+     *   default-form service showed built-in First/Last/Email and lost the required Address.
+     * Found in: design-log/51 - address and composite form fields.md, F4 / Q16.
+     * Expected: the zero id is the site's default "Booking form", a real form, kept as is.
      */
-    it('should treat the all-zero form id as no form', () => {
+    it('should keep the all-zero form id: it is the site default form', () => {
         expect(
             mapService({ _id: 'svc-1', form: { id: '00000000-0000-0000-0000-000000000000' } })
                 .formId,
-        ).toBe('');
+        ).toBe('00000000-0000-0000-0000-000000000000');
+    });
+
+    it('should read no form id as empty', () => {
+        expect(mapService({ _id: 'svc-1' }).formId).toBe('');
     });
 
     it('should label free services without price', () => {

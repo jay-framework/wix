@@ -8,170 +8,226 @@ import {
     defaultFieldMessage,
     projectFormFields,
     projectFormSummaryFields,
+    requiredUntargetedLabels,
     validateFormField,
     validateFormSummaryField,
 } from '../lib/utils/project-form-fields.js';
 import type { FieldValue, FormFieldView } from '../lib/types.js';
 import { FieldRule } from '../lib/components/field-rule.js';
+import type { RawForm } from '../lib/wix-apis/get-form.js';
+import { fixtureField, formSummaryFixture, rawFormFixture } from './support/form-kinds.js';
+import { fixtureTemplates, requiredAddressFacts, specOf } from './support/address-fixtures.js';
 
-describe('projectFormFields', () => {
+const withTemplates = { addressTemplates: fixtureTemplates(), warn: () => {} };
+
+const textView = { placeholder: '', options: [], hidden: false };
+
+describe('projectFormFields (DL #51 §1)', () => {
     /**
-     * Bug: DL#40 dropped hidden fields entirely (`!field.hidden`), so a page could
-     *   not populate a Wix hidden field and it never reached the submission.
-     * Found in: design-log/39 - general forms infrastructure.md §Design 4a (narrows DL#40 OQ-4)
-     * Expected: hidden fields are MARKED (hidden: true), not dropped, so the generator
-     *   can emit their value+control channel and the component submits them.
+     * DL #51 test 2 (projection): reads `formFields[]` only, in layout order, and returns the
+     * unsupported fields instead of dropping or mis-rendering them.
      */
-    it('should project raw form fields, marking (not dropping) hidden fields', () => {
-        const result = projectFormFields({
+    /** DL #52 flips this row: the address is projected with its spec, nothing is unsupported. */
+    it('should project booking-form.json in layout order, with the address supported', () => {
+        expect(projectFormFields(rawFormFixture('booking-form'), withTemplates)).toEqual({
             fields: [
+                {
+                    target: 'first_name',
+                    label: 'First name',
+                    inputType: 'text',
+                    required: true,
+                    ...textView,
+                },
+                {
+                    target: 'last_name',
+                    label: 'Last name',
+                    inputType: 'text',
+                    required: true,
+                    ...textView,
+                },
                 {
                     target: 'email',
-                    hidden: false,
-                    view: { label: 'Email', fieldType: 'TEXT_INPUT' },
-                    validation: { required: true, string: { format: 'EMAIL' } },
+                    label: 'Email',
+                    inputType: 'email',
+                    required: true,
+                    ...textView,
+                },
+                { target: 'phone', label: 'Phone', inputType: 'tel', required: false, ...textView },
+                {
+                    target: 'address',
+                    label: 'Multi-line address',
+                    inputType: 'address',
+                    required: true,
+                    placeholder: '',
+                    options: [],
+                    address: specOf(requiredAddressFacts()),
                 },
                 {
-                    target: 'message',
-                    hidden: false,
-                    view: { label: 'Message', fieldType: 'TEXT_AREA' },
-                },
-                {
-                    target: 'propertyId',
-                    hidden: true,
-                    view: { label: 'Property' },
+                    target: 'add_your_message',
+                    label: 'Add your message',
+                    inputType: 'textarea',
+                    required: false,
+                    ...textView,
                 },
             ],
+            unsupportedFields: [],
         });
+    });
 
-        expect(result).toEqual([
+    it('should project the contact form: chips, select and consent checkbox, all supported', () => {
+        const projected = projectFormFields(rawFormFixture('contact-form'));
+        expect(projected.unsupportedFields).toEqual([]);
+        expect(
+            projected.fields.map((field) => [field.target, field.inputType, field.required]),
+        ).toEqual([
+            ['first_name_5820', 'text', true],
+            ['email_7e06', 'email', true],
+            ['interests', 'multiselect', true],
+            ['country', 'select', false],
+            ['form_field_aa5f', 'checkbox', true],
+        ]);
+        expect(projected.fields[4]?.label).toBe('I agree to be contacted');
+    });
+
+    it('should list each unsupported kind of the all-kinds form with its Wix kind', () => {
+        expect(
+            projectFormFields(rawFormFixture('booking-form-all-kinds'), withTemplates)
+                .unsupportedFields,
+        ).toEqual([
             {
-                target: 'email',
-                label: 'Email',
-                inputType: 'email',
-                required: true,
-                placeholder: '',
-                minLength: undefined,
-                maxLength: undefined,
-                pattern: undefined,
-                options: [],
-                hidden: false,
-            },
-            {
-                target: 'message',
-                label: 'Message',
-                inputType: 'textarea',
+                target: 'file_upload_1ffc',
+                label: 'File upload',
+                wixKind: 'WIX_FILE/FILE_UPLOAD',
                 required: false,
-                placeholder: '',
-                minLength: undefined,
-                maxLength: undefined,
-                pattern: undefined,
-                options: [],
-                hidden: false,
             },
-            {
-                target: 'propertyId',
-                label: 'Property',
-                inputType: 'text',
-                required: false,
-                placeholder: '',
-                minLength: undefined,
-                maxLength: undefined,
-                pattern: undefined,
-                options: [],
-                hidden: true,
-            },
+        ]);
+    });
+
+    it('should ignore deletedFormFields, and fields[] when formFields[] is present', () => {
+        const form = rawFormFixture('contact-form');
+        const extra = fixtureField('booking-form-all-kinds', 'file_upload_1ffc');
+        const withDeleted = { ...form, deletedFormFields: [extra] };
+        expect(projectFormFields(withDeleted)).toEqual(projectFormFields(form));
+    });
+
+    /** DL #52 live QA flips the old-style-only row: it was silent (bug 3), now it fails loudly. */
+    it('should list the inputs of an old-style-only form as unsupported and warn', () => {
+        const legacy = (rawFormFixture('contact-form') as RawForm).fields ?? [];
+        const warnings: string[] = [];
+        const projected = projectFormFields({ fields: legacy } as RawForm, {
+            warn: (message) => warnings.push(message),
+        });
+        expect(projected.fields).toEqual([]);
+        expect(projected.unsupportedFields.map((field) => field.target)).toEqual(
+            legacy.filter((field) => field.target).map((field) => field.target),
+        );
+        expect(warnings).toHaveLength(legacy.length ? 1 : 0);
+    });
+
+    it('should skip layout items that are not in formFields and put unplaced fields last', () => {
+        const form = rawFormFixture('booking-form');
+        const items = form.steps![0]!.layout!.large!.items!;
+        expect(items.map((item) => item.fieldId)).toContain('00000000-0000-0000-0000-000000000011');
+        form.steps![0]!.layout!.large!.items = items.filter(
+            (item) => item.fieldId !== '00000000-0000-0000-0000-000000000001',
+        );
+        expect(projectFormFields(form, withTemplates).fields.map((field) => field.target)).toEqual([
+            'last_name',
+            'email',
+            'phone',
+            'address',
+            'add_your_message',
+            'first_name',
         ]);
     });
 
     /**
-     * Bug (DL#41 4c, test 3 — runtime, failing-first): the submit path is
-     *   Record<string,string> and the projection has no checkbox/multiselect kind,
-     *   so a boolean checkbox submits its static `value` attribute and a multi-select
-     *   is truncated to a single string.
-     * Found in: design-log/39 - general forms infrastructure.md §Design 4c.
-     * Expected: readInputType (via projectFormFields) returns 'checkbox' for a single
-     *   boolean field and 'multiselect' for a multiple-selection choice.
-     * Actual (pre-fix): FormFieldInputType has neither kind and readInputType returns
-     *   'text' / 'select' — this test fails red at runtime until 4c lands.
+     * DL#41 4a: hidden fields are MARKED (hidden: true), not dropped, so a page can populate
+     * them via the `control` channel and they reach the submission (DL #51 row 3).
      */
-    it('should detect a single boolean field as a checkbox', () => {
-        const result = projectFormFields({
-            fields: [
-                {
-                    target: 'consent',
-                    view: { label: 'I agree', fieldType: 'CHECKBOX' },
-                    validation: { required: true, boolean: {} },
-                },
-            ],
+    it('should mark (not drop) hidden fields', () => {
+        const form = rawFormFixture('contact-form');
+        const email = form.formFields!.find(
+            (field) => field.inputOptions?.target === 'email_7e06',
+        )!;
+        email.hidden = true;
+        const projected = projectFormFields(form);
+        expect(projected.fields.find((field) => field.target === 'email_7e06')).toMatchObject({
+            inputType: 'email',
+            hidden: true,
         });
-        expect(result[0]?.inputType).toBe('checkbox');
     });
 
-    it('should detect a multiple-selection choice as a multiselect', () => {
-        const result = projectFormFields({
-            fields: [
-                {
-                    target: 'interests',
-                    view: {
-                        label: 'Interests',
-                        fieldType: 'CHECKBOX_GROUP',
-                        options: [
-                            { value: 'news', label: 'News' },
-                            { value: 'offers', label: 'Offers' },
-                        ],
-                    },
-                },
-            ],
-        });
-        expect(result[0]?.inputType).toBe('multiselect');
+    it('should ignore display and untargeted fields', () => {
+        const form = rawFormFixture('contact-form');
+        delete form.formFields!.find((field) => field.inputOptions?.target === 'country')!
+            .inputOptions!.target;
+        const targets = projectFormFields(form).fields.map((field) => field.target);
+        expect(targets).toEqual(['first_name_5820', 'email_7e06', 'interests', 'form_field_aa5f']);
     });
+});
 
-    it('should map select fields from options', () => {
-        const result = projectFormFields({
-            fields: [
-                {
-                    target: 'topic',
-                    view: {
-                        label: 'Topic',
-                        options: [
-                            { value: 'sales', label: 'Sales' },
-                            { value: 'support', label: 'Support' },
-                        ],
-                    },
-                },
-            ],
-        });
-
-        expect(result[0]?.inputType).toBe('select');
-        expect(result[0]?.options).toEqual([
-            { value: 'sales', label: 'Sales' },
-            { value: 'support', label: 'Support' },
-        ]);
+describe('requiredUntargetedLabels', () => {
+    it('should name the required inputs that have no target', () => {
+        const form = rawFormFixture('contact-form');
+        delete form.formFields!.find((field) => field.inputOptions?.target === 'email_7e06')!
+            .inputOptions!.target;
+        delete form.formFields!.find((field) => field.inputOptions?.target === 'country')!
+            .inputOptions!.target;
+        expect(requiredUntargetedLabels(form)).toEqual(['Email']);
     });
 });
 
 describe('projectFormSummaryFields', () => {
-    it('should project summary fields and filter deleted or unsupported types', () => {
-        const result = projectFormSummaryFields([
-            { target: 'first_name', label: 'First Name', type: 'STRING', required: true },
-            { target: 'removed', label: 'Removed', type: 'STRING', deleted: true },
-            { target: 'photo', label: 'Photo', type: 'FILE' },
-        ]);
-
-        expect(result).toEqual([
-            {
-                target: 'first_name',
-                label: 'First Name',
-                type: 'STRING',
-                required: true,
-            },
-        ]);
+    /**
+     * DL #51 test 1. Bug: the summary filter silently dropped the required address.
+     * Found in: QA 2026-11-10 (booking form bbb199c4, Problem 1).
+     * Expected: the address is listed as unsupported, with `required: 'unknown'` (the Summary
+     * API carries no `required`, Q13).
+     */
+    it('should list the Multi-line address of booking-form-summary.json as unsupported', () => {
+        expect(projectFormSummaryFields(formSummaryFixture().formSummary?.fields)).toEqual({
+            fields: [
+                { target: 'first_name', label: 'First name', type: 'STRING', required: false },
+                { target: 'last_name', label: 'Last name', type: 'STRING', required: false },
+                { target: 'email', label: 'Email', type: 'EMAIL', required: false },
+                { target: 'phone', label: 'Phone', type: 'PHONE', required: false },
+                {
+                    target: 'add_your_message',
+                    label: 'Add your message',
+                    type: 'STRING',
+                    required: false,
+                },
+            ],
+            unsupportedFields: [
+                {
+                    target: 'address',
+                    label: 'Multi-line address',
+                    wixKind: 'MULTILINE_ADDRESS',
+                    required: 'unknown',
+                },
+            ],
+        });
     });
 
-    it('should return an empty array when input has no usable fields', () => {
-        expect(projectFormSummaryFields([])).toEqual([]);
-        expect(projectFormSummaryFields(undefined)).toEqual([]);
+    it('should drop deleted and untargeted summary fields', () => {
+        expect(
+            projectFormSummaryFields([
+                { target: 'removed', label: 'Removed', type: 'STRING', deleted: true },
+                { id: 'no-target', label: 'No target', type: 'STRING' },
+                { target: 'photo', label: 'Photo', type: 'FILE' },
+            ]),
+        ).toEqual({
+            fields: [],
+            unsupportedFields: [
+                { target: 'photo', label: 'Photo', wixKind: 'FILE', required: 'unknown' },
+            ],
+        });
+    });
+
+    it('should return empty lists when input has no fields', () => {
+        expect(projectFormSummaryFields([])).toEqual({ fields: [], unsupportedFields: [] });
+        expect(projectFormSummaryFields(undefined)).toEqual({ fields: [], unsupportedFields: [] });
     });
 });
 
@@ -364,38 +420,21 @@ describe('checkFormField (DL#53 G1)', () => {
  * Expected: tel fields carry `phone: { defaultCountry }` from the option; no other field has `phone`.
  */
 describe('projectFormFields with defaultPhoneCountry (DL#55 P1c)', () => {
-    const form = {
-        fields: [
-            { target: 'name', view: { label: 'Name' } },
-            {
-                target: 'email',
-                view: { label: 'Email' },
-                validation: { string: { format: 'EMAIL' } },
-            },
-            {
-                target: 'phone',
-                view: { label: 'Phone' },
-                validation: { string: { format: 'PHONE' } },
-            },
-            { target: 'site', view: { label: 'Site' }, validation: { string: { format: 'URL' } } },
-        ],
-    };
+    // Live capture (DL #51 Phase 0): one PHONE_INPUT field with no own default country.
+    const form = rawFormFixture('booking-form');
+    const phoneRulesByTarget = (options?: { defaultPhoneCountry?: string }) =>
+        projectFormFields(form, { ...withTemplates, ...options })
+            .fields.filter((field) => 'phone' in field)
+            .map((field) => [field.target, field.phone]);
 
     it('should give tel fields the default country', () => {
-        const fields = projectFormFields(form, { defaultPhoneCountry: 'IL' });
-        expect(fields.map((field) => [field.target, field.phone])).toEqual([
-            ['name', undefined],
-            ['email', undefined],
+        expect(phoneRulesByTarget({ defaultPhoneCountry: 'IL' })).toEqual([
             ['phone', { defaultCountry: 'IL' }],
-            ['site', undefined],
-        ]);
-        expect(fields.filter((field) => 'phone' in field).map((field) => field.target)).toEqual([
-            'phone',
         ]);
     });
 
     it('should give no field phone rules without the option', () => {
-        expect(projectFormFields(form).some((field) => 'phone' in field)).toBe(false);
+        expect(phoneRulesByTarget()).toEqual([]);
     });
 });
 
@@ -413,7 +452,7 @@ describe('projectFormFields on a real Wix Phone field (DL#55 P1c-b, L7 capture)'
         ),
     );
     const phoneOf = (options?: { defaultPhoneCountry?: string }) =>
-        projectFormFields(form, options).find((field) => field.target === 'phone')!;
+        projectFormFields(form, options).fields.find((field) => field.target === 'phone')!;
 
     it('should project the field as tel with its default and accepted countries', () => {
         expect(phoneOf()).toMatchObject({

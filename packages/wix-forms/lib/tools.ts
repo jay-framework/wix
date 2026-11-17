@@ -2,3 +2,4 @@
 // setup). Loaded via the `./tools` export by the Jay toolchain; never by the serve path (`.`).
 export { setupWixForms, setup, generateWixFormsAgentKit } from './setup.js';
 export { validateWixFormBindings } from './validators/wix-form-bindings.js';
+export { checkAddressBindings, isAddressContractTag } from './validators/address-bindings.js';

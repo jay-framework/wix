@@ -1,0 +1,39 @@
+{
+  "source": "LB0 live Create Booking (anonymous visitor token), 2026-11-16; raw 400 body, no ids",
+  "status": 400,
+  "sentAddress": {
+    "country": "US",
+    "city": "Montgomery",
+    "postalCode": "999999999999999999999999999999999999999999999999999999999999",
+    "subdivision": "AL",
+    "addressLine": "600 Dexter Ave"
+  },
+  "body": {
+    "message": "Validation failed: must match pattern \"^.{0,50}$\" must match pattern \"^.{0,50}$\"",
+    "details": {
+      "validationError": {
+        "fieldViolations": [
+          {
+            "ruleName": "INVALID_VALUE_FOR_PATTERN_ERROR",
+            "field": "must match pattern \"^.{0,50}$\"",
+            "description": "must match pattern \"^.{0,50}$\"",
+            "data": {
+              "pattern": "^.{0,50}$",
+              "formViolations": [
+                {
+                  "fieldName": "address/postalCode",
+                  "description": "must match pattern \"^.{0,50}$\"",
+                  "ruleName": "INVALID_VALUE_FOR_PATTERN_ERROR",
+                  "data": {
+                    "pattern": "^.{0,50}$"
+                  }
+                }
+              ]
+            },
+            "violatedRule": "OTHER"
+          }
+        ]
+      }
+    }
+  }
+}

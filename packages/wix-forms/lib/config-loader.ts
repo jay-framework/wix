@@ -3,6 +3,7 @@ import path from 'node:path';
 import yaml from 'js-yaml';
 import { isSupportedCountry } from 'libphonenumber-js/min';
 import type { FormInclude } from './wix-apis/list-forms.js';
+import type { AddressConfig, AddressLabelsConfig } from './address/address-types.js';
 
 /**
  * Wix Forms config: per-form contract generation and, through `formIds`, the runtime submit
@@ -27,6 +28,8 @@ export interface WixFormsConfig {
      * A Wix Phone field's own default country wins. Unset: such phones are refused in the browser.
      */
     defaultPhoneCountry?: string;
+    /** Address copy (DL #52 Q8): `locale` for country names, `labels` merged per key into the defaults. */
+    address?: AddressConfig;
 }
 
 /**
@@ -43,6 +46,7 @@ interface RawWixFormsConfig {
     formIds?: string[];
     include?: FormInclude;
     defaultPhoneCountry?: string;
+    address?: unknown;
 }
 
 export function loadWixFormsConfig(projectRoot: string): WixFormsConfig {
@@ -56,7 +60,82 @@ export function loadWixFormsConfig(projectRoot: string): WixFormsConfig {
         formIds: Array.isArray(raw?.formIds) ? raw!.formIds : [],
         include: raw?.include ?? 'enabled',
         ...phoneCountryOf(raw?.defaultPhoneCountry),
+        ...addressConfigOf(raw?.address),
     };
+}
+
+/** `address: { locale?, labels? { parts?, subdivisionPart?, subdivisions? } }`; a wrong shape fails init. */
+function addressConfigOf(rawValue: unknown): Pick<WixFormsConfig, 'address'> {
+    if (rawValue === undefined || rawValue === null) return {};
+    if (!isPlainObject(rawValue)) throw addressConfigError('must be a mapping');
+    const { locale, labels } = rawValue as { locale?: unknown; labels?: unknown };
+    if (locale !== undefined && (typeof locale !== 'string' || !isSupportedLocale(locale))) {
+        throw addressConfigError(
+            `locale "${String(locale)}" is not a locale Intl.DisplayNames supports`,
+        );
+    }
+    return {
+        address: {
+            ...(typeof locale === 'string' ? { locale } : {}),
+            ...(labels === undefined ? {} : { labels: addressLabelsOf(labels) }),
+        },
+    };
+}
+
+function addressLabelsOf(rawValue: unknown): AddressLabelsConfig {
+    if (!isPlainObject(rawValue)) throw addressConfigError('labels must be a mapping');
+    const { parts, subdivisionPart, subdivisions } = rawValue as Record<string, unknown>;
+    return {
+        ...(parts === undefined ? {} : { parts: stringMap(parts, 'labels.parts') }),
+        ...(subdivisionPart === undefined
+            ? {}
+            : { subdivisionPart: upperKeys(stringMap(subdivisionPart, 'labels.subdivisionPart')) }),
+        ...(subdivisions === undefined ? {} : { subdivisions: subdivisionNames(subdivisions) }),
+    };
+}
+
+function subdivisionNames(rawValue: unknown): Record<string, Record<string, string>> {
+    if (!isPlainObject(rawValue)) throw addressConfigError('labels.subdivisions must be a mapping');
+    return Object.fromEntries(
+        Object.entries(rawValue as Record<string, unknown>).map(([country, names]) => [
+            country.toUpperCase(),
+            upperKeys(stringMap(names, `labels.subdivisions.${country}`)),
+        ]),
+    );
+}
+
+/** YAML reads `'25': Lombardia` and `25: Lombardia` alike; values must be strings. */
+function stringMap(rawValue: unknown, where: string): Record<string, string> {
+    if (!isPlainObject(rawValue)) throw addressConfigError(`${where} must be a mapping`);
+    return Object.fromEntries(
+        Object.entries(rawValue as Record<string, unknown>).map(([key, value]) => {
+            if (typeof value !== 'string')
+                throw addressConfigError(`${where}.${key} must be a string`);
+            return [key, value];
+        }),
+    );
+}
+
+function upperKeys(map: Record<string, string>): Record<string, string> {
+    return Object.fromEntries(
+        Object.entries(map).map(([key, value]) => [key.toUpperCase(), value]),
+    );
+}
+
+function isPlainObject(value: unknown): boolean {
+    return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isSupportedLocale(locale: string): boolean {
+    try {
+        return Intl.DisplayNames.supportedLocalesOf([locale]).length > 0;
+    } catch {
+        return false;
+    }
+}
+
+function addressConfigError(problem: string): Error {
+    return new Error(`config/.wix-forms.yaml: address ${problem}. Fix or remove the key.`);
 }
 
 /** A bad code fails init loudly; otherwise every local phone would fail quietly (DL#55 P1c). */

@@ -37,27 +37,53 @@ For local smoke tests, **All site permissions** is acceptable temporarily.
 
 ## Participant form fields empty
 
-Bookings loads participant fields via `getFormSummary` from `@jay-framework/wix-forms`:
+Bookings loads participant fields via `wixBookings.getParticipantForm` (Wix Get Form):
 
 - Ensure `wix-forms` is set up and API key has **Wix Forms** permission
 - A service's participant form is `form.id` in the Wix Bookings service. The all-zero id
-  (`00000000-0000-0000-0000-000000000000`) means the site default form: the plugin then shows its
-  built-in First name / Last name / Email fields and does not call `getFormSummary`
-- `formId` in `agent-kit/references/wix-bookings/services.yaml` is empty for those default-form services
-- Changed a service in the dashboard (e.g. assigned a custom form) and the page still shows the old
-  data: the services list is slow-rendered and stays fresh for 10 minutes. Restart the dev server,
-  or wait, before re-testing
-- Fields show `required: false` even when Wix requires them: the Form Summary API does not
-  carry `required`. **`createBooking` does not enforce it either** — QA 2026-11-10 booked a form
-  with a required Address and got 200 without one
-- **Known gap — fields are dropped:** only text, email, phone, number and URL fields are shown.
-  Address (and other non-text fields) are silently left out of the participant form, even when
-  required. Wix checkout does not ask for them either, so the booking is confirmed without them.
-  Do not put address or other non-text fields on a booking form until this is fixed
+  (`00000000-0000-0000-0000-000000000000`) is the site default "Booking form", read like any form;
+  `services.yaml` lists it as the service's `formId`. A required field it cannot show gives
+  `FORM_UNSUPPORTED`
+- Changed a service or form in the dashboard and the page still shows the old data: the services
+  list is slow-rendered and the participant form is cached, both for 10 minutes. Restart the dev
+  server, or wait, before re-testing
+- `required` is Wix's real flag (Get Form). Wix's `createBooking` does not enforce it — QA
+  2026-11-10 booked a form with a required Address and got 200 without one — so the plugin's
+  `createBooking` re-validates every field on the server and refuses a missing required value
+  (`bookingFailure === VALIDATION`)
+- **`FORM_UNSUPPORTED`:** a **required** field uses a kind this version cannot show (dropdown,
+  date picker, checkbox group, file upload, number, a second address, …): booking is disabled for that
+  service, and `bookingError` names the field. Make the field optional in the Wix dashboard (or
+  remove it), or upgrade the plugin. An **optional** field of such a kind is left out of the
+  participant form with a server warning (`[wix-bookings] …`), and never sent
+- Shown kinds: text, long text, email, phone, URL, a Multi-line address (the `address` tag, see
+  setup §6), and a single checkbox (`type === BOOLEAN`, bind
+  it to `<input type="checkbox">`). Hidden fields are ignored with a server warning
+
+## Address problems
+
+- **"Country/Region is required." and the page has no address control:** the page binds no
+  address refs. Add the address markup (setup §6). The `BOOKINGS-ADDRESS-UNBOUND` validator
+  finding reports this at build time.
+- **`FORM_UNAVAILABLE` / "Could not load the address layouts":** the plugin could not fetch the
+  address layouts from Wix (List Form Templates): a network or API-key problem, retried after 30 s.
+  If the QA-only `WIX_FORMS_ADDRESS_TEMPLATES_ORIGIN` environment variable is set, unset it and
+  restart.
+- **"This address cannot be accepted for <country>. Please contact us.":** Wix requires an address
+  part outside the eight the plugin knows. Run the L-drift probe (`scripts/address-map-probe.mjs`
+  in `@jay-framework/wix-forms`) and report the country, part and rule.
+- **`[wix-forms] address drift: …` in the server log:** Wix answered differently from the plugin's
+  country layout map. See "Address drift" in the `@jay-framework/wix-forms`
+  `docs/01-setup-and-troubleshooting.md`.
+- **`BOOKINGS-ADDRESS-UNBOUND`:** add the address markup; or re-run `jay-stack agent-kit` if
+  `services.yaml` is stale; or, on a page that only offers address-free services, suppress it with
+  `wix-bookings: { allow-unbound-address: true }` in the page's jay-validations block.
+- **Italy (and other countries) show region codes, not names:** name them in
+  `config/.wix-forms.yaml` `address.labels.subdivisions` (wix-forms setup guide).
 
 ## Phone / validation behaves differently from a `wixForm` page
 
-Expected, not a bug. Booking participant fields are checked with `validateFormSummaryField` (required + simple patterns on the trimmed value). Phones use the same `checkPhone` as `wixForm`: a spaced or dashed number such as `+1 202-555-0123` is sent to `createBooking` as E.164 (`+12025550123`), and a number with no country code is refused ("Please include the country code, starting with +.") unless `defaultPhoneCountry` is set in `config/.wix-forms.yaml`. `HOOK` errors and `onSubmitStart` do not apply to the booking flow. Failures surface as `bookingFailure === VALIDATION`, not per-field `errorRule`.
+Expected, not a bug. Booking participant fields are checked with `validateFormField` (the Wix schema's required, length and pattern, plus the format rules), in the browser and again in `createBooking`. Phones use the same `checkPhone` as `wixForm`: a spaced or dashed number such as `+1 202-555-0123` is sent to Wix as E.164 (`+12025550123`), and a number with no country code uses the Phone field's default country, else `defaultPhoneCountry` in `config/.wix-forms.yaml`; with neither it is refused ("Please include the country code, starting with +."). `HOOK` errors and `onSubmitStart` do not apply to the booking flow. Failures surface as `bookingFailure === VALIDATION`, not per-field `errorRule`.
 
 ## Do not assume success from redirect alone
 

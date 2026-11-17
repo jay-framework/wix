@@ -29,6 +29,20 @@ export function describeServicesError(error: unknown): Outcome<ServicesFailure> 
     };
 }
 
+/** FORM_UNAVAILABLE's one visitor text (DL #52 Q3), on the server outcome and the page alike. */
+export const FORM_UNAVAILABLE_MESSAGE =
+    'Could not load the participant form. Please try again later.';
+
+/** Wix rate limiting (429) is transient; the visitor sees no API text. */
+const RATE_LIMITED_MESSAGE = 'Booking is busy right now. Please wait a minute and try again.';
+
+/**
+ * A 429 on an eCommerce call (cart, place-order, checkout) comes after createBooking succeeded:
+ * the booking exists, so "try again" would create a second one.
+ */
+const RATE_LIMITED_AFTER_BOOKING_MESSAGE =
+    "Your booking was received, but we couldn't open payment. Please check your email before booking again.";
+
 export function describeBookingError(error: unknown): Outcome<BookingFailure> {
     const rawMessage = error instanceof Error ? error.message : '';
     if (rawMessage.includes('/ecom/v2/carts') && rawMessage.includes('403')) {
@@ -52,10 +66,21 @@ export function describeBookingError(error: unknown): Outcome<BookingFailure> {
                 'Could not open Wix checkout. Publish your Wix site (hosted checkout requires a published site).',
         };
     }
+    if (rawMessage.startsWith('Wix API 429')) {
+        const message = rawMessage.includes('/ecom/')
+            ? RATE_LIMITED_AFTER_BOOKING_MESSAGE
+            : RATE_LIMITED_MESSAGE;
+        return { failure: BookingFailure.UNKNOWN, message };
+    }
     return {
         failure: BookingFailure.UNKNOWN,
         message: rawMessage || 'Booking failed. Please try again.',
     };
+}
+
+/** DL #51: the default text for FORM_UNSUPPORTED — the site, not the visitor, must change. */
+export function describeUnsupportedForm(labels: string[]): string {
+    return `This booking form has a required field this site cannot show yet: ${labels.join(', ')}. Booking is disabled until the site is updated.`;
 }
 
 export function bookingStateOf(state: {

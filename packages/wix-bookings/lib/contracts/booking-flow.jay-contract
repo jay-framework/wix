@@ -104,9 +104,127 @@ tags:
     tags:
       - { tag: target, type: data, dataType: string }
       - { tag: label, type: data, dataType: string }
-      - { tag: type, type: data, dataType: string }
+      - { tag: type, type: data, dataType: string, description: "STRING | EMAIL | PHONE | URL | BOOLEAN (a single checkbox: bind it to an input type=checkbox). The address is not here: bind the address tag" }
       - { tag: required, type: data, dataType: boolean }
-      - { tag: formInputs, type: interactive, elementType: HTMLInputElement, description: Participant form field }
+      - { tag: formInputs, type: interactive, elementType: HTMLInputElement, description: Participant form field (a checkbox for BOOLEAN) }
+
+  - tag: address
+    type: sub-contract
+    phase: fast+interactive
+    description: "The participant address (DL #52); bind every part, each country shows its own."
+    tags:
+      - { tag: present, type: variant, dataType: boolean, description: The participant form has an address field }
+      - { tag: label, type: data, dataType: string }
+      - { tag: required, type: variant, dataType: boolean }
+      - { tag: error, type: data, dataType: string }
+      - { tag: invalid, type: variant, dataType: boolean }
+      - tag: country
+        type: sub-contract
+        tags:
+          - { tag: label, type: data, dataType: string }
+          - { tag: value, type: data, dataType: string }
+          - { tag: error, type: data, dataType: string }
+          - { tag: invalid, type: variant, dataType: boolean }
+          - { tag: input, type: interactive, elementType: HTMLSelectElement }
+          - tag: options
+            type: sub-contract
+            repeated: true
+            trackBy: value
+            tags:
+              - { tag: value, type: data, dataType: string }
+              - { tag: label, type: data, dataType: string }
+      - tag: addressLine
+        type: sub-contract
+        tags:
+          - { tag: shown, type: variant, dataType: boolean }
+          - { tag: required, type: variant, dataType: boolean }
+          - { tag: order, type: data, dataType: number } # template layout position, 0 when hidden
+          - { tag: label, type: data, dataType: string }
+          - { tag: value, type: data, dataType: string }
+          - { tag: error, type: data, dataType: string }
+          - { tag: invalid, type: variant, dataType: boolean }
+          - { tag: maxLength, type: data, dataType: number }
+          - { tag: input, type: interactive, elementType: HTMLInputElement }
+      - tag: addressLine2
+        type: sub-contract
+        tags:
+          - { tag: shown, type: variant, dataType: boolean }
+          - { tag: required, type: variant, dataType: boolean }
+          - { tag: order, type: data, dataType: number } # template layout position, 0 when hidden
+          - { tag: label, type: data, dataType: string }
+          - { tag: value, type: data, dataType: string }
+          - { tag: error, type: data, dataType: string }
+          - { tag: invalid, type: variant, dataType: boolean }
+          - { tag: maxLength, type: data, dataType: number }
+          - { tag: input, type: interactive, elementType: HTMLInputElement }
+      - tag: streetName
+        type: sub-contract
+        tags:
+          - { tag: shown, type: variant, dataType: boolean }
+          - { tag: required, type: variant, dataType: boolean }
+          - { tag: order, type: data, dataType: number } # template layout position, 0 when hidden
+          - { tag: label, type: data, dataType: string }
+          - { tag: value, type: data, dataType: string }
+          - { tag: error, type: data, dataType: string }
+          - { tag: invalid, type: variant, dataType: boolean }
+          - { tag: maxLength, type: data, dataType: number }
+          - { tag: input, type: interactive, elementType: HTMLInputElement }
+      - tag: streetNumber
+        type: sub-contract
+        tags:
+          - { tag: shown, type: variant, dataType: boolean }
+          - { tag: required, type: variant, dataType: boolean }
+          - { tag: order, type: data, dataType: number } # template layout position, 0 when hidden
+          - { tag: label, type: data, dataType: string }
+          - { tag: value, type: data, dataType: string }
+          - { tag: error, type: data, dataType: string }
+          - { tag: invalid, type: variant, dataType: boolean }
+          - { tag: maxLength, type: data, dataType: number }
+          - { tag: input, type: interactive, elementType: HTMLInputElement }
+      - tag: city
+        type: sub-contract
+        tags:
+          - { tag: shown, type: variant, dataType: boolean }
+          - { tag: required, type: variant, dataType: boolean }
+          - { tag: order, type: data, dataType: number } # template layout position, 0 when hidden
+          - { tag: label, type: data, dataType: string }
+          - { tag: value, type: data, dataType: string }
+          - { tag: error, type: data, dataType: string }
+          - { tag: invalid, type: variant, dataType: boolean }
+          - { tag: maxLength, type: data, dataType: number }
+          - { tag: input, type: interactive, elementType: HTMLInputElement }
+      - tag: subdivision
+        type: sub-contract
+        tags:
+          - { tag: shown, type: variant, dataType: boolean }
+          - { tag: listed, type: variant, dataType: boolean }
+          - { tag: required, type: variant, dataType: boolean }
+          - { tag: order, type: data, dataType: number } # template layout position, 0 when hidden
+          - { tag: label, type: data, dataType: string }
+          - { tag: value, type: data, dataType: string }
+          - { tag: error, type: data, dataType: string }
+          - { tag: invalid, type: variant, dataType: boolean }
+          - { tag: input, type: interactive, elementType: HTMLSelectElement }
+          - { tag: text, type: interactive, elementType: HTMLInputElement }
+          - tag: options
+            type: sub-contract
+            repeated: true
+            trackBy: value
+            tags:
+              - { tag: value, type: data, dataType: string }
+              - { tag: label, type: data, dataType: string }
+      - tag: postalCode
+        type: sub-contract
+        tags:
+          - { tag: shown, type: variant, dataType: boolean }
+          - { tag: required, type: variant, dataType: boolean }
+          - { tag: order, type: data, dataType: number } # template layout position, 0 when hidden
+          - { tag: label, type: data, dataType: string }
+          - { tag: value, type: data, dataType: string }
+          - { tag: error, type: data, dataType: string }
+          - { tag: invalid, type: variant, dataType: boolean }
+          - { tag: maxLength, type: data, dataType: number }
+          - { tag: input, type: interactive, elementType: HTMLInputElement }
 
   - tag: formLoading
     type: variant
@@ -137,9 +255,9 @@ tags:
 
   - tag: bookingFailure
     type: variant
-    dataType: enum (NONE | VALIDATION | FORM_UNAVAILABLE | CHECKOUT_PERMISSION | CHECKOUT_REDIRECT_REJECTED | SITE_NOT_PUBLISHED | UNKNOWN)
+    dataType: enum (NONE | VALIDATION | FORM_UNAVAILABLE | CHECKOUT_PERMISSION | CHECKOUT_REDIRECT_REJECTED | SITE_NOT_PUBLISHED | UNKNOWN | FORM_UNSUPPORTED)
     phase: fast+interactive
-    description: Why the participant form or the booking failed (NONE when it did not)
+    description: Why the participant form or the booking failed (NONE when it did not). FORM_UNSUPPORTED = the form has a required field this site cannot show; booking stays off until the site is updated
 
   - tag: bookButton
     type: interactive

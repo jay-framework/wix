@@ -27,13 +27,12 @@ export interface ServiceForm {
     _id?: string;
 }
 
-/** Wix's id for "no custom form" — the service uses the site default participant form. */
-const DEFAULT_FORM_ID = '00000000-0000-0000-0000-000000000000';
-
-/** The service's own participant form id, or '' when it uses the default form. */
+/**
+ * The service's participant form id. The all-zero id is the site default "Booking form", a real
+ * form read through Get Form like any other (DL #51 F4); '' means the service has no form at all.
+ */
 export function participantFormId(form: ServiceForm | undefined): string {
-    const id = form?.id ?? form?._id ?? '';
-    return id === DEFAULT_FORM_ID ? '' : id;
+    return form?.id ?? form?._id ?? '';
 }
 
 export function formatPrice(service: RawService): string {

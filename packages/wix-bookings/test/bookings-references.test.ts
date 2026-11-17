@@ -20,7 +20,8 @@ describe('buildServicesReference', () => {
 
         expect(reference.totalServices).toBe(3);
         expect(reference.visibleServices).toBe(2);
-        expect(reference.services[1]?.formId).toBe('');
+        // DL #51 test 18: the zero id is the site default form, so it is listed as svc-2's form.
+        expect(reference.services[1]?.formId).toBe('00000000-0000-0000-0000-000000000000');
         expect(reference.services[0]).toMatchObject({
             serviceId: 'svc-1',
             name: 'Massage',

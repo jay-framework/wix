@@ -2,3 +2,4 @@
 // setup). Loaded via the `./tools` export by the Jay toolchain; never by the serve path (`.`).
 export { generateWixBookingsAgentKit } from './generate-agent-kit.js';
 export { setupWixBookings, setup } from './setup.js';
+export { validateBookingFlowBindings } from './validators/booking-flow-bindings.js';

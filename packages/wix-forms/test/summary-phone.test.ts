@@ -60,7 +60,7 @@ describe('bookings participant phones (DL #58)', () => {
     });
 
     it('should give summary phone fields the configured default country', () => {
-        const fields = projectFormSummaryFields(
+        const { fields } = projectFormSummaryFields(
             [{ target: 'phone', label: 'Phone', type: 'PHONE' }],
             { defaultPhoneCountry: 'GB' },
         );

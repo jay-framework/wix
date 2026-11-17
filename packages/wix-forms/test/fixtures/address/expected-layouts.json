@@ -1,0 +1,413 @@
+{
+  "_source": "Hand-written from the DL #52 template table (Background) and per-part limits; not generated from code.",
+  "MLA_COMMON": {
+    "fields": [
+      {
+        "part": "addressLine",
+        "hidden": false,
+        "required": true,
+        "maxLength": 150
+      },
+      {
+        "part": "addressLine2",
+        "hidden": true,
+        "required": false,
+        "maxLength": 50
+      },
+      {
+        "part": "city",
+        "hidden": false,
+        "required": true,
+        "maxLength": 50
+      },
+      {
+        "part": "postalCode",
+        "hidden": false,
+        "required": true,
+        "pattern": "^.{0,50}$"
+      }
+    ],
+    "subdivisionCodeCount": 0
+  },
+  "MLA_COMMON_STATE": {
+    "fields": [
+      {
+        "part": "addressLine",
+        "hidden": false,
+        "required": true,
+        "maxLength": 150
+      },
+      {
+        "part": "addressLine2",
+        "hidden": true,
+        "required": false,
+        "maxLength": 50
+      },
+      {
+        "part": "city",
+        "hidden": false,
+        "required": true,
+        "maxLength": 50
+      },
+      {
+        "part": "subdivision",
+        "hidden": false,
+        "required": true
+      },
+      {
+        "part": "postalCode",
+        "hidden": false,
+        "required": true,
+        "pattern": "^.{0,50}$"
+      }
+    ],
+    "subdivisionCodeCount": 0
+  },
+  "MLA_US": {
+    "fields": [
+      {
+        "part": "addressLine",
+        "hidden": false,
+        "required": true,
+        "maxLength": 150
+      },
+      {
+        "part": "addressLine2",
+        "hidden": true,
+        "required": false,
+        "maxLength": 50
+      },
+      {
+        "part": "city",
+        "hidden": false,
+        "required": true,
+        "maxLength": 50
+      },
+      {
+        "part": "subdivision",
+        "hidden": false,
+        "required": true
+      },
+      {
+        "part": "postalCode",
+        "hidden": false,
+        "required": true,
+        "pattern": "^.{0,50}$"
+      }
+    ],
+    "subdivisionCodeCount": 54
+  },
+  "MLA_GB": {
+    "fields": [
+      {
+        "part": "addressLine",
+        "hidden": false,
+        "required": true,
+        "maxLength": 150
+      },
+      {
+        "part": "addressLine2",
+        "hidden": true,
+        "required": false,
+        "maxLength": 50
+      },
+      {
+        "part": "city",
+        "hidden": false,
+        "required": true,
+        "maxLength": 50
+      },
+      {
+        "part": "subdivision",
+        "hidden": false,
+        "required": true
+      },
+      {
+        "part": "postalCode",
+        "hidden": false,
+        "required": true,
+        "pattern": "^.{0,50}$"
+      }
+    ],
+    "subdivisionCodeCount": 4
+  },
+  "MLA_CA": {
+    "fields": [
+      {
+        "part": "addressLine",
+        "hidden": false,
+        "required": true,
+        "maxLength": 150
+      },
+      {
+        "part": "addressLine2",
+        "hidden": true,
+        "required": false,
+        "maxLength": 50
+      },
+      {
+        "part": "city",
+        "hidden": false,
+        "required": true,
+        "maxLength": 50
+      },
+      {
+        "part": "subdivision",
+        "hidden": false,
+        "required": true
+      },
+      {
+        "part": "postalCode",
+        "hidden": false,
+        "required": true,
+        "pattern": "^.{0,50}$"
+      }
+    ],
+    "subdivisionCodeCount": 13
+  },
+  "MLA_IL": {
+    "fields": [
+      {
+        "part": "streetName",
+        "hidden": false,
+        "required": true
+      },
+      {
+        "part": "streetNumber",
+        "hidden": false,
+        "required": true
+      },
+      {
+        "part": "addressLine2",
+        "hidden": false,
+        "required": false,
+        "maxLength": 50
+      },
+      {
+        "part": "city",
+        "hidden": false,
+        "required": true,
+        "maxLength": 50
+      },
+      {
+        "part": "postalCode",
+        "hidden": false,
+        "required": false,
+        "pattern": "^.{0,50}$"
+      }
+    ],
+    "subdivisionCodeCount": 0
+  },
+  "MLA_DE": {
+    "fields": [
+      {
+        "part": "streetName",
+        "hidden": false,
+        "required": true
+      },
+      {
+        "part": "streetNumber",
+        "hidden": false,
+        "required": true
+      },
+      {
+        "part": "addressLine2",
+        "hidden": true,
+        "required": false,
+        "maxLength": 50
+      },
+      {
+        "part": "postalCode",
+        "hidden": false,
+        "required": true,
+        "pattern": "^.{0,50}$"
+      },
+      {
+        "part": "city",
+        "hidden": false,
+        "required": true,
+        "maxLength": 50
+      },
+      {
+        "part": "subdivision",
+        "hidden": false,
+        "required": true
+      }
+    ],
+    "subdivisionCodeCount": 16
+  },
+  "MLA_JP": {
+    "fields": [
+      {
+        "part": "postalCode",
+        "hidden": false,
+        "required": true,
+        "pattern": "^.{0,50}$"
+      },
+      {
+        "part": "subdivision",
+        "hidden": false,
+        "required": true
+      },
+      {
+        "part": "city",
+        "hidden": false,
+        "required": true,
+        "maxLength": 50
+      },
+      {
+        "part": "addressLine",
+        "hidden": false,
+        "required": true,
+        "maxLength": 150
+      },
+      {
+        "part": "addressLine2",
+        "hidden": true,
+        "required": false,
+        "maxLength": 50
+      }
+    ],
+    "subdivisionCodeCount": 47
+  },
+  "MLA_BR": {
+    "fields": [
+      {
+        "part": "streetName",
+        "hidden": false,
+        "required": true
+      },
+      {
+        "part": "streetNumber",
+        "hidden": false,
+        "required": true
+      },
+      {
+        "part": "addressLine2",
+        "hidden": true,
+        "required": false,
+        "maxLength": 50
+      },
+      {
+        "part": "city",
+        "hidden": false,
+        "required": true,
+        "maxLength": 50
+      },
+      {
+        "part": "subdivision",
+        "hidden": false,
+        "required": true
+      },
+      {
+        "part": "postalCode",
+        "hidden": false,
+        "required": true,
+        "pattern": "^.{0,50}$"
+      }
+    ],
+    "subdivisionCodeCount": 27
+  },
+  "MLA_FR": {
+    "fields": [
+      {
+        "part": "addressLine",
+        "hidden": false,
+        "required": true,
+        "maxLength": 150
+      },
+      {
+        "part": "addressLine2",
+        "hidden": true,
+        "required": false,
+        "maxLength": 50
+      },
+      {
+        "part": "postalCode",
+        "hidden": false,
+        "required": true,
+        "pattern": "^.{0,50}$"
+      },
+      {
+        "part": "city",
+        "hidden": false,
+        "required": true,
+        "maxLength": 50
+      },
+      {
+        "part": "subdivision",
+        "hidden": false,
+        "required": true
+      }
+    ],
+    "subdivisionCodeCount": 16
+  },
+  "MLA_ES": {
+    "fields": [
+      {
+        "part": "addressLine",
+        "hidden": false,
+        "required": true,
+        "maxLength": 150
+      },
+      {
+        "part": "addressLine2",
+        "hidden": true,
+        "required": false,
+        "maxLength": 50
+      },
+      {
+        "part": "city",
+        "hidden": false,
+        "required": true,
+        "maxLength": 50
+      },
+      {
+        "part": "subdivision",
+        "hidden": false,
+        "required": true
+      },
+      {
+        "part": "postalCode",
+        "hidden": false,
+        "required": true,
+        "pattern": "^.{0,50}$"
+      }
+    ],
+    "subdivisionCodeCount": 19
+  },
+  "MLA_AU": {
+    "fields": [
+      {
+        "part": "addressLine",
+        "hidden": false,
+        "required": true,
+        "maxLength": 150
+      },
+      {
+        "part": "addressLine2",
+        "hidden": true,
+        "required": false,
+        "maxLength": 50
+      },
+      {
+        "part": "city",
+        "hidden": false,
+        "required": true,
+        "maxLength": 50
+      },
+      {
+        "part": "subdivision",
+        "hidden": false,
+        "required": true
+      },
+      {
+        "part": "postalCode",
+        "hidden": false,
+        "required": true,
+        "pattern": "^.{0,50}$"
+      }
+    ],
+    "subdivisionCodeCount": 8
+  }
+}

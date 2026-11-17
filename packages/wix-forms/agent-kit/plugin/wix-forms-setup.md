@@ -1,4 +1,4 @@
-Wix Forms plugin setup — dynamic forms and shared getFormSummary action.
+Wix Forms plugin setup — dynamic per-form contracts and the shared form schema service.
 
 ## What wix-forms provides
 
@@ -7,7 +7,8 @@ Per-form headless contracts (one per Wix form) and two server actions:
 - **form/&lt;slug&gt;** — one contract generated per Wix form at agent-kit time, with
   tags named after that form's fields. See `per-form-contracts.md` and
   `user-visible-messages.md` (Wix vs plugin copy, success/i18n).
-- **getFormSummary** — returns participant field schema for other plugins (e.g. wix-bookings)
+- **`WixFormsService.getRawForm(formId)`** — the full Get Form schema, for other plugins (wix-bookings reads its participant form with it). Classify its fields with `readFieldKey` / `classifyFormField` (exported), which list what this version cannot show
+- **getFormSummary** — **deprecated** (removed in the next minor): flat field summaries without `required`
 - **submitForm** — submits form values to Wix Forms. If you call it yourself (not through the `wixForm` component), `await ensureSessionFresh()` from `@jay-framework/wix-server-client/client` first: a submit without the session cookie is refused
 - **`WixFormsService.isSubmittableForm(formId)`** — the same allowlist check `submitForm` runs. It expects the canonical id, the form GUID in lowercase: trim and lowercase project input first, or a differently cased id reads as not submittable.
 
@@ -70,7 +71,8 @@ on one page you typically keep distinct keys while each script points at its own
   key="newsletter">
 </script>
 
-<form novalidate if="!contact.isSubmitted">
+<p role="alert" if="contact.loadError">{contact.loadError}</p>
+<form novalidate if="!contact.isSubmitted && !contact.loadError">
   <label>{contact.email.label}
     <input ref="contact.email.input" autocomplete="email"
            aria-required="{contact.email.required}" placeholder="{contact.email.placeholder}" />
@@ -103,22 +105,17 @@ page-provided values, custom-UI/multi-step, honeypot, non-string fields, and a
 server-side submit hook (verify the caller, write your own record, redirect) — see
 `rich-forms.md`.
 
-## Cross-plugin use: getFormSummary
+## Cross-plugin use: the participant form schema
 
-`wix-bookings` loads participant fields via `getFormSummary` — it does **not** use the `wix-form` UI on `/book`.
+`wix-bookings` loads participant fields with its own query `wixBookings.getParticipantForm({ serviceId })`,
+which reads Get Form through `WixFormsService.getRawForm` — it does **not** use the `wix-form` UI on `/book`.
+`required` is Wix's real flag, and a required field bookings cannot show disables booking (`FORM_UNSUPPORTED`).
 
-```typescript
-import { getFormSummary } from '@jay-framework/wix-forms';
-```
+**`getFormSummary` is deprecated** (removed in the next minor; the server warns once when it is called):
 
-Flow: user selects a booking service → `getFormSummary({ formId: service.formId })` → user fills participant fields → `createBooking`.
-
-- **`required` is always `false`.** Wix's Form Summary API returns each field's `target`,
-  `label`, `type`, and options — not whether it is required — so `getFormSummary` cannot
-  report it, and `createBooking` does not enforce it either. Mark fields you know are required
-  (e.g. first name, email) in your jay-html.
-- **Only text-like fields are returned** (string, email, phone, number, URL). Address and other
-  non-text fields are dropped, even when required.
+- The Form Summary API has no `required`, so every field reads `required: false`.
+- Only text-like fields are returned (string, email, phone, number, URL); others are now listed in
+  `unsupportedFields` (`required: "unknown"`) instead of being dropped silently.
 - An invalid or missing `formId` is refused with an `ActionError` `INVALID_INPUT` (a 4xx),
   before any Wix call.
 
@@ -131,4 +128,37 @@ Flow: user selects a booking service → `getFormSummary({ formId: service.formI
 | `namespace` | string | No | List Forms namespace. Default `wix.form_app.form` (standalone Wix Forms) |
 | `formIds` | string[] | No | Restrict generation to these form ids (empty = all forms in namespace). Also the runtime submit allowlist: when set, `submitForm` refuses other forms (empty = the namespace's enabled forms) |
 | `include` | enum | No | `enabled` (default) \| `disabled` \| `all` |
+| `address.locale` | string | No | `Intl.DisplayNames` locale for country names (default `en`). An unsupported locale fails init |
+| `address.labels.parts` | map | No | Part label overrides, e.g. `{ postalCode: PLZ }`. Merged per key into the defaults |
+| `address.labels.subdivisionPart` | map | No | Subdivision label per country code, e.g. `{ US: State }` |
+| `address.labels.subdivisions` | map | No | Region names per country, e.g. `{ IT: { '25': Lombardia } }`; merged per country, so other countries keep their names |
 | `defaultPhoneCountry` | string | No | ISO 3166-1 alpha-2 code (e.g. `IL`, `US`) for phones typed without a country code. A Wix Phone field's own default country wins when set. Without either, such phones are refused with `PHONE_COUNTRY`. An unsupported code fails init with an error naming the key. See `rich-forms.md` §3 |
+
+## Address copy
+
+Address layouts come from Wix (List Form Templates) at runtime, cached for an hour; no data ships with the plugin. Contract generation (agent-kit) does not fetch them: every address contract has all eight parts, so a layout outage fails only the page render and submit, never the contract. Wix gives codes, not names: the plugin names the countries (`Intl.DisplayNames`) and the regions of US, GB, CA, DE, JP, BR, FR, ES and AU in English. Other countries' regions show their codes until you name them:
+
+```yaml
+address:
+  locale: de
+  labels:
+    parts: { postalCode: PLZ }
+    subdivisionPart: { US: State }
+    subdivisions: { IT: { '25': Lombardia } }
+```
+
+The same config applies to booking pages (wix-bookings resolves addresses through this plugin).
+
+## QA-only settings
+
+- `WIX_FORMS_ADDRESS_TEMPLATES_ORIGIN` (environment variable, **not** config): replaces the origin (scheme, host, port) of the List Form Templates request, so a QA run can make the layout fetch fail (`http://127.0.0.1:9`). An invalid value fails init naming the variable; when set, the server logs `[wix-forms] address templates origin overridden to <origin> (QA only)` once. Never set it in production: every form with an address becomes unavailable.
+
+## Before release: L-drift
+
+Before every release, run the address map probe against the QA probe form (one all-countries address whose part overrides are all required), as an anonymous visitor:
+
+```bash
+node packages/wix-forms/scripts/address-map-probe.mjs --client-id <headless client id> --form-id <probe form id> --target address out.json
+```
+
+It re-derives the country → layout map and diffs it, and the templates, against `test/fixtures/address/`. Any difference blocks the release until the fixtures and `COUNTRY_TEMPLATE_IDS` are updated through a red-first test.

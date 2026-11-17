@@ -10,6 +10,7 @@ import {
     bookingStateOf,
     describeBookingError,
     describeServicesError,
+    describeUnsupportedForm,
 } from '../lib/utils/booking-outcome.js';
 
 // The contract's enums, as `jay-cli definitions` generates them.
@@ -24,6 +25,7 @@ vi.mock('../lib/contracts/booking-flow.jay-contract', () => ({
         CHECKOUT_REDIRECT_REJECTED: 4,
         SITE_NOT_PUBLISHED: 5,
         UNKNOWN: 6,
+        FORM_UNSUPPORTED: 7,
     },
 }));
 
@@ -100,5 +102,97 @@ describe('bookingStateOf', () => {
         expect(bookingStateOf({ ...idle, failure: BookingFailure.VALIDATION })).toEqual(
             BookingState.FAILED,
         );
+    });
+});
+
+describe('FORM_UNSUPPORTED (DL #51 test 16)', () => {
+    it('should name the fields in the default text', () => {
+        expect(describeUnsupportedForm(['Multi-line address', 'File upload'])).toBe(
+            'This booking form has a required field this site cannot show yet: Multi-line address, File upload. Booking is disabled until the site is updated.',
+        );
+    });
+
+    it('should be a FAILED booking state', () => {
+        expect(
+            bookingStateOf({
+                isBooking: false,
+                isConfirmed: false,
+                failure: BookingFailure.FORM_UNSUPPORTED,
+            }),
+        ).toEqual(BookingState.FAILED);
+    });
+
+    it('should be the last member of BookingFailure (appended after UNKNOWN)', () => {
+        expect(failureNames()).toEqual([
+            'NONE',
+            'VALIDATION',
+            'FORM_UNAVAILABLE',
+            'CHECKOUT_PERMISSION',
+            'CHECKOUT_REDIRECT_REJECTED',
+            'SITE_NOT_PUBLISHED',
+            'UNKNOWN',
+            'FORM_UNSUPPORTED',
+        ]);
+    });
+});
+
+/** Exhaustive over the contract's enum: a missing or extra member fails type-checking. */
+function failureName(failure: BookingFailure): string {
+    switch (failure) {
+        case BookingFailure.NONE:
+            return 'NONE';
+        case BookingFailure.VALIDATION:
+            return 'VALIDATION';
+        case BookingFailure.FORM_UNAVAILABLE:
+            return 'FORM_UNAVAILABLE';
+        case BookingFailure.CHECKOUT_PERMISSION:
+            return 'CHECKOUT_PERMISSION';
+        case BookingFailure.CHECKOUT_REDIRECT_REJECTED:
+            return 'CHECKOUT_REDIRECT_REJECTED';
+        case BookingFailure.SITE_NOT_PUBLISHED:
+            return 'SITE_NOT_PUBLISHED';
+        case BookingFailure.UNKNOWN:
+            return 'UNKNOWN';
+        case BookingFailure.FORM_UNSUPPORTED:
+            return 'FORM_UNSUPPORTED';
+        default: {
+            const unhandled: never = failure;
+            throw new Error(`unhandled BookingFailure ${String(unhandled)}`);
+        }
+    }
+}
+
+function failureNames(): string[] {
+    return [0, 1, 2, 3, 4, 5, 6, 7].map((value) => failureName(value as BookingFailure));
+}
+
+/**
+ * Bug: a Wix 429 (rate limit) from place-order showed the raw "Wix API 429: …" text to the visitor.
+ * Found in: DL #52 live QA, note A (L2 JP, L3, L4 ZW, L5). Expected: a friendly retry message,
+ * no API text. Actual: "Wix API 429: /ecom/v2/carts/<id>/place-order".
+ */
+describe('describeBookingError on a Wix 429', () => {
+    /**
+     * Bug: the 429 retry message invited a second booking.
+     * Found in: DL #52 live QA re-run, note A. The eCommerce calls (cart, place-order, checkout)
+     * run after createBooking succeeded, so the booking already exists.
+     * Expected: tell the visitor the booking was received and to check email before booking again.
+     * Actual: "Booking is busy right now. Please wait a minute and try again."
+     */
+    it('tells the visitor the booking was received when place-order is rate limited', () => {
+        expect(
+            describeBookingError(new Error('Wix API 429: /ecom/v2/carts/c-1/place-order')),
+        ).toEqual({
+            failure: BookingFailure.UNKNOWN,
+            message:
+                "Your booking was received, but we couldn't open payment. Please check your email before booking again.",
+        });
+    });
+
+    it('keeps the retry message when a call before the booking is rate limited', () => {
+        expect(describeBookingError(new Error('Wix API 429: /bookings/v2/bookings'))).toEqual({
+            failure: BookingFailure.UNKNOWN,
+            message: 'Booking is busy right now. Please wait a minute and try again.',
+        });
     });
 });

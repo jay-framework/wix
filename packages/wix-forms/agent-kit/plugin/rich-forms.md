@@ -13,7 +13,8 @@ confirmation can echo what was entered via each field's `value`. A `resetButton`
 store and returns to a blank form (`isSubmitted=false`).
 
 ```html
-<form novalidate if="!contact.isSubmitted">
+<p role="alert" if="contact.loadError">{contact.loadError}</p>
+<form novalidate if="!contact.isSubmitted && !contact.loadError">
   <label for="contact-email">{contact.email.label}</label>
   <input
     id="contact-email"
@@ -295,6 +296,37 @@ is single-value, so each click would replace the whole selection (the validator 
 - Put `aria-invalid` on each chip `<input>`, not on the `<fieldset>` (the `group` role does
   not support it). Hide the input visually with clipping, never `display:none`, so it stays
   focusable; a failed submit focuses the first chip of an invalid group.
+
+## 4c. Address fields
+
+Bind all eight parts; each part shows only for the countries that use it:
+
+```html
+<fieldset style="display: flex; flex-direction: column">
+  <label>{contact.address.country.label}
+    <select ref="contact.address.country.input" autocomplete="country">
+      <option forEach="contact.address.country.options" trackBy="value" value="{value}">{label}</option>
+    </select></label>
+  <label if="contact.address.streetName.shown" style="order: {contact.address.streetName.order}">{contact.address.streetName.label}<input ref="contact.address.streetName.input" /></label>
+  <label if="contact.address.streetNumber.shown" style="order: {contact.address.streetNumber.order}">{contact.address.streetNumber.label}<input ref="contact.address.streetNumber.input" /></label>
+  <label if="contact.address.addressLine.shown" style="order: {contact.address.addressLine.order}">{contact.address.addressLine.label}<input ref="contact.address.addressLine.input" autocomplete="address-line1" /></label>
+  <label if="contact.address.addressLine2.shown" style="order: {contact.address.addressLine2.order}">{contact.address.addressLine2.label}<input ref="contact.address.addressLine2.input" autocomplete="address-line2" /></label>
+  <label if="contact.address.city.shown" style="order: {contact.address.city.order}">{contact.address.city.label}<input ref="contact.address.city.input" autocomplete="address-level2" /></label>
+  <label if="contact.address.subdivision.shown" style="order: {contact.address.subdivision.order}">{contact.address.subdivision.label}
+    <select if="contact.address.subdivision.listed" ref="contact.address.subdivision.input" autocomplete="address-level1">
+      <option forEach="contact.address.subdivision.options" trackBy="value" value="{value}">{label}</option>
+    </select>
+    <input if="!contact.address.subdivision.listed" ref="contact.address.subdivision.text" autocomplete="address-level1" /></label>
+  <label if="contact.address.postalCode.shown" style="order: {contact.address.postalCode.order}">{contact.address.postalCode.label}<input ref="contact.address.postalCode.input" autocomplete="postal-code" /></label>
+</fieldset>
+<p if="contact.address.invalid">{contact.address.error}</p>
+```
+
+- Parts follow the country's own layout order (Germany: postal code before city; Japan: postal code first). Each part's `order` is its position in that layout (0 when hidden): put the parts in a flex container and bind `style="order: {…order}"`, as above. The country select stays first.
+- `autocomplete` tokens: `country`, `address-line1`, `address-line2`, `address-level2` (city), `address-level1` (subdivision), `postal-code`. `streetName` and `streetNumber` have **no** standard token: never put `address-line1` on them.
+- Both subdivision inputs are required (rule 6): `input` for a listed region, `text` for free text. Italy starts as free text and switches to a select after Wix names the valid codes.
+- An optional address that is left blank (a preselected country alone counts as blank) is not submitted.
+- The value is an object (`{ country, city, … }`, Wix's own keys). A submit hook that narrows `values[target]` to `string | string[] | boolean` must handle it.
 
 ## 5. Custom UI / multi-step
 

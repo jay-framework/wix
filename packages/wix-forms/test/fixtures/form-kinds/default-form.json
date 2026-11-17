@@ -1,0 +1,585 @@
+{
+  "form": {
+    "id": "00000000-0000-0000-0000-000000000000",
+    "fields": [
+      {
+        "id": "00000000-0000-0000-0000-000000000000",
+        "pii": false,
+        "hidden": false,
+        "view": {
+          "content": {
+            "nodes": [
+              {
+                "id": "wzzvh1",
+                "type": "HEADING",
+                "nodes": [
+                  {
+                    "style": {},
+                    "textData": {
+                      "text": "Client Details",
+                      "decorations": []
+                    },
+                    "id": "",
+                    "nodes": [],
+                    "type": "TEXT"
+                  }
+                ],
+                "headingData": {
+                  "level": 2.0,
+                  "textStyle": {
+                    "textAlignment": "AUTO"
+                  }
+                }
+              }
+            ],
+            "documentStyle": {}
+          },
+          "fieldType": "BOOKINGS_HEADER"
+        },
+        "readOnly": false
+      },
+      {
+        "id": "00000000-0000-0000-0000-000000000011",
+        "pii": false,
+        "hidden": false,
+        "view": {
+          "fieldType": "BOOKINGS_LOGIN_BAR"
+        },
+        "readOnly": false
+      },
+      {
+        "id": "00000000-0000-0000-0000-000000000001",
+        "target": "first_name",
+        "validation": {
+          "string": {
+            "format": "UNDEFINED",
+            "enum": []
+          },
+          "required": true
+        },
+        "pii": true,
+        "hidden": false,
+        "view": {
+          "label": "First name",
+          "fieldType": "BOOKINGS_FIRST_NAME",
+          "hideLabel": false
+        },
+        "readOnly": false
+      },
+      {
+        "id": "00000000-0000-0000-0000-000000000010",
+        "target": "last_name",
+        "validation": {
+          "string": {
+            "format": "UNDEFINED",
+            "enum": []
+          },
+          "required": true
+        },
+        "pii": true,
+        "hidden": false,
+        "view": {
+          "label": "Last name",
+          "fieldType": "BOOKINGS_LAST_NAME",
+          "hideLabel": false
+        },
+        "readOnly": false
+      },
+      {
+        "id": "00000000-0000-0000-0000-000000000003",
+        "target": "phone",
+        "validation": {
+          "string": {
+            "format": "PHONE",
+            "enum": []
+          },
+          "required": false
+        },
+        "pii": true,
+        "hidden": false,
+        "view": {
+          "label": "Phone",
+          "showFlag": true,
+          "fieldType": "BOOKINGS_PHONE",
+          "hideLabel": false
+        },
+        "readOnly": false
+      },
+      {
+        "id": "00000000-0000-0000-0000-000000000002",
+        "target": "email",
+        "validation": {
+          "string": {
+            "format": "EMAIL",
+            "enum": []
+          },
+          "required": true
+        },
+        "pii": true,
+        "hidden": false,
+        "view": {
+          "label": "Email",
+          "fieldType": "BOOKINGS_EMAIL",
+          "hideLabel": false
+        },
+        "readOnly": false
+      },
+      {
+        "id": "00000000-0000-0000-0000-000000000004",
+        "target": "address",
+        "validation": {
+          "predefined": {
+            "format": "MULTILINE_ADDRESS",
+            "multilineAddressOptions": {
+              "allowedCountries": [],
+              "fields": {
+                "subdivision": {
+                  "required": true
+                },
+                "city": {
+                  "required": true
+                },
+                "postalCode": {
+                  "required": true
+                },
+                "streetName": {
+                  "required": true
+                },
+                "streetNumber": {
+                  "required": true
+                },
+                "addressLine": {
+                  "required": true
+                },
+                "addressLine2": {
+                  "required": true
+                },
+                "country": {
+                  "required": true
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "pii": true,
+        "hidden": false,
+        "view": {
+          "showCountryFlags": false,
+          "label": "Multi-line address",
+          "fieldSettings": {
+            "addressLine2": {
+              "show": false
+            }
+          },
+          "autocompleteEnabled": true,
+          "fieldType": "BOOKINGS_ADDRESS"
+        },
+        "readOnly": false
+      },
+      {
+        "id": "00000000-0000-0000-0000-000000000008",
+        "target": "add_your_message",
+        "validation": {
+          "string": {
+            "format": "UNDEFINED",
+            "enum": []
+          },
+          "required": false
+        },
+        "pii": false,
+        "hidden": false,
+        "view": {
+          "label": "Add your message",
+          "fieldType": "TEXT_AREA",
+          "hideLabel": false
+        },
+        "readOnly": false
+      }
+    ],
+    "formFields": [
+      {
+        "id": "00000000-0000-0000-0000-000000000000",
+        "hidden": false,
+        "identifier": "BOOKINGS_HEADER",
+        "fieldType": "DISPLAY",
+        "displayOptions": {
+          "displayFieldType": "RICH_CONTENT",
+          "richContentOptions": {
+            "richContent": {
+              "nodes": [
+                {
+                  "type": "HEADING",
+                  "id": "wzzvh1",
+                  "nodes": [
+                    {
+                      "type": "TEXT",
+                      "id": "",
+                      "nodes": [],
+                      "style": {},
+                      "textData": {
+                        "text": "Client Details",
+                        "decorations": []
+                      }
+                    }
+                  ],
+                  "headingData": {
+                    "level": 2,
+                    "textStyle": {
+                      "textAlignment": "AUTO"
+                    }
+                  }
+                }
+              ],
+              "documentStyle": {}
+            }
+          }
+        }
+      },
+      {
+        "id": "00000000-0000-0000-0000-000000000001",
+        "hidden": false,
+        "identifier": "BOOKINGS_FIRST_NAME",
+        "fieldType": "INPUT",
+        "inputOptions": {
+          "target": "first_name",
+          "pii": true,
+          "required": true,
+          "inputType": "STRING",
+          "contactMapping": {
+            "contactField": "FIRST_NAME"
+          },
+          "readOnly": false,
+          "stringOptions": {
+            "validation": {
+              "format": "UNKNOWN_FORMAT",
+              "enum": []
+            },
+            "componentType": "TEXT_INPUT",
+            "textInputOptions": {
+              "label": "First name",
+              "showLabel": true,
+              "mediaSettings": {
+                "imagePosition": "ABOVE",
+                "imageAlignment": "CENTER",
+                "imageFit": "COVER"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "00000000-0000-0000-0000-000000000010",
+        "hidden": false,
+        "identifier": "BOOKINGS_LAST_NAME",
+        "fieldType": "INPUT",
+        "inputOptions": {
+          "target": "last_name",
+          "pii": true,
+          "required": true,
+          "inputType": "STRING",
+          "contactMapping": {
+            "contactField": "LAST_NAME"
+          },
+          "readOnly": false,
+          "stringOptions": {
+            "validation": {
+              "format": "UNKNOWN_FORMAT",
+              "enum": []
+            },
+            "componentType": "TEXT_INPUT",
+            "textInputOptions": {
+              "label": "Last name",
+              "showLabel": true,
+              "mediaSettings": {
+                "imagePosition": "ABOVE",
+                "imageAlignment": "CENTER",
+                "imageFit": "COVER"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "00000000-0000-0000-0000-000000000003",
+        "hidden": false,
+        "identifier": "BOOKINGS_PHONE",
+        "fieldType": "INPUT",
+        "inputOptions": {
+          "target": "phone",
+          "pii": true,
+          "required": false,
+          "inputType": "STRING",
+          "contactMapping": {
+            "contactField": "PHONE"
+          },
+          "readOnly": false,
+          "stringOptions": {
+            "validation": {
+              "format": "PHONE",
+              "enum": []
+            },
+            "componentType": "PHONE_INPUT",
+            "phoneInputOptions": {
+              "label": "Phone",
+              "showLabel": true,
+              "showCountryFlag": true
+            }
+          }
+        }
+      },
+      {
+        "id": "00000000-0000-0000-0000-000000000002",
+        "hidden": false,
+        "identifier": "BOOKINGS_EMAIL",
+        "fieldType": "INPUT",
+        "inputOptions": {
+          "target": "email",
+          "pii": true,
+          "required": true,
+          "inputType": "STRING",
+          "contactMapping": {
+            "contactField": "EMAIL"
+          },
+          "readOnly": false,
+          "stringOptions": {
+            "validation": {
+              "format": "EMAIL",
+              "enum": []
+            },
+            "componentType": "TEXT_INPUT",
+            "textInputOptions": {
+              "label": "Email",
+              "showLabel": true,
+              "mediaSettings": {
+                "imagePosition": "ABOVE",
+                "imageAlignment": "CENTER",
+                "imageFit": "COVER"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "00000000-0000-0000-0000-000000000004",
+        "hidden": false,
+        "identifier": "BOOKINGS_ADDRESS",
+        "fieldType": "INPUT",
+        "inputOptions": {
+          "target": "address",
+          "pii": true,
+          "required": true,
+          "inputType": "ADDRESS",
+          "contactMapping": {
+            "contactField": "ADDRESS"
+          },
+          "readOnly": false,
+          "addressOptions": {
+            "componentType": "MULTILINE_ADDRESS",
+            "validation": {
+              "allowedCountries": [],
+              "fields": {
+                "subdivision": {
+                  "required": true
+                },
+                "city": {
+                  "required": true
+                },
+                "postalCode": {
+                  "required": true
+                },
+                "streetName": {
+                  "required": true
+                },
+                "streetNumber": {
+                  "required": true
+                },
+                "addressLine": {
+                  "required": true
+                },
+                "addressLine2": {
+                  "required": true
+                },
+                "country": {
+                  "required": true
+                }
+              }
+            },
+            "multilineAddressOptions": {
+              "label": "Multi-line address",
+              "showCountryFlags": false,
+              "fieldSettings": {
+                "addressLine2": {
+                  "show": false
+                }
+              },
+              "autocompleteEnabled": true,
+              "showLabel": true
+            }
+          }
+        }
+      },
+      {
+        "id": "00000000-0000-0000-0000-000000000008",
+        "hidden": false,
+        "identifier": "TEXT_AREA",
+        "fieldType": "INPUT",
+        "inputOptions": {
+          "target": "add_your_message",
+          "pii": false,
+          "required": false,
+          "inputType": "STRING",
+          "readOnly": false,
+          "stringOptions": {
+            "validation": {
+              "format": "UNKNOWN_FORMAT",
+              "enum": []
+            },
+            "componentType": "TEXT_INPUT",
+            "textInputOptions": {
+              "label": "Add your message",
+              "showLabel": true,
+              "mediaSettings": {
+                "imagePosition": "ABOVE",
+                "imageAlignment": "CENTER",
+                "imageFit": "COVER"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "steps": [
+      {
+        "id": "657ca657-97c2-46cf-36a3-8684b63a7f2b",
+        "name": "Page 1",
+        "hidden": false,
+        "layout": {
+          "large": {
+            "items": [
+              {
+                "fieldId": "00000000-0000-0000-0000-000000000000",
+                "row": 0,
+                "column": 0,
+                "width": 12,
+                "height": 1
+              },
+              {
+                "fieldId": "00000000-0000-0000-0000-000000000011",
+                "row": 1,
+                "column": 0,
+                "width": 12,
+                "height": 1
+              },
+              {
+                "fieldId": "00000000-0000-0000-0000-000000000001",
+                "row": 2,
+                "column": 0,
+                "width": 6,
+                "height": 1
+              },
+              {
+                "fieldId": "00000000-0000-0000-0000-000000000010",
+                "row": 2,
+                "column": 6,
+                "width": 6,
+                "height": 1
+              },
+              {
+                "fieldId": "00000000-0000-0000-0000-000000000003",
+                "row": 3,
+                "column": 6,
+                "width": 6,
+                "height": 1
+              },
+              {
+                "fieldId": "00000000-0000-0000-0000-000000000002",
+                "row": 3,
+                "column": 0,
+                "width": 6,
+                "height": 1
+              },
+              {
+                "fieldId": "00000000-0000-0000-0000-000000000004",
+                "row": 4,
+                "column": 0,
+                "width": 12,
+                "height": 1
+              },
+              {
+                "fieldId": "00000000-0000-0000-0000-000000000008",
+                "row": 5,
+                "column": 0,
+                "width": 12,
+                "height": 1
+              }
+            ],
+            "sections": [
+              {
+                "id": "657ca657-97c2-46cf-36a3-8684b63a7f23",
+                "row": 0,
+                "allowedFieldIds": ["00000000-0000-0000-0000-000000000000"]
+              },
+              {
+                "id": "fa3f6418-cb04-46c0-9e8d-fd1da805cdfc",
+                "row": 1,
+                "allowedFieldIds": ["00000000-0000-0000-0000-000000000011"]
+              },
+              {
+                "id": "657ca657-97c2-47cf-36a3-8684b63a7f23",
+                "row": 2,
+                "allowedFieldIds": ["$new"]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "rules": [],
+    "revision": "1",
+    "createdDate": "2026-11-10T07:43:08.749Z",
+    "updatedDate": "2026-11-10T07:43:08.749Z",
+    "properties": {
+      "name": "Booking form",
+      "disabled": false
+    },
+    "deletedFields": [],
+    "deletedFormFields": [],
+    "kind": "REGULAR",
+    "postSubmissionTriggers": {
+      "upsertContact": {
+        "fieldsMapping": {
+          "first_name": {
+            "contactField": "FIRST_NAME"
+          },
+          "email": {
+            "contactField": "EMAIL"
+          },
+          "last_name": {
+            "contactField": "LAST_NAME"
+          },
+          "address": {
+            "contactField": "ADDRESS"
+          },
+          "phone": {
+            "contactField": "PHONE"
+          }
+        },
+        "labels": []
+      }
+    },
+    "namespace": "wix.bookings.v2.bookings",
+    "nestedForms": [],
+    "spamFilterProtectionLevel": "ADVANCED",
+    "submitSettings": {
+      "submitSuccessAction": "NO_ACTION"
+    },
+    "fieldGroups": [],
+    "sourceFormId": "00000000-0000-0000-0000-000000000000",
+    "enabled": true,
+    "name": "Booking form",
+    "formRules": [],
+    "autoFillContact": "FORM_INPUT",
+    "submissionAccess": "OWNER_AND_COLLABORATORS"
+  }
+}

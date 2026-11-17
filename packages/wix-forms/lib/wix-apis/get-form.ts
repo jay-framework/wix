@@ -10,53 +10,93 @@ export interface RichContentNode {
 
 export type RawFieldLabel = string | RichContentNode;
 
-export interface RawFormField {
-    target?: string;
-    hidden?: boolean;
-    view?: {
-        label?: RawFieldLabel;
-        placeholder?: string;
-        fieldType?: string;
-        options?: Array<{ value?: string; label?: string }>;
-        /** A Wix Phone field's Default country, ISO code (DL#55 P1c-b, L7 capture). */
-        defaultCountry?: string;
-    };
+export interface RawFieldOption {
+    value?: string;
+    label?: string;
+}
+
+/** A `<component>Options` object (`textInputOptions`, `dropdownOptions`, …). */
+export interface RawComponentOptions {
+    label?: RawFieldLabel;
+    placeholder?: string;
+    options?: RawFieldOption[];
+    /** Documented as `{ label?, placeholder? }`; present when the custom ("Other") option is on. */
+    customOption?: Record<string, unknown> | null;
+    /** A Wix Phone field's Default country, ISO code (`phoneInputOptions`, DL#55 L7 capture). */
+    defaultCountryCode?: string;
+}
+
+/**
+ * A `<type>Options` object (`stringOptions`, `arrayOptions`, …): the component type, its validation,
+ * and one `<component>Options` object, named after the component (DL #51 read rules).
+ */
+export interface RawTypeOptions {
+    componentType?: string;
     validation?: {
-        required?: boolean;
-        string?: {
-            format?: string;
-            minLength?: number;
-            maxLength?: number;
-            pattern?: string;
-            /** A Wix Phone field's Accepted countries, ISO codes (DL#55 P1c-b, L7 capture). */
-            phoneOptions?: { allowedCountryCodes?: string[] };
+        format?: string;
+        enum?: unknown[];
+        minLength?: number;
+        maxLength?: number;
+        pattern?: string;
+        /** A Wix Phone field's Accepted countries, ISO codes (DL#55 L7 capture). */
+        phoneOptions?: { allowedCountryCodes?: string[] };
+        items?: {
+            itemType?: string;
+            stringOptions?: { format?: string; enum?: unknown[] };
         };
-        /** Present for a boolean (single-checkbox) field (DL#41 4c). */
-        boolean?: Record<string, unknown>;
     };
+    [componentOptions: string]: unknown;
+}
+
+/** One `formFields[]` entry of Get Form / List Forms (DL #51 F1). */
+export interface RawFormField {
+    id?: string;
+    fieldType?: 'INPUT' | 'DISPLAY';
+    identifier?: string;
+    hidden?: boolean;
     inputOptions?: {
-        stringOptions?: {
-            textInputOptions?: { label?: RawFieldLabel; placeholder?: string };
-            componentType?: string;
-            options?: Array<{ value?: string; label?: string }>;
-        };
-        /** Present for a single-checkbox (boolean) field (DL#41 4c). */
-        booleanOptions?: Record<string, unknown>;
-        /** Present for a multi-selection (array) choice field (DL#41 4c). */
-        arrayOptions?: {
-            componentType?: string;
-            options?: Array<{ value?: string; label?: string }>;
-        };
+        target?: string;
+        required?: boolean;
+        readOnly?: boolean;
+        inputType?: string;
+        stringOptions?: RawTypeOptions;
+        booleanOptions?: RawTypeOptions;
+        arrayOptions?: RawTypeOptions;
+        addressOptions?: RawTypeOptions;
+        wixFileOptions?: RawTypeOptions;
+        numberOptions?: RawTypeOptions;
     };
+}
+
+export interface RawLayoutItem {
+    fieldId?: string;
+    row?: number;
+    column?: number;
+}
+
+export interface RawFormStep {
+    layout?: { large?: { items?: RawLayoutItem[] } };
+}
+
+/** An entry of the legacy `fields[]` list, read only to report it (DL #52 live QA). */
+export interface RawLegacyField {
+    target?: string;
+    validation?: { required?: boolean; predefined?: { format?: string } };
+    view?: { label?: string };
 }
 
 export interface GetFormResponse {
     form?: {
         id?: string;
-        fields?: RawFormField[];
+        name?: string;
         formFields?: RawFormField[];
+        /** Legacy field list; never projected. Inputs only here make the form unsupported. */
+        fields?: RawLegacyField[];
+        steps?: RawFormStep[];
     };
 }
+
+export type RawForm = NonNullable<GetFormResponse['form']>;
 
 export async function getFormSchema(client: WixClient, formId: string): Promise<GetFormResponse> {
     return wixFetch<GetFormResponse>(

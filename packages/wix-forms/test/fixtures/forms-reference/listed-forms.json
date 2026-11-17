@@ -27,6 +27,29 @@
         "placeholder": "",
         "options": []
       }
+    ],
+    "unsupportedFields": []
+  },
+  {
+    "id": "0b1c2d3e-0000-4000-8000-000000000002",
+    "name": "Booking form",
+    "fields": [
+      {
+        "target": "first_name",
+        "label": "First name",
+        "inputType": "text",
+        "required": true,
+        "placeholder": "",
+        "options": []
+      }
+    ],
+    "unsupportedFields": [
+      {
+        "target": "address",
+        "label": "Multi-line address",
+        "wixKind": "ADDRESS/MULTILINE_ADDRESS",
+        "required": true
+      }
     ]
   }
 ]

@@ -2,13 +2,22 @@ import { participantFormId } from '../utils/format.js';
 import type { RawBookingService } from '../wix-apis/query-services.js';
 
 const DESCRIPTION =
-    'Wix Bookings services for agent discovery. Use serviceId with dashboard path bookings/services/form/<serviceId>.';
+    'Wix Bookings services for agent discovery. Use serviceId with dashboard path bookings/services/form/<serviceId>. participantFormHasAddress: the participant form has an address, so a booking-flow page must bind the address parts.';
 
-function serviceId(service: RawBookingService): string {
+export function serviceId(service: RawBookingService): string {
     return service._id ?? service.id ?? '';
 }
 
-export function buildServicesReference(services: RawBookingService[]) {
+/**
+ * `participantFormHasAddress` per service id (DL #52 §6): true / false when known; a service
+ * absent from the map (its form could not be read) gets no flag, which the validator warns about.
+ */
+export type ParticipantAddressFlags = ReadonlyMap<string, boolean>;
+
+export function buildServicesReference(
+    services: RawBookingService[],
+    addressFlags: ParticipantAddressFlags = new Map(),
+) {
     const visible = services.filter((s) => !s.hidden);
     return {
         _description: DESCRIPTION,
@@ -22,6 +31,9 @@ export function buildServicesReference(services: RawBookingService[]) {
                 type: service.type ?? '',
                 formId: participantFormId(service.form),
                 dashboardPath: id ? `bookings/services/form/${id}` : '',
+                ...(addressFlags.has(id)
+                    ? { participantFormHasAddress: addressFlags.get(id) }
+                    : {}),
                 payment: {
                     online: service.payment?.options?.online ?? false,
                     inPerson: service.payment?.options?.inPerson ?? false,

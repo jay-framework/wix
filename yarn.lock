@@ -2707,6 +2707,7 @@ __metadata:
     "@babel/preset-env": "npm:^7.23.8"
     "@babel/preset-typescript": "npm:^7.23.3"
     "@jay-framework/compiler-jay-stack": "npm:^0.26.4"
+    "@jay-framework/compiler-shared": "npm:^0.26.4"
     "@jay-framework/component": "npm:^0.26.4"
     "@jay-framework/fullstack-component": "npm:^0.26.4"
     "@jay-framework/jay-cli": "npm:^0.26.4"

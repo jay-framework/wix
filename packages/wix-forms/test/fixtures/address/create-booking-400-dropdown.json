@@ -1,0 +1,31 @@
+{
+  "_source": "live Create Booking on a QA site, 2026-11-10: a dropdown value outside its options (DL #51 F6), RESPONSE 400 verbatim.",
+  "body": {
+    "message": "Validation failed: must be equal to one of the allowed values must be equal to one of the allowed values",
+    "details": {
+      "validationError": {
+        "fieldViolations": [
+          {
+            "ruleName": "NOT_ALLOWED_VALUE_ERROR",
+            "field": "must be equal to one of the allowed values",
+            "description": "must be equal to one of the allowed values",
+            "data": {
+              "allowedValues": ["Option 1", "Option 2"],
+              "formViolations": [
+                {
+                  "fieldName": "dropdown_7b7d",
+                  "description": "must be equal to one of the allowed values",
+                  "ruleName": "NOT_ALLOWED_VALUE_ERROR",
+                  "data": {
+                    "allowedValues": ["Option 1", "Option 2"]
+                  }
+                }
+              ]
+            },
+            "violatedRule": "OTHER"
+          }
+        ]
+      }
+    }
+  }
+}

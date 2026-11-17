@@ -3,7 +3,9 @@
  * browser component; must never import server-only modules.
  */
 
-import type { FormFieldView } from '../types.js';
+import type { FormFieldOptionView, FormFieldView } from '../types.js';
+import type { AddressFieldSpec, LayoutPart } from '../address/address-types.js';
+import { splitErrorKey, withLearnedFacts } from '../address/address-value.js';
 import { FieldRule } from './field-rule.js';
 import { defaultFieldMessage } from '../utils/project-form-fields.js';
 
@@ -51,6 +53,12 @@ export interface SubmitRejection {
     code?: string;
     /** True when `fieldErrors` come from a submit hook's `FieldRejection` (DL #57 H). */
     fromHook?: boolean;
+    /** DL #52: `<target>/subdivision` → the codes Wix accepts. */
+    fieldOptions?: Record<string, FormFieldOptionView[]>;
+    /** DL #52: target → parts Wix required that the layout hid. */
+    revealedParts?: Record<string, LayoutPart[]>;
+    /** DL #52: target → the submitted country the learned facts belong to. */
+    factsCountry?: Record<string, string>;
 }
 
 export interface SubmitRejectionView {
@@ -58,6 +66,13 @@ export interface SubmitRejectionView {
     invalidByTarget: Record<string, boolean>;
     ruleByTarget: Record<string, FieldRule>;
     statusMessage: string;
+}
+
+export interface LearnedAddressSpecs {
+    /** Address specs with the learned facts merged, by target (DL #52); only the changed ones. */
+    addressSpecs: Record<string, AddressFieldSpec>;
+    /** Address targets whose typed subdivision must be cleared: a list was learned for it (Q6). */
+    clearedSubdivisions: string[];
 }
 
 /**
@@ -77,7 +92,16 @@ export function presentSubmitRejection(
     const statusLines: string[] = result.message ? [result.message] : [];
     for (const [target, message] of Object.entries(result.fieldErrors ?? {})) {
         const field = fields.find((candidate) => candidate.target === target);
-        if (field && !field.hidden) {
+        const addressTarget = splitErrorKey(target).target;
+        const addressField = fields.find(
+            (candidate) => candidate.inputType === 'address' && candidate.target === addressTarget,
+        );
+        if (addressField && target !== addressTarget) {
+            // An address part error (DL #52): Wix's located key, already worded by the server.
+            view.errorByTarget[target] = message;
+            view.invalidByTarget[target] = true;
+            view.ruleByTarget[target] = FieldRule.SERVER;
+        } else if (field && !field.hidden) {
             const rule = serverRuleOf(result, target);
             view.errorByTarget[target] = serverFieldMessage(rule, field, message);
             view.invalidByTarget[target] = true;
@@ -89,6 +113,30 @@ export function presentSubmitRejection(
     view.statusMessage = statusLines.join(' ');
     if (!view.statusMessage && !Object.keys(view.errorByTarget).length) {
         view.statusMessage = SUBMIT_FAILED_MESSAGE;
+    }
+    return view;
+}
+
+/**
+ * Learned facts are keyed by the country the server says it learned them for (review m7), never
+ * by whatever country is selected when the answer arrives.
+ */
+export function learnedAddressSpecs(
+    result: SubmitRejection,
+    fields: FormFieldView[],
+): LearnedAddressSpecs {
+    const view: LearnedAddressSpecs = { addressSpecs: {}, clearedSubdivisions: [] };
+    for (const field of fields) {
+        const country = result.factsCountry?.[field.target];
+        if (field.inputType !== 'address' || !field.address || !country) continue;
+        const options = result.fieldOptions?.[`${field.target}/subdivision`];
+        const revealed = result.revealedParts?.[field.target];
+        if (!options && !revealed) continue;
+        view.addressSpecs[field.target] = withLearnedFacts(field.address, {
+            ...(options ? { subdivisionsOf: { [country]: options } } : {}),
+            ...(revealed ? { revealedPartsOf: { [country]: revealed } } : {}),
+        });
+        if (options) view.clearedSubdivisions.push(field.target);
     }
     return view;
 }

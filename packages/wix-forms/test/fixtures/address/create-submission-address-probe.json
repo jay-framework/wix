@@ -1,0 +1,1444 @@
+{
+  "_source": "live probe on a QA site, 2026-11-16: Create Submission as a visitor, form with a required \"address\" (all countries, every part override required) and an optional \"address_limited\" (allowedCountries US, IL, IT; default US).",
+  "cases": [
+    {
+      "case": "US valid",
+      "sent": {
+        "address": {
+          "country": "US",
+          "subdivision": "AL",
+          "city": "Montgomery",
+          "postalCode": "36104",
+          "addressLine": "600 Dexter Ave"
+        }
+      },
+      "status": 200,
+      "body": {
+        "status": "PENDING",
+        "storedSubmissions": {
+          "address": {
+            "city": "Montgomery",
+            "addressLine": "600 Dexter Ave",
+            "country": "US",
+            "postalCode": "36104",
+            "subdivision": "AL"
+          }
+        }
+      }
+    },
+    {
+      "case": "address left out (required field)",
+      "sent": {},
+      "status": 400,
+      "body": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "address",
+                      "errorType": "REQUIRED_VALUE_ERROR",
+                      "errorMessage": "must have required property 'address'",
+                      "params": {
+                        "missingProperty": "address"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "case": "US missing subdivision",
+      "sent": {
+        "address": {
+          "country": "US",
+          "city": "Montgomery",
+          "postalCode": "36104",
+          "addressLine": "600 Dexter Ave"
+        }
+      },
+      "status": 400,
+      "body": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "address/subdivision",
+                      "errorType": "REQUIRED_VALUE_ERROR",
+                      "errorMessage": "must have required property 'subdivision'",
+                      "params": {
+                        "missingProperty": "subdivision"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "case": "US missing postalCode",
+      "sent": {
+        "address": {
+          "country": "US",
+          "subdivision": "AL",
+          "city": "Montgomery",
+          "addressLine": "600 Dexter Ave"
+        }
+      },
+      "status": 400,
+      "body": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "address/postalCode",
+                      "errorType": "REQUIRED_VALUE_ERROR",
+                      "errorMessage": "must have required property 'postalCode'",
+                      "params": {
+                        "missingProperty": "postalCode"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "case": "US subdivision XX",
+      "sent": {
+        "address": {
+          "country": "US",
+          "subdivision": "XX",
+          "city": "Montgomery",
+          "postalCode": "36104",
+          "addressLine": "600 Dexter Ave"
+        }
+      },
+      "status": 400,
+      "body": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "address/subdivision",
+                      "errorType": "NOT_ALLOWED_VALUE_ERROR",
+                      "errorMessage": "must be equal to one of the allowed values",
+                      "params": {
+                        "allowedValues": [
+                          "AA",
+                          "AE",
+                          "AK",
+                          "AL",
+                          "AP",
+                          "AR",
+                          "AZ",
+                          "CA",
+                          "CO",
+                          "CT",
+                          "DC",
+                          "DE",
+                          "FL",
+                          "GA",
+                          "HI",
+                          "IA",
+                          "ID",
+                          "IL",
+                          "IN",
+                          "KS",
+                          "KY",
+                          "LA",
+                          "MA",
+                          "MD",
+                          "ME",
+                          "MI",
+                          "MN",
+                          "MO",
+                          "MS",
+                          "MT",
+                          "NC",
+                          "ND",
+                          "NE",
+                          "NH",
+                          "NJ",
+                          "NM",
+                          "NV",
+                          "NY",
+                          "OH",
+                          "OK",
+                          "OR",
+                          "PA",
+                          "RI",
+                          "SC",
+                          "SD",
+                          "TN",
+                          "TX",
+                          "UT",
+                          "VA",
+                          "VT",
+                          "WA",
+                          "WI",
+                          "WV",
+                          "WY"
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "case": "US subdivision US-AL",
+      "sent": {
+        "address": {
+          "country": "US",
+          "subdivision": "US-AL",
+          "city": "Montgomery",
+          "postalCode": "36104",
+          "addressLine": "600 Dexter Ave"
+        }
+      },
+      "status": 400,
+      "body": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "address/subdivision",
+                      "errorType": "NOT_ALLOWED_VALUE_ERROR",
+                      "errorMessage": "must be equal to one of the allowed values",
+                      "params": {
+                        "allowedValues": [
+                          "AA",
+                          "AE",
+                          "AK",
+                          "AL",
+                          "AP",
+                          "AR",
+                          "AZ",
+                          "CA",
+                          "CO",
+                          "CT",
+                          "DC",
+                          "DE",
+                          "FL",
+                          "GA",
+                          "HI",
+                          "IA",
+                          "ID",
+                          "IL",
+                          "IN",
+                          "KS",
+                          "KY",
+                          "LA",
+                          "MA",
+                          "MD",
+                          "ME",
+                          "MI",
+                          "MN",
+                          "MO",
+                          "MS",
+                          "MT",
+                          "NC",
+                          "ND",
+                          "NE",
+                          "NH",
+                          "NJ",
+                          "NM",
+                          "NV",
+                          "NY",
+                          "OH",
+                          "OK",
+                          "OR",
+                          "PA",
+                          "RI",
+                          "SC",
+                          "SD",
+                          "TN",
+                          "TX",
+                          "UT",
+                          "VA",
+                          "VT",
+                          "WA",
+                          "WI",
+                          "WV",
+                          "WY"
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "case": "US extra addressLine2",
+      "sent": {
+        "address": {
+          "country": "US",
+          "subdivision": "AL",
+          "city": "Montgomery",
+          "postalCode": "36104",
+          "addressLine": "600 Dexter Ave",
+          "addressLine2": "Apt 1"
+        }
+      },
+      "status": 200,
+      "body": {
+        "status": "PENDING",
+        "storedSubmissions": {
+          "address": {
+            "city": "Montgomery",
+            "addressLine": "600 Dexter Ave",
+            "country": "US",
+            "postalCode": "36104",
+            "addressLine2": "Apt 1",
+            "subdivision": "AL"
+          }
+        }
+      }
+    },
+    {
+      "case": "US extra streetName",
+      "sent": {
+        "address": {
+          "country": "US",
+          "subdivision": "AL",
+          "city": "Montgomery",
+          "postalCode": "36104",
+          "addressLine": "600 Dexter Ave",
+          "streetName": "Dexter"
+        }
+      },
+      "status": 400,
+      "body": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "address/streetName",
+                      "errorType": "UNKNOWN_VALUE_ERROR",
+                      "errorMessage": "must NOT have additional properties",
+                      "params": {
+                        "additionalProperty": "streetName"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "case": "unknown country ZZ",
+      "sent": {
+        "address": {
+          "country": "ZZ",
+          "subdivision": "AL",
+          "city": "Montgomery",
+          "postalCode": "36104",
+          "addressLine": "600 Dexter Ave"
+        }
+      },
+      "status": 400,
+      "body": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "address/subdivision",
+                      "errorType": "UNKNOWN_VALUE_ERROR",
+                      "errorMessage": "must NOT have additional properties",
+                      "params": {
+                        "additionalProperty": "subdivision"
+                      }
+                    },
+                    {
+                      "errorPath": "address/country",
+                      "errorType": "NOT_ALLOWED_VALUE_ERROR",
+                      "errorMessage": "must be equal to one of the allowed values",
+                      "params": {
+                        "allowedValues": [
+                          "AW",
+                          "AF",
+                          "AO",
+                          "AI",
+                          "AX",
+                          "AL",
+                          "AD",
+                          "AN",
+                          "AE",
+                          "AR",
+                          "AM",
+                          "AS",
+                          "AQ",
+                          "TF",
+                          "AG",
+                          "AU",
+                          "AT",
+                          "AZ",
+                          "BI",
+                          "BE",
+                          "BJ",
+                          "BQ",
+                          "BF",
+                          "BD",
+                          "BG",
+                          "BH",
+                          "BS",
+                          "BA",
+                          "BL",
+                          "BY",
+                          "BZ",
+                          "BM",
+                          "BO",
+                          "BR",
+                          "BB",
+                          "BN",
+                          "BT",
+                          "BV",
+                          "BW",
+                          "CF",
+                          "CA",
+                          "CC",
+                          "CH",
+                          "CL",
+                          "CN",
+                          "CI",
+                          "CM",
+                          "CD",
+                          "CG",
+                          "CK",
+                          "CO",
+                          "KM",
+                          "CV",
+                          "CR",
+                          "CW",
+                          "CX",
+                          "KY",
+                          "CY",
+                          "CZ",
+                          "DE",
+                          "DJ",
+                          "DM",
+                          "DK",
+                          "DO",
+                          "DZ",
+                          "EC",
+                          "EG",
+                          "ER",
+                          "EH",
+                          "ES",
+                          "EE",
+                          "ET",
+                          "FI",
+                          "FJ",
+                          "FK",
+                          "FR",
+                          "FO",
+                          "FM",
+                          "GA",
+                          "GB",
+                          "GE",
+                          "GG",
+                          "GH",
+                          "GI",
+                          "GN",
+                          "GP",
+                          "GM",
+                          "GW",
+                          "GQ",
+                          "GR",
+                          "GD",
+                          "GL",
+                          "GT",
+                          "GF",
+                          "GU",
+                          "GY",
+                          "HK",
+                          "HM",
+                          "HN",
+                          "HR",
+                          "HT",
+                          "HU",
+                          "ID",
+                          "IM",
+                          "IN",
+                          "IO",
+                          "IE",
+                          "IQ",
+                          "IS",
+                          "IL",
+                          "IT",
+                          "JM",
+                          "JE",
+                          "JO",
+                          "JP",
+                          "KZ",
+                          "KE",
+                          "KG",
+                          "KH",
+                          "KI",
+                          "KN",
+                          "KR",
+                          "XK",
+                          "KW",
+                          "LA",
+                          "LB",
+                          "LR",
+                          "LY",
+                          "LC",
+                          "LI",
+                          "LK",
+                          "LS",
+                          "LT",
+                          "LU",
+                          "LV",
+                          "MO",
+                          "MF",
+                          "MA",
+                          "MC",
+                          "MD",
+                          "MG",
+                          "MV",
+                          "MX",
+                          "MH",
+                          "MK",
+                          "ML",
+                          "MT",
+                          "MM",
+                          "ME",
+                          "MN",
+                          "MP",
+                          "MZ",
+                          "MR",
+                          "MS",
+                          "MQ",
+                          "MU",
+                          "MW",
+                          "MY",
+                          "YT",
+                          "NA",
+                          "NC",
+                          "NE",
+                          "NF",
+                          "NG",
+                          "NI",
+                          "NU",
+                          "NL",
+                          "NO",
+                          "NP",
+                          "NR",
+                          "NZ",
+                          "OM",
+                          "PK",
+                          "PA",
+                          "PN",
+                          "PE",
+                          "PH",
+                          "PW",
+                          "PG",
+                          "PL",
+                          "PR",
+                          "PT",
+                          "PY",
+                          "PS",
+                          "PF",
+                          "QA",
+                          "RE",
+                          "RO",
+                          "RU",
+                          "RW",
+                          "SA",
+                          "SD",
+                          "SN",
+                          "SG",
+                          "GS",
+                          "SH",
+                          "SJ",
+                          "SB",
+                          "SL",
+                          "SV",
+                          "SM",
+                          "SO",
+                          "PM",
+                          "RS",
+                          "SS",
+                          "ST",
+                          "SR",
+                          "SK",
+                          "SI",
+                          "SE",
+                          "SZ",
+                          "SX",
+                          "SC",
+                          "TC",
+                          "TD",
+                          "TG",
+                          "TH",
+                          "TJ",
+                          "TK",
+                          "TM",
+                          "TL",
+                          "TO",
+                          "TT",
+                          "TN",
+                          "TR",
+                          "TV",
+                          "TW",
+                          "TZ",
+                          "UG",
+                          "UA",
+                          "UM",
+                          "UY",
+                          "US",
+                          "UZ",
+                          "VA",
+                          "VC",
+                          "VE",
+                          "VG",
+                          "VI",
+                          "VN",
+                          "VU",
+                          "WF",
+                          "WS",
+                          "YE",
+                          "ZA",
+                          "ZM",
+                          "ZW"
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "case": "country only",
+      "sent": {
+        "address": {
+          "country": "US"
+        }
+      },
+      "status": 400,
+      "body": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "address/addressLine",
+                      "errorType": "REQUIRED_VALUE_ERROR",
+                      "errorMessage": "must have required property 'addressLine'",
+                      "params": {
+                        "missingProperty": "addressLine"
+                      }
+                    },
+                    {
+                      "errorPath": "address/city",
+                      "errorType": "REQUIRED_VALUE_ERROR",
+                      "errorMessage": "must have required property 'city'",
+                      "params": {
+                        "missingProperty": "city"
+                      }
+                    },
+                    {
+                      "errorPath": "address/subdivision",
+                      "errorType": "REQUIRED_VALUE_ERROR",
+                      "errorMessage": "must have required property 'subdivision'",
+                      "params": {
+                        "missingProperty": "subdivision"
+                      }
+                    },
+                    {
+                      "errorPath": "address/postalCode",
+                      "errorType": "REQUIRED_VALUE_ERROR",
+                      "errorMessage": "must have required property 'postalCode'",
+                      "params": {
+                        "missingProperty": "postalCode"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "case": "no country, parts only",
+      "sent": {
+        "address": {
+          "city": "Montgomery",
+          "addressLine": "x",
+          "postalCode": "1"
+        }
+      },
+      "status": 400,
+      "body": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "address/country",
+                      "errorType": "REQUIRED_VALUE_ERROR",
+                      "errorMessage": "must have required property 'country'",
+                      "params": {
+                        "missingProperty": "country"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "case": "IL valid street",
+      "sent": {
+        "address": {
+          "country": "IL",
+          "streetName": "Herzl",
+          "streetNumber": "1",
+          "city": "Tel Aviv",
+          "postalCode": "6100000"
+        }
+      },
+      "status": 200,
+      "body": {
+        "status": "PENDING",
+        "storedSubmissions": {
+          "address": {
+            "city": "Tel Aviv",
+            "country": "IL",
+            "streetName": "Herzl",
+            "postalCode": "6100000",
+            "streetNumber": "1"
+          }
+        }
+      }
+    },
+    {
+      "case": "IL no postalCode",
+      "sent": {
+        "address": {
+          "country": "IL",
+          "streetName": "Herzl",
+          "streetNumber": "1",
+          "city": "Tel Aviv"
+        }
+      },
+      "status": 400,
+      "body": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "address/postalCode",
+                      "errorType": "REQUIRED_VALUE_ERROR",
+                      "errorMessage": "must have required property 'postalCode'",
+                      "params": {
+                        "missingProperty": "postalCode"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "case": "IL with addressLine",
+      "sent": {
+        "address": {
+          "country": "IL",
+          "addressLine": "Herzl 1",
+          "city": "Tel Aviv",
+          "postalCode": "1"
+        }
+      },
+      "status": 400,
+      "body": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "address/streetName",
+                      "errorType": "REQUIRED_VALUE_ERROR",
+                      "errorMessage": "must have required property 'streetName'",
+                      "params": {
+                        "missingProperty": "streetName"
+                      }
+                    },
+                    {
+                      "errorPath": "address/streetNumber",
+                      "errorType": "REQUIRED_VALUE_ERROR",
+                      "errorMessage": "must have required property 'streetNumber'",
+                      "params": {
+                        "missingProperty": "streetNumber"
+                      }
+                    },
+                    {
+                      "errorPath": "address/addressLine",
+                      "errorType": "UNKNOWN_VALUE_ERROR",
+                      "errorMessage": "must NOT have additional properties",
+                      "params": {
+                        "additionalProperty": "addressLine"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "case": "IL with addressLine2",
+      "sent": {
+        "address": {
+          "country": "IL",
+          "streetName": "Herzl",
+          "streetNumber": "1",
+          "addressLine2": "apt 3",
+          "city": "Tel Aviv",
+          "postalCode": "1"
+        }
+      },
+      "status": 200,
+      "body": {
+        "status": "PENDING",
+        "storedSubmissions": {
+          "address": {
+            "city": "Tel Aviv",
+            "country": "IL",
+            "streetName": "Herzl",
+            "postalCode": "1",
+            "addressLine2": "apt 3",
+            "streetNumber": "1"
+          }
+        }
+      }
+    },
+    {
+      "case": "IT (COMMON_STATE) subdivision MI",
+      "sent": {
+        "address": {
+          "country": "IT",
+          "addressLine": "Via Roma 1",
+          "city": "Milano",
+          "subdivision": "MI",
+          "postalCode": "20100"
+        }
+      },
+      "status": 400,
+      "body": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "address/subdivision",
+                      "errorType": "NOT_ALLOWED_VALUE_ERROR",
+                      "errorMessage": "must be equal to one of the allowed values",
+                      "params": {
+                        "allowedValues": [
+                          "21",
+                          "23",
+                          "25",
+                          "32",
+                          "34",
+                          "36",
+                          "42",
+                          "45",
+                          "52",
+                          "55",
+                          "57",
+                          "62",
+                          "65",
+                          "67",
+                          "72",
+                          "75",
+                          "77",
+                          "78",
+                          "82",
+                          "88"
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "case": "IT subdivision XX",
+      "sent": {
+        "address": {
+          "country": "IT",
+          "addressLine": "Via Roma 1",
+          "city": "Milano",
+          "subdivision": "XX",
+          "postalCode": "20100"
+        }
+      },
+      "status": 400,
+      "body": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "address/subdivision",
+                      "errorType": "NOT_ALLOWED_VALUE_ERROR",
+                      "errorMessage": "must be equal to one of the allowed values",
+                      "params": {
+                        "allowedValues": [
+                          "21",
+                          "23",
+                          "25",
+                          "32",
+                          "34",
+                          "36",
+                          "42",
+                          "45",
+                          "52",
+                          "55",
+                          "57",
+                          "62",
+                          "65",
+                          "67",
+                          "72",
+                          "75",
+                          "77",
+                          "78",
+                          "82",
+                          "88"
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "case": "IT no subdivision",
+      "sent": {
+        "address": {
+          "country": "IT",
+          "addressLine": "Via Roma 1",
+          "city": "Milano",
+          "postalCode": "20100"
+        }
+      },
+      "status": 400,
+      "body": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "address/subdivision",
+                      "errorType": "REQUIRED_VALUE_ERROR",
+                      "errorMessage": "must have required property 'subdivision'",
+                      "params": {
+                        "missingProperty": "subdivision"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "case": "FR subdivision IDF",
+      "sent": {
+        "address": {
+          "country": "FR",
+          "addressLine": "1 rue",
+          "city": "Paris",
+          "subdivision": "IDF",
+          "postalCode": "75001"
+        }
+      },
+      "status": 200,
+      "body": {
+        "status": "PENDING",
+        "storedSubmissions": {
+          "address": {
+            "city": "Paris",
+            "addressLine": "1 rue",
+            "country": "FR",
+            "postalCode": "75001",
+            "subdivision": "IDF"
+          }
+        }
+      }
+    },
+    {
+      "case": "FR subdivision FR-IDF",
+      "sent": {
+        "address": {
+          "country": "FR",
+          "addressLine": "1 rue",
+          "city": "Paris",
+          "subdivision": "FR-IDF",
+          "postalCode": "75001"
+        }
+      },
+      "status": 400,
+      "body": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "address/subdivision",
+                      "errorType": "NOT_ALLOWED_VALUE_ERROR",
+                      "errorMessage": "must be equal to one of the allowed values",
+                      "params": {
+                        "allowedValues": [
+                          "GES",
+                          "NAQ",
+                          "ARA",
+                          "BFC",
+                          "BRE",
+                          "CVL",
+                          "20R",
+                          "IDF",
+                          "OCC",
+                          "HDF",
+                          "NOR",
+                          "PDL",
+                          "PAC",
+                          "BL",
+                          "RE",
+                          "TF"
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "case": "ZW (COMMON) with subdivision",
+      "sent": {
+        "address": {
+          "country": "ZW",
+          "addressLine": "1 st",
+          "city": "Harare",
+          "subdivision": "HA",
+          "postalCode": "0000"
+        }
+      },
+      "status": 400,
+      "body": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "address/subdivision",
+                      "errorType": "UNKNOWN_VALUE_ERROR",
+                      "errorMessage": "must NOT have additional properties",
+                      "params": {
+                        "additionalProperty": "subdivision"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "case": "ZW (COMMON) no subdivision",
+      "sent": {
+        "address": {
+          "country": "ZW",
+          "addressLine": "1 st",
+          "city": "Harare",
+          "postalCode": "0000"
+        }
+      },
+      "status": 200,
+      "body": {
+        "status": "PENDING",
+        "storedSubmissions": {
+          "address": {
+            "country": "ZW",
+            "addressLine": "1 st",
+            "city": "Harare",
+            "postalCode": "0000"
+          }
+        }
+      }
+    },
+    {
+      "case": "US postalCode 60 chars",
+      "sent": {
+        "address": {
+          "country": "US",
+          "subdivision": "AL",
+          "city": "Montgomery",
+          "postalCode": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "addressLine": "600 Dexter Ave"
+        }
+      },
+      "status": 400,
+      "body": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "address/postalCode",
+                      "errorType": "INVALID_VALUE_FOR_PATTERN_ERROR",
+                      "errorMessage": "must match pattern \"^.{0,50}$\"",
+                      "params": {
+                        "pattern": "^.{0,50}$"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "case": "US addressLine 160 chars",
+      "sent": {
+        "address": {
+          "country": "US",
+          "subdivision": "AL",
+          "city": "Montgomery",
+          "postalCode": "36104",
+          "addressLine": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        }
+      },
+      "status": 400,
+      "body": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "address/addressLine",
+                      "errorType": "MAX_LENGTH_ERROR",
+                      "errorMessage": "must NOT have more than 150 characters",
+                      "params": {
+                        "limit": 150
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "case": "limited: GB not in allowedCountries",
+      "sent": {
+        "address": {
+          "country": "US",
+          "subdivision": "AL",
+          "city": "Montgomery",
+          "postalCode": "36104",
+          "addressLine": "600 Dexter Ave"
+        },
+        "address_limited": {
+          "country": "GB",
+          "addressLine": "1 st",
+          "city": "London",
+          "subdivision": "ENG",
+          "postalCode": "SW1"
+        }
+      },
+      "status": 400,
+      "body": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "address_limited/country",
+                      "errorType": "NOT_ALLOWED_VALUE_ERROR",
+                      "errorMessage": "must be equal to one of the allowed values",
+                      "params": {
+                        "allowedValues": ["US", "IL", "IT"]
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "case": "limited: US valid",
+      "sent": {
+        "address": {
+          "country": "US",
+          "subdivision": "AL",
+          "city": "Montgomery",
+          "postalCode": "36104",
+          "addressLine": "600 Dexter Ave"
+        },
+        "address_limited": {
+          "country": "US",
+          "subdivision": "AL",
+          "city": "Montgomery",
+          "postalCode": "36104",
+          "addressLine": "600 Dexter Ave"
+        }
+      },
+      "status": 200,
+      "body": {
+        "status": "PENDING",
+        "storedSubmissions": {
+          "address": {
+            "city": "Montgomery",
+            "addressLine": "600 Dexter Ave",
+            "country": "US",
+            "postalCode": "36104",
+            "subdivision": "AL"
+          },
+          "address_limited": {
+            "city": "Montgomery",
+            "addressLine": "600 Dexter Ave",
+            "country": "US",
+            "postalCode": "36104",
+            "subdivision": "AL"
+          }
+        }
+      }
+    },
+    {
+      "case": "address as string",
+      "sent": {
+        "address": "600 Dexter Ave"
+      },
+      "status": 400,
+      "body": {
+        "message": "Validation failed: submission Submission doesn't satisfy form requirements",
+        "details": {
+          "validationError": {
+            "fieldViolations": [
+              {
+                "ruleName": "SUBMISSION_VALIDATION",
+                "field": "submission",
+                "description": "Submission doesn't satisfy form requirements",
+                "data": {
+                  "errors": [
+                    {
+                      "errorPath": "address",
+                      "errorType": "TYPE_ERROR",
+                      "errorMessage": "must be object",
+                      "params": {
+                        "type": "object"
+                      }
+                    }
+                  ]
+                },
+                "violatedRule": "OTHER"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

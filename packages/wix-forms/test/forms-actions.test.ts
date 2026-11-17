@@ -7,9 +7,12 @@ import type { WixFormsService } from '../lib/services/wix-forms-service-marker.j
 
 function formsServiceStub(): WixFormsService {
     return {
-        getFormSummaryFields: vi.fn(async () => [
-            { target: 'first_name', label: 'First name', type: 'STRING', required: false },
-        ]),
+        getFormSummaryFields: vi.fn(async () => ({
+            fields: [
+                { target: 'first_name', label: 'First name', type: 'STRING', required: false },
+            ],
+            unsupportedFields: [],
+        })),
     } as unknown as WixFormsService;
 }
 
@@ -37,5 +40,6 @@ describe('getFormSummary query', () => {
         const result = await getFormSummary.handler({ formId }, forms);
         expect(forms.getFormSummaryFields).toHaveBeenCalledWith(formId);
         expect(result.fields).toHaveLength(1);
+        expect(result.unsupportedFields).toEqual([]);
     });
 });

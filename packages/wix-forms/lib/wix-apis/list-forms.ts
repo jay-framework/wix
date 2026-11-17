@@ -1,6 +1,6 @@
 import type { WixClient } from '@wix/sdk';
 import { wixFetch } from '@jay-framework/wix-server-client';
-import type { RawFormField } from './get-form.js';
+import type { RawFormField, RawFormStep } from './get-form.js';
 
 /**
  * List Forms (Wix Form Schema Service v4).
@@ -16,6 +16,7 @@ export interface ListedForm {
     id: string;
     name?: string;
     formFields?: RawFormField[];
+    steps?: RawFormStep[];
 }
 
 interface ListFormsResponse {

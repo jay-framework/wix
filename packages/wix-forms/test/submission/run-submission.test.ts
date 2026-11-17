@@ -96,6 +96,7 @@ interface HarnessOptions {
      */
     forceSite?: true;
     isSubmittableForm?: SubmitDeps['isSubmittableForm'];
+    unsupportedFieldsOf?: SubmitDeps['unsupportedFieldsOf'];
 }
 
 function harness(options: HarnessOptions = {}): Harness {
@@ -117,6 +118,7 @@ function harness(options: HarnessOptions = {}): Harness {
             resolveIdentity,
             resolveClient,
             isSubmittableForm: options.isSubmittableForm ?? (async () => true),
+            unsupportedFieldsOf: options.unsupportedFieldsOf ?? (async () => []),
             hook: options.forceSite ? siteForcingHook(options.hook) : options.hook,
         },
     };
@@ -661,6 +663,7 @@ describe('runSubmission — DL#43, resolving the caller session', () => {
             {
                 ...identitySubmitDeps(identity),
                 isSubmittableForm: async () => true,
+                unsupportedFieldsOf: async () => [],
                 createSubmission: async (_formId, _values, authorization) =>
                     void authorizations.push(authorization),
             },
@@ -1278,5 +1281,61 @@ describe('runSubmission — DL#53 G3, the hook code reaches the result', () => {
         const { deps } = harness({ wixFails: forbidden });
 
         expect('code' in (await submitWith(deps))).toBe(false);
+    });
+});
+
+describe('runSubmission — DL #51 test 4, unsupported fields', () => {
+    const address = {
+        target: 'address',
+        label: 'Multi-line address',
+        wixKind: 'ADDRESS/MULTILINE_ADDRESS',
+    };
+    const L10 =
+        '[wix-forms] refused a submission for a form with a required field this site cannot show';
+
+    it('should refuse a form with a required unsupported field without calling Wix', async () => {
+        const unsupportedFieldsOf = vi.fn(async () => [{ ...address, required: true }]);
+        const { deps, posts } = harness({ unsupportedFieldsOf });
+
+        expect(await submitWith(deps, { first_name: 'Ada', address: 'x' })).toEqual(
+            REJECTED_FAILURE,
+        );
+        expect(posts).toEqual([]);
+        expect(unsupportedFieldsOf).toHaveBeenCalledWith(FORM_ID);
+        expect(errorLog.mock.calls).toEqual([[L10, { formId: FORM_ID }]]);
+    });
+
+    it('should ask with the canonical id, after the allowlist check', async () => {
+        const unsupportedFieldsOf = vi.fn(async () => []);
+        const { deps } = harness({ unsupportedFieldsOf, isSubmittableForm: async () => false });
+
+        await submitFormId(deps, FORM_ID.toUpperCase());
+        expect(unsupportedFieldsOf).not.toHaveBeenCalled();
+
+        const allowed = harness({ unsupportedFieldsOf });
+        await submitFormId(allowed.deps, FORM_ID.toUpperCase());
+        expect(unsupportedFieldsOf).toHaveBeenCalledWith(FORM_ID);
+    });
+
+    it('should submit without the key of an optional unsupported field', async () => {
+        const { deps, posts } = harness({
+            unsupportedFieldsOf: async () => [{ ...address, required: false }],
+        });
+
+        expect(await submitWith(deps, { first_name: 'Ada', address: 'x' })).toEqual({
+            success: true,
+        });
+        expect(posts).toEqual([[FORM_ID, { first_name: 'Ada' }]]);
+    });
+
+    it('should return UNKNOWN without posting when the unsupported fields cannot load', async () => {
+        const { deps, posts } = harness({
+            unsupportedFieldsOf: async () => {
+                throw new Error('Wix API 503');
+            },
+        });
+
+        expect(await submitWith(deps)).toEqual(UNKNOWN_FAILURE);
+        expect(posts).toEqual([]);
     });
 });
