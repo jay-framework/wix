@@ -1,6 +1,6 @@
 {
   "name": "@jay-framework/wix-forms",
-  "version": "0.27.0",
+  "version": "0.26.4",
   "type": "module",
   "description": "Wix Forms package for Jay Framework — dynamic form schemas, form rendering, and getFormSummary for cross-plugin use",
   "license": "Apache-2.0",

@@ -1,6 +1,6 @@
 # Changelog — @jay-framework/wix-bookings
 
-## 0.27.0
+## Unreleased
 
 ### Breaking
 
@@ -15,7 +15,7 @@
 2. **`ParticipantFormValue` now includes an address object** (`string | boolean | AddressValue`);
    `createBooking`'s `invalid` outcome may carry `<target>/<part>` keys, `fieldOptions`,
    `revealedParts` and `factsCountry`.
-3. **Requires `@jay-framework/wix-forms` `^0.27.0`.**
+3. **Requires the `@jay-framework/wix-forms` release that ships address fields** (release both packages together).
 
 ### Features
 

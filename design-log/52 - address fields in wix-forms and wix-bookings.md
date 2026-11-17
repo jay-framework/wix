@@ -1049,7 +1049,7 @@ Phase A0 (fixtures + probe script), A (shared core), B-server, B-client, F (per 
 - **m2** A template target outside the eight parts fails the response (`parseAddressTemplates`). Test A1 "fails on a target that is not one of the eight parts".
 - **m3** `createLearnedAddressFacts({ labels })`; `snapshot()` names codes from `address.labels.subdivisions`. Test A10.
 - **m4** `checkAddressBindings` is exported from `@jay-framework/wix-forms/tools`; `validateBookingFlowBindings` from wix-bookings `lib/tools.ts`, which imports the core from `@jay-framework/wix-forms/tools`.
-- **m5** Both packages are 0.27.0 and wix-bookings depends on `@jay-framework/wix-forms` `^0.27.0`. §7 checklist addition: the final commit must keep both versions and that range in step (and the lockfile).
+- **m5** Versions are **not** changed on this branch (both packages stay `0.26.4`, and wix-bookings keeps `@jay-framework/wix-forms` `^0.26.4`). Versioning is a separate release step owned by the release owner, who sets the versions and the wix-bookings → wix-forms range together. The CHANGELOG entries sit under "Unreleased" and list the breaking changes so the release owner can choose the version.
 - **m6** A participant form that cannot be read during agent-kit leaves `participantFormHasAddress` out for that service and logs a warning; the validator then warns. Test: `generate-agent-kit` "writes true, false, and no flag when the form cannot be read".
 - **m7** The server returns `factsCountry` (target → the submitted country); bookings and per-form clients apply learned facts to that country only. Test B3 "applies learned facts to the country the server names".
 
@@ -1115,3 +1115,5 @@ Every Gate-exit check L1–L12 has passed on the final code. L1–L10 and L12 ar
 | L12 L-drift                  | PASS   | No drift: 247 countries, 66 non-COMMON, `unmatchedOrAmbiguous {}`; 394 visitor probes over 5 rotated visitor tokens, none accepted; IL `subdivision` → `UNKNOWN_VALUE_ERROR`                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 
 `RELEASE-BLOCKED.md` is not deleted by this commit: removing it (the §7 final commit) is a release decision left to the owner.
+
+**Versioning (2026-11-17):** the 0.27.0 bump made during implementation was reverted at the release owner's request. This branch changes no package versions or dependency ranges between the two packages; the §6 semver analysis (a breaking change for `0.x` consumers) is input for the release step, not a decision taken here.
