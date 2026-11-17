@@ -497,7 +497,7 @@ QA testbed (`qa-testbed/testbed`, site of the QA forms) with a locally packed wi
 
 ### Pending
 
-- **Human VoiceOver + Safari re-listen** (Verification (a)–(i)), script `a11y-spike/RELISTEN-SCRIPT.md` in the workspace (outside the repo). The status becomes `[Implemented]` once it passes; NVDA, JAWS and TalkBack remain an untested known gap (CHANGELOG).
+- **Human VoiceOver + Safari re-listen** (Verification (a)–(i)), script `a11y-spike/RELISTEN-SCRIPT.md` in the workspace (outside the repo). The status becomes `[Implemented]` once it passes (**resolved 2026-11-17:** passed — see "VoiceOver re-listen results" and "Automated VoiceOver runs"); NVDA, JAWS and TalkBack remain an untested known gap (CHANGELOG).
 - Agent feedback (jay-feedback): both, as designed — the guides (`rich-forms.md` §1, §3 `errorRule` + page checks, §4b, §6; `per-form-contracts.md`; `user-visible-messages.md`; `wix-forms-dashboard-content.md`) and the bindings-validator warning.
 
 ### Address parts addendum (2026-11-17)
@@ -510,7 +510,7 @@ Implemented as designed in "Addendum (2026-11-17): address parts" below. Commits
 - **Observed (by design).** A part that already **shows** an error (because leaving another part validated the whole address) announces when left, even if untouched, matching a native field that shows an error. A part with no visible error stays quiet (G2).
 - **Gate:** `yarn install` and `yarn confirm` exit 0 (wix-forms 876/876, wix-bookings 173/173; the others 108, 44, 42, 38, 11 ×3, 8, 3, all green). The formatter changed no unrelated files. No package version or dependency range changed.
 - **Demo:** QA testbed page `src/pages/dl59-address` (form "QA Address LF0 v2", both addresses bound, a visible `statusMessage` readout plus a log of every write to the `role="status"` region), with a tarball packed from this branch. Playwright at 1440×900 with captions: **4/4 checks passed**. (a) at the leave the region is `''`, and on the next task it reads "Address is required."; (b) a repeat leave writes `''` then the error; (c) typing a fix writes only `''`; (d) choosing Israel removes Address and its announcement, with only `''` written. No submissions. Video: `dl59-address-blur-announce-2026-11-17.webm` at the workspace root.
-- **Pending:** a human VoiceOver re-listen of the "Address parts" steps in the workspace re-listen script.
+- **Pending:** a human VoiceOver re-listen of the "Address parts" steps in the workspace re-listen script. **Resolved 2026-11-17:** covered by the automated VoiceOver runs (address first leave 5/5, repeat 2/3, fix silent) — see "Automated VoiceOver runs".
 
 ## VoiceOver re-listen results (2026-11-17)
 
@@ -604,7 +604,7 @@ Approved follow-up (option A). The Design section stays as written; this changes
 - `blur-announcer.ts`: `distinctFromLastWrite(text, lastWritten)` and a `lastWritten` memory; the deferred write sends `text + ' '` when the last write was exactly `text`. Owner, `withdraw`, `cancel`, delay 0 unchanged. No deviation from the addendum.
 - Tests red → green: 4 failing before the fix (new unit toggle test, new interactive `ann@` sequence, and the two existing repeat-leave tests in validation-timing and address (b), updated to the toggled value); after: wix-forms 878/878; `yarn confirm` exit 0.
 - Equality audit: no production code compares `statusMessage` text; the only equality checks were those tests.
-- Pending: VoiceOver re-listen of the repeat leave on the repacked QA testbed.
+- Pending: VoiceOver re-listen of the repeat leave on the repacked QA testbed. **Resolved 2026-11-17:** 0/3 → 7/11 after this addendum; the remaining misses are accepted as a polite-announcement limitation — see "Automated VoiceOver runs".
 
 ## Automated VoiceOver runs (2026-11-17)
 
