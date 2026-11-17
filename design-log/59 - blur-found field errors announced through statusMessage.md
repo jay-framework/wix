@@ -1,6 +1,6 @@
 # 59 - Blur-Found Field Errors Announced through statusMessage
 
-Status: [Design] — Phase 0 passed (VoiceOver); ready for implementation approval. Behaviour approved by product. Revised after review rounds 1–8 and the Phase 0 results.
+Status: [Implemented — pending VoiceOver re-listen] — Phases 1–3 and 5 implemented, Phase 4 demo recorded (2026-11-17); the post-implementation human re-listen (Verification) is outstanding. Design sections unchanged since approval; see Implementation Results.
 
 Numbering: renumbered from #58 (taken by another branch's log). Whichever branch merges to `main` second rebases its `readme.md` row.
 
@@ -457,3 +457,45 @@ The guide states: word each rule once here, bind `{error}`, and keep `errorRule`
 - **5**: status line counts rounds 1–8.
 
 **Phase 0 results (2026-11-17)** — VoiceOver + Safari passed at 0 / 150 / 500 / 1000 ms with no difference heard; repeat leave re-read; per-field `aria-live` redundant. Row 8 applied: `BLUR_ANNOUNCE_DELAY_MS = 0` (clear now, write on the next macrotask), 150 ms removed throughout; per-field `aria-live` removed, so the validator warning, test 18 and the Phase 3 `aria-live` edits are in; no product re-confirmation of behaviour 6; NVDA / JAWS / TalkBack untested, recorded as a known gap here and in the CHANGELOG notes. TL;DR, Problem, behaviours 1 and 6, Prior Art, null hypothesis, Q2, Q7, Design, Phases 0–3, tests, Verification, Trade-offs and pre-mortem updated.
+
+## Implementation Results
+
+Implemented 2026-11-17 on `forms-blur-announce`, on base `79683ad`. **Not rebased:** `git rebase origin/main` (one new commit, `3d74579`, bookings phone format) conflicted on `design-log/readme.md` (the table rows), so it was aborted; every `file:line` citation above is still valid on this base. Whichever branch merges second rebases the readme row (as stated at the top).
+
+Commits: design log; Phase 1 (tests, red); Phase 2 (announcer); Phase 3 (validator, guides, CHANGELOG); Phase 5 (page wording); this section. No package version or dependency range changed.
+
+### Tests (red → green)
+
+- **Phase 1** — tests 1–17 and 19–23 in `test/wix-form-validation-timing.interactive.test.ts`, test 18 in `test/wix-form-bindings-validator.test.ts`, plus 10 unit tests in the new `test/blur-announcer.test.ts`. Red on the pre-implementation component (checked by running the new cases against `79683ad`'s `wix-form.ts`): 1, 2, 11, 18 and the setup assertions of 4, 5, 7, 13, 15, 22, 23 — as labelled — **plus 17 and 19** (see deviations). Guards green: 3, 6, 8, 9, 10, 12, 14, 16 (both variants), 20, 21. Unit tests red with `createBlurAnnouncer is not a function` (the module held only the Phase 0 constant in Phase 1, so the interactive file could import it and fail per case).
+- **Phase 2** — every Phase 1 test green except 18. Package: 613/617 (the 4 red are test 18's four live cases).
+- **Phase 3** — 18 green; the accessible-pattern test's pattern updated (drop `aria-live`, add the status region; expectation `[]` unchanged); chip fixture + `rich-forms.md` §4b pair updated together. Package: 617/617.
+- **Phase 5** — tests 24–30 in `test/wix-form-page-checks.interactive.test.ts`. Red at the start of Phase 5: 24, 26, 27 (EMAIL and SERVER cases), 29, 30 and the setup assertion of 28. Guards green: 25 and 27's HOOK / CUSTOM half. Existing two-argument page-check and context tests unchanged and green. Package: **626/626**.
+- **Gate**: `yarn install`, `yarn build`, `yarn confirm` all exit 0. `yarn confirm` test counts per package: wix-forms 626/626; the others 108/108, 61/61, 44/44, 42/42, 38/38, 11/11 (×3), 8/8, 3/3. The formatter's edits to unrelated files (examples' `wix-request-session.md`, `wix-data/test/setup-before-init.test.ts`) were restored. `npm run validate` (validate-plugin) passes.
+
+### Deviations
+
+1. **Fake-timer protocol.** `vi.advanceTimersByTimeAsync(0)` does not fire a 0 ms timer under vitest's fake timers here (observed: the timer count stays 1). The harness's `flush` is `vi.runOnlyPendingTimersAsync()`, and "advance" runs it twice: once for the announcer's write, once for jay's reactive auto-batch, which that write schedules because it happens outside an event handler (the view state only shows it after that flush). "Not yet" is still asserted synchronously after the event.
+2. **Tests 17 and 19 were red, not guards.** 17's required setup assertion ("a `pagehide` listener was captured") fails on today's code, which registers none. 19 is made non-vacuous by asserting the announcer's pending timer is gone after `unmount()` (`vi.getTimerCount()` > 0 before, 0 after), which also fails today (no timer). The `createEffect` cleanup does run on unmount in this runtime (Q6 fallback not needed).
+3. **Test 23's chip half is not covered by an interactive test.** A chip field binds no native `input`, so it can never own a blur announcement; the harness cannot give one target both a chip group and an input. `handleOptionToggle` calls the same `withdrawIfFixed` as `handleControl`, which test 23 covers.
+4. **Test 12** needed the chip field in `fields` (a harness setup slip, fixed before the red run).
+5. **Phase 5 tests use real timers + the file's `settle()`** (a 10 ms wait covers the 0 ms write and the reactive flush) instead of fake timers; they assert values, not timing.
+6. **No `registeredFieldMessages`.** The context exports `registeredFields(context, formId): FieldRegistration[]`; `registeredFieldChecks` maps over it and `createPageCheckRunner` reads the records directly (it needs record identity for the unknown-target `WeakSet`), so a separate messages accessor would be dead code.
+7. **Small helpers in `wix-form.ts`**: `withdrawIfFixed(field)` (shared by `handleControl` / `handleOptionToggle`) and `inPageWording(rejection)` for the rejection branch. `page-checks.ts` gained `ownEntry` for the own-property lookup now used twice.
+8. **Phase order**: Phase 5 was implemented before the Phase 4 demo so one recording covers the page-wording addendum.
+9. **Validator**: `attribute` on the finding is `aria-live` or `role`; the suggestion names the page's own key (`{contact.statusMessage}`), not `{key…}`.
+10. Test 2 in the log ("observe both writes") is asserted through the view state: `''` synchronously after the second blur, then the text after advance.
+
+### What the log got slightly wrong
+
+- Test 17 and 19 labels (deviation 2).
+- "Only `wix-form-bindings-validator.test.ts:183-195` breaks from the warning" — the same file's `should accept the rich-forms §4b checkbox-chip example` (`:372-378`) also reads the chip fixture through the bindings validator and broke; fixed by the planned fixture edit.
+- Page `messages` are keyed by **field target** (as checks are), not the contract tag name; on a form whose tags differ from targets (`firstName_5820` / `first_name_5820`) a page that uses the tag gets the unknown-target warning. The guide says "target" and its examples use forms where they match.
+
+### Demo (Phase 4)
+
+QA testbed (`qa-testbed/testbed`, site of the QA forms) with a locally packed wix-forms tarball and a new page `src/pages/dl59` (accessible pattern: no `aria-live` on errors, visually hidden `role="status"` region; page wording for first name REQUIRED). `jay-stack agent-kit` and `validate` pass; the new page has no warnings, and the older `contact` page now gets the new "announced twice" warning on its five live error spans, as intended. Playwright (1440×900) with a caption overlay and a readout of every write to the status region: **9/9 checks passed** — no live per-field errors; status empty in the leaving task and holding the error on the next task; repeat leave clears then rewrites; fixing clears with no new write; page wording shown and announced; Enter-key submit from an invalid field writes no blur text and focuses the first invalid field. Video: `dl59-blur-announce-demo-2026-11-17.webm` at the workspace root. No submissions were made. Not demoed (need a real submission): success-after-announcement and rejection-then-blur — covered by tests 15, 21 and 7, and by re-listen steps g and h.
+
+### Pending
+
+- **Human VoiceOver + Safari re-listen** (Verification (a)–(i)), script `a11y-spike/RELISTEN-SCRIPT.md` in the workspace (outside the repo). The status becomes `[Implemented]` once it passes; NVDA, JAWS and TalkBack remain an untested known gap (CHANGELOG).
+- Agent feedback (jay-feedback): both, as designed — the guides (`rich-forms.md` §1, §3 `errorRule` + page checks, §4b, §6; `per-form-contracts.md`; `user-visible-messages.md`; `wix-forms-dashboard-content.md`) and the bindings-validator warning.
