@@ -141,7 +141,7 @@ export function wixKindOf(key: FieldKey): string {
     return key.format === UNKNOWN_FORMAT ? kind : `${kind}/${key.format}`;
 }
 
-/** Rows 4-10. */
+/** Rows 4-10 (and 8b). */
 function classifyStringField(key: FieldKey): FormFieldInputType | undefined {
     const format = key.format;
     switch (key.componentType) {
@@ -150,6 +150,8 @@ function classifyStringField(key: FieldKey): FormFieldInputType | undefined {
                 return key.identifier === 'TEXT_AREA' ? 'textarea' : 'text';
             if (format === 'EMAIL') return 'email';
             if (format === 'URL') return 'url';
+            // Row 8b (DL #51 addendum 2026-11-17): an API-made phone field, phone-checked by Wix.
+            if (format === 'PHONE') return 'tel';
             return undefined;
         case 'PHONE_INPUT':
             return format === 'PHONE' ? 'tel' : undefined;

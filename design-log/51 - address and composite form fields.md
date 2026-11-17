@@ -753,3 +753,21 @@ As decided above: agent-kit guides updated (unsupported fields, `FORM_UNSUPPORTE
 ### Release gate removed (2026-11-17)
 
 By owner decision, the release gate is removed from the repo instead of being closed through L6: `RELEASE-BLOCKED.md`, `assertReleaseNotBlocked` in `scripts/publish.cjs`, its test (`scripts/test/publish-gate.test.cjs`), the root `test` script entry and the "Check the release gate" step in `.github/workflows/publish.yml` are deleted. DL #52's live QA (L1–L12) covers the address behaviour L6 was meant to check. Nothing now blocks a publish mechanically; the L-drift probe (L12) stays a manual pre-release step (wix-forms CHANGELOG and `wix-forms-setup.md` → Before release).
+
+## Addendum (2026-11-17): `STRING` + `TEXT_INPUT` + `PHONE` → `'tel'`
+
+**Change:** one new row, 8b, after row 7: `STRING` + `TEXT_INPUT` + `PHONE` → per-form `'tel'`, bookings `'PHONE'`, rendered. The Design above is unchanged; this row extends the table.
+
+**Why:**
+
+- **An observed live tuple.** Get Form of the QA testbed form "QA Test DL54" (made through the Form Schemas API) has a phone field with identifier `TEXT_INPUT`, `componentType` `TEXT_INPUT` and `validation.format` `PHONE`. It is not in the Phase 0 captures (F5), so the fail-closed table dropped it as row 14, and a required one would block the whole form (or booking with `FORM_UNSUPPORTED`). It was found when the testbed `/dl55` and `/dl56` pages failed `jay-stack validate` in the DL #59 branch merge review. Every dashboard-made phone field seen (three on the customer site, testbed "QA DL55 Phone") is `CONTACTS_PHONE` / `PHONE_INPUT` / `PHONE`, row 8.
+- **Wix enforces the format.** `PHONE` is a format Wix checks server-side on this field: the DL #54/#55 live phone checks ran on this same field (DL #55 `wix-l1-probes-2026-11-11.json`), so it is not an unvalidated free-text field.
+- **It worked before DL #51.** The legacy projection rendered it as a phone input; row 14 was a regression for it, not a decision.
+
+**Evidence:** `wix-forms/test/fixtures/format-parity/text-input-phone-field-schema.json`, Get Form of "QA Test DL54" captured 2026-11-17, verbatim except the form id and `automationId` redacted.
+
+**Behaviour: exactly row 8.** `classifyStringField` returns `'tel'`, so everything keyed on `'tel'` / `'PHONE'` applies unchanged: the DL #55 phone rules and `checkPhone`, E.164 posting through `toPostedValues` (bookings: DL #58 through `projectParticipantForm`), and `defaultPhoneCountry`. A field-level default country exists only in `phoneInputOptions.defaultCountryCode`. `phoneRulesOf` reads it through `componentOptionsOf(raw)`, which for `TEXT_INPUT` is `textInputOptions` (`project-form-fields.ts`, `phoneRulesOf`), so for this tuple only config `defaultPhoneCountry` applies. `stringOptions.validation.phoneOptions.allowedCountryCodes` is read the same way as for row 8 (absent in the capture).
+
+**Tests:** `wix-forms/test/text-input-phone.test.ts` (classifier `'tel'`, projection with phone rules and no unsupported field, required too, E.164 for `+1 202-555-0123` → `+12025550123`, local `054-123-4567` with `IL` → `+972541234567`) and the bookings `participant-form.test.ts` case (projection `PHONE` with `defaultCountry`). They ran red (5/6 and 1/37 failing), then green after the one-row change.
+
+**Agent feedback loop:** neither. No agent-kit guide lists the supported tuples, and there is nothing new to validate: the field now projects like any phone field.

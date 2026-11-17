@@ -29,3 +29,10 @@
 - `createBooking` returns a Create Booking 400 with form violations as `invalid` (located part
   errors) instead of an `UNKNOWN` failure.
 - `services.yaml` gains `participantFormHasAddress` per service.
+
+### Fixes
+
+- **A participant phone field made through the Form Schemas API was unsupported.** A
+  `TEXT_INPUT` field with format `PHONE` is now a `PHONE` participant field (phone checks, E.164,
+  config `defaultPhoneCountry`), so a required one no longer disables booking with
+  `FORM_UNSUPPORTED` (wix-forms DL #51 addendum).
