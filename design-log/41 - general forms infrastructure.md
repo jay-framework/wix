@@ -502,3 +502,7 @@ End-to-end QA run 2026-11-10 (local builds of `main`, fresh `create jay` project
 - **Tests:** wix-forms 251/252 (the one red test is DL #44's chip `checked` check, red until jay treats `checked` as a boolean attribute).
 
 **Re-check on the fix branches (2026-11-10, video `qa-09`):** with jay `wix-forms-step-11` the guide's exact chip pattern (`checked="selected"`) renders unchecked in SSR, the DOM `checked` follows each click, the payload is `["News","Events"]` in option order, and focus moves to the confirmation after a successful submit. wix-forms 252/252.
+
+## Live Checks Results (2026-11-16)
+
+**Live check 2026-11-16 (0.26.4 from npm, QA testbed).** MUST-VERIFY #1 is closed: Wix Create Submission accepts `string[]` and boolean values. A form with an optional `CHECKBOX_GROUP` and `CHECKBOX`, submitted through a server-side hook, was stored as `["Alpha","Gamma"]` / `true` and `["Beta"]` / `false` (status CONFIRMED; the dashboard shows the tags). The string fallback is not needed. The guide's `<select multiple>` pattern (`selected="selected"`) renders with nothing selected and submits `["News","Offers"]`. Addendum A: focus now moves to the confirmation after a successful submit (it stayed on BODY on 2026-11-10).

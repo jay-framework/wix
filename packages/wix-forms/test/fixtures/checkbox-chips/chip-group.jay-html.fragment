@@ -9,7 +9,7 @@
   <label forEach="contact.interests.options" trackBy="value" class="chip {selected ? on}">
     <input type="checkbox" class="sr-only" ref="contact.interests.options.toggle" value="{value}" checked="selected" aria-invalid="{$parent.contact.interests.invalid}" /> {label}
   </label>
-  <span id="contact-interests-error" class="error" aria-live="polite">{contact.interests.error}</span>
+  <span id="contact-interests-error" class="error">{contact.interests.error}</span>
 </fieldset>
 <label><input type="checkbox" ref="contact.consent.input" /> I agree</label>
 <button ref="contact.submitButton">Send</button>

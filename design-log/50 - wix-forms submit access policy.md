@@ -354,3 +354,7 @@ Curl against the dev server — all passed:
 | Cross-site POST                        | 403 `CROSS_ORIGIN_REQUEST`                                |
 
 Browser: a real visitor submits after a cookie-less refusal; a member's submit is attributed to `submitter.memberId`.
+
+## Live Checks Results (2026-11-16)
+
+**Live check 2026-11-16 (0.26.4).** F1 holds in both directions. A cookie-less `submitForm` is refused (`reason:3`, "refused a submission without a session cookie", nothing stored). Real visitors in a normal profile and in a fresh private context get `wix_session`, send it on `submitForm`, and their submissions are stored with `submitter.visitorId`. There is no site-credential-only post for the unhooked form. The one exception is local WebKit over http, which never keeps the Secure cookie (DL #48).

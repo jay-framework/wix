@@ -25,7 +25,7 @@ store and returns to a blank form (`isSubmitted=false`).
     aria-describedby="contact-email-error"
     placeholder="{contact.email.placeholder}"
   />
-  <span id="contact-email-error" class="error" aria-live="polite">{contact.email.error}</span>
+  <span id="contact-email-error" class="error">{contact.email.error}</span>
   <button ref="contact.submitButton" aria-busy="{contact.isSubmitting}">Send</button>
 </form>
 
@@ -35,7 +35,7 @@ store and returns to a blank form (`isSubmitted=false`).
   <button type="button" ref="contact.resetButton">Send another</button>
 </section>
 
-<p role="status" aria-live="polite">{contact.statusMessage}</p>
+<p role="status" aria-live="polite" class="visually-hidden">{contact.statusMessage}</p>
 ```
 
 See **§6 Accessibility** for why each attribute is there.
@@ -143,18 +143,34 @@ above). The `invalid` variant also drives error styling.
 
 Every visible field has an `errorRule` variant:
 `NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE | URL | PATTERN | CUSTOM | SERVER | PHONE_COUNTRY | HOOK`.
-`error` keeps the English default text; for your own wording (or another language) branch on
-`errorRule` — never match the `error` text.
+`error` is the English default text unless the page words the rule itself. For your own
+wording (or another language), **word each rule once in `registerFieldChecks`' `messages`** (page
+checks, below) and bind `{error}` — that text is both what the field shows and what the plugin
+announces to screen readers. Never match the `error` text.
+
+```ts
+forms.registerFieldChecks(
+  CONTACT_FORM_ID,
+  {},
+  {
+    messages: {
+      email: {
+        [FieldRule.REQUIRED]: 'Indiquez votre e-mail.',
+        [FieldRule.EMAIL]: 'Cette adresse e-mail ne semble pas valide.',
+        [FieldRule.SERVER]: 'Nous ne pouvons pas accepter cette adresse.',
+      },
+    },
+  },
+);
+```
 
 ```html
-<span id="c-email-err" aria-live="polite">
-  <span if="contact.email.errorRule === REQUIRED">Email is required.</span>
-  <span if="contact.email.errorRule === EMAIL">That email doesn't look right.</span>
-  <span if="contact.email.errorRule === CUSTOM">{contact.email.error}</span>
-  <span if="contact.email.errorRule === HOOK">{contact.email.error}</span>
-  <span if="contact.email.errorRule === SERVER">We could not accept this email. Please check it.</span>
-</span>
+<span id="c-email-err">{contact.email.error}</span>
 ```
+
+Keep `errorRule` for styling or markup that differs per rule. If a page keeps literal text in
+`errorRule` branches, it must pass the same text in `messages`, or a screen reader hears a
+different text from the one shown.
 
 - **The rule is the same whoever caught it.** A format error Wix refuses after submit (e.g.
   `a@b.c`, which passes the browser) carries `EMAIL` / `PHONE` / `URL` and the same default
@@ -201,6 +217,14 @@ const unregister = forms.registerFieldChecks(BOOKING_FORM_ID, {
   not show as a visible field, is warned about once in the console and never runs.
 - A check that throws is logged once and treated as passing — a page bug must not block submit.
 - Checks are synchronous; checks registered after the form mounted still run.
+- **Your own wording for the plugin's rules**: the optional third argument
+  `{ messages: { <target>: { [FieldRule.<RULE>]: 'text' } } }` replaces the default text of a failed
+  built-in or Wix-format rule (`REQUIRED`, `EMAIL`, `PHONE`, `SERVER`, …) for that field, wherever
+  the plugin finds it — blur, typing, submit, or a Wix rejection. That text is the field's `error`,
+  shown and announced. `CUSTOM` (a check's own text) and `HOOK` (your hook's text) are never
+  reworded. With several registrations, the first that words a field and rule wins; unregister
+  drops its wording. A rule with no entry keeps the default text. `FieldRule` and the
+  `FieldMessages` type are exported from `@jay-framework/wix-forms/client`.
 - **A page check is not a security check.** It is browser UX; re-validate on the server in the
   form's submit hook (§7).
 
@@ -276,7 +300,7 @@ is single-value, so each click would replace the whole selection (the validator 
   <label forEach="contact.interests.options" trackBy="value" class="chip {selected ? on}">
     <input type="checkbox" class="sr-only" ref="contact.interests.options.toggle" value="{value}" checked="selected" aria-invalid="{$parent.contact.interests.invalid}" /> {label}
   </label>
-  <span id="contact-interests-error" class="error" aria-live="polite">{contact.interests.error}</span>
+  <span id="contact-interests-error" class="error">{contact.interests.error}</span>
 </fieldset>
 <label><input type="checkbox" ref="contact.consent.input" /> I agree</label>
 <button ref="contact.submitButton">Send</button>
@@ -372,14 +396,21 @@ mechanical mistakes marked ⚠️.
 - ⚠️ **Label every field input**: wrap it in `<label>{k.f.label} …</label>`, or use
   `<label for>` + `id`, or `aria-label`. A placeholder is not a label.
 - ⚠️ **Keep the error outside the `<label>`** (otherwise it becomes part of the field's name).
-  Link it with `aria-describedby` and keep the element always present with
-  `aria-live="polite"` — not `role="alert"`, which interrupts.
+  Link it with `aria-describedby` and keep the element always present, with **no live region
+  on it** — no `aria-live`, no `role="alert"` / `status` / `log`. The plugin announces blur-found
+  errors itself through `statusMessage` (below); a live error element is read twice (the bindings
+  validator warns).
 - ⚠️ **No native `required`** without `novalidate` on the `<form>`: the browser's own
   validation cancels the `submit` event, so the plugin never runs. Use
   `aria-required="{k.f.required}"` + `<form novalidate>`.
 - **Status region always in the DOM**: `<p role="status" aria-live="polite">{k.statusMessage}</p>`,
-  outside the conditional form. A live region inserted together with its text is often not
-  announced.
+  outside the conditional form, visible or visually hidden (`class="visually-hidden"` with the
+  usual clip CSS — never `display:none`). A live region inserted together with its text is often
+  not announced. Bind `statusMessage` only here, never inside an `if`. Besides the submit status,
+  the plugin announces **blur-found field errors** through it: when the visitor leaves a field
+  invalid, it clears the region and writes the field's `error` one task later, so it is read after
+  the next field's name; fixing the field clears it silently; typing never announces. A visible
+  status line therefore also shows blur errors.
 - **Confirmation is focusable**: `ref="k.confirmation" tabindex="-1"` on the thank-you panel.
 - **Busy state**: `aria-busy="{k.isSubmitting}"` on the submit button — this is the primary
   pattern; a second click or Enter is already ignored while `isSubmitting` is set. Adding

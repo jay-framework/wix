@@ -14,18 +14,6 @@
    this site cannot show". Re-run `jay-stack agent-kit` and bind the parts (`rich-forms.md` §4c):
    the validator now **errors** on an address part without its input(s) (rule 6).
 
-### Features
-
-- Address layouts come from Wix's public List Form Templates API at runtime (cached 1 h; a failure
-  makes the form unavailable, never unsupported). Countries: all 247 Wix accepts, honouring the
-  field's allowed countries and default country.
-- Part errors are keyed `<target>/<part>`; when Wix names the valid regions (Italy) or requires a
-  hidden part, the part updates for the visitor and for later visitors (learned per server process).
-- `config/.wix-forms.yaml` `address.locale` and `address.labels` (part labels, subdivision labels,
-  region names).
-- Booking pages (wix-bookings) must add the address markup (see wix-bookings-setup.md → Address).
-- Dev-only `scripts/address-map-probe.mjs` (L-drift): run before every release.
-
 ### Behaviour changes (read before upgrading)
 
 1. **Bookings participant phones are checked and sent like form phones (wix-bookings).**
@@ -37,6 +25,54 @@
    reads Get Form and checks with `validateFormField`; it keeps this behaviour through the newly
    exported `phoneRulesOf` and `toPostedValues`, so a Phone field's own default country now also
    applies (it wins over `defaultPhoneCountry`, as on `wixForm` pages).
+2. **Blur-found field errors are announced through `statusMessage`.** When a visitor leaves a
+   field invalid, the plugin clears `statusMessage` and writes the field's `error` text on the next
+   task, so screen readers read it after the next field's name (a per-field live region updated as
+   focus moves was dropped by VoiceOver). Leaving it invalid again re-announces it; fixing the
+   field clears it silently; typing, `control` commits and chip toggles never announce. A submit or
+   reset always wins, and no blur text is left beside the confirmation. So `statusMessage` is **no
+   longer always empty between submits**, and a later invalid blur replaces a rejection's status
+   text. This affects every site at runtime on upgrade, with no opt-out; no contract change.
+   Address parts follow the same rule: leaving a part announces that part's error; fixing it or
+   changing the country (which removes or re-lays out parts) clears it silently (DL #59 addendum).
+   A repeat announcement of the same text toggles a trailing non-breaking space (`U+00A0`) on
+   `statusMessage`, so VoiceOver re-reads it; compare `statusMessage` trimmed, if at all (DL #59
+   repeat-leave addendum).
+3. **New bindings-validator warning**: an element whose own text binds `{key.field.error}` and is
+   itself live (`aria-live` other than `off`, or `role="alert"` / `status` / `log`) — the error
+   would be announced twice.
+
+**Upgrade checklist** (blur announcements, item 2) — page edits:
+
+1. Bind `{key.statusMessage}` only to an always-present `role="status"` region (visible or visually
+   hidden); remove any `if="…statusMessage"` condition on it.
+2. Remove a visible `{key.statusMessage}` line that duplicates field errors, or accept that it now
+   shows blur errors.
+3. In `submitFailure === REJECTED` (and other failure) branches, replace a bound
+   `{key.statusMessage}` with static copy; use `onSubmitOutcome` to keep a hook's message on screen.
+4. Remove `aria-live` (and `role="alert"` / `status` / `log`) from per-field error elements; keep
+   the `aria-describedby` link.
+
+**Known gap**: blur announcements were verified by a human listen on VoiceOver + Safari only.
+NVDA, JAWS and TalkBack are untested, including the removal of per-field `aria-live`.
+
+### Features
+
+- **Pages can word the plugin's own field rules.** `registerFieldChecks(formId, checks, { messages })`
+  takes an optional map of field target → `FieldRule` → text. That text becomes the field's `error`
+  for a failed built-in or Wix-format rule (blur, typing, submit and Wix rejections), so the field
+  shows and the status region announces the page's wording. `CUSTOM` and `HOOK` texts are never
+  reworded. Additive: two-argument calls are unchanged. New exported types `FieldMessages` and
+  `FieldCheckOptions`.
+- Address layouts come from Wix's public List Form Templates API at runtime (cached 1 h; a failure
+  makes the form unavailable, never unsupported). Countries: all 247 Wix accepts, honouring the
+  field's allowed countries and default country.
+- Part errors are keyed `<target>/<part>`; when Wix names the valid regions (Italy) or requires a
+  hidden part, the part updates for the visitor and for later visitors (learned per server process).
+- `config/.wix-forms.yaml` `address.locale` and `address.labels` (part labels, subdivision labels,
+  region names).
+- Booking pages (wix-bookings) must add the address markup (see wix-bookings-setup.md → Address).
+- Dev-only `scripts/address-map-probe.mjs` (L-drift): run before every release.
 
 ### Fixes
 

@@ -125,7 +125,7 @@ bindings that do not match the contract. Form identity is fixed by
   <input id="firstName" ref="contact.firstName.input" autocomplete="given-name"
          aria-required="{contact.firstName.required}" aria-describedby="firstName-error"
          placeholder="{contact.firstName.placeholder}" />
-  <span id="firstName-error" class="error" aria-live="polite">{contact.firstName.error}</span>
+  <span id="firstName-error" class="error">{contact.firstName.error}</span>
   <label>{contact.country.label}
     <select ref="contact.country.input">
       <option forEach="contact.country.options" trackBy="value" value="{value}">{label}</option>

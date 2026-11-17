@@ -184,3 +184,7 @@ End-to-end QA run 2026-11-10 (local builds of `main`, fresh `create jay` project
 - **OQ-1 answered (custom form, `qa-13`):** a custom booking form's id is a GUID, `getFormSummary` accepts it (200) with no allowlist, and the form's namespace is `wix.bookings.v2.bookings`.
 - **Wrong claim above:** "Wix still enforces required fields on `createBooking`" is false. A custom form with a required Address booked with 200 and no address. The summary also drops non-text fields (Address) entirely: 7 fields in Wix, 5 in the summary.
 - **Staff path:** the staff query above is documented as `POST /bookings/v1/staff-members/query` (not v2); the code now uses v1 and reads every cursor page.
+
+## Live Checks Results (2026-11-16)
+
+**Live check 2026-11-16 (0.26.4).** The bookings participant form still loads after F2 hardening. QA Consultation → slot → `getFormSummary?formId=bbb199c4-9f44-46e8-baaa-05e101851965` (a GUID) returns 200, and 5 participant fields render. There were no errors or refusals in the server log. OQ-1 (which namespace booking participant forms use) is still open for the `getFormSummary` follow-up.

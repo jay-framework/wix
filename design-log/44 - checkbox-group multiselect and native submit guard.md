@@ -314,3 +314,7 @@ End-to-end QA run 2026-11-10 (local builds of `main`, fresh `create jay` project
 - **Red until jay:** the strengthened compile test asserts `checked: ba(vs1 => vs1.selected)`. jay 0.26.0's boolean-attribute set lacks `checked`, so `checked="selected"` still compiles to the string `'selected'`. The test stays red until the jay fix (add `checked` to boolean attributes; render boolean conditions for headless data in SSR) is synced in. Until then the QA workaround — omit the `checked` binding — is the safe page pattern.
 
 **Re-check on the fix branches (2026-11-10, video `qa-09`):** with jay `wix-forms-step-11` the guide's exact chip pattern (`checked="selected"`) renders unchecked in SSR, the DOM `checked` follows each click, the payload is `["News","Events"]` in option order, and focus moves to the confirmation after a successful submit. wix-forms 252/252.
+
+## Live Checks Results (2026-11-16)
+
+**Browser verification 2026-11-16 (0.26.4, Chromium, video `e2e-3-chips-submit-guard-2026-11-16.webm`).** (a) Chips toggle `.on`, and the payload follows option order (clicked Events, News → `["News","Events"]`). (b) The checkbox submits `true`, and an optional one submits `false`. (c) A fresh-load button click, Enter and `form.requestSubmit()` cause no navigation or query string; two rapid Enters send one request. (d) Reset unchecks every chip; Enter after reset submits without navigation. (e) `<select multiple>` submits an array. An empty required chip group focuses the first chip. Q10: Wix stores `string[]` and booleans (see DL #41). All pass.

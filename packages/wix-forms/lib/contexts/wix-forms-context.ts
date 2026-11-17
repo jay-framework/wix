@@ -26,6 +26,7 @@
 
 import { createJayContext } from '@jay-framework/runtime';
 import { registerReactiveGlobalContext } from '@jay-framework/component';
+import type { FieldRule } from '../components/field-rule.js';
 import type { SubmitFailure } from '../components/submit-outcome.js';
 import type { FieldValue } from '../types.js';
 import { canonicalFormId } from '../utils/form-id.js';
@@ -38,6 +39,20 @@ export type FieldCheck = (
 
 /** Field target → checks, run in order after the Wix rules pass; the first message wins. */
 export type FieldChecks = Record<string, FieldCheck[]>;
+
+/** Field target → the page's own wording per failed rule; used as the field's `error` (DL #59). */
+export type FieldMessages = Record<string, Partial<Record<FieldRule, string>>>;
+
+export interface FieldCheckOptions {
+    /** Not for CUSTOM (a check's own text) or HOOK (the hook's text); those are never reworded. */
+    messages?: FieldMessages;
+}
+
+/** One `registerFieldChecks` call, kept as one record so unregister and scans use its identity. */
+export interface FieldRegistration {
+    checks: FieldChecks;
+    messages: FieldMessages;
+}
 
 /**
  * One settled submit, as the visitor was shown it — never what was stored. A honeypot trip and a
@@ -68,8 +83,16 @@ export interface SubmitStartEvent {
 export type SubmitStartHandler = (args: { event: SubmitStartEvent }) => void;
 
 export interface WixFormsContext {
-    /** Register checks for one form (keyed by form id, any case); returns an unregister function. */
-    registerFieldChecks(formId: string, checks: FieldChecks): () => void;
+    /**
+     * Register checks for one form (keyed by form id, any case); returns an unregister function.
+     * `options.messages` words the plugin's own rules for a field (DL #59): that text becomes the
+     * field's `error`, shown and announced.
+     */
+    registerFieldChecks(
+        formId: string,
+        checks: FieldChecks,
+        options?: FieldCheckOptions,
+    ): () => void;
     /**
      * Fires once per settled submit of any plugin form (DL#53 G3). Returns an unsubscribe function:
      * the context is global and jay never removes a handler, so call it when the page unmounts.
@@ -100,7 +123,7 @@ const EMIT_SUBMIT_OUTCOME = Symbol('wix-forms.emitSubmitOutcome');
 const EMIT_SUBMIT_START = Symbol('wix-forms.emitSubmitStart');
 
 interface WixFormsContextState extends WixFormsContext {
-    [REGISTERED_CHECKS](formId: string): FieldChecks[];
+    [REGISTERED_CHECKS](formId: string): FieldRegistration[];
     [EMIT_SUBMIT_OUTCOME](event: SubmitOutcomeEvent): void;
     [EMIT_SUBMIT_START](event: SubmitStartEvent): void;
 }
@@ -111,9 +134,14 @@ export function provideWixFormsContext(): WixFormsContext {
 }
 
 /** Every registration for `formId` (canonicalised), in registration order. */
-export function registeredFieldChecks(context: WixFormsContext, formId: string): FieldChecks[] {
+export function registeredFields(context: WixFormsContext, formId: string): FieldRegistration[] {
     const canonical = canonicalFormId(formId);
     return canonical ? (context as WixFormsContextState)[REGISTERED_CHECKS](canonical) : [];
+}
+
+/** The checks of every registration for `formId`, in registration order. */
+export function registeredFieldChecks(context: WixFormsContext, formId: string): FieldChecks[] {
+    return registeredFields(context, formId).map((registration) => registration.checks);
 }
 
 /** Emits one settled submit to every `onSubmitOutcome` subscriber. */
@@ -127,25 +155,30 @@ export function emitSubmitStart(context: WixFormsContext, event: SubmitStartEven
 }
 
 function createWixFormsContextState(): WixFormsContextState {
-    const registrationsByFormId = new Map<string, FieldChecks[]>();
+    const registrationsByFormId = new Map<string, FieldRegistration[]>();
     const keysWarnedAbout = new Set<string>();
 
-    function registerFieldChecks(formId: string, checks: FieldChecks): () => void {
+    function registerFieldChecks(
+        formId: string,
+        checks: FieldChecks,
+        options: FieldCheckOptions = {},
+    ): () => void {
         const canonical = canonicalFormId(formId);
         if (!canonical) {
             warnAboutNonFormIdKey(formId);
             return () => {};
         }
-        registrationsByFormId.set(canonical, [...registrationsFor(canonical), checks]);
+        const registration: FieldRegistration = { checks, messages: options.messages ?? {} };
+        registrationsByFormId.set(canonical, [...registrationsFor(canonical), registration]);
         return () => {
             registrationsByFormId.set(
                 canonical,
-                registrationsFor(canonical).filter((registered) => registered !== checks),
+                registrationsFor(canonical).filter((registered) => registered !== registration),
             );
         };
     }
 
-    function registrationsFor(canonical: string): FieldChecks[] {
+    function registrationsFor(canonical: string): FieldRegistration[] {
         return registrationsByFormId.get(canonical) ?? [];
     }
 

@@ -21,7 +21,7 @@ import {
     type DynamicContractProps,
     type Signals,
 } from '@jay-framework/fullstack-component';
-import { createSignal, Props, useReactive } from '@jay-framework/component';
+import { createEffect, createSignal, Props, useReactive } from '@jay-framework/component';
 import { WIX_FORMS_SERVICE, type WixFormsService } from '../services/wix-forms-service-marker.js';
 import { ensureSessionFresh } from '@jay-framework/wix-server-client/client';
 import type {
@@ -33,6 +33,7 @@ import type {
 import { submitForm } from '../actions/forms-actions.js';
 import { checkFormField } from '../utils/project-form-fields.js';
 import { FieldRule, type FieldCheckResult } from './field-rule.js';
+import { createBlurAnnouncer } from './blur-announcer.js';
 import { createPageCheckRunner } from './page-checks.js';
 import { createSubmitOutcomeReporter, createSubmitStartReporter } from './submit-outcome-events.js';
 import {
@@ -43,6 +44,7 @@ import {
     SubmitFailure,
     toSitePath,
     type SubmitRejection,
+    type SubmitRejectionView,
 } from './submit-outcome.js';
 import {
     emptyStoreFor,
@@ -77,6 +79,7 @@ import {
 import {
     addressErrorKey,
     isAddressValue,
+    layoutOf,
     nextAddressValue,
     splitErrorKey,
     withLearnedFacts,
@@ -217,12 +220,17 @@ function WixFormInteractive(
     const [values, setValues] = createSignal<Record<string, FieldValue>>({});
     // Fields the user has edited; page-provided control seeding never overwrites these.
     const dirtyTargets = new Set<string>();
+    /** Address part keys (`<target>/<part>`) the visitor typed in: G2 per part (DL #59 addendum). */
+    const dirtyAddressParts = new Set<string>();
     // Honeypot value is kept OUT of the store so it never reaches readFormValues (Q12).
     let honeypotValue = '';
     const submitFlight = createSubmitFlight();
     // Each visible single select's DOM value at mount / after reset: the autofill baseline (DL#53 G2).
     const selectBaselineByTarget = new Map<string, string>();
-    const runPageChecks = createPageCheckRunner(carryForward.formId, carryForward.fields);
+    const { runPageChecks, pageWordingFor } = createPageCheckRunner(
+        carryForward.formId,
+        carryForward.fields,
+    );
     // One spec per address on the client (DL #52 §5): every consumer reads `currentFields()`.
     const [addressSpecs, setAddressSpecs] = createSignal<Record<string, AddressFieldSpec>>(
         Object.fromEntries(
@@ -246,6 +254,9 @@ function WixFormInteractive(
     const reportSubmitStart = createSubmitStartReporter(carryForward.formId);
     // The submit was handed to the server: drives submitState SUBMITTING (DL #57 G6).
     const [isHandedOff, setIsHandedOff] = createSignal(false);
+    // Blur-found errors reach screen readers through statusMessage (DL #59).
+    const blurAnnouncer = createBlurAnnouncer({ setStatusMessage });
+    createEffect(() => () => blurAnnouncer.cancel());
 
     /** The only way busy is cleared (DL #57 L2): leaving busy always ends the hand-off too. */
     function setBusy(value: boolean): void {
@@ -266,7 +277,8 @@ function WixFormInteractive(
     }
 
     /**
-     * The built-in rules, then — only when they pass — the page's own checks (DL#53 G1). Blur and
+     * The built-in rules, then — only when they pass — the page's own checks (DL#53 G1). A failed
+     * built-in rule carries the page's own wording when it registered one (DL #59). Blur and
      * typing check the stored value; submit passes the submitted value and values. Page checks
      * always see the submitted (trimmed) value, on every path (DL #57 T).
      */
@@ -276,9 +288,13 @@ function WixFormInteractive(
         allValues: Readonly<Record<string, FieldValue>> = readFormValues(),
     ): FieldCheckResult {
         const builtIn = checkFormField(field, value);
-        return builtIn.rule === FieldRule.NONE
-            ? runPageChecks(field, submittedValueOf(field, value), allValues)
-            : builtIn;
+        if (builtIn.rule === FieldRule.NONE) {
+            return runPageChecks(field, submittedValueOf(field, value), allValues);
+        }
+        return {
+            rule: builtIn.rule,
+            message: pageWordingFor(field, builtIn.rule) ?? builtIn.message,
+        };
     }
 
     function validateField(field: FormFieldView): void {
@@ -296,6 +312,12 @@ function WixFormInteractive(
         setErrorByTarget((current) => ({ ...current, [field.target]: '' }));
         setInvalidByTarget((current) => ({ ...current, [field.target]: false }));
         setRuleByTarget((current) => ({ ...current, [field.target]: FieldRule.NONE }));
+        blurAnnouncer.withdraw(field.target);
+    }
+
+    /** A commit (or a valid blur) that fixed the field takes its announcement back (DL #59). */
+    function withdrawIfFixed(field: FormFieldView): void {
+        if (!errorByTarget()[field.target]) blurAnnouncer.withdraw(field.target);
     }
 
     /** An address shows one error per part, keyed `<target>/<part>` (DL #52). */
@@ -319,16 +341,41 @@ function WixFormInteractive(
     /** "Early to forgive" per part: typing re-checks the address once an error is shown. */
     function handleAddressInput(field: FormFieldView, part: AddressPart, value: string): void {
         dirtyTargets.add(field.target);
+        dirtyAddressParts.add(addressErrorKey(field.target, part));
         const spec = currentField(field.target).address!;
-        const current = values()[field.target];
-        const next = nextAddressValue(spec, isAddressValue(current) ? current : {}, part, value);
+        const stored = values()[field.target];
+        const current = isAddressValue(stored) ? stored : {};
+        const next = nextAddressValue(spec, current, part, value);
         setFieldValue(field.target, next);
         if (part === 'country') reflectToInput(field, next);
         if (hasAddressError(field.target)) showAddressErrors(currentField(field.target));
+        const countryChanged = part === 'country' && value !== current.country;
+        withdrawClearedAddressParts(currentField(field.target), countryChanged);
     }
 
-    function handleAddressBlur(field: FormFieldView): void {
-        if (dirtyTargets.has(field.target) || hasAddressError(field.target)) validateField(field);
+    /**
+     * A fixed or vanished part takes its announcement back; a country change also drops the
+     * subdivision's, whose text/select channel may have switched (DL #59 addendum, DL #52).
+     */
+    function withdrawClearedAddressParts(field: FormFieldView, countryChanged: boolean): void {
+        const value = values()[field.target];
+        const layout = layoutOf(field.address!, isAddressValue(value) ? value.country : undefined);
+        for (const part of ADDRESS_PARTS) {
+            const key = addressErrorKey(field.target, part);
+            const vanished =
+                part !== 'country' && !layout?.parts.some((shown) => shown.part === part);
+            const switched = countryChanged && part === 'subdivision';
+            if (!errorByTarget()[key] || vanished || switched) blurAnnouncer.withdraw(key);
+        }
+    }
+
+    /** Validates the address, then announces the left part's error, owned by its key (DL #59). */
+    function handleAddressBlur(field: FormFieldView, part: AddressPart): void {
+        if (!(dirtyTargets.has(field.target) || hasAddressError(field.target))) return;
+        const key = addressErrorKey(field.target, part);
+        const wasShown = Boolean(errorByTarget()[key]);
+        validateField(field);
+        if (dirtyAddressParts.has(key) || wasShown) announceLeave(key);
     }
 
     /** Push a store value back into a native input for visual consistency (Q5, Q6). */
@@ -364,7 +411,17 @@ function WixFormInteractive(
 
     /** "Late to complain": blur validates only a field the user changed or that shows an error (DL#53 G2). */
     function handleNativeBlur(field: FormFieldView): void {
-        if (dirtyTargets.has(field.target) || errorByTarget()[field.target]) validateField(field);
+        if (!(dirtyTargets.has(field.target) || errorByTarget()[field.target])) return;
+        validateField(field);
+        announceLeave(field.target);
+    }
+
+    /** A leave announces `key`'s error, or withdraws its announcement once valid (DL #59). */
+    function announceLeave(key: string): void {
+        const message = errorByTarget()[key];
+        if (!message) blurAnnouncer.withdraw(key);
+        // Only a visitor's leave announces: never during a submit or beside the confirmation.
+        else if (!isSubmitting() && !isSubmitted()) blurAnnouncer.announce(key, message);
     }
 
     /** "Early to forgive": typing clears a shown error once valid, never swaps its text (DL#53 G2). */
@@ -383,6 +440,7 @@ function WixFormInteractive(
         setFieldValue(field.target, value);
         reflectToInput(field, value);
         validateField(field);
+        withdrawIfFixed(field);
     }
 
     /** A chip change is a commit, like `control`: store the new selection and validate. */
@@ -393,6 +451,7 @@ function WixFormInteractive(
             toggleSelection(field, { current: values()[field.target], ...change }),
         );
         validateField(field);
+        withdrawIfFixed(field);
     }
 
     wireFieldEvents(refs, carryForward.fields, {
@@ -493,11 +552,13 @@ function WixFormInteractive(
         setErrorByTarget({});
         setInvalidByTarget({});
         setRuleByTarget({});
+        blurAnnouncer.cancel();
         setStatusMessage('');
         setSubmitFailure(SubmitFailure.NONE);
         setIsSubmitted(false);
         setBusy(false);
         dirtyTargets.clear();
+        dirtyAddressParts.clear();
         honeypotValue = '';
         clearNativeInputsAfterRemount();
         afterRemount(() => focusFirstFieldInput(refs, carryForward.fields, () => true));
@@ -505,6 +566,7 @@ function WixFormInteractive(
 
     /** The echo shows what was submitted: visible text-like values trimmed (DL #57 T). */
     function showSubmitted(): void {
+        blurAnnouncer.cancel();
         setValues((current) => trimTextValues(carryForward.fields, current));
         setIsSubmitted(true);
         afterRemount(
@@ -578,10 +640,12 @@ function WixFormInteractive(
         window.addEventListener('pageshow', (event: PageTransitionEvent) => {
             if (event.persisted) setBusy(false);
         });
+        window.addEventListener('pagehide', () => blurAnnouncer.cancel());
     }
 
     async function submit(): Promise<void> {
         if (isSubmitting()) return;
+        blurAnnouncer.cancel();
         setStatusMessage('');
         setSubmitFailure(SubmitFailure.NONE);
         setErrorByTarget({});
@@ -697,6 +761,17 @@ function WixFormInteractive(
         });
     }
 
+    /** A rejection's visible field errors, in the page's wording where it registered one (DL #59). */
+    function inPageWording(rejection: SubmitRejectionView): Record<string, string> {
+        return Object.fromEntries(
+            Object.entries(rejection.errorByTarget).map(([target, message]) => {
+                const field = carryForward.fields.find((candidate) => candidate.target === target);
+                const wording = field && pageWordingFor(field, rejection.ruleByTarget[target]);
+                return [target, wording ?? message];
+            }),
+        );
+    }
+
     /** Applies a returned submit result; returns the site path to navigate to, if any. */
     function presentSubmitResult(result: SubmitFormResult): string | undefined {
         if (!result.success) {
@@ -704,7 +779,7 @@ function WixFormInteractive(
             applyLearnedAddressSpecs(
                 learnedAddressSpecs(result as SubmitRejection, currentFields()),
             );
-            setErrorByTarget(rejection.errorByTarget);
+            setErrorByTarget(inPageWording(rejection));
             setInvalidByTarget(rejection.invalidByTarget);
             setRuleByTarget(rejection.ruleByTarget);
             setStatusMessage(rejection.statusMessage);
@@ -738,6 +813,7 @@ function WixFormInteractive(
         for (const target of rejection.clearedSubdivisions) {
             const current = values()[target];
             const next = { ...(isAddressValue(current) ? current : {}), subdivision: '' };
+            blurAnnouncer.withdraw(addressErrorKey(target, 'subdivision'));
             setFieldValue(target, next);
             reflectToInput(currentField(target), next);
         }
@@ -776,7 +852,7 @@ interface FieldEventHandlers {
     onControl(field: FormFieldView, event: Event): void;
     onOptionToggle(field: FormFieldView, change: Omit<OptionToggle, 'current'>): void;
     onAddressInput(field: FormFieldView, part: AddressPart, value: string): void;
-    onAddressBlur(field: FormFieldView): void;
+    onAddressBlur(field: FormFieldView, part: AddressPart): void;
 }
 
 /** Each address part's `input` (and `subdivision.text`): input/change store, blur validates. */
@@ -797,7 +873,7 @@ function wireAddressEvents(
                 );
             ref.oninput?.(read);
             ref.onchange?.(read);
-            ref.onblur?.(() => handlers.onAddressBlur(field));
+            ref.onblur?.(() => handlers.onAddressBlur(field, part));
         }
     }
 }

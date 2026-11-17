@@ -157,6 +157,9 @@ function detectAccessibilityIssues(
             return;
         }
 
+        // Error elements carry no ref, so this runs before the ref check below.
+        warnAboutLiveErrorElement(el, formKeys, findings);
+
         const ref: string | undefined = el?.getAttribute?.('ref');
         if (!ref) return;
         const [key, field, channel] = ref.split('.');
@@ -422,6 +425,41 @@ function matchedErrorRuleCondition(
     const match = condition?.trim().match(ERROR_RULE_CONDITION);
     if (!match || !formKeys.has(match[1])) return undefined;
     return { fieldPath: `${match[1]}.${match[2]}`, rule: match[3] };
+}
+
+const LIVE_ROLES = new Set(['alert', 'status', 'log']);
+
+/**
+ * The plugin announces blur errors through statusMessage (DL #59), so a live per-field error is
+ * read twice. Own attributes only: a missed warning, never a false one.
+ */
+function warnAboutLiveErrorElement(
+    el: any,
+    formKeys: Set<string>,
+    findings: JayHtmlValidationFinding[],
+): void {
+    const [errorBinding] = ownErrorBindings(el, formKeys);
+    const attribute = liveAttributeOf(el);
+    if (!errorBinding || !attribute) return;
+    const [key] = errorBinding.split('.');
+    findings.push({
+        severity: 'warning',
+        attribute,
+        message: `"{${errorBinding}.error}" is on a live element (aria-live / role), so a blur error is announced twice — wix-forms already announces it through statusMessage.`,
+        suggestion: `Remove aria-live from the error element; keep it linked from the input with aria-describedby, and bind {${key}.statusMessage} to an always-present role="status" region.`,
+    });
+}
+
+/** The element's own attribute that makes it a live region, if any. */
+function liveAttributeOf(el: any): 'aria-live' | 'role' | undefined {
+    const ariaLive = el?.getAttribute?.('aria-live');
+    if (ariaLive !== undefined && ariaLive !== null && ariaLive.trim().toLowerCase() !== 'off') {
+        return 'aria-live';
+    }
+    const role = String(el?.getAttribute?.('role') ?? '')
+        .trim()
+        .toLowerCase();
+    return LIVE_ROLES.has(role) ? 'role' : undefined;
 }
 
 /** `{<key>.<field>.error}` in the element's own text nodes only. */

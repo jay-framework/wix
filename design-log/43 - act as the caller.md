@@ -1,6 +1,6 @@
 # 43 - Act as the Caller
 
-Status: Approved — Phases 1–3 implemented; Phase 4 live: submitter attribution verified 2026-11-10; forms-403 measurement and captcha forms pending
+Status: Approved — Phases 1–3 implemented; Phase 4 live: submitter attribution verified 2026-11-10; forms-403 measurement removed 2026-11-16 (no members-only submit setting in Wix Forms); Wix Data WDE0027 re-verified 2026-11-16; captcha forms pending
 
 Builds on **DL#42** (session cookie `wix_session`, `resolveRequestIdentity`, the submit hook), **DL#41** (forms submit chain) and **DL#05** (wix-data, its 2026-10-26 auth note). Generic: any Jay project, no downstream site named. Uses only Wix's documented headless APIs and SDK.
 
@@ -485,3 +485,9 @@ End-to-end QA run 2026-11-10 (local builds of `main`, fresh `create jay` project
 
 - **Submitter attribution verified live:** a visitor's submission carries `submitter.visitorId` (after a cookie-less refusal, the real visitor still submits); a signed-in member's submission carries `submitter.memberId` (queried through the submissions API).
 - **Still pending:** the forms-403 measurement (a members-only form refusing a visitor) and captcha-protected forms (V5) were not set up in this run.
+
+## Live Checks Results (2026-11-16)
+
+**Live check 2026-11-16 (0.26.4).** Wix Data: a real visitor `items.insert` on a collection with Admin-only permissions was refused with `details.applicationError.code = "WDE0027"`, and `isDataPermissionDenied` returned true (FORBIDDEN). This was measured with the visitor client and the 0.26.4 classifier outside a jay page, because the testbed does not depend on wix-data. Forms side (V2): **still not measured.** The Forms v4 API has no "only members may submit" setting (`submissionAccess` controls who reads submissions; `limitationRule` only caps counts and dates), so no Wix refusal of Create Submission could be produced. `isPermissionDenied` (403 only) is still unverified for forms. Member attribution passed: a signed-in member's submission is stored with `submitter.memberId`.
+
+**Decision (2026-11-16):** the forms-side 403 measurement (Phase 4, V2) is **removed from the release gate**. Wix Forms v4 has no members-only submit setting, so a headless site cannot make Create Submission refuse a visitor this way. `isPermissionDenied` stays 403-only; if Wix ever refuses a forms caller with another status, the visitor sees the generic failure message.
