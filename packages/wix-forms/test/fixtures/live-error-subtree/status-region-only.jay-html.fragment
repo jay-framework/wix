@@ -1,0 +1,7 @@
+<form novalidate>
+    <label for="email">{contact.email.label}</label>
+    <input id="email" ref="contact.email.input" aria-describedby="email-error" />
+    <p id="email-error" class="field-error">{contact.email.error}</p>
+    <div role="status" aria-live="polite"><span class="visually-hidden">{contact.statusMessage}</span></div>
+    <button ref="contact.submitButton">Send</button>
+</form>

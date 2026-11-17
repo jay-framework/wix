@@ -240,6 +240,41 @@ describe('validateWixFormBindings — accessibility warnings (DL#41 Addendum A)'
         ])('should not warn on %s', async (_case, element) => {
             expect(await warningsFor(page(element))).toEqual([]);
         });
+
+        /**
+         * Bug: the warning read only the live element's own text nodes, so an error rendered in
+         * child `if` spans was never flagged (15 such paragraphs missed on one site).
+         * Found in: a consumer-site upgrade QA (0.26.5), 2026-11-17.
+         * Expected: a live error element warns when its error binding or errorRule branches sit
+         * in descendants; a live region holding no field error stays silent.
+         * Actual: no warning for the `if`-span pattern.
+         */
+        describe('error text in descendant elements', () => {
+            const fragment = (name: string) =>
+                readFile(path.join(fixturesDir, 'live-error-subtree', name), 'utf-8');
+
+            it.each([
+                ['aria-live', 'if-span-error.jay-html.fragment'],
+                ['role', 'static-error-rule-span.jay-html.fragment'],
+            ])('should warn once (%s) on %s', async (attribute, name) => {
+                expect(await warningsFor(await fragment(name))).toEqual([
+                    {
+                        severity: 'warning',
+                        attribute,
+                        message:
+                            '"{contact.email.error}" is on a live element (aria-live / role), so a blur error is announced twice — wix-forms already announces it through statusMessage.',
+                        suggestion:
+                            'Remove aria-live from the error element; keep it linked from the input with aria-describedby, and bind {contact.statusMessage} to an always-present role="status" region.',
+                    },
+                ]);
+            });
+
+            it('should not warn on a live region that holds no field error', async () => {
+                expect(
+                    await warningsFor(await fragment('status-region-only.jay-html.fragment')),
+                ).toEqual([]);
+            });
+        });
     });
 
     it('should warn on a field input with no accessible label', async () => {

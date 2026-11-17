@@ -86,6 +86,13 @@ NVDA, JAWS and TalkBack are untested, including the removal of per-field `aria-l
   `defaultPhoneCountry` (such a field has no own default country). A required one no longer
   blocks the form (DL #51 addendum, 2026-11-17). No contract change.
 
+- **The "announced twice" warning missed errors rendered in child elements.** The DL #59
+  bindings-validator warning now inspects a live error element's whole subtree, so
+  `<p aria-live="polite"><span if="…errorRule === …">{…error}</span><span if="…">Static copy</span></p>`
+  is flagged. A descendant with its own `id` or `ref` is still a separate element (a live
+  ancestor around an error element stays silent), and a live region with no field error, such as
+  the form's `role="status"` region, is not warned. No contract change.
+
 ## 0.26.4
 
 ### Behaviour changes (read before upgrading)
