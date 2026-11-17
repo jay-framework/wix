@@ -2,6 +2,34 @@
 
 ## Unreleased
 
+### Behaviour change (read before upgrading)
+
+1. **Blur-found field errors are announced through `statusMessage`.** When a visitor leaves a
+   field invalid, the plugin clears `statusMessage` and writes the field's `error` text on the next
+   task, so screen readers read it after the next field's name (a per-field live region updated as
+   focus moves was dropped by VoiceOver). Leaving it invalid again re-announces it; fixing the
+   field clears it silently; typing, `control` commits and chip toggles never announce. A submit or
+   reset always wins, and no blur text is left beside the confirmation. So `statusMessage` is **no
+   longer always empty between submits**, and a later invalid blur replaces a rejection's status
+   text. This affects every site at runtime on upgrade, with no opt-out; no contract change.
+2. **New bindings-validator warning**: an element whose own text binds `{key.field.error}` and is
+   itself live (`aria-live` other than `off`, or `role="alert"` / `status` / `log`) — the error
+   would be announced twice.
+
+**Upgrade checklist** — page edits:
+
+1. Bind `{key.statusMessage}` only to an always-present `role="status"` region (visible or visually
+   hidden); remove any `if="…statusMessage"` condition on it.
+2. Remove a visible `{key.statusMessage}` line that duplicates field errors, or accept that it now
+   shows blur errors.
+3. In `submitFailure === REJECTED` (and other failure) branches, replace a bound
+   `{key.statusMessage}` with static copy; use `onSubmitOutcome` to keep a hook's message on screen.
+4. Remove `aria-live` (and `role="alert"` / `status` / `log`) from per-field error elements; keep
+   the `aria-describedby` link.
+
+**Known gap**: blur announcements were verified by a human listen on VoiceOver + Safari only.
+NVDA, JAWS and TalkBack are untested, including the removal of per-field `aria-live`.
+
 ### Fixes
 
 - **The honeypot trips when a bot sets its value without typing.** The form now also reads the

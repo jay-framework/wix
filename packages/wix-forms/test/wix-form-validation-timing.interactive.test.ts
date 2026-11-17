@@ -597,9 +597,13 @@ describe('wix-form blur announcement through statusMessage (DL #59)', () => {
 
     it('should not announce on control commit or chip toggle', async () => {
         const control = fakeControl('');
-        const harness = await mountForm([requiredName, requiredTopics], { name: { control } }, {
-            chipField: requiredTopics,
-        });
+        const harness = await mountForm(
+            [requiredName, requiredTopics],
+            { name: { control } },
+            {
+                chipField: requiredTopics,
+            },
+        );
 
         listenerFor(control, 'input')({ target: control });
         harness.chips[0].checked = true;

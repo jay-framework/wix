@@ -187,8 +187,9 @@ describe('validateWixFormBindings — accessibility warnings (DL#41 Addendum A)'
                     <label for="email">{contact.email.label}</label>
                     <input id="email" ref="contact.email.input" aria-required="{contact.email.required}"
                            aria-describedby="email-error" />
-                    <span id="email-error" aria-live="polite">{contact.email.error}</span>
+                    <span id="email-error">{contact.email.error}</span>
                     <input ref="contact.firstName.input" aria-label="First name" required />
+                    <p role="status" aria-live="polite" class="visually-hidden">{contact.statusMessage}</p>
                 <button ref="contact.submitButton">Send</button></form>`,
             ),
         ).toEqual([]);
@@ -227,7 +228,10 @@ describe('validateWixFormBindings — accessibility warnings (DL#41 Addendum A)'
         });
 
         it.each([
-            ['aria-live="off"', `<span id="email-error" aria-live="off">{contact.email.error}</span>`],
+            [
+                'aria-live="off"',
+                `<span id="email-error" aria-live="off">{contact.email.error}</span>`,
+            ],
             ['no live attribute', `<span id="email-error">{contact.email.error}</span>`],
             [
                 'a live ancestor',

@@ -25,7 +25,7 @@ There is **no** setting in `config/.wix-forms.yaml` for message text — copy li
 
 | `submitFailure` | Meaning                                                                                      | Where details are                                                                |
 | --------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `VALIDATION`    | Client checks failed, or Wix rejected specific fields                                        | `{key.<target>.error}` per visible field; hidden-field errors in `statusMessage` |
+| `VALIDATION`    | Client checks failed, or Wix rejected specific fields                                        | `{key.<target>.error}` per visible field; hidden-field errors in `statusMessage` until the next blur announcement |
 | `REJECTED`      | Wix refused the submission, or a server submit hook rejected it                              | A hook's `ActionError` message is in `statusMessage`                             |
 | `PERMISSION`    | Wix denied the caller (401 / 403), the session expired, or the request had no session cookie | —                                                                                |
 | `NETWORK`       | The request did not complete (offline, timeout)                                              | —                                                                                |
@@ -48,7 +48,7 @@ See `rich-forms.md` §3 (busy from the first click) and §7 (reacting to a send 
 <p role="alert" if="contact.submitState === FAILED">
   <span if="contact.submitFailure === VALIDATION">Vérifiez les champs en rouge.</span>
   <span if="contact.submitFailure === NETWORK">Problème de connexion, réessayez.</span>
-  <span if="contact.submitFailure === REJECTED">{contact.statusMessage}</span>
+  <span if="contact.submitFailure === REJECTED">Nous n'avons pas pu accepter votre message.</span>
   <span if="contact.submitFailure === PERMISSION"
     >Impossible d'envoyer ce formulaire. Actualisez la page et réessayez.</span
   >
@@ -56,15 +56,15 @@ See `rich-forms.md` §3 (busy from the first click) and §7 (reacting to a send 
 </p>
 ```
 
-Binding `{contact.statusMessage}` for `REJECTED` is a choice: it shows a hook's own message (which the hook author controls). Write static copy instead if hooks may return English.
+Write static copy in failure branches — never bind `{contact.statusMessage}` there. A hook's own message still reaches the visitor through the always-present status region below, until a later blur announcement replaces it; to keep a hook's message on screen, render it from `onSubmitOutcome` (`event.code`, `event.fieldErrors`).
 
 ### English default (fine for English sites)
 
 ```html
-<p class="form-status" if="contact.statusMessage">{contact.statusMessage}</p>
+<p class="form-status" role="status" aria-live="polite">{contact.statusMessage}</p>
 ```
 
-`statusMessage` is empty on success, and empty on a client-validation failure (errors are on the fields). Do **not** test `statusMessage` to detect a failure — use `submitState`.
+Keep this region always present (no `if`). After a submit, `statusMessage` holds the submit's status: empty on success and on a client-validation failure (errors are on the fields). Between submits it also holds a **blur-found field error**, which the plugin announces there when the visitor leaves a field invalid — so a visible status line shows that error too. Do **not** test `statusMessage` to detect a failure — use `submitState`.
 
 ## `loadError`
 

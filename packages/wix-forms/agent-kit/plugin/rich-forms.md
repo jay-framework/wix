@@ -24,7 +24,7 @@ store and returns to a blank form (`isSubmitted=false`).
     aria-describedby="contact-email-error"
     placeholder="{contact.email.placeholder}"
   />
-  <span id="contact-email-error" class="error" aria-live="polite">{contact.email.error}</span>
+  <span id="contact-email-error" class="error">{contact.email.error}</span>
   <button ref="contact.submitButton" aria-busy="{contact.isSubmitting}">Send</button>
 </form>
 
@@ -34,7 +34,7 @@ store and returns to a blank form (`isSubmitted=false`).
   <button type="button" ref="contact.resetButton">Send another</button>
 </section>
 
-<p role="status" aria-live="polite">{contact.statusMessage}</p>
+<p role="status" aria-live="polite" class="visually-hidden">{contact.statusMessage}</p>
 ```
 
 See **§6 Accessibility** for why each attribute is there.
@@ -146,7 +146,7 @@ Every visible field has an `errorRule` variant:
 `errorRule` — never match the `error` text.
 
 ```html
-<span id="c-email-err" aria-live="polite">
+<span id="c-email-err">
   <span if="contact.email.errorRule === REQUIRED">Email is required.</span>
   <span if="contact.email.errorRule === EMAIL">That email doesn't look right.</span>
   <span if="contact.email.errorRule === CUSTOM">{contact.email.error}</span>
@@ -275,7 +275,7 @@ is single-value, so each click would replace the whole selection (the validator 
   <label forEach="contact.interests.options" trackBy="value" class="chip {selected ? on}">
     <input type="checkbox" class="sr-only" ref="contact.interests.options.toggle" value="{value}" checked="selected" aria-invalid="{$parent.contact.interests.invalid}" /> {label}
   </label>
-  <span id="contact-interests-error" class="error" aria-live="polite">{contact.interests.error}</span>
+  <span id="contact-interests-error" class="error">{contact.interests.error}</span>
 </fieldset>
 <label><input type="checkbox" ref="contact.consent.input" /> I agree</label>
 <button ref="contact.submitButton">Send</button>
@@ -340,14 +340,21 @@ mechanical mistakes marked ⚠️.
 - ⚠️ **Label every field input**: wrap it in `<label>{k.f.label} …</label>`, or use
   `<label for>` + `id`, or `aria-label`. A placeholder is not a label.
 - ⚠️ **Keep the error outside the `<label>`** (otherwise it becomes part of the field's name).
-  Link it with `aria-describedby` and keep the element always present with
-  `aria-live="polite"` — not `role="alert"`, which interrupts.
+  Link it with `aria-describedby` and keep the element always present, with **no live region
+  on it** — no `aria-live`, no `role="alert"` / `status` / `log`. The plugin announces blur-found
+  errors itself through `statusMessage` (below); a live error element is read twice (the bindings
+  validator warns).
 - ⚠️ **No native `required`** without `novalidate` on the `<form>`: the browser's own
   validation cancels the `submit` event, so the plugin never runs. Use
   `aria-required="{k.f.required}"` + `<form novalidate>`.
 - **Status region always in the DOM**: `<p role="status" aria-live="polite">{k.statusMessage}</p>`,
-  outside the conditional form. A live region inserted together with its text is often not
-  announced.
+  outside the conditional form, visible or visually hidden (`class="visually-hidden"` with the
+  usual clip CSS — never `display:none`). A live region inserted together with its text is often
+  not announced. Bind `statusMessage` only here, never inside an `if`. Besides the submit status,
+  the plugin announces **blur-found field errors** through it: when the visitor leaves a field
+  invalid, it clears the region and writes the field's `error` one task later, so it is read after
+  the next field's name; fixing the field clears it silently; typing never announces. A visible
+  status line therefore also shows blur errors.
 - **Confirmation is focusable**: `ref="k.confirmation" tabindex="-1"` on the thank-you panel.
 - **Busy state**: `aria-busy="{k.isSubmitting}"` on the submit button — this is the primary
   pattern; a second click or Enter is already ignored while `isSubmitting` is set. Adding
