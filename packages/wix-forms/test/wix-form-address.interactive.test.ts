@@ -22,6 +22,8 @@ import { wixForm } from '../lib/components/wix-form.js';
 import { SubmitFailure } from '../lib/components/submit-outcome.js';
 import type { FormFieldView } from '../lib/types.js';
 import { addressFieldView, IT_CODES } from './support/address-fixtures.js';
+import { layoutOf } from '../lib/address/address-value.js';
+import type { AddressFieldSpec } from '../lib/address/address-types.js';
 
 const PARTS = [
     'country',
@@ -41,6 +43,7 @@ interface Element {
 
 function mountAddressForm(field: FormFieldView) {
     const handlers = new Map<string, (event: { event: { target: Element } }) => void>();
+    const blurHandlers = new Map<string, () => void>();
     const elements = new Map<string, Element>();
     let submit: (() => void) | undefined;
     let viewState: Record<string, any> = {};
@@ -51,7 +54,7 @@ function mountAddressForm(field: FormFieldView) {
     const partRef = (key: string) => ({
         oninput: (handler: any) => handlers.set(key, handler),
         onchange: () => {},
-        onblur: () => {},
+        onblur: (handler: () => void) => blurHandlers.set(key, handler),
         exec$: async (fn: (target: Element) => unknown) => fn(element(key)),
     });
     const address = Object.fromEntries(
@@ -98,6 +101,7 @@ function mountAddressForm(field: FormFieldView) {
             element(key).value = value;
             handlers.get(key)!({ event: { target: element(key) } });
         },
+        leave: (part: string, channel = 'input') => blurHandlers.get(`${part}.${channel}`)!(),
         dom: (part: string, channel = 'input') => element(`${part}.${channel}`).value,
         element: (part: string, channel = 'input') => element(`${part}.${channel}`),
         submit: () => submit!(),
@@ -225,5 +229,183 @@ describe('the default country on load', () => {
         await settle();
         expect(form.viewState.address.country.value).toBe('US');
         expect(form.dom('country')).toBe('US');
+    });
+});
+
+/**
+ * Bug: leaving an address part with an error shows it but never announces it: `handleAddressBlur`
+ * validates without the DL #59 announcer, so VoiceOver hears nothing after the next field's name.
+ * Found in: DL #59 merge of main (address blur gap).
+ * Expected: leaving a part with an error announces that part's text on the next task, owned by
+ * `<target>/<part>`; a fix (typing, country change, the subdivision text/select switch) withdraws
+ * it silently; no announcement during a submit.
+ * Actual: statusMessage stays '' after an invalid address part leave.
+ */
+describe('DL #59: address part errors are announced on blur', () => {
+    const status = (form: ReturnType<typeof mountAddressForm>) => form.viewState.statusMessage;
+    const partError = (form: ReturnType<typeof mountAddressForm>, part: string) =>
+        form.viewState.address[part].error;
+
+    function hasPart(spec: AddressFieldSpec, country: string, part: string): boolean {
+        return Boolean(layoutOf(spec, country)?.parts.some((shown) => shown.part === part));
+    }
+
+    function countryWhere(spec: AddressFieldSpec, test: (code: string) => boolean): string {
+        const found = spec.countries.map((option) => option.value).find(test);
+        if (!found) throw new Error('no fixture country matches');
+        return found;
+    }
+
+    /** Types then empties `part`, so it is dirty and fails REQUIRED when left. */
+    async function emptyAfterTyping(form: ReturnType<typeof mountAddressForm>, part: string) {
+        form.type(part, 'x');
+        form.type(part, '');
+        await settle();
+    }
+
+    async function usFormWithEmptyCity() {
+        const form = mountAddressForm(addressFieldView());
+        form.type('country', 'US');
+        await settle();
+        await emptyAfterTyping(form, 'city');
+        return form;
+    }
+
+    it('(a) announces the left part error on the next task', async () => {
+        const form = await usFormWithEmptyCity();
+
+        form.leave('city');
+        expect(status(form)).toBe('');
+        await settle();
+
+        expect(partError(form, 'city')).toBe('City is required.');
+        expect(status(form)).toBe('City is required.');
+    });
+
+    it('(b) a repeat leave clears then re-reads the same error', async () => {
+        const form = await usFormWithEmptyCity();
+        form.leave('city');
+        await settle();
+
+        form.leave('city');
+        expect(status(form)).toBe('');
+        await settle();
+        expect(status(form)).toBe('City is required.');
+    });
+
+    it('(c) fixing the part by typing clears silently', async () => {
+        const form = await usFormWithEmptyCity();
+        form.leave('city');
+        await settle();
+        expect(status(form)).toBe('City is required.');
+
+        form.type('city', 'Springfield');
+        expect(status(form)).toBe('');
+        await settle();
+        expect(status(form)).toBe('');
+    });
+
+    it('(d) a country change withdraws an owned announcement of a removed part', async () => {
+        const spec = addressFieldView().address!;
+        const removed = 'addressLine';
+        const without = countryWhere(spec, (code) => !hasPart(spec, code, removed));
+        const form = mountAddressForm(addressFieldView());
+        form.type('country', 'US');
+        await settle();
+        await emptyAfterTyping(form, removed);
+        form.leave(removed);
+        await settle();
+        expect(status(form)).not.toBe('');
+
+        form.type('country', without);
+        await settle();
+        expect(status(form)).toBe('');
+    });
+
+    it('(d) a country change withdraws a pending announcement of a removed part', async () => {
+        const spec = addressFieldView().address!;
+        const removed = 'addressLine';
+        const without = countryWhere(spec, (code) => !hasPart(spec, code, removed));
+        const form = mountAddressForm(addressFieldView());
+        form.type('country', 'US');
+        await settle();
+        await emptyAfterTyping(form, removed);
+
+        form.leave(removed);
+        form.type('country', without);
+        await settle();
+        expect(status(form)).toBe('');
+    });
+
+    it('(e) does not announce a part leave during a submit', async () => {
+        const form = await usFormWithEmptyCity();
+        let finish: (result: unknown) => void = () => {};
+        vi.mocked(submitForm).mockImplementationOnce(
+            () => new Promise((resolve) => (finish = resolve)) as never,
+        );
+        for (const [part, value] of Object.entries({
+            addressLine: '1 Main St',
+            city: 'Springfield',
+            subdivision: 'IL',
+            postalCode: '62701',
+        })) {
+            form.type(part, value);
+        }
+        await settle();
+        form.submit();
+        await settle();
+        expect(form.viewState.isSubmitting).toBe(true);
+
+        await emptyAfterTyping(form, 'city');
+        form.leave('city');
+        await settle();
+        expect(status(form)).toBe('');
+        finish({ success: true });
+        await settle();
+    });
+
+    it('(f) leaving another part valid keeps the first part text', async () => {
+        const form = await usFormWithEmptyCity();
+        form.leave('city');
+        await settle();
+
+        form.type('addressLine', '1 Main St');
+        form.leave('addressLine');
+        await settle();
+        expect(status(form)).toBe('City is required.');
+    });
+
+    it('(G2) leaving an untouched part does not complain', async () => {
+        const form = mountAddressForm(addressFieldView());
+        form.type('country', 'US');
+        form.type('addressLine', '1 Main St');
+        await settle();
+
+        form.leave('city');
+        await settle();
+        expect(status(form)).toBe('');
+    });
+
+    it('(g) the subdivision text -> select switch withdraws the text owner', async () => {
+        const spec = addressFieldView().address!;
+        const withSubdivision = (code: string) => hasPart(spec, code, 'subdivision');
+        const listed = (code: string) => Boolean(layoutOf(spec, code)?.subdivisions?.length);
+        const textCountry = countryWhere(spec, (code) => withSubdivision(code) && !listed(code));
+        const listCountry = countryWhere(spec, (code) => withSubdivision(code) && listed(code));
+        const form = mountAddressForm(addressFieldView());
+        form.type('country', textCountry);
+        await settle();
+        expect(form.viewState.address.subdivision.listed).toBe(false);
+        form.type('subdivision', 'x', 'text');
+        form.type('subdivision', '', 'text');
+        await settle();
+        form.leave('subdivision', 'text');
+        await settle();
+        expect(status(form)).not.toBe('');
+
+        form.type('country', listCountry);
+        await settle();
+        expect(form.viewState.address.subdivision.listed).toBe(true);
+        expect(status(form)).toBe('');
     });
 });
