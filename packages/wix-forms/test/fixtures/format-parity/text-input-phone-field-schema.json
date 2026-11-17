@@ -1,0 +1,269 @@
+{
+  "form": {
+    "id": "<form-id>",
+    "fields": [
+      {
+        "id": "aaabb78a-38c3-410d-bdf7-883128e8c902",
+        "target": "name",
+        "validation": {
+          "string": {
+            "format": "UNDEFINED",
+            "enum": []
+          },
+          "required": false
+        },
+        "pii": false,
+        "hidden": false,
+        "view": {
+          "label": "Name",
+          "fieldType": "TEXT_INPUT"
+        },
+        "readOnly": false
+      },
+      {
+        "id": "d2166564-14cf-41ee-bebe-54a73ba5fe23",
+        "target": "email",
+        "validation": {
+          "string": {
+            "format": "EMAIL",
+            "enum": []
+          },
+          "required": false
+        },
+        "pii": false,
+        "hidden": false,
+        "view": {
+          "label": "Email",
+          "fieldType": "TEXT_INPUT"
+        },
+        "readOnly": false
+      },
+      {
+        "id": "4e24336b-fc71-4a47-be1e-84f92994d925",
+        "target": "phone",
+        "validation": {
+          "string": {
+            "format": "PHONE",
+            "enum": []
+          },
+          "required": false
+        },
+        "pii": false,
+        "hidden": false,
+        "view": {
+          "label": "Phone",
+          "fieldType": "TEXT_INPUT"
+        },
+        "readOnly": false
+      },
+      {
+        "id": "6f6c6fb2-0333-402c-8b92-c8fadf45e7a7",
+        "target": "website",
+        "validation": {
+          "string": {
+            "format": "URL",
+            "enum": []
+          },
+          "required": false
+        },
+        "pii": false,
+        "hidden": false,
+        "view": {
+          "label": "Website",
+          "fieldType": "TEXT_INPUT"
+        },
+        "readOnly": false
+      }
+    ],
+    "formFields": [
+      {
+        "id": "aaabb78a-38c3-410d-bdf7-883128e8c902",
+        "hidden": false,
+        "identifier": "TEXT_INPUT",
+        "fieldType": "INPUT",
+        "inputOptions": {
+          "target": "name",
+          "pii": false,
+          "required": false,
+          "inputType": "STRING",
+          "readOnly": false,
+          "stringOptions": {
+            "validation": {
+              "format": "UNKNOWN_FORMAT",
+              "enum": []
+            },
+            "componentType": "TEXT_INPUT",
+            "textInputOptions": {
+              "label": "Name",
+              "showLabel": true,
+              "mediaSettings": {
+                "imagePosition": "ABOVE",
+                "imageAlignment": "CENTER",
+                "imageFit": "COVER"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "d2166564-14cf-41ee-bebe-54a73ba5fe23",
+        "hidden": false,
+        "identifier": "TEXT_INPUT",
+        "fieldType": "INPUT",
+        "inputOptions": {
+          "target": "email",
+          "pii": false,
+          "required": false,
+          "inputType": "STRING",
+          "readOnly": false,
+          "stringOptions": {
+            "validation": {
+              "format": "EMAIL",
+              "enum": []
+            },
+            "componentType": "TEXT_INPUT",
+            "textInputOptions": {
+              "label": "Email",
+              "showLabel": true,
+              "mediaSettings": {
+                "imagePosition": "ABOVE",
+                "imageAlignment": "CENTER",
+                "imageFit": "COVER"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "4e24336b-fc71-4a47-be1e-84f92994d925",
+        "hidden": false,
+        "identifier": "TEXT_INPUT",
+        "fieldType": "INPUT",
+        "inputOptions": {
+          "target": "phone",
+          "pii": false,
+          "required": false,
+          "inputType": "STRING",
+          "readOnly": false,
+          "stringOptions": {
+            "validation": {
+              "format": "PHONE",
+              "enum": []
+            },
+            "componentType": "TEXT_INPUT",
+            "textInputOptions": {
+              "label": "Phone",
+              "showLabel": true,
+              "mediaSettings": {
+                "imagePosition": "ABOVE",
+                "imageAlignment": "CENTER",
+                "imageFit": "COVER"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "6f6c6fb2-0333-402c-8b92-c8fadf45e7a7",
+        "hidden": false,
+        "identifier": "TEXT_INPUT",
+        "fieldType": "INPUT",
+        "inputOptions": {
+          "target": "website",
+          "pii": false,
+          "required": false,
+          "inputType": "STRING",
+          "readOnly": false,
+          "stringOptions": {
+            "validation": {
+              "format": "URL",
+              "enum": []
+            },
+            "componentType": "TEXT_INPUT",
+            "textInputOptions": {
+              "label": "Website",
+              "showLabel": true,
+              "mediaSettings": {
+                "imagePosition": "ABOVE",
+                "imageAlignment": "CENTER",
+                "imageFit": "COVER"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "steps": [
+      {
+        "id": "87a57c36-0b69-4499-8d0c-861747e957c2",
+        "name": "Page 1",
+        "hidden": false,
+        "layout": {
+          "large": {
+            "items": [
+              {
+                "fieldId": "aaabb78a-38c3-410d-bdf7-883128e8c902",
+                "row": 0,
+                "column": 0,
+                "width": 12,
+                "height": 1
+              },
+              {
+                "fieldId": "d2166564-14cf-41ee-bebe-54a73ba5fe23",
+                "row": 1,
+                "column": 0,
+                "width": 12,
+                "height": 1
+              },
+              {
+                "fieldId": "4e24336b-fc71-4a47-be1e-84f92994d925",
+                "row": 2,
+                "column": 0,
+                "width": 12,
+                "height": 1
+              },
+              {
+                "fieldId": "6f6c6fb2-0333-402c-8b92-c8fadf45e7a7",
+                "row": 3,
+                "column": 0,
+                "width": 12,
+                "height": 1
+              }
+            ],
+            "sections": []
+          }
+        }
+      }
+    ],
+    "rules": [],
+    "revision": "1",
+    "createdDate": "2026-11-11T10:11:00.801Z",
+    "updatedDate": "2026-11-11T10:11:00.801Z",
+    "properties": {
+      "name": "QA Test DL54",
+      "disabled": false
+    },
+    "deletedFields": [],
+    "deletedFormFields": [],
+    "kind": "REGULAR",
+    "extendedFields": {
+      "namespaces": {
+        "@forms/form-app": {
+          "automationId": "<automation-id>"
+        }
+      }
+    },
+    "namespace": "wix.form_app.form",
+    "nestedForms": [],
+    "spamFilterProtectionLevel": "ADVANCED",
+    "submitSettings": {
+      "submitSuccessAction": "NO_ACTION"
+    },
+    "fieldGroups": [],
+    "enabled": true,
+    "name": "QA Test DL54",
+    "formRules": [],
+    "autoFillContact": "FORM_INPUT",
+    "submissionAccess": "OWNER_AND_COLLABORATORS"
+  }
+}

@@ -44,6 +44,12 @@
   honeypot input's current value at submit, so a script that sets `.value` directly (no `input`
   event) gets the fake success and never posts. No contract change.
 
+- **A phone field made through the Form Schemas API was dropped as unsupported.** A field with
+  component `TEXT_INPUT` and format `PHONE` (the dashboard makes `PHONE_INPUT`) is now a `tel`
+  field, exactly like a Wix Phone field: the same phone checks, E.164 posting, and config
+  `defaultPhoneCountry` (such a field has no own default country). A required one no longer
+  blocks the form (DL #51 addendum, 2026-11-17). No contract change.
+
 ## 0.26.4
 
 ### Behaviour changes (read before upgrading)

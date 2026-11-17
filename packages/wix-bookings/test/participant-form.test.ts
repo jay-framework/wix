@@ -16,12 +16,17 @@ vi.mock('../lib/wix-apis/query-services.js', () => ({
     getBookingServiceById: vi.fn(),
 }));
 
+import { readFileSync } from 'node:fs';
 import { ActionError } from '@jay-framework/fullstack-component';
-import { readFieldKey } from '@jay-framework/wix-forms';
+import { readFieldKey, type RawForm } from '@jay-framework/wix-forms';
 import { getBookingServiceById } from '../lib/wix-apis/query-services.js';
 import { createWixBookingsService } from '../lib/services/create-wix-bookings-service.js';
 import { getParticipantForm } from '../lib/actions/bookings-actions.js';
-import { toBookingFieldType, toFormFieldView } from '../lib/utils/participant-form.js';
+import {
+    projectParticipantForm,
+    toBookingFieldType,
+    toFormFieldView,
+} from '../lib/utils/participant-form.js';
 import type { BookingFormFieldView } from '../lib/types.js';
 import {
     QA_FORM_ID,
@@ -318,5 +323,34 @@ describe('wixBookings.getParticipantForm query (DL #51 test 8b)', () => {
 
         expect(result).toBe(BOOKING_FORM_PROJECTION);
         expect(bookings.getParticipantForm).toHaveBeenCalledWith('svc-1', forms);
+    });
+});
+
+/**
+ * Bug: a participant phone field made through the Form Schemas API (`STRING` + `TEXT_INPUT` +
+ *   `PHONE`) is listed as unsupported, so a required one blocks booking.
+ * Found in: DL #59 branch merge review (testbed /dl55, /dl56 validate failures); fixed by the
+ *   wix-forms DL #51 addendum (2026-11-17), whose classifier bookings shares.
+ * Expected: a `PHONE` participant field with config `defaultPhoneCountry` rules, like `PHONE_INPUT`.
+ * Actual: `toBookingFieldType` returns undefined and the field is in `unsupportedFields`.
+ */
+describe('participant TEXT_INPUT + PHONE field (DL #51 addendum 2026-11-17)', () => {
+    function textInputPhoneForm(): RawForm {
+        const url = new URL(
+            '../../wix-forms/test/fixtures/format-parity/text-input-phone-field-schema.json',
+            import.meta.url,
+        );
+        return (JSON.parse(readFileSync(url, 'utf8')) as { form: RawForm }).form;
+    }
+
+    it('should project the field as PHONE with phone rules', () => {
+        const projected = projectParticipantForm(textInputPhoneForm(), 'form-1', () => {}, {
+            defaultPhoneCountry: 'IL',
+        });
+        expect(projected.unsupportedFields).toEqual([]);
+        expect(projected.fields.find((field) => field.target === 'phone')).toMatchObject({
+            type: 'PHONE',
+            phone: { defaultCountry: 'IL' },
+        });
     });
 });
