@@ -36,6 +36,13 @@ export const FORM_UNAVAILABLE_MESSAGE =
 /** Wix rate limiting (429) is transient; the visitor sees no API text. */
 const RATE_LIMITED_MESSAGE = 'Booking is busy right now. Please wait a minute and try again.';
 
+/**
+ * A 429 on an eCommerce call (cart, place-order, checkout) comes after createBooking succeeded:
+ * the booking exists, so "try again" would create a second one.
+ */
+const RATE_LIMITED_AFTER_BOOKING_MESSAGE =
+    "Your booking was received, but we couldn't open payment. Please check your email before booking again.";
+
 export function describeBookingError(error: unknown): Outcome<BookingFailure> {
     const rawMessage = error instanceof Error ? error.message : '';
     if (rawMessage.includes('/ecom/v2/carts') && rawMessage.includes('403')) {
@@ -60,7 +67,10 @@ export function describeBookingError(error: unknown): Outcome<BookingFailure> {
         };
     }
     if (rawMessage.startsWith('Wix API 429')) {
-        return { failure: BookingFailure.UNKNOWN, message: RATE_LIMITED_MESSAGE };
+        const message = rawMessage.includes('/ecom/')
+            ? RATE_LIMITED_AFTER_BOOKING_MESSAGE
+            : RATE_LIMITED_MESSAGE;
+        return { failure: BookingFailure.UNKNOWN, message };
     }
     return {
         failure: BookingFailure.UNKNOWN,

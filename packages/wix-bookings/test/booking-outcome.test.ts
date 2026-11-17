@@ -172,10 +172,25 @@ function failureNames(): string[] {
  * no API text. Actual: "Wix API 429: /ecom/v2/carts/<id>/place-order".
  */
 describe('describeBookingError on a Wix 429', () => {
-    it('maps a rate-limited place-order to a friendly retry message', () => {
+    /**
+     * Bug: the 429 retry message invited a second booking.
+     * Found in: DL #52 live QA re-run, note A. The eCommerce calls (cart, place-order, checkout)
+     * run after createBooking succeeded, so the booking already exists.
+     * Expected: tell the visitor the booking was received and to check email before booking again.
+     * Actual: "Booking is busy right now. Please wait a minute and try again."
+     */
+    it('tells the visitor the booking was received when place-order is rate limited', () => {
         expect(
             describeBookingError(new Error('Wix API 429: /ecom/v2/carts/c-1/place-order')),
         ).toEqual({
+            failure: BookingFailure.UNKNOWN,
+            message:
+                "Your booking was received, but we couldn't open payment. Please check your email before booking again.",
+        });
+    });
+
+    it('keeps the retry message when a call before the booking is rate limited', () => {
+        expect(describeBookingError(new Error('Wix API 429: /bookings/v2/bookings'))).toEqual({
             failure: BookingFailure.UNKNOWN,
             message: 'Booking is busy right now. Please wait a minute and try again.',
         });

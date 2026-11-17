@@ -1117,3 +1117,5 @@ Every Gate-exit check L1–L12 has passed on the final code. L1–L10 and L12 ar
 `RELEASE-BLOCKED.md` is not deleted by this commit: removing it (the §7 final commit) is a release decision left to the owner.
 
 **Versioning (2026-11-17):** the 0.27.0 bump made during implementation was reverted at the release owner's request. This branch changes no package versions or dependency ranges between the two packages; the §6 semver analysis (a breaking change for `0.x` consumers) is input for the release step, not a decision taken here.
+
+**429 wording (2026-11-17, product decision):** a Wix 429 on an eCommerce call (cart, place-order, checkout) happens after `createBooking` succeeded, so the visitor now reads "Your booking was received, but we couldn't open payment. Please check your email before booking again." instead of a retry prompt that could create a second booking. A 429 on any earlier call keeps "Booking is busy right now. Please wait a minute and try again." Tests: wix-bookings `describeBookingError on a Wix 429` (red, then green); wix-bookings 165/165.
