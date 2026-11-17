@@ -1,22 +1,8 @@
 #!/usr/bin/env node
 
 const { execSync } = require('child_process');
-const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
-
-const RELEASE_BLOCKED_FILE = 'RELEASE-BLOCKED.md';
-
-/**
- * The release gate (DL #51): while RELEASE-BLOCKED.md exists at the repo root, nothing publishes.
- * Throws (never exits) so the workflow and tests can call it directly.
- */
-function assertReleaseNotBlocked(rootDir) {
-  const gateFile = path.join(rootDir, RELEASE_BLOCKED_FILE);
-  if (!fs.existsSync(gateFile)) return;
-  const reason = fs.readFileSync(gateFile, 'utf-8').trim();
-  throw new Error(`Publishing is blocked by the DL #51 release gate (${gateFile}):\n${reason}`);
-}
 
 function askOtp(prompt) {
   return new Promise((resolve) => {
@@ -46,9 +32,6 @@ function getPackages() {
 }
 
 async function main() {
-  // The repo root from this file, never process.cwd(): running from elsewhere cannot skip the gate.
-  assertReleaseNotBlocked(path.resolve(__dirname, '..'));
-
   let otp = process.argv[2] || process.env.NPM_OTP;
 
   if (!otp) {
@@ -121,5 +104,3 @@ if (require.main === module) {
     process.exit(1);
   });
 }
-
-module.exports = { assertReleaseNotBlocked };

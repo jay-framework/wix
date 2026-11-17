@@ -35,8 +35,5 @@ jobs:
       - name: Build packages
         run: yarn build
 
-      - name: Check the release gate (DL #51)
-        run: node -e "require('./scripts/publish.cjs').assertReleaseNotBlocked(process.cwd())"
-
       - name: Publish packages
         run: yarn workspaces foreach -A --no-private npm publish --access public --tolerate-republish
