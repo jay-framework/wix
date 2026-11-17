@@ -548,3 +548,27 @@ A person ran the re-listen on the real form (QA testbed page with a wix-forms co
 | `lib/components/wix-form.ts` | 261 | 415 |
 | `lib/components/wix-form.ts` | 405 | 577 |
 | `lib/components/wix-form.ts` | 405-409 | 577-581 |
+
+## Addendum (2026-11-17): address parts
+
+Approved follow-up to the open note above. The Design section stays as written; this adds the address case.
+
+**Decision.** Leaving an address part announces **that part's** error text through the same `blurAnnouncer`, owned by the part key `addressErrorKey(target, part)` = `<target>/<part>` (DL #52). Ownership and `withdraw` are therefore per part: leaving part B valid never clears part A's text.
+
+**Gates — the same as `handleNativeBlur` (`wix-form.ts:385-392`).** No announcement while `isSubmitting()` or after `isSubmitted()`. G2 per part: a part announces only if the visitor typed in it (a new per-part dirty set) or it already shows an error; the address as a whole still validates as today (`handleAddressBlur`, `:349-351`).
+
+**Fixes clear silently.**
+- Typing or choosing a select value (`handleAddressInput`, `:339-347`): after the store update, every part of that address with no error withdraws its own key.
+- A country change (the `country` part in `handleAddressInput`): it announces nothing new. A part the new layout no longer has, and the subdivision, withdraw (pending or written). Kept parts keep their announcement while their error stands.
+- The subdivision free text ↔ select switch is treated as clearing the old owner: a country change withdraws `<target>/subdivision` (above), and learned facts that clear a stale subdivision (`applyLearnedAddressSpecs`, `:777-785`) withdraw it too. That one runs inside a submit, which already cancels the announcer (`:522`, `:535`), so it is belt and braces.
+
+**Where (smallest change).**
+- `wireAddressEvents` (`:842`) passes the part to `onAddressBlur(field, part)`; both channels (`input`, `text`) of `subdivision` share the key.
+- A shared helper `announceLeave(key)` is extracted from `handleNativeBlur` (`:388-391`): withdraw when the key has no error, else announce when not submitting or submitted. `handleNativeBlur` calls it with `field.target`, `handleAddressBlur` with the part key.
+- `withdrawClearedAddressParts(field, { countryChanged })` runs at the end of `handleAddressInput`.
+
+**Bookings.** `wix-bookings`' booking flow has no `statusMessage` region and no announcer (checked: no `statusMessage` / `role="status"` in `wix-bookings/lib` or its agent-kit). Bookings is out of scope, as recorded today.
+
+**Agent feedback (jay-feedback).** Neither. The guides describe blur announcements for "a field" in general, not per field type, so they already cover address parts; nothing new can be caught by a validator.
+
+**Tests** (`test/wix-form-address.interactive.test.ts`, the DOM-free address harness, now with blur): (a) a leave announces on the next task; (b) a repeat leave clears then re-reads; (c) typing a fix clears silently; (d) a country change withdraws a removed part's owned and pending announcement; (e) no announcement during a submit; (f) part A's text survives leaving part B valid; (G2) an untouched part does not complain; (g) the subdivision text → select switch withdraws.
