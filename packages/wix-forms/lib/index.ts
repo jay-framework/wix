@@ -16,6 +16,8 @@ export {
     provideWixFormsContext,
     type FieldCheck,
     type FieldChecks,
+    type FieldCheckOptions,
+    type FieldMessages,
     type SubmitOutcomeEvent,
     type SubmitOutcomeHandler,
     type SubmitStartEvent,

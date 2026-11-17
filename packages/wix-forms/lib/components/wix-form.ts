@@ -37,6 +37,7 @@ import {
     SubmitFailure,
     toSitePath,
     type SubmitRejection,
+    type SubmitRejectionView,
 } from './submit-outcome.js';
 import {
     emptyStoreFor,
@@ -129,7 +130,10 @@ function WixFormInteractive(
     const submitFlight = createSubmitFlight();
     // Each visible single select's DOM value at mount / after reset: the autofill baseline (DL#53 G2).
     const selectBaselineByTarget = new Map<string, string>();
-    const runPageChecks = createPageCheckRunner(carryForward.formId, carryForward.fields);
+    const { runPageChecks, pageWordingFor } = createPageCheckRunner(
+        carryForward.formId,
+        carryForward.fields,
+    );
     const reportSubmitOutcome = createSubmitOutcomeReporter(carryForward.formId);
     const reportSubmitStart = createSubmitStartReporter(carryForward.formId);
     // The submit was handed to the server: drives submitState SUBMITTING (DL #57 G6).
@@ -157,7 +161,8 @@ function WixFormInteractive(
     }
 
     /**
-     * The built-in rules, then — only when they pass — the page's own checks (DL#53 G1). Blur and
+     * The built-in rules, then — only when they pass — the page's own checks (DL#53 G1). A failed
+     * built-in rule carries the page's own wording when it registered one (DL #59). Blur and
      * typing check the stored value; submit passes the submitted value and values. Page checks
      * always see the submitted (trimmed) value, on every path (DL #57 T).
      */
@@ -167,9 +172,13 @@ function WixFormInteractive(
         allValues: Readonly<Record<string, FieldValue>> = readFormValues(),
     ): FieldCheckResult {
         const builtIn = checkFormField(field, value);
-        return builtIn.rule === FieldRule.NONE
-            ? runPageChecks(field, submittedValueOf(field, value), allValues)
-            : builtIn;
+        if (builtIn.rule === FieldRule.NONE) {
+            return runPageChecks(field, submittedValueOf(field, value), allValues);
+        }
+        return {
+            rule: builtIn.rule,
+            message: pageWordingFor(field, builtIn.rule) ?? builtIn.message,
+        };
     }
 
     function validateField(field: FormFieldView): void {
@@ -524,11 +533,22 @@ function WixFormInteractive(
         });
     }
 
+    /** A rejection's visible field errors, in the page's wording where it registered one (DL #59). */
+    function inPageWording(rejection: SubmitRejectionView): Record<string, string> {
+        return Object.fromEntries(
+            Object.entries(rejection.errorByTarget).map(([target, message]) => {
+                const field = carryForward.fields.find((candidate) => candidate.target === target);
+                const wording = field && pageWordingFor(field, rejection.ruleByTarget[target]);
+                return [target, wording ?? message];
+            }),
+        );
+    }
+
     /** Applies a returned submit result; returns the site path to navigate to, if any. */
     function presentSubmitResult(result: SubmitFormResult): string | undefined {
         if (!result.success) {
             const rejection = presentSubmitRejection(result, carryForward.fields);
-            setErrorByTarget(rejection.errorByTarget);
+            setErrorByTarget(inPageWording(rejection));
             setInvalidByTarget(rejection.invalidByTarget);
             setRuleByTarget(rejection.ruleByTarget);
             setStatusMessage(rejection.statusMessage);

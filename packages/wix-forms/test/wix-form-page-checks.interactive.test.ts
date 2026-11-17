@@ -449,3 +449,176 @@ describe('wix-form phone normalization (DL#55 P1c)', () => {
         expect(input.value).toBe('054.123.4567');
     });
 });
+
+/**
+ * Bug: a page that words its own field errors (branching on errorRule) has them announced in the
+ * plugin's English default, because the announcement is the field's `error` (DL #59 behaviour 7).
+ * Found in: design-log/59 §Design "Page wording".
+ * Expected: registerFieldChecks' optional `messages` map is the field's `error` for a built-in or
+ * Wix-format rule, so the visible and announced texts are one; CUSTOM and HOOK are never reworded.
+ * Actual: registerFieldChecks takes no third argument; `error` is always the default text.
+ */
+describe('wix-form page wording through registerFieldChecks messages (DL #59)', () => {
+    const FRENCH_REQUIRED = 'Indiquez votre e-mail.';
+    const frenchEmail = { email: { [FieldRule.REQUIRED]: FRENCH_REQUIRED } };
+
+    function register(messages: Record<string, Partial<Record<FieldRule, string>>>) {
+        return provideWixFormsContext().registerFieldChecks(FORM_ID, {}, { messages });
+    }
+
+    async function blurEmptyEmail(harness: WixFormHarness, input: FakeInput): Promise<void> {
+        type(input, 'a');
+        type(input, '');
+        blur(input);
+        await settle();
+    }
+
+    it("should use the page's registered wording as the field error and announce it", async () => {
+        register(frenchEmail);
+        const input = fakeInput();
+        const harness = await mount([requiredEmail], { email: { input } });
+
+        await blurEmptyEmail(harness, input);
+
+        expect(fieldView(harness, 'email')).toMatchObject({
+            error: FRENCH_REQUIRED,
+            errorRule: FieldRule.REQUIRED,
+        });
+        expect(harness.viewState().statusMessage).toBe(FRENCH_REQUIRED);
+    });
+
+    it("should fall back to the plugin's default text for a rule the page did not word", async () => {
+        register(frenchEmail);
+        const input = fakeInput();
+        const harness = await mount([requiredEmail], { email: { input } });
+
+        type(input, 'x');
+        blur(input);
+        await settle();
+
+        expect(fieldView(harness, 'email').errorRule).toBe(FieldRule.EMAIL);
+        expect(fieldView(harness, 'email').error).not.toBe('');
+        expect(fieldView(harness, 'email').error).not.toBe(FRENCH_REQUIRED);
+        expect(harness.viewState().statusMessage).toBe(fieldView(harness, 'email').error);
+    });
+
+    it("should use the page's wording for submit-time client errors", async () => {
+        register(frenchEmail);
+        const harness = await mount([requiredEmail], { email: { input: fakeInput() } });
+
+        await submitOnce();
+
+        expect(fieldView(harness, 'email').error).toBe(FRENCH_REQUIRED);
+    });
+
+    it.each([
+        [FieldRule.EMAIL, 'Cette adresse e-mail ne semble pas valide.'],
+        [FieldRule.SERVER, 'Nous ne pouvons pas accepter cette adresse.'],
+    ])("should use the page's wording for a Wix %s rejection", async (rule, wording) => {
+        register({ email: { [rule]: wording } });
+        const input = fakeInput();
+        const harness = await mount([requiredEmail], { email: { input } });
+        type(input, 'ada@example.com');
+        vi.mocked(submitForm).mockResolvedValueOnce({
+            success: false,
+            reason: SubmitFailure.VALIDATION,
+            fieldErrors: { email: 'Wix text' },
+            fieldRules: { email: rule },
+        } as any);
+
+        await submitOnce();
+
+        expect(fieldView(harness, 'email')).toMatchObject({ error: wording, errorRule: rule });
+    });
+
+    it('should never reword a HOOK rejection or a page check CUSTOM text', async () => {
+        provideWixFormsContext().registerFieldChecks(
+            FORM_ID,
+            { phone: [internationalOnly] },
+            {
+                messages: {
+                    email: { [FieldRule.HOOK]: 'reworded hook' },
+                    phone: { [FieldRule.CUSTOM]: 'reworded custom' },
+                },
+            },
+        );
+        const email = fakeInput();
+        const phone = fakeInput();
+        const harness = await mount([requiredEmail, gbPhone], {
+            email: { input: email },
+            phone: { input: phone },
+        });
+        type(phone, '020 7946 0000');
+        blur(phone);
+        await settle();
+        expect(fieldView(harness, 'phone')).toMatchObject({
+            error: 'Use an international number, e.g. +44 20 …',
+            errorRule: FieldRule.CUSTOM,
+        });
+
+        type(phone, '+44 20 7946 0000');
+        type(email, 'ada@example.com');
+        vi.mocked(submitForm).mockResolvedValueOnce({
+            success: false,
+            reason: SubmitFailure.REJECTED,
+            fieldErrors: { email: 'The hook says no' },
+            fromHook: true,
+        } as any);
+        await submitOnce();
+        expect(fieldView(harness, 'email')).toMatchObject({
+            error: 'The hook says no',
+            errorRule: FieldRule.HOOK,
+        });
+    });
+
+    it('should stop using the wording after unregister', async () => {
+        const unregister = register(frenchEmail);
+        const input = fakeInput();
+        const harness = await mount([requiredEmail], { email: { input } });
+        await blurEmptyEmail(harness, input);
+        expect(fieldView(harness, 'email').error).toBe(FRENCH_REQUIRED);
+
+        unregister();
+        blur(input);
+        await settle();
+
+        expect(fieldView(harness, 'email').errorRule).toBe(FieldRule.REQUIRED);
+        expect(fieldView(harness, 'email').error).not.toBe(FRENCH_REQUIRED);
+        expect(fieldView(harness, 'email').error).not.toBe('');
+    });
+
+    it("should use the first registration's wording for the same field and rule", async () => {
+        const context = provideWixFormsContext();
+        context.registerFieldChecks(FORM_ID, {}, { messages: frenchEmail });
+        context.registerFieldChecks(
+            FORM_ID,
+            {},
+            {
+                messages: { email: { [FieldRule.REQUIRED]: 'Second wording' } },
+            },
+        );
+        const input = fakeInput();
+        const harness = await mount([requiredEmail], { email: { input } });
+
+        await blurEmptyEmail(harness, input);
+
+        expect(fieldView(harness, 'email').error).toBe(FRENCH_REQUIRED);
+    });
+
+    it('should warn once about a messages target that is not a visible field', async () => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        register({ nickname: { [FieldRule.REQUIRED]: 'Pick a nickname' } });
+        const input = fakeInput();
+        const harness = await mount([requiredEmail], { email: { input } });
+
+        await blurEmptyEmail(harness, input);
+        blur(input);
+        await settle();
+
+        const nicknameWarnings = warn.mock.calls.filter(([text]) =>
+            String(text).includes('"nickname"'),
+        );
+        expect(nicknameWarnings).toHaveLength(1);
+        expect(fieldView(harness, 'email').errorRule).toBe(FieldRule.REQUIRED);
+    });
+});

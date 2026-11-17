@@ -142,18 +142,34 @@ above). The `invalid` variant also drives error styling.
 
 Every visible field has an `errorRule` variant:
 `NONE | REQUIRED | MIN_LENGTH | MAX_LENGTH | EMAIL | PHONE | URL | PATTERN | CUSTOM | SERVER | PHONE_COUNTRY | HOOK`.
-`error` keeps the English default text; for your own wording (or another language) branch on
-`errorRule` — never match the `error` text.
+`error` is the English default text unless the page words the rule itself. For your own
+wording (or another language), **word each rule once in `registerFieldChecks`' `messages`** (page
+checks, below) and bind `{error}` — that text is both what the field shows and what the plugin
+announces to screen readers. Never match the `error` text.
+
+```ts
+forms.registerFieldChecks(
+  CONTACT_FORM_ID,
+  {},
+  {
+    messages: {
+      email: {
+        [FieldRule.REQUIRED]: 'Indiquez votre e-mail.',
+        [FieldRule.EMAIL]: 'Cette adresse e-mail ne semble pas valide.',
+        [FieldRule.SERVER]: 'Nous ne pouvons pas accepter cette adresse.',
+      },
+    },
+  },
+);
+```
 
 ```html
-<span id="c-email-err">
-  <span if="contact.email.errorRule === REQUIRED">Email is required.</span>
-  <span if="contact.email.errorRule === EMAIL">That email doesn't look right.</span>
-  <span if="contact.email.errorRule === CUSTOM">{contact.email.error}</span>
-  <span if="contact.email.errorRule === HOOK">{contact.email.error}</span>
-  <span if="contact.email.errorRule === SERVER">We could not accept this email. Please check it.</span>
-</span>
+<span id="c-email-err">{contact.email.error}</span>
 ```
+
+Keep `errorRule` for styling or markup that differs per rule. If a page keeps literal text in
+`errorRule` branches, it must pass the same text in `messages`, or a screen reader hears a
+different text from the one shown.
 
 - **The rule is the same whoever caught it.** A format error Wix refuses after submit (e.g.
   `a@b.c`, which passes the browser) carries `EMAIL` / `PHONE` / `URL` and the same default
@@ -200,6 +216,14 @@ const unregister = forms.registerFieldChecks(BOOKING_FORM_ID, {
   not show as a visible field, is warned about once in the console and never runs.
 - A check that throws is logged once and treated as passing — a page bug must not block submit.
 - Checks are synchronous; checks registered after the form mounted still run.
+- **Your own wording for the plugin's rules**: the optional third argument
+  `{ messages: { <target>: { [FieldRule.<RULE>]: 'text' } } }` replaces the default text of a failed
+  built-in or Wix-format rule (`REQUIRED`, `EMAIL`, `PHONE`, `SERVER`, …) for that field, wherever
+  the plugin finds it — blur, typing, submit, or a Wix rejection. That text is the field's `error`,
+  shown and announced. `CUSTOM` (a check's own text) and `HOOK` (your hook's text) are never
+  reworded. With several registrations, the first that words a field and rule wins; unregister
+  drops its wording. A rule with no entry keeps the default text. `FieldRule` and the
+  `FieldMessages` type are exported from `@jay-framework/wix-forms/client`.
 - **A page check is not a security check.** It is browser UX; re-validate on the server in the
   form's submit hook (§7).
 

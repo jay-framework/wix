@@ -26,7 +26,7 @@ import { clearGlobalContextRegistry } from '@jay-framework/runtime';
 import { submitForm } from '../lib/actions/forms-actions.js';
 import { BLUR_ANNOUNCE_DELAY_MS } from '../lib/components/blur-announcer.js';
 import { SubmitFailure } from '../lib/components/submit-outcome.js';
-import { provideWixFormsContext } from '../lib/contexts/wix-forms-context.js';
+import { provideWixFormsContext, type FieldCheck } from '../lib/contexts/wix-forms-context.js';
 import type { FormFieldView } from '../lib/types.js';
 import {
     fakeControl,
@@ -665,7 +665,7 @@ describe('wix-form blur announcement through statusMessage (DL #59)', () => {
     describe("the plugin's own focus move after an Enter-key submit", () => {
         const laterDate: FormFieldView = { ...optionalTextField, target: 'date', label: 'Date' };
 
-        async function mountWithFocusBlurringB(checkB: ReturnType<typeof vi.fn>) {
+        async function mountWithFocusBlurringB(checkB: FieldCheck & ReturnType<typeof vi.fn>) {
             provideWixFormsContext().registerFieldChecks(PAGE_CHECK_FORM_ID, { date: [checkB] });
             const inputA = fakeInput();
             const inputB = fakeInput();

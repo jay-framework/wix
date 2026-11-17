@@ -30,6 +30,15 @@
 **Known gap**: blur announcements were verified by a human listen on VoiceOver + Safari only.
 NVDA, JAWS and TalkBack are untested, including the removal of per-field `aria-live`.
 
+### Features
+
+- **Pages can word the plugin's own field rules.** `registerFieldChecks(formId, checks, { messages })`
+  takes an optional map of field target → `FieldRule` → text. That text becomes the field's `error`
+  for a failed built-in or Wix-format rule (blur, typing, submit and Wix rejections), so the field
+  shows and the status region announces the page's wording. `CUSTOM` and `HOOK` texts are never
+  reworded. Additive: two-argument calls are unchanged. New exported types `FieldMessages` and
+  `FieldCheckOptions`.
+
 ### Fixes
 
 - **The honeypot trips when a bot sets its value without typing.** The form now also reads the
