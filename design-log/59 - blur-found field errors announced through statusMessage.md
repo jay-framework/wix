@@ -511,3 +511,40 @@ A person ran the re-listen on the real form (QA testbed page with a wix-forms co
 | The same, after a page reload, three runs                    | the error is heard 3 of 3                                                         | Pass   |
 
 **Observation:** on the first try the error was not heard, because the tester moved on before VoiceOver finished. A polite `role="status"` update is queued behind the next field's speech and can be cut off by further key presses or speech. This is the expected behaviour of polite announcements and is accepted; switching blur errors to an assertive region was considered and not needed.
+
+## Merge of `main` (DL #51/#52 address fields), 2026-11-17
+
+`main` (`1a2541c`) was merged into this branch (`a99c655`). Conflicts in `wix-form.ts`, `CHANGELOG.md`, `plugin.yaml` and the design-log index were resolved keeping both behaviours: page wording (`pageWordingFor`, `inPageWording`) sits beside the address specs (`currentFields()`, learned specs on a rejection). `yarn confirm` green: wix-forms 867/867, wix-bookings 173/173.
+
+**Address errors are not announced on blur (open).** An address reports its errors per part (`<target>/<part>`) through `handleAddressBlur`, which does not call `blurAnnouncer`; only `handleNativeBlur` does. So a visitor leaving an invalid address part hears nothing until submit. Neither this log nor DL #52 designs it; deciding it (and which part's text to announce) is a follow-up. Rejected address parts keep Wix's text in `inPageWording`, since page wording is keyed by whole field.
+
+**Code references moved.** The Design section is unchanged; the references above now point at these lines:
+
+| File | Cited | Now |
+|------|-------|-----|
+| `agent-kit/plugin/per-form-contracts.md` | 81 | 128 |
+| `agent-kit/plugin/rich-forms.md` | 27 | 28 |
+| `lib/components/form-view-state.ts` | 36 | 50 |
+| `lib/components/submit-outcome.ts` | 77-92 | 92-140 (main added code inside the range) |
+| `lib/components/wix-form.ts` | 115 | 209 |
+| `lib/components/wix-form.ts` | 212 | 366 |
+| `lib/generators/contract-utils.ts` | 149 | 237 |
+| `lib/index.client.ts` | 16-17 | 21-22 |
+| `lib/index.ts` | 17-18 | 22-23 |
+| `plugin.yaml` | 22-25 | 22-25 (description line changed) |
+| `agent-kit/plugin/rich-forms.md` | 145-155 | 146-156 |
+| `agent-kit/plugin/rich-forms.md` | 148-156 | 149-157 |
+| `agent-kit/plugin/rich-forms.md` | 158-160 | 159-161 |
+| `agent-kit/plugin/rich-forms.md` | 278 | 279 |
+| `agent-kit/plugin/rich-forms.md` | 342-344 | 374-376 |
+| `agent-kit/plugin/rich-forms.md` | 344 | 376 |
+| `agent-kit/plugin/rich-forms.md` | 37 | 38 |
+| `test/submission/run-submission.test.ts` | 417-426 | 419-428 |
+| `lib/validators/wix-form-bindings.ts` | 130-131 | 158-159 |
+| `lib/validators/wix-form-bindings.ts` | 309 | 337 |
+| `lib/components/wix-form.ts` | 131 | 225 |
+| `lib/components/wix-form.ts` | 166-168 | 279-281 |
+| `lib/components/wix-form.ts` | 255-263 | 409-417 |
+| `lib/components/wix-form.ts` | 261 | 415 |
+| `lib/components/wix-form.ts` | 405 | 577 |
+| `lib/components/wix-form.ts` | 405-409 | 577-581 |
