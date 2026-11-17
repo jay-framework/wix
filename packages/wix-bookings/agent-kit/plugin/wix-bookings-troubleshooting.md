@@ -83,7 +83,7 @@ Bookings loads participant fields via `wixBookings.getParticipantForm` (Wix Get 
 
 ## Phone / validation behaves differently from a `wixForm` page
 
-Expected, not a bug. Booking participant fields are checked with `validateFormSummaryField` (required + simple patterns on the trimmed value). Phones use the same `checkPhone` as `wixForm`: a spaced or dashed number such as `+1 202-555-0123` is sent to `createBooking` as E.164 (`+12025550123`), and a number with no country code is refused ("Please include the country code, starting with +.") unless `defaultPhoneCountry` is set in `config/.wix-forms.yaml`. `HOOK` errors and `onSubmitStart` do not apply to the booking flow. Failures surface as `bookingFailure === VALIDATION`, not per-field `errorRule`.
+Expected, not a bug. Booking participant fields are checked with `validateFormField` (the Wix schema's required, length and pattern, plus the format rules), in the browser and again in `createBooking`. Phones use the same `checkPhone` as `wixForm`: a spaced or dashed number such as `+1 202-555-0123` is sent to Wix as E.164 (`+12025550123`), and a number with no country code uses the Phone field's default country, else `defaultPhoneCountry` in `config/.wix-forms.yaml`; with neither it is refused ("Please include the country code, starting with +."). `HOOK` errors and `onSubmitStart` do not apply to the booking flow. Failures surface as `bookingFailure === VALIDATION`, not per-field `errorRule`.
 
 ## Do not assume success from redirect alone
 

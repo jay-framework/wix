@@ -35,6 +35,7 @@ import {
     blockingFieldLabels,
     normalisedAddress,
     participantFieldErrors,
+    postedParticipantValues,
     toFormFieldView,
 } from '../utils/participant-form.js';
 import {
@@ -402,7 +403,7 @@ function BookingFlowInteractive(
                     scheduleId: slot.scheduleId,
                     eventId: slot.eventId,
                 },
-                formValues,
+                formValues: postedParticipantValues(formFields(), formValues),
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                 siteOrigin: window.location.origin,
             });

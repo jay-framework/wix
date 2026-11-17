@@ -198,7 +198,7 @@ export function fieldErrorsOf(field: FormFieldView, value: FieldValue): Record<s
  * `phoneInputOptions.defaultCountryCode` / `stringOptions.validation.phoneOptions` mirror the
  * legacy paths DL#55 captured (DL#55 Gap 2).
  */
-function phoneRulesOf(
+export function phoneRulesOf(
     raw: RawFormField,
     inputType: FormFieldInputType,
     { defaultPhoneCountry }: ProjectionOptions,

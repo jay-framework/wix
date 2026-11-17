@@ -17,6 +17,13 @@
    `revealedParts` and `factsCountry`.
 3. **Requires the `@jay-framework/wix-forms` release that ships address fields** (release both packages together).
 
+### Behaviour changes
+
+- **Participant phones are sent as E.164** (DL #58, kept on the Get Form path): checked with the
+  `wixForm` phone rules in the browser and in `createBooking`; a local number uses the Phone
+  field's default country, else `defaultPhoneCountry`; with neither it is refused with "Please
+  include the country code, starting with +.".
+
 ### Features
 
 - `createBooking` returns a Create Booking 400 with form violations as `invalid` (located part

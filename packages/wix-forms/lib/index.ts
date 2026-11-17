@@ -10,10 +10,11 @@ export {
     projectFormFields,
     unsupportedFieldOf,
     inLayoutOrder,
+    phoneRulesOf,
     validateFormField,
     validateFormSummaryField,
 } from './utils/project-form-fields.js';
-export { toPostedSummaryValues } from './components/submission-values.js';
+export { toPostedSummaryValues, toPostedValues } from './components/submission-values.js';
 export { FieldRule, type FieldCheckResult } from './components/field-rule.js';
 export {
     WIX_FORMS_CONTEXT,

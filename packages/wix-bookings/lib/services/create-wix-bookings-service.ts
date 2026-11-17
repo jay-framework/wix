@@ -45,6 +45,7 @@ import {
     blockingFieldLabels,
     participantFieldErrors,
     projectParticipantForm,
+    postedParticipantValues,
     supportedParticipantValues,
     toFormFieldView,
 } from '../utils/participant-form.js';
@@ -67,8 +68,10 @@ async function projectionOptionsFor(
     rawForm: RawForm,
     forms: WixFormsService,
 ): Promise<ProjectionOptions> {
-    if (!hasAddressField(rawForm)) return {};
+    const phoneOptions = { defaultPhoneCountry: forms.config.defaultPhoneCountry };
+    if (!hasAddressField(rawForm)) return phoneOptions;
     return {
+        ...phoneOptions,
         addressTemplates: await forms.addressTemplates(),
         learnedFacts: forms.learnedAddressFacts().snapshot(),
         addressConfig: forms.config.address,
@@ -149,7 +152,10 @@ export function createWixBookingsService(
         if (Object.keys(fieldErrors).length) return { outcome: 'invalid', fieldErrors };
         return {
             service: service!,
-            formValues: supportedParticipantValues(participantForm.fields, input.formValues),
+            formValues: postedParticipantValues(
+                participantForm.fields,
+                supportedParticipantValues(participantForm.fields, input.formValues),
+            ),
             fields: participantForm.fields,
             forms,
         };

@@ -33,7 +33,10 @@
    `toPostedSummaryValues` sends them as E.164, so `+1 202-555-0123` books instead of failing with
    a Wix 400 (UNKNOWN). A number without a country code is now refused in the browser ("Please
    include the country code, starting with +.") unless `defaultPhoneCountry` is set. Summary
-   fields carry an optional `phone` (`PhoneRules`, now exported).
+   fields carry an optional `phone` (`PhoneRules`, now exported). With the address work, bookings
+   reads Get Form and checks with `validateFormField`; it keeps this behaviour through the newly
+   exported `phoneRulesOf` and `toPostedValues`, so a Phone field's own default country now also
+   applies (it wins over `defaultPhoneCountry`, as on `wixForm` pages).
 
 ### Fixes
 

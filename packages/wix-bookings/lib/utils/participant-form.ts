@@ -13,6 +13,7 @@ import {
     toWixAddress,
     type ProjectionOptions,
     inLayoutOrder,
+    phoneRulesOf,
     readFieldKey,
     readFieldView,
     unsupportedFieldOf,
@@ -20,6 +21,7 @@ import {
     type FormFieldView,
     type ProjectedForm,
     type RawForm,
+    toPostedValues,
     validateFormField,
 } from '@jay-framework/wix-forms';
 import type { BookingFormFieldView, ParticipantFormValue } from '../types.js';
@@ -109,13 +111,16 @@ export function projectParticipantForm(
             else projected.unsupportedFields.push(unsupportedFieldOf(key));
             continue;
         }
+        const inputType = classifyFormField(key)!;
         projected.fields.push({
             target: key.target!,
             label: key.label,
             type,
             required: key.required,
-            longText: classifyFormField(key) === 'textarea',
+            longText: inputType === 'textarea',
             ...readFieldView(raw, key),
+            // The same phone rules as a wixForm page (DL #58 on the DL #51 path).
+            ...phoneRulesOf(raw, inputType, options),
         });
     }
     return projected;
@@ -190,6 +195,18 @@ export function supportedParticipantValues(
         if (address) kept[field.target] = address;
     }
     return kept;
+}
+
+/** Phones as E.164 (DL #58), as `checkPhone` reads them; every other value as given. */
+export function postedParticipantValues(
+    fields: BookingFormFieldView[],
+    values: Record<string, ParticipantFormValue>,
+): Record<string, ParticipantFormValue> {
+    // toPostedValues only rewrites tel strings, so every value keeps its participant type.
+    return toPostedValues(fields.map(toFormFieldView), values) as Record<
+        string,
+        ParticipantFormValue
+    >;
 }
 
 /** The address as Wix takes it; undefined for an optional blank one (left out, DL #52 §1). */
