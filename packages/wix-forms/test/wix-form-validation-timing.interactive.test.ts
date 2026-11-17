@@ -1,6 +1,6 @@
 // @vitest-environment node
 
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const captured = vi.hoisted(() => ({ submit: undefined as undefined | (() => Promise<void>) }));
 
@@ -22,7 +22,11 @@ vi.mock('../lib/components/form-submit-guard.js', async (importOriginal) => {
     };
 });
 
+import { clearGlobalContextRegistry } from '@jay-framework/runtime';
 import { submitForm } from '../lib/actions/forms-actions.js';
+import { BLUR_ANNOUNCE_DELAY_MS } from '../lib/components/blur-announcer.js';
+import { SubmitFailure } from '../lib/components/submit-outcome.js';
+import { provideWixFormsContext } from '../lib/contexts/wix-forms-context.js';
 import type { FormFieldView } from '../lib/types.js';
 import {
     fakeControl,
@@ -353,5 +357,453 @@ describe('wix-form submit flight (DL#53 G2)', () => {
         await submitOnce();
 
         expect(harness.viewState().isSubmitting).toBe(false);
+    });
+});
+
+const requiredName: FormFieldView = { ...optionalTextField, required: true };
+const requiredTopics: FormFieldView = { ...topicsMultiselect, required: true };
+const PAGE_CHECK_FORM_ID = '3f2b1c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d';
+
+/** A promise the test settles by hand, to hold a submit in flight. */
+function deferred<T>(): { promise: Promise<T>; resolve(value: T): void } {
+    let resolve!: (value: T) => void;
+    const promise = new Promise<T>((settle) => (resolve = settle));
+    return { promise, resolve };
+}
+
+/**
+ * Bug: a blur-found error is written only to the per-field live region at the moment focus moves
+ * to the next field, so VoiceOver drops it (DL #59 §Problem).
+ * Found in: design-log/59 — human VoiceOver listen on a consumer site.
+ * Expected: statusMessage is cleared now and holds the error one task later; fixing clears it;
+ * typing, commits, submit, reset, the confirmation and teardown never leave a blur text behind.
+ * Actual: statusMessage stays '' outside a submit.
+ */
+describe('wix-form blur announcement through statusMessage (DL #59)', () => {
+    /** Flushes jay's reactive `setTimeout(0)` batch and pending microtasks under fake timers. */
+    const flush = () => vi.advanceTimersByTimeAsync(0);
+    /** Runs the announcer's deferred write ("advance" in DL #59). */
+    const advance = () => vi.advanceTimersByTimeAsync(BLUR_ANNOUNCE_DELAY_MS);
+
+    beforeEach(() => {
+        vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+        vi.useRealTimers();
+        vi.unstubAllGlobals();
+        clearGlobalContextRegistry();
+    });
+
+    async function mountForm(
+        fields: FormFieldView[],
+        fieldElements: Record<string, FakeFieldElements>,
+        options: { chipField?: FormFieldView; formId?: string } = {},
+    ): Promise<WixFormHarness> {
+        const harness = mountWixForm(fields, options.chipField, fieldElements, options.formId);
+        await flush();
+        return harness;
+    }
+
+    async function submitAndSettle(): Promise<void> {
+        const submitting = submitNow();
+        await flush();
+        await submitting;
+        await flush();
+    }
+
+    function status(harness: WixFormHarness): string {
+        return harness.viewState().statusMessage;
+    }
+
+    /** Types then empties the field, so it is dirty and fails REQUIRED on blur. */
+    function makeDirtyAndEmpty(input: FakeInput): void {
+        type(input, 'a');
+        type(input, '');
+    }
+
+    async function announceRequiredEmail(): Promise<{ harness: WixFormHarness; input: FakeInput }> {
+        const input = fakeInput();
+        const harness = await mountForm([requiredEmail], { email: { input } });
+        makeDirtyAndEmpty(input);
+        blur(input);
+        await advance();
+        return { harness, input };
+    }
+
+    it('should announce a blur-found error in statusMessage on the next macrotask', async () => {
+        const input = fakeInput();
+        const harness = await mountForm([requiredEmail], { email: { input } });
+        makeDirtyAndEmpty(input);
+
+        blur(input);
+        expect(status(harness)).toBe('');
+
+        await advance();
+        expect(errorOf(harness, 'email')).not.toBe('');
+        expect(status(harness)).toBe(errorOf(harness, 'email'));
+    });
+
+    it('should clear statusMessage before re-announcing the same error on a second invalid leave', async () => {
+        const { harness, input } = await announceRequiredEmail();
+        const message = errorOf(harness, 'email');
+        expect(status(harness)).toBe(message);
+
+        blur(input);
+        expect(status(harness)).toBe('');
+
+        await advance();
+        expect(status(harness)).toBe(message);
+    });
+
+    it('should not announce while typing', async () => {
+        const { harness, input } = await announceRequiredEmail();
+        const before = status(harness);
+
+        type(input, 'not-an-email');
+        await advance();
+
+        expect(status(harness)).toBe(before);
+    });
+
+    it('should silently clear the field announcement when the field is fixed by typing', async () => {
+        const { harness, input } = await announceRequiredEmail();
+        expect(status(harness)).toBe(errorOf(harness, 'email'));
+
+        type(input, 'ada@example.com');
+        expect(status(harness)).toBe('');
+        await advance();
+        expect(status(harness)).toBe('');
+    });
+
+    it('should silently clear when the field is left valid on blur', async () => {
+        const { harness, input } = await announceRequiredEmail();
+        expect(status(harness)).toBe(errorOf(harness, 'email'));
+
+        type(input, 'ada@example.com');
+        blur(input);
+        await advance();
+
+        expect(status(harness)).toBe('');
+    });
+
+    it('should cancel a pending announcement when the field is fixed before the delay', async () => {
+        const input = fakeInput();
+        const harness = await mountForm([requiredEmail], { email: { input } });
+        makeDirtyAndEmpty(input);
+
+        blur(input);
+        type(input, 'ada@example.com');
+        await advance();
+
+        expect(status(harness)).toBe('');
+    });
+
+    it('should not clear another owner message on withdraw', async () => {
+        const email = fakeInput();
+        const name = fakeInput();
+        const harness = await mountForm([requiredEmail, requiredName], {
+            email: { input: email },
+            name: { input: name },
+        });
+        makeDirtyAndEmpty(email);
+        blur(email);
+        await advance();
+        expect(status(harness)).toBe(errorOf(harness, 'email'));
+
+        type(email, 'ada@example.com');
+        expect(status(harness)).toBe('');
+
+        type(name, 'Ada');
+        vi.mocked(submitForm).mockResolvedValueOnce({
+            success: false,
+            reason: SubmitFailure.REJECTED,
+            message: 'Server says no',
+            fieldErrors: { name: 'Taken' },
+        } as any);
+        await submitAndSettle();
+        expect(status(harness)).toBe('Server says no');
+
+        type(name, 'Ada Lovelace');
+        type(email, 'ada@example.org');
+        await advance();
+        expect(errorOf(harness, 'name')).toBe('');
+        expect(status(harness)).toBe('Server says no');
+    });
+
+    it('should let submit win over a pending blur announcement', async () => {
+        const input = fakeInput();
+        const harness = await mountForm([requiredEmail], { email: { input } });
+        makeDirtyAndEmpty(input);
+
+        blur(input);
+        await submitAndSettle();
+        await advance();
+
+        expect(harness.viewState().submitFailure).toBe(SubmitFailure.VALIDATION);
+        expect(status(harness)).toBe('');
+    });
+
+    it('should cancel a pending announcement on reset', async () => {
+        const input = fakeInput();
+        const harness = await mountForm([requiredEmail], { email: { input } });
+        makeDirtyAndEmpty(input);
+
+        blur(input);
+        resetNow(harness);
+        await advance();
+
+        expect(status(harness)).toBe('');
+    });
+
+    it('should not announce a blur on an untouched field', async () => {
+        const input = fakeInput();
+        const harness = await mountForm([requiredEmail], { email: { input } });
+
+        blur(input);
+        await advance();
+
+        expect(status(harness)).toBe('');
+    });
+
+    it('should announce only the last of two rapid invalid leaves', async () => {
+        const email = fakeInput();
+        const name = fakeInput();
+        const harness = await mountForm([requiredEmail, requiredName], {
+            email: { input: email },
+            name: { input: name },
+        });
+        type(email, 'not-an-email');
+        makeDirtyAndEmpty(name);
+
+        blur(email);
+        blur(name);
+        await advance();
+
+        expect(errorOf(harness, 'email')).not.toBe(errorOf(harness, 'name'));
+        expect(status(harness)).toBe(errorOf(harness, 'name'));
+    });
+
+    it('should not announce on control commit or chip toggle', async () => {
+        const control = fakeControl('');
+        const harness = await mountForm([requiredName, requiredTopics], { name: { control } }, {
+            chipField: requiredTopics,
+        });
+
+        listenerFor(control, 'input')({ target: control });
+        harness.chips[0].checked = true;
+        listenerFor(harness.chips[0], 'change')({ target: harness.chips[0] });
+        harness.chips[0].checked = false;
+        listenerFor(harness.chips[0], 'change')({ target: harness.chips[0] });
+        await advance();
+
+        expect(errorOf(harness, 'name')).not.toBe('');
+        expect(errorOf(harness, 'topics')).not.toBe('');
+        expect(status(harness)).toBe('');
+    });
+
+    it('should not leave a blur announcement behind on a client-validation stop', async () => {
+        const { harness } = await announceRequiredEmail();
+        expect(status(harness)).toBe(errorOf(harness, 'email'));
+
+        await submitAndSettle();
+        expect(status(harness)).toBe('');
+        await advance();
+        expect(status(harness)).toBe('');
+    });
+
+    it('should not announce a blur that happens during an in-flight submit', async () => {
+        const input = fakeInput();
+        const harness = await mountForm([requiredEmail], { email: { input } });
+        type(input, 'ada@example.com');
+        const flight = deferred<any>();
+        vi.mocked(submitForm).mockReturnValueOnce(flight.promise);
+
+        const submitting = submitNow();
+        await flush();
+        type(input, 'not-an-email');
+        blur(input);
+        await advance();
+        expect(errorOf(harness, 'email')).not.toBe('');
+        expect(status(harness)).toBe('');
+
+        flight.resolve({ success: true });
+        await submitting;
+        await flush();
+        expect(status(harness)).toBe('');
+    });
+
+    it('should not leave a blur announcement next to the success confirmation', async () => {
+        const { harness, input } = await announceRequiredEmail();
+        expect(status(harness)).toBe(errorOf(harness, 'email'));
+
+        type(input, 'ada@example.com');
+        await submitAndSettle();
+        expect(harness.viewState().isSubmitted).toBe(true);
+        expect(status(harness)).toBe('');
+
+        blur(input);
+        await advance();
+        expect(status(harness)).toBe('');
+    });
+
+    describe("the plugin's own focus move after an Enter-key submit", () => {
+        const laterDate: FormFieldView = { ...optionalTextField, target: 'date', label: 'Date' };
+
+        async function mountWithFocusBlurringB(checkB: ReturnType<typeof vi.fn>) {
+            provideWixFormsContext().registerFieldChecks(PAGE_CHECK_FORM_ID, { date: [checkB] });
+            const inputA = fakeInput();
+            const inputB = fakeInput();
+            inputA.focus.mockImplementation(() => blur(inputB));
+            const harness = await mountForm(
+                [requiredEmail, laterDate],
+                { email: { input: inputA }, date: { input: inputB } },
+                { formId: PAGE_CHECK_FORM_ID },
+            );
+            type(inputB, 'yesterday');
+            return { harness, inputA, inputB };
+        }
+
+        it('should not announce the blur caused by focusing the first invalid field', async () => {
+            const checkB = vi.fn(() => 'Pick a later date');
+            const { harness, inputA } = await mountWithFocusBlurringB(checkB);
+            const callsBefore = checkB.mock.calls.length;
+
+            await submitAndSettle();
+            expect(inputA.focus).toHaveBeenCalled();
+            expect(checkB.mock.calls.length - callsBefore).toBe(2);
+
+            await advance();
+            expect(status(harness)).toBe('');
+        });
+
+        it('should keep the rejection text when the rejection focus move blurs an invalid field', async () => {
+            const checkB = vi.fn<() => string | undefined>(() => 'Pick a later date');
+            checkB.mockReturnValueOnce(undefined);
+            const { harness, inputA } = await mountWithFocusBlurringB(checkB);
+            type(inputA, 'ada@example.com');
+            vi.mocked(submitForm).mockResolvedValueOnce({
+                success: false,
+                reason: SubmitFailure.REJECTED,
+                message: 'Server says no',
+                fieldErrors: { email: 'Taken' },
+            } as any);
+
+            await submitAndSettle();
+            expect(inputA.focus).toHaveBeenCalled();
+            expect(errorOf(harness, 'date')).toBe('Pick a later date');
+
+            await advance();
+            expect(status(harness)).toBe('Server says no');
+        });
+    });
+
+    it('should cancel a pending announcement on pagehide', async () => {
+        const addEventListener = vi.fn();
+        vi.stubGlobal('window', {
+            addEventListener,
+            removeEventListener: vi.fn(),
+            location: { assign: vi.fn() },
+        });
+        const input = fakeInput();
+        const harness = await mountForm([requiredEmail], { email: { input } });
+        const pagehide = addEventListener.mock.calls.find(([name]) => name === 'pagehide');
+        expect(pagehide).toBeDefined();
+        makeDirtyAndEmpty(input);
+
+        blur(input);
+        pagehide![1]({ persisted: true });
+        await advance();
+
+        expect(status(harness)).toBe('');
+    });
+
+    it('should cancel a pending announcement when the component unmounts', async () => {
+        const input = fakeInput();
+        const harness = await mountForm([requiredEmail], { email: { input } });
+        makeDirtyAndEmpty(input);
+        blur(input);
+        const pendingTimers = vi.getTimerCount();
+
+        harness.unmount();
+
+        expect(pendingTimers).toBeGreaterThan(0);
+        expect(vi.getTimerCount()).toBe(0);
+        await advance();
+        expect(status(harness)).toBe('');
+    });
+
+    it('should not announce the removal blur after a honeypot fake success', async () => {
+        const input = fakeInput();
+        const harness = await mountForm([requiredEmail], { email: { input } });
+        type(input, 'not-an-email');
+        type(harness.honeypot, 'bot');
+
+        await submitAndSettle();
+        expect(harness.viewState().isSubmitted).toBe(true);
+        blur(input);
+        await advance();
+
+        expect(status(harness)).toBe('');
+    });
+
+    it('should not announce an invalid edit typed during a successful submit when the form is removed', async () => {
+        const input = fakeInput();
+        const harness = await mountForm([requiredEmail], { email: { input } });
+        type(input, 'ada@example.com');
+        const flight = deferred<any>();
+        vi.mocked(submitForm).mockReturnValueOnce(flight.promise);
+
+        const submitting = submitNow();
+        await flush();
+        type(input, 'not-an-email');
+        flight.resolve({ success: true });
+        await submitting;
+        await flush();
+        expect(harness.viewState().isSubmitted).toBe(true);
+        expect(status(harness)).toBe('');
+
+        blur(input);
+        await advance();
+        expect(harness.viewState().email.invalid).toBe(true);
+        expect(status(harness)).toBe('');
+    });
+
+    it('should keep another field announcement when a different field is left valid', async () => {
+        const email = fakeInput();
+        const name = fakeInput();
+        const harness = await mountForm([requiredEmail, requiredName], {
+            email: { input: email },
+            name: { input: name },
+        });
+        makeDirtyAndEmpty(email);
+        blur(email);
+        await advance();
+        const emailError = errorOf(harness, 'email');
+        expect(status(harness)).toBe(emailError);
+
+        type(name, 'Ada');
+        blur(name);
+        await advance();
+        expect(status(harness)).toBe(emailError);
+
+        type(email, 'ada@example.com');
+        expect(status(harness)).toBe('');
+    });
+
+    it('should withdraw a field announcement when a control commit fixes it', async () => {
+        const input = fakeInput();
+        const control = fakeControl('');
+        const harness = await mountForm([requiredName], { name: { input, control } });
+        makeDirtyAndEmpty(input);
+        blur(input);
+        await advance();
+        expect(status(harness)).toBe(errorOf(harness, 'name'));
+
+        control.setAttribute('data-value', 'Ada');
+        listenerFor(control, 'input')({ target: control });
+        expect(status(harness)).toBe('');
+        await advance();
+        expect(status(harness)).toBe('');
     });
 });

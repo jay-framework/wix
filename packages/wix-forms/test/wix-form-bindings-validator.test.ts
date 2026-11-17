@@ -194,6 +194,50 @@ describe('validateWixFormBindings — accessibility warnings (DL#41 Addendum A)'
         ).toEqual([]);
     });
 
+    /**
+     * Bug: a per-field live error is read a second time now that the plugin announces blur
+     * errors through statusMessage (DL #59, Phase 0: per-field aria-live redundant).
+     * Expected: a warning on an element whose own text binds {key.field.error} and is live.
+     */
+    describe('a live per-field error element (DL #59)', () => {
+        const page = (errorElement: string) =>
+            `<form novalidate>
+                <label for="email">{contact.email.label}</label>
+                <input id="email" ref="contact.email.input" aria-describedby="email-error" />
+                ${errorElement}
+                <p role="status" aria-live="polite" class="visually-hidden">{contact.statusMessage}</p>
+            <button ref="contact.submitButton">Send</button></form>`;
+
+        it.each([
+            ['aria-live', `<span id="email-error" aria-live="polite">{contact.email.error}</span>`],
+            ['role', `<span id="email-error" role="alert">{contact.email.error}</span>`],
+            ['role', `<span id="email-error" role="status">{contact.email.error}</span>`],
+            ['role', `<span id="email-error" role="log">{contact.email.error}</span>`],
+        ])('should warn once on a live error element (%s): %s', async (attribute, element) => {
+            expect(await warningsFor(page(element))).toEqual([
+                {
+                    severity: 'warning',
+                    attribute,
+                    message:
+                        '"{contact.email.error}" is on a live element (aria-live / role), so a blur error is announced twice — wix-forms already announces it through statusMessage.',
+                    suggestion:
+                        'Remove aria-live from the error element; keep it linked from the input with aria-describedby, and bind {contact.statusMessage} to an always-present role="status" region.',
+                },
+            ]);
+        });
+
+        it.each([
+            ['aria-live="off"', `<span id="email-error" aria-live="off">{contact.email.error}</span>`],
+            ['no live attribute', `<span id="email-error">{contact.email.error}</span>`],
+            [
+                'a live ancestor',
+                `<div aria-live="polite"><span id="email-error">{contact.email.error}</span></div>`,
+            ],
+        ])('should not warn on %s', async (_case, element) => {
+            expect(await warningsFor(page(element))).toEqual([]);
+        });
+    });
+
     it('should warn on a field input with no accessible label', async () => {
         expect(
             await warningsFor(

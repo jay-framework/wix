@@ -189,6 +189,8 @@ export interface WixFormHarness {
     honeypot: FakeInput;
     /** The view state of the latest render or update (DL#53 P2), as the page would see it. */
     viewState(): Record<string, any>;
+    /** Unmounts the component as jay does when its page leaves (DL #59 test 19). */
+    unmount(): void;
 }
 
 interface ChipGroup {
@@ -325,9 +327,10 @@ export function mountWixForm(
         const fastViewState = { isSubmitting: createSignal(false) };
         return (wixForm as any).comp(props, refs, fastViewState, carryForward);
     });
-    component({} as any);
+    const instance = component({} as any) as any;
 
     return {
+        unmount: () => instance.unmount(),
         submitForm,
         submitButton,
         resetButton,
