@@ -1,6 +1,6 @@
 # 51 - Address and Composite Form Fields
 
-Status: Implemented (2026-11-11), Phases 1a, 1b, 2 and the release gate; live checks L1 and L5 passed. L6 (the gate's exit check) is pending: it belongs to the follow-up address log. Address support is deferred to that follow-up design log (§5).
+Status: Implemented (2026-11-11), Phases 1a, 1b, 2; live checks L1 and L5 passed. Address support shipped in DL #52 (live QA L1–L12 passed 2026-11-17). The release gate was removed on 2026-11-17 by owner decision (see Implementation Results → Release gate removed).
 
 Covers `@jay-framework/wix-forms` and `@jay-framework/wix-bookings`. Builds on DL #40 (per-form contracts), #41 (value store, `FieldValue`, multiselect), #44 (checkbox groups), #45/#46 (outcome enums), #47/#49 (security gate, `getFormSummary`, `canonicalFormId`, path-segment helper), #50 (submit allowlist) and #35 (bookings browser context). jay is used only through its public surface (`makeJayQuery`, contract YAML, `parseContract`, `JayHtmlValidatorFn`). Paths are relative to `packages/` unless stated.
 
@@ -749,3 +749,7 @@ Test-site resources created for L1/L5 (nothing existing was changed): bookings f
 ### jay-feedback
 
 As decided above: agent-kit guides updated (unsupported fields, `FORM_UNSUPPORTED`, `BOOLEAN`, deprecated `getFormSummary`); no new validation.
+
+### Release gate removed (2026-11-17)
+
+By owner decision, the release gate is removed from the repo instead of being closed through L6: `RELEASE-BLOCKED.md`, `assertReleaseNotBlocked` in `scripts/publish.cjs`, its test (`scripts/test/publish-gate.test.cjs`), the root `test` script entry and the "Check the release gate" step in `.github/workflows/publish.yml` are deleted. DL #52's live QA (L1–L12) covers the address behaviour L6 was meant to check. Nothing now blocks a publish mechanically; the L-drift probe (L12) stays a manual pre-release step (wix-forms CHANGELOG and `wix-forms-setup.md` → Before release).
