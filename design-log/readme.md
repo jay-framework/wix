@@ -2,6 +2,8 @@
 
 Design documentation for the Jay Framework Wix integration packages.
 
+Deferred follow-ups for wix-forms: `packages/wix-forms/BACKLOG.md`.
+
 ## Structure
 
 | #   | Title                                                                                                                                                                                      | Status                                                                                                                                                                 |
