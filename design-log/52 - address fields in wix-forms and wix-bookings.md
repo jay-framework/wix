@@ -1119,3 +1119,34 @@ Every Gate-exit check L1–L12 has passed on the final code. L1–L10 and L12 ar
 **Versioning (2026-11-17):** the 0.27.0 bump made during implementation was reverted at the release owner's request. This branch changes no package versions or dependency ranges between the two packages; the §6 semver analysis (a breaking change for `0.x` consumers) is input for the release step, not a decision taken here.
 
 **429 wording (2026-11-17, product decision):** a Wix 429 on an eCommerce call (cart, place-order, checkout) happens after `createBooking` succeeded, so the visitor now reads "Your booking was received, but we couldn't open payment. Please check your email before booking again." instead of a retry prompt that could create a second booking. A 429 on any earlier call keeps "Booking is busy right now. Please wait a minute and try again." Tests: wix-bookings `describeBookingError on a Wix 429` (red, then green); wix-bookings 165/165.
+
+### Rebase onto main (DL #58) — 2026-11-17
+
+Rebased the 19 branch commits onto `main` at `3d74579` ("Bookings phone format (#62)", DL #58). Pre-rebase head `724aaba` is kept as local branch `form-address-fields-pre-rebase-main`.
+
+**Conflicts and resolutions**
+
+- `wix-bookings/lib/types.ts` (twice): kept both imports (`FieldViewData`, address types and `PhoneRules`) and both fields (`phone?` from DL #58, `longText` / `FieldViewData` / address from DL #51/#52).
+- `wix-forms/lib/utils/project-form-fields.ts`: kept the branch's fail-closed `ProjectedForm` loop for the deprecated `projectFormSummaryFields` and added DL #58's `ProjectionOptions` parameter and `phone: { defaultCountry }` on PHONE fields.
+- `wix-forms/lib/services/wix-forms-service.ts`: branch's `ProjectedForm` shape, still passing `defaultPhoneCountry` to the summary projection.
+- `wix-bookings/lib/components/booking-flow.ts`: branch's Get Form path (`getParticipantForm`, `participantFieldErrors`); DL #58's `getFormSummary` mapping and `toPostedSummaryValues` dropped, their intent re-applied below.
+- `wix-bookings/agent-kit/plugin/wix-bookings-setup.md`: rewritten (below).
+- `design-log/readme.md` (twice): the branch's rows plus main's #58 row, ordered by number. #59 lives on another branch and is not touched.
+- CHANGELOGs merged without conflict; no package version or dependency range changed (both stay `0.26.4`, as on `main`). The DL #58 test `summary-phone.test.ts` only had its access path changed to the `ProjectedForm` return shape (`{ fields }`), with the same expected value.
+
+**Phone behaviour on the new path (decision).** DL #51 moved the participant check to `validateFormField` on Get Form. After the textual merge it ran `checkPhone` with no phone rules and posted values as typed: spaced phones reached Wix unconverted, and local numbers were refused even with `defaultPhoneCountry`. DL #58 is the newer product decision for phones, so it now holds on this path:
+- `projectParticipantForm` adds wix-forms' `phoneRulesOf` (now exported), the same rules a `wixForm` page uses. A Phone field's own default country wins over config `defaultPhoneCountry`. This is a small widening of DL #58, which only had config because the Summary API has no field country. Get Form does have it, and DL #55 already ranks the two this way.
+- The browser posts `postedParticipantValues` (wix-forms `toPostedValues`, now exported) and `createBooking` posts the same after its server check. On the server it is idempotent, and it also covers direct action callers, which DL #58 Q4 had left out.
+- Messages are unchanged: `Please enter a valid phone number.`, and `Please include the country code, starting with +.` when no country is known.
+- Address country and phone default country stay independent. No code links them, and the live address booking kept a `+972…` phone with a US address and `defaultPhoneCountry: US`. No new coupling was added.
+
+**Tests.** The reproduction tests in `wix-bookings/test/participant-phone.test.ts` (server `createBooking`) and `participant-phone.interactive.test.ts` (booking flow) cover cases (a)–(d), 8 in all. Before the fix 4 were red: (a) and (d) on both paths. (b) and (c) were already correct on both paths. After the fix 8/8 pass. `yarn confirm` exits 0, with 1267 vitest tests (wix-forms 818, wix-bookings 173) and 6/6 publish-gate tests.
+
+**Live QA** (QA testbed, fresh 0.26.4 tarballs and installed dist verified equal, testbed config `defaultPhoneCountry: US`, visitor auth, Chromium 1440x900; `jay-stack validate` passed with 0 errors and 2 project warnings):
+- (a) `+1 202-555-0123` on QA Consultation was posted as `+12025550123` (HTTP 200, redirected to checkout, not paid) and stored as `+12025550123`.
+- (b) `12` showed "Please enter a valid phone number." with no createBooking request.
+- (c) `+12025550199` was posted and stored unchanged.
+- (d) `(202) 555-0123` was accepted and posted and stored as `+12025550123`.
+- Address check: a US booking on DL51 Consent Test was CONFIRMED with address `600 Dexter Ave, Montgomery, AL, 36104, US`.
+- Videos are at the workspace root: `rebase-phone-{a,b,c,d,address-us}-2026-11-17.webm`.
+- All 5 bookings were cancelled: `d2366f02…`, `67c1928f…`, `7063b03f…`, `139a5439…`, `7958d7b1…`.
