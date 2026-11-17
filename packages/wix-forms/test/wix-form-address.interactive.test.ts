@@ -47,6 +47,7 @@ function mountAddressForm(field: FormFieldView) {
     const elements = new Map<string, Element>();
     let submit: (() => void) | undefined;
     let viewState: Record<string, any> = {};
+    const statusRenders: string[] = [];
     const element = (key: string) => {
         if (!elements.has(key)) elements.set(key, { value: '', focus: vi.fn() });
         return elements.get(key)!;
@@ -81,6 +82,9 @@ function mountAddressForm(field: FormFieldView) {
                 dom: undefined,
                 mount: () => {},
                 update: (next: Record<string, any>) => {
+                    if (next.statusMessage !== viewState.statusMessage) {
+                        statusRenders.push(next.statusMessage);
+                    }
                     viewState = next;
                 },
                 unmount: () => {},
@@ -96,6 +100,8 @@ function mountAddressForm(field: FormFieldView) {
         get viewState() {
             return viewState;
         },
+        /** Each rendered change of `statusMessage`, in order. */
+        statusRenders,
         type: (part: string, value: string, channel = 'input') => {
             const key = `${part}.${channel}`;
             element(key).value = value;
@@ -287,10 +293,10 @@ describe('DL #59: address part errors are announced on blur', () => {
         form.leave('city');
         await settle();
 
+        const before = form.statusRenders.length;
         form.leave('city');
-        expect(status(form)).toBe('');
         await settle();
-        expect(status(form)).toBe('City is required.');
+        expect(form.statusRenders.slice(before)).toEqual(['', 'City is required.']);
     });
 
     it('(c) fixing the part by typing clears silently', async () => {
@@ -299,10 +305,10 @@ describe('DL #59: address part errors are announced on blur', () => {
         await settle();
         expect(status(form)).toBe('City is required.');
 
+        const before = form.statusRenders.length;
         form.type('city', 'Springfield');
-        expect(status(form)).toBe('');
         await settle();
-        expect(status(form)).toBe('');
+        expect(form.statusRenders.slice(before)).toEqual(['']);
     });
 
     it('(d) a country change withdraws an owned announcement of a removed part', async () => {

@@ -33,6 +33,8 @@
    reset always wins, and no blur text is left beside the confirmation. So `statusMessage` is **no
    longer always empty between submits**, and a later invalid blur replaces a rejection's status
    text. This affects every site at runtime on upgrade, with no opt-out; no contract change.
+   Address parts follow the same rule: leaving a part announces that part's error; fixing it or
+   changing the country (which removes or re-lays out parts) clears it silently (DL #59 addendum).
 3. **New bindings-validator warning**: an element whose own text binds `{key.field.error}` and is
    itself live (`aria-live` other than `off`, or `role="alert"` / `status` / `log`) — the error
    would be announced twice.
