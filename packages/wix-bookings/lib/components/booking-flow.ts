@@ -27,7 +27,11 @@ import type {
     BookingSlotView,
 } from '../types.js';
 import { createBooking, listSlots } from '../actions/bookings-actions.js';
-import { getFormSummary, validateFormSummaryField } from '@jay-framework/wix-forms';
+import {
+    getFormSummary,
+    toPostedSummaryValues,
+    validateFormSummaryField,
+} from '@jay-framework/wix-forms';
 import {
     SLOW_RENDER_TTL,
     SLOW_RENDER_GRACE,
@@ -223,6 +227,7 @@ function BookingFlowInteractive(
                     label: field.label,
                     type: field.type,
                     required: field.required,
+                    ...(field.phone ? { phone: field.phone } : {}),
                 })),
             );
         } catch (error) {
@@ -282,7 +287,7 @@ function BookingFlowInteractive(
                     scheduleId: slot.scheduleId,
                     eventId: slot.eventId,
                 },
-                formValues,
+                formValues: toPostedSummaryValues(fields, formValues),
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                 siteOrigin: window.location.origin,
             });

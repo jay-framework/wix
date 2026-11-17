@@ -1,3 +1,5 @@
+import type { PhoneRules } from '@jay-framework/wix-forms';
+
 export type BookingServiceType = 'APPOINTMENT' | 'CLASS';
 
 export interface BookingServiceView {
@@ -25,6 +27,8 @@ export interface BookingFormFieldView {
     label: string;
     type: 'STRING' | 'EMAIL' | 'PHONE' | 'NUMBER' | 'URL';
     required: boolean;
+    /** PHONE fields: the rules `checkPhone` uses to judge and normalize the value (DL #58). */
+    phone?: PhoneRules;
 }
 
 export type CreateBookingOutcome =

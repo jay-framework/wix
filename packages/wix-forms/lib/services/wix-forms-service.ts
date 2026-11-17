@@ -72,7 +72,9 @@ export function provideWixFormsService(
                 );
             }
             const { formSummary } = await getFormSummary(wixClient, formId);
-            const fields = projectFormSummaryFields(formSummary?.fields);
+            const fields = projectFormSummaryFields(formSummary?.fields, {
+                defaultPhoneCountry: config.defaultPhoneCountry,
+            });
             if (!fields.length) {
                 throw new Error('Could not load participant form fields from Wix.');
             }
