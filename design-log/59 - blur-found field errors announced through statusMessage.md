@@ -605,3 +605,18 @@ Approved follow-up (option A). The Design section stays as written; this changes
 - Tests red → green: 4 failing before the fix (new unit toggle test, new interactive `ann@` sequence, and the two existing repeat-leave tests in validation-timing and address (b), updated to the toggled value); after: wix-forms 878/878; `yarn confirm` exit 0.
 - Equality audit: no production code compares `statusMessage` text; the only equality checks were those tests.
 - Pending: VoiceOver re-listen of the repeat leave on the repacked QA testbed.
+
+## Automated VoiceOver runs (2026-11-17)
+
+macOS Safari + VoiceOver, driven by a script (keystrokes through System Events; spoken text read from VoiceOver's AppleScript `last phrase`, polled every 50–100 ms), on the QA testbed form and address pages. Four runs; transcripts are kept outside the repo.
+
+| Case                                                                          | Heard        |
+| ----------------------------------------------------------------------------- | ------------ |
+| First leave of an invalid field (Email → chip group, Email → First name)      | 11/11        |
+| First leave of an invalid address part (Address line → City)                  | 5/5          |
+| Back to the invalid field (error read through `aria-describedby`)             | 8/8          |
+| Fixing the field, then leaving                                                | silent (2/2) |
+| Repeat leave, unchanged — before the repeat-leave addendum                    | 0/3          |
+| Repeat leave, unchanged — after it (Email 3/5 + 2/3 earlier run; address 2/3) | 7/11         |
+
+**Decision (product, 2026-11-17): accepted as a known limitation of polite announcements.** Every miss shows VoiceOver still speaking the newly focused field when the update lands, including after the short City field, so it is the screen reader dropping a polite update, not the page (the status value is verified to change). The visitor has already heard the error on the first leave, and hears it again whenever they return to the field. An assertive region (`role="alert"`) was considered and not adopted: more intrusive, and a design change for a secondary case. Caveat: `last phrase` only keeps the latest utterance, so a very short phrase can in rare cases be missed by the poll; misses were cross-checked against the surrounding focus speech.
