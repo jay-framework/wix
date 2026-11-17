@@ -464,7 +464,35 @@ describe('wix-form blur announcement through statusMessage (DL #59)', () => {
         expect(status(harness)).toBe('');
 
         await advance();
-        expect(status(harness)).toBe(message);
+        expect(status(harness)).toBe(`${message} `);
+    });
+
+    /**
+     * Bug: a repeat leave of a still-invalid Email is not re-read by VoiceOver; the status goes
+     * text → '' → the identical text 1 ms later, which VoiceOver treats as unchanged.
+     * Found in: DL #59 automated VoiceOver run, repeat leave (0 of 3 read).
+     * Expected: the repeat leave writes the text with a trailing U+00A0; the field error is unchanged.
+     * Actual: the repeat leave writes the identical text.
+     */
+    it('should make the status differ on a repeat leave of a still-invalid email', async () => {
+        const input = fakeInput();
+        const harness = await mountForm([requiredEmail], { email: { input } });
+        const rendered: string[] = [];
+
+        type(input, 'ann@');
+        blur(input);
+        await advance();
+        const message = errorOf(harness, 'email');
+        rendered.push(status(harness));
+
+        blur(input);
+        rendered.push(status(harness));
+        await advance();
+        rendered.push(status(harness));
+
+        expect(message).not.toBe('');
+        expect(rendered).toEqual([message, '', `${message} `]);
+        expect(errorOf(harness, 'email')).toBe(message);
     });
 
     it('should not announce while typing', async () => {

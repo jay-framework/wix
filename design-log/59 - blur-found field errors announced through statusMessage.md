@@ -586,3 +586,22 @@ Approved follow-up to the open note above. The Design section stays as written; 
 **Agent feedback (jay-feedback).** Neither. The guides describe blur announcements for "a field" in general, not per field type, so they already cover address parts; nothing new can be caught by a validator.
 
 **Tests** (`test/wix-form-address.interactive.test.ts`, the DOM-free address harness, now with blur): (a) a leave announces on the next task; (b) a repeat leave clears then re-reads; (c) typing a fix clears silently; (d) a country change withdraws a removed part's owned and pending announcement; (e) no announcement during a submit; (f) part A's text survives leaving part B valid; (G2) an untouched part does not complain; (g) the subdivision text → select switch withdraws.
+
+## Addendum (2026-11-17): repeat-leave re-read
+
+Approved follow-up (option A). The Design section stays as written; this changes only what text the announcer writes.
+
+**Evidence.** An automated macOS VoiceOver + Safari run (2026-11-17): type `ann@` in Email, Tab, Shift+Tab back, Tab again. The first leave is read 3 of 3; the **repeat leave is read 0 of 3**. A Playwright trace of the status region shows why: on the repeat leave it goes from `"Please enter a valid email address."` to `""` and back to the identical text about **1 ms** later (WebKit and Chromium). VoiceOver merges the clear and the identical re-write into "unchanged" and says nothing.
+
+**Decision (option A).** When an announcement's text equals the text the announcer last wrote, it writes the text with a trailing non-breaking space (`U+00A0`) instead; the next equal announcement writes the plain text again, and so on. The read text is the same; the DOM value really differs, so the region changes. Delay 0, clear-then-deferred-write, owner, `withdraw` and `cancel` are unchanged. Rejected alternatives: a longer delay (Phase 0 showed delays are what loses the announcement) and a zero-width character (some readers speak it or ignore the change).
+
+**Exact rule.** The announcer remembers the last value it wrote to `statusMessage` (never the clear). On the deferred write of `text`: if the last written value is `text`, write `text + ' '`; otherwise write `text`. Only `statusMessage` carries the toggle; the visible per-field error text is untouched. `cancel()` keeps the memory (a submit or other writer in between is harmless: the worst case is a different-but-equal-sounding value). Nothing compares `statusMessage` for equality: `withdraw` uses the owner key, not the text; page wording sets field errors, not the status; submit outcomes call `setStatusMessage` directly.
+
+**Tests.** Unit (`test/blur-announcer.test.ts`): three consecutive announcements of the same text for the same field write `['', text, '', text + ' ', '', text]`. Interactive (`test/wix-form-validation-timing.interactive.test.ts`): type `ann@` in Email, blur, refocus, blur: the status goes `text` → `''` → `text + ' '`, and the field's own error stays `text`. The existing "repeat leave" tests (unit, validation-timing, address (b)) change their expected re-write to the toggled value.
+
+### Implementation Results: repeat-leave re-read (2026-11-17)
+
+- `blur-announcer.ts`: `distinctFromLastWrite(text, lastWritten)` and a `lastWritten` memory; the deferred write sends `text + ' '` when the last write was exactly `text`. Owner, `withdraw`, `cancel`, delay 0 unchanged. No deviation from the addendum.
+- Tests red → green: 4 failing before the fix (new unit toggle test, new interactive `ann@` sequence, and the two existing repeat-leave tests in validation-timing and address (b), updated to the toggled value); after: wix-forms 878/878; `yarn confirm` exit 0.
+- Equality audit: no production code compares `statusMessage` text; the only equality checks were those tests.
+- Pending: VoiceOver re-listen of the repeat leave on the repacked QA testbed.

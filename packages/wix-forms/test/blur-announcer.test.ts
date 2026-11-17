@@ -35,15 +35,34 @@ describe('createBlurAnnouncer (DL #59)', () => {
         expect(writes).toEqual(['', 'Enter an email']);
     });
 
-    it('should clear before re-writing the same text', async () => {
+    /**
+     * Bug: a repeat leave of a still-invalid field is not re-read; the status goes text → '' →
+     * the identical text 1 ms later and VoiceOver treats it as unchanged.
+     * Found in: DL #59 automated VoiceOver run, repeat leave (0 of 3 read).
+     * Expected: each re-write of the same text differs from the last by a toggled trailing U+00A0.
+     * Actual: the identical text is written again.
+     */
+    it('should toggle a trailing non-breaking space when re-announcing the same text', async () => {
+        const announcer = createBlurAnnouncer({ setStatusMessage });
+        const text = 'Enter an email';
+
+        for (let leave = 0; leave < 3; leave++) {
+            announcer.announce('email', text);
+            await advance();
+        }
+
+        expect(writes).toEqual(['', text, '', `${text} `, '', text]);
+    });
+
+    it('should write plain text when the text differs from the last write', async () => {
         const announcer = createBlurAnnouncer({ setStatusMessage });
         announcer.announce('email', 'Enter an email');
         await advance();
 
-        announcer.announce('email', 'Enter an email');
+        announcer.announce('name', 'Enter your name');
         await advance();
 
-        expect(writes).toEqual(['', 'Enter an email', '', 'Enter an email']);
+        expect(writes).toEqual(['', 'Enter an email', '', 'Enter your name']);
     });
 
     it('should write only the last of two pending announcements', async () => {

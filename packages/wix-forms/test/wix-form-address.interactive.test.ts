@@ -296,7 +296,7 @@ describe('DL #59: address part errors are announced on blur', () => {
         const before = form.statusRenders.length;
         form.leave('city');
         await settle();
-        expect(form.statusRenders.slice(before)).toEqual(['', 'City is required.']);
+        expect(form.statusRenders.slice(before)).toEqual(['', 'City is required.\u00a0']);
     });
 
     it('(c) fixing the part by typing clears silently', async () => {

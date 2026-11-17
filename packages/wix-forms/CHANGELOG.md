@@ -35,6 +35,9 @@
    text. This affects every site at runtime on upgrade, with no opt-out; no contract change.
    Address parts follow the same rule: leaving a part announces that part's error; fixing it or
    changing the country (which removes or re-lays out parts) clears it silently (DL #59 addendum).
+   A repeat announcement of the same text toggles a trailing non-breaking space (`U+00A0`) on
+   `statusMessage`, so VoiceOver re-reads it; compare `statusMessage` trimmed, if at all (DL #59
+   repeat-leave addendum).
 3. **New bindings-validator warning**: an element whose own text binds `{key.field.error}` and is
    itself live (`aria-live` other than `off`, or `role="alert"` / `status` / `log`) — the error
    would be announced twice.

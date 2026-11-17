@@ -11,6 +11,15 @@
  *  clear-then-deferred-write is what VoiceOver reads after the next field's name (DL #59, Phase 0). */
 export const BLUR_ANNOUNCE_DELAY_MS = 0;
 
+/** Invisible to readers, but makes a repeat of the same text a real DOM change (DL #59 addendum,
+ *  repeat-leave re-read): VoiceOver ignores '' → identical text written 1 ms apart. */
+const REPEAT_MARKER = '\u00a0';
+
+/** `text`, or `text` + REPEAT_MARKER when the last write was exactly `text`. */
+export function distinctFromLastWrite(text: string, lastWritten: string | undefined): string {
+    return lastWritten === text ? text + REPEAT_MARKER : text;
+}
+
 export interface BlurAnnouncer {
     /** Clear `statusMessage` now and write `text` after the delay, owned by `target`. */
     announce(target: string, text: string): void;
@@ -31,6 +40,7 @@ export function createBlurAnnouncer(options: {
     let pendingTimer: ReturnType<typeof setTimeout> | undefined;
     let pendingTarget: string | undefined;
     let owner: string | undefined;
+    let lastWritten: string | undefined;
 
     function clearPending(): void {
         clearTimeout(pendingTimer);
@@ -47,7 +57,8 @@ export function createBlurAnnouncer(options: {
             pendingTimer = setTimeout(() => {
                 pendingTimer = undefined;
                 pendingTarget = undefined;
-                setStatusMessage(text);
+                lastWritten = distinctFromLastWrite(text, lastWritten);
+                setStatusMessage(lastWritten);
                 owner = target;
             }, delayMs);
         },
