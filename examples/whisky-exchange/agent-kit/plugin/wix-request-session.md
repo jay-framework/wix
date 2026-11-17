@@ -20,6 +20,8 @@ and the cookie cleared. Nothing to wire up: it happens inside the plugin.
 `wix_session` is `Secure`: develop on `http://localhost` or over https. Over plain http on any
 other host (a LAN IP, a custom `.test` host) the session is never kept, and every caller-session
 feature (form submits, wix-data `asCaller`) behaves as signed-out.
+Safari (WebKit) does not keep a `Secure` cookie even on `http://localhost` or `http://127.0.0.1`, so
+every submit there fails as `PERMISSION`. To test in Safari, run the dev server over https.
 
 ## Reading it in an action
 
