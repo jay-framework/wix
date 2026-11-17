@@ -21,13 +21,14 @@ import {
     type DynamicContractProps,
     type Signals,
 } from '@jay-framework/fullstack-component';
-import { createSignal, Props, useReactive } from '@jay-framework/component';
+import { createEffect, createSignal, Props, useReactive } from '@jay-framework/component';
 import { WIX_FORMS_SERVICE, type WixFormsService } from '../services/wix-forms-service-marker.js';
 import { ensureSessionFresh } from '@jay-framework/wix-server-client/client';
 import type { FieldValue, FormFieldView, SubmitFormResult } from '../types.js';
 import { submitForm } from '../actions/forms-actions.js';
 import { checkFormField } from '../utils/project-form-fields.js';
 import { FieldRule, type FieldCheckResult } from './field-rule.js';
+import { createBlurAnnouncer } from './blur-announcer.js';
 import { createPageCheckRunner } from './page-checks.js';
 import { createSubmitOutcomeReporter, createSubmitStartReporter } from './submit-outcome-events.js';
 import {
@@ -133,6 +134,9 @@ function WixFormInteractive(
     const reportSubmitStart = createSubmitStartReporter(carryForward.formId);
     // The submit was handed to the server: drives submitState SUBMITTING (DL #57 G6).
     const [isHandedOff, setIsHandedOff] = createSignal(false);
+    // Blur-found errors reach screen readers through statusMessage (DL #59).
+    const blurAnnouncer = createBlurAnnouncer({ setStatusMessage });
+    createEffect(() => () => blurAnnouncer.cancel());
 
     /** The only way busy is cleared (DL #57 L2): leaving busy always ends the hand-off too. */
     function setBusy(value: boolean): void {
@@ -179,6 +183,12 @@ function WixFormInteractive(
         setErrorByTarget((current) => ({ ...current, [field.target]: '' }));
         setInvalidByTarget((current) => ({ ...current, [field.target]: false }));
         setRuleByTarget((current) => ({ ...current, [field.target]: FieldRule.NONE }));
+        blurAnnouncer.withdraw(field.target);
+    }
+
+    /** A commit (or a valid blur) that fixed the field takes its announcement back (DL #59). */
+    function withdrawIfFixed(field: FormFieldView): void {
+        if (!errorByTarget()[field.target]) blurAnnouncer.withdraw(field.target);
     }
 
     /** Push a store value back into a native input for visual consistency (Q5, Q6). */
@@ -210,7 +220,12 @@ function WixFormInteractive(
 
     /** "Late to complain": blur validates only a field the user changed or that shows an error (DL#53 G2). */
     function handleNativeBlur(field: FormFieldView): void {
-        if (dirtyTargets.has(field.target) || errorByTarget()[field.target]) validateField(field);
+        if (!(dirtyTargets.has(field.target) || errorByTarget()[field.target])) return;
+        validateField(field);
+        const message = errorByTarget()[field.target];
+        if (!message) blurAnnouncer.withdraw(field.target);
+        // Only a visitor's leave announces: never during a submit or beside the confirmation.
+        else if (!isSubmitting() && !isSubmitted()) blurAnnouncer.announce(field.target, message);
     }
 
     /** "Early to forgive": typing clears a shown error once valid, never swaps its text (DL#53 G2). */
@@ -229,6 +244,7 @@ function WixFormInteractive(
         setFieldValue(field.target, value);
         reflectToInput(field, value);
         validateField(field);
+        withdrawIfFixed(field);
     }
 
     /** A chip change is a commit, like `control`: store the new selection and validate. */
@@ -239,6 +255,7 @@ function WixFormInteractive(
             toggleSelection(field, { current: values()[field.target], ...change }),
         );
         validateField(field);
+        withdrawIfFixed(field);
     }
 
     wireFieldEvents(refs, carryForward.fields, {
@@ -328,6 +345,7 @@ function WixFormInteractive(
         setErrorByTarget({});
         setInvalidByTarget({});
         setRuleByTarget({});
+        blurAnnouncer.cancel();
         setStatusMessage('');
         setSubmitFailure(SubmitFailure.NONE);
         setIsSubmitted(false);
@@ -340,6 +358,7 @@ function WixFormInteractive(
 
     /** The echo shows what was submitted: visible text-like values trimmed (DL #57 T). */
     function showSubmitted(): void {
+        blurAnnouncer.cancel();
         setValues((current) => trimTextValues(carryForward.fields, current));
         setIsSubmitted(true);
         afterRemount(
@@ -406,10 +425,12 @@ function WixFormInteractive(
         window.addEventListener('pageshow', (event: PageTransitionEvent) => {
             if (event.persisted) setBusy(false);
         });
+        window.addEventListener('pagehide', () => blurAnnouncer.cancel());
     }
 
     async function submit(): Promise<void> {
         if (isSubmitting()) return;
+        blurAnnouncer.cancel();
         setStatusMessage('');
         setSubmitFailure(SubmitFailure.NONE);
         setErrorByTarget({});

@@ -380,10 +380,21 @@ function deferred<T>(): { promise: Promise<T>; resolve(value: T): void } {
  * Actual: statusMessage stays '' outside a submit.
  */
 describe('wix-form blur announcement through statusMessage (DL #59)', () => {
-    /** Flushes jay's reactive `setTimeout(0)` batch and pending microtasks under fake timers. */
-    const flush = () => vi.advanceTimersByTimeAsync(0);
-    /** Runs the announcer's deferred write ("advance" in DL #59). */
-    const advance = () => vi.advanceTimersByTimeAsync(BLUR_ANNOUNCE_DELAY_MS);
+    /**
+     * Runs every timer pending now (jay's reactive `setTimeout(0)` batch) and the microtasks they
+     * release. The fake clock does not fire a 0 ms timer on `advanceTimersByTimeAsync(0)`.
+     */
+    const flush = () => vi.runOnlyPendingTimersAsync();
+    /**
+     * Runs the announcer's deferred write ("advance" in DL #59; its delay is
+     * BLUR_ANNOUNCE_DELAY_MS), then the reactive batch that the write schedules outside an event
+     * handler, so the view state shows it.
+     */
+    async function advance(): Promise<void> {
+        expect(BLUR_ANNOUNCE_DELAY_MS).toBe(0);
+        await flush();
+        await flush();
+    }
 
     beforeEach(() => {
         vi.useFakeTimers();
