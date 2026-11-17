@@ -500,6 +500,18 @@ QA testbed (`qa-testbed/testbed`, site of the QA forms) with a locally packed wi
 - **Human VoiceOver + Safari re-listen** (Verification (a)–(i)), script `a11y-spike/RELISTEN-SCRIPT.md` in the workspace (outside the repo). The status becomes `[Implemented]` once it passes; NVDA, JAWS and TalkBack remain an untested known gap (CHANGELOG).
 - Agent feedback (jay-feedback): both, as designed — the guides (`rich-forms.md` §1, §3 `errorRule` + page checks, §4b, §6; `per-form-contracts.md`; `user-visible-messages.md`; `wix-forms-dashboard-content.md`) and the bindings-validator warning.
 
+### Address parts addendum (2026-11-17)
+
+Implemented as designed in "Addendum (2026-11-17): address parts" below. Commits: addendum (design); tests (red); implementation + CHANGELOG + these results.
+
+- **Tests (red → green)**, in `test/wix-form-address.interactive.test.ts`: (a), (b), (c), (d owned), (f), (g) red on the pre-change component (nothing reached `statusMessage`). (d pending), (e) and (G2) were guards, green before and after. All 13 in the file pass after. Package: **876/876**.
+- **Deviation (test harness).** The address harness runs real timers and the view state updates only after jay's batch, so "clears, then re-reads" (b) and "fixed silently" (c) assert the sequence of rendered `statusMessage` values (`statusRenders`) rather than a synchronous `''`.
+- **Deviation (fixture).** (d) uses `addressLine`, which US has and IL lacks (the fixture's IL layout uses street name/number); `postalCode` is shown for every fixture country.
+- **Observed (by design).** A part that already **shows** an error (because leaving another part validated the whole address) announces when left, even if untouched, matching a native field that shows an error. A part with no visible error stays quiet (G2).
+- **Gate:** `yarn install` and `yarn confirm` exit 0 (wix-forms 876/876, wix-bookings 173/173; the others 108, 44, 42, 38, 11 ×3, 8, 3, all green). The formatter changed no unrelated files. No package version or dependency range changed.
+- **Demo:** QA testbed page `src/pages/dl59-address` (form "QA Address LF0 v2", both addresses bound, a visible `statusMessage` readout plus a log of every write to the `role="status"` region), with a tarball packed from this branch. Playwright at 1440×900 with captions: **4/4 checks passed**. (a) at the leave the region is `''`, and on the next task it reads "Address is required."; (b) a repeat leave writes `''` then the error; (c) typing a fix writes only `''`; (d) choosing Israel removes Address and its announcement, with only `''` written. No submissions. Video: `dl59-address-blur-announce-2026-11-17.webm` at the workspace root.
+- **Pending:** a human VoiceOver re-listen of the "Address parts" steps in the workspace re-listen script.
+
 ## VoiceOver re-listen results (2026-11-17)
 
 A person ran the re-listen on the real form (QA testbed page with a wix-forms contact form), macOS Safari + VoiceOver, on the implemented code.
@@ -516,7 +528,7 @@ A person ran the re-listen on the real form (QA testbed page with a wix-forms co
 
 `main` (`1a2541c`) was merged into this branch (`a99c655`). Conflicts in `wix-form.ts`, `CHANGELOG.md`, `plugin.yaml` and the design-log index were resolved keeping both behaviours: page wording (`pageWordingFor`, `inPageWording`) sits beside the address specs (`currentFields()`, learned specs on a rejection). `yarn confirm` green: wix-forms 867/867, wix-bookings 173/173.
 
-**Address errors are not announced on blur (open).** An address reports its errors per part (`<target>/<part>`) through `handleAddressBlur`, which does not call `blurAnnouncer`; only `handleNativeBlur` does. So a visitor leaving an invalid address part hears nothing until submit. Neither this log nor DL #52 designs it; deciding it (and which part's text to announce) is a follow-up. Rejected address parts keep Wix's text in `inPageWording`, since page wording is keyed by whole field.
+**Address errors are not announced on blur (resolved 2026-11-17 by the address-parts addendum below).** An address reports its errors per part (`<target>/<part>`) through `handleAddressBlur`, which does not call `blurAnnouncer`; only `handleNativeBlur` does. So a visitor leaving an invalid address part hears nothing until submit. Neither this log nor DL #52 designs it; deciding it (and which part's text to announce) is a follow-up. Rejected address parts keep Wix's text in `inPageWording`, since page wording is keyed by whole field.
 
 **Code references moved.** The Design section is unchanged; the references above now point at these lines:
 
