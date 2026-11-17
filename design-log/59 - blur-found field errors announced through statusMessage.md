@@ -1,6 +1,6 @@
 # 59 - Blur-Found Field Errors Announced through statusMessage
 
-Status: [Implemented — pending VoiceOver re-listen] — Phases 1–3 and 5 implemented, Phase 4 demo recorded (2026-11-17); the post-implementation human re-listen (Verification) is outstanding. Design sections unchanged since approval; see Implementation Results.
+Status: [Implemented] — VoiceOver re-listen passed 2026-11-17 (macOS Safari + VoiceOver; NVDA, JAWS and TalkBack untested, a recorded gap).
 
 Numbering: renumbered from #58 (taken by another branch's log). Whichever branch merges to `main` second rebases its `readme.md` row.
 
@@ -499,3 +499,15 @@ QA testbed (`qa-testbed/testbed`, site of the QA forms) with a locally packed wi
 
 - **Human VoiceOver + Safari re-listen** (Verification (a)–(i)), script `a11y-spike/RELISTEN-SCRIPT.md` in the workspace (outside the repo). The status becomes `[Implemented]` once it passes; NVDA, JAWS and TalkBack remain an untested known gap (CHANGELOG).
 - Agent feedback (jay-feedback): both, as designed — the guides (`rich-forms.md` §1, §3 `errorRule` + page checks, §4b, §6; `per-form-contracts.md`; `user-visible-messages.md`; `wix-forms-dashboard-content.md`) and the bindings-validator warning.
+
+## VoiceOver re-listen results (2026-11-17)
+
+A person ran the re-listen on the real form (QA testbed page with a wix-forms contact form), macOS Safari + VoiceOver, on the implemented code.
+
+| Check                                                        | Observed                                                                          | Result |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------------- | ------ |
+| `ann@` in E-mail, Shift+Tab to First name (a text field)     | "First name…", then the e-mail error                                              | Pass   |
+| `ann@` in E-mail, Tab to the Interests chip group, then wait | the group and "News" are read, then the e-mail error, then VoiceOver's usage hint | Pass   |
+| The same, after a page reload, three runs                    | the error is heard 3 of 3                                                         | Pass   |
+
+**Observation:** on the first try the error was not heard, because the tester moved on before VoiceOver finished. A polite `role="status"` update is queued behind the next field's speech and can be cut off by further key presses or speech. This is the expected behaviour of polite announcements and is accepted; switching blur errors to an assertive region was considered and not needed.
