@@ -500,6 +500,10 @@ QA testbed (`qa-testbed/testbed`, site of the QA forms) with a locally packed wi
 - **Human VoiceOver + Safari re-listen** (Verification (a)–(i)), script `a11y-spike/RELISTEN-SCRIPT.md` in the workspace (outside the repo). The status becomes `[Implemented]` once it passes (**resolved 2026-11-17:** passed — see "VoiceOver re-listen results" and "Automated VoiceOver runs"); NVDA, JAWS and TalkBack remain an untested known gap (CHANGELOG).
 - Agent feedback (jay-feedback): both, as designed — the guides (`rich-forms.md` §1, §3 `errorRule` + page checks, §4b, §6; `per-form-contracts.md`; `user-visible-messages.md`; `wix-forms-dashboard-content.md`) and the bindings-validator warning.
 
+### Validator: subtree (2026-11-17)
+
+Found in a consumer-site upgrade QA: pages that render each error in child `if` spans inside a live `<p>` were never warned (the rule read own text nodes only; 15 paragraphs missed on one site). The rule now walks the live element's subtree for `{key.field.error}` text and `if="key.field.errorRule === …"` branches, and does not enter a descendant with its own `id` or `ref` (a separate element), so the test 18 guards (ancestor live region, `statusMessage` region, `aria-live="off"`) hold. Tests: two red cases (aria-live with `{error}` in an `if` span; `role="alert"` with a static `errorRule` branch) turned green, plus a guard (a `role="status"` region holding only `statusMessage`) green throughout. Fixtures in `test/fixtures/live-error-subtree/`. Validator file 40/40.
+
 ### Address parts addendum (2026-11-17)
 
 Implemented as designed in "Addendum (2026-11-17): address parts" below. Commits: addendum (design); tests (red); implementation + CHANGELOG + these results.

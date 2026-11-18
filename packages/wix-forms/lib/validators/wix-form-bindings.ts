@@ -431,14 +431,14 @@ const LIVE_ROLES = new Set(['alert', 'status', 'log']);
 
 /**
  * The plugin announces blur errors through statusMessage (DL #59), so a live per-field error is
- * read twice. Own attributes only: a missed warning, never a false one.
+ * read twice. Own live attributes only (not ancestors): a missed warning, never a false one.
  */
 function warnAboutLiveErrorElement(
     el: any,
     formKeys: Set<string>,
     findings: JayHtmlValidationFinding[],
 ): void {
-    const [errorBinding] = ownErrorBindings(el, formKeys);
+    const [errorBinding] = errorBindingsInSubtree(el, formKeys);
     const attribute = liveAttributeOf(el);
     if (!errorBinding || !attribute) return;
     const [key] = errorBinding.split('.');
@@ -460,6 +460,40 @@ function liveAttributeOf(el: any): 'aria-live' | 'role' | undefined {
         .trim()
         .toLowerCase();
     return LIVE_ROLES.has(role) ? 'role' : undefined;
+}
+
+/**
+ * Fields whose error the element shows: `{<key>.<field>.error}` in its text, or an
+ * `if="<key>.<field>.errorRule === …"` branch, in the element or its descendants. A descendant
+ * with its own `id` or `ref` is a separate element (a live ancestor around an error element
+ * stays exempt), so the walk does not enter it.
+ */
+function errorBindingsInSubtree(el: any, formKeys: Set<string>): string[] {
+    const fieldPaths = new Set<string>();
+    collectErrorBindings(el, formKeys, fieldPaths);
+    return [...fieldPaths];
+}
+
+function collectErrorBindings(node: any, formKeys: Set<string>, fieldPaths: Set<string>): void {
+    for (const child of node?.childNodes ?? []) {
+        if (child.nodeType === 3) {
+            addErrorTextBindings(String(child.rawText ?? child.text ?? ''), formKeys, fieldPaths);
+        } else if (child.nodeType === 1 && !isSeparateElement(child)) {
+            const branch = matchedErrorRuleCondition(child, formKeys);
+            if (branch) fieldPaths.add(branch.fieldPath);
+            collectErrorBindings(child, formKeys, fieldPaths);
+        }
+    }
+}
+
+function addErrorTextBindings(text: string, formKeys: Set<string>, fieldPaths: Set<string>): void {
+    for (const match of text.matchAll(ERROR_TEXT_BINDING)) {
+        if (formKeys.has(match[1])) fieldPaths.add(`${match[1]}.${match[2]}`);
+    }
+}
+
+function isSeparateElement(el: any): boolean {
+    return Boolean(el?.getAttribute?.('id') || el?.getAttribute?.('ref'));
 }
 
 /** `{<key>.<field>.error}` in the element's own text nodes only. */
