@@ -103,6 +103,41 @@ For hero/banner images that span the full viewport:
 />
 ```
 
+## Reserve space (CLS)
+
+A bound Wix image has no size until it arrives, so the page jumps when it loads. Give every
+`<img>` (and every `<video poster>`) bound to a `wix-image` tag a box in the markup.
+`jay-stack validate` warns `WIX-MEDIA-NO-DIMENSIONS` when the box is missing.
+
+```html
+<!-- ✅ fill/crop: the transform IS the box -->
+<img src="{mainMedia.url}/v1/fill/w_400,h_300/file.webp"
+     width="400" height="300" style="max-width:100%;height:auto" alt="{mainMedia.altText}">
+
+<!-- ✅ the contract has intrinsic size (e.g. product-card thumbnail) -->
+<img src="{thumbnail.url}/v1/fit/w_400,h_400/file.webp"
+     width="{thumbnail.width}" height="{thumbnail.height}" style="max-width:100%;height:auto">
+
+<!-- ✅ size unknown: fix the box with CSS -->
+<img src="{mainMedia.url}/v1/fit/w_800,h_800/file.webp" style="aspect-ratio:1/1;width:100%;object-fit:contain">
+
+<!-- ❌ no reserved space -->
+<img src="{mainMedia.url}/v1/fit/w_800,h_800/file.webp">
+```
+
+- **`fill`** crops to exactly `w`×`h`, so copy those numbers into `width`/`height`.
+  **`fit`** keeps the original ratio, so the transform size is not the real ratio: bind the
+  contract's `width`/`height` where it has them, or set `aspect-ratio` inline.
+- `width`/`height` do not fight responsive CSS: with `max-width:100%; height:auto` the browser
+  uses them only for the ratio.
+- What counts: both `width` and `height` attributes (static or bound), or an inline `style` with
+  `aspect-ratio`, or with `width` and `height` (not `auto`; `max-width` does not count). A bound
+  `style` counts too. CSS classes are not read.
+- `<video poster>` follows the same rules. `<source>` in a `<picture>` is skipped: size the `<img>`.
+- If the box comes from a CSS class (e.g. `.card img { aspect-ratio: 1 }`), the warning is a false
+  positive. Suppress it for the page with
+  `<script type="application/jay-validations">wix-media: { allow-unsized-media: true }</script>`.
+
 ## Video
 
 Use the media URL directly in `<video>` tags.

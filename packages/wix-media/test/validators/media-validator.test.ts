@@ -28,6 +28,15 @@ const mediaContract: JayHtmlValidationContext['contract'] = {
                 { tag: 'altText', type: [1] },
             ],
         },
+        {
+            tag: 'thumbnail',
+            type: [4],
+            tags: [
+                { tag: 'url', type: [1], meta: { mediaType: 'wix-image' } },
+                { tag: 'width', type: [2] },
+                { tag: 'height', type: [2] },
+            ],
+        },
         { tag: 'title', type: [1] },
     ],
 };
@@ -94,6 +103,10 @@ describe('media-validator', () => {
                     severity: 'error',
                     message: expect.stringContaining('mainMedia.url'),
                 }),
+                expect.objectContaining({
+                    severity: 'warning',
+                    message: expect.stringMatching(/^WIX-MEDIA-NO-DIMENSIONS/),
+                }),
             ]);
         });
 
@@ -127,6 +140,10 @@ describe('media-validator', () => {
                 expect.objectContaining({
                     severity: 'error',
                     message: expect.stringContaining('productPage.mediaGallery.selectedMedia.url'),
+                }),
+                expect.objectContaining({
+                    severity: 'warning',
+                    message: expect.stringMatching(/^WIX-MEDIA-NO-DIMENSIONS/),
                 }),
             ]);
         });
@@ -236,7 +253,7 @@ describe('media-validator', () => {
 
         it('flags binding with w_600 and no srcset', async () => {
             const ctx = makeContext(
-                '<img src="{mainMedia.url}/v1/fill/w_600,h_400/file.webp" alt="product" />',
+                '<img src="{mainMedia.url}/v1/fill/w_600,h_400/file.webp" width="600" height="400" alt="product" />',
                 mediaContract,
             );
             const findings = await validate(ctx);
@@ -254,7 +271,7 @@ describe('media-validator', () => {
                 `<img src="{mainMedia.url}/v1/fill/w_800,h_600/file.webp"
                       srcset="{mainMedia.url}/v1/fill/w_400%2Ch_300/file.webp 400w,
                               {mainMedia.url}/v1/fill/w_800%2Ch_600/file.webp 800w"
-                      alt="product" />`,
+                      width="800" height="600" alt="product" />`,
                 mediaContract,
             );
             const findings = await validate(ctx);
@@ -304,7 +321,7 @@ describe('media-validator', () => {
                 mediaContract,
             );
             const findings = await validate(ctx);
-            expect(findings).toHaveLength(3);
+            expect(findings).toHaveLength(4);
         });
 
         it('checks video poster attribute', async () => {
@@ -326,7 +343,7 @@ describe('media-validator', () => {
                     <img src="{mainMedia.url}/v1/fill/w_800,h_600/file.webp"
                          srcset="{mainMedia.url}/v1/fill/w_400%2Ch_300/file.webp 400w,
                                  {mainMedia.url}/v1/fill/w_800%2Ch_600/file.webp 800w"
-                         alt="hero" />
+                         width="800" height="600" alt="hero" />
                     <img src="https://static.wixstatic.com/media/abc123/v1/fit/w_100,h_100/file.jpg" alt="thumb" />
                     <p>No images here</p>
                 </div>`,
@@ -334,6 +351,128 @@ describe('media-validator', () => {
             );
             const findings = await validate(ctx);
             expect(findings).toEqual([]);
+        });
+    });
+
+    describe('Rule F: WIX-MEDIA-NO-DIMENSIONS (Design Log #61)', () => {
+        const SRC = '{mainMedia.url}/v1/fill/w_300,h_300/file.webp';
+        const noDimensions = (findings: Awaited<ReturnType<typeof validate>>) =>
+            findings.filter((f) => f.message?.startsWith('WIX-MEDIA-NO-DIMENSIONS'));
+
+        async function noDimensionsFor(html: string, contract = mediaContract) {
+            return noDimensions(await validate(makeContext(html, contract, headlessImports)));
+        }
+
+        it('warns on a bound wix image with no reserved space', async () => {
+            const findings = await noDimensionsFor(`<img src="${SRC}" alt="p" />`);
+            expect(findings).toEqual([
+                expect.objectContaining({
+                    severity: 'warning',
+                    element: '<img>',
+                    attribute: 'src',
+                    message: expect.stringContaining("'{mainMedia.url}'"),
+                }),
+            ]);
+            expect(findings[0].message).toContain(
+                'agent-kit/designer/wix-media.md → Reserve space (CLS)',
+            );
+            expect(findings[0].suggestion).toContain('width="400" height="300"');
+        });
+
+        it('warns on a headless-keyed wix image with no reserved space', async () => {
+            const findings = await noDimensionsFor(
+                '<img src="{productPage.mediaGallery.selectedMedia.url}/v1/fill/w_300,h_300/f.webp" alt="p" />',
+                undefined,
+            );
+            expect(findings).toHaveLength(1);
+        });
+
+        it('warns on a video poster bound to a wix image', async () => {
+            const findings = await noDimensionsFor(`<video poster="${SRC}" src="v.mp4"></video>`);
+            expect(findings).toEqual([
+                expect.objectContaining({ element: '<video>', attribute: 'poster' }),
+            ]);
+        });
+
+        it.each([
+            ['static width and height', `width="300" height="300"`],
+            ['bound width and height', `width="{thumbnail.width}" height="{thumbnail.height}"`],
+            ['inline aspect-ratio', `style="aspect-ratio:4/3"`],
+            ['inline width and height', `style="width:80px;height:80px"`],
+            ['case-insensitive inline size', `style="WIDTH:80px;Height:80px"`],
+            ['fully bound style', `style="{imgStyle}"`],
+            ['partly bound style', `style="width:80px;{extra}"`],
+        ])('passes with %s', async (_name, sizing) => {
+            expect(await noDimensionsFor(`<img src="${SRC}" ${sizing} alt="p" />`)).toEqual([]);
+        });
+
+        it('warns when only width is set', async () => {
+            expect(await noDimensionsFor(`<img src="${SRC}" width="300" alt="p" />`)).toHaveLength(
+                1,
+            );
+        });
+
+        it('warns when style only has max-width and height:auto', async () => {
+            const html = `<img src="${SRC}" style="max-width:100%;height:auto" alt="p" />`;
+            expect(await noDimensionsFor(html)).toHaveLength(1);
+        });
+
+        it('gives both the transform error and this warning for an untransformed unsized url', async () => {
+            const findings = await validate(
+                makeContext('<img src="{mainMedia.url}" alt="p" />', mediaContract),
+            );
+            expect(findings.map((f) => f.severity).sort()).toEqual(['error', 'warning']);
+            expect(noDimensions(findings)).toHaveLength(1);
+        });
+
+        it('skips <source> and reads the size from the <img> in a <picture>', async () => {
+            const html = `<picture><source srcset="${SRC} 300w" /><img src="${SRC}" width="300" height="300" alt="p" /></picture>`;
+            expect(await noDimensionsFor(html)).toEqual([]);
+        });
+
+        it('reports one finding naming the first binding when several match', async () => {
+            const html =
+                '<img src="{thumbnail.url}{mainMedia.url}/v1/fill/w_300,h_300/f.webp" alt="p" />';
+            const findings = await noDimensionsFor(html);
+            expect(findings).toHaveLength(1);
+            expect(findings[0].message).toContain("'{thumbnail.url}'");
+        });
+
+        it('ignores static wix urls (jay core owns static images)', async () => {
+            const html =
+                '<img src="https://static.wixstatic.com/media/a/v1/fill/w_100,h_100/f.jpg" alt="p" />';
+            expect(await noDimensionsFor(html)).toEqual([]);
+        });
+
+        it('ignores bindings that are not wix images', async () => {
+            expect(await noDimensionsFor('<img src="{title}" alt="p" />')).toEqual([]);
+        });
+
+        it('is suppressed by wix-media: { allow-unsized-media: true }', async () => {
+            const ctx = makeContext(`<img src="${SRC}" alt="p" />`, mediaContract);
+            ctx.validationOverrides = { 'wix-media': { 'allow-unsized-media': true } };
+            expect(noDimensions(await validate(ctx))).toEqual([]);
+        });
+    });
+
+    describe('guide paths', () => {
+        it('points every message at agent-kit/designer/wix-media.md', async () => {
+            const findings = await validate(
+                makeContext(
+                    `<div>
+                        <img src="https://static.wixstatic.com/media/abc123" alt="a" />
+                        <img src="/images/logo.png" alt="b" />
+                        <img src="{mainMedia.url}" alt="c" />
+                        <img src="https://static.wixstatic.com/media/a/v1/fill/w_800,h_600/f.webp" alt="d" />
+                        <img src="{mainMedia.url}/v1/fill/w_400,h_400/f.webp" srcset="{mainMedia.url}/v1/fill/w_300,h_300/f.webp 300w" width="1" height="1" alt="e" />
+                    </div>`,
+                    mediaContract,
+                ),
+            );
+            expect(findings.length).toBeGreaterThanOrEqual(5);
+            for (const finding of findings) {
+                expect(finding.message).toContain('agent-kit/designer/wix-media.md');
+            }
         });
     });
 });

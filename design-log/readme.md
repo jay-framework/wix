@@ -67,6 +67,7 @@ Deferred follow-ups for wix-forms: `packages/wix-forms/BACKLOG.md`.
 | 57  | [Trimmed Echo, Hook Field Errors and Submit Start for wix-forms](./57%20-%20trimmed%20echo,%20hook%20field%20errors%20and%20submit%20start%20for%20wix-forms.md)                           | [Implemented] — approved (product, 2026-11-12)                                                                                                                         |
 | 58  | [E.164 Participant Phones for wix-bookings](./58%20-%20E.164%20participant%20phones%20for%20wix-bookings.md)                                                                               | [Implemented] (2026-11-16)                                                                                                                                             |
 | 59  | [Blur-Found Field Errors Announced through statusMessage](./59%20-%20blur-found%20field%20errors%20announced%20through%20statusMessage.md)                                                 | [Implemented] — VoiceOver re-listen passed 2026-11-17                                                                                                                  |
+| 61  | [Reserved Space for Bound wix-media Images (CLS)](./61%20-%20reserved%20space%20for%20bound%20wix-media%20images.md) | [Implemented] — approved (product, 2026-11-23) |
 
 ## Packages Covered
 
