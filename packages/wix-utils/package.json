@@ -12,20 +12,30 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./sanitize": {
+      "types": "./dist/sanitize-catalog-html.d.ts",
+      "default": "./dist/sanitize-catalog-html.js"
     }
   },
   "scripts": {
     "build": "npm run clean && npm run build:lib && npm run build:types",
     "build:lib": "vite build",
-    "build:types": "tsup lib/index.ts --dts-only --format esm",
+    "build:types": "tsup lib/index.ts lib/sanitize-catalog-html.ts --dts-only --format esm",
     "build:check-types": "tsc",
     "clean": "rimraf dist",
-    "test": ":"
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "entities": "^4.5.0",
+    "sanitize-html": "^2.17.0"
   },
   "devDependencies": {
+    "@types/sanitize-html": "^2.16.0",
     "rimraf": "^5.0.5",
     "tsup": "^8.5.1",
     "typescript": "^5.3.3",
-    "vite": "^6.4.4"
+    "vite": "^6.4.4",
+    "vitest": "^4.1.11"
   }
 }

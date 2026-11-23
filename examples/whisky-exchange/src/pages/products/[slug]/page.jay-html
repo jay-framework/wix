@@ -1,5 +1,11 @@
 <html>
 <head>
+  <script type="application/jay-validations">
+    jay-stack:
+      allow-html-string:
+        - "p.description" # sanitized at source by wix-stores
+        - "p.infoSections.plainDescription" # sanitized at source by wix-stores
+  </script>
   <script type="application/jay-headless" plugin="@jay-framework/wix-stores-v1" contract="product-page" key="p"></script>
   <script type="application/jay-headless" plugin="@jay-framework/wix-cart" contract="cart-indicator" key="cart"></script>
   <script type="application/jay-headless" plugin="@jay-framework/wix-members" contract="login-indicator" key="auth"></script>

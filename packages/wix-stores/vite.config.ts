@@ -27,6 +27,8 @@ export default defineConfig(({ isSsrBuild }) => ({
         },
         rollupOptions: {
             external: [
+                // server-only sanitizer subpath; resolved from wix-utils at runtime (DL #62)
+                '@jay-framework/wix-utils/sanitize',
                 /^@jay-framework\/compiler-/,
                 '@jay-framework/component',
                 '@jay-framework/fullstack-component',

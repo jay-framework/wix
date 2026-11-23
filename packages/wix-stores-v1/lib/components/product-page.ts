@@ -46,6 +46,7 @@ import { WIX_STORES_V1_CONTEXT, WixStoresV1Context } from '../contexts/wix-store
 import type { V1Product, V1SeoData } from '../wix-apis/types.js';
 import { queryProducts as queryProductsApi } from '../wix-apis/index.js';
 import { stripWixMediaResize } from '@jay-framework/wix-utils';
+import { htmlToPlainText, sanitizeCatalogHtml } from '@jay-framework/wix-utils/sanitize';
 import { allOptionsHaveSelection, mapChoice, selectedChoices } from '../utils/product-options.js';
 import { SLOW_RENDER_TTL, SLOW_RENDER_GRACE } from '../slow-render-defaults.js';
 
@@ -93,7 +94,7 @@ function mapInfoSections(
     return (sections || []).map((section, index) => ({
         _id: String(index),
         title: section.title || '',
-        plainDescription: section.description || '',
+        plainDescription: sanitizeCatalogHtml(section.description || ''),
         uniqueName: section.title || '',
     }));
 }
@@ -197,7 +198,7 @@ function mapSeoHeadTags(
     ) {
         headTags.push({
             tag: 'meta',
-            attrs: { name: 'description', content: product.description },
+            attrs: { name: 'description', content: htmlToPlainText(product.description) },
         });
     }
 
@@ -281,7 +282,7 @@ async function renderSlowlyChanging(
                 viewState: {
                     _id: product._id || '',
                     productName: product.name || '',
-                    description: product.description || '',
+                    description: sanitizeCatalogHtml(product.description || ''),
                     brand: product.brand || '',
                     ribbon: product.ribbon || '',
                     productType: mapProductType(product.productType),

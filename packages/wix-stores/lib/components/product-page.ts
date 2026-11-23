@@ -8,6 +8,7 @@ import {
 } from '@jay-framework/fullstack-component';
 import { createMemo, createSignal, Props } from '@jay-framework/component';
 import { formatWixMediaUrl } from '@jay-framework/wix-utils';
+import { htmlToPlainText, sanitizeCatalogHtml } from '@jay-framework/wix-utils/sanitize';
 import {
     ChoiceType,
     InfoSectionOfProductPageViewState,
@@ -173,7 +174,7 @@ function mapProductType(productType: string): ProductType {
 function mapInfoSections(infoSections: InfoSection[]): Array<InfoSectionOfProductPageViewState> {
     return infoSections.map((infoSection) => ({
         _id: infoSection._id,
-        plainDescription: infoSection.plainDescription || '',
+        plainDescription: sanitizeCatalogHtml(infoSection.plainDescription || ''),
         title: infoSection.title || '',
         uniqueName: infoSection.uniqueName || '',
     }));
@@ -201,7 +202,7 @@ function mapSeoHeadTags(
     ) {
         headTags.push({
             tag: 'meta',
-            attrs: { name: 'description', content: product.plainDescription },
+            attrs: { name: 'description', content: htmlToPlainText(product.plainDescription) },
         });
     }
 
@@ -474,7 +475,7 @@ async function renderSlowlyChanging(
                 viewState: {
                     _id: _id,
                     productName: name || '',
-                    description: plainDescription,
+                    description: sanitizeCatalogHtml(plainDescription || ''),
                     categorySlug,
                     brand: brand?.name || '',
                     ribbon: ribbon?.name || '',
