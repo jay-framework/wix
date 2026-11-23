@@ -1,0 +1,17 @@
+import { makeJayStackComponent } from '@jay-framework/fullstack-component';
+import { WIX_MEMBERS_CONTEXT } from '@jay-framework/wix-members/client';
+
+function Interactive(props, refs, signals, carryForward, members) {
+    refs.form.onsubmit(({ event }) => {
+        event.preventDefault();
+        const email = '';
+        const password = '';
+        members.register(email, password);
+    });
+    return { render: () => ({}) };
+}
+
+export const page = makeJayStackComponent()
+    .withProps()
+    .withContexts(WIX_MEMBERS_CONTEXT).withFastRender(async () => ({}))
+    .withInteractive(Interactive);

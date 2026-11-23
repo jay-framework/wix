@@ -1,0 +1,11 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <form ref="form">
+      <input ref="email" type="email" autocomplete="email" />
+      <input ref="password" type="password" autocomplete="current-password" />
+      <button type="submit">Log in</button>
+    </form>
+  </body>
+</html>

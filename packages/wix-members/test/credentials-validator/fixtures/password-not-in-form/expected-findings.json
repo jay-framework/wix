@@ -1,0 +1,7 @@
+[
+  {
+    "file": "src/pages/signup/page.jay-html",
+    "severity": "error",
+    "rule": "password-not-in-form"
+  }
+]

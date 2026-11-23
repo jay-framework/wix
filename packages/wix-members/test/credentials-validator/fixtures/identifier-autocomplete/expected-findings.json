@@ -1,0 +1,12 @@
+[
+  {
+    "file": "src/pages/login/page.jay-html",
+    "severity": "warning",
+    "rule": "identifier-autocomplete"
+  },
+  {
+    "file": "src/pages/login-text/page.jay-html",
+    "severity": "warning",
+    "rule": "identifier-autocomplete"
+  }
+]

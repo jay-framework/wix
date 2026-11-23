@@ -1,0 +1,27 @@
+[
+  {
+    "file": "src/pages/login/page.jay-html",
+    "severity": "error",
+    "rule": "autocomplete-role"
+  },
+  {
+    "file": "src/pages/signup/page.jay-html",
+    "severity": "error",
+    "rule": "autocomplete-role"
+  },
+  {
+    "file": "src/pages/signup-missing/page.jay-html",
+    "severity": "error",
+    "rule": "autocomplete-role"
+  },
+  {
+    "file": "src/pages/combined-one-role/page.jay-html",
+    "severity": "error",
+    "rule": "autocomplete-role"
+  },
+  {
+    "file": "src/pages/combined-mixed/page.jay-html",
+    "severity": "error",
+    "rule": "autocomplete-role"
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "file": "src/lib/all.ts",
+    "severity": "error",
+    "rule": "secret-in-storage"
+  },
+  {
+    "file": "src/lib/all.ts",
+    "severity": "error",
+    "rule": "secret-in-storage"
+  },
+  {
+    "file": "src/lib/all.ts",
+    "severity": "error",
+    "rule": "secret-in-storage"
+  },
+  {
+    "file": "src/lib/all.ts",
+    "severity": "error",
+    "rule": "secret-in-storage"
+  },
+  {
+    "file": "src/lib/all.ts",
+    "severity": "error",
+    "rule": "secret-in-storage"
+  },
+  {
+    "file": "src/lib/all.ts",
+    "severity": "error",
+    "rule": "secret-in-storage"
+  }
+]

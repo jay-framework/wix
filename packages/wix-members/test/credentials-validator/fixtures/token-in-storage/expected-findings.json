@@ -1,0 +1,12 @@
+[
+  {
+    "file": "src/lib/session.ts",
+    "severity": "warning",
+    "rule": "token-in-storage"
+  },
+  {
+    "file": "src/lib/session.ts",
+    "severity": "warning",
+    "rule": "token-in-storage"
+  }
+]

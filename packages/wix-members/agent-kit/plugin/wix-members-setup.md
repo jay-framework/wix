@@ -90,6 +90,12 @@ Wrap any page content with the protected-page contract to require login:
 </div>
 ```
 
+## Direct login on your own page
+
+To log in or sign up members with a form on your page (`login`, `register`, `sendPasswordReset`), follow
+`wix-members-direct-login.md`: form templates, `autocomplete` roles, password reset, and the passkey gap.
+`jay-stack validate` checks those pages.
+
 ## How the OAuth flow works
 
 1. User clicks login button → `redirectToLogin()` generates OAuth PKCE data, stores it in sessionStorage, and redirects to Wix-hosted login page

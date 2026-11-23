@@ -1,0 +1,12 @@
+[
+  {
+    "file": "src/lib/remember.ts",
+    "severity": "error",
+    "rule": "secret-in-storage"
+  },
+  {
+    "file": "src/lib/remember.ts",
+    "severity": "error",
+    "rule": "secret-in-storage"
+  }
+]

@@ -1,0 +1,12 @@
+[
+  {
+    "file": "src/pages/signup/page.jay-html",
+    "severity": "error",
+    "rule": "password-type"
+  },
+  {
+    "file": "src/pages/no-type/page.jay-html",
+    "severity": "error",
+    "rule": "password-type"
+  }
+]

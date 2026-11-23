@@ -1,0 +1,7 @@
+[
+  {
+    "file": "app/pages/login/page.jay-html",
+    "severity": "error",
+    "rule": "password-not-in-form"
+  }
+]

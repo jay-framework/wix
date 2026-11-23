@@ -1,0 +1,37 @@
+[
+  {
+    "file": "src/pages/renamed-import/page.jay-html",
+    "severity": "error",
+    "rule": "password-not-in-form"
+  },
+  {
+    "file": "src/pages/fast-render/page.jay-html",
+    "severity": "error",
+    "rule": "password-not-in-form"
+  },
+  {
+    "file": "src/pages/second-context/page.jay-html",
+    "severity": "error",
+    "rule": "password-not-in-form"
+  },
+  {
+    "file": "src/pages/destructured/page.jay-html",
+    "severity": "error",
+    "rule": "password-not-in-form"
+  },
+  {
+    "file": "src/pages/aliased/page.jay-html",
+    "severity": "error",
+    "rule": "password-not-in-form"
+  },
+  {
+    "file": "src/pages/inline-arrow/page.jay-html",
+    "severity": "error",
+    "rule": "password-not-in-form"
+  },
+  {
+    "file": "src/pages/helper-call/page.jay-html",
+    "severity": "error",
+    "rule": "password-not-in-form"
+  }
+]

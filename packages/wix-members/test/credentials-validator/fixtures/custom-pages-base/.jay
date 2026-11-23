@@ -1,0 +1,2 @@
+devServer:
+  pagesBase: ./app/pages

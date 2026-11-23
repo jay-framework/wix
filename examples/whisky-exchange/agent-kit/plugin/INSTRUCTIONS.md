@@ -72,5 +72,6 @@ The plugin participates in four CLI commands, each running different hooks:
 
 | File | Plugin | Description |
 | --- | --- | --- |
+| [wix-members-direct-login.md](wix-members-direct-login.md) | wix-members | Direct member login, sign-up and password reset on your own page: form templates, autocomplete roles, validator rules. |
 | [wix-members-setup.md](wix-members-setup.md) | wix-members |  |
 | [wix-request-session.md](wix-request-session.md) | wix-server-client | ## Site by default, the caller when the request carries a session |

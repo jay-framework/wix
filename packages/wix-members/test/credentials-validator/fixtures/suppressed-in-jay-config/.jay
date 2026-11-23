@@ -1,0 +1,3 @@
+validations:
+  wix-members:
+    password-not-in-form: true

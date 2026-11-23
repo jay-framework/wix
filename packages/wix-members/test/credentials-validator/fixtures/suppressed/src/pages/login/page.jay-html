@@ -1,0 +1,18 @@
+<html>
+  <head>
+    <script type="application/jay-validations">
+      wix-members:
+        password-not-in-form: true
+        password-type: true
+        autocomplete-role: true
+        identifier-autocomplete: true
+    </script>
+  </head>
+  <body>
+    <div>
+      <input ref="email" type="email" autocomplete="off" />
+      <input ref="password" type="text" autocomplete="new-password" />
+      <button ref="submit">Sign up</button>
+    </div>
+  </body>
+</html>

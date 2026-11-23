@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <script type="application/jay-validations">
+      wix-members:
+        no-password-reset: true
+    </script>
+  </head>
+  <body>
+    <form ref="form">
+      <input ref="email" type="email" autocomplete="username" />
+      <input ref="password" type="password" autocomplete="current-password" />
+      <button type="submit">Log in</button>
+    </form>
+  </body>
+</html>

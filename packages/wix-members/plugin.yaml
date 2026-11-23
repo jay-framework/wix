@@ -31,5 +31,13 @@ validators:
   - name: auth-callback-page
     handler: validateAuthCallbackPage
     description: Checks that the auth callback page exists for the OAuth redirect flow
+  - name: credentials-page
+    handler: validateCredentialsPage
+    description: Login/sign-up forms and autocomplete roles
+
+projectValidators:
+  - name: credentials-project
+    handler: validateCredentialsProject
+    description: Password reset reachable, no secrets in storage
 
 setup: setupWixMembers

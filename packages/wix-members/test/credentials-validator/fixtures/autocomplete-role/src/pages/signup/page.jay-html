@@ -1,0 +1,12 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <form ref="form">
+      <input ref="email" type="email" autocomplete="username" />
+      <input ref="password" type="password" autocomplete="current-password" />
+      <input ref="confirmPassword" type="password" autocomplete="new-password" />
+      <button type="submit">Sign up</button>
+    </form>
+  </body>
+</html>

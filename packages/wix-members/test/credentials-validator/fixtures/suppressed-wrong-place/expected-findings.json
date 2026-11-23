@@ -1,0 +1,7 @@
+[
+  {
+    "file": "src/pages/login/page.ts",
+    "severity": "warning",
+    "rule": "no-password-reset"
+  }
+]

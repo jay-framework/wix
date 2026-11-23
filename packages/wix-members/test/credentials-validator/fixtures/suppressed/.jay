@@ -1,0 +1,5 @@
+validations:
+  wix-members:
+    no-password-reset: true
+    secret-in-storage: true
+    token-in-storage: true
