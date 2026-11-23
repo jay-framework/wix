@@ -550,3 +550,306 @@ describe('validateWixFormBindings — PHONE without PHONE_COUNTRY (DL#55 P1c war
         ).toEqual([phoneCountryWarning]);
     });
 });
+
+/**
+ * DL #60: field autocomplete, aria-invalid and error-linkage rules. Expected findings are written
+ * from the design log (Design §3 message format), not from code runs. Each fixture is otherwise a
+ * clean page, so the full finding list is compared.
+ */
+describe('validateWixFormBindings — DL #60 field autocomplete, aria-invalid and error linkage', () => {
+    const FIELD_CHANNELS = [
+        'label',
+        'placeholder',
+        'value',
+        'required',
+        'error',
+        'invalid',
+        'errorRule',
+        'input',
+        'control',
+    ];
+    const field = (tag: string, meta?: Record<string, string>, extra: object[] = []) => ({
+        tag,
+        type: [] as number[],
+        ...(meta && { meta }),
+        tags: [...FIELD_CHANNELS.map((channel) => ({ tag: channel })), ...extra],
+    });
+    const ADDRESS_PARTS_TAGS = [
+        'country',
+        'streetName',
+        'streetNumber',
+        'addressLine',
+        'addressLine2',
+        'city',
+        'subdivision',
+        'postalCode',
+    ];
+    const DL60_TAGS = [
+        field('firstName', { kind: 'text', target: 'first_name' }),
+        field('lastName', { kind: 'text', target: 'last_name' }),
+        field('email', { kind: 'email', target: 'email' }),
+        field('phone', { kind: 'tel', target: 'phone' }),
+        field('message', undefined),
+        field('interests', { kind: 'multiselect', target: 'interests' }, [
+            {
+                tag: 'options',
+                tags: [{ tag: 'value' }, { tag: 'label' }, { tag: 'selected' }, { tag: 'toggle' }],
+            },
+        ]),
+        ...[
+            'submitButton',
+            'resetButton',
+            'confirmation',
+            'statusMessage',
+            'isSubmitted',
+            'isSubmitting',
+            'loadError',
+        ].map((tag) => ({ tag, type: [] as number[] })),
+    ];
+    const ADDRESS_TAG = {
+        tag: 'address',
+        type: [] as number[],
+        tags: [
+            { tag: 'label' },
+            { tag: 'error' },
+            { tag: 'invalid' },
+            ...ADDRESS_PARTS_TAGS.map((part) => ({ tag: part })),
+        ],
+    };
+    const dl60Import = (tags: object[] = DL60_TAGS) => ({
+        key: 'contact',
+        contractName: 'form/contact',
+        contract: { name: 'ContactForm', tags: tags as any },
+    });
+
+    const SEE = 'See: wix-forms rich-forms.md §6.';
+    const suppress = (rule: string) =>
+        `Suppress with wix-forms: { allow-${rule}: true } in <script type="application/jay-validations">.`;
+
+    async function findingsFor(
+        name: string,
+        options: { tags?: object[]; overrides?: Record<string, boolean> } = {},
+    ) {
+        const html = await readFile(path.join(fixturesDir, 'dl60-field-a11y', name), 'utf-8');
+        const ctx = contextWith(html, [dl60Import(options.tags)]);
+        if (options.overrides) ctx.validationOverrides = { 'wix-forms': options.overrides };
+        return validateWixFormBindings(ctx);
+    }
+
+    describe('wix-forms/field-autocomplete', () => {
+        it('should warn on a bound email input with no type and no autocomplete (test 2)', async () => {
+            expect(await findingsFor('email-no-autocomplete.jay-html.fragment')).toEqual([
+                {
+                    severity: 'warning',
+                    attribute: 'ref',
+                    message:
+                        '[wix-forms/field-autocomplete] ref="contact.email.input" (Wix email field "email") has no autocomplete, so the browser cannot autofill it.',
+                    suggestion: `Add autocomplete="email". ${suppress('field-autocomplete')} ${SEE}`,
+                },
+            ]);
+        });
+
+        it.each([
+            ['type="email" (test 3)', 'email-type-no-autocomplete.jay-html.fragment'],
+            ['type="tel" (test 3b)', 'tel-type-no-autocomplete.jay-html.fragment'],
+        ])('should leave a missing token on a %s input to the generic rule', async (_, name) => {
+            expect(await findingsFor(name)).toEqual([]);
+        });
+
+        it('should error on a valid but wrong token (test 4)', async () => {
+            expect(await findingsFor('email-wrong-token.jay-html.fragment')).toEqual([
+                {
+                    severity: 'error',
+                    attribute: 'autocomplete',
+                    message:
+                        '[wix-forms/field-autocomplete] ref="contact.email.input" (Wix email field "email") has autocomplete="name"; the browser will fill a name into it.',
+                    suggestion: `Use autocomplete="email". ${suppress('field-autocomplete')} ${SEE}`,
+                },
+            ]);
+        });
+
+        it.each([
+            ['a shipping prefix (test 5)', 'email-shipping-prefix.jay-html.fragment'],
+            ['tel-national on a tel field (test 18)', 'tel-national.jay-html.fragment'],
+            ['a text field without meta (test 8)', 'text-field-no-meta.jay-html.fragment'],
+        ])('should accept %s', async (_, name) => {
+            expect(await findingsFor(name)).toEqual([]);
+        });
+
+        it('should suggest given-name for the first_name target (test 6)', async () => {
+            expect(await findingsFor('first-name-no-autocomplete.jay-html.fragment')).toEqual([
+                {
+                    severity: 'warning',
+                    attribute: 'ref',
+                    message:
+                        '[wix-forms/field-autocomplete] ref="contact.firstName.input" (Wix field "first_name") has no autocomplete, so the browser cannot autofill it.',
+                    suggestion: `Add autocomplete="given-name". ${suppress('field-autocomplete')} ${SEE}`,
+                },
+            ]);
+        });
+
+        /**
+         * Found at the QA testbed (DL #60 V1): Wix suffixes generated field keys, so a real
+         * first-name field's target is `first_name_5820`, not `first_name`.
+         * Expected: the suffixed target maps to given-name like the bare one.
+         */
+        it('should suggest given-name for a suffixed first_name_<hex> target', async () => {
+            const tags = [
+                field('firstName', { kind: 'text', target: 'first_name_5820' }),
+                ...DL60_TAGS.slice(1),
+            ];
+            expect(
+                (await findingsFor('first-name-no-autocomplete.jay-html.fragment', { tags })).map(
+                    (finding) => finding.suggestion?.split('.')[0],
+                ),
+            ).toEqual(['Add autocomplete="given-name"']);
+        });
+
+        it('should error on address-line1 on an address streetName (test 7)', async () => {
+            expect(
+                await findingsFor('address-street-wrong-token.jay-html.fragment', {
+                    tags: [ADDRESS_TAG, { tag: 'submitButton', type: [] }],
+                }),
+            ).toEqual([
+                {
+                    severity: 'error',
+                    attribute: 'autocomplete',
+                    message:
+                        '[wix-forms/field-autocomplete] ref="contact.address.streetName.input" (address part "streetName") has autocomplete="address-line1"; the browser will fill a street address line into it.',
+                    suggestion: `Remove the autocomplete: streetName has no standard token. ${suppress('field-autocomplete')} ${SEE}`,
+                },
+            ]);
+        });
+
+        it('should check an address part inside if=, without meta (test 22)', async () => {
+            expect(
+                await findingsFor('address-city-conditional-no-token.jay-html.fragment', {
+                    tags: [ADDRESS_TAG, { tag: 'submitButton', type: [] }],
+                }),
+            ).toEqual([
+                {
+                    severity: 'warning',
+                    attribute: 'ref',
+                    message:
+                        '[wix-forms/field-autocomplete] ref="contact.address.city.input" (address part "city") has no autocomplete, so the browser cannot autofill it.',
+                    suggestion: `Add autocomplete="address-level2". ${suppress('field-autocomplete')} ${SEE}`,
+                },
+            ]);
+        });
+    });
+
+    describe('wix-forms/field-invalid-unbound', () => {
+        const SUGGESTION = `Use aria-invalid="{contact.email.invalid}". ${suppress('field-invalid-unbound')} ${SEE}`;
+
+        it.each([
+            [
+                'missing (test 9)',
+                'email-no-aria-invalid.jay-html.fragment',
+                'ref',
+                '[wix-forms/field-invalid-unbound] ref="contact.email.input" has no aria-invalid bound to the field\'s invalid state, so screen readers never say "invalid".',
+            ],
+            [
+                'static "true" (test 10)',
+                'email-static-aria-invalid.jay-html.fragment',
+                'aria-invalid',
+                '[wix-forms/field-invalid-unbound] ref="contact.email.input" has a static aria-invalid="true"; it must follow the field\'s invalid state, so screen readers say "invalid" before the visitor typed anything.',
+            ],
+            [
+                'static "false"',
+                'email-false-aria-invalid.jay-html.fragment',
+                'aria-invalid',
+                '[wix-forms/field-invalid-unbound] ref="contact.email.input" has a static aria-invalid="false"; it must follow the field\'s invalid state, so screen readers never say "invalid".',
+            ],
+            [
+                "another field's state (test 10)",
+                'email-other-field-aria-invalid.jay-html.fragment',
+                'aria-invalid',
+                '[wix-forms/field-invalid-unbound] ref="contact.email.input" has aria-invalid="{contact.firstName.invalid}", which is another field\'s state; it must be {contact.email.invalid}.',
+            ],
+        ])('should warn when aria-invalid is %s', async (_, name, attribute, message) => {
+            expect(await findingsFor(name)).toEqual([
+                { severity: 'warning', attribute, message, suggestion: SUGGESTION },
+            ]);
+        });
+
+        it('should accept {$parent.…invalid} on chip toggles, linked from the fieldset (test 11)', async () => {
+            expect(await findingsFor('chips.jay-html.fragment')).toEqual([]);
+        });
+    });
+
+    describe('wix-forms/field-error-undescribed', () => {
+        it('should warn on an always-present error element with no id (test 12)', async () => {
+            expect(await findingsFor('error-no-id.jay-html.fragment')).toEqual([
+                {
+                    severity: 'warning',
+                    message:
+                        '[wix-forms/field-error-undescribed] <span> showing {contact.email.error} inside ref="emailRow" has no id, so ref="contact.email.input" cannot point aria-describedby at it; the error is not read when the field is focused.',
+                    suggestion: `Give it id="contact-email-error" and add aria-describedby="contact-email-error" to the input. ${suppress('field-error-undescribed')} ${SEE}`,
+                },
+            ]);
+        });
+
+        it("should warn when the error id is not in the input's aria-describedby", async () => {
+            expect(await findingsFor('error-not-listed.jay-html.fragment')).toEqual([
+                {
+                    severity: 'warning',
+                    message:
+                        '[wix-forms/field-error-undescribed] <span id="contact-email-error"> showing {contact.email.error} is not in ref="contact.email.input"\'s aria-describedby, so the error is not read when the field is focused.',
+                    suggestion: `Add "contact-email-error" to the input's aria-describedby. ${suppress('field-error-undescribed')} ${SEE}`,
+                },
+            ]);
+        });
+
+        it('should warn on an unlinked always-present wrapper of errorRule branches (test 20)', async () => {
+            expect(await findingsFor('error-rule-wrapper-unlinked.jay-html.fragment')).toEqual([
+                {
+                    severity: 'warning',
+                    message:
+                        '[wix-forms/field-error-undescribed] <p> showing contact.email.errorRule branches has no id, so ref="contact.email.input" cannot point aria-describedby at it; the error is not read when the field is focused.',
+                    suggestion: `Give it id="contact-email-error" and add aria-describedby="contact-email-error" to the input. ${suppress('field-error-undescribed')} ${SEE}`,
+                },
+            ]);
+        });
+
+        it.each([
+            ['a linked error span (test 13)', 'good-email.jay-html.fragment'],
+            ['an error element under if= (test 14)', 'error-conditional.jay-html.fragment'],
+            ['a bound aria-describedby (test 19)', 'bound-describedby.jay-html.fragment'],
+            ['a bound error id (test 19)', 'bound-error-id.jay-html.fragment'],
+            ['a linked errorRule wrapper (test 21)', 'error-rule-wrapper-linked.jay-html.fragment'],
+        ])('should stay silent on %s', async (_, name) => {
+            expect(await findingsFor(name)).toEqual([]);
+        });
+    });
+
+    it('should report the three rules on the Problem page, one per rule', async () => {
+        const rules = (await findingsFor('problem-page.jay-html.fragment')).map(
+            (finding) => finding.message.match(/^\[([^\]]+)\]/)?.[1],
+        );
+        expect(rules).toEqual([
+            'wix-forms/field-autocomplete',
+            'wix-forms/field-invalid-unbound',
+            'wix-forms/field-error-undescribed',
+        ]);
+    });
+
+    it.each(['field-autocomplete', 'field-invalid-unbound', 'field-error-undescribed'])(
+        'should drop only %s when allow-<rule-id> is set (test 15)',
+        async (rule) => {
+            const rules = (
+                await findingsFor('problem-page.jay-html.fragment', {
+                    overrides: { [`allow-${rule}`]: true },
+                })
+            ).map((finding) => finding.message.match(/^\[wix-forms\/([^\]]+)\]/)?.[1]);
+            expect(rules).toEqual(
+                ['field-autocomplete', 'field-invalid-unbound', 'field-error-undescribed'].filter(
+                    (id) => id !== rule,
+                ),
+            );
+        },
+    );
+
+    it('should pass the rich-forms §1 example with zero findings (test 16)', async () => {
+        expect(await findingsFor('rich-forms-section-1.jay-html.fragment')).toEqual([]);
+    });
+});

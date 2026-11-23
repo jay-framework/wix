@@ -1,0 +1,22 @@
+<p role="alert" if="contact.loadError">{contact.loadError}</p>
+<form novalidate if="!contact.isSubmitted && !contact.loadError">
+  <label for="contact-email">{contact.email.label}</label>
+  <input
+    id="contact-email"
+    ref="contact.email.input"
+    autocomplete="email"
+    aria-required="{contact.email.required}"
+    aria-invalid="{contact.email.invalid}"
+    aria-describedby="contact-email-error"
+    placeholder="{contact.email.placeholder}"
+  />
+  <span id="contact-email-error" class="error">{contact.email.error}</span>
+  <button ref="contact.submitButton" aria-busy="{contact.isSubmitting}">Send</button>
+</form>
+
+<section if="contact.isSubmitted" ref="contact.confirmation" tabindex="-1">
+  <h2>Thanks, {contact.firstName.value}!</h2>
+  <p>We'll reply to {contact.email.value} shortly.</p>
+  <button type="button" ref="contact.resetButton">Send another</button>
+</section>
+

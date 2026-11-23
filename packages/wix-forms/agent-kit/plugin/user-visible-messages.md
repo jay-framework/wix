@@ -110,6 +110,8 @@ On a phone field, branch on both `PHONE` and `PHONE_COUNTRY` (or show `{field.er
 
 Never test `error` text (`if="contact.email.error === '…'"`); branch on `errorRule`. Write `REQUIRED` copy that still reads correctly while the field holds text (see `rich-forms.md` §3).
 
+The error text is read in two ways: through `aria-describedby` when focus returns to the field (the always-present error element, or the wrapper around your `errorRule` branches, needs an `id` the input lists), and through `statusMessage` once on blur (`rich-forms.md` §6).
+
 ## Address messages
 
 English defaults, with the labels resolved from `config/.wix-forms.yaml` `address.labels` (else the plugin's English defaults):

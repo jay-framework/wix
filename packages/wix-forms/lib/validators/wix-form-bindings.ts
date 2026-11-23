@@ -24,6 +24,8 @@
  *     show no error.
  *  7. Address bindings (DL #52 rule 6): every part of an address field binds its input(s), and no
  *     ref names an unknown part or part child (`checkAddressBindings`).
+ *  8. Field autocomplete, aria-invalid and error linkage (DL #60, `detectFieldA11yRules`): rule ids
+ *     `wix-forms/field-autocomplete`, `field-invalid-unbound`, `field-error-undescribed`.
  *
  * Best-effort: a page still importing the retired `contract="wix-form"` also
  * gets a migration message, IF the unresolved name surfaces in headlessImports.
@@ -32,6 +34,15 @@
 import type { JayHtmlValidatorFn, JayHtmlValidationFinding } from '@jay-framework/compiler-shared';
 import { walkElements } from '@jay-framework/compiler-shared';
 import { checkAddressBindings, isAddressContractTag } from './address-bindings.js';
+import { detectFieldA11yRules } from './field-a11y-rules.js';
+import {
+    ERROR_TEXT_BINDING,
+    closestAncestor,
+    matchedErrorRuleCondition,
+    ownErrorBindings,
+    selfOrAncestorBranchesOn,
+    tagNameOf,
+} from './markup-queries.js';
 
 const RETIRED_CONTRACT_NAME = 'wix-form';
 const FORM_CONTRACT_PREFIX = 'form/';
@@ -71,6 +82,7 @@ export const validateWixFormBindings: JayHtmlValidatorFn = (ctx) => {
     detectUnguardedForms(ctx, new Set(formImports.map((imp) => imp.key!)), findings);
     detectPhoneRuleWithoutCountryBranch(ctx, new Set(formImports.map((imp) => imp.key!)), findings);
     detectAddressBindingIssues(ctx, formImports, findings);
+    detectFieldA11yRules(ctx, formImports, findings);
     return findings;
 };
 
@@ -204,17 +216,6 @@ function hasAccessibleLabel(el: any, body: any): boolean {
     );
 }
 
-function closestAncestor(el: any, tagName: string): any {
-    for (let node = el?.parentNode; node; node = node.parentNode) {
-        if (tagNameOf(node) === tagName) return node;
-    }
-    return undefined;
-}
-
-function tagNameOf(el: any): string {
-    return String(el?.rawTagName ?? el?.tagName ?? '').toLowerCase();
-}
-
 function detectRetiredFieldsBindings(
     ctx: Parameters<JayHtmlValidatorFn>[0],
     formImports: Array<{ key?: string }>,
@@ -250,7 +251,11 @@ interface FormImportInfo {
     optionTagsByField: Map<string, Set<string>>;
 }
 
-type FormImport = { key?: string; contractName: string; contract?: { tags?: ContractTag[] } };
+export type FormImport = {
+    key?: string;
+    contractName: string;
+    contract?: { tags?: ContractTag[] };
+};
 
 function collectFormImportInfo(formImports: FormImport[]): Map<string, FormImportInfo> {
     const infoByKey = new Map<string, FormImportInfo>();
@@ -360,10 +365,6 @@ function detectScalarControlOverOptions(
     });
 }
 
-/** `<key>.<field>.errorRule === RULE` (or `==`), the whole condition; anything else is unrecognised. */
-const ERROR_RULE_CONDITION = /^(\w+)\.(\w+)\.errorRule\s*===?\s*(\w+)$/;
-const ERROR_TEXT_BINDING = /\{\s*(\w+)\.(\w+)\.error\s*\}/g;
-
 interface PhoneErrorDisplay {
     rules: Set<string>;
     hasUnconditionalBinding: boolean;
@@ -415,16 +416,6 @@ function collectErrorDisplays(
         }
     });
     return displays;
-}
-
-function matchedErrorRuleCondition(
-    el: any,
-    formKeys: Set<string>,
-): { fieldPath: string; rule: string } | undefined {
-    const condition: string | undefined = el?.getAttribute?.('if');
-    const match = condition?.trim().match(ERROR_RULE_CONDITION);
-    if (!match || !formKeys.has(match[1])) return undefined;
-    return { fieldPath: `${match[1]}.${match[2]}`, rule: match[3] };
 }
 
 const LIVE_ROLES = new Set(['alert', 'status', 'log']);
@@ -494,24 +485,6 @@ function addErrorTextBindings(text: string, formKeys: Set<string>, fieldPaths: S
 
 function isSeparateElement(el: any): boolean {
     return Boolean(el?.getAttribute?.('id') || el?.getAttribute?.('ref'));
-}
-
-/** `{<key>.<field>.error}` in the element's own text nodes only. */
-function ownErrorBindings(el: any, formKeys: Set<string>): string[] {
-    const ownText = (el?.childNodes ?? [])
-        .filter((child: any) => child.nodeType === 3)
-        .map((child: any) => String(child.rawText ?? child.text ?? ''))
-        .join(' ');
-    return [...ownText.matchAll(ERROR_TEXT_BINDING)]
-        .filter((match) => formKeys.has(match[1]))
-        .map((match) => `${match[1]}.${match[2]}`);
-}
-
-function selfOrAncestorBranchesOn(el: any, fieldPath: string, formKeys: Set<string>): boolean {
-    for (let node = el; node; node = node.parentNode) {
-        if (matchedErrorRuleCondition(node, formKeys)?.fieldPath === fieldPath) return true;
-    }
-    return false;
 }
 
 function selfOrAncestorLoopsOver(el: any, loop: string): boolean {

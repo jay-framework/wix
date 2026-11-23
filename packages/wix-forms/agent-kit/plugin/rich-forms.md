@@ -136,8 +136,9 @@ min/max/pattern) — nothing to configure. Timing is "late to complain, early to
   enforcement refuses in its submit hook with `FieldRejection` (§7).
 
 Bind `aria-invalid="{contact.email.invalid}"` on the input
-and put the `error` in a polite live region linked by `aria-describedby` (see example
-above). The `invalid` variant also drives error styling.
+and put the `error` in an always-present, non-live element linked by `aria-describedby` (see
+example above); the plugin announces blur errors itself through `statusMessage` (§6). The
+`invalid` variant also drives error styling.
 
 ### Which rule failed — `errorRule`
 
@@ -416,7 +417,41 @@ mechanical mistakes marked ⚠️.
   pattern; a second click or Enter is already ignored while `isSubmitting` is set. Adding
   `disabled="{k.isSubmitting}"` is optional and a trade-off: it drops the button out of tab order
   mid-submit (focus is lost).
-- **`autocomplete`** on personal-data fields (`name`, `given-name`, `email`, `tel`, …).
+- ⚠️ **`autocomplete` from the field kind** (`wix-forms/field-autocomplete`). The contract's
+  `meta: { kind, target }` names the one right token; a missing token warns, a wrong one is an
+  **error** (the browser would fill the wrong data):
+
+  | Field (`meta.kind` / Wix target / address part) | `autocomplete` |
+  |---|---|
+  | kind `email` | `email` |
+  | kind `tel` | `tel` or `tel-national` |
+  | kind `url` | `url` |
+  | target `first_name` / `last_name` (also Wix-suffixed, e.g. `first_name_5820`) | `given-name` / `family-name` |
+  | address `country` / `addressLine` / `addressLine2` | `country` / `address-line1` / `address-line2` |
+  | address `city` / `subdivision` (both inputs) / `postalCode` | `address-level2` / `address-level1` / `postal-code` |
+  | address `streetName`, `streetNumber` | none — never `address-line1` |
+  | other kinds (`text`, `textarea`, `select`, `checkbox`, `multiselect`) | your choice, not checked |
+
+  Section and `shipping` / `billing` prefixes are fine (`autocomplete="shipping email"`), and
+  `autocomplete="off"` is accepted. Regenerate form contracts (`jay-stack-cli agent-kit`) to get
+  `meta`; an old contract checks address parts only.
+- ⚠️ **`aria-invalid` is bound to `invalid`, never set by page code**
+  (`wix-forms/field-invalid-unbound`): `aria-invalid="{k.f.invalid}"` on the input, and
+  `{$parent.k.f.invalid}` on each chip `<input>`. The plugin already delays `invalid` until the
+  visitor changed and left the field (§3), so a static `"true"` says "invalid" too early and
+  `"false"` or a missing attribute never says it.
+- ⚠️ **Link the always-present error element** (`wix-forms/field-error-undescribed`): give the
+  element that shows `{k.f.error}` — or the wrapper around your `errorRule` branches — a static
+  `id`, and list it in the input's (or the chip `<fieldset>`'s) `aria-describedby`. Then the
+  error is read when focus returns to the field.
+- **Hints above the field.** Put format hints and rules **above** the input (or in the label),
+  linked with `aria-describedby`, never only in `placeholder`: a hint below the field is hidden by
+  mobile keyboards and autofill popups.
+- **Suppressing** one of the three rules for a whole page: `wix-forms: { allow-field-autocomplete: true }`
+  (or `allow-field-invalid-unbound`, `allow-field-error-undescribed`) in
+  `<script type="application/jay-validations">`.
+- Generic HTML form rules (placeholder as label, hint position, token grammar, `:user-invalid`,
+  autofill styling) come from the a11y plugin; see its agent-kit guide `forms-and-autofill.md`.
 - **Groups**: wrap a checkbox or radio group in `<fieldset><legend>{k.f.label}</legend> …`.
 - **Custom choosers** (`control` buttons): mark the chosen one with `aria-pressed="true"`
   from page data.

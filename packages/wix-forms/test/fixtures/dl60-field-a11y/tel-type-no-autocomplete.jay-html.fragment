@@ -1,0 +1,5 @@
+<form novalidate>
+    <label>{contact.phone.label} <input type="tel" ref="contact.phone.input" aria-invalid="{contact.phone.invalid}" aria-describedby="contact-phone-error" /></label>
+    <span id="contact-phone-error" class="error">{contact.phone.error}</span>
+    <button ref="contact.submitButton">Send</button>
+</form>

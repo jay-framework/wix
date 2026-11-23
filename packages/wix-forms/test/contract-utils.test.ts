@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { contractTagName } from '../lib/generators/contract-utils.js';
+import { contractTagName, fieldTag, hiddenFieldTag } from '../lib/generators/contract-utils.js';
+import type { FormFieldView } from '../lib/types.js';
 
 /**
  * Bug: Break B — generated contract tags used the raw Wix field `target`
@@ -40,5 +41,36 @@ describe('contractTagName', () => {
 
     it('should suffix a target already equal to a reserved tag', () => {
         expect(contractTagName('submitButton')).toBe('submitButtonField');
+    });
+});
+
+/**
+ * DL #60 §1: each visible field carries `meta: { kind, target }` so the bindings validator knows
+ * the field's kind and its raw Wix target (`first_name`, not the camelCased tag). Hidden fields
+ * have no input and get no meta.
+ */
+describe('field meta (DL #60)', () => {
+    const firstName: FormFieldView = {
+        target: 'first_name',
+        label: 'First name',
+        inputType: 'text',
+        required: true,
+        placeholder: '',
+        options: [],
+    };
+
+    it("should put the field kind and raw Wix target in a visible field's meta", () => {
+        expect(fieldTag(firstName).split('\n').slice(0, 6)).toEqual([
+            '  - tag: firstName',
+            '    type: sub-contract',
+            '    phase: fast+interactive',
+            '    description: First name',
+            '    meta: { kind: text, target: first_name }',
+            '    tags:',
+        ]);
+    });
+
+    it('should give a hidden field no meta', () => {
+        expect(hiddenFieldTag(firstName)).not.toContain('meta:');
     });
 });

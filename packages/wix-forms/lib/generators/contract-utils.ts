@@ -63,7 +63,8 @@ function valueTagLines(field: FormFieldView, child: string): string[] {
 
 /**
  * Build the `sub-contract` tag for a single visible form field, named after the
- * field's `target`. Carries label/placeholder/value/required/error/invalid/errorRule plus
+ * field's `target`. Its `meta` carries the field kind and raw Wix target for the bindings
+ * validator (DL #60). Carries label/placeholder/value/required/error/invalid/errorRule plus
  * `input` and `control` interactive tags; options-bearing fields also get a
  * repeated `options` sub-contract.
  */
@@ -76,6 +77,7 @@ export function fieldTag(field: FormFieldView, level = 1): string {
         `${prop}type: sub-contract`,
         `${prop}phase: fast+interactive`,
         `${prop}description: ${yamlInline(field.label || field.target)}`,
+        `${prop}meta: { kind: ${field.inputType}, target: ${flowScalar(field.target)} }`,
         `${prop}tags:`,
         `${child}- { tag: label, type: data, dataType: string }`,
     ];
@@ -95,6 +97,14 @@ export function fieldTag(field: FormFieldView, level = 1): string {
         lines.push(...optionsSubContract(field, level + 2));
     }
     return lines.join('\n');
+}
+
+/**
+ * A scalar safe inside a YAML flow mapping: Wix targets are plain keys (`first_name`), so they stay
+ * bare; anything else is quoted.
+ */
+function flowScalar(value: string): string {
+    return /^[A-Za-z_][\w-]*$/.test(value) ? value : JSON.stringify(value);
 }
 
 /**

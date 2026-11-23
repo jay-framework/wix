@@ -1,0 +1,10 @@
+<form novalidate>
+    <fieldset aria-describedby="contact-interests-error">
+        <legend>{contact.interests.label}</legend>
+        <label forEach="contact.interests.options" trackBy="value">
+            <input type="checkbox" ref="contact.interests.options.toggle" value="{value}" checked="selected" aria-invalid="{$parent.contact.interests.invalid}" /> {label}
+        </label>
+        <span id="contact-interests-error" class="error">{contact.interests.error}</span>
+    </fieldset>
+    <button ref="contact.submitButton">Send</button>
+</form>

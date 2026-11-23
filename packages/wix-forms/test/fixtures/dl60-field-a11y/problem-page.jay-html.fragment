@@ -1,0 +1,5 @@
+<form novalidate>
+    <label>{contact.email.label}<input ref="contact.email.input" /></label>
+    <span class="error">{contact.email.error}</span>
+    <button ref="contact.submitButton">Send</button>
+</form>

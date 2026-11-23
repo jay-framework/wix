@@ -1,0 +1,5 @@
+<form novalidate>
+    <label>{contact.phone.label} <input ref="contact.phone.input" autocomplete="tel-national" aria-invalid="{contact.phone.invalid}" aria-describedby="contact-phone-error" /></label>
+    <span id="contact-phone-error" class="error">{contact.phone.error}</span>
+    <button ref="contact.submitButton">Send</button>
+</form>

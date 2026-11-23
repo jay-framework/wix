@@ -1,0 +1,5 @@
+<form novalidate>
+    <label>{contact.firstName.label} <input ref="contact.firstName.input" aria-invalid="{contact.firstName.invalid}" aria-describedby="contact-first-name-error" /></label>
+    <span id="contact-first-name-error" class="error">{contact.firstName.error}</span>
+    <button ref="contact.submitButton">Send</button>
+</form>

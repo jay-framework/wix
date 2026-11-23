@@ -13,6 +13,16 @@
    `postalCode`); a form with a required address no longer shows "This form has a required field
    this site cannot show". Re-run `jay-stack agent-kit` and bind the parts (`rich-forms.md` §4c):
    the validator now **errors** on an address part without its input(s) (rule 6).
+3. **New validator rules: field `autocomplete`, `aria-invalid` and error linkage** (DL #60).
+   Regenerate form contracts (`jay-stack agent-kit`): each visible field tag now carries
+   `meta: { kind, target }`. New warnings may appear: `wix-forms/field-autocomplete` (a field
+   with no token for its kind), `wix-forms/field-invalid-unbound` (`aria-invalid` not bound to
+   the field's `invalid`) and `wix-forms/field-error-undescribed` (the always-present error
+   element is not in the input's `aria-describedby`). A **wrong** `autocomplete` token for the
+   field kind (e.g. `name` on an email field, `address-line1` on `streetName`) is an **error**,
+   which can fail existing `jay-stack validate` / CI runs. Suppress a rule page-wide with
+   `wix-forms: { allow-<rule-id>: true }` in `<script type="application/jay-validations">`
+   (`rich-forms.md` §6).
 
 ### Behaviour changes (read before upgrading)
 

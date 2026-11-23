@@ -1,0 +1,5 @@
+<form novalidate>
+    <label>{contact.email.label} <input ref="contact.email.input" autocomplete="name" aria-invalid="{contact.email.invalid}" aria-describedby="contact-email-error" /></label>
+    <span id="contact-email-error" class="error">{contact.email.error}</span>
+    <button ref="contact.submitButton">Send</button>
+</form>

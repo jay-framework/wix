@@ -7,6 +7,7 @@ tags:
     type: sub-contract
     phase: fast+interactive
     description: I agree
+    meta: { kind: checkbox, target: consent }
     tags:
       - { tag: label, type: data, dataType: string }
       - { tag: value, type: variant, dataType: boolean }
@@ -20,6 +21,7 @@ tags:
     type: sub-contract
     phase: fast+interactive
     description: Interests
+    meta: { kind: multiselect, target: interests }
     tags:
       - { tag: label, type: data, dataType: string }
       - { tag: required, type: variant, dataType: boolean }
@@ -41,6 +43,7 @@ tags:
     type: sub-contract
     phase: fast+interactive
     description: Country
+    meta: { kind: select, target: country }
     tags:
       - { tag: label, type: data, dataType: string }
       - { tag: required, type: variant, dataType: boolean }

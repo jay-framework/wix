@@ -7,6 +7,7 @@ tags:
     type: sub-contract
     phase: fast+interactive
     description: First name
+    meta: { kind: text, target: firstName }
     tags:
       - { tag: label, type: data, dataType: string }
       - { tag: placeholder, type: data, dataType: string }
@@ -21,6 +22,7 @@ tags:
     type: sub-contract
     phase: fast+interactive
     description: Email
+    meta: { kind: email, target: email }
     tags:
       - { tag: label, type: data, dataType: string }
       - { tag: placeholder, type: data, dataType: string }
@@ -35,6 +37,7 @@ tags:
     type: sub-contract
     phase: fast+interactive
     description: Message
+    meta: { kind: textarea, target: message }
     tags:
       - { tag: label, type: data, dataType: string }
       - { tag: placeholder, type: data, dataType: string }
@@ -49,6 +52,7 @@ tags:
     type: sub-contract
     phase: fast+interactive
     description: Country
+    meta: { kind: select, target: country }
     tags:
       - { tag: label, type: data, dataType: string }
       - { tag: required, type: variant, dataType: boolean }
