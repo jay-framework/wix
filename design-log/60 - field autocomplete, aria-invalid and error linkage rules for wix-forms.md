@@ -337,3 +337,6 @@ No false-green demos: a run that does not show the expected speech or fill is a 
 ### Agent feedback (done)
 
 Validation: the three rules. Guide: `rich-forms.md` §3 fix and §6 additions, `user-visible-messages.md` line. Generic knowledge stays in the a11y plugin's `forms-and-autofill.md`, which the guide points to.
+
+
+**Re-attempt 2026-11-24 (QA agent):** Accessibility and Automation now work from iTerm (System Events, Safari and VoiceOver AppleScript all answered), but `screencapture` still fails with "could not create image from display" even when run in an iTerm window, so **Screen Recording is still not effective** for iTerm (most likely iTerm must be fully quit and relaunched after the grant, or the grant is on a different app entry). No video could be recorded, so every Safari, VoiceOver and native-autofill cell above stays FAILED / not demonstrated. No Safari My Card, Keychain entry or QA-site data was created, so nothing needs deleting.
