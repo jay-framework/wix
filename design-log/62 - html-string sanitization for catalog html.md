@@ -172,3 +172,12 @@ Validation: none new in wix (jay's `HTML-STRING-TRUST` covers it). Agent-kit: on
 - `yarn build`: ok. `yarn test`: **1362/1362** across the workspace (wix-utils 21/21, new store tests 2/2 + 2/2).
 - `npm run validate` on all examples: no errors. Before the acknowledgement there were 2 `HTML-STRING-TRUST` warnings per product page. After it there are 0. The `RAW-HTML-SINK`, `INLINE-EVENT-HANDLER` and `JAVASCRIPT-URL` rules report nothing. The remaining warnings were already there.
 - Built against the unreleased jay rule (synced from a local jay build). The released wix still needs the jay release that has the rule.
+
+### Live check on a real Wix Stores QA site (2026-11-24)
+
+`examples/store` (this branch) ran against a QA Stores site (visitor mode, catalog V3) with the product slug `qa-xss-product`. The example page does not bind `description`, so for the demo only I bound `{productPage.description}` in a div and listed it under `allow-html-string` (local edit, reverted, not committed). Recorded: `wix-62-live-product-20261124.webm` (workspace root).
+
+- **Rendered HTML (SSR, from the real catalog):** `<p>QA description with an <a href="https://example.com" target="_blank" rel="noopener noreferrer">external link</a> and <span>bold</span>.</p>`. The link is kept with `target="_blank"` and `rel="noopener noreferrer"`. No `<script>`, no `on*` attributes.
+- **Console:** no errors from the description. The only console error is `GET /ecom/v1/carts/current` answering 404, which is the cart indicator for a first-time visitor with no cart (unrelated to sanitization).
+- **Bold:** the text is kept, but the emphasis is not. The catalog returns bold as a `<span>` with an inline style; the sanitizer strips `style`, so the page shows plain text. Possible follow-up: map the catalog's bold span to `<strong>` before sanitizing. No change made here.
+- **Finding: Wix sanitizes upstream.** Creating the product through the Wix API with `<img onerror>`, `<script>`, inline `style` and a `javascript:` link returned them already stripped or converted to Ricos nodes (the `img` became an IMAGE node, `style` became a font-weight span, the `javascript:` link was dropped). A real Stores product therefore cannot carry the raw payload through the API, and **this live page does not prove that the sanitizer blocked a payload.** That proof stays in the unit tests (red then green above) and in `wix-62-sanitize-20261123.webm`. The live run shows only that real catalog HTML passes through the sanitizing plugin intact (link) and unharmed.
