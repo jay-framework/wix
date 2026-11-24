@@ -225,3 +225,14 @@ Not affected (checked): :100, :134 (filter `severity: 'error'`), :178 (`arrayCon
 **Demo video:** `wix-61-reserve-space-cls-20261123.webm` (workspace root, narrated, 67 s).
 
 **Agent feedback loop:** validation + guide section, as planned. Nothing else is needed.
+
+### Live check on a real Wix Stores QA site (2026-11-24)
+
+`examples/store` (this branch) ran against a QA Stores site (visitor mode) with the product `qa-xss-product`, whose main image is 3000x3000. The shipped store page positions the image absolutely inside a fixed-height frame, so it cannot shift. For the demo I made a local edit (reverted, not committed) to `products/[slug]/page.jay-html`: the image frame got no fixed height, the image flows in normal layout, and a text line follows it. Two variants of the same `<img src="{productPage.mediaGallery.selectedMedia.url}/…">`. Measured with `PerformanceObserver` `layout-shift` (sum of `value`, `hadRecentInput` ignored), cache disabled, 400 ms latency and 400 kbit/s throttle in headless Chromium. Recorded: `wix-61-live-product-20261124.webm` (workspace root).
+
+| Variant | `jay-stack validate` | CLS |
+|---|---|---|
+| no `width`/`height` | `WIX-MEDIA-NO-DIMENSIONS` on `products/[slug]/page.jay-html`, with the guide path | **0.0235** |
+| `width="800" height="800"` | warning gone (10 warnings to 9) | **0.0008** |
+
+Pass criteria met (unsized > 0, sized < 0.01). Deviations from the planned demo: the design named the whisky-exchange card; the live QA site has the store example's product page instead, and its shipped markup needed the flow-layout edit above to show a shift. The throttle is a CDP network emulation approximating Slow 3G, not the DevTools preset.
